@@ -1,1 +1,5 @@
-module TestPfam using Base.Test using MIToS end
+module TestPfam
+  using Base.Test
+  using MIToS
+
+end

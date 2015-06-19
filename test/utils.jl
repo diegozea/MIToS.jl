@@ -1,1 +1,5 @@
-module TestUtils using Base.Test using MIToS end
+module TestUtils
+  using Base.Test
+  using MIToS
+
+end

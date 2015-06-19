@@ -1,1 +1,5 @@
-module TestMSA using Base.Test using MIToS end
+module TestMSA
+  using Base.Test
+  using MIToS
+
+end

@@ -1,1 +1,6 @@
-module TestSIFTS using Base.Test using MIToS end
+module TestSIFTS
+  using Base.Test
+  using MIToS
+
+
+end

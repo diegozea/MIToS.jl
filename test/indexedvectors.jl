@@ -1,1 +1,5 @@
-module TestIndexedVectors using Base.Test using MIToS end
+module TestIndexedVectors
+  using Base.Test
+  using MIToS
+
+end
