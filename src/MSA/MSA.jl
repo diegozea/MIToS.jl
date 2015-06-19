@@ -1,1 +1,3 @@
-module MSA end
+module MSA
+
+end

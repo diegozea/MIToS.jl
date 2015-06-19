@@ -1,1 +1,3 @@
-module SIFTS end
+module SIFTS
+
+end

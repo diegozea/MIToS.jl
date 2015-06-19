@@ -1,1 +1,3 @@
-module Utils end
+module Utils
+
+end

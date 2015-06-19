@@ -1,1 +1,3 @@
-module MI end
+module MI
+
+end
