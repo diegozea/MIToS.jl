@@ -1,4 +1,6 @@
-function getsiftsmapping(filename::ASCIIString, chain::Char; from = "PDB", to = "Pfam", segment_num = 1, check_observed = true)
+using LightXML
+
+function getsiftsmapping(filename::ASCIIString, chain::Char; to = "Pfam", segment_num = 1, check_observed = true)
 	mapping = Dict{Int,Int}()
 	sifts = parse_file(filename);
 	siftsroot = root(sifts);
@@ -20,18 +22,11 @@ function getsiftsmapping(filename::ASCIIString, chain::Char; from = "PDB", to = 
 				end
 				if use
 					crossref = get_elements_by_tagname(residue, "crossRefDb")
-					key = -9999
-					value = -9999
+					key = int( attribute(residue, "dbResNum") ) ## <residue dbSource="PDBe" ...
 					for ref in crossref
-						if attribute(ref, "dbSource") == from
-							key = int( attribute(ref, "dbResNum") )
-						end
 						if attribute(ref, "dbSource") == to
-							value = int( attribute(ref, "dbResNum") )
-						end
-						if key != -9999 && value != -9999
-							mapping[key] = value
-							break
+							mapping[key] = int( attribute(ref, "dbResNum") )
+              break
 						end
 					end
 				end
