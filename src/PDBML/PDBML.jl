@@ -1,8 +1,10 @@
 module PDBML
 
-  export getpdbchain
+  export PDBResidue, pdbresidue,
 
-  include("PDBMLParser.jl")
+  getpdbchain
+
   include("PDBResidues.jl")
+  include("PDBMLParser.jl")
 
 end

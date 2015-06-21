@@ -1,5 +1,7 @@
 module TestPDBML
   using Base.Test
-  using MIToS
+  using MIToS.PDML
+
+
 
 end
