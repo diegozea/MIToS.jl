@@ -50,3 +50,11 @@ end
 deepcopy(ann::Annotations) = Annotations( deepcopy( ann.file ), deepcopy( ann.sequences ), deepcopy( ann.columns ), deepcopy( ann.residues ))
 
 copy(ann::Annotations) = Annotations( copy( ann.file ), copy( ann.sequences ), copy( ann.columns ), copy( ann.residues ))
+
+# Show & Print
+# ------------
+
+import Base: print, show
+
+print(io::IO, ann::Annotations) = dump(io, ann)
+show(io::IO, ann::Annotations) = dump(io, ann)

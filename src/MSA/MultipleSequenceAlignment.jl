@@ -148,3 +148,9 @@ end
 
 # Remove positions with gaps in the reference sequence
 adjustreference!(msa::MultipleSequenceAlignment) = filtercolumns!(msa, vec(msa.msa[1,:]) .!= GAP )
+
+# Show & Print
+# ------------
+
+print(io::IO, msa::MultipleSequenceAlignment) = dump(io, msa)
+show(io::IO, msa::MultipleSequenceAlignment) = dump(io, msa)

@@ -1,4 +1,4 @@
-import Base: length, getindex, size, ndims, copy, deepcopy, start, next, done, show, push!
+import Base: length, getindex, size, ndims, copy, deepcopy, start, next, done, show, push!, print
 
 # Mapping Values and Array Positions back and forth
 # =================================================
@@ -89,26 +89,8 @@ function push!{T}(indvec::IndexedVector{T}, value::T)
   indvec
 end
 
-# Show
-# ----
+# Show & Print
+# ------------
 
-function _printregion(io::IO, indvec::IndexedVector, region::UnitRange)
-  for i in region
-      value = selectvalue(indvec, i)
-      print(io, "$(i)\t$(value)\n")
-  end
-end
-
-function show(io::IO, indvec::IndexedVector)
-  len = length(indvec)
-  println(io, "IndexedVector with $len values:")
-  screen = Base.tty_size()[1] > 6 ? Base.tty_size()[1] - 5 : Base.tty_size()[1]
-  if len <= screen
-    _printregion(io, indvec, 1:len)
-  else
-    partlen = int((screen)/2) - 3
-    _printregion(io, indvec, 1:partlen)
-    print(io, " \u22ee\n")
-    _printregion(io, indvec, (len-partlen):len)
-  end
-end
+print(io::IO, indvec::IndexedVector) = dump(io, indvec)
+show(io::IO, indvec::IndexedVector) = dump(io, indvec)
