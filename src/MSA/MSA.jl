@@ -6,11 +6,11 @@ module MSA
 
   Annotations, filtersequences!, filtercolumns!,
 
-  MultipleSequenceAlignment, AlignedSequence, getresidues,
-  nsequences, ncolumns, getsequence, gappercentage, coverage,
-  columngappercentage, setreference!, gapstrip!, adjustreference!,
+  MultipleSequenceAlignment, AlignedSequence, getresidues, getsequence,
+  nsequences, ncolumns, gappercentage, residuepercentage, coverage, 
+  columngappercentage, setreference!, gapstrip!, adjustreference!, asciisequence,
 
-  readpfam
+  readpfam, writepfam, printpfam
 
   include("Residues.jl")
   include("IndexedVectors.jl")

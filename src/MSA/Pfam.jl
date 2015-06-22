@@ -168,10 +168,80 @@ function __to_msa_mapping(sequences::Array{ASCIIString,1}, ids::Array{ASCIIStrin
   (aln', mapp)
 end
 
-function readpfam(filename::ASCIIString)
+function readpfam(filename::ASCIIString; useidcoordinates::Bool=true)
   IDS, SEQS, GF, GS, GC, GR = __pre_readstockholm(filename)
-  MSA, MAP = __to_msa_mapping(SEQS, IDS)
+  MSA, MAP = useidcoordinates ? __to_msa_mapping(SEQS, IDS) : __to_msa_mapping(SEQS)
   COLS = vcat(1:size(MSA,2))
   msa = MultipleSequenceAlignment(indexedvector(IDS), MSA, MAP, indexedvector(COLS), Annotations(GF, GS, GC, GR))
   filtercolumns!(msa, columngappercentage(msa) .< 1.0)
+end
+
+# Print Pfam
+# ==========
+
+function __printfileannotations(io::IO, msa::MultipleSequenceAlignment)
+	if !isempty(msa.annotations.file)
+		for (key, value) in msa.annotations.file
+			println(io, string("#=GF ", key, " ", value))
+		end
+	end
+end
+
+function __printcolumnsannotations(io::IO, msa::MultipleSequenceAlignment)
+	if !isempty(msa.annotations.columns)
+		for (key, value) in msa.annotations.columns
+			println(io, string("#=GC ", key, "\t\t", value))
+		end
+	end
+end
+
+function __printsequencesannotations(io::IO, msa::MultipleSequenceAlignment)
+	if !isempty(msa.annotations.sequences)
+		for (key, value) in msa.annotations.sequences
+			println(io, string("#=GC ", key[1], " ", key[2], " ", value))
+		end
+	end
+end
+
+
+function __to_sequence_dict(annotation::Dict{(ASCIIString,ASCIIString),ASCIIString})
+	seq_dict = Dict{ASCIIString,Vector{ASCIIString}}()
+	for (key, value) in annotation
+		seq_id = key[1]
+		if seq_id in keys(seq_dict)
+			push!(seq_dict[seq_id], string(key[2], "\t", value)) 
+		else
+			seq_dict[seq_id] = [ string(key[2], "\t", value) ]
+		end
+	end
+	sizehint(seq_dict, length(seq_dict))
+end
+
+function printpfam(io::IO, msa::MultipleSequenceAlignment)
+	__printfileannotations(io, msa)
+	__printsequencesannotations(io, msa)
+	res_annotations = __to_sequence_dict(msa.annotations.residues)
+	for i in 1:nsequences(msa)
+		id = selectvalue(msa.id, i)
+		seq = asciisequence(msa, i)
+		println(io, string(id, "\t\t", seq))
+		if id in keys(res_annotations)
+			for line in res_annotations[id]
+				println(io, string("#=GR ", id, " ", line))
+			end
+		end
+	end
+	__printcolumnsannotations(io, msa)
+	println(io, "//")
+end
+
+printpfam(msa::MultipleSequenceAlignment) = printpfam(STDOUT, msa)
+
+# Write Pfam
+# ==========
+
+function writepfam(filename::ASCIIString, msa::MultipleSequenceAlignment)
+	open(filename, "w") do fh
+		printpfam(fh, msa)
+	end
 end

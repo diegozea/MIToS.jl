@@ -162,5 +162,7 @@ adjustreference!(msa::MultipleSequenceAlignment) = filtercolumns!(msa, vec(msa.m
 # Show & Print
 # ------------
 
+asciisequence(msa::MultipleSequenceAlignment, seq::Int) = ascii(convert(Vector{Uint8}, vec(msa.msa[seq,:])))
+
 print(io::IO, msa::MultipleSequenceAlignment) = dump(io, msa)
 show(io::IO, msa::MultipleSequenceAlignment) = dump(io, msa)
