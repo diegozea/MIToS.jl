@@ -81,10 +81,10 @@ getindex(msa::MultipleSequenceAlignment, id::ASCIIString) = getsequence(msa, id)
 
 function filtersequences!(msa::MultipleSequenceAlignment, mask::BitVector)
   if length(mask) == nsequences(msa)
-    msa.id = msa.id[ mask ]
     msa.msa = msa.msa[ mask , : ]
     msa.sequencemapping = msa.sequencemapping[ mask , : ]
     filtersequences!(msa.annotations, msa.id, mask)
+    msa.id = msa.id[ mask ]
   end
   msa
 end
@@ -121,8 +121,18 @@ function gappercentage(x::AbstractArray{Residue})
   float(counter) / float(len)
 end
 
+function residuepercentage(x::AbstractArray{Residue})
+  counter = 0
+  len = 0
+  for res in x
+    counter += res == GAP ? 0 : 1
+    len += 1
+  end
+  float(counter) / float(len)
+end
+
 """Coverage of sequences"""
-coverage(msa::MultipleSequenceAlignment) = vec( mapslices(gappercentage, msa.msa, 2) )
+coverage(msa::MultipleSequenceAlignment) = vec( mapslices(residuepercentage, msa.msa, 2) )
 
 columngappercentage(msa::MultipleSequenceAlignment) = vec( mapslices(gappercentage, msa.msa, 1) )
 
@@ -138,7 +148,7 @@ end
 
 setreference!(msa::MultipleSequenceAlignment, id::ASCIIString) = setreference!(msa, selectindex(msa.id ,id))
 
-function gapstrip!(msa::MultipleSequenceAlignment; coveragelimit::FloatingPoint=0.8, gaplimit::FloatingPoint=0.5)
+function gapstrip!(msa::MultipleSequenceAlignment; coveragelimit::FloatingPoint=0.75, gaplimit::FloatingPoint=0.5)
   adjustreference!(msa)
   # Remove sequences with pour coverage of the reference sequence
   ncolumns(msa) != 0 ? filtersequences!(msa, coverage(msa) .>= coveragelimit ) : throw("There are not columns in the MSA after the gap trimming")

@@ -13,9 +13,9 @@ end
 
 __filter(str::ASCIIString, mask) = ascii( str.data[mask] )
 
-function filtersequences!(data::Annotations, ids, mask)
+function filtersequences!(data::Annotations, ids::IndexedVector, mask)
   if length(data.sequences) > 0 || length(data.residues) > 0
-    del = ids[ ! mask ]
+    del = ids.values[ !mask ]
     for key in keys(data.residues)
       if key[1] in del
         delete!(data.residues, key)
