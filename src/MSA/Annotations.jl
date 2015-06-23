@@ -58,3 +58,13 @@ import Base: print, show
 
 print(io::IO, ann::Annotations) = dump(io, ann)
 show(io::IO, ann::Annotations) = dump(io, ann)
+
+# Empty Annotations
+# =================
+
+function __empty(::Type{Annotations})
+  Annotations(sizehint(Dict{ASCIIString, ASCIIString}(), 0),
+              sizehint(Dict{(ASCIIString,ASCIIString),ASCIIString}(), 0),
+              sizehint(Dict{ASCIIString, ASCIIString}(), 0),
+              sizehint(Dict{(ASCIIString,ASCIIString),ASCIIString}(), 0))
+end

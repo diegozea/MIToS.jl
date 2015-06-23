@@ -7,15 +7,18 @@ module MSA
   Annotations, filtersequences!, filtercolumns!,
 
   MultipleSequenceAlignment, AlignedSequence, getresidues, getsequence,
-  nsequences, ncolumns, gappercentage, residuepercentage, coverage, 
+  nsequences, ncolumns, gappercentage, residuepercentage, coverage,
   columngappercentage, setreference!, gapstrip!, adjustreference!, asciisequence,
 
-  readpfam, writepfam, printpfam
+  readpfam, writepfam, printpfam, downloadpfam,
+
+  readfasta, writefasta, printfasta
 
   include("Residues.jl")
   include("IndexedVectors.jl")
   include("Annotations.jl")
   include("MultipleSequenceAlignment.jl")
   include("Pfam.jl")
+  include("FASTA.jl")
 
 end

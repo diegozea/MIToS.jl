@@ -209,7 +209,7 @@ function __to_sequence_dict(annotation::Dict{(ASCIIString,ASCIIString),ASCIIStri
 	for (key, value) in annotation
 		seq_id = key[1]
 		if seq_id in keys(seq_dict)
-			push!(seq_dict[seq_id], string(key[2], "\t", value)) 
+			push!(seq_dict[seq_id], string(key[2], "\t", value))
 		else
 			seq_dict[seq_id] = [ string(key[2], "\t", value) ]
 		end
@@ -244,4 +244,17 @@ function writepfam(filename::ASCIIString, msa::MultipleSequenceAlignment)
 	open(filename, "w") do fh
 		printpfam(fh, msa)
 	end
+end
+
+# Download Pfam
+# =============
+
+function downloadpfam(pfamcode::ASCIIString; filename::ASCIIString="$pfamcode.aln")
+  if length(pfamcode)== 7 && ( pfamcode[1:2] == "PF" || pfamcode[1:2] == "pf" )
+    namegz = string(filename, ".gz")
+    download(string("http://pfam.xfam.org/family/PF", pfamcode[3:end], "/alignment/full/gzipped"), namegz)
+    run(`gzip -d $namegz`)
+  else
+    throw(string(pfamcode, " is not a correct Pfam code"))
+  end
 end
