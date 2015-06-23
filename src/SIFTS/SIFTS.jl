@@ -1,6 +1,6 @@
 module SIFTS
 
-  export getsiftsmapping
+  export siftsmapping, downloadsifts
 
   include("ResidueMapping.jl")
 

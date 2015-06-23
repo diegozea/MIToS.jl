@@ -1,8 +1,8 @@
 using LightXML
 
-function getsiftsmapping(filename::ASCIIString, chain::Char; to = "Pfam", segment_num = 1, check_observed = true)
+function siftsmapping(sifts_xml::ASCIIString, chain::Char, dbid::ASCIIString; db::ASCIIString = "Pfam", segment_num::Int = 1, check_observed::Bool = true)
 	mapping = Dict{Int,Int}()
-	sifts = parse_file(filename);
+	sifts = parse_file(sifts_xml);
 	siftsroot = root(sifts);
 	entities = get_elements_by_tagname(siftsroot, "entity");
 	for entity in entities
@@ -24,7 +24,7 @@ function getsiftsmapping(filename::ASCIIString, chain::Char; to = "Pfam", segmen
 					crossref = get_elements_by_tagname(residue, "crossRefDb")
 					key = int( attribute(residue, "dbResNum") ) ## <residue dbSource="PDBe" ...
 					for ref in crossref
-						if attribute(ref, "dbSource") == to
+						if attribute(ref, "dbSource") == db && attribute(ref, "dbAccessionId") == dbid
 							mapping[key] = int( attribute(ref, "dbResNum") )
               break
 						end
@@ -34,4 +34,15 @@ function getsiftsmapping(filename::ASCIIString, chain::Char; to = "Pfam", segmen
 		end
 	end
 	sizehint(mapping, length(mapping))
+end
+
+# Download SIFTS
+# ==============
+
+function downloadsifts(pdbcode::ASCIIString; filename::ASCIIString="$(lowercase(pdbcode)).xml.gz")
+  if length(pdbcode)== 4
+    download(string("ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/", lowercase(pdbcode[2:3]), "/", lowercase(pdbcode), ".xml.gz"), filename)
+  else
+    throw(string(pdbcode, " is not a correct PDB"))
+  end
 end
