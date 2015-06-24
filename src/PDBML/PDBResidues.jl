@@ -4,8 +4,8 @@ immutable PDBResidueIdentifier
 	number::ASCIIString
 	name::ASCIIString
 	group::ASCIIString
-  model::ASCIIString
-  chain::ASCIIString
+	model::ASCIIString
+	chain::ASCIIString
 end
 
 hash(a::PDBResidueIdentifier) = hash(string(a.number, a.name, a.group, a.model,a.chain))
