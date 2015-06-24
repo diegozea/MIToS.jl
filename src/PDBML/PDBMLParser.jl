@@ -34,7 +34,7 @@ function getatoms(pdbml::ASCIIString; chain::ASCIIString = "all",
 			x = float(__get_text(atom, "Cartn_x"))
 			y = float(__get_text(atom, "Cartn_y"))
 			z = float(__get_text(atom, "Cartn_z"))
-			occupancy = __get_text(atom, "occupancy")
+			occupancy = float(__get_text(atom, "occupancy"))
 			B = __get_text(atom, "B_iso_or_equiv")
 
 			push!(atom_list, PDBAtom(PDBResidueIdentifier(number, name, atom_group, atom_model, atom_chain),

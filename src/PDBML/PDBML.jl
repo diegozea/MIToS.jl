@@ -1,7 +1,7 @@
 module PDBML
 
   export PDBResidueIdentifier, Coordinates, PDBAtom, PDBResidue,
-  distance, contact, getoccupancy,
+  distance, contact,
 
   getatoms, getresidues
 

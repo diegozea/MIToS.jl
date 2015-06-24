@@ -30,22 +30,20 @@ distance(a::Coordinates, b::Coordinates) = sqrt((a.x - b.x)^2 + (a.y - b.y)^2 + 
 
 contact(a::Coordinates, b::Coordinates, limit::FloatingPoint) = distance(a,b) <= limit ? true : false
 
-immutable PDBAtom
+immutable PDBAtom{T<:FloatingPoint}
   residueid::PDBResidueIdentifier
-  coordinates::Coordinates
+  coordinates::Coordinates{T}
   atomid::ASCIIString
   element::ASCIIString
-  occupancy::ASCIIString
+  occupancy::T
   B::ASCIIString
 end
-
-getoccupancy(atom::PDBAtom) = float(atom.occupancy)
 
 distance(a::PDBAtom, b::PDBAtom) = distance(a.coordinates, b.coordinates)
 
 contact(a::PDBAtom, b::PDBAtom, limit::FloatingPoint) = contact(a.coordinates, b.coordinates, limit)
 
-type PDBResidue
+type PDBResidue{T<:FloatingPoint}
   id::PDBResidueIdentifier
-	atoms::Vector{PDBAtom}
+	atoms::Vector{PDBAtom{T}}
 end
