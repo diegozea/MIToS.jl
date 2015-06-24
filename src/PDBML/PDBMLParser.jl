@@ -11,37 +11,36 @@ end
 function __get_atom_iterator(pdbml::ASCIIString)
 	pdbfile = parse_file(pdbml)
 	pdbroot = root(pdbfile)
-  child_elements(get_elements_by_tagname(pdbroot, "atom_siteCategory")[1])
+	child_elements(get_elements_by_tagname(pdbroot, "atom_siteCategory")[1])
 end
 
 function getatoms(pdbml::ASCIIString; chain::ASCIIString = "all",
 	model::ASCIIString = "all", group::ASCIIString = "all", atomname::ASCIIString="all", onlyheavy::Bool=false)
 	atom_list = Array(PDBAtom,0)
-  atoms = __get_atom_iterator(pdbml)
+	atoms = __get_atom_iterator(pdbml)
 	for atom in atoms
 
-    atom_group = __get_text(atom, "group_PDB")
+   	atom_group = __get_text(atom, "group_PDB")
 		atom_model = __get_text(atom, "pdbx_PDB_model_num")
 		atom_chain = __get_text(atom, "label_asym_id")
-    atom_name = __get_text(atom, "label_atom_id")
-    element = __get_text(atom, "type_symbol")
+   	atom_name = __get_text(atom, "label_atom_id")
+   	element = __get_text(atom, "type_symbol")
 
-    if  (group=="all" || group==atom_group) && (chain=="all" || chain==atom_chain) &&
-        (model=="all" || model==atom_model) && (atomname=="all" || atomname==atom_name) && (!onlyheavy || element!="H")
+   	if  (group=="all" || group==atom_group) && (chain=="all" || chain==atom_chain) &&
+   	    (model=="all" || model==atom_model) && (atomname=="all" || atomname==atom_name) && (!onlyheavy || element!="H")
 
-      number = __get_text(atom, "label_seq_id")
+			number = __get_text(atom, "label_seq_id")
 			name = __get_text(atom, "label_comp_id")
 			x = float(__get_text(atom, "Cartn_x"))
-      y = float(__get_text(atom, "Cartn_y"))
-      z = float(__get_text(atom, "Cartn_z"))
+			y = float(__get_text(atom, "Cartn_y"))
+			z = float(__get_text(atom, "Cartn_z"))
 			occupancy = __get_text(atom, "occupancy")
 			B = __get_text(atom, "B_iso_or_equiv")
 
-      push!(atom_list, PDBAtom(PDBResidueIdentifier(number, name, atom_group, atom_model, atom_chain),
+			push!(atom_list, PDBAtom(PDBResidueIdentifier(number, name, atom_group, atom_model, atom_chain),
                                Coordinates(x,y,z), atom_name, element, occupancy, B))
 		end
-
-  end
+	end
 	atom_list
 end
 
