@@ -1,8 +1,10 @@
 module PDBML
 
-  export PDBResidue, pdbresidue,
+  export PDBResidueIdentifier, Coordinates, PDBAtom, PDBResidue,
+  distance, contact, getoccupancy,
 
-  getpdbchain
+  getatoms, getresidues
+
 
   include("PDBResidues.jl")
   include("PDBMLParser.jl")
