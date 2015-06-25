@@ -6,7 +6,7 @@ module MSA
 
   Annotations, filtersequences!, filtercolumns!,
 
-  MultipleSequenceAlignment, AlignedSequence, getresidues, getsequence,
+  MultipleSequenceAlignment, AlignedSequence, getresidues, getsequence, getrawsequences,
   nsequences, ncolumns, gappercentage, residuepercentage, coverage,
   columngappercentage, setreference!, gapstrip!, adjustreference!, asciisequence,
 

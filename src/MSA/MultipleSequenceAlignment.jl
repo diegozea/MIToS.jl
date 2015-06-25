@@ -44,6 +44,16 @@ ndims(msa::MultipleSequenceAlignment) = ndims(msa.msa)
 nsequences(msa::MultipleSequenceAlignment) = size(msa, 1)
 ncolumns(msa::MultipleSequenceAlignment) = size(msa, 2)
 
+function getrawsequences(msa::MultipleSequenceAlignment)
+  nseq = nsequences(msa)
+  tmsa = msa.msa'
+  sequences = Array(Vector{Residue}, nseq)
+  for i in 1:nseq
+    @inbounds sequences[i] = tmsa[:,i]
+  end
+  sequences
+end
+
 # Select sequence
 # ---------------
 

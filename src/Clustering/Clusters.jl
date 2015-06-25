@@ -1,6 +1,8 @@
 # Clusters
 # ========
 
+import MIToS.MSA: nsequences
+
 immutable Clusters
   clustersize::Vector{Int}
   sequencecluster::Vector{Int}
