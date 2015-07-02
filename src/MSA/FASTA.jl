@@ -1,39 +1,51 @@
-using FastaIO
-
-function readfasta(filename::ASCIIString; useidcoordinates::Bool=true)
-  rawaln = FastaIO.readfasta("PF00085_full.fasta") # Make faster: push! sequences and/or reshape!
-  nseq = length(rawaln)
-  nres = length(rawaln[1][2])
-  aln = Array(Residue,nres,nseq)
-  mapp = Array(Int,nseq,nres)
-  gaps = Uint8['.', '-']
-  sep = r"/|-"
-  ids = Array(ASCIIString,nseq)
-  for i in 1:nseq
-    id,seq = rawaln[i]
-    ids[i] = id
-    if useidcoordinates
-      fields = split(id,sep)
-      init = length(fields) == 3 ? int(fields[2]) : 1
-    else
-      init = 1
-    end
-    for j in 1:nres
-      res = seq[j]
-      aln[j,i] = residue(res)
-      if !( res in gaps )
-        mapp[i, j] = init
-        init += 1
+function __deleteitems!(vector::Vector, items)
+  i = 1
+  j = 0
+  while j < length(vector)
+    j += 1
+    if !(vector[j] in items)
+      if i != j
+        vector[i] = vector[j]
       end
-    end
-    if useidcoordinates && (init - 1) != int(fields[3])
-      throw("Different lengths: $(fields[3]) != $(init) for sequence $(ids[i])")
+      i += 1
     end
   end
-  msa = MultipleSequenceAlignment(indexedvector(ids), aln', mapp, indexedvector([1:nres]), __empty(Annotations))
-  filtercolumns!(msa, columngappercentage(msa) .< 1.0)
+  resize!(vector, i-1)
 end
 
+function __pre_readfasta(filename::ASCIIString)
+  IDS  = ASCIIString[]
+  SEQS = ASCIIString[]
+
+  delim = uint8('>')
+  newline = uint8('\n')
+  deletechars = IntSet([delim, newline, '\t', ' '])
+
+  fh = open(filename,"r")
+  seqinfo = readuntil(fh, delim)
+  if seqinfo[1] == delim
+    seqinfo = readuntil(fh, delim)
+    while length(seqinfo) != 0
+      firstnewline = findfirst(seqinfo, newline)
+      push!(IDS, ascii( seqinfo[1:(firstnewline-1)] ) )
+      push!(SEQS, ascii( __deleteitems!(seqinfo[(firstnewline+1):end], deletechars) ) )
+      seqinfo = readuntil(fh, delim)
+    end
+  else
+    throw("The file doesn't start with '>'")
+  end
+  close(fh)
+
+  (IDS, SEQS)
+end
+
+function readfasta(filename::ASCIIString; useidcoordinates::Bool=true)
+  IDS, SEQS = __pre_readfasta(filename)
+  MSA, MAP = useidcoordinates ? __to_msa_mapping(SEQS, IDS) : __to_msa_mapping(SEQS)
+  COLS = vcat(1:size(MSA,2))
+  msa = MultipleSequenceAlignment(indexedvector(IDS), MSA, MAP, indexedvector(COLS), __empty(Annotations))
+  filtercolumns!(msa, columngappercentage(msa) .< 1.0)
+end
 
 # Print Pfam
 # ==========
