@@ -1,4 +1,4 @@
-module PDBML
+module PDB
 
   export PDBResidueIdentifier, Coordinates, PDBAtom, PDBResidue,
   distance, contact,
