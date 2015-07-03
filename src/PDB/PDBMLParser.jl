@@ -14,7 +14,7 @@ function __get_atom_iterator(pdbml::ASCIIString)
 	child_elements(get_elements_by_tagname(pdbroot, "atom_siteCategory")[1])
 end
 
-function getatoms(pdbml::ASCIIString; chain::ASCIIString = "all",
+function getpdbmlatoms(pdbml::ASCIIString; chain::ASCIIString = "all",
 	model::ASCIIString = "all", group::ASCIIString = "all", atomname::ASCIIString="all", onlyheavy::Bool=false)
 	atom_list = Array(PDBAtom,0)
 	atoms = __get_atom_iterator(pdbml)
