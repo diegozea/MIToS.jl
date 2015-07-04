@@ -67,3 +67,25 @@ end
 
 getresidues(pdbml::ASCIIString; chain::ASCIIString = "all",	model::ASCIIString = "all",
             group::ASCIIString = "all", onlyheavy::Bool=false) = getresidues(getatoms(pdbml, chain=chain, model=model, group=group, onlyheavy=onlyheavy))
+
+# Download PDB
+# ============
+
+function __inputnameforgzip(outfile)
+  len = length(outfile)
+  if len > 3 && outfile[len-2:len] == ".gz"
+    return(outfile)
+  end
+  string(outfile, ".gz")
+end
+
+function downloadpdb(pdbcode::ASCIIString; format::ASCIIString="xml", outfile::ASCIIString="default")
+  if length(pdbcode)== 4
+    filename = string(uppercase(pdbcode), ".", lowercase(format),".gz")
+    outfile = outfile == "default" ? filename : __inputnameforgzip(outfile)
+    download(string("http://www.rcsb.org/pdb/files/", filename), outfile)
+    run(`gzip -d $outfile`)
+  else
+    throw(string(pdbcode, " is not a correct PDB code"))
+  end
+end
