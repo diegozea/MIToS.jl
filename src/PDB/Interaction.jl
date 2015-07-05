@@ -14,7 +14,7 @@ isanionic(a::PDBAtom) = (a.residueid.name, a.atomid) in __anionic
 
 ishbonddonor(a::PDBAtom) = (a.residueid.name, a.atomid) in __hbond_donor
 
-ishbondacceptor(a::PDBAtom) = (a.residueid.name, a.atomid) in __hbond_acceptor
+ishbondacceptor(a::PDBAtom) = (a.residueid.name, a.atomid) in keys(__hbond_acceptor)
 
 """Test if the function f is true for any pair of atoms between the residues a and b,
 only test atoms that returns true for the fuction criteria"""
@@ -157,11 +157,13 @@ hydrophobic(a::PDBResidue, b::PDBResidue) = any(hydrophobic, a, b, ishydrophobic
 __ishydrogen(a::PDBAtom) = a.element=="H"
 
 function __find_antecedent(res::PDBResidue, a::PDBAtom)
+  ids = __hbond_acceptor[(a.residueid.name, a.atomid)]
   N = length(res)
   indices = Array(Int,N)
   j = 0
   @inbounds for i in 1:N
-    if (res.atoms[i].element != "H") && (res.atoms[i] != a) && covalent(res.atoms[i], a)
+    if res.atoms[i].atomid in ids
+       # && (res.atoms[i].element != "H") && (res.atoms[i] != a) && covalent(res.atoms[i], a)
       j += 1
       indices[j] = i
     end
