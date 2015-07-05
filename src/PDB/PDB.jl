@@ -2,6 +2,7 @@ module PDB
 
   export PDBResidueIdentifier, Coordinates, PDBAtom, PDBResidue,
   distance, contact, findheavy, findCA, findCB, selectbestoccupancy,
+  angle,
 
   getpdbmlatoms, getresidues, downloadpdb,
 

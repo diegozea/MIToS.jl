@@ -1,4 +1,4 @@
-import Base: ==, !=, hash, isequal, length
+import Base: ==, !=, hash, isequal, length, -, norm, dot, angle, cross, vec
 
 immutable PDBResidueIdentifier
 	number::ASCIIString
@@ -30,6 +30,26 @@ distance(a::Coordinates, b::Coordinates) = sqrt((a.x - b.x)^2 + (a.y - b.y)^2 + 
 
 contact(a::Coordinates, b::Coordinates, limit::FloatingPoint) = distance(a,b) <= limit ? true : false
 
+-(a::Coordinates, b::Coordinates) = Coordinates(a.x - b.x, a.y - b.y, a.z - b.z)
+
+norm(a::Coordinates) = sqrt(a.x^2 + a.y^2 + a.z^2)
+
+dot(a::Coordinates, b::Coordinates) = (a.x * b.x) + (a.y * b.y) + (a.z * b.z)
+
+"""Angle (in degrees) at b between a-b and b-c"""
+function angle(a::Coordinates, b::Coordinates, c::Coordinates)
+  A = b - a
+  B = b - c
+  acosd(dot(A,B) / (norm(A)*norm(B)))
+end
+
+vec{T}(a::Coordinates{T}) = T[a.x, a.y, a.z]
+
+function cross(a::Coordinates, b::Coordinates)
+  normal = cross(vec(a), vec(b))
+  Coordinates(normal[1], normal[2], normal[3])
+end
+
 immutable PDBAtom{T<:FloatingPoint}
   residueid::PDBResidueIdentifier
   coordinates::Coordinates{T}
@@ -42,6 +62,10 @@ end
 distance(a::PDBAtom, b::PDBAtom) = distance(a.coordinates, b.coordinates)
 
 contact(a::PDBAtom, b::PDBAtom, limit::FloatingPoint) = contact(a.coordinates, b.coordinates, limit)
+
+angle(a::PDBAtom, b::PDBAtom, c::PDBAtom) = angle(a.coordinates, b.coordinates, c.coordinates)
+
+cross(a::PDBAtom, b::PDBAtom) = cross(a.coordinates, b.coordinates)
 
 type PDBResidue{T<:FloatingPoint}
   id::PDBResidueIdentifier
