@@ -10,6 +10,7 @@ module PDB
   ishbonddonor, ishbondacceptor, hydrogenbond,
   vanderwaals, vanderwaalsclash, covalent, disulphide,
   aromaticsulphur, pication, aromatic, ionic, hydrophobic,
+  stridehydrogenbond, chimerahydrogenbond,
 
   getpdbmlatoms, getresidues, downloadpdb,
 

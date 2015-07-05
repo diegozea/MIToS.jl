@@ -180,9 +180,10 @@ function __hbond_kernel(donor, acceptor, indices_donor, indices_acceptor, indice
       indices_ant = __find_antecedent(acceptor, acc)
       if distance(don, acc) <= 3.9 && length(indices_ant) != 0
         for k in indices_h
-          if distance(donor.atoms[k], acc) <= 2.5 && angle(don, donor.atoms[k], acc) >= 90.0
+          hyd = donor.atoms[k]
+          if distance(hyd, acc) <= 2.5 && angle(don, hyd, acc) >= 90.0
             for ant in indices_ant
-              if angle(don, acc, acceptor.atoms[ant]) >= 90.0 && angle(donor.atoms[k], acc, acceptor.atoms[ant]) >= 90.0
+              if angle(don, acc, acceptor.atoms[ant]) >= 90.0 && angle(hyd, acc, acceptor.atoms[ant]) >= 90.0
                 return(true)
               end
             end
@@ -199,12 +200,47 @@ function __hydrogenbond_don_acc(donor::PDBResidue, acceptor::PDBResidue)
   if length(indices_h) == 0
     throw("They aren't hydrogens in the donor")
   end
-  indices_donor = find(ishbonddonor, donor.atoms)
-  indices_acceptor = find(ishbondacceptor, acceptor.atoms)
-  if length(indices_donor) != 0 && length(indices_acceptor) != 0
-    return(__hbond_kernel(donor, acceptor, indices_donor, indices_acceptor, indices_h))
+  if donor != acceptor
+    indices_donor = find(ishbonddonor, donor.atoms)
+    indices_acceptor = find(ishbondacceptor, acceptor.atoms)
+    if length(indices_donor) != 0 && length(indices_acceptor) != 0
+      return(__hbond_kernel(donor, acceptor, indices_donor, indices_acceptor, indices_h))
+    end
   end
   return(false)
 end
 
 hydrogenbond(a::PDBResidue, b::PDBResidue) = __hydrogenbond_don_acc(a,b) || __hydrogenbond_don_acc(b,a)
+
+# STRIDE Hydrogen bonds
+# =====================
+
+function stridehydrogenbond(filename::ASCIIString; model::ASCIIString="1", group::ASCIIString="ATOM")
+  out = split(readall(`stride -h $filename`),'\n')
+  pairs = Set{(PDBResidueIdentifier,PDBResidueIdentifier)}()
+  for line in out
+    if length(line) > 3 && ( line[1:3] == "DNR" || line[1:3] == "ACC" )
+      push!(pairs, (PDBResidueIdentifier(replace(line[12:15],' ', ""), replace(line[6:8],' ', ""), group, model, line[10:10]),
+            PDBResidueIdentifier(replace(line[32:35],' ', ""), replace(line[26:28],' ', ""), group, model, line[30:30])))
+    end
+  end
+  sizehint(pairs,length(pairs))
+end
+
+# CHIMERA Hydrogen bonds
+# ======================
+
+function chimerahydrogenbond(filename::ASCIIString; chain::ASCIIString="A", model::ASCIIString="1", commands::ASCIIString="relax 0 intraRes 0")
+  sel = "select :*.$chain; select ~ligand & ~solvent" #ATOM
+  out =  split(readall( `echo "select #$model; $sel; hbonds log 1 selRestrict both intermodel 0 batch 1 namingStyle simple $commands"` |> `chimera -n $filename` ), '\n')
+  parser = r"^([A-Z]{3})\s+(\S+)\.(\S)\s+\S+\s+([A-Z]{3})\s+(\S+)\.(\S)\s+\S+\s+[A-Z]{3}\s+\S+\.\S\s+\S+"
+  pairs = Set{(PDBResidueIdentifier,PDBResidueIdentifier)}()
+  for line in out
+    m = match(parser, line)
+    if m != nothing && length(m.captures) == 6
+      push!(pairs, (PDBResidueIdentifier(m.captures[2], m.captures[1], "ATOM", model, m.captures[3]),
+            PDBResidueIdentifier(m.captures[5], m.captures[4], "ATOM", model, m.captures[6])))
+    end
+  end
+  sizehint(pairs,length(pairs))
+end

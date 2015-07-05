@@ -40,7 +40,12 @@ dot(a::Coordinates, b::Coordinates) = (a.x * b.x) + (a.y * b.y) + (a.z * b.z)
 function angle(a::Coordinates, b::Coordinates, c::Coordinates)
   A = b - a
   B = b - c
-  acosd(dot(A,B) / (norm(A)*norm(B)))
+  norms = (norm(A)*norm(B))
+  if norms != 0
+    return( acosd(dot(A,B) / norms) )
+  else
+    return(0.0)
+  end
 end
 
 vec{T}(a::Coordinates{T}) = T[a.x, a.y, a.z]
