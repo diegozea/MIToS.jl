@@ -1,6 +1,8 @@
 module PDB
 
-  export PDBResidueIdentifier, Coordinates, PDBAtom, PDBResidue,
+  export covalentradius, vanderwaalsradius,
+
+  PDBResidueIdentifier, Coordinates, PDBAtom, PDBResidue,
   distance, contact, findheavy, findCA, findCB, selectbestoccupancy,
   angle,
 
@@ -8,6 +10,7 @@ module PDB
 
   getpdbatoms
 
+  include("AtomsData.jl")
   include("PDBResidues.jl")
   include("PDBMLParser.jl")
   include("PDBParser.jl")
