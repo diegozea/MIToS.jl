@@ -1,4 +1,4 @@
-import Base: ==, !=, hash, isequal, length, -, norm, dot, angle, cross, vec
+import Base: ==, !=, hash, isequal, length, -, norm, dot, angle, cross, vec, any
 
 immutable PDBResidueIdentifier
 	number::ASCIIString
@@ -87,12 +87,12 @@ function findheavy(res::PDBResidue)
   resize!(indices, j)
 end
 
-function findCA(res::PDBResidue)
+function findatoms(res::PDBResidue, atomid::ASCIIString)
   N = length(res)
   indices = Array(Int,N)
   j = 0
   @inbounds for i in 1:N
-    if res.atoms[i].atomid == "CA"
+    if res.atoms[i].atomid == atomid
       j += 1
       indices[j] = i
     end
@@ -165,8 +165,8 @@ function distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")
       end
     end
   elseif criteria == "CA"
-    indices_a = findCA(a)
-    indices_b = findCA(b)
+    indices_a = findatoms(a, "CA")
+    indices_b = findatoms(b, "CA")
     if length(indices_a) != 0 && length(indices_b) != 0
       for i in indices_a
         for j in indices_b
@@ -186,6 +186,20 @@ function distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")
     end
   end
   dist
+end
+
+"""Test if the function f is true for any pair of atoms between the residues a and b"""
+function any(f::Function, a::PDBResidue, b::PDBResidue)
+  Na = length(a)
+  Nb = length(b)
+  @inbounds for i in 1:Na
+    for j in 1:Nb
+      if f(a.atoms[i], b.atoms[j])
+        return(true)
+      end
+    end
+  end
+  return(false)
 end
 
 """Heavy, All, CA, CB (CA for GLY)"""
@@ -213,8 +227,8 @@ function contact(a::PDBResidue, b::PDBResidue, limit::FloatingPoint; criteria::A
       end
     end
   elseif criteria == "CA"
-    indices_a = findCA(a)
-    indices_b = findCA(b)
+    indices_a = findatoms(a, "CA")
+    indices_b = findatoms(b, "CA")
     if length(indices_a) != 0 && length(indices_b) != 0
       for i in indices_a
         for j in indices_b
