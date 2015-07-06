@@ -12,7 +12,7 @@ iscationic(a::PDBAtom) = (a.residueid.name, a.atomid) in __cationic
 
 isanionic(a::PDBAtom) = (a.residueid.name, a.atomid) in __anionic
 
-ishbonddonor(a::PDBAtom) = (a.residueid.name, a.atomid) in __hbond_donor
+ishbonddonor(a::PDBAtom) = (a.residueid.name, a.atomid) in keys(__hbond_donor)
 
 ishbondacceptor(a::PDBAtom) = (a.residueid.name, a.atomid) in keys(__hbond_acceptor)
 
@@ -154,8 +154,6 @@ hydrophobic(a::PDBResidue, b::PDBResidue) = any(hydrophobic, a, b, ishydrophobic
 # Hydrogen bonds
 # --------------
 
-__ishydrogen(a::PDBAtom) = a.element=="H"
-
 function __find_antecedent(res::PDBResidue, a::PDBAtom)
   ids = __hbond_acceptor[(a.residueid.name, a.atomid)]
   N = length(res)
@@ -171,12 +169,27 @@ function __find_antecedent(res::PDBResidue, a::PDBAtom)
   resize!(indices, j)
 end
 
-# Hydrogen bond
-# Test it against HBOND or using HBOND like PICCOLO
+function __find_h(res::PDBResidue, a::PDBAtom)
+  ids = __hbond_donor[(a.residueid.name, a.atomid)]
+  N = length(res)
+  indices = Array(Int,N)
+  j = 0
+  @inbounds for i in 1:N
+    if res.atoms[i].atomid in ids
+      j += 1
+      indices[j] = i
+    end
+  end
+  resize!(indices, j)
+end
 
-function __hbond_kernel(donor, acceptor, indices_donor, indices_acceptor, indices_h)
+function __hbond_kernel(donor, acceptor, indices_donor, indices_acceptor)
   @inbounds for i in indices_donor
     don = donor.atoms[i]
+    indices_h = __find_h(donor, don)
+    if length(indices_h) == 0
+      continue
+    end
     for j in indices_acceptor
       acc = acceptor.atoms[j]
       indices_ant = __find_antecedent(acceptor, acc)
@@ -198,15 +211,11 @@ function __hbond_kernel(donor, acceptor, indices_donor, indices_acceptor, indice
 end
 
 function __hydrogenbond_don_acc(donor::PDBResidue, acceptor::PDBResidue)
-  indices_h = find(__ishydrogen, donor.atoms)
-  if length(indices_h) == 0
-    throw("They aren't hydrogens in the donor")
-  end
   if donor != acceptor
     indices_donor = find(ishbonddonor, donor.atoms)
     indices_acceptor = find(ishbondacceptor, acceptor.atoms)
     if length(indices_donor) != 0 && length(indices_acceptor) != 0
-      return(__hbond_kernel(donor, acceptor, indices_donor, indices_acceptor, indices_h))
+      return(__hbond_kernel(donor, acceptor, indices_donor, indices_acceptor))
     end
   end
   return(false)
