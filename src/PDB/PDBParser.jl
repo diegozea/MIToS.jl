@@ -16,7 +16,10 @@ function getpdbatoms(pdb::ASCIIString; chain::ASCIIString = "all",
       if  (chain=="all" || chain==atom_chain) && ((model==0 || model=="all") || model==string(atom_model+1)) &&
           (atomname=="all" || atomname==atom_name) && (!onlyheavy || element!="H")
 
-        number = replace(line[23:26],' ',"")
+        # 23 - 26        Integer         Residue sequence number.
+        # 27             AChar           Code for insertion of residues.
+        number = replace(line[23:27],' ',"")
+
         name = replace(line[18:20],' ',"")
         x = float(replace(line[31:38],' ',""))
         y = float(replace(line[39:46],' ',""))
