@@ -324,7 +324,7 @@ const __hbond_donor = Dict{(ASCIIString, ASCIIString), Vector{ASCIIString}}( [ (
 
 """Keys come from Table 1 of Bickerton et. al. 2011,
 Antecedents come from come from: http://biomachina.org/courses/modeling/download/topallh22x.pro
-Synonyms come from: http://www.bmrb.wisc.edu/ref_info/atom_nom.tbl""""""
+Synonyms come from: http://www.bmrb.wisc.edu/ref_info/atom_nom.tbl"""
 const __hbond_acceptor = Dict{(ASCIIString, ASCIIString), Vector{ASCIIString}}( [ ("ALA","O") => ["C"], ("ALA","OT1") => ["C"], ("ALA","OXT") => ["C"], ("ALA","OT2") => ["C"],
 ("ARG","O") => ["C"], ("ARG","OT1") => ["C"], ("ARG","OXT") => ["C"], ("ARG","OT2") => ["C"],
 ("ASN","O") => ["C"], ("ASN","OT1") => ["C"], ("ASN","OXT") => ["C"], ("ASN","OT2") => ["C"],
