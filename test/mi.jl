@@ -1,5 +1,2 @@
-module TestMI
-  using Base.Test
-  using MIToS
-
-end
+using Base.Test
+using MIToS

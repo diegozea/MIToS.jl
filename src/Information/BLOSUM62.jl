@@ -2,7 +2,7 @@
 #  Blocks Database = /data/blocks_5.0/blocks.dat
 #  Cluster Percentage: >= 62
 
-const BLOSUM62_P_i = Float64[ 0.0741,
+const BLOSUM62_Pa = Float64[ 0.0741,
   0.0516,
   0.0445,
   0.0536,
@@ -27,7 +27,7 @@ const BLOSUM62_P_i = Float64[ 0.0741,
 
 # Normalization is done row based. The firts row contains the P(aa|A) and so one..
 #     A      R      N      D      C      Q      E      G      H      I      L      K      M      F      P      S      T      W      Y      V
-const BLOSUM62_P_i_j = Float64[
+const BLOSUM62_Pab = Float64[
  0.2901 0.0310 0.0256 0.0297 0.0216 0.0256 0.0405 0.0783 0.0148 0.0432 0.0594 0.0445 0.0175 0.0216 0.0297 0.0850 0.0499 0.0054 0.0175 0.0688 ;
  0.0446 0.3450 0.0388 0.0310 0.0078 0.0484 0.0523 0.0329 0.0233 0.0233 0.0465 0.1202 0.0155 0.0174 0.0194 0.0446 0.0349 0.0058 0.0174 0.0310 ;
  0.0427 0.0449 0.3169 0.0831 0.0090 0.0337 0.0494 0.0652 0.0315 0.0225 0.0315 0.0539 0.0112 0.0180 0.0202 0.0697 0.0494 0.0045 0.0157 0.0270 ;
