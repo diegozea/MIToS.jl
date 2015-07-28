@@ -3,9 +3,9 @@
 
 type Annotations
   file::Dict{ASCIIString, ASCIIString}
-  sequences::Dict{(ASCIIString,ASCIIString),ASCIIString}
+  sequences::Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}
   columns::Dict{ASCIIString,ASCIIString}
-  residues::Dict{(ASCIIString,ASCIIString),ASCIIString}
+  residues::Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}
 end
 
 # Filters
@@ -64,7 +64,7 @@ show(io::IO, ann::Annotations) = dump(io, ann)
 
 function __empty(::Type{Annotations})
   Annotations(sizehint(Dict{ASCIIString, ASCIIString}(), 0),
-              sizehint(Dict{(ASCIIString,ASCIIString),ASCIIString}(), 0),
+              sizehint(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0),
               sizehint(Dict{ASCIIString, ASCIIString}(), 0),
-              sizehint(Dict{(ASCIIString,ASCIIString),ASCIIString}(), 0))
+              sizehint(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0))
 end

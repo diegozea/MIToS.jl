@@ -204,7 +204,7 @@ function __printsequencesannotations(io::IO, msa::MultipleSequenceAlignment)
 end
 
 
-function __to_sequence_dict(annotation::Dict{(ASCIIString,ASCIIString),ASCIIString})
+function __to_sequence_dict(annotation::Dict{Tuple{ASCIIString,ASCIIString},ASCIIString})
 	seq_dict = Dict{ASCIIString,Vector{ASCIIString}}()
 	for (key, value) in annotation
 		seq_id = key[1]

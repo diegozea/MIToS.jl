@@ -7,17 +7,17 @@ BMC bioinformatics, 12(1), 313.
 2. Cordero, B., Gómez, V., Platero-Prats, A. E., Revés, M.,
 Echeverría, J., Cremades, E., ... & Alvarez, S. (2008).
 Covalent radii revisited. Dalton Transactions, (21), 2832-2838."""
-const covalentradius = Dict{ASCIIString,Float64}(["C" => 0.77,
-                                                  "N" => 0.70,
-                                                  "O" => 0.66,
-                                                  "S" => 1.04,
-                                                  "H" => 0.31 ])
+const covalentradius = Dict{ASCIIString,Float64}("C" => 0.77,
+                                                 "N" => 0.70,
+                                                 "O" => 0.66,
+                                                 "S" => 1.04,
+                                                 "H" => 0.31 )
 
 """van der Waals radius in Å from the Additional file 1 of
 Bickerton, G. R., Higueruelo, A. P., & Blundell, T. L. (2011).
 Comprehensive, atomic-level characterization of structurally characterized protein-protein interactions: the PICCOLO database.
 BMC bioinformatics, 12(1), 313."""
-const vanderwaalsradius = Dict{(ASCIIString,ASCIIString),Float64}([("ALA","C") => 1.61,
+const vanderwaalsradius = Dict{Tuple{ASCIIString,ASCIIString},Float64}(("ALA","C") => 1.61,
 ("ALA","CA") => 1.88,
 ("ALA","CB") => 1.88,
 ("ALA","N") => 1.64,
@@ -183,9 +183,9 @@ const vanderwaalsradius = Dict{(ASCIIString,ASCIIString),Float64}([("ALA","C") =
 ("VAL","CG1") => 1.88,
 ("VAL","CG2") => 1.88,
 ("VAL","N") => 1.64,
-("VAL","O") => 1.42 ])
+("VAL","O") => 1.42 )
 
-const __hydrophobic = Set{(ASCIIString, ASCIIString)}( { ("ALA","CB"),
+const __hydrophobic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ALA","CB"),
 ("ARG","CB"),
 ("ARG","CG"),
 ("ASN","CB"),
@@ -236,9 +236,9 @@ const __hydrophobic = Set{(ASCIIString, ASCIIString)}( { ("ALA","CB"),
 ("TYR","CG"),
 ("VAL","CB"),
 ("VAL","CG1"),
-("VAL","CG2") } )
+("VAL","CG2") ] )
 
-const __aromatic = Set{(ASCIIString, ASCIIString)}( { ("HIS","CD2"),
+const __aromatic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("HIS","CD2"),
 ("HIS","CE1"),
 ("HIS","CG"),
 ("HIS","ND1"),
@@ -263,9 +263,9 @@ const __aromatic = Set{(ASCIIString, ASCIIString)}( { ("HIS","CD2"),
 ("TYR","CE1"),
 ("TYR","CE2"),
 ("TYR","CG"),
-("TYR","CZ") } )
+("TYR","CZ") ] )
 
-const __cationic = Set{(ASCIIString, ASCIIString)}( { ("ARG","CZ"),
+const __cationic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ARG","CZ"),
 ("ARG","NE"),
 ("ARG","NH1"),
 ("ARG","NH2"),
@@ -274,19 +274,19 @@ const __cationic = Set{(ASCIIString, ASCIIString)}( { ("ARG","CZ"),
 ("HIS","CG"),
 ("HIS","ND1"),
 ("HIS","NE2"),
-("LYS","NZ") } )
+("LYS","NZ") ] )
 
-const __anionic = Set{(ASCIIString, ASCIIString)}( { ("ASP","CG"),
+const __anionic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ASP","CG"),
 ("ASP","OD1"),
 ("ASP","OD2"),
 ("GLU","CD"),
 ("GLU","OE1"),
-("GLU","OE2") } )
+("GLU","OE2") ] )
 
 """Keys come from Table 1 of Bickerton et. al. 2011,
 The hydrogen names of the donor comes from: http://biomachina.org/courses/modeling/download/topallh22x.pro
 Synonyms come from: http://www.bmrb.wisc.edu/ref_info/atom_nom.tbl"""
-const __hbond_donor = Dict{(ASCIIString, ASCIIString), Vector{ASCIIString}}( [ ("ALA","N") => ["HN", "H", "HN1","H1","1H", "HN2","H2","2H", "HN3","H3","3H", "HT1","HT2","HT3"],
+const __hbond_donor = Dict{Tuple{ASCIIString, ASCIIString}, Vector{ASCIIString}}( ("ALA","N") => ["HN", "H", "HN1","H1","1H", "HN2","H2","2H", "HN3","H3","3H", "HT1","HT2","HT3"],
 ("ARG","N") => ["HN", "H", "HN1","H1","1H", "HN2","H2","2H", "HN3","H3","3H", "HT1","HT2","HT3"],
 ("ARG","NE") => ["HE", "HNE"],
 ("ARG","NH1") => ["HH11","HH12", "1HH1","2HH1"],
@@ -318,14 +318,14 @@ const __hbond_donor = Dict{(ASCIIString, ASCIIString), Vector{ASCIIString}}( [ (
 ("TYR","N") => ["HN", "H", "HN1","H1","1H", "HN2","H2","2H", "HN3","H3","3H", "HT1","HT2","HT3"],
 ("TYR","OH") => ["HH", "HOH"],
 ("VAL","N") => ["HN", "H", "HN1","H1","1H", "HN2","H2","2H", "HN3","H3","3H", "HT1","HT2","HT3"],
-("PRO","N") => ["HN1","H1","1H", "HN2","H2","2H", "HT1","HT2"] ] )
+("PRO","N") => ["HN1","H1","1H", "HN2","H2","2H", "HT1","HT2"] )
 # Proline N-Terminal (RESIDUE PROP)
 
 
 """Keys come from Table 1 of Bickerton et. al. 2011,
 Antecedents come from come from: http://biomachina.org/courses/modeling/download/topallh22x.pro
 Synonyms come from: http://www.bmrb.wisc.edu/ref_info/atom_nom.tbl"""
-const __hbond_acceptor = Dict{(ASCIIString, ASCIIString), Vector{ASCIIString}}( [ ("ALA","O") => ["C"], ("ALA","OT1") => ["C"], ("ALA","OXT") => ["C"], ("ALA","OT2") => ["C"],
+const __hbond_acceptor = Dict{Tuple{ASCIIString, ASCIIString}, Vector{ASCIIString}}( ("ALA","O") => ["C"], ("ALA","OT1") => ["C"], ("ALA","OXT") => ["C"], ("ALA","OT2") => ["C"],
 ("ARG","O") => ["C"], ("ARG","OT1") => ["C"], ("ARG","OXT") => ["C"], ("ARG","OT2") => ["C"],
 ("ASN","O") => ["C"], ("ASN","OT1") => ["C"], ("ASN","OXT") => ["C"], ("ASN","OT2") => ["C"],
 ("ASN","OD1") => ["CG"],
@@ -356,4 +356,4 @@ const __hbond_acceptor = Dict{(ASCIIString, ASCIIString), Vector{ASCIIString}}( 
 ("THR","OG1") => ["CB"],
 ("TRP","O") => ["C"], ("TRP","OT1") => ["C"], ("TRP","OXT") => ["C"], ("TRP","OT2") => ["C"],
 ("TYR","O") => ["C"], ("TYR","OT1") => ["C"], ("TYR","OXT") => ["C"], ("TYR","OT2") => ["C"],
-("VAL","O") => ["C"], ("VAL","OT1") => ["C"], ("VAL","OXT") => ["C"], ("VAL","OT2") => ["C"] ] )
+("VAL","O") => ["C"], ("VAL","OT1") => ["C"], ("VAL","OXT") => ["C"], ("VAL","OT2") => ["C"] )
