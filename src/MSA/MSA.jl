@@ -1,6 +1,6 @@
 module MSA
 
-  export Residue, residue, GAP,
+  export Residue, GAP,
 
   IndexedVector, indexedvector, selectindex, selectvalue, swap!,
 
