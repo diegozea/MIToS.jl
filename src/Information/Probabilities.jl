@@ -191,46 +191,51 @@ end
 
 ### Counting
 
-function count!{T}(n::ResidueCount{T, 1, true}, res::AbstractVector{Residue})
-  @inbounds for aa in res
-    n.counts[Int(aa)] += one(T)
-  end
-  update!(n)
-end
+for (usegap, testgap) in [ (:(true),:()), (:(false),:(aa == Int(GAP) && continue)) ]
 
-function count!{T}(n::ResidueCount{T, 1, false}, res::AbstractVector{Residue})
-  for aa in res
-    @inbounds if aa != GAP
-      n.counts[Int(aa)] += one(T)
+  @eval begin
+
+    function count!{T}(n::ResidueCount{T, 1, $(usegap)}, cl, res::AbstractVector{Residue})
+      for i in 1:length(res)
+        aa = Int(res[i])
+        $(testgap)
+        n.counts[aa] += getweight(cl,i)
+      end
+      update!(n)
     end
+
+    count!{T}(n::ResidueCount{T, 1, $(usegap)}, res::AbstractVector{Residue}) = count!(n, one(T), res)
+
+  end
+end
+
+function count!{T}(n::ResidueCount{T, 2, true}, cl, res1::AbstractVector{Residue}, res2::AbstractVector{Residue})
+  for i in 1:length(res1)
+    n.counts[Int(res1[i]), Int(res2[i])] += getweight(cl,i)
   end
   update!(n)
 end
 
-function count!{T}(n::ResidueCount{T, 2, true}, res1::AbstractVector{Residue}, res2::AbstractVector{Residue})
-  @inbounds for i in 1:length(res1)
-    n.counts[Int(res1[i]), Int(res2[i])] += one(T)
-  end
-  update!(n)
-end
-
-function count!{T}(n::ResidueCount{T, 2, false}, res1::AbstractVector{Residue}, res2::AbstractVector{Residue})
-  @inbounds for i in 1:length(res1)
+function count!{T}(n::ResidueCount{T, 2, false}, cl, res1::AbstractVector{Residue}, res2::AbstractVector{Residue})
+  for i in 1:length(res1)
     aa1 = res1[i]
     aa2 = res2[i]
     if (aa1 != GAP) && (aa2 != GAP)
-      n.counts[Int(aa1), Int(aa2)] += one(T)
+      n.counts[Int(aa1), Int(aa2)] += getweight(cl,i)
     end
   end
   update!(n)
 end
 
-function count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, res::AbstractVector{Residue}...)
+count!{T}(n::ResidueCount{T, 2, true}, res1::AbstractVector{Residue}, res2::AbstractVector{Residue}) = count!(n, one(T), res1, res2)
+count!{T}(n::ResidueCount{T, 2, false},res1::AbstractVector{Residue}, res2::AbstractVector{Residue}) = count!(n, one(T), res1, res2)
+
+function count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, cl, res::AbstractVector{Residue}...)
   if length(res) == N
-    @inbounds for i in 1:length(res[1])
+    for i in 1:length(res[1])
       aa_list = [ Int(aa[i]) for aa in res ]
       if UseGap || (findfirst(aa_list, Int(GAP)) == 0)
-        n.counts[aa_list...] += one(T)
+        n.counts[aa_list...] += getweight(cl,i)
       end
     end
     update!(n)
@@ -239,8 +244,7 @@ function count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, res::AbstractVector
   end
 end
 
-
-
+count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, res::AbstractVector{Residue}...) = count!(n, one(T), res...)
 
 # """Fill the Pab matrix with λ, but doesn't update the marginal probabilities"""
 # function __initialize!(pab::ResiduePairProbabilities)

@@ -1,5 +1,6 @@
 using Base.Test
 using MIToS.Information
+using MIToS.Clustering
 using MIToS.MSA
 
 @test size(ResidueCount{Int, 1, false}().counts) == (20,)
@@ -96,6 +97,15 @@ end
 
 @test size(similar(ResidueCount{Int, 1, false}(),4).marginals) == (20, 4)
 @test isa(similar(ResidueCount{Int, 1, false}(),Float64).total, Float64)
+
+println("Test count! whit Clusters")
+false_clusters = Clusters(zeros(20),zeros(20),rand(20))
+seq = Residue(MSA._to_char)
+@test_throws BoundsError count!(zeros(ResidueCount{Float64, 1, true}), false_clusters, seq)
+@test count!(zeros(ResidueCount{Float64, 1, false}), false_clusters, seq).counts == getweight(false_clusters)
+@test count!(zeros(ResidueCount{Float64, 2, false}), false_clusters, seq, seq).marginals[:,1] == getweight(false_clusters)
+@test count!(zeros(ResidueCount{Float64, 3, false}), false_clusters, seq, seq, seq).marginals[:,1] == getweight(false_clusters)
+
 
 # # Copy & deepcopy
 # cnone = copy(none)
