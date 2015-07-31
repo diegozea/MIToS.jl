@@ -11,39 +11,72 @@ using MIToS.MSA
 @test size(ResidueCount{Int, 3, false}().counts) == (20,20,20)
 @test size(ResidueCount{Int, 3, true}().counts) == (21,21,21)
 
-@test size(ResidueCount{Int, 1, true}().marginals) == (1,21)
-@test size(ResidueCount{Int, 1, false}().marginals) == (1,20)
+for ndim = 1:4
+	@test size(ResidueCount{Int, ndim, true}().marginals) == (21, ndim)
+	@test size(ResidueCount{Int, ndim, false}().marginals) == (20, ndim)
+end
 
-@test size(ResidueCount{Int, 2, true}().marginals) == (2,21)
-@test size(ResidueCount{Int, 2, false}().marginals) == (2,20)
-
-@test size(ResidueCount{Int, 3, true}().marginals) == (3,21)
-@test size(ResidueCount{Int, 3, false}().marginals) == (3,20)
-
-for ndim = 1:3, usegap = Bool[true, false]
+for ndim = 1:4, usegap = Bool[true, false]
 	println("### N: $(ndim) UseGap: $(usegap) ###")
+
   println("Test zeros for ResidueCount{Float64, $(ndim), $(usegap)}")
   N = zeros(ResidueCount{Float64, ndim, usegap})
   @test sum(N.counts) == zero(Float64)
+
   println("Test iteration interface for ResidueCount{Float64, $(ndim), $(usegap)}")
   n = usegap ? 21 : 20
   @test collect(N) == zeros(Int, n^ndim)
+
   println("Test size for ResidueCount{Float64, $(ndim), $(usegap)}")
   @test size(N) == size(N.counts)
+
   println("Test indexing with i for ResidueCount{Float64, $(ndim), $(usegap)}")
   @test N[1] == zero(Float64)
   @test N[Int(Residue('R'))] == zero(Float64)
+
+  println("Test setindex! with i for ResidueCount{Float64, $(ndim), $(usegap)}")
+  N[3] = 1
+  @test N[3] == one(Float64)
+
+  println("Test update! for ResidueCount{Float64, $(ndim), $(usegap)}")
+  fill!(N.counts, 1)
+  update!(N)
+  @test N.total == length(N.counts)
+  @test N.marginals[1] == size(N.counts,1) ^ ( ndim - 1 )
+
+  println("Test apply_pseudocount! with Laplace Smoothing for ResidueCount{Float64, $(ndim), $(usegap)}")
+  P = apply_pseudocount!(zeros(ResidueCount{Float64, ndim, usegap}), AdditiveSmoothing(1.0))
+  @test P[1,1] == 1.0
+  @test P.total == length(P.counts)
+  @test P.marginals[1] == size(P.counts,1) ^ ( ndim - 1 )
+
+  println("Test fill! with AdditiveSmoothing(0.05) for ResidueCount{Float64, $(ndim), $(usegap)}")
+  fill!(P, AdditiveSmoothing(0.05))
+  @test P[1,1] == 0.05
+  @test P.total == length(P.counts) * 0.05
+  @test P.marginals[1] == 0.05 * ( size(P.counts,1) ^ ( ndim - 1 ) )
 end
 
 for usegap = Bool[true, false]
 	println("### UseGap: $(usegap) ###")
 	N = zeros(ResidueCount{Float64, 2, usegap})
+
   println("Test indexing with ij for ResidueCount{Float64, 2, $(usegap)}")
   @test N[1,1] == zero(Float64)
   @test N[Int(Residue('R')), Int(Residue('R'))] == zero(Float64)
+  
+  println("Test setindex! with ij for ResidueCount{Float64, 2, $(usegap)}")
+  N[3,3] = 1
+  @test N[3,3] == one(Float64)
 end
 
+for ndim = 1:4
+	@test size(similar(ResidueCount{Int, ndim, false}()).marginals) == (20, ndim)
+	@test size(similar(ResidueCount{Int, ndim, true}()).marginals) == (21, ndim)
+end 
 
+@test size(similar(ResidueCount{Int, 1, false}(),4).marginals) == (20, 4)
+@test isa(similar(ResidueCount{Int, 1, false}(),Float64).total, Float64)
 
 # # Copy & deepcopy
 # cnone = copy(none)

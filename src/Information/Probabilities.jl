@@ -1,16 +1,27 @@
-import Base: zero, zeros, start, next, done, length, eltype, 
-						 size, setindex!, 
-						 getindex, similar #, print # , copy, deepcopy, fill!, getindex, setindex!
+import Base: zero, one, zeros, start, next, done, length, eltype, 
+						 size, setindex!, getindex, similar, fill! #, print # , copy, deepcopy, fill!, getindex, setindex!
 
 # Counts and Pseudocounts
 
 abstract Pseudocount
 
-immutable AdditiveSmoothing{T} <: Pseudocount
+"""
+**Additive Smoothing** or fixed pseudocount  `λ`  for `ResidueCount` (in order to estimate probabilities when the number of samples is low).  
+
+Common values of `λ` are:  
+
+- `0` :  No cell frequency prior, gives you the maximum likelihood estimator.
+- `0.05` is the optimum value for `λ` found in Buslje et. al. 2009, similar results was obtained for `λ` in the range [0.025, 0.075].
+- `1 / p` : Perks prior (Perks, 1947) where `p` the number of parameters (i.e. residues, pairs of residues) to estimate. If `p` is the number of residues (`20` without counting gaps), this gives you `0.05`. 
+- `sqrt(n) / p` : Minimax prior (Trybula, 1958) where `n` is the number of samples and `p` the number of parameters to estimate.  If the number of samples `n` is 400 (minimum number of sequence clusters for achieve good performance in Buslje et. al. 2009) for estimating 400 parameters (pairs of residues without counting gaps) this gives you `0.05`.
+- `0.5` : Jeffreys prior (Jeffreys, 1946).
+- `1` : Bayes-Laplace uniform prior, aka. Laplace smoothing."""
+immutable AdditiveSmoothing{T<:Real} <: Pseudocount
   λ::T
 end
 
 zero{T}(::Type{AdditiveSmoothing{T}}) = AdditiveSmoothing{T}(zero(T))
+one{T}(::Type{AdditiveSmoothing{T}}) = AdditiveSmoothing{T}(one(T))
 
 ## Counts
 
@@ -19,32 +30,32 @@ zero{T}(::Type{AdditiveSmoothing{T}}) = AdditiveSmoothing{T}(zero(T))
 `UseGap` is a `Bool`, `true` means that **ResidueCount** counts gaps in the position 21."""
 # The field marginal is used for pre allocation of marginal sums.
 # The field total is used for saving the total.
-type ResidueCount{T, N, UseGap} <: AbstractArray{T, N}
+type ResidueCount{T<:Real, N, UseGap} <: AbstractArray{T, N}
   counts::Array{T, N}
   marginals::Array{T, 2}
   total::T
 end
 
-call{T}(::Type{ResidueCount{T, 1, true}}) = ResidueCount{T, 1, true}(Array(T, 21), Array(T, (1,21)), zero(T))
-call{T}(::Type{ResidueCount{T, 2, true}}) = ResidueCount{T, 2, true}(Array(T, (21, 21)), Array(T, (2,21)), zero(T))
+call{T}(::Type{ResidueCount{T, 1, true}}) = ResidueCount{T, 1, true}(Array(T, 21), Array(T, (21,1)), zero(T))
+call{T}(::Type{ResidueCount{T, 2, true}}) = ResidueCount{T, 2, true}(Array(T, (21, 21)), Array(T, (21,2)), zero(T))
 
-call{T}(::Type{ResidueCount{T, 1, false}}) = ResidueCount{T, 1, false}(Array(T, 20), Array(T, (1,20)), zero(T))
-call{T}(::Type{ResidueCount{T, 2, false}}) = ResidueCount{T, 2, false}(Array(T, (20, 20)), Array(T, (2,20)), zero(T))
+call{T}(::Type{ResidueCount{T, 1, false}}) = ResidueCount{T, 1, false}(Array(T, 20), Array(T, (20,1)), zero(T))
+call{T}(::Type{ResidueCount{T, 2, false}}) = ResidueCount{T, 2, false}(Array(T, (20, 20)), Array(T, (20,2)), zero(T))
 
 function call{T, N, UseGap}(::Type{ResidueCount{T, N, UseGap}})
-  n = UseGap ? 21 : 20
-  ResidueCount{T, N, UseGap}(Array(T, (Int[ n for d in 1:N]...)), Array(T, (N, n)), zero(T))
+  nres = UseGap ? 21 : 20
+  ResidueCount{T, N, UseGap}(Array(T, (Int[ nres for d in 1:N]...)), Array(T, (nres, N)), zero(T))
 end
 
-zeros{T}(::Type{ResidueCount{T, 1, true}}) = ResidueCount{T, 1, true}(zeros(T, 21), zeros(T, (1,21)), zero(T))
-zeros{T}(::Type{ResidueCount{T, 2, true}}) = ResidueCount{T, 2, true}(zeros(T, (21, 21)), zeros(T, (2,21)), zero(T))
+zeros{T}(::Type{ResidueCount{T, 1, true}}) = ResidueCount{T, 1, true}(zeros(T, 21), zeros(T, (21, 1)), zero(T))
+zeros{T}(::Type{ResidueCount{T, 2, true}}) = ResidueCount{T, 2, true}(zeros(T, (21, 21)), zeros(T, (21, 2)), zero(T))
 
-zeros{T}(::Type{ResidueCount{T, 1, false}}) = ResidueCount{T, 1, false}(zeros(T, 20), zeros(T, (1,20)), zero(T))
-zeros{T}(::Type{ResidueCount{T, 2, false}}) = ResidueCount{T, 2, false}(zeros(T, (20, 20)), zeros(T, (2,20)), zero(T))
+zeros{T}(::Type{ResidueCount{T, 1, false}}) = ResidueCount{T, 1, false}(zeros(T, 20), zeros(T, (20, 1)), zero(T))
+zeros{T}(::Type{ResidueCount{T, 2, false}}) = ResidueCount{T, 2, false}(zeros(T, (20, 20)), zeros(T, (20, 2)), zero(T))
 
 function zeros{T, N, UseGap}(::Type{ResidueCount{T, N, UseGap}})
-  n = UseGap ? 21 : 20
-  ResidueCount{T, N, UseGap}(zeros(T, (Int[ n for d in 1:N]...)), zeros(T, (N, n)), zero(T))
+  nres = UseGap ? 21 : 20
+  ResidueCount{T, N, UseGap}(zeros(T, (Int[ nres for d in 1:N]...)), zeros(T, (nres, N)), zero(T))
 end
 
 ### Abstract Array Interface
@@ -56,7 +67,7 @@ getindex(n::ResidueCount, i::Int)	= getindex(n.counts, i)
 
 """`setindex!(n::ResidueCount, v, i::Int)` set a value into counts field, but doesn't update the marginals and total.
 Use `Int()` for indexing with `Residues`. Use `update!` in order to calculate again the marginals and total."""
-setindex!(n::ResidueCount, v, i::Int) = setindex!(N.counts, v, i)
+setindex!(n::ResidueCount, v, i::Int) = setindex!(n.counts, v, i)
 
 #### Length & Size
 
@@ -92,6 +103,92 @@ similar{T,N,UseGap}(n::ResidueCount{T,N,UseGap}) = ResidueCount{T,N,UseGap}()
 similar{T,N,S,UseGap}(n::ResidueCount{T,N,UseGap}, ::Type{S}) = ResidueCount{S,N,UseGap}()
 similar{T,N,UseGap}(n::ResidueCount{T,N,UseGap}, D::Int) = ResidueCount{T,D,UseGap}()
 similar{T,N,S,UseGap}(n::ResidueCount{T,N,UseGap}, ::Type{S}, D::Int) = ResidueCount{S,D,UseGap}()
+
+### Update!
+
+function _tuple_without_index(index::Int, N::Int)
+	used = Array(Int, N - 1)
+	j = 1
+	for i in 1:N
+		if i != index
+			used[j] = i
+			j += 1
+		end
+	end
+	(used...)
+end
+
+function update!{T,UseGap}(n::ResidueCount{T,1,UseGap})
+	n.marginals[:] = n.counts
+	n.total = sum(n.counts)
+	n 
+end
+
+function update!{T,UseGap}(n::ResidueCount{T,2,UseGap})
+	n.marginals[:,1] = sum(n.counts, 2) # this is faster than sum(n,2)
+	n.marginals[:,2] = sum(n.counts, 1)
+	n.total = sum(n.marginals[:,1])
+	n
+end
+
+function update!{T, N, UseGap}(n::ResidueCount{T, N, UseGap})
+	for i in 1:N
+		n.marginals[:,i] = sum(n.counts, _tuple_without_index(i,N))
+	end
+	n.total = sum(n.marginals[:,1])
+	n
+end
+
+### Apply Pseudocount
+
+for (dim, gap, margi_exp, total_exp) in [ (:1, :true,  :(pse.λ), :(pse.λ * 21)),
+																					(:1, :false, :(pse.λ), :(pse.λ * 20)),
+																					(:2, :true,  :(pse.λ * 21), :(pse.λ * 441)),
+																					(:2, :false, :(pse.λ * 20), :(pse.λ * 400)) ] 
+	@eval begin 
+
+		function apply_pseudocount!{T}(n::ResidueCount{T, $(dim), $(gap)}, pse::AdditiveSmoothing{T})
+			margi_sum = $(margi_exp)
+			total_sum = $(total_exp)
+			n.counts[:] += pse.λ
+			n.marginals[:] += margi_sum
+			n.total += total_sum
+			n
+		end
+
+		function fill!{T}(n::ResidueCount{T, $(dim), $(gap)}, pse::AdditiveSmoothing{T})
+			margi_sum = $(margi_exp)
+			total_sum = $(total_exp)
+			fill!(n.counts, pse.λ)
+			fill!(n.marginals, margi_sum)
+			n.total = total_sum
+			n
+		end
+
+	end
+
+end
+
+function apply_pseudocount!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::AdditiveSmoothing{T})
+	nres = UseGap ? 21 : 20
+	margi_sum = pse.λ * (nres^(N-1))
+	total_sum = pse.λ * (nres^N)
+	n.counts[:] += pse.λ
+	n.marginals[:] += margi_sum
+	n.total += total_sum
+	n
+end
+
+function fill!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::AdditiveSmoothing{T})
+	nres = UseGap ? 21 : 20
+	margi_sum = pse.λ * (nres^(N-1))
+	total_sum = pse.λ * (nres^N)
+	fill!(n.counts, pse.λ)
+	fill!(n.marginals, margi_sum)
+	n.total = total_sum
+	n
+end
+
 
 
 # ### PROBABILITIES AND PSEUDOCOUNTS ###
