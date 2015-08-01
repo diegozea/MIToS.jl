@@ -6,7 +6,8 @@ module Information
   export BLOSUM62_Pa, BLOSUM62_Pab,
 
   Pseudocount, AdditiveSmoothing, ResidueCount, ResidueProbability,
-	update!, apply_pseudocount!, count!
+	update!, apply_pseudocount!, count!, normalize!,
+  blosum_pseudofrequencies!, apply_pseudofrequencies!
 
 
   #Fixed, Pseudofrequencies, ResidueProbabilities, ResiduePairProbabilities

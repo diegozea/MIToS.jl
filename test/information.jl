@@ -100,7 +100,7 @@ end
 @test size(similar(ResidueCount{Int, 1, false}(),4).marginals) == (20, 4)
 @test isa(similar(ResidueCount{Int, 1, false}(),Float64).total, Float64)
 
-println("Test count! whit Clusters")
+println("### Test count! whit Clusters ###")
 false_clusters = Clusters(zeros(20),zeros(20),rand(20))
 seq = Residue(MSA._to_char)
 @test_throws BoundsError count!(zeros(ResidueCount{Float64, 1, true}), false_clusters, seq)
@@ -108,8 +108,15 @@ seq = Residue(MSA._to_char)
 @test count!(zeros(ResidueCount{Float64, 2, false}), false_clusters, seq, seq).marginals[:,1] == getweight(false_clusters)
 @test count!(zeros(ResidueCount{Float64, 3, false}), false_clusters, seq, seq, seq).marginals[:,1] == getweight(false_clusters)
 
-## Test Probabilities
+println("### Test count ###")
+@test count(false, false_clusters, seq).counts == getweight(false_clusters)
+@test count(false, false_clusters, seq, seq).marginals[:,1] == getweight(false_clusters)
+@test count(false, false_clusters, seq, seq, seq).marginals[:,1] == getweight(false_clusters)
+@test count(true, seq).total == 21
+@test count(true, seq, seq).total == 21
+@test count(true, seq, seq, seq).total == 21
 
+## Test Probabilities
 
 @test size(ResidueProbability{1, false}().probabilities) == (20,)
 @test size(ResidueProbability{1, true}().probabilities) == (21,)
@@ -146,6 +153,25 @@ for ndim = 1:4, usegap = Bool[true, false]
   println("Test setindex! with i for ResidueProbability{$(ndim), $(usegap)}")
   N[3] = 1.0
   @test N[3] == one(Float64)
+
+  println("Test update! for ResidueProbability{$(ndim), $(usegap)}")
+  N = zeros(ResidueProbability{ndim, usegap})
+  N[1] = 0.5
+  update!(N)
+  @test N.marginals[1,1] == 0.5
+
+  println("Test normalize! for ResidueProbability{$(ndim), $(usegap)}")
+  normalize!(N)
+  @test N[1] == 1.0
+  @test N.marginals[1,1] == 1.0
+  @test sum(N) == 1.0
+
+  println("Test fill! with ResidueCount{Int, $(ndim), $(usegap)} for ResidueProbability{$(ndim), $(usegap)}")
+  C = fill!(zeros(ResidueCount{Int, ndim, usegap}), AdditiveSmoothing(1))
+  P = fill!(N, C)
+  @test P[1] == 1.0/length(C.counts)
+  @test P.marginals[1,1] == 1.0 / nres
+  @test_approx_eq sum(P) 1.0
 end
 
 for usegap = Bool[true, false]
@@ -170,55 +196,13 @@ end
 
 @test size(similar(ResidueProbability{1, false}(),4).marginals) == (20, 4)
 
-
-# # Copy & deepcopy
-# cnone = copy(none)
-# dcnone = deepcopy(none)
-#
-# none.Gab[1,1] = 1.0
-#
-# @test cnone.α == zero(Float64)
-# @test cnone.β == zero(Float64)
-# @test cnone.Gab[1,1] == zero(Float64)
-#
-# @test dcnone.α == zero(Float64)
-# @test dcnone.β == zero(Float64)
-# @test dcnone.Gab[1,1] == zero(Float64)
-#
-# ## ResidueProbabilities ##
-#
-# none = zeros(ResidueProbabilities)
-# @test none.Pa == zeros(Float64, 20)
-#
-# # Copy & deepcopy
-# cnone = copy(none)
-# dcnone = deepcopy(none)
-#
-# none.Pa[1] = 1.0
-#
-# @test cnone.Pa[1] == zero(Float64)
-# @test dcnone.Pa[1] == zero(Float64)
-#
-# ## ResidueProbabilities ##
-#
-# none =  zeros(ResiduePairProbabilities)
-# @test none.Pab == zeros(Float64, (20,20))
-# @test none.Pa == zeros(Float64, 20)
-# @test none.Pb == zeros(Float64, 20)
-#
-# # Copy & deepcopy
-# cnone = copy(none)
-# dcnone = deepcopy(none)
-#
-# none.Pab[1,1] = 1.0
-# none.Pa[1] = 1.0
-# none.Pb[1] = 1.0
-#
-# @test cnone.Pab[1,1] == zero(Float64)
-# @test cnone.Pa[1] == zero(Float64)
-# @test cnone.Pb[1] == zero(Float64)
-#
-# @test dcnone.Pab[1,1] == zero(Float64)
-# @test dcnone.Pa[1] == zero(Float64)
-# @test dcnone.Pb[1] == zero(Float64)
-#
+# println("### Test probabilities ###")
+# @test probabilities(count(false, seq)).marginals[1,1] == 0.05
+# @test probabilities(count(false, seq, seq)).marginals[1,1] == 0.05
+# @test probabilities(count(false, seq, seq, seq)).marginals[1,1] == 0.05
+# @test probabilities(false, seq).marginals[1,1] == 0.05
+# @test probabilities(false, seq, seq).marginals[1,1] == 0.05
+# @test probabilities(false, seq, seq, seq).marginals[1,1] == 0.05
+# @test sum(probabilities(false, seq)) == 1.0
+# @test sum(probabilities(false, seq, seq)) == 1.0
+# @test sum(probabilities(false, seq, seq, seq)) == 1.0
