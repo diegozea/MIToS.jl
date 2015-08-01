@@ -3,6 +3,8 @@ using MIToS.Information
 using MIToS.Clustering
 using MIToS.MSA
 
+## Test Counts
+
 @test size(ResidueCount{Int, 1, false}().counts) == (20,)
 @test size(ResidueCount{Int, 1, true}().counts) == (21,)
 
@@ -105,6 +107,68 @@ seq = Residue(MSA._to_char)
 @test count!(zeros(ResidueCount{Float64, 1, false}), false_clusters, seq).counts == getweight(false_clusters)
 @test count!(zeros(ResidueCount{Float64, 2, false}), false_clusters, seq, seq).marginals[:,1] == getweight(false_clusters)
 @test count!(zeros(ResidueCount{Float64, 3, false}), false_clusters, seq, seq, seq).marginals[:,1] == getweight(false_clusters)
+
+## Test Probabilities
+
+
+@test size(ResidueProbability{1, false}().probabilities) == (20,)
+@test size(ResidueProbability{1, true}().probabilities) == (21,)
+
+@test size(ResidueProbability{2, false}().probabilities) == (20,20)
+@test size(ResidueProbability{2, true}().probabilities) == (21,21)
+
+@test size(ResidueProbability{3, false}().probabilities) == (20,20,20)
+@test size(ResidueProbability{3, true}().probabilities) == (21,21,21)
+
+for ndim = 1:4
+	@test size(ResidueProbability{ndim, true}().marginals) == (21, ndim)
+	@test size(ResidueProbability{ndim, false}().marginals) == (20, ndim)
+end
+
+for ndim = 1:4, usegap = Bool[true, false]
+	println("### N: $(ndim) UseGap: $(usegap) ###")
+  nres = usegap ? 21 : 20
+
+  println("Test zeros for ResidueProbability{$(ndim), $(usegap)}")
+  N = zeros(ResidueProbability{ndim, usegap})
+  @test sum(N.probabilities) == zero(Float64)
+
+  println("Test iteration interface for ResidueProbability{$(ndim), $(usegap)}")
+  @test collect(N) == zeros(Float64, nres^ndim)
+
+  println("Test size for ResidueProbability{$(ndim), $(usegap)}")
+  @test size(N) == size(N.probabilities)
+
+  println("Test indexing with i for ResidueProbability{$(ndim), $(usegap)}")
+  @test N[1] == zero(Float64)
+  @test N[Int(Residue('R'))] == zero(Float64)
+
+  println("Test setindex! with i for ResidueProbability{$(ndim), $(usegap)}")
+  N[3] = 1.0
+  @test N[3] == one(Float64)
+end
+
+for usegap = Bool[true, false]
+	println("### UseGap: $(usegap) ###")
+  nres = usegap ? 21 : 20
+
+	N = zeros(ResidueProbability{2, usegap})
+
+  println("Test indexing with ij for ResidueProbability{2, $(usegap)}")
+  @test N[1,1] == zero(Float64)
+  @test N[Int(Residue('R')), Int(Residue('R'))] == zero(Float64)
+
+  println("Test setindex! with ij for ResidueProbability{2, $(usegap)}")
+  N[3,3] = 1.0
+  @test N[3,3] == one(Float64)
+end
+
+for ndim = 1:4
+	@test size(similar(ResidueProbability{ndim, false}()).marginals) == (20, ndim)
+	@test size(similar(ResidueProbability{ndim, true}()).marginals) == (21, ndim)
+end
+
+@test size(similar(ResidueProbability{1, false}(),4).marginals) == (20, 4)
 
 
 # # Copy & deepcopy

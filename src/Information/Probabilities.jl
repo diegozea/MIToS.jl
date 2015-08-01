@@ -246,6 +246,100 @@ end
 
 count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, res::AbstractVector{Residue}...) = count!(n, one(T), res...)
 
+## Probabilities
+
+type ResidueProbability{N, UseGap} <: AbstractArray{Float64, N}
+  probabilities::Array{Float64, N}
+  marginals::Array{Float64, 2}
+end
+
+call(::Type{ResidueProbability{1, true}}) = ResidueProbability{1, true}(Array(Float64, 21), Array(Float64, (21,1)))
+call(::Type{ResidueProbability{2, true}}) = ResidueProbability{2, true}(Array(Float64, (21, 21)), Array(Float64, (21,2)))
+
+call(::Type{ResidueProbability{1, false}}) = ResidueProbability{1, false}(Array(Float64, 20), Array(Float64, (20,1)))
+call(::Type{ResidueProbability{2, false}}) = ResidueProbability{2, false}(Array(Float64, (20, 20)), Array(Float64, (20,2)))
+
+function call{N, UseGap}(::Type{ResidueProbability{N, UseGap}})
+  nres = UseGap ? 21 : 20
+  ResidueProbability{N, UseGap}(Array(Float64, (Int[ nres for d in 1:N]...)), Array(Float64, (nres, N)))
+end
+
+zeros(::Type{ResidueProbability{1, true}}) = ResidueProbability{1, true}(zeros(Float64, 21), zeros(Float64, (21, 1)))
+zeros(::Type{ResidueProbability{2, true}}) = ResidueProbability{2, true}(zeros(Float64, (21, 21)), zeros(Float64, (21, 2)))
+
+zeros(::Type{ResidueProbability{1, false}}) = ResidueProbability{1, false}(zeros(Float64, 20), zeros(Float64, (20, 1)))
+zeros(::Type{ResidueProbability{2, false}}) = ResidueProbability{2, false}(zeros(Float64, (20, 20)), zeros(Float64, (20, 2)))
+
+function zeros{N, UseGap}(::Type{ResidueProbability{N, UseGap}})
+  nres = UseGap ? 21 : 20
+  ResidueProbability{N, UseGap}(zeros(Float64, (Int[ nres for d in 1:N]...)), zeros(Float64, (nres, N)))
+end
+
+### Abstract Array Interface
+
+Base.linearindexing(::ResidueProbability)	= Base.LinearFast()
+
+"""`getindex(p::ResidueProbability, i::Int)` gives you access to the probabilities, use `Int()` for indexing with `Residues`"""
+getindex(p::ResidueProbability, i::Int)	= getindex(p.probabilities, i)
+
+"""`setindex!(p::ResidueProbability, v, i::Int)` set a value into probabilities field, but doesn't update the marginals.
+Use `Int()` for indexing with `Residues`. Use `update!` in order to calculate again the marginals."""
+setindex!(p::ResidueProbability, v, i::Int) = setindex!(p.probabilities, v, i)
+
+#### Length & Size
+
+length(p::ResidueProbability{1, true}) = 21
+length(p::ResidueProbability{1,false}) = 20
+
+length(p::ResidueProbability{2, true}) = 441
+length(p::ResidueProbability{2,false}) = 400
+
+length{N,UseGap}(p::ResidueProbability{N, UseGap}) = length(p.probabilities)
+
+size(p::ResidueProbability{1, true}) = (21,)
+size(p::ResidueProbability{1,false}) = (20,)
+
+size(p::ResidueProbability{2, true}) = (21, 21)
+size(p::ResidueProbability{2,false}) = (20, 20)
+
+size{N,UseGap}(p::ResidueProbability{N, UseGap}) = size(p.probabilities)
+
+#### Iteration Interface
+
+start(p::ResidueProbability) = 1
+
+@inbounds next(p::ResidueProbability, state::Int) = (p.probabilities[state], state + 1)
+
+done{N,UseGap}(p::ResidueProbability{N, UseGap}, state) = state > length(p)
+
+eltype{N,UseGap}(::Type{ResidueProbability{N, UseGap}}) = Float64
+
+#### Similar
+
+similar{N,UseGap}(p::ResidueProbability{N,UseGap}) = ResidueProbability{N,UseGap}()
+similar{N,UseGap}(p::ResidueProbability{N,UseGap}, D::Int) = ResidueProbability{D,UseGap}()
+
+### Update!
+
+function update!{UseGap}(p::ResidueProbability{1,UseGap})
+	p.marginals[:] = p.probabilities
+	p
+end
+
+function update!{UseGap}(p::ResidueProbability{2,UseGap})
+	p.marginals[:,1] = sum(p.probabilities, 2) # this is faster than sum(p,2)
+	p.marginals[:,2] = sum(p.probabilities, 1)
+	p
+end
+
+function update!{N, UseGap}(p::ResidueProbability{N, UseGap})
+	for i in 1:N
+		p.marginals[:,i] = sum(p.probabilities, _tuple_without_index(i,N))
+	end
+	p
+end
+
+
 # """Fill the Pab matrix with λ, but doesn't update the marginal probabilities"""
 # function __initialize!(pab::ResiduePairProbabilities)
 #   fill!(pab.Pab, zero(Float64))
