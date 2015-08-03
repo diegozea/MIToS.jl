@@ -23,6 +23,52 @@ end
 zero{T}(::Type{AdditiveSmoothing{T}}) = AdditiveSmoothing{T}(zero(T))
 one{T}(::Type{AdditiveSmoothing{T}}) = AdditiveSmoothing{T}(one(T))
 
+## ResidueContingencyTables
+
+abstract ResidueContingencyTables{T, N, UseGap} <: AbstractArray{T, N}
+
+### Abstract Array Interface
+
+Base.linearindexing(::ResidueContingencyTables)	= Base.LinearFast()
+
+"""`getindex(n::ResidueContingencyTables, i::Int)` gives you access to the table, use `Int()` for indexing with `Residues`"""
+getindex(n::ResidueContingencyTables, i::Int)	= getindex(n.table, i)
+
+"""`setindex!(n::ResidueCount, v, i::Int)` set a value into the table, but doesn't update the marginals (and total).
+Use `Int()` for indexing with `Residues`. Use `update!` in order to calculate again the marginals (and total)."""
+setindex!(n::ResidueContingencyTables, v, i::Int) = setindex!(n.table, v, i)
+
+#### Length & Size
+
+length{T}(n::ResidueContingencyTables{T, 1, true}) = 21
+length{T}(n::ResidueContingencyTables{T, 1,false}) = 20
+
+length{T}(n::ResidueContingencyTables{T, 2, true}) = 441
+length{T}(n::ResidueContingencyTables{T, 2,false}) = 400
+
+length{T,N,UseGap}(n::ResidueContingencyTables{T, N, UseGap}) = length(n.table)
+
+size{T}(n::ResidueContingencyTables{T, 1, true}) = (21,)
+size{T}(n::ResidueContingencyTables{T, 1,false}) = (20,)
+
+size{T}(n::ResidueContingencyTables{T, 2, true}) = (21, 21)
+size{T}(n::ResidueContingencyTables{T, 2,false}) = (20, 20)
+
+size{T,N,UseGap}(n::ResidueContingencyTables{T, N, UseGap}) = size(n.table)
+
+@inline nresidues{T, N}(n::ResidueContingencyTables{T, N, true})  = 21
+@inline nresidues{T, N}(n::ResidueContingencyTables{T, N, false}) = 20
+
+#### Iteration Interface
+
+start(n::ResidueContingencyTables) = 1
+
+@inbounds next(n::ResidueContingencyTables, state::Int) = (n.table[state], state + 1)
+
+done{T,N,UseGap}(n::ResidueContingencyTables{T, N, UseGap}, state) = state > length(n)
+
+eltype{T,N,UseGap}(::Type{ResidueContingencyTables{T, N, UseGap}}) = T
+
 ## Counts
 
 """`ResidueCount{T, N, UseGap}` is used for counting residues in columns (or sequences) of an MSA.
@@ -30,8 +76,8 @@ one{T}(::Type{AdditiveSmoothing{T}}) = AdditiveSmoothing{T}(one(T))
 `UseGap` is a `Bool`, `true` means that **ResidueCount** counts gaps in the position 21."""
 # The field marginal is used for pre allocation of marginal sums.
 # The field total is used for saving the total.
-type ResidueCount{T, N, UseGap} <: AbstractArray{T, N}
-  counts::Array{T, N}
+type ResidueCount{T, N, UseGap} <: ResidueContingencyTables{T, N, UseGap}
+  table::Array{T, N}
   marginals::Array{T, 2}
   total::T
 end
@@ -58,45 +104,6 @@ function zeros{T, N, UseGap}(::Type{ResidueCount{T, N, UseGap}})
   ResidueCount{T, N, UseGap}(zeros(T, (Int[ nres for d in 1:N]...)), zeros(T, (nres, N)), zero(T))
 end
 
-### Abstract Array Interface
-
-Base.linearindexing(::ResidueCount)	= Base.LinearFast()
-
-"""`getindex(n::ResidueCount, i::Int)` gives you access to the counts, use `Int()` for indexing with `Residues`"""
-getindex(n::ResidueCount, i::Int)	= getindex(n.counts, i)
-
-"""`setindex!(n::ResidueCount, v, i::Int)` set a value into counts field, but doesn't update the marginals and total.
-Use `Int()` for indexing with `Residues`. Use `update!` in order to calculate again the marginals and total."""
-setindex!(n::ResidueCount, v, i::Int) = setindex!(n.counts, v, i)
-
-#### Length & Size
-
-length{T}(n::ResidueCount{T, 1, true}) = 21
-length{T}(n::ResidueCount{T, 1,false}) = 20
-
-length{T}(n::ResidueCount{T, 2, true}) = 441
-length{T}(n::ResidueCount{T, 2,false}) = 400
-
-length{T,N,UseGap}(n::ResidueCount{T, N, UseGap}) = length(n.counts)
-
-size{T}(n::ResidueCount{T, 1, true}) = (21,)
-size{T}(n::ResidueCount{T, 1,false}) = (20,)
-
-size{T}(n::ResidueCount{T, 2, true}) = (21, 21)
-size{T}(n::ResidueCount{T, 2,false}) = (20, 20)
-
-size{T,N,UseGap}(n::ResidueCount{T, N, UseGap}) = size(n.counts)
-
-#### Iteration Interface
-
-start(n::ResidueCount) = 1
-
-@inbounds next(n::ResidueCount, state::Int) = (n.counts[state], state + 1)
-
-done{T,N,UseGap}(n::ResidueCount{T, N, UseGap}, state) = state > length(n)
-
-eltype{T,N,UseGap}(::Type{ResidueCount{T, N, UseGap}}) = T
-
 #### Similar
 
 similar{T,N,UseGap}(n::ResidueCount{T,N,UseGap}) = ResidueCount{T,N,UseGap}()
@@ -119,21 +126,21 @@ function _tuple_without_index(index::Int, N::Int)
 end
 
 function update!{T,UseGap}(n::ResidueCount{T,1,UseGap})
-	n.marginals[:] = n.counts
-	n.total = sum(n.counts)
+	n.marginals[:] = n.table
+	n.total = sum(n.table)
 	n
 end
 
 function update!{T,UseGap}(n::ResidueCount{T,2,UseGap})
-	n.marginals[:,1] = sum(n.counts, 2) # this is faster than sum(n,2)
-	n.marginals[:,2] = sum(n.counts, 1)
+	n.marginals[:,1] = sum(n.table, 2) # this is faster than sum(n,2)
+	n.marginals[:,2] = sum(n.table, 1)
 	n.total = sum(n.marginals[:,1])
 	n
 end
 
 function update!{T, N, UseGap}(n::ResidueCount{T, N, UseGap})
 	for i in 1:N
-		n.marginals[:,i] = sum(n.counts, _tuple_without_index(i,N))
+		n.marginals[:,i] = sum(n.table, _tuple_without_index(i,N))
 	end
 	n.total = sum(n.marginals[:,1])
 	n
@@ -158,7 +165,7 @@ for (dim, gap, margi_exp, total_exp) in [ (:1, :true,  :(pse.λ), :(pse.λ * 21)
 		function apply_pseudocount!{T}(n::ResidueCount{T, $(dim), $(gap)}, pse::AdditiveSmoothing{T})
 			margi_sum = $(margi_exp)
 			total_sum = $(total_exp)
-			__sum!(n.counts, pse.λ)
+			__sum!(n.table, pse.λ)
 			__sum!(n.marginals, margi_sum)
 			n.total += total_sum
 			n
@@ -167,7 +174,7 @@ for (dim, gap, margi_exp, total_exp) in [ (:1, :true,  :(pse.λ), :(pse.λ * 21)
 		function fill!{T}(n::ResidueCount{T, $(dim), $(gap)}, pse::AdditiveSmoothing{T})
 			margi_sum = $(margi_exp)
 			total_sum = $(total_exp)
-			fill!(n.counts, pse.λ)
+			fill!(n.table, pse.λ)
 			fill!(n.marginals, margi_sum)
 			n.total = total_sum
 			n
@@ -178,20 +185,20 @@ for (dim, gap, margi_exp, total_exp) in [ (:1, :true,  :(pse.λ), :(pse.λ * 21)
 end
 
 function apply_pseudocount!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::AdditiveSmoothing{T})
-	nres = UseGap ? 21 : 20
+	nres = nresidues(n)
 	margi_sum = pse.λ * (nres^(N-1))
 	total_sum = pse.λ * (nres^N)
-	__sum!(n.counts, pse.λ)
+	__sum!(n.table, pse.λ)
 	__sum!(n.marginals, margi_sum)
 	n.total += total_sum
 	n
 end
 
 function fill!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::AdditiveSmoothing{T})
-	nres = UseGap ? 21 : 20
+	nres = nresidues(n)
 	margi_sum = pse.λ * (nres^(N-1))
 	total_sum = pse.λ * (nres^N)
-	fill!(n.counts, pse.λ)
+	fill!(n.table, pse.λ)
 	fill!(n.marginals, margi_sum)
 	n.total = total_sum
 	n
@@ -207,7 +214,7 @@ for (usegap, testgap) in [ (:(true),:()), (:(false),:(aa == Int(GAP) && continue
       for i in 1:length(res)
         aa = Int(res[i])
         $(testgap)
-        n.counts[aa] += getweight(cl,i)
+        n.table[aa] += getweight(cl,i)
       end
       update!(n)
     end
@@ -219,7 +226,7 @@ end
 
 function count!{T}(n::ResidueCount{T, 2, true}, cl, res1::AbstractVector{Residue}, res2::AbstractVector{Residue})
   for i in 1:length(res1)
-    n.counts[Int(res1[i]), Int(res2[i])] += getweight(cl,i)
+    n.table[Int(res1[i]), Int(res2[i])] += getweight(cl,i)
   end
   update!(n)
 end
@@ -229,7 +236,7 @@ function count!{T}(n::ResidueCount{T, 2, false}, cl, res1::AbstractVector{Residu
     aa1 = res1[i]
     aa2 = res2[i]
     if (aa1 != GAP) && (aa2 != GAP)
-      n.counts[Int(aa1), Int(aa2)] += getweight(cl,i)
+      n.table[Int(aa1), Int(aa2)] += getweight(cl,i)
     end
   end
   update!(n)
@@ -243,7 +250,7 @@ function count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, cl, res::AbstractVe
     for i in 1:length(res[1])
       aa_list = [ Int(aa[i]) for aa in res ]
       if UseGap || (findfirst(aa_list, Int(GAP)) == 0)
-        n.counts[aa_list...] += getweight(cl,i)
+        n.table[aa_list...] += getweight(cl,i)
       end
     end
     update!(n)
@@ -261,8 +268,8 @@ count(usegap::Bool, res::AbstractVector{Residue}...) = count!(zeros(ResidueCount
 
 ## Probabilities
 
-type ResidueProbability{N, UseGap} <: AbstractArray{Float64, N}
-  probabilities::Array{Float64, N}
+type ResidueProbability{N, UseGap} <: ResidueContingencyTables{Float64, N, UseGap}
+  table::Array{Float64, N}
   marginals::Array{Float64, 2}
 end
 
@@ -288,45 +295,6 @@ function zeros{N, UseGap}(::Type{ResidueProbability{N, UseGap}})
   ResidueProbability{N, UseGap}(zeros(Float64, (Int[ nres for d in 1:N]...)), zeros(Float64, (nres, N)))
 end
 
-### Abstract Array Interface
-
-Base.linearindexing(::ResidueProbability)	= Base.LinearFast()
-
-"""`getindex(p::ResidueProbability, i::Int)` gives you access to the probabilities, use `Int()` for indexing with `Residues`"""
-getindex(p::ResidueProbability, i::Int)	= getindex(p.probabilities, i)
-
-"""`setindex!(p::ResidueProbability, v, i::Int)` set a value into probabilities field, but doesn't update the marginals.
-Use `Int()` for indexing with `Residues`. Use `update!` in order to calculate again the marginals."""
-setindex!(p::ResidueProbability, v, i::Int) = setindex!(p.probabilities, v, i)
-
-#### Length & Size
-
-length(p::ResidueProbability{1, true}) = 21
-length(p::ResidueProbability{1,false}) = 20
-
-length(p::ResidueProbability{2, true}) = 441
-length(p::ResidueProbability{2,false}) = 400
-
-length{N,UseGap}(p::ResidueProbability{N, UseGap}) = length(p.probabilities)
-
-size(p::ResidueProbability{1, true}) = (21,)
-size(p::ResidueProbability{1,false}) = (20,)
-
-size(p::ResidueProbability{2, true}) = (21, 21)
-size(p::ResidueProbability{2,false}) = (20, 20)
-
-size{N,UseGap}(p::ResidueProbability{N, UseGap}) = size(p.probabilities)
-
-#### Iteration Interface
-
-start(p::ResidueProbability) = 1
-
-@inbounds next(p::ResidueProbability, state::Int) = (p.probabilities[state], state + 1)
-
-done{N,UseGap}(p::ResidueProbability{N, UseGap}, state) = state > length(p)
-
-eltype{N,UseGap}(::Type{ResidueProbability{N, UseGap}}) = Float64
-
 #### Similar
 
 similar{N,UseGap}(p::ResidueProbability{N,UseGap}) = ResidueProbability{N,UseGap}()
@@ -335,19 +303,19 @@ similar{N,UseGap}(p::ResidueProbability{N,UseGap}, D::Int) = ResidueProbability{
 ### Update!
 
 function update!{UseGap}(p::ResidueProbability{1,UseGap})
-	p.marginals[:] = p.probabilities
+	p.marginals[:] = p.table
 	p
 end
 
 function update!{UseGap}(p::ResidueProbability{2,UseGap})
-	p.marginals[:,1] = sum(p.probabilities, 2) # this is faster than sum(p,2)
-	p.marginals[:,2] = sum(p.probabilities, 1)
+	p.marginals[:,1] = sum(p.table, 2) # this is faster than sum(p,2)
+	p.marginals[:,2] = sum(p.table, 1)
 	p
 end
 
 function update!{N, UseGap}(p::ResidueProbability{N, UseGap})
 	for i in 1:N
-		p.marginals[:,i] = sum(p.probabilities, _tuple_without_index(i,N))
+		p.marginals[:,i] = sum(p.table, _tuple_without_index(i,N))
 	end
 	p
 end
@@ -376,7 +344,7 @@ function normalize!(p::ResidueProbability; updated::Bool=false)
   end
   total = sum(p.marginals[:,1])
   if total != 1.0
-    __div!(p.probabilities, total)
+    __div!(p.table, total)
     __div!(p.marginals, total)
   end
   p
@@ -402,7 +370,7 @@ function fill!{T, N, UseGap}(p::ResidueProbability{N, UseGap}, n::ResidueCount{T
   if !updated
     update!(n)
   end
-  __fill_probabilities!(p.probabilities, n.counts, n.total)
+  __fill_probabilities!(p.table, n.table, n.total)
   __fill_probabilities!(p.marginals, n.marginals, n.total)
 	p
 end
@@ -434,7 +402,7 @@ function apply_pseudofrequencies!(Pab::ResidueProbability{2,false}, Gab::Residue
     total += value
   end
   if total != 1.0
-    __div!(Pab.probabilities, total)
+    __div!(Pab.table, total)
     update!(Pab)
   else
     update!(Pab)
@@ -447,14 +415,14 @@ end
 # """
 # function probabilities{T, N, UseGap}(n::ResidueCount{T, N, UseGap})
 #   p = ResidueProbability{N, UseGap}()
-#   __fill_probabilities!(p.probabilities, n.counts, sum(n.counts)) # slow but safe: n.total will be wrong if ResidueCount is not updated
+#   __fill_probabilities!(p.table, n.table, sum(n.table)) # slow but safe: n.total will be wrong if ResidueCount is not updated
 #   update!(p)
 # end
 
 # # Use it only when n::ResidueCount is updated
 # function __probabilities{T, N, UseGap}(n::ResidueCount{T, N, UseGap})
 #   p = ResidueProbability{N, UseGap}()
-#   __fill_probabilities!(p.probabilities, n.counts, n.total)
+#   __fill_probabilities!(p.table, n.table, n.total)
 #   __fill_probabilities!(p.marginals, n.marginals, n.total)
 # 	p
 # end

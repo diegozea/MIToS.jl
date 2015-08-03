@@ -5,14 +5,14 @@ using MIToS.MSA
 
 ## Test Counts
 
-@test size(ResidueCount{Int, 1, false}().counts) == (20,)
-@test size(ResidueCount{Int, 1, true}().counts) == (21,)
+@test size(ResidueCount{Int, 1, false}().table) == (20,)
+@test size(ResidueCount{Int, 1, true}().table) == (21,)
 
-@test size(ResidueCount{Int, 2, false}().counts) == (20,20)
-@test size(ResidueCount{Int, 2, true}().counts) == (21,21)
+@test size(ResidueCount{Int, 2, false}().table) == (20,20)
+@test size(ResidueCount{Int, 2, true}().table) == (21,21)
 
-@test size(ResidueCount{Int, 3, false}().counts) == (20,20,20)
-@test size(ResidueCount{Int, 3, true}().counts) == (21,21,21)
+@test size(ResidueCount{Int, 3, false}().table) == (20,20,20)
+@test size(ResidueCount{Int, 3, true}().table) == (21,21,21)
 
 for ndim = 1:4
 	@test size(ResidueCount{Int, ndim, true}().marginals) == (21, ndim)
@@ -25,13 +25,13 @@ for ndim = 1:4, usegap = Bool[true, false]
 
   println("Test zeros for ResidueCount{Float64, $(ndim), $(usegap)}")
   N = zeros(ResidueCount{Float64, ndim, usegap})
-  @test sum(N.counts) == zero(Float64)
+  @test sum(N.table) == zero(Float64)
 
   println("Test iteration interface for ResidueCount{Float64, $(ndim), $(usegap)}")
   @test collect(N) == zeros(Int, nres^ndim)
 
   println("Test size for ResidueCount{Float64, $(ndim), $(usegap)}")
-  @test size(N) == size(N.counts)
+  @test size(N) == size(N.table)
 
   println("Test indexing with i for ResidueCount{Float64, $(ndim), $(usegap)}")
   @test N[1] == zero(Float64)
@@ -42,21 +42,21 @@ for ndim = 1:4, usegap = Bool[true, false]
   @test N[3] == one(Float64)
 
   println("Test update! for ResidueCount{Float64, $(ndim), $(usegap)}")
-  fill!(N.counts, 1)
+  fill!(N.table, 1)
   update!(N)
-  @test N.total == length(N.counts)
+  @test N.total == length(N.table)
   @test N.marginals[1] == nres ^ ( ndim - 1 )
 
   println("Test apply_pseudocount! with Laplace Smoothing for ResidueCount{Float64, $(ndim), $(usegap)}")
   P = apply_pseudocount!(zeros(ResidueCount{Float64, ndim, usegap}), AdditiveSmoothing(1.0))
   @test P[1,1] == 1.0
-  @test P.total == length(P.counts)
+  @test P.total == length(P.table)
   @test P.marginals[1] == nres ^ ( ndim - 1 )
 
   println("Test fill! with AdditiveSmoothing(0.05) for ResidueCount{Float64, $(ndim), $(usegap)}")
   fill!(P, AdditiveSmoothing(0.05))
   @test P[1,1] == 0.05
-  @test P.total == length(P.counts) * 0.05
+  @test P.total == length(P.table) * 0.05
   @test P.marginals[1] == 0.05 * ( nres ^ ( ndim - 1 ) )
 end
 
@@ -78,7 +78,7 @@ for usegap = Bool[true, false]
   println("Test count! for ResidueCount{Float64, 2, $(usegap)} and ResidueCount{Float64, 1, $(usegap)}")
 	C = zeros(ResidueCount{Float64, 2, usegap})
   count!(C, aas, aas)
-  @test C.counts == eye(nres)
+  @test C.table == eye(nres)
   @test (count!(zeros(ResidueCount{Float64, 1, usegap}), aas)).total == nres
 
   println("Test count! for ResidueCount{Float64, 5, $(usegap)} and  ResidueCount{Float64, 5, $(usegap)}}")
@@ -104,12 +104,12 @@ println("### Test count! whit Clusters ###")
 false_clusters = Clusters(zeros(20),zeros(20),rand(20))
 seq = Residue(MSA._to_char)
 @test_throws BoundsError count!(zeros(ResidueCount{Float64, 1, true}), false_clusters, seq)
-@test count!(zeros(ResidueCount{Float64, 1, false}), false_clusters, seq).counts == getweight(false_clusters)
+@test count!(zeros(ResidueCount{Float64, 1, false}), false_clusters, seq).table == getweight(false_clusters)
 @test count!(zeros(ResidueCount{Float64, 2, false}), false_clusters, seq, seq).marginals[:,1] == getweight(false_clusters)
 @test count!(zeros(ResidueCount{Float64, 3, false}), false_clusters, seq, seq, seq).marginals[:,1] == getweight(false_clusters)
 
 println("### Test count ###")
-@test count(false, false_clusters, seq).counts == getweight(false_clusters)
+@test count(false, false_clusters, seq).table == getweight(false_clusters)
 @test count(false, false_clusters, seq, seq).marginals[:,1] == getweight(false_clusters)
 @test count(false, false_clusters, seq, seq, seq).marginals[:,1] == getweight(false_clusters)
 @test count(true, seq).total == 21
@@ -118,14 +118,14 @@ println("### Test count ###")
 
 ## Test Probabilities
 
-@test size(ResidueProbability{1, false}().probabilities) == (20,)
-@test size(ResidueProbability{1, true}().probabilities) == (21,)
+@test size(ResidueProbability{1, false}().table) == (20,)
+@test size(ResidueProbability{1, true}().table) == (21,)
 
-@test size(ResidueProbability{2, false}().probabilities) == (20,20)
-@test size(ResidueProbability{2, true}().probabilities) == (21,21)
+@test size(ResidueProbability{2, false}().table) == (20,20)
+@test size(ResidueProbability{2, true}().table) == (21,21)
 
-@test size(ResidueProbability{3, false}().probabilities) == (20,20,20)
-@test size(ResidueProbability{3, true}().probabilities) == (21,21,21)
+@test size(ResidueProbability{3, false}().table) == (20,20,20)
+@test size(ResidueProbability{3, true}().table) == (21,21,21)
 
 for ndim = 1:4
 	@test size(ResidueProbability{ndim, true}().marginals) == (21, ndim)
@@ -138,13 +138,13 @@ for ndim = 1:4, usegap = Bool[true, false]
 
   println("Test zeros for ResidueProbability{$(ndim), $(usegap)}")
   N = zeros(ResidueProbability{ndim, usegap})
-  @test sum(N.probabilities) == zero(Float64)
+  @test sum(N.table) == zero(Float64)
 
   println("Test iteration interface for ResidueProbability{$(ndim), $(usegap)}")
   @test collect(N) == zeros(Float64, nres^ndim)
 
   println("Test size for ResidueProbability{$(ndim), $(usegap)}")
-  @test size(N) == size(N.probabilities)
+  @test size(N) == size(N.table)
 
   println("Test indexing with i for ResidueProbability{$(ndim), $(usegap)}")
   @test N[1] == zero(Float64)
@@ -169,7 +169,7 @@ for ndim = 1:4, usegap = Bool[true, false]
   println("Test fill! with ResidueCount{Int, $(ndim), $(usegap)} for ResidueProbability{$(ndim), $(usegap)}")
   C = fill!(zeros(ResidueCount{Int, ndim, usegap}), AdditiveSmoothing(1))
   P = fill!(N, C)
-  @test P[1] == 1.0/length(C.counts)
+  @test P[1] == 1.0/length(C.table)
   @test P.marginals[1,1] == 1.0 / nres
   @test_approx_eq sum(P) 1.0
 end
