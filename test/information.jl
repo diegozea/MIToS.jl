@@ -3,6 +3,9 @@ using MIToS.Information
 using MIToS.Clustering
 using MIToS.MSA
 
+const false_clusters = Clusters(zeros(20),zeros(20),rand(20))
+const seq = Residue(MSA._to_char)
+
 ## Test Counts
 
 @test size(ResidueCount{Int, 1, false}().table) == (20,)
@@ -66,7 +69,6 @@ end
 for usegap = Bool[true, false]
 	println("### UseGap: $(usegap) ###")
   nres = usegap ? 21 : 20
-  aas = Residue(MSA._to_char)
 
 	N = zeros(ResidueCount{Float64, 2, usegap})
 
@@ -80,15 +82,15 @@ for usegap = Bool[true, false]
 
   println("Test count! for ResidueCount{Float64, 2, $(usegap)} and ResidueCount{Float64, 1, $(usegap)}")
 	C = zeros(ResidueCount{Float64, 2, usegap})
-  count!(C, aas, aas)
+  count!(C, seq, seq)
   @test C.table == eye(nres)
-  @test (count!(zeros(ResidueCount{Float64, 1, usegap}), aas)).total == nres
+  @test (count!(zeros(ResidueCount{Float64, 1, usegap}), seq)).total == nres
 
   println("Test count! for ResidueCount{Float64, 5, $(usegap)} and  ResidueCount{Float64, 5, $(usegap)}}")
-  @test (count!(zeros(ResidueCount{Float64, 5, usegap}), aas, aas, aas, aas, aas)).total == nres
+  @test (count!(zeros(ResidueCount{Float64, 5, usegap}), seq, seq, seq, seq, seq)).total == nres
 
   println("Test count! for ResidueCount{Float64, 4, $(usegap)} and  ResidueCount{Float64, 4, $(usegap)}}")
-  C4 = count!(zeros(ResidueCount{Float64, 4, usegap}), aas, aas, aas, aas)
+  C4 = count!(zeros(ResidueCount{Float64, 4, usegap}), seq, seq, seq, seq)
   @test C4[20,20,20,20] == 1.0
   @test C4[20,20,20,19] == 0.0
   # Also test sum
@@ -104,20 +106,23 @@ end
 @test isa(similar(ResidueCount{Int, 1, false}(),Float64).total, Float64)
 
 println("### Test count! whit Clusters ###")
-false_clusters = Clusters(zeros(20),zeros(20),rand(20))
-seq = Residue(MSA._to_char)
 @test_throws BoundsError count!(zeros(ResidueCount{Float64, 1, true}), false_clusters, seq)
 @test count!(zeros(ResidueCount{Float64, 1, false}), false_clusters, seq).table == getweight(false_clusters)
 @test count!(zeros(ResidueCount{Float64, 2, false}), false_clusters, seq, seq).marginals[:,1] == getweight(false_clusters)
 @test count!(zeros(ResidueCount{Float64, 3, false}), false_clusters, seq, seq, seq).marginals[:,1] == getweight(false_clusters)
 
 println("### Test count ###")
-@test count(false, false_clusters, seq).table == getweight(false_clusters)
-@test count(false, false_clusters, seq, seq).marginals[:,1] == getweight(false_clusters)
-@test count(false, false_clusters, seq, seq, seq).marginals[:,1] == getweight(false_clusters)
-@test count(true, seq).total == 21
-@test count(true, seq, seq).total == 21
-@test count(true, seq, seq, seq).total == 21
+@test count(seq, weight=false_clusters).table == getweight(false_clusters)
+@test count(seq, seq, weight=false_clusters).marginals[:,1] == getweight(false_clusters)
+@test count(seq, seq, seq, weight=false_clusters).marginals[:,1] == getweight(false_clusters)
+
+@test count(seq, usegap=true).total == 21
+@test count(seq, seq, usegap=true).total == 21
+@test count(seq, seq, seq, usegap=true).total == 21
+
+@test count(AdditiveSmoothing(1.0), seq, usegap=true).total == 21 + 21
+@test count(AdditiveSmoothing(1.0), seq, seq, usegap=true).total == 21 + (21*21)
+
 
 ## Test Probabilities
 
@@ -201,7 +206,7 @@ end
 
 println("### Test pseudofrequencies ###")
 
-Pab = fill!(zeros(ResidueProbability{2, false}), count(false, seq, seq))
+Pab = fill!(zeros(ResidueProbability{2, false}), count(seq, seq))
 
 Gab = blosum_pseudofrequencies!(zeros(ResidueProbability{2, false}), Pab)
 @test_approx_eq sum(Gab) 1.0
@@ -211,6 +216,23 @@ Gab = blosum_pseudofrequencies!(zeros(ResidueProbability{2, false}), Pab)
 Pab_with_pseudofrequency = apply_pseudofrequencies!(copy(Pab), Gab, 10, 0)
 @test Pab_with_pseudofrequency == Pab
 
+
+println("### Test probabilities ###")
+@test probabilities(seq, weight=false_clusters).table == getweight(false_clusters)/sum(getweight(false_clusters))
+@test probabilities(seq, seq, weight=false_clusters).marginals[:,1] == getweight(false_clusters)/sum(getweight(false_clusters))
+@test probabilities(seq, seq, seq, weight=false_clusters).marginals[:,1] == getweight(false_clusters)/sum(getweight(false_clusters))
+
+@test_approx_eq probabilities(seq)[1] 0.05
+@test_approx_eq probabilities(seq, seq)[2,2] 0.05
+@test_approx_eq probabilities(seq, seq, seq)[3,3,3] 0.05
+
+@test_approx_eq probabilities(AdditiveSmoothing(1.0), seq, usegap=true)[1] 1/21.0
+Pab = probabilities(AdditiveSmoothing(1.0), seq, seq, usegap=true)
+@test_approx_eq Pab[1,1] 2.0/(21 + 21*21)
+@test_approx_eq Pab[1,2] 1.0/(21 + 21*21)
+@test_approx_eq sum(Pab) 1.0
+
+@test_approx_eq probabilities(1, 0, seq, seq)[2,2] 0.05
 
 
 

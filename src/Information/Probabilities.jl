@@ -1,6 +1,10 @@
 import  Base: zero, one, zeros, start, next, done, length, eltype,
         size, setindex!, getindex, similar, fill!, count #, print # , copy, deepcopy, fill!, getindex, setindex!
 
+#
+
+typealias SequenceWeights Union(Int, Clusters, AbstractVector)
+
 # Counts and Pseudocounts
 
 abstract Pseudocount
@@ -210,11 +214,11 @@ for (usegap, testgap) in [ (:(true),:()), (:(false),:(aa == Int(GAP) && continue
 
   @eval begin
 
-    function count!{T}(n::ResidueCount{T, 1, $(usegap)}, cl, res::AbstractVector{Residue})
+    function count!{T}(n::ResidueCount{T, 1, $(usegap)}, weights, res::AbstractVector{Residue})
       for i in 1:length(res)
         aa = Int(res[i])
         $(testgap)
-        n.table[aa] += getweight(cl,i)
+        n.table[aa] += getweight(weights,i)
       end
       update!(n)
     end
@@ -224,19 +228,19 @@ for (usegap, testgap) in [ (:(true),:()), (:(false),:(aa == Int(GAP) && continue
   end
 end
 
-function count!{T}(n::ResidueCount{T, 2, true}, cl, res1::AbstractVector{Residue}, res2::AbstractVector{Residue})
+function count!{T}(n::ResidueCount{T, 2, true}, weights, res1::AbstractVector{Residue}, res2::AbstractVector{Residue})
   for i in 1:length(res1)
-    n.table[Int(res1[i]), Int(res2[i])] += getweight(cl,i)
+    n.table[Int(res1[i]), Int(res2[i])] += getweight(weights,i)
   end
   update!(n)
 end
 
-function count!{T}(n::ResidueCount{T, 2, false}, cl, res1::AbstractVector{Residue}, res2::AbstractVector{Residue})
+function count!{T}(n::ResidueCount{T, 2, false}, weights, res1::AbstractVector{Residue}, res2::AbstractVector{Residue})
   for i in 1:length(res1)
     aa1 = res1[i]
     aa2 = res2[i]
     if (aa1 != GAP) && (aa2 != GAP)
-      n.table[Int(aa1), Int(aa2)] += getweight(cl,i)
+      n.table[Int(aa1), Int(aa2)] += getweight(weights,i)
     end
   end
   update!(n)
@@ -245,12 +249,12 @@ end
 count!{T}(n::ResidueCount{T, 2, true}, res1::AbstractVector{Residue}, res2::AbstractVector{Residue}) = count!(n, one(T), res1, res2)
 count!{T}(n::ResidueCount{T, 2, false},res1::AbstractVector{Residue}, res2::AbstractVector{Residue}) = count!(n, one(T), res1, res2)
 
-function count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, cl, res::AbstractVector{Residue}...)
+function count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, weights, res::AbstractVector{Residue}...)
   if length(res) == N
     for i in 1:length(res[1])
       aa_list = [ Int(aa[i]) for aa in res ]
       if UseGap || (findfirst(aa_list, Int(GAP)) == 0)
-        n.table[aa_list...] += getweight(cl,i)
+        n.table[aa_list...] += getweight(weights,i)
       end
     end
     update!(n)
@@ -263,8 +267,16 @@ count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, res::AbstractVector{Residue}
 
 #### Default counters
 
-count(usegap::Bool, cl::Clusters, res::AbstractVector{Residue}...) = count!(zeros(ResidueCount{Float64, length(res), usegap}), cl, res...)
-count(usegap::Bool, res::AbstractVector{Residue}...) = count!(zeros(ResidueCount{Int, length(res), usegap}), 1, res...)
+"""```count(res::AbstractVector{Residue}...; usegap=false, weight=1)```  
+```count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=1)```  
+
+`count` creates a new ResidueCount counting the number of residues, pairs of residues, etc. in the sequences/columns.
+"""
+count(res::AbstractVector{Residue}...; usegap::Bool=false, 
+	weight::SequenceWeights=1) = count!(zeros(ResidueCount{Float64, length(res), usegap}), weight, res...)
+
+count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap::Bool=false, 
+	weight::SequenceWeights=1) = apply_pseudocount!(count!(zeros(ResidueCount{Float64, length(res), usegap}), weight, res...), pseudocount)
 
 ## Probabilities
 
@@ -413,26 +425,24 @@ function apply_pseudofrequencies!(Pab::ResidueProbability{2,false}, Gab::Residue
   end
 end
 
-# """```probabilities{T, N, UseGap}(n::ResidueCount{T, N, UseGap})```
+## Default probabilities
 
-# This function creates a new `ResidueProbability` matrix based on the counts of `n`. If you want to calculate probabilities on a preallocated `ResidueProbability` matrix use `fill!` instead.
-# """
-# function probabilities{T, N, UseGap}(n::ResidueCount{T, N, UseGap})
-#   p = ResidueProbability{N, UseGap}()
-#   __fill_probabilities!(p.table, n.table, sum(n.table)) # slow but safe: n.total will be wrong if ResidueCount is not updated
-#   update!(p)
-# end
+"""```probabilities(res::AbstractVector{Residue}...; usegap=false, weight=1)```  
+```probabilities(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=1)```  
 
-# # Use it only when n::ResidueCount is updated
-# function __probabilities{T, N, UseGap}(n::ResidueCount{T, N, UseGap})
-#   p = ResidueProbability{N, UseGap}()
-#   __fill_probabilities!(p.table, n.table, n.total)
-#   __fill_probabilities!(p.marginals, n.marginals, n.total)
-# 	p
-# end
-# """```probabilities{T, N, UseGap}(usegap::Bool[, cl::Clusters], res::AbstractVector{Residue}...)```
+`probabilities` creates a new ResidueProbability with the probabilities of residues, pairs of residues, etc. in the sequences/columns.
+"""
+probabilities(res::AbstractVector{Residue}...; usegap::Bool=false, 
+	weight::SequenceWeights=1) = fill!(ResidueProbability{length(res), usegap}(), count(res..., usegap=usegap, weight=weight))
 
-# This function creates a new `ResidueProbability` matrix based on the counts of residues in the sequences/positions `res`.
-# i.e. If you use two columns of a MSA, you obtain the probabilities for pairs of residues between the two columns """
-# probabilities(usegap::Bool, cl::Clusters, res::AbstractVector{Residue}...) = __probabilities(count(usegap, cl, res...))
-# probabilities(usegap::Bool, res::AbstractVector{Residue}...) = __probabilities(count(usegap, res...))
+probabilities(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap::Bool=false, 
+	weight::SequenceWeights=1) = fill!(ResidueProbability{length(res), usegap}(), count(pseudocount, res..., usegap=usegap, weight=weight))
+
+"""This method use BLOSUM62 based pseudofrequencies"""
+function probabilities(α, β, res1::AbstractVector{Residue}, res2::AbstractVector{Residue}; weight::SequenceWeights=1) 
+	Pab = fill!(ResidueProbability{2, false}(), count(res1, res2, usegap=false, weight=weight))
+	Gab = blosum_pseudofrequencies!(ResidueProbability{2,false}(), Pab)
+	apply_pseudofrequencies!(Pab, Gab, α, β)
+end
+
+

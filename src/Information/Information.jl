@@ -8,7 +8,7 @@ module Information
   Pseudocount, AdditiveSmoothing, 
 	ResidueContingencyTables, ResidueCount, ResidueProbability,
 	nresidues, update!, apply_pseudocount!, count!, normalize!,
-  blosum_pseudofrequencies!, apply_pseudofrequencies!
+  blosum_pseudofrequencies!, apply_pseudofrequencies!, probabilities
 
 
   #Fixed, Pseudofrequencies, ResidueProbabilities, ResiduePairProbabilities
