@@ -362,7 +362,8 @@ end
 
 """```fill!{T, N, UseGap}(p::ResidueProbability{N, UseGap}, n::ResidueCount{T, N, UseGap}; updated::Bool=false)```
 
-This function fills a preallocated `ResidueProbability` (`p`) with the probabilities calculated from `n` (`ResidueCount`). This function updates `n` unless `updated=true`.
+This function fills a preallocated `ResidueProbability` (`p`) with the probabilities calculated from `n` (`ResidueCount`). 
+This function updates `n` unless `updated=true`.
 
 If `n` is updated, you can use `updated=true` for a faster calculation.
 """
@@ -394,6 +395,9 @@ end
 ### Apply pseudofrequencies
 
 function apply_pseudofrequencies!(Pab::ResidueProbability{2,false}, Gab::ResidueProbability{2,false}, α, β)
+	if β == 0.0
+		return(Pab)
+	end
   frac = one(Float64) / ( α + β )
   total = zero(Float64)
   @inbounds for i in 1:20, j in 1:20

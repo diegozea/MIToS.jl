@@ -23,8 +23,11 @@ for ndim = 1:4, usegap = Bool[true, false]
 	println("### N: $(ndim) UseGap: $(usegap) ###")
   nres = usegap ? 21 : 20
 
+	println("Test nresidues for ResidueCount{Float64, $(ndim), $(usegap)}")
+	N = zeros(ResidueCount{Float64, ndim, usegap})
+	@test nresidues(N) == nres
+
   println("Test zeros for ResidueCount{Float64, $(ndim), $(usegap)}")
-  N = zeros(ResidueCount{Float64, ndim, usegap})
   @test sum(N.table) == zero(Float64)
 
   println("Test iteration interface for ResidueCount{Float64, $(ndim), $(usegap)}")
@@ -196,13 +199,19 @@ end
 
 @test size(similar(ResidueProbability{1, false}(),4).marginals) == (20, 4)
 
-# println("### Test probabilities ###")
-# @test probabilities(count(false, seq)).marginals[1,1] == 0.05
-# @test probabilities(count(false, seq, seq)).marginals[1,1] == 0.05
-# @test probabilities(count(false, seq, seq, seq)).marginals[1,1] == 0.05
-# @test probabilities(false, seq).marginals[1,1] == 0.05
-# @test probabilities(false, seq, seq).marginals[1,1] == 0.05
-# @test probabilities(false, seq, seq, seq).marginals[1,1] == 0.05
-# @test sum(probabilities(false, seq)) == 1.0
-# @test sum(probabilities(false, seq, seq)) == 1.0
-# @test sum(probabilities(false, seq, seq, seq)) == 1.0
+println("### Test pseudofrequencies ###")
+
+Pab = fill!(zeros(ResidueProbability{2, false}), count(false, seq, seq))
+
+Gab = blosum_pseudofrequencies!(zeros(ResidueProbability{2, false}), Pab)
+@test_approx_eq sum(Gab) 1.0
+
+@test_approx_eq sum( apply_pseudofrequencies!(copy(Pab), Gab, 1, 1) ) 1.0
+
+Pab_with_pseudofrequency = apply_pseudofrequencies!(copy(Pab), Gab, 10, 0)
+@test Pab_with_pseudofrequency == Pab
+
+
+
+
+

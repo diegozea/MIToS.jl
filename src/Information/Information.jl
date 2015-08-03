@@ -3,7 +3,7 @@ module Information
   using MIToS.MSA
   using MIToS.Clustering
 
-  export BLOSUM62_Pa, BLOSUM62_Pab,
+  export BLOSUM62_Pi, BLOSUM62_Pij,
 
   Pseudocount, AdditiveSmoothing, 
 	ResidueContingencyTables, ResidueCount, ResidueProbability,
