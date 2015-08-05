@@ -6,7 +6,17 @@ using MIToS.MSA
 const false_clusters = Clusters(zeros(20),zeros(20),rand(20))
 const seq = Residue(MSA._to_char)
 
-## Test Counts
+print("""
+
+Tests for ResidueContingencyTables
+==================================
+""")
+
+print("""
+
+Tests for ResidueCount
+----------------------
+""")
 
 @test size(ResidueCount{Int, 1, false}().table) == (20,)
 @test size(ResidueCount{Int, 1, true}().table) == (21,)
@@ -22,8 +32,12 @@ for ndim = 1:4
 	@test size(ResidueCount{Int, ndim, false}().marginals) == (20, ndim)
 end
 
+print("""
+
+Iterate for N & UseGap:
+""")
 for ndim = 1:4, usegap = Bool[true, false]
-	println("### N: $(ndim) UseGap: $(usegap) ###")
+	println("# Iteration = N: $(ndim) UseGap: $(usegap)")
   nres = usegap ? 21 : 20
 
 	println("Test nresidues for ResidueCount{Float64, $(ndim), $(usegap)}")
@@ -65,9 +79,17 @@ for ndim = 1:4, usegap = Bool[true, false]
   @test P.total == length(P.table) * 0.05
   @test P.marginals[1] == 0.05 * ( nres ^ ( ndim - 1 ) )
 end
+print("""
+Iteration end
 
+""")
+
+print("""
+
+Iterate for UseGap in [true, false]:
+""")
 for usegap = Bool[true, false]
-	println("### UseGap: $(usegap) ###")
+	println("# Iteration = UseGap: $(usegap)")
   nres = usegap ? 21 : 20
 
 	N = zeros(ResidueCount{Float64, 2, usegap})
@@ -96,7 +118,14 @@ for usegap = Bool[true, false]
   # Also test sum
   @test sum(C4) == nres
 end
+print("""
+Iteration end
 
+""")
+
+print("""
+Test similar
+""")
 for ndim = 1:4
 	@test size(similar(ResidueCount{Int, ndim, false}()).marginals) == (20, ndim)
 	@test size(similar(ResidueCount{Int, ndim, true}()).marginals) == (21, ndim)
@@ -105,13 +134,17 @@ end
 @test size(similar(ResidueCount{Int, 1, false}(),4).marginals) == (20, 4)
 @test isa(similar(ResidueCount{Int, 1, false}(),Float64).total, Float64)
 
-println("### Test count! whit Clusters ###")
+print("""
+Test count! with Clusters
+""")
 @test_throws BoundsError count!(zeros(ResidueCount{Float64, 1, true}), false_clusters, seq)
 @test count!(zeros(ResidueCount{Float64, 1, false}), false_clusters, seq).table == getweight(false_clusters)
 @test count!(zeros(ResidueCount{Float64, 2, false}), false_clusters, seq, seq).marginals[:,1] == getweight(false_clusters)
 @test count!(zeros(ResidueCount{Float64, 3, false}), false_clusters, seq, seq, seq).marginals[:,1] == getweight(false_clusters)
 
-println("### Test count ###")
+print("""
+Test count
+""")
 @test count(seq, weight=false_clusters).table == getweight(false_clusters)
 @test count(seq, seq, weight=false_clusters).marginals[:,1] == getweight(false_clusters)
 @test count(seq, seq, seq, weight=false_clusters).marginals[:,1] == getweight(false_clusters)
@@ -124,7 +157,11 @@ println("### Test count ###")
 @test count(AdditiveSmoothing(1.0), seq, seq, usegap=true).total == 21 + (21*21)
 
 
-## Test Probabilities
+print("""
+
+Tests for ResidueProbability
+----------------------
+""")
 
 @test size(ResidueProbability{1, false}().table) == (20,)
 @test size(ResidueProbability{1, true}().table) == (21,)
@@ -140,8 +177,12 @@ for ndim = 1:4
 	@test size(ResidueProbability{ndim, false}().marginals) == (20, ndim)
 end
 
+print("""
+
+Iterate for N & UseGap:
+""")
 for ndim = 1:4, usegap = Bool[true, false]
-	println("### N: $(ndim) UseGap: $(usegap) ###")
+	println("# Iteration = N: $(ndim) UseGap: $(usegap)")
   nres = usegap ? 21 : 20
 
   println("Test zeros for ResidueProbability{$(ndim), $(usegap)}")
@@ -181,9 +222,17 @@ for ndim = 1:4, usegap = Bool[true, false]
   @test P.marginals[1,1] == 1.0 / nres
   @test_approx_eq sum(P) 1.0
 end
+print("""
+Iteration end
 
+""")
+
+print("""
+
+Iterate for UseGap in [true, false]:
+""")
 for usegap = Bool[true, false]
-	println("### UseGap: $(usegap) ###")
+	println("# Iteration = UseGap: $(usegap)")
   nres = usegap ? 21 : 20
 
 	N = zeros(ResidueProbability{2, usegap})
@@ -196,6 +245,10 @@ for usegap = Bool[true, false]
   N[3,3] = 1.0
   @test N[3,3] == one(Float64)
 end
+print("""
+Iteration end
+
+""")
 
 for ndim = 1:4
 	@test size(similar(ResidueProbability{ndim, false}()).marginals) == (20, ndim)
@@ -204,8 +257,9 @@ end
 
 @test size(similar(ResidueProbability{1, false}(),4).marginals) == (20, 4)
 
-println("### Test pseudofrequencies ###")
-
+print("""
+Test pseudofrequencies
+""")
 Pab = fill!(zeros(ResidueProbability{2, false}), count(seq, seq))
 
 Gab = blosum_pseudofrequencies!(zeros(ResidueProbability{2, false}), Pab)
@@ -217,7 +271,9 @@ Pab_with_pseudofrequency = apply_pseudofrequencies!(copy(Pab), Gab, 10, 0)
 @test Pab_with_pseudofrequency == Pab
 
 
-println("### Test probabilities ###")
+print("""
+Test probabilities
+""")
 @test probabilities(seq, weight=false_clusters).table == getweight(false_clusters)/sum(getweight(false_clusters))
 @test probabilities(seq, seq, weight=false_clusters).marginals[:,1] == getweight(false_clusters)/sum(getweight(false_clusters))
 @test probabilities(seq, seq, seq, weight=false_clusters).marginals[:,1] == getweight(false_clusters)/sum(getweight(false_clusters))
@@ -234,7 +290,9 @@ Pab = probabilities(AdditiveSmoothing(1.0), seq, seq, usegap=true)
 
 @test_approx_eq probabilities(1, 0, seq, seq)[2,2] 0.05
 
-println("### Test delete_dimensions ###")
+print("""
+Test delete_dimensions
+""")
 Pxyz = probabilities(seq, seq, seq);
 @test delete_dimensions(Pxyz, 3) == probabilities(seq, seq)
 @test delete_dimensions(Pxyz, 3, 2) == probabilities(seq)

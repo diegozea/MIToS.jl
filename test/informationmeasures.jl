@@ -87,6 +87,7 @@ MI(X,Y,Z)
 @test estimate(MutualInformation(), Pggg) == 0.0
 @test estimate(MutualInformation(), probabilities(g,s,r)) == 0.0
 @test_approx_eq_eps estimate(MutualInformation(), probabilities(AdditiveSmoothing(1e10),s,s,s)) 0.0 1e-10
+@test_approx_eq estimate(MutualInformation(), probabilities(s,s,r)) estimate(MutualInformation(), count(s,s,r))
 
 print("""
 MI(X,Y,Z) = H(X) + H(Y) + H(Z) - H(X,Y) - H(X,Z) - H(Y,Z) + H(X,Y,Z)

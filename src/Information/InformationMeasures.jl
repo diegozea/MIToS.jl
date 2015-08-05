@@ -123,7 +123,7 @@ end
 
 estimate(measure::MutualInformation, pxy, base::Real) = estimate(measure, pxy) / log(base)
 
-function estimate{UseGap}(measure::MutualInformation, pxyz::ResidueProbability{3,UseGap})
+function estimate{T, UseGap}(measure::MutualInformation, pxyz::ResidueContingencyTables{T, 3, UseGap})
   pxy = delete_dimensions(pxyz,3)
   return( estimate_on_marginal(Entropy(), pxyz, 1) + # H(X)
   estimate_on_marginal(Entropy(), pxyz ,2) + # H(Y)
