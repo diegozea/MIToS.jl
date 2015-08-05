@@ -234,6 +234,19 @@ Pab = probabilities(AdditiveSmoothing(1.0), seq, seq, usegap=true)
 
 @test_approx_eq probabilities(1, 0, seq, seq)[2,2] 0.05
 
+println("### Test delete_dimensions ###")
+Pxyz = probabilities(seq, seq, seq);
+@test delete_dimensions(Pxyz, 3) == probabilities(seq, seq)
+@test delete_dimensions(Pxyz, 3, 2) == probabilities(seq)
+Pxy = delete_dimensions(Pxyz, 3);
+@test delete_dimensions!(Pxy, Pxyz, 1) == probabilities(seq, seq)
+@test_approx_eq sum(Pxy) 1.0
+Nxyz = count(seq, seq, seq);
+Nxy = delete_dimensions(Nxyz, 3);
+@test Nxy == count(seq, seq)
+@test delete_dimensions(Nxyz, 3, 2) == count(seq)
+@test delete_dimensions!(Nxy, Nxyz, 1) == count(seq, seq)
+@test sum(Nxy) == Nxyz.total
 
 
 

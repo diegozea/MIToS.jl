@@ -1,5 +1,6 @@
 module MIToS
 
+  include(joinpath("Utils", "Utils.jl"))
   include(joinpath("MSA", "MSA.jl"))
   include(joinpath("Clustering", "Clustering.jl"))
   include(joinpath("Information", "Information.jl"))

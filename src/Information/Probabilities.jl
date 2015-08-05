@@ -267,15 +267,15 @@ count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, res::AbstractVector{Residue}
 
 #### Default counters
 
-"""```count(res::AbstractVector{Residue}...; usegap=false, weight=1)```  
-```count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=1)```  
+"""```count(res::AbstractVector{Residue}...; usegap=false, weight=1)```
+```count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=1)```
 
 `count` creates a new ResidueCount counting the number of residues, pairs of residues, etc. in the sequences/columns.
 """
-count(res::AbstractVector{Residue}...; usegap::Bool=false, 
+count(res::AbstractVector{Residue}...; usegap::Bool=false,
 	weight::SequenceWeights=1) = count!(zeros(ResidueCount{Float64, length(res), usegap}), weight, res...)
 
-count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap::Bool=false, 
+count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap::Bool=false,
 	weight::SequenceWeights=1) = apply_pseudocount!(count!(zeros(ResidueCount{Float64, length(res), usegap}), weight, res...), pseudocount)
 
 ## Probabilities
@@ -374,7 +374,7 @@ end
 
 """```fill!{T, N, UseGap}(p::ResidueProbability{N, UseGap}, n::ResidueCount{T, N, UseGap}; updated::Bool=false)```
 
-This function fills a preallocated `ResidueProbability` (`p`) with the probabilities calculated from `n` (`ResidueCount`). 
+This function fills a preallocated `ResidueProbability` (`p`) with the probabilities calculated from `n` (`ResidueCount`).
 This function updates `n` unless `updated=true`.
 
 If `n` is updated, you can use `updated=true` for a faster calculation.
@@ -427,22 +427,66 @@ end
 
 ## Default probabilities
 
-"""```probabilities(res::AbstractVector{Residue}...; usegap=false, weight=1)```  
-```probabilities(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=1)```  
+"""```probabilities(res::AbstractVector{Residue}...; usegap=false, weight=1)```
+```probabilities(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=1)```
 
 `probabilities` creates a new ResidueProbability with the probabilities of residues, pairs of residues, etc. in the sequences/columns.
 """
-probabilities(res::AbstractVector{Residue}...; usegap::Bool=false, 
+probabilities(res::AbstractVector{Residue}...; usegap::Bool=false,
 	weight::SequenceWeights=1) = fill!(ResidueProbability{length(res), usegap}(), count(res..., usegap=usegap, weight=weight))
 
-probabilities(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap::Bool=false, 
+probabilities(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap::Bool=false,
 	weight::SequenceWeights=1) = fill!(ResidueProbability{length(res), usegap}(), count(pseudocount, res..., usegap=usegap, weight=weight))
 
 """This method use BLOSUM62 based pseudofrequencies"""
-function probabilities(α, β, res1::AbstractVector{Residue}, res2::AbstractVector{Residue}; weight::SequenceWeights=1) 
+function probabilities(α, β, res1::AbstractVector{Residue}, res2::AbstractVector{Residue}; weight::SequenceWeights=1)
 	Pab = fill!(ResidueProbability{2, false}(), count(res1, res2, usegap=false, weight=weight))
 	Gab = blosum_pseudofrequencies!(ResidueProbability{2,false}(), Pab)
 	apply_pseudofrequencies!(Pab, Gab, α, β)
 end
+
+#### Delete dimensions
+#### Useful for get Nxy from Nxyz
+
+function __list_without_dimensions(len::Int, out_len::Int, dimensions::Int...)
+  ndim = length(dimensions)
+  (len - ndim) != out_len && throw("$out_len should be $len minus the number of dimensions = $(len - ndim)")
+  index_list = Array(Int, out_len)
+  j = 1
+  for i in 1:len
+    if ! (i in dimensions)
+      index_list[j] = i
+      j += 1
+    end
+  end
+  index_list
+end
+
+"""
+```delete_dimensions!(out::ResidueContingencyTables, in::ResidueContingencyTables, dimensions::Int...)
+
+This function fills a ResidueContingencyTables with the counts/probabilities on `in` after the deletion of `dimensions`.
+i.e. This is useful for getting Pxy from Pxyz.
+"""
+function delete_dimensions!{T,N,S,UseGap}(out::ResidueCount{T, S, UseGap}, in::ResidueCount{T, N, UseGap}, dimensions::Int...)
+  out.total = in.total
+  out.marginals[:] = in.marginals[:, __list_without_dimensions(N, S, dimensions...)]
+  out.table[:] = sum(in.table, dimensions)
+  out
+end
+
+function delete_dimensions!{N,S,UseGap}(out::ResidueProbability{S, UseGap}, in::ResidueProbability{N, UseGap}, dimensions::Int...)
+  out.marginals[:] = in.marginals[:, __list_without_dimensions(N, S, dimensions...)]
+  out.table[:] = sum(in.table, dimensions)
+  out
+end
+
+"""```delete_dimensions(in::ResidueContingencyTables, dimensions::Int...)```
+
+This function creates a ResidueContingencyTables with the counts/probabilities on `in` after the deletion of `dimensions`.
+i.e. This is useful for getting Pxy from Pxyz.
+"""
+delete_dimensions{T,N,UseGap}(in::ResidueCount{T, N, UseGap}, dimensions::Int...) = delete_dimensions!(ResidueCount{T, N-length(dimensions), UseGap}(), in, dimensions...)
+delete_dimensions{N,UseGap}(in::ResidueProbability{N, UseGap}, dimensions::Int...) = delete_dimensions!(ResidueProbability{N-length(dimensions), UseGap}(), in, dimensions...)
 
 
