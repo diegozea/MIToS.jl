@@ -17,9 +17,9 @@ function __pre_readfasta(filename::ASCIIString)
   IDS  = ASCIIString[]
   SEQS = ASCIIString[]
 
-  delim = uint8('>')
-  newline = uint8('\n')
-  deletechars = IntSet([delim, newline, '\t', ' '])
+  delim = UInt8('>')
+  newline = UInt8('\n')
+  deletechars = IntSet(Int[delim, newline, '\t', ' '])
 
   fh = open(filename,"r")
   seqinfo = readuntil(fh, delim)

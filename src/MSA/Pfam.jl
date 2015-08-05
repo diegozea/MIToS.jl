@@ -1,7 +1,7 @@
 function __words(line::ASCIIString, n::Int)
   N = length(line.data)
   coords = Array(ASCIIString, n)
-  spaces = Uint8[' ', '\n', '\t']
+  spaces = UInt8[' ', '\n', '\t']
   j = 0
   start = 0
   if N > 1
@@ -14,7 +14,7 @@ function __words(line::ASCIIString, n::Int)
         if block
           j += 1
           if j == n
-            last = line.data[N] == uint8('\n') ? N-1 : N
+            last = line.data[N] == UInt8('\n') ? N-1 : N
             @inbounds coords[j] = ascii(getindex(line.data,start:last))
             break
           else
@@ -143,7 +143,7 @@ function __to_msa_mapping(sequences::Array{ASCIIString,1}, ids::Array{ASCIIStrin
   nres = length(sequences[1])
   aln = Array(Residue,nres,nseq)
   mapp = Array(Int,nseq,nres)
-  gaps = Uint8['.', '-']
+  gaps = UInt8['.', '-']
   sep = r"/|-"
   for i in 1:nseq
     fields = split(ids[i],sep)
@@ -152,7 +152,7 @@ function __to_msa_mapping(sequences::Array{ASCIIString,1}, ids::Array{ASCIIStrin
     if length(seq) == nres
       @inbounds for j in 1:nres
         res = seq[j]
-        aln[j,i] = residue( res )
+        aln[j,i] = Residue( res )
         if !( res in gaps )
           mapp[i, j] = init
           init += 1
