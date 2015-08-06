@@ -1,8 +1,8 @@
 module MSA
 
-  export Residue, GAP,
+  export Residue, GAP, @res_str,
 
-  IndexedVector, indexedvector, selectindex, selectvalue, swap!,
+  IndexedVector, selectindex, selectvalue, swap!,
 
   Annotations, filtersequences!, filtercolumns!,
 

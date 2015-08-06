@@ -4,7 +4,7 @@ using MIToS.Clustering
 using MIToS.MSA
 
 const false_clusters = Clusters(zeros(20),zeros(20),rand(20))
-const seq = Residue(MSA._to_char)
+const seq = res"ARNDCQEGHILKMFPSTWYV-"
 
 print("""
 

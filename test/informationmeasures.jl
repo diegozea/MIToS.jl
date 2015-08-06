@@ -1,9 +1,9 @@
 using Base.Test
 
 using MIToS.MSA
-const s = Residue(MSA._to_char);
+const s = res"ARNDCQEGHILKMFPSTWYV-"
 const r = reverse(s);
-const g = Residue("GGGGGGGGGGGGGGGGGGGG".data);
+const g = res"GGGGGGGGGGGGGGGGGGGG";
 
 using MIToS.Information
 const Pg = probabilities(g)
