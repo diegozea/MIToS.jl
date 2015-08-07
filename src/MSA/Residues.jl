@@ -104,7 +104,24 @@ convert(::Type{Residue}, x::Char)  = _to_residue[ Int(x) ];
 # They are useful for IO and creation of Vector{Residue}
 
 convert(::Type{Residue}, str::ASCIIString) = Residue[ Residue(char) for char in str.data ]
-convert(::Type{ASCIIString}, seq::AbstractVector{Residue}) = ascii( UInt8[ UInt8(res) for res in seq ] )
+convert(::Type{Residue}, str::Vector{UInt8}) = convert(Vector{Residue}, str)
+convert(::Type{ASCIIString}, seq::AbstractVector{Residue}) = ASCIIString( UInt8[ UInt8(res) for res in seq ] )
+
+# For convert a MSA stored as Vector{ASCIIString} to Matrix{Residue}
+function convert(::Type{Matrix{Residue}}, sequences::Array{ASCIIString,1})
+  nseq = length(sequences)
+  nres = length(sequences[1])
+  aln = Array(Residue,nres,nseq)
+  for col in 1:nseq
+    seq = sequences[col].data
+    if length(seq) == nres
+      aln[:,col] = Residue( seq )
+    else
+      throw(ErrorException("There is an aligned sequence with different number of columns [ $(length(seq)) != $(nres) ]: $(ascii(seq))"))
+    end
+  end
+  aln'
+end
 
 """
 `@res_str` can be used for easy creation of `Vector{Residue}`

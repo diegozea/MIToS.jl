@@ -31,6 +31,20 @@ Convert to and from ASCIIString
 @test Residue(alphabet) == Residue[ Residue(char) for char in alphabet]
 @test ascii(Residue(alphabet)) == alphabet
 
+const msa =  ["DAWAEF",
+              "DAWAED",
+              "DAYCMD" ]
+
+const badmsa=["DAWAEF",
+              "DAWAED",
+              "DAM"    ]
+
+@test convert(Matrix{Residue}, msa) == Residue['D' 'A' 'W' 'A' 'E' 'F'
+                                              'D' 'A' 'W' 'A' 'E' 'D'
+                                              'D' 'A' 'Y' 'C' 'M' 'D']
+
+@test_throws ErrorException convert(Matrix{Residue}, badmsa)
+
 print("""
 Comparisons
 """)

@@ -1,19 +1,6 @@
-function __deleteitems!(vector::Vector, items)
-  i = 1
-  j = 0
-  while j < length(vector)
-    j += 1
-    if !(vector[j] in items)
-      if i != j
-        vector[i] = vector[j]
-      end
-      i += 1
-    end
-  end
-  resize!(vector, i-1)
-end
+using MIToS.Utils
 
-function __pre_readfasta(filename::ASCIIString)
+function _pre_readfasta(filename::ASCIIString)
   IDS  = ASCIIString[]
   SEQS = ASCIIString[]
 
@@ -27,8 +14,8 @@ function __pre_readfasta(filename::ASCIIString)
     seqinfo = readuntil(fh, delim)
     while length(seqinfo) != 0
       firstnewline = findfirst(seqinfo, newline)
-      push!(IDS, ascii( seqinfo[1:(firstnewline-1)] ) )
-      push!(SEQS, ascii( __deleteitems!(seqinfo[(firstnewline+1):end], deletechars) ) )
+      push!(IDS, ASCIIString( seqinfo[1:(firstnewline-1)] ) )
+      push!(SEQS, ASCIIString( deleteitems!(seqinfo[(firstnewline+1):end], deletechars) ) )
       seqinfo = readuntil(fh, delim)
     end
   else
@@ -40,10 +27,10 @@ function __pre_readfasta(filename::ASCIIString)
 end
 
 function readfasta(filename::ASCIIString; useidcoordinates::Bool=true)
-  IDS, SEQS = __pre_readfasta(filename)
-  MSA, MAP = useidcoordinates ? __to_msa_mapping(SEQS, IDS) : __to_msa_mapping(SEQS)
+  IDS, SEQS = _pre_readfasta(filename)
+  MSA, MAP = useidcoordinates  && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
   COLS = vcat(1:size(MSA,2))
-  msa = MultipleSequenceAlignment(indexedvector(IDS), MSA, MAP, indexedvector(COLS), __empty(Annotations))
+  msa = MultipleSequenceAlignment(IndexedVector(IDS), MSA, MAP, IndexedVector(COLS), Annotations())
   filtercolumns!(msa, columngappercentage(msa) .< 1.0)
 end
 

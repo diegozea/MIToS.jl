@@ -71,8 +71,8 @@ function getsequence(data::Annotations, id::ASCIIString)
         GR[key] = value
       end
     end
-    GS = sizehint(GS, length(GS))
-    GR = sizehint(GR, length(GR))
+    GS = sizehint!(GS, length(GS))
+    GR = sizehint!(GR, length(GR))
   end
   Annotations(data.file, GS, data.columns, GR)
 end
