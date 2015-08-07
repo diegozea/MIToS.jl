@@ -16,7 +16,7 @@ Creation
 """)
 const pdbs = IndexedVector(pdb_list)
 @test pdbs.values == pdb_list
-# @test_throws "3 is more than one time in the vector." IndexedVector([1,2,3,3])
+@test_throws ErrorException IndexedVector([1,2,3,3])
 
 print("""
 
@@ -103,6 +103,7 @@ push!
 -----
 """)
 push!(pdbs, "2TRX")
+@test_throws ErrorException push!(pdbs, "2TRX")
 @test selectvalue(pdbs, 4) == "2TRX"
 @test selectindex(pdbs, "2TRX") == 4
 

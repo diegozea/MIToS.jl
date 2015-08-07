@@ -46,7 +46,7 @@ function IndexedVector{T}(vector::Vector{T})
   i = 1
   for element in vector
     if element in keys(index)
-      throw("$element is more than one time in the vector.")
+      throw(ErrorException("$element is more than one time in the vector."))
     else
       index[element] = i
       i += 1
@@ -157,7 +157,7 @@ end
 
 function push!{T}(indvec::IndexedVector{T}, value::T)
   if value in keys(indvec.value2index)
-    throw("$value is already in the IndexedVector")
+    throw(ErrorException("$value is already in the IndexedVector"))
   else
     push!(indvec.values, value)
     indvec.value2index[value] = length(indvec.values)

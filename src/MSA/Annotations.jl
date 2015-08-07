@@ -1,6 +1,12 @@
+import Base: print, show, copy, deepcopy, empty!, print, show
+
 # Annotations
 # ===========
 
+"""
+The `Annotations` type is basically a container for `Dict`s with the annotations of a multiple sequence alignment.
+`Annotations` was designed for storage of annotations of the **Stockholm format**.
+"""
 type Annotations
   file::Dict{ASCIIString, ASCIIString}
   sequences::Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}
@@ -8,12 +14,24 @@ type Annotations
   residues::Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}
 end
 
+# Empty Annotations
+call(::Type{Annotations}) = Annotations(sizehint!(Dict{ASCIIString, ASCIIString}(), 0),
+              sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0),
+              sizehint!(Dict{ASCIIString, ASCIIString}(), 0),
+              sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0))
+
+
 # Filters
 # -------
 
-__filter(str::ASCIIString, mask) = ascii( str.data[mask] )
+# This function is useful because of the Julia issue 12495
+_filter(str::ASCIIString, mask) = ASCIIString( str.data[mask] )
 
-function filtersequences!(data::Annotations, ids::IndexedVector, mask)
+"""
+`filtersequences!(data::Annotations, ids::IndexedVector, mask::AbstractArray{Bool,1})` is useful for deleting annotations for a group of sequences.
+`ids` should be an `IndexedVector` with the `seqname`s of the annotated sequences and `mask` should be a logical vector.
+"""
+function filtersequences!(data::Annotations, ids::IndexedVector, mask::AbstractArray{Bool,1})
   if length(data.sequences) > 0 || length(data.residues) > 0
     del = ids.values[ !mask ]
     for key in keys(data.residues)
@@ -26,45 +44,105 @@ function filtersequences!(data::Annotations, ids::IndexedVector, mask)
         delete!(data.sequences, key)
       end
     end
-    data.sequences = sizehint(data.sequences, length(data.sequences))
-    data.residues = sizehint(data.residues, length(data.residues))
+    data.sequences = sizehint!(data.sequences, length(data.sequences))
+    data.residues = sizehint!(data.residues, length(data.residues))
   end
   data
 end
 
+"""
+`filtercolumns!(data::Annotations, mask)` is useful for deleting annotations for a group of columns (creating a subset in place).
+"""
 function filtercolumns!(data::Annotations, mask)
   if length(data.columns) > 0 || length(data.residues) > 0
     for (key,value) in data.residues
-      data.residues[key] = __filter(value, mask)
+      data.residues[key] = _filter(value, mask)
     end
     for (key,value) in data.columns
-      data.columns[key] = __filter(value, mask)
+      data.columns[key] = _filter(value, mask)
     end
   end
   data
 end
 
-# Copy and deepcopy
-# -----------------
+# Copy, deepcopy and empty!
+# -------------------------
 
-deepcopy(ann::Annotations) = Annotations( deepcopy( ann.file ), deepcopy( ann.sequences ), deepcopy( ann.columns ), deepcopy( ann.residues ))
-
-copy(ann::Annotations) = Annotations( copy( ann.file ), copy( ann.sequences ), copy( ann.columns ), copy( ann.residues ))
+for fun in [:copy, :deepcopy, :empty!]
+  @eval $(fun)(ann::Annotations) = Annotations( $(fun)( ann.file ), $(fun)( ann.sequences ), $(fun)( ann.columns ), $(fun)( ann.residues ))
+end
 
 # Show & Print
 # ------------
 
-import Base: print, show
-
 print(io::IO, ann::Annotations) = dump(io, ann)
 show(io::IO, ann::Annotations) = dump(io, ann)
 
-# Empty Annotations
-# =================
+# ncolumns
+# --------
 
-function __empty(::Type{Annotations})
-  Annotations(sizehint(Dict{ASCIIString, ASCIIString}(), 0),
-              sizehint(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0),
-              sizehint(Dict{ASCIIString, ASCIIString}(), 0),
-              sizehint(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0))
+"""
+`ncolumns(ann::Annotations)` returns the number of columns/residues with annotations.
+This function returns `-1` if there is not annotations per column/residue.
+"""
+function ncolumns(ann::Annotations)
+  for value in values(ann.columns)
+      return(length(value))
+  end
+  for value in values(ann.residues)
+      return(length(value))
+  end
+  -1
 end
+
+# Getters & Setters
+# -----------------
+
+for (fun, field) in [ (:getannotfile,   :(ann.file)),
+                      (:getannotcolumn, :(ann.columns))]
+  @eval begin
+    $(fun)(ann::Annotations) = $(field)
+    $(fun)(ann::Annotations, feature::ASCIIString) = getindex($(field), feature)
+    $(fun)(ann::Annotations, feature::ASCIIString, default::ASCIIString) = get($(field), feature, default)
+  end
+end
+
+for (fun, field) in [ (:getannotsequence, :(ann.sequences)),
+                      (:getannotresidue,  :(ann.residues))]
+  @eval begin
+    $(fun)(ann::Annotations) = $(field)
+    $(fun)(ann::Annotations, seqname::ASCIIString, feature::ASCIIString) = getindex($(field), (seqname, feature))
+    $(fun)(ann::Annotations, seqname::ASCIIString, feature::ASCIIString, default::ASCIIString) = get($(field), (seqname, feature), default)
+  end
+end
+
+setannotfile!(ann::Annotations, feature::ASCIIString, annotation::ASCIIString) = setindex!(ann.file, annotation, feature)
+
+setannotsequence!(ann::Annotations, seqname::ASCIIString, feature::ASCIIString, annotation::ASCIIString) = setindex!(ann.sequences, annotation, (seqname, feature))
+
+function setannotcolumn!(ann::Annotations, feature::ASCIIString, annotation::ASCIIString)
+  len = ncolumns(ann)
+  if (len == -1) || (len == length(annotation))
+    setindex!(ann.columns, annotation, feature)
+  else
+    throw(DimensionMismatch("You should have exactly 1 char per column ($len columns/residues)"))
+  end
+end
+
+function setannotresidue!(ann::Annotations, seqname::ASCIIString, feature::ASCIIString, annotation::ASCIIString)
+  len = ncolumns(ann)
+  if (len == -1) || (len == length(annotation))
+    setindex!(ann.residues, annotation, (seqname, feature))
+  else
+    throw(DimensionMismatch("You should have exactly 1 char per residue ($len columns/residues)"))
+  end
+end
+
+@doc "`getannotfile(ann[, feature[,default]])` returns per file annotation for `feature`" getannotfile
+@doc "`getannotcolumn(ann[, feature[,default]])` returns per column annotation for `feature`" getannotcolumn
+@doc "`getannotsequence(ann[, seqname, feature[,default]])` returns per sequence annotation for `(seqname, feature)`" getannotsequence
+@doc "`getannotresidue(ann[, seqname, feature[,default]])` returns per residue annotation for `(seqname, feature)`" getannotresidue
+@doc "`setannotfile!(ann, feature, annotation)` stores per file `annotation` for `feature`" setannotfile!
+@doc "`setannotcolumn!(ann, feature, annotation)` stores per column `annotation` (1 char per column) for `feature`" setannotcolumn!
+@doc "`setannotsequence!(ann, seqname, feature, annotation)` stores per sequence `annotation` for `(seqname, feature)`" setannotsequence!
+@doc "`setannotresidue!(ann, seqname, feature, annotation)` stores per residue `annotation` (1 char per residue) for `(seqname, feature)`" setannotresidue!

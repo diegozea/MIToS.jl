@@ -5,6 +5,8 @@ module MSA
   IndexedVector, selectindex, selectvalue, swap!,
 
   Annotations, filtersequences!, filtercolumns!,
+  getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
+  setannotfile!, setannotcolumn!, setannotsequence!, setannotresidue!,
 
   MultipleSequenceAlignment, AlignedSequence, getresidues, getsequence, getrawsequences,
   nsequences, ncolumns, gappercentage, residuepercentage, coverage,
