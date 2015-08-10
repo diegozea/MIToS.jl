@@ -22,10 +22,10 @@ function siftsmapping(sifts_xml::ASCIIString, chain::Char, dbid::ASCIIString; db
 				end
 				if use
 					crossref = get_elements_by_tagname(residue, "crossRefDb")
-					key = int( attribute(residue, "dbResNum") ) ## <residue dbSource="PDBe" ...
+					key = Int( attribute(residue, "dbResNum") ) ## <residue dbSource="PDBe" ...
 					for ref in crossref
 						if attribute(ref, "dbSource") == db && attribute(ref, "dbAccessionId") == dbid
-							mapping[key] = int( attribute(ref, "dbResNum") )
+							mapping[key] = Int( attribute(ref, "dbResNum") )
               break
 						end
 					end
@@ -33,7 +33,7 @@ function siftsmapping(sifts_xml::ASCIIString, chain::Char, dbid::ASCIIString; db
 			end
 		end
 	end
-	sizehint(mapping, length(mapping))
+	sizehint!(mapping, length(mapping))
 end
 
 # Download SIFTS

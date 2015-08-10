@@ -1,7 +1,7 @@
 # Hobohm I
 # ========
 
-function __fill_hobohmI!(cluster::Vector{Int}, clustersize::Vector{Int}, aln::Vector{Vector{Residue}}, threshold::FloatingPoint)
+function _fill_hobohmI!(cluster::Vector{Int}, clustersize::Vector{Int}, aln::Vector{Vector{Residue}}, threshold::Float64)
   cluster_id = 0
   nseq = length(aln)
   for i in 1:(nseq-1)
@@ -26,7 +26,7 @@ function __fill_hobohmI!(cluster::Vector{Int}, clustersize::Vector{Int}, aln::Ve
   resize!(clustersize, cluster_id)
 end
 
-function __get_sequence_weight(clustersize, cluster)
+function _get_sequence_weight(clustersize, cluster)
   nseq = length(cluster)
   sequence_weight = Array(Float64, nseq)
   for i in 1:nseq
@@ -35,11 +35,11 @@ function __get_sequence_weight(clustersize, cluster)
   sequence_weight
 end
 
-function hobohmI(msa::MultipleSequenceAlignment, threshold::FloatingPoint)
+function hobohmI(msa::MultipleSequenceAlignment, threshold::Float64)
   aln = getrawsequences(msa)
   nseq = length(aln)
   cluster = zeros(Int,nseq)
   clustersize = zeros(Int,nseq)
-  __fill_hobohmI!(cluster, clustersize, aln, threshold)
-  Clusters(clustersize, cluster, __get_sequence_weight(clustersize, cluster))
+  _fill_hobohmI!(cluster, clustersize, aln, threshold)
+  Clusters(clustersize, cluster, _get_sequence_weight(clustersize, cluster))
 end

@@ -153,7 +153,7 @@ end
 ### Apply Pseudocount
 
 # This is faster than array[:] += value
-function __sum!(array, value)
+function _sum!(array, value)
   @inbounds for i in eachindex(array)
     array[i] += value
   end
@@ -169,8 +169,8 @@ for (dim, gap, margi_exp, total_exp) in [ (:1, :true,  :(pse.λ), :(pse.λ * 21)
 		function apply_pseudocount!{T}(n::ResidueCount{T, $(dim), $(gap)}, pse::AdditiveSmoothing{T})
 			margi_sum = $(margi_exp)
 			total_sum = $(total_exp)
-			__sum!(n.table, pse.λ)
-			__sum!(n.marginals, margi_sum)
+			_sum!(n.table, pse.λ)
+			_sum!(n.marginals, margi_sum)
 			n.total += total_sum
 			n
 		end
@@ -192,8 +192,8 @@ function apply_pseudocount!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::Ad
 	nres = nresidues(n)
 	margi_sum = pse.λ * (nres^(N-1))
 	total_sum = pse.λ * (nres^N)
-	__sum!(n.table, pse.λ)
-	__sum!(n.marginals, margi_sum)
+	_sum!(n.table, pse.λ)
+	_sum!(n.marginals, margi_sum)
 	n.total += total_sum
 	n
 end
@@ -335,7 +335,7 @@ end
 ### Normalize
 
 # This is faster than array[:] /= value
-function __div!(array, value)
+function _div!(array, value)
   @inbounds for i in eachindex(array)
     array[i] /= value
   end
@@ -356,8 +356,8 @@ function normalize!(p::ResidueProbability; updated::Bool=false)
   end
   total = sum(p.marginals[:,1])
   if total != 1.0
-    __div!(p.table, total)
-    __div!(p.marginals, total)
+    _div!(p.table, total)
+    _div!(p.marginals, total)
   end
   p
 end
@@ -365,7 +365,7 @@ end
 ### ResidueProbability calculation from ResidueCount and others
 
 # This is faster than p[:] = ( n ./ total )
-function __fill_probabilities!{T,N}(p::Array{Float64,N}, n::Array{T,N}, total::T)
+function _fill_probabilities!{T,N}(p::Array{Float64,N}, n::Array{T,N}, total::T)
   @inbounds for i in 1:length(p) # p and n should have the same length
     p[i] = ( n[i] / total )
   end
@@ -383,8 +383,8 @@ function fill!{T, N, UseGap}(p::ResidueProbability{N, UseGap}, n::ResidueCount{T
   if !updated
     update!(n)
   end
-  __fill_probabilities!(p.table, n.table, n.total)
-  __fill_probabilities!(p.marginals, n.marginals, n.total)
+  _fill_probabilities!(p.table, n.table, n.total)
+  _fill_probabilities!(p.marginals, n.marginals, n.total)
 	p
 end
 
@@ -418,7 +418,7 @@ function apply_pseudofrequencies!(Pab::ResidueProbability{2,false}, Gab::Residue
     total += value
   end
   if total != 1.0
-    __div!(Pab.table, total)
+    _div!(Pab.table, total)
     update!(Pab)
   else
     update!(Pab)
@@ -448,7 +448,7 @@ end
 #### Delete dimensions
 #### Useful for get Nxy from Nxyz
 
-function __list_without_dimensions(len::Int, out_len::Int, dimensions::Int...)
+function _list_without_dimensions(len::Int, out_len::Int, dimensions::Int...)
   ndim = length(dimensions)
   (len - ndim) != out_len && throw("$out_len should be $len minus the number of dimensions = $(len - ndim)")
   index_list = Array(Int, out_len)
@@ -470,13 +470,13 @@ i.e. This is useful for getting Pxy from Pxyz.
 """
 function delete_dimensions!{T,N,S,UseGap}(out::ResidueCount{T, S, UseGap}, in::ResidueCount{T, N, UseGap}, dimensions::Int...)
   out.total = in.total
-  out.marginals[:] = in.marginals[:, __list_without_dimensions(N, S, dimensions...)]
+  out.marginals[:] = in.marginals[:, _list_without_dimensions(N, S, dimensions...)]
   out.table[:] = sum(in.table, dimensions)
   out
 end
 
 function delete_dimensions!{N,S,UseGap}(out::ResidueProbability{S, UseGap}, in::ResidueProbability{N, UseGap}, dimensions::Int...)
-  out.marginals[:] = in.marginals[:, __list_without_dimensions(N, S, dimensions...)]
+  out.marginals[:] = in.marginals[:, _list_without_dimensions(N, S, dimensions...)]
   out.table[:] = sum(in.table, dimensions)
   out
 end

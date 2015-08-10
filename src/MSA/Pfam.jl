@@ -58,7 +58,7 @@ function _to_msa_mapping(sequences::Array{ASCIIString,1})
   nres = length(sequences[1])
   aln = Array(Residue,nres,nseq)
   mapp = Array(Int,nseq,nres)
-  gaps = Uint8['.', '-']
+  gaps = UInt8['.', '-']
   for i in 1:nseq
     init = 1
     seq = sequences[i].data

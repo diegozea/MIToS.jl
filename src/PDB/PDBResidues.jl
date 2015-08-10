@@ -139,7 +139,7 @@ function selectbestoccupancy(res::PDBResidue, indices::Vector{Int})
   return(indice)
 end
 
-function __update_distance(a, b, i, j, dist)
+function _update_distance(a, b, i, j, dist)
   actual_dist = distance(a.atoms[i], b.atoms[j])
   if actual_dist < dist
     return(actual_dist)
@@ -156,7 +156,7 @@ function distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")
     Nb = length(b)
     @inbounds for i in 1:Na
       for j in 1:Nb
-        dist = __update_distance(a, b, i, j, dist)
+        dist = _update_distance(a, b, i, j, dist)
       end
     end
   elseif criteria == "Heavy"
@@ -165,7 +165,7 @@ function distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")
     if length(indices_a) != 0 && length(indices_b) != 0
       for i in indices_a
         for j in indices_b
-          dist = __update_distance(a, b, i, j, dist)
+          dist = _update_distance(a, b, i, j, dist)
         end
       end
     end
@@ -175,7 +175,7 @@ function distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")
     if length(indices_a) != 0 && length(indices_b) != 0
       for i in indices_a
         for j in indices_b
-          dist = __update_distance(a, b, i, j, dist)
+          dist = _update_distance(a, b, i, j, dist)
         end
       end
     end
@@ -185,7 +185,7 @@ function distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")
     if length(indices_a) != 0 && length(indices_b) != 0
       for i in indices_a
         for j in indices_b
-          dist = __update_distance(a, b, i, j, dist)
+          dist = _update_distance(a, b, i, j, dist)
         end
       end
     end

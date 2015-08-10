@@ -58,8 +58,8 @@ end
 # ---------------
 
 function getsequence(data::Annotations, id::ASCIIString)
-  GS = Dict{(ASCIIString,ASCIIString),ASCIIString}()
-  GR = Dict{(ASCIIString,ASCIIString),ASCIIString}()
+  GS = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
+  GR = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
   if length(data.sequences) > 0 || length(data.residues) > 0
     for (key, value) in data.sequences
       if key[1] == id
@@ -158,7 +158,7 @@ end
 
 setreference!(msa::MultipleSequenceAlignment, id::ASCIIString) = setreference!(msa, selectindex(msa.id ,id))
 
-function gapstrip!(msa::MultipleSequenceAlignment; coveragelimit::FloatingPoint=0.75, gaplimit::FloatingPoint=0.5)
+function gapstrip!(msa::MultipleSequenceAlignment; coveragelimit::Float64=0.75, gaplimit::Float64=0.5)
   adjustreference!(msa)
   # Remove sequences with pour coverage of the reference sequence
   ncolumns(msa) != 0 ? filtersequences!(msa, coverage(msa) .>= coveragelimit ) : throw("There are not columns in the MSA after the gap trimming")
@@ -172,7 +172,7 @@ adjustreference!(msa::MultipleSequenceAlignment) = filtercolumns!(msa, vec(msa.m
 # Show & Print
 # ------------
 
-asciisequence(msa::MultipleSequenceAlignment, seq::Int) = ascii(convert(Vector{Uint8}, vec(msa.msa[seq,:])))
+asciisequence(msa::MultipleSequenceAlignment, seq::Int) = ascii(convert(Vector{UInt8}, vec(msa.msa[seq,:])))
 
 print(io::IO, msa::MultipleSequenceAlignment) = dump(io, msa)
 show(io::IO, msa::MultipleSequenceAlignment) = dump(io, msa)

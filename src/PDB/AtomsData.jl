@@ -185,7 +185,7 @@ const vanderwaalsradius = Dict{Tuple{ASCIIString,ASCIIString},Float64}(("ALA","C
 ("VAL","N") => 1.64,
 ("VAL","O") => 1.42 )
 
-const __hydrophobic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ALA","CB"),
+const _hydrophobic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ALA","CB"),
 ("ARG","CB"),
 ("ARG","CG"),
 ("ASN","CB"),
@@ -238,7 +238,7 @@ const __hydrophobic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ALA","CB"),
 ("VAL","CG1"),
 ("VAL","CG2") ] )
 
-const __aromatic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("HIS","CD2"),
+const _aromatic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("HIS","CD2"),
 ("HIS","CE1"),
 ("HIS","CG"),
 ("HIS","ND1"),
@@ -265,7 +265,7 @@ const __aromatic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("HIS","CD2"),
 ("TYR","CG"),
 ("TYR","CZ") ] )
 
-const __cationic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ARG","CZ"),
+const _cationic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ARG","CZ"),
 ("ARG","NE"),
 ("ARG","NH1"),
 ("ARG","NH2"),
@@ -276,7 +276,7 @@ const __cationic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ARG","CZ"),
 ("HIS","NE2"),
 ("LYS","NZ") ] )
 
-const __anionic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ASP","CG"),
+const _anionic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ASP","CG"),
 ("ASP","OD1"),
 ("ASP","OD2"),
 ("GLU","CD"),
@@ -286,7 +286,7 @@ const __anionic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ASP","CG"),
 """Keys come from Table 1 of Bickerton et. al. 2011,
 The hydrogen names of the donor comes from: http://biomachina.org/courses/modeling/download/topallh22x.pro
 Synonyms come from: http://www.bmrb.wisc.edu/ref_info/atom_nom.tbl"""
-const __hbond_donor = Dict{Tuple{ASCIIString, ASCIIString}, Vector{ASCIIString}}( ("ALA","N") => ["HN", "H", "HN1","H1","1H", "HN2","H2","2H", "HN3","H3","3H", "HT1","HT2","HT3"],
+const _hbond_donor = Dict{Tuple{ASCIIString, ASCIIString}, Vector{ASCIIString}}( ("ALA","N") => ["HN", "H", "HN1","H1","1H", "HN2","H2","2H", "HN3","H3","3H", "HT1","HT2","HT3"],
 ("ARG","N") => ["HN", "H", "HN1","H1","1H", "HN2","H2","2H", "HN3","H3","3H", "HT1","HT2","HT3"],
 ("ARG","NE") => ["HE", "HNE"],
 ("ARG","NH1") => ["HH11","HH12", "1HH1","2HH1"],
@@ -325,7 +325,7 @@ const __hbond_donor = Dict{Tuple{ASCIIString, ASCIIString}, Vector{ASCIIString}}
 """Keys come from Table 1 of Bickerton et. al. 2011,
 Antecedents come from come from: http://biomachina.org/courses/modeling/download/topallh22x.pro
 Synonyms come from: http://www.bmrb.wisc.edu/ref_info/atom_nom.tbl"""
-const __hbond_acceptor = Dict{Tuple{ASCIIString, ASCIIString}, Vector{ASCIIString}}( ("ALA","O") => ["C"], ("ALA","OT1") => ["C"], ("ALA","OXT") => ["C"], ("ALA","OT2") => ["C"],
+const _hbond_acceptor = Dict{Tuple{ASCIIString, ASCIIString}, Vector{ASCIIString}}( ("ALA","O") => ["C"], ("ALA","OT1") => ["C"], ("ALA","OXT") => ["C"], ("ALA","OT2") => ["C"],
 ("ARG","O") => ["C"], ("ARG","OT1") => ["C"], ("ARG","OXT") => ["C"], ("ARG","OT2") => ["C"],
 ("ASN","O") => ["C"], ("ASN","OT1") => ["C"], ("ASN","OXT") => ["C"], ("ASN","OT2") => ["C"],
 ("ASN","OD1") => ["CG"],
