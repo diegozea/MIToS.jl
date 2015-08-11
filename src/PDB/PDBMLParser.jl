@@ -2,7 +2,7 @@ using LightXML
 
 function _get_text(elem, name)
 	sub = find_element(elem, name)
-	if sub != nothing
+	if sub !== nothing
 		return(content(sub))
 	end
 	throw("There is not $name for $elem")
