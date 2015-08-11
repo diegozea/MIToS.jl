@@ -226,8 +226,8 @@ hydrogenbond(a::PDBResidue, b::PDBResidue) = _hydrogenbond_don_acc(a,b) || _hydr
 # STRIDE Hydrogen bonds
 # =====================
 
-function stridehydrogenbond(filename::ASCIIString; model::ASCIIString="1", group::ASCIIString="ATOM")
-  out = split(readall(`stride -h $filename`),'\n')
+function stridehydrogenbond(filename::ASCIIString; model::ASCIIString="1", group::ASCIIString="ATOM", path::ASCIIString="stride")
+  out = split(readall(`$path -h $filename`),'\n')
   pairs = Set{(PDBResidueIdentifier,PDBResidueIdentifier)}()
   for line in out
     if length(line) > 3 && ( line[1:3] == "DNR" || line[1:3] == "ACC" )
