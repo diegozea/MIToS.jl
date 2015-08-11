@@ -14,6 +14,7 @@ type Entropy <: InformationMeasure end
 `p` should be a `ResidueProbability` table.
 """
 function estimate(measure::Entropy, p::ResidueProbability)
+## measure is not used in the funciotn body.
   H = zero(Float64)
   for i in 1:length(p)
     @inbounds pi = p[i]
