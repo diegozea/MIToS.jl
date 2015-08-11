@@ -14,6 +14,9 @@ const Pss = probabilities(s,s)
 const Psr = probabilities(s,r)
 const Psss = probabilities(s,s,s)
 
+const  prob_random = probabilities(AdditiveSmoothing(1.0), Residue[], Residue[])
+const count_random = count(AdditiveSmoothing(1.0), Residue[], Residue[])
+
 print("""
 
 Tests for Information Measures
@@ -42,6 +45,8 @@ Joint Entropy: H(X,Y)
 @test estimate(Entropy(), Pss) == log(20)
 @test estimate(Entropy(), Psr) == log(19)
 @test estimate(Entropy(), Pss, 2) == log(2, 20)
+@test_approx_eq estimate(Entropy(), count_random) log(400)
+@test_approx_eq estimate(Entropy(),  prob_random) log(400)
 
 print("""
 Joint Entropy: H(X,Y,Z)
@@ -65,6 +70,7 @@ Mutual Information
 
 @test estimate(MutualInformation(), Pgg) == 0.0
 @test estimate(MutualInformation(), probabilities(g,s)) == 0.0
+@test_approx_eq_eps estimate(MutualInformation(),  prob_random) 0.0 1e-15
 
 print("""
 MI(X,Y) = H(X) + H(Y) - H(X,Y)
@@ -73,10 +79,14 @@ MI(X,Y) = H(X) + H(Y) - H(X,Y)
 @test estimate(MutualInformation(), Pss) == estimate_on_marginal(Entropy(), Pss, 1) + estimate_on_marginal(Entropy(), Pss, 2) - estimate(Entropy(), Pss)
 @test estimate(MutualInformation(), Psr, 2) == estimate_on_marginal(Entropy(), Psr, 1, 2) + estimate_on_marginal(Entropy(), Psr, 2, 2) - estimate(Entropy(), Psr, 2)
 @test estimate(MutualInformation(), Pss, 20) == estimate_on_marginal(Entropy(), Pss, 1, 20) + estimate_on_marginal(Entropy(), Pss, 2, 20) - estimate(Entropy(), Pss, 20)
+@test_approx_eq_eps estimate(MutualInformation(), prob_random) ( estimate_on_marginal(Entropy(), prob_random, 1) +
+                                                                  estimate_on_marginal(Entropy(),  prob_random, 2) -
+                                                                  estimate(Entropy(), prob_random) ) 1e15
 
 print("""
 MI using ResidueCount
 """)
+@test_approx_eq estimate(MutualInformation(), count_random) 0.0
 @test estimate(MutualInformation(), count(g,g)) == estimate(MutualInformation(), Pgg)
 @test estimate(MutualInformation(), count(s,s)) == estimate(MutualInformation(), Pss)
 @test_approx_eq estimate(MutualInformation(), count(s,r)) estimate(MutualInformation(), Psr)
