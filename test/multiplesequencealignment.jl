@@ -26,8 +26,10 @@ Parse Fasta
 """)
 const fasta = readfasta("./data/PF09645_full.fasta")
 
+# Are the parsers getting the same result?
 for field in msa_fields
   if field != :annotations
     @eval @test fasta.$field == pfam.$field
   end
 end
+
