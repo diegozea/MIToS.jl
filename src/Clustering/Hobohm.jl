@@ -36,7 +36,7 @@ function _get_sequence_weight(clustersize, cluster)
 end
 
 function hobohmI(msa::MultipleSequenceAlignment, threshold::Float64)
-  aln = getrawsequences(msa)
+  aln = getresiduesequences(msa)
   nseq = length(aln)
   cluster = zeros(Int,nseq)
   clustersize = zeros(Int,nseq)

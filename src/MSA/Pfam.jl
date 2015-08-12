@@ -53,73 +53,33 @@ function _pre_readstockholm(filename::ASCIIString)
   (IDS, SEQS, GF, GS, GC, GR)
 end
 
-function _to_msa_mapping(sequences::Array{ASCIIString,1})
-  nseq = size(sequences,1)
-  nres = length(sequences[1])
-  aln = Array(Residue,nres,nseq)
-  mapp = zeros(Int,nseq,nres) # This needs to be zeros
-  gaps = UInt8['.', '-']
-  for i in 1:nseq
-    init = 1
-    seq = sequences[i].data
-    if length(seq) == nres
-      @inbounds for j in 1:nres
-        res = seq[j]
-        aln[j,i] = Residue( res )
-        if !( res in gaps )
-          mapp[i, j] = init
-          init += 1
-        end
-      end
-    else
-      throw( ErrorException( "There is and aligned sequence with different number of columns [ $(length(seq)) != $(nres) ]:\n$(ascii(seq))" ) )
-    end
-  end
-  (aln', mapp)
-end
-
-function _to_msa_mapping(sequences::Array{ASCIIString,1}, ids::Array{ASCIIString,1})
-  nseq = size(sequences,1)
-  nres = length(sequences[1])
-  aln = Array(Residue,nres,nseq)
-  mapp = zeros(Int,nseq,nres) # This needs to be zeros
-  gaps = UInt8['.', '-']
-  sep = r"/|-"
-  for i in 1:nseq
-    fields = split(ids[i],sep)
-    init = length(fields) == 3 ? parse(Int, fields[2]) : 1
-    seq = sequences[i].data
-    if length(seq) == nres
-      @inbounds for j in 1:nres
-        res = seq[j]
-        aln[j,i] = Residue( res )
-        if !( res in gaps )
-          mapp[i, j] = init
-          init += 1
-        end
-      end
-    else
-      throw( ErrorException( "There is and aligned sequence with different number of columns [ $(length(seq)) != $(nres) ]:\n$(ascii(seq))" ) )
-    end
-    if (init - 1) != parse(Int, fields[3])
-      throw( ErrorException( "Different lengths: $(fields[3]) != $(init) for sequence $(ids[i])" ) )
-    end
-  end
-  (aln', mapp)
-end
-
-function readpfam(filename::ASCIIString; useidcoordinates::Bool=true)
+function readpfam(filename::ASCIIString, ::Type{AnnotatedMultipleSequenceAlignment}; useidcoordinates::Bool=true, deletefullgaps::Bool=true)
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(filename)
   MSA, MAP = useidcoordinates && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
   COLS = vcat(1:size(MSA,2))
-  msa = MultipleSequenceAlignment(IndexedVector(IDS), MSA, MAP, IndexedVector(COLS), Annotations(GF, GS, GC, GR))
-  filtercolumns!(msa, columngappercentage(msa) .< 1.0)
+  msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, MAP, IndexedVector(COLS), Annotations(GF, GS, GC, GR))
+  if deletefullgaps
+    deletefullgaps!(msa)
+  end
+  return(msa)
 end
+
+function readpfam(filename::ASCIIString, ::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
+  # Could be faster with a special _pre_readstockholm
+  IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(filename)
+  msa = MultipleSequenceAlignment(IndexedVector(IDS), convert(Matrix{Residue}, SEQS))
+  if deletefullgaps
+    deletefullgaps!(msa)
+  end
+  return(msa)
+end
+
+readpfam(filename; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = readpfam(filename, AnnotatedMultipleSequenceAlignment, useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps)
 
 # Print Pfam
 # ==========
 
-function _printfileannotations(io::IO, msa::MultipleSequenceAlignment)
+function _printfileannotations(io::IO, msa::AnnotatedMultipleSequenceAlignment)
 	if !isempty(msa.annotations.file)
 		for (key, value) in msa.annotations.file
 			println(io, string("#=GF ", key, " ", value))
@@ -127,7 +87,7 @@ function _printfileannotations(io::IO, msa::MultipleSequenceAlignment)
 	end
 end
 
-function _printcolumnsannotations(io::IO, msa::MultipleSequenceAlignment)
+function _printcolumnsannotations(io::IO, msa::AnnotatedMultipleSequenceAlignment)
 	if !isempty(msa.annotations.columns)
 		for (key, value) in msa.annotations.columns
 			println(io, string("#=GC ", key, "\t\t", value))
@@ -135,7 +95,7 @@ function _printcolumnsannotations(io::IO, msa::MultipleSequenceAlignment)
 	end
 end
 
-function _printsequencesannotations(io::IO, msa::MultipleSequenceAlignment)
+function _printsequencesannotations(io::IO, msa::AnnotatedMultipleSequenceAlignment)
 	if !isempty(msa.annotations.sequences)
 		for (key, value) in msa.annotations.sequences
 			println(io, string("#=GC ", key[1], " ", key[2], " ", value))
@@ -157,7 +117,7 @@ function _to_sequence_dict(annotation::Dict{Tuple{ASCIIString,ASCIIString},ASCII
 	sizehint!(seq_dict, length(seq_dict))
 end
 
-function printpfam(io::IO, msa::MultipleSequenceAlignment)
+function printpfam(io::IO, msa::AnnotatedMultipleSequenceAlignment)
 	_printfileannotations(io, msa)
 	_printsequencesannotations(io, msa)
 	res_annotations = _to_sequence_dict(msa.annotations.residues)
@@ -175,12 +135,21 @@ function printpfam(io::IO, msa::MultipleSequenceAlignment)
 	println(io, "//")
 end
 
-printpfam(msa::MultipleSequenceAlignment) = printpfam(STDOUT, msa)
+function printpfam(io::IO, msa::MultipleSequenceAlignment)
+	for i in 1:nsequences(msa)
+		id = selectvalue(msa.id, i)
+		seq = asciisequence(msa, i)
+		println(io, string(id, "\t\t", seq))
+	end
+	println(io, "//")
+end
+
+printpfam(msa::AbstractMultipleSequenceAlignment) = printpfam(STDOUT, msa)
 
 # Write Pfam
 # ==========
 
-function writepfam(filename::ASCIIString, msa::MultipleSequenceAlignment)
+function writepfam(filename::ASCIIString, msa::AbstractMultipleSequenceAlignment)
 	open(filename, "w") do fh
 		printpfam(fh, msa)
 	end

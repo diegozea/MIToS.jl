@@ -8,7 +8,9 @@ module MSA
   getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
   setannotfile!, setannotcolumn!, setannotsequence!, setannotresidue!,
 
-  MultipleSequenceAlignment, AlignedSequence, getresidues, getsequence, getrawsequences,
+  MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment, AbstractMultipleSequenceAlignment,
+  Sequence, AnnotatedSequence, AbstractSequence,
+  getresidues, getsequence, getresiduesequences,
   nsequences, ncolumns, gappercentage, residuepercentage, coverage,
   columngappercentage, setreference!, gapstrip!, adjustreference!, asciisequence,
 
@@ -20,6 +22,7 @@ module MSA
   include("IndexedVectors.jl")
   include("Annotations.jl")
   include("MultipleSequenceAlignment.jl")
+  include("GeneralParserMethods.jl")
   include("Pfam.jl")
   include("FASTA.jl")
 

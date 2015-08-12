@@ -96,3 +96,4 @@ Selection without Mappings
 
 @test getresidues(small) == gaores
 
+
