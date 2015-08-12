@@ -19,7 +19,7 @@ type AnnotatedMultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
   annotations::Annotations
 end
 
-convert(::Type(MultipleSequenceAlignment), msa::AnnotatedMultipleSequenceAlignment) = Sequence(msa.id, msa.msa)
+convert(::Type{MultipleSequenceAlignment}, msa::AnnotatedMultipleSequenceAlignment) = MultipleSequenceAlignment(msa.id, msa.msa)
 
 # Aligned Sequence
 # ================
@@ -39,7 +39,7 @@ type AnnotatedSequence <: AbstractSequence
   annotations::Annotations
 end
 
-convert(::Type(Sequence), seq::AnnotatedSequence) = Sequence(seq.id, seq.index, seq.sequence)
+convert(::Type{Sequence}, seq::AnnotatedSequence) = Sequence(seq.id, seq.index, seq.sequence)
 
 # AbstractArray Interface
 # -----------------------
@@ -121,6 +121,7 @@ function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::ASCIIString)
   i = selectindex(msa.id, id)
   AnnotatedSequence(id, i, vec(msa.msa[i,:]), vec(msa.sequencemapping[i,:]), msa.filecolumnmapping, getsequence(msa.annotations, id))
 end
+
 function getsequence(msa::MultipleSequenceAlignment, id::ASCIIString)
   i = selectindex(msa.id, id)
   Sequence(id, i, vec(msa.msa[i,:]))

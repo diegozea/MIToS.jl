@@ -27,7 +27,10 @@ Test pfam stockholm parser using the 4 sequence full MSA for PF09645
 """)
 
 const pfam = readpfam("./data/PF09645_full.stockholm")
+const pfam_na = readpfam("./data/PF09645_full.stockholm", MultipleSequenceAlignment)
 const F112_SSV1 = collect(".....QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ.....")
+
+@test pfam_na == convert(MultipleSequenceAlignment, pfam)
 
 @test size(pfam.msa, 1) == 4
 @test size(pfam.msa, 2)  == length(F112_SSV1[ F112_SSV1 .!= '.' ]) # Without inserts
@@ -53,6 +56,11 @@ Parse Fasta
 
 const fasta = readfasta("./data/PF09645_full.fasta")
 const small = readfasta("./data/Gaoetal2011.fasta")
+const fasta_na = readfasta("./data/PF09645_full.fasta", MultipleSequenceAlignment)
+const small_na = readfasta("./data/Gaoetal2011.fasta", MultipleSequenceAlignment, deletefullgaps=false)
+
+@test fasta_na == convert(MultipleSequenceAlignment, fasta)
+@test small_na == convert(MultipleSequenceAlignment, small)
 
 print("""
 Test the FASTA parser usando Gao et.al. 2011 example
@@ -95,5 +103,80 @@ Selection without Mappings
 """)
 
 @test getresidues(small) == gaores
+@test getresidues(small_na) == gaores
 
+print("""
+Test getindex
+""")
 
+for index in [ 2, (2,:), (:,2), (2,2), (2:4, 2:4), (2,[3,4,5]),
+              (:, [1,2,3,4,5,6] .< 4 ), ([1,2,3,4,5,6] .< 4, :),
+              (:,:), ([1,2,3,4,5,6] .< 4, [1,2,3,4,5,6] .< 4) ]
+  @test small[index...] == gaores[index...]
+  @test small_na[index...] == gaores[index...]
+end
+
+print("""
+Test setindex! with copy and deepcopy
+""")
+copy_small = copy(small)
+deepcopy_small_na = deepcopy(small_na)
+
+for (index, value) in [ ((1),Residue('H')), # ((1),Residue('D')),
+                        ((:,1), res"HHHHHH"), # ((:,1), res"DDDDDD"),
+                        ((1),Residue('H')) ] #, ((1),Residue('D')) ]
+  copy_small[index...] = value
+  @test copy_small[index...] == value
+  @test small[index...] != value
+  deepcopy_small_na[index...] = value
+  @test deepcopy_small_na[index...] == value
+  @test small_na[index...] != value
+end
+
+for (index, value) in [ (1,Residue('H')), (1,Residue('D')),
+                        ( : , res"HHHHHH"), ( : , res"DAYCMD") ]
+  tmp_sequence = copy(getsequence(small, 4))
+  tmp_sequence[index] = value
+  @test tmp_sequence[index] == value
+end
+
+print("""
+Test getresidues, getsequence and getresiduesequence
+""")
+
+for i in 1:6
+  println("Test sequence $i for getresidues and getsequence")
+  @eval @test getresidues(getsequence(small,$i)) == $(Symbol("seq$i"))
+  @eval @test getresidues(getsequence(small_na,$i)) == $(Symbol("seq$i"))
+end
+
+const rawseqs = getresiduesequences(small)
+const rawseqs_na = getresiduesequences(small_na)
+
+for i in 1:6
+  println("Test sequence $i from getresiduesequences")
+  @eval @test rawseqs[$i] == $(Symbol("seq$i"))
+  @eval @test rawseqs_na[$i] == $(Symbol("seq$i"))
+end
+
+print("""
+
+Size, sequences and columns
+---------------------------
+""")
+
+for aln in (small, small_na)
+  @test size(aln) == (6,6)
+  @test length(aln) == 36
+  @test ncolumns(aln) == 6
+  @test nsequences(aln) == 6
+end
+
+@test ncolumns(getsequence(small, 4)) == 6
+
+for aln in (fasta, fasta_na, pfam, pfam_na)
+  @test size(aln) == (4,110)
+  @test length(aln) == 440
+  @test ncolumns(aln) == 110
+  @test nsequences(aln) == 4
+end
