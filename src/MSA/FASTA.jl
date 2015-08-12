@@ -30,7 +30,7 @@ function readfasta(filename::ASCIIString; useidcoordinates::Bool=true)
   IDS, SEQS = _pre_readfasta(filename)
   MSA, MAP = useidcoordinates  && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
   COLS = vcat(1:size(MSA,2))
-  msa = MultipleSequenceAlignment(IndexedVector(IDS), MSA, MAP, IndexedVector(COLS), Annotations())
+  msa = MultipleSequenceAlignment(IndexedVector(IDS), MSA, MAP, IndexedVector(COLS), empty(Annotations))
   filtercolumns!(msa, columngappercentage(msa) .< 1.0)
 end
 

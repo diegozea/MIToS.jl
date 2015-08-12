@@ -4,7 +4,7 @@ module MSA
 
   IndexedVector, selectindex, selectvalue, swap!,
 
-  Annotations, filtersequences!, filtercolumns!,
+  Annotations, filtersequences!, filtercolumns!, empty,
   getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
   setannotfile!, setannotcolumn!, setannotsequence!, setannotresidue!,
 

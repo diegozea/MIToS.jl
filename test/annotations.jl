@@ -42,13 +42,20 @@ setannotresidue!(annot, "O31698/18-71", "SS", "CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEE
 
 print("""
 
-copy & empty!
--------------
+copy, empty, isempty & empty!
+-----------------------------
 """)
 copy_annot = copy(annot)
 empty!(copy_annot)
 @test ncolumns(annot) == 37
 @test ncolumns(copy_annot) == -1
+
+@test !isempty(annot)
+@test isempty(copy_annot)
+
+no_annotations = empty(Annotations)
+@test ncolumns(no_annotations) == -1
+@test isempty(no_annotations)
 
 print("""
 
