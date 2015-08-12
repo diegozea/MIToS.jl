@@ -119,8 +119,8 @@ end
 print("""
 Test setindex! with copy and deepcopy
 """)
-copy_small = copy(small)
-deepcopy_small_na = deepcopy(small_na)
+const copy_small = copy(small)
+const deepcopy_small_na = deepcopy(small_na)
 
 for (index, value) in [ ((1),Residue('H')), # ((1),Residue('D')),
                         ((:,1), res"HHHHHH"), # ((:,1), res"DDDDDD"),
@@ -180,3 +180,93 @@ for aln in (fasta, fasta_na, pfam, pfam_na)
   @test ncolumns(aln) == 110
   @test nsequences(aln) == 4
 end
+
+print("""
+
+AnnotatedSequence and Sequence
+------------------------------
+""")
+
+print("""
+Convert to Sequence
+""")
+
+print("""
+Test getsequence with annotations
+""")
+
+print("""
+Test getsequence using ID
+""")
+
+print("""
+
+Test Filters!
+-------------
+""")
+
+print("""
+filtersequences! with and without annotations
+""")
+
+print("""
+Test for ArgumentError's on filters with bad masks
+""")
+
+print("""
+Test copy and deepcopy for sequences
+""")
+
+print("""
+Test filtercolumns! for sequences
+""")
+
+print("""
+
+Test Gaps and Coverage
+----------------------
+""")
+
+print("""
+Test residuepercentage
+""")
+
+print("""
+Test coverage
+""")
+
+print("""
+
+Reference
+---------
+""")
+
+print("""
+Test setreference!
+""")
+
+print("""
+Test gapstrip!
+""")
+
+print("""
+Test adjustreference!
+""")
+
+print("""
+
+Printers
+--------
+""")
+
+print("""
+Test asciisequence
+""")
+
+print("""
+Test printfasta
+""")
+
+print("""
+Test printpfam
+""")
