@@ -20,10 +20,10 @@ Parse Pfam
 
 print("""
 Test pfam stockholm parser using the 4 sequence full MSA for PF09645
-Order: Tree
-Inserts lower case
-Gaps as "." or "-" (mixed)
-Pfam version 28.0, based on UniProt release 2014_07
+> Order: Tree
+> Inserts lower case
+> Gaps as "." or "-" (mixed)
+> Pfam version 28.0, based on UniProt release 2014_07
 """)
 
 const pfam = readpfam("./data/PF09645_full.stockholm")
@@ -31,7 +31,7 @@ const F112_SSV1 = collect(".....QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAI
 
 @test size(pfam.msa, 1) == 4
 @test size(pfam.msa, 2)  == length(F112_SSV1[ F112_SSV1 .!= '.' ]) # Without inserts
-@test vec(pfam.msa[4,:]) == convert(Vector{Residue}, F112_SSV1[ F112_SSV1 .!= '.' ])
+@test slice(pfam.msa,4,:) == convert(Vector{Residue}, F112_SSV1[ F112_SSV1 .!= '.' ])
 @test minimum(pfam.sequencemapping[4,:]) == 3
 @test maximum(pfam.sequencemapping[4,:]) == 112
 @test pfam.id.values == ["C3N734_SULIY/1-95", "H2C869_9CREN/7-104", "Y070_ATV/2-70", "F112_SSV1/3-112"]
