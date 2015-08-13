@@ -9,7 +9,7 @@ module MSA
   setannotfile!, setannotcolumn!, setannotsequence!, setannotresidue!,
 
   MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment, AbstractMultipleSequenceAlignment,
-  Sequence, AnnotatedSequence, AbstractSequence,
+  AlignedSequence, AnnotatedAlignedSequence, AbstractAlignedSequence,
   getresidues, getsequence, getresiduesequences,
   nsequences, ncolumns, gappercentage, residuepercentage, coverage,
   columngappercentage, setreference!, gapstrip!, adjustreference!, asciisequence,

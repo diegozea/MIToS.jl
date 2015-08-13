@@ -3,7 +3,7 @@ using MIToS.MSA
 
 # Fields of MultipleSequenceAlignment
 const msa_fields = Symbol[:id, :msa, :sequencemapping, :filecolumnmapping, :annotations]
-# Fields of AlignedSequence
+# Fields of AlignedAlignedSequence
 const seq_fields = Symbol[:id, :index, :sequence, :sequencemapping, :filecolumnmapping, :annotations]
 
 print("""
@@ -183,21 +183,31 @@ end
 
 print("""
 
-AnnotatedSequence and Sequence
-------------------------------
+AnnotatedAlignedSequence and AlignedSequence
+--------------------------------------------
 """)
 
 print("""
-Convert to Sequence
+Test getsequence using Index and ID and convert to AlignedSequence
 """)
 
-print("""
-Test getsequence with annotations
-""")
+for i in 1:4
+  annseq = getsequence(pfam, i)
+  @test isa(annseq, AnnotatedAlignedSequence)
+  seq = getsequence(pfam_na, i)
+  @test isa(seq, AlignedSequence)
+  @test AlignedSequence(annseq) == seq
+end
 
-print("""
-Test getsequence using ID
-""")
+for id in ["C3N734_SULIY/1-95", "H2C869_9CREN/7-104", "Y070_ATV/2-70", "F112_SSV1/3-112"]
+  annseq = getsequence(pfam, id)
+  @test pfam[id] == annseq
+  @test isa(annseq, AnnotatedAlignedSequence)
+  seq = getsequence(pfam_na, id)
+  @test pfam_na[id] == seq
+  @test isa(seq, AlignedSequence)
+  @test AlignedSequence(annseq) == seq
+end
 
 print("""
 
@@ -208,18 +218,80 @@ Test Filters!
 print("""
 filtersequences! with and without annotations
 """)
+@test getsequence(filtersequences!(copy(pfam), [1,2,3,4] .== 3), 1) == getsequence(pfam,3)
+@test getsequence(filtersequences!(copy(pfam), [1,2,3,4] .> 2), 2) == getsequence(pfam,4)
+
+@test getsequence(filtersequences!(copy(pfam_na), [1,2,3,4] .== 3), 1) == getsequence(pfam_na,3)
+@test getsequence(filtersequences!(copy(pfam_na), [1,2,3,4] .> 2), 2) == getsequence(pfam_na,4)
+
+print("""
+filtercolumns! with and without annotations
+""")
+
+@test getresidues(getsequence(filtercolumns!(copy(pfam), collect(1:110) .<= 10), 4)) == res"QTLNSYKMAE"
+@test getresidues(getsequence(filtercolumns!(copy(pfam_na), collect(1:110) .<= 10), 4)) == res"QTLNSYKMAE"
 
 print("""
 Test for ArgumentError's on filters with bad masks
 """)
 
+@test_throws ArgumentError filtersequences!(copy(pfam), [1,2,3,4,5,6,7,8,9,10] .> 2)
+@test_throws ArgumentError filtersequences!(copy(pfam), [1,2,3] .> 2)
+@test_throws ArgumentError filtersequences!(copy(pfam_na), [1,2,3] .> 2)
+@test_throws ArgumentError filtercolumns!(copy(pfam_na), [1,2,3] .> 2)
+@test_throws ArgumentError filtercolumns!(copy(pfam_na), collect(1:200) .<= 10)
+
 print("""
 Test copy and deepcopy for sequences
 """)
 
+for (index, value) in [ (2,Residue('H')) , (2:3,res"HG") ]
+  annseq = getsequence(pfam, 4)
+  seq = getsequence(pfam_na, 4)
+  copied_annseq = copy(annseq)
+  deepcopied_seq = deepcopy(seq)
+  copied_annseq[index] = value
+  deepcopied_seq[index] = value
+  @test copied_annseq[index] == value
+  @test annseq[index] != value
+  @test deepcopied_seq[index] == value
+  @test seq[index] != value
+end
+
 print("""
 Test filtercolumns! for sequences
 """)
+
+let i = 4
+  annseq = getsequence(pfam, i)
+  seq = getsequence(pfam, i)
+  print("""
+  Test Sequence .== Residue for mask generation
+  """)
+  @test annseq[annseq .== Residue('Q')] == res"QQQQQQQQQQQQQQ"
+  @test seq[seq .== Residue('Q')] == res"QQQQQQQQQQQQQQ"
+  print("""
+  Test filtercolumns!
+  """)
+  filtered_annseq = filtercolumns!(copy(annseq), annseq .== Residue('Q'))
+  filtered_seq = filtercolumns!(copy(seq), seq .== Residue('Q'))
+  @test getresidues(filtered_annseq) == res"QQQQQQQQQQQQQQ"
+  @test getresidues(filtered_seq) == res"QQQQQQQQQQQQQQ"
+  @test AlignedSequence(filtered_annseq) == filtered_seq
+  @test getannotcolumn(filtered_annseq, "SS_cons") == "XHHEXXXXXXXXXX"
+  @test getannotresidue(filtered_annseq, "F112_SSV1/3-112", "SS") == "XHHEXXXXXXXXXX"
+end
+
+print("""
+
+Test Annotation Getters
+-----------------------
+""")
+
+@test getannotcolumn(pfam, "SS_cons") == getannotcolumn(getsequence(pfam, 4), "SS_cons")
+@test getannotresidue(pfam, "F112_SSV1/3-112", "SS") == getannotresidue(getsequence(pfam, 4), "F112_SSV1/3-112", "SS")
+@test getannotfile(pfam) == getannotfile(getsequence(pfam, 4))
+@test getannotsequence(pfam,"F112_SSV1/3-112","DR") == getannotsequence(getsequence(pfam, 4), "F112_SSV1/3-112", "DR")
 
 print("""
 
@@ -227,13 +299,32 @@ Test Gaps and Coverage
 ----------------------
 """)
 
+@test gappercentage(small) == 0.0
+@test gappercentage(getsequence(small,1)) == 0.0
+@test gappercentage(small[1,:]) == 0.0
+
+@test gappercentage(getsequence(pfam,4)) == 0.0
+@test gappercentage(getsequence(pfam_na,4)) == 0.0
+
+@test gappercentage(convert(Vector{Residue}, F112_SSV1)) == mean(F112_SSV1 .== '.')
+
+@test gappercentage(pfam[:,1]) == 0.75
+@test gappercentage(pfam_na[:,1]) == 0.75
+
 print("""
 Test residuepercentage
 """)
 
+@test residuepercentage(small) == 1.0
+@test residuepercentage(getsequence(pfam, 4)) == 1.0
+@test residuepercentage(pfam[:,1]) == 0.25
+
 print("""
 Test coverage
 """)
+
+@test coverage(pfam)[4] == 1.0
+@test sum(coverage(small)) == 6.0
 
 print("""
 
@@ -245,13 +336,50 @@ print("""
 Test setreference!
 """)
 
+let copy_pfam = copy(pfam), copy_pfam_na = copy(pfam_na)
+  setreference!(copy_pfam, 4)
+  @test getresidues(getsequence(copy_pfam,1)) == res"QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ"
+  setreference!(copy_pfam, "C3N734_SULIY/1-95")
+  @test getresidues(getsequence(copy_pfam,4)) == res"QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ"
+  @test copy_pfam == pfam
+
+  setreference!(copy_pfam_na, 4)
+  @test getresidues(getsequence(copy_pfam_na,1)) == res"QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ"
+  setreference!(copy_pfam_na, "C3N734_SULIY/1-95")
+  @test getresidues(getsequence(copy_pfam_na,4)) == res"QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ"
+  @test copy_pfam_na == pfam_na
+end
+
 print("""
 Test gapstrip!
 """)
 
+let copy_pfam = copy(pfam), copy_pfam_na = copy(pfam_na)
+  setreference!(copy_pfam, 4)
+  setreference!(copy_pfam_na, 4)
+  gapstrip!(copy_pfam, gaplimit=1.0, coveragelimit=0.0)
+  gapstrip!(copy_pfam_na, gaplimit=1.0, coveragelimit=0.0)
+  @test size(copy_pfam) == (4, 110)
+  @test copy_pfam == copy_pfam_na
+
+  setreference!(copy_pfam, 1)
+  setreference!(copy_pfam_na, 1)
+  gapstrip!(copy_pfam)
+  gapstrip!(copy_pfam_na)
+  residuepercentage(copy_pfam[1,:]) == 1.0
+  residuepercentage(copy_pfam_na[1,:]) == 1.0
+end
+
 print("""
 Test adjustreference!
 """)
+
+let copy_pfam = copy(pfam), copy_pfam_na = copy(pfam_na)
+  adjustreference!(copy_pfam)
+  adjustreference!(copy_pfam_na)
+  residuepercentage(copy_pfam[1,:]) == 1.0
+  residuepercentage(copy_pfam_na[1,:]) == 1.0
+end
 
 print("""
 
