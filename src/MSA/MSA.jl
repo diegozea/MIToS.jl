@@ -13,16 +13,20 @@ module MSA
   getresidues, getsequence, getresiduesequences,
   nsequences, ncolumns, gappercentage, residuepercentage, coverage,
   columngappercentage, setreference!, gapstrip!, adjustreference!, asciisequence,
+  gapstrip, adjustreference, filtersequences, filtercolumns,
 
-  Stockholm, writepfam, printpfam, downloadpfam,
+  Raw,
 
-  FASTA, writefasta, printfasta
+  Stockholm, downloadpfam,
+
+  FASTA
 
   include("Residues.jl")
   include("IndexedVectors.jl")
   include("Annotations.jl")
   include("MultipleSequenceAlignment.jl")
   include("GeneralParserMethods.jl")
+  include("Raw.jl")
   include("Pfam.jl")
   include("FASTA.jl")
 

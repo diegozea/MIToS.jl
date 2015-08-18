@@ -8,6 +8,7 @@ include("eachlinestring.jl")
 include("residues.jl")
 include("indexedvectors.jl")
 include("annotations.jl")
+include("rawaln_and_gaps.jl")
 include("multiplesequencealignment.jl")
 # Information
 include("probabilities.jl")

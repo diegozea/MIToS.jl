@@ -200,7 +200,8 @@ end
 # Counting Gaps and Coverage
 # --------------------------
 
-"""Calculates the percentage of gaps on the `Array` (alignment, sequence, column, etc.)"""
+"""Calculates the percentage of gaps on the `Array` (alignment, sequence, column, etc.).
+This function can take an extra `dim` argument for calculation of the gap percentage over the given dimension"""
 function gappercentage(x::AbstractArray{Residue})
   counter = 0
   len = 0
@@ -211,7 +212,10 @@ function gappercentage(x::AbstractArray{Residue})
   float(counter) / float(len)
 end
 
-"""Calculates the percentage of residues (no gaps) on the `Array` (alignment, sequence, column, etc.)"""
+gappercentage(x::AbstractArray{Residue}, dim::Int) = vec( mapslices(gappercentage, x, dim) )
+
+"""Calculates the percentage of residues (no gaps) on the `Array` (alignment, sequence, column, etc.)
+This function can take an extra `dim` argument for calculation of the residue percentage over the given dimension"""
 function residuepercentage(x::AbstractArray{Residue})
   counter = 0
   len = 0
@@ -222,12 +226,14 @@ function residuepercentage(x::AbstractArray{Residue})
   float(counter) / float(len)
 end
 
+residuepercentage(x::AbstractArray{Residue}, dim::Int) = vec( mapslices(residuepercentage, x, dim) )
+
 """Coverage of the sequences with respect of the number of positions on the MSA"""
-coverage(msa::Matrix{Residue}) = vec( mapslices(residuepercentage, msa, 2) )
+coverage(msa::Matrix{Residue}) = residuepercentage(msa, 2)
 coverage(msa::AbstractMultipleSequenceAlignment) = coverage(msa.msa)
 
 """Percentage of gaps per column/position on the MSA"""
-columngappercentage(msa::Matrix{Residue}) = vec( mapslices(gappercentage, msa, 1) )
+columngappercentage(msa::Matrix{Residue}) = gappercentage(msa, 1)
 columngappercentage(msa::AbstractMultipleSequenceAlignment) = columngappercentage(msa.msa)
 
 # Reference
@@ -294,7 +300,7 @@ function gapstrip(msa::Matrix{Residue}; coveragelimit::Float64=0.75, gaplimit::F
     throw("There are not columns in the MSA after the gap trimming")
   end
   if nsequences(msa) != 0
-    msa = filtercolumns!(msa, columngappercentage(msa) .<= gaplimit)
+    msa = filtercolumns(msa, columngappercentage(msa) .<= gaplimit)
   else
     throw("There are not sequences in the MSA after coverage filter")
   end

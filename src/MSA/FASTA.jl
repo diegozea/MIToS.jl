@@ -1,6 +1,6 @@
 using MIToS.Utils
 
-import Base: parse
+import Base: parse, print
 
 immutable FASTA <: Format end
 
@@ -80,4 +80,4 @@ function print(io::IO, msa::AbstractMultipleSequenceAlignment, format::Type{FAST
 	end
 end
 
-print(msa::MultipleSequenceAlignment, format::Type{FASTA}) = printfasta(STDOUT, msa, FASTA)
+print(msa::MultipleSequenceAlignment, format::Type{FASTA}) = print(STDOUT, msa, FASTA)
