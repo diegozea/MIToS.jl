@@ -1,5 +1,9 @@
 using MIToS.Utils
 
+import MIToS.Utils: reader
+
+immutable Stockholm <: Format end
+
 function _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
   if line[1:4] == "#=GF"
     words = get_n_words(line,3)
@@ -30,7 +34,7 @@ function _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
   end
 end
 
-function _pre_readstockholm(filename::ASCIIString)
+function _pre_readstockholm(io::Union(IO, AbstractString))
   IDS  = ASCIIString[]
   SEQS = ASCIIString[]
   GF = Dict{ASCIIString,ASCIIString}()
@@ -38,12 +42,10 @@ function _pre_readstockholm(filename::ASCIIString)
   GS = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
   GR = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
 
-  open(filename, "r") do stockholm_file
-    for line in eachline(stockholm_file)
-      if length(line) >= 4
-        _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
+  for line in eachline(io)
+     if length(line) >= 4
+       _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
      end
-    end
   end
 
   GF = sizehint!(GF, length(GF))
@@ -53,8 +55,8 @@ function _pre_readstockholm(filename::ASCIIString)
   (IDS, SEQS, GF, GS, GC, GR)
 end
 
-function readpfam(filename::ASCIIString, ::Type{AnnotatedMultipleSequenceAlignment}; useidcoordinates::Bool=true, deletefullgaps::Bool=true)
-  IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(filename)
+function reader(io::Union(IO, AbstractString), format::Type{Stockholm}, output::Type{AnnotatedMultipleSequenceAlignment}; useidcoordinates::Bool=true, deletefullgaps::Bool=true)
+  IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
   MSA, MAP = useidcoordinates && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
   COLS = vcat(1:size(MSA,2))
   msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, MAP, IndexedVector(COLS), Annotations(GF, GS, GC, GR))
@@ -64,9 +66,9 @@ function readpfam(filename::ASCIIString, ::Type{AnnotatedMultipleSequenceAlignme
   return(msa)
 end
 
-function readpfam(filename::ASCIIString, ::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
+function reader(io::Union(IO, AbstractString), format::Type{Stockholm}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
   # Could be faster with a special _pre_readstockholm
-  IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(filename)
+  IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
   msa = MultipleSequenceAlignment(IndexedVector(IDS), convert(Matrix{Residue}, SEQS))
   if deletefullgaps
     deletefullgaps!(msa)
@@ -74,7 +76,7 @@ function readpfam(filename::ASCIIString, ::Type{MultipleSequenceAlignment}; dele
   return(msa)
 end
 
-readpfam(filename; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = readpfam(filename, AnnotatedMultipleSequenceAlignment, useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps)
+reader(io, format::Type{Stockholm}; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = reader(io, Stockholm, AnnotatedMultipleSequenceAlignment, useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps)
 
 # Print Pfam
 # ==========

@@ -1,6 +1,10 @@
 using MIToS.Utils
 
-function _pre_readfasta(filename::ASCIIString)
+import MIToS.Utils: reader
+
+immutable FASTA <: Format end
+
+function _pre_readfasta(io::IO)
   IDS  = ASCIIString[]
   SEQS = ASCIIString[]
 
@@ -8,29 +12,24 @@ function _pre_readfasta(filename::ASCIIString)
   newline = UInt8('\n')
   deletechars = IntSet(Int[delim, newline, '\t', ' '])
 
-  fh = open(filename,"r")
-  try
-    seqinfo = readuntil(fh, delim)
-    if seqinfo[1] == delim
-      seqinfo = readuntil(fh, delim)
-      while length(seqinfo) != 0
-        firstnewline = findfirst(seqinfo, newline)
-        push!(IDS, ASCIIString( seqinfo[1:(firstnewline-1)] ) )
-        push!(SEQS, ASCIIString( deleteitems!(seqinfo[(firstnewline+1):end], deletechars) ) )
-        seqinfo = readuntil(fh, delim)
-      end
-    else
-      throw(ErrorException("The file doesn't start with '>'"))
+  seqinfo = readuntil(io, delim)
+  if seqinfo[1] == delim
+    seqinfo = readuntil(io, delim)
+    while length(seqinfo) != 0
+      firstnewline = findfirst(seqinfo, newline)
+      push!(IDS, ASCIIString( seqinfo[1:(firstnewline-1)] ) )
+      push!(SEQS, ASCIIString( deleteitems!(seqinfo[(firstnewline+1):end], deletechars) ) )
+      seqinfo = readuntil(io, delim)
     end
-  finally
-    close(fh)
+  else
+    throw(ErrorException("The file doesn't start with '>'"))
   end
 
   (IDS, SEQS)
 end
 
-function readfasta(filename::ASCIIString, ::Type{AnnotatedMultipleSequenceAlignment}; useidcoordinates::Bool=true, deletefullgaps::Bool=true)
-  IDS, SEQS = _pre_readfasta(filename)
+function reader(io::IO, format::Type{FASTA}, output::Type{AnnotatedMultipleSequenceAlignment}; useidcoordinates::Bool=true, deletefullgaps::Bool=true)
+  IDS, SEQS = _pre_readfasta(io)
   MSA, MAP = useidcoordinates  && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
   COLS = vcat(1:size(MSA,2))
   msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, MAP, IndexedVector(COLS), empty(Annotations))
@@ -40,8 +39,8 @@ function readfasta(filename::ASCIIString, ::Type{AnnotatedMultipleSequenceAlignm
   return(msa)
 end
 
-function readfasta(filename::ASCIIString, ::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
-  IDS, SEQS = _pre_readfasta(filename)
+function reader(io::IO, format::Type{FASTA}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
+  IDS, SEQS = _pre_readfasta(io)
   msa = MultipleSequenceAlignment(IndexedVector(IDS), convert(Matrix{Residue}, SEQS))
   if deletefullgaps
     deletefullgaps!(msa)
@@ -49,7 +48,7 @@ function readfasta(filename::ASCIIString, ::Type{MultipleSequenceAlignment}; del
   return(msa)
 end
 
-readfasta(filename; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = readfasta(filename, AnnotatedMultipleSequenceAlignment, useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps)
+reader(io::IO, format::Type{FASTA}; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = reader(io, FASTA, AnnotatedMultipleSequenceAlignment; useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps)
 
 # Print Pfam
 # ==========

@@ -3,6 +3,7 @@ using Base.Test
 
 # Utils
 include("utils.jl")
+include("eachlinestring.jl")
 # MSA
 include("residues.jl")
 include("indexedvectors.jl")

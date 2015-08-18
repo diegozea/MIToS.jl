@@ -66,11 +66,14 @@ getresidues(msa::AbstractMultipleSequenceAlignment) = msa.msa
 getresidues(seq::AbstractAlignedSequence) = seq.sequence
 
 """Gives you the number of sequences on the `MultipleSequenceAlignment`"""
-nsequences(msa::AbstractMultipleSequenceAlignment) = size(msa, 1)
+nsequences(msa::AbstractMultipleSequenceAlignment) = size(msa.msa, 1)
+nsequences(msa::Matrix{Residue}) = size(msa, 1)
 
 """Gives you the number of columns/positions on the MSA or aligned sequence"""
-ncolumns(msa::AbstractMultipleSequenceAlignment) = size(msa, 2)
+ncolumns(msa::AbstractMultipleSequenceAlignment) = size(msa.msa, 2)
+ncolumns(msa::Matrix{Residue}) = size(msa, 2)
 ncolumns(seq::AbstractAlignedSequence) = length(seq.sequence)
+ncolumns(seq::Vector{Residue}) = length(seq)
 
 """Gives you a `Vector{Vector{Residue}}` with all the sequences of the MSA without Annotations"""
 function getresiduesequences(msa::AbstractMultipleSequenceAlignment)
@@ -114,6 +117,8 @@ getsequence(msa::AnnotatedMultipleSequenceAlignment, i::Int) = AnnotatedAlignedS
 """Returns an `AlignedSequence` from the `MultipleSequenceAlignment`"""
 getsequence(msa::MultipleSequenceAlignment, i::Int) = AlignedSequence(selectvalue(msa.id, i), i,  vec(msa.msa[i,:]))
 
+getsequence(msa::Matrix{Residue}, i::Int) = vec(msa[i,:])
+
 function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::ASCIIString)
   i = selectindex(msa.id, id)
   AnnotatedAlignedSequence(id, i, vec(msa.msa[i,:]), vec(msa.sequencemapping[i,:]), msa.filecolumnmapping, getsequence(msa.annotations, id))
@@ -128,29 +133,46 @@ getindex(msa::AbstractMultipleSequenceAlignment, id::ASCIIString) = getsequence(
 
 # Filters
 # -------
-"""
-Allows to filter sequences on a MSA using a `BitVector` mask (removes `false`s).
-For `AnnotatedMultipleSequenceAlignment`s the annotations are updated.
-"""
-function filtersequences!(msa::AnnotatedMultipleSequenceAlignment, mask::BitVector)
+
+function filtersequences(msa::Matrix{Residue}, mask::BitVector)
   if length(mask) == nsequences(msa)
-    msa.msa = msa.msa[ mask , : ]
-    msa.sequencemapping = msa.sequencemapping[ mask , : ]
-    filtersequences!(msa.annotations, msa.id, mask)
-    msa.id = msa.id[ mask ]
-    return(msa)
+    return(msa[mask, :])
   else
     throw(ArgumentError("The number of sequences on the MSA should be equal to the length of the mask"))
   end
 end
 
+"""
+Allows to filter sequences on a MSA using a `BitVector` mask (removes `false`s).
+For `AnnotatedMultipleSequenceAlignment`s the annotations are updated.
+"""
+function filtersequences!(msa::AnnotatedMultipleSequenceAlignment, mask::BitVector)
+  msa.msa = filtersequences(msa.msa, mask)
+  msa.sequencemapping = msa.sequencemapping[ mask , : ]
+  filtersequences!(msa.annotations, msa.id, mask)
+  msa.id = msa.id[ mask ]
+  msa
+end
+
 function filtersequences!(msa::MultipleSequenceAlignment, mask::BitVector)
-  if length(mask) == nsequences(msa)
-    msa.msa = msa.msa[ mask , : ]
-    msa.id = msa.id[ mask ]
-    return(msa)
+  msa.msa = filtersequences(msa.msa, mask)
+  msa.id = msa.id[ mask ]
+  msa
+end
+
+function filtercolumns(msa::Matrix{Residue}, mask::BitVector)
+  if length(mask) == ncolumns(msa)
+    return(msa[ : , mask ])
   else
-    throw(ArgumentError("The number of sequences on the MSA should be equal to the length of the mask"))
+    throw(ArgumentError("The number of columns on the MSA should be equal to the length of the mask"))
+  end
+end
+
+function filtercolumns(seq::Vector{Residue}, mask::BitVector)
+  if length(mask) == ncolumns(seq)
+    return(seq[ mask ])
+  else
+    throw(ArgumentError("The number of columns on the MSA should be equal to the length of the mask"))
   end
 end
 
@@ -159,45 +181,29 @@ Allows to filter columns/positions on a MSA using a `BitVector` mask.
 For `AnnotatedMultipleSequenceAlignment`s or `AnnotatedAlignedSequence`s the annotations are updated.
 """
 function filtercolumns!(msa::AnnotatedMultipleSequenceAlignment, mask::BitVector)
-  if length(mask) == ncolumns(msa)
-    msa.msa = msa.msa[ : , mask ]
-    msa.sequencemapping = msa.sequencemapping[ : , mask ]
-    msa.filecolumnmapping = msa.filecolumnmapping[ mask ]
-    filtercolumns!(msa.annotations, mask)
-    return(msa)
-  else
-    throw(ArgumentError("The number of columns on the MSA should be equal to the length of the mask"))
-  end
+  msa.msa = filtercolumns(msa.msa, mask)
+  msa.sequencemapping = msa.sequencemapping[ : , mask ]
+  msa.filecolumnmapping = msa.filecolumnmapping[ mask ]
+  filtercolumns!(msa.annotations, mask)
+  msa
 end
 
 function filtercolumns!(msa::MultipleSequenceAlignment, mask::BitVector)
-  if length(mask) == ncolumns(msa)
-    msa.msa = msa.msa[ : , mask ]
-    return(msa)
-  else
-    throw(ArgumentError("The number of columns on the MSA should be equal to the length of the mask"))
-  end
+  msa.msa = filtercolumns(msa.msa, mask)
+  msa
 end
 
 function filtercolumns!(seq::AnnotatedAlignedSequence, mask::BitVector)
-  if length(mask) == length(seq)
-    seq.sequence = seq.sequence[ mask ]
-    seq.sequencemapping = seq.sequencemapping[ mask ]
-    seq.filecolumnmapping = seq.filecolumnmapping[ mask ]
-    filtercolumns!(seq.annotations, mask)
-    return(seq)
-  else
-    throw(ArgumentError("The number of columns/residues on the aligned sequence should be equal to the length of the mask"))
-  end
+  seq.sequence = filtercolumns(seq.sequence, mask)
+  seq.sequencemapping = seq.sequencemapping[ mask ]
+  seq.filecolumnmapping = seq.filecolumnmapping[ mask ]
+  filtercolumns!(seq.annotations, mask)
+  seq
 end
 
 function filtercolumns!(seq::AlignedSequence, mask::BitVector)
-  if length(mask) == length(seq)
-    seq.sequence = seq.sequence[ mask ]
-    return(seq)
-  else
-    throw(ArgumentError("The number of columns/residues on the aligned sequence should be equal to the length of the mask"))
-  end
+  seq.sequence = filtercolumns(seq.sequence, mask)
+  seq
 end
 
 # Copy, deepcopy, empty!
@@ -236,10 +242,12 @@ function residuepercentage(x::AbstractArray{Residue})
 end
 
 """Coverage of the sequences with respect of the number of positions on the MSA"""
-coverage(msa::AbstractMultipleSequenceAlignment) = vec( mapslices(residuepercentage, msa.msa, 2) )
+coverage(msa::Matrix{Residue}) = vec( mapslices(residuepercentage, msa, 2) )
+coverage(msa::AbstractMultipleSequenceAlignment) = coverage(msa.msa)
 
 """Percentage of gaps per column/position on the MSA"""
-columngappercentage(msa::AbstractMultipleSequenceAlignment) = vec( mapslices(gappercentage, msa.msa, 1) )
+columngappercentage(msa::Matrix{Residue}) = vec( mapslices(gappercentage, msa, 1) )
+columngappercentage(msa::AbstractMultipleSequenceAlignment) = columngappercentage(msa.msa)
 
 # Reference
 # ---------
@@ -263,8 +271,16 @@ end
 
 setreference!(msa::AbstractMultipleSequenceAlignment, id::ASCIIString) = setreference!(msa, selectindex(msa.id ,id))
 
+function setreference!(msa::Matrix{Residue}, i::Int)
+  msa[1, :], msa[i, :] = msa[i, :], msa[1, :]
+  msa
+end
+
+adjustreference(msa::Matrix{Residue}) = msa[ vec(msa[1,:]) .!= GAP ]
+
 """Removes positions/columns of the MSA with gaps in the reference (first) sequence"""
 adjustreference!(msa::AbstractMultipleSequenceAlignment) = filtercolumns!(msa, vec(msa.msa[1,:]) .!= GAP )
+
 
 """
 This functions deletes/filters sequences and columns/positions on the MSA on the following order:
