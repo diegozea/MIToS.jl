@@ -19,7 +19,7 @@ Gzipped files should end on `.gz`.
 function read(pathname::AbstractString, args...; kargs...)
   if startswith(pathname, "http://") || startswith(pathname, "https://") || startswith(pathname, "ftp://")
     filename = download(pathname)
-    io = endswith(pathname, ".gz") ? gzopen(pathname, "r") : open(filename, "r")
+    io = endswith(pathname, ".gz") ? gzopen(filename, "r") : open(filename, "r")
     try
       reader(io, args...; kargs...)
     finally
