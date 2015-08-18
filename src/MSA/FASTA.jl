@@ -69,10 +69,10 @@ end
 
 parse(io::Union(IO,AbstractString), format::Type{FASTA}; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = parse(io, FASTA, AnnotatedMultipleSequenceAlignment; useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps)
 
-# Print Pfam
-# ==========
+# Print FASTA
+# ===========
 
-function printfasta(io::IO, msa::AbstractMultipleSequenceAlignment)
+function print(io::IO, msa::AbstractMultipleSequenceAlignment, format::Type{FASTA})
 	for i in 1:nsequences(msa)
 		id = selectvalue(msa.id, i)
 		seq = asciisequence(msa, i)
@@ -80,14 +80,4 @@ function printfasta(io::IO, msa::AbstractMultipleSequenceAlignment)
 	end
 end
 
-printfasta(msa::AbstractMultipleSequenceAlignment) = printfasta(STDOUT, msa)
-
-# Write Pfam
-# ==========
-
-function writefasta(filename::ASCIIString, msa::AbstractMultipleSequenceAlignment)
-	open(filename, "w") do fh
-		printfasta(fh, msa)
-	end
-end
-
+print(msa::MultipleSequenceAlignment, format::Type{FASTA}) = printfasta(STDOUT, msa, FASTA)

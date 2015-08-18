@@ -1,6 +1,6 @@
 using MIToS.Utils
 
-import Base: parse
+import Base: parse, print
 
 immutable Stockholm <: Format end
 
@@ -100,7 +100,7 @@ end
 function _printsequencesannotations(io::IO, msa::AnnotatedMultipleSequenceAlignment)
 	if !isempty(msa.annotations.sequences)
 		for (key, value) in msa.annotations.sequences
-			println(io, string("#=GC ", key[1], " ", key[2], " ", value))
+			println(io, string("#=GS ", key[1], " ", key[2], " ", value))
 		end
 	end
 end
@@ -119,7 +119,7 @@ function _to_sequence_dict(annotation::Dict{Tuple{ASCIIString,ASCIIString},ASCII
 	sizehint!(seq_dict, length(seq_dict))
 end
 
-function printpfam(io::IO, msa::AnnotatedMultipleSequenceAlignment)
+function print(io::IO, msa::AnnotatedMultipleSequenceAlignment, format::Type{Stockholm})
 	_printfileannotations(io, msa)
 	_printsequencesannotations(io, msa)
 	res_annotations = _to_sequence_dict(msa.annotations.residues)
@@ -137,7 +137,7 @@ function printpfam(io::IO, msa::AnnotatedMultipleSequenceAlignment)
 	println(io, "//")
 end
 
-function printpfam(io::IO, msa::MultipleSequenceAlignment)
+function print(io::IO, msa::MultipleSequenceAlignment, format::Type{Stockholm})
 	for i in 1:nsequences(msa)
 		id = selectvalue(msa.id, i)
 		seq = asciisequence(msa, i)
@@ -146,16 +146,7 @@ function printpfam(io::IO, msa::MultipleSequenceAlignment)
 	println(io, "//")
 end
 
-printpfam(msa::AbstractMultipleSequenceAlignment) = printpfam(STDOUT, msa)
-
-# Write Pfam
-# ==========
-
-function writepfam(filename::ASCIIString, msa::AbstractMultipleSequenceAlignment)
-	open(filename, "w") do fh
-		printpfam(fh, msa)
-	end
-end
+print(msa::AnnotatedMultipleSequenceAlignment) = print(STDOUT, msa, Stockholm)
 
 # Download Pfam
 # =============
@@ -164,7 +155,7 @@ function downloadpfam(pfamcode::ASCIIString; filename::ASCIIString="$pfamcode.al
   if length(pfamcode)== 7 && ( pfamcode[1:2] == "PF" || pfamcode[1:2] == "pf" )
     namegz = string(filename, ".gz")
     download(string("http://pfam.xfam.org/family/PF", pfamcode[3:end], "/alignment/full/gzipped"), namegz)
-    run(`gzip -d $namegz`)
+    #run(`gzip -d $namegz`)
   else
     throw( ErrorException( string(pfamcode, " is not a correct Pfam code") ) )
   end

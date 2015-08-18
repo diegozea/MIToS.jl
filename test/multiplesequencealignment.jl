@@ -65,7 +65,8 @@ F112_SSV1/3-112                .....QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRA
 #=GR F112_SSV1/3-112     SS    .....X---HHHHHHHHHHHHHHHSEE-HHHHHHHH---HHHHHHHHHHHHHHHHH-TTTEEEEE-SS-EEEEE--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.....
 #=GC SS_cons                   .....X---HHHHHHHHHHHHHHHSEE-HHHHHHHH---HHHHHHHHHHHHHHHHH-TTTEEEEE-SS-EEEEE--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.....
 #=GC seq_cons                  ........NshphAclhaKILppKtElolEDIlAQFEISsosAYsI.+sL+hICEpH.-ECpsppKsRKTlhh.hKpEphppptpEp..ppItKIhsAp................h....
-//"""
+//
+"""
 
 @test parse(pfam_string, Stockholm) == pfam
 
@@ -105,7 +106,8 @@ DAYCMD
 >SEQ5
 DAYCMT
 >SEQ6
-DAYCMT"""
+DAYCMT
+"""
 
 @test parse(fasta_string, FASTA) == small
 
@@ -279,13 +281,13 @@ filtercolumns! with and without annotations
 @test getresidues(getsequence(filtercolumns!(copy(pfam_na), collect(1:110) .<= 10), 4)) == res"QTLNSYKMAE"
 
 print("""
-Test for ArgumentError's on filters with bad masks
+Test for BoundsError's on filters with bad masks
 """)
 
-@test_throws ArgumentError filtersequences!(copy(pfam), [1,2,3,4,5,6,7,8,9,10] .> 2)
-@test_throws ArgumentError filtersequences!(copy(pfam_na), [1,2,3] .> 2)
-@test_throws ArgumentError filtercolumns!(copy(pfam), [1,2,3] .> 2)
-@test_throws ArgumentError filtercolumns!(copy(pfam_na), collect(1:200) .<= 10)
+@test_throws BoundsError filtersequences!(copy(pfam), [1,2,3,4,5,6,7,8,9,10] .> 2)
+@test_throws BoundsError filtersequences!(copy(pfam_na), [1,2,3] .> 2)
+@test_throws BoundsError filtercolumns!(copy(pfam), [1,2,3] .> 2)
+@test_throws BoundsError filtercolumns!(copy(pfam_na), collect(1:200) .<= 10)
 
 print("""
 Test copy and deepcopy for sequences
@@ -321,8 +323,8 @@ let i = 4
   """)
   filtered_annseq = filtercolumns!(copy(annseq), annseq .== Residue('Q'))
   filtered_seq = filtercolumns!(copy(seq), seq .== Residue('Q'))
-  @test_throws ArgumentError filtercolumns!(copy(annseq), collect(1:(length(seq)-10)) .> 2)
-  @test_throws ArgumentError filtercolumns!(copy(seq), collect(1:(length(seq)+10)) .<= 10)
+  @test_throws BoundsError filtercolumns!(copy(annseq), collect(1:(length(seq)-10)) .> 2)
+  @test_throws BoundsError filtercolumns!(copy(seq), collect(1:(length(seq)+10)) .<= 10)
   @test getresidues(filtered_annseq) == res"QQQQQQQQQQQQQQ"
   @test getresidues(filtered_seq) == res"QQQQQQQQQQQQQQ"
   @test AlignedSequence(filtered_annseq) == filtered_seq
@@ -439,10 +441,22 @@ print("""
 Test asciisequence
 """)
 
+@test asciisequence(small, 4) == "DAYCMD"
+
 print("""
 Test printfasta
 """)
 
+let io = IOBuffer()
+  print(io, small, FASTA)
+  @test takebuf_string(io) == fasta_string
+end
+
 print("""
 Test printpfam
 """)
+
+let io = IOBuffer()
+  print(io, pfam, Stockholm)
+  @test parse(takebuf_string(io), Stockholm, useidcoordinates=false) == pfam
+end

@@ -1,3 +1,18 @@
+import Base: write
+using MIToS.Utils
+
+# Write
+# =====
+
+function write{T<:Format}(filename::ASCIIString, msa::AbstractMultipleSequenceAlignment, format::Type{T}, mode::ASCIIString="w")
+	open(filename, mode) do fh
+		print(fh, msa, format)
+	end
+end
+
+# Mappings
+# ========
+
 function _to_msa_mapping(sequences::Array{ASCIIString,1})
   nseq = size(sequences,1)
   nres = length(sequences[1])

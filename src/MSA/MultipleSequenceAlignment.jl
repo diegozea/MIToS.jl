@@ -134,13 +134,7 @@ getindex(msa::AbstractMultipleSequenceAlignment, id::ASCIIString) = getsequence(
 # Filters
 # -------
 
-function filtersequences(msa::Matrix{Residue}, mask::BitVector)
-  if length(mask) == nsequences(msa)
-    return(msa[mask, :])
-  else
-    throw(ArgumentError("The number of sequences on the MSA should be equal to the length of the mask"))
-  end
-end
+filtersequences(msa::Matrix{Residue}, mask::BitVector) = msa[mask, :]
 
 """
 Allows to filter sequences on a MSA using a `BitVector` mask (removes `false`s).
@@ -160,21 +154,8 @@ function filtersequences!(msa::MultipleSequenceAlignment, mask::BitVector)
   msa
 end
 
-function filtercolumns(msa::Matrix{Residue}, mask::BitVector)
-  if length(mask) == ncolumns(msa)
-    return(msa[ : , mask ])
-  else
-    throw(ArgumentError("The number of columns on the MSA should be equal to the length of the mask"))
-  end
-end
-
-function filtercolumns(seq::Vector{Residue}, mask::BitVector)
-  if length(mask) == ncolumns(seq)
-    return(seq[ mask ])
-  else
-    throw(ArgumentError("The number of columns on the MSA should be equal to the length of the mask"))
-  end
-end
+filtercolumns(msa::Matrix{Residue}, mask::BitVector) = msa[ : , mask ]
+filtercolumns(seq::Vector{Residue}, mask::BitVector) = seq[ mask ]
 
 """
 Allows to filter columns/positions on a MSA using a `BitVector` mask.
@@ -276,11 +257,11 @@ function setreference!(msa::Matrix{Residue}, i::Int)
   msa
 end
 
-adjustreference(msa::Matrix{Residue}) = msa[ vec(msa[1,:]) .!= GAP ]
+"""Creates a new Matrix{Residue}. This function deletes positions/columns of the MSA with gaps in the reference (first) sequence"""
+adjustreference(msa::Matrix{Residue}) = msa[ : , vec(msa[1,:]) .!= GAP ]
 
 """Removes positions/columns of the MSA with gaps in the reference (first) sequence"""
 adjustreference!(msa::AbstractMultipleSequenceAlignment) = filtercolumns!(msa, vec(msa.msa[1,:]) .!= GAP )
-
 
 """
 This functions deletes/filters sequences and columns/positions on the MSA on the following order:
@@ -297,6 +278,29 @@ function gapstrip!(msa::AbstractMultipleSequenceAlignment; coveragelimit::Float6
   nsequences(msa) != 0 ? filtercolumns!(msa, columngappercentage(msa) .<= gaplimit) : throw("There are not sequences in the MSA after coverage filter")
 end
 
+"""
+Creates a new `Matrix{Residue}` with deleted sequences and columns/positions on the MSA:
+
+ - Removes all the columns/position on the MSA with gaps on the reference sequence (first sequence)
+ - Removes all the sequences with a coverage with respect to the number of columns/positions on the MSA **less** than a `coveragelimit` (default to `0.75`: sequences with 25% of gaps)
+ - Removes all the columns/position on the MSA with **more** than a `gaplimit` (default to `0.5`: 50% of gaps)
+"""
+function gapstrip(msa::Matrix{Residue}; coveragelimit::Float64=0.75, gaplimit::Float64=0.5)
+  msa = adjustreference(msa)
+  # Remove sequences with pour coverage of the reference sequence
+  if ncolumns(msa) != 0
+    msa = filtersequences(msa, coverage(msa) .>= coveragelimit )
+  else
+    throw("There are not columns in the MSA after the gap trimming")
+  end
+  if nsequences(msa) != 0
+    msa = filtercolumns!(msa, columngappercentage(msa) .<= gaplimit)
+  else
+    throw("There are not sequences in the MSA after coverage filter")
+  end
+  msa
+end
+
 # Get annotations
 # ---------------
 
@@ -308,4 +312,6 @@ end
 # Show & Print
 # ------------
 
-asciisequence(msa::AbstractMultipleSequenceAlignment, seq::Int) = ascii(convert(Vector{UInt8}, vec(msa.msa[seq,:])))
+"""Gives an ASCIIString with the sequence number `seq` of the MSA"""
+asciisequence(msa::Matrix{Residue}, seq::Int) = ascii(convert(Vector{UInt8}, vec(msa[seq,:])))
+asciisequence(msa::AbstractMultipleSequenceAlignment, seq::Int) = asciisequence(msa.msa, seq)
