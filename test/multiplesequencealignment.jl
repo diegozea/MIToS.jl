@@ -49,6 +49,27 @@ const F112_SSV1 = collect(".....QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAI
 @test pfam.annotations.sequences[("F112_SSV1/3-112","DR")] == "PDB; 2VQC A; 4-73;"
 
 print("""
+Test parse for string inputs
+""")
+
+const pfam_string = """# STOCKHOLM 1.0
+#=GS C3N734_SULIY/1-95   AC C3N734.1
+#=GS H2C869_9CREN/7-104  AC H2C869.1
+#=GS Y070_ATV/2-70       AC Q3V4T1.1
+#=GS F112_SSV1/3-112     AC P20220.1
+#=GS F112_SSV1/3-112     DR PDB; 2VQC A; 4-73;
+C3N734_SULIY/1-95              ...mp---NSYQMAEIMYKILQQKKEISLEDILAQFEISASTAYNVQRTLRMICEKHPDECEVQTKNRRTIFKWIKNEETTEEGQEE--QEIEKILNAQPAE-------------k....
+H2C869_9CREN/7-104             ...nk--LNDVQRAKLLVKILQAKGELDVYDIMLQFEISYTRAIPIMKLTRKICEAQ-EICTYDEKEHKLVSLNAKKEKVEQDEEENEREEIEKILDAH----------------trreq
+Y070_ATV/2-70                  qsvne-------VAQQLFSKLREKKEITAEDIIAIYNVTPSVAYAIFTVLKVMCQQHQGECQAIKRGRKTVI-------------------------------------------vskq.
+F112_SSV1/3-112                .....QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ.....
+#=GR F112_SSV1/3-112     SS    .....X---HHHHHHHHHHHHHHHSEE-HHHHHHHH---HHHHHHHHHHHHHHHHH-TTTEEEEE-SS-EEEEE--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.....
+#=GC SS_cons                   .....X---HHHHHHHHHHHHHHHSEE-HHHHHHHH---HHHHHHHHHHHHHHHHH-TTTEEEEE-SS-EEEEE--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.....
+#=GC seq_cons                  ........NshphAclhaKILppKtElolEDIlAQFEISsosAYsI.+sL+hICEpH.-ECpsppKsRKTlhh.hKpEphppptpEp..ppItKIhsAp................h....
+//"""
+
+@test parse(pfam_string, Stockholm) == pfam
+
+print("""
 
 Parse Fasta
 -----------
@@ -68,6 +89,25 @@ Test download of read(URL, ...)
 
 @test read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/Gaoetal2011.fasta", FASTA) == small
 @test read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.fasta.gz", FASTA) == fasta
+
+print("""
+Test parse for string inputs
+""")
+
+const fasta_string = """>SEQ1
+DAWAEE
+>SEQ2
+DAWAEF
+>SEQ3
+DAWAED
+>SEQ4
+DAYCMD
+>SEQ5
+DAYCMT
+>SEQ6
+DAYCMT"""
+
+@test parse(fasta_string, FASTA) == small
 
 print("""
 Test the FASTA parser usando Gao et.al. 2011 example

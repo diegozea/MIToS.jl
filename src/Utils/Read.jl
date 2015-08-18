@@ -7,21 +7,19 @@ using GZip
 """
 abstract Format
 
-reader(io::IO) = throw(ErrorException("You need to indicate the format of the file (and maybe the output type)"))
-
 """
 ```read(pathname, Format [, Type [, … ] ] ) -> Type```
 
-This function opens a file in the `pathname` and calls `reader`for the given `Format` and `Type` on it.
+This function opens a file in the `pathname` and calls `parse(io, ...)`for the given `Format` and `Type` on it.
 If the  `pathname` is an HTTP or FTP URL, the file is downloaded with `download` in a temporal file.
 Gzipped files should end on `.gz`.
 """
-function read(pathname::AbstractString, args...; kargs...)
+function read{T<:Format}(pathname::AbstractString, format::Type{T}, args...; kargs...)
   if startswith(pathname, "http://") || startswith(pathname, "https://") || startswith(pathname, "ftp://")
     filename = download(pathname)
     io = endswith(pathname, ".gz") ? gzopen(filename, "r") : open(filename, "r")
     try
-      reader(io, args...; kargs...)
+      parse(io, format, args...; kargs...)
     finally
       close(io)
       rm(filename)
@@ -29,7 +27,7 @@ function read(pathname::AbstractString, args...; kargs...)
   else
     io = endswith(pathname, ".gz") ? gzopen(pathname, "r") : open(pathname, "r")
     try
-      reader(io, args...; kargs...)
+      parse(io, format, args...; kargs...)
     finally
       close(io)
     end

@@ -14,9 +14,9 @@ module MSA
   nsequences, ncolumns, gappercentage, residuepercentage, coverage,
   columngappercentage, setreference!, gapstrip!, adjustreference!, asciisequence,
 
-  Stockholm, reader, writepfam, printpfam, downloadpfam,
+  Stockholm, writepfam, printpfam, downloadpfam,
 
-  FASTA, reader, writefasta, printfasta
+  FASTA, writefasta, printfasta
 
   include("Residues.jl")
   include("IndexedVectors.jl")

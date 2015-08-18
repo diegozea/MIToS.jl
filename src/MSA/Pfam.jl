@@ -1,6 +1,6 @@
 using MIToS.Utils
 
-import MIToS.Utils: reader
+import Base: parse
 
 immutable Stockholm <: Format end
 
@@ -55,7 +55,7 @@ function _pre_readstockholm(io::Union(IO, AbstractString))
   (IDS, SEQS, GF, GS, GC, GR)
 end
 
-function reader(io::Union(IO, AbstractString), format::Type{Stockholm}, output::Type{AnnotatedMultipleSequenceAlignment}; useidcoordinates::Bool=true, deletefullgaps::Bool=true)
+function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::Type{AnnotatedMultipleSequenceAlignment}; useidcoordinates::Bool=true, deletefullgaps::Bool=true)
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
   MSA, MAP = useidcoordinates && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
   COLS = vcat(1:size(MSA,2))
@@ -66,7 +66,7 @@ function reader(io::Union(IO, AbstractString), format::Type{Stockholm}, output::
   return(msa)
 end
 
-function reader(io::Union(IO, AbstractString), format::Type{Stockholm}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
+function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
   # Could be faster with a special _pre_readstockholm
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
   msa = MultipleSequenceAlignment(IndexedVector(IDS), convert(Matrix{Residue}, SEQS))
@@ -76,7 +76,7 @@ function reader(io::Union(IO, AbstractString), format::Type{Stockholm}, output::
   return(msa)
 end
 
-reader(io, format::Type{Stockholm}; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = reader(io, Stockholm, AnnotatedMultipleSequenceAlignment, useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps)
+parse(io, format::Type{Stockholm}; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = parse(io, Stockholm, AnnotatedMultipleSequenceAlignment, useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps)
 
 # Print Pfam
 # ==========

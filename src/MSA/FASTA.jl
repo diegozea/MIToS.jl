@@ -1,8 +1,27 @@
 using MIToS.Utils
 
-import MIToS.Utils: reader
+import Base: parse
 
 immutable FASTA <: Format end
+
+# FASTA Parser
+# ============
+
+function _pre_readfasta(io::AbstractString)
+  seqs = split(io, '>')
+  N = length(seqs) - 1
+
+  IDS  = Array(ASCIIString, N)
+  SEQS = Array(ASCIIString, N)
+
+  for i in 1:N
+    fields = split(seqs[i+1], '\n')
+    IDS[i] = replace(fields[1], r"\s+", "")
+    SEQS[i] = replace(fields[2], r"\s+", "")
+  end
+
+  (IDS, SEQS)
+end
 
 function _pre_readfasta(io::IO)
   IDS  = ASCIIString[]
@@ -28,7 +47,7 @@ function _pre_readfasta(io::IO)
   (IDS, SEQS)
 end
 
-function reader(io::IO, format::Type{FASTA}, output::Type{AnnotatedMultipleSequenceAlignment}; useidcoordinates::Bool=true, deletefullgaps::Bool=true)
+function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{AnnotatedMultipleSequenceAlignment}; useidcoordinates::Bool=true, deletefullgaps::Bool=true)
   IDS, SEQS = _pre_readfasta(io)
   MSA, MAP = useidcoordinates  && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
   COLS = vcat(1:size(MSA,2))
@@ -39,7 +58,7 @@ function reader(io::IO, format::Type{FASTA}, output::Type{AnnotatedMultipleSeque
   return(msa)
 end
 
-function reader(io::IO, format::Type{FASTA}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
+function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
   IDS, SEQS = _pre_readfasta(io)
   msa = MultipleSequenceAlignment(IndexedVector(IDS), convert(Matrix{Residue}, SEQS))
   if deletefullgaps
@@ -48,7 +67,7 @@ function reader(io::IO, format::Type{FASTA}, output::Type{MultipleSequenceAlignm
   return(msa)
 end
 
-reader(io::IO, format::Type{FASTA}; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = reader(io, FASTA, AnnotatedMultipleSequenceAlignment; useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps)
+parse(io::Union(IO,AbstractString), format::Type{FASTA}; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = parse(io, FASTA, AnnotatedMultipleSequenceAlignment; useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps)
 
 # Print Pfam
 # ==========
