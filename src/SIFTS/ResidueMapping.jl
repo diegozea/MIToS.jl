@@ -51,6 +51,15 @@ function call(::Type{SIFTSResidue}, residue::LightXML.XMLElement)
   )
 end
 
+function call(::Type{SIFTSResidue}, residue::LightXML.XMLElement, missing::Bool)
+  SIFTSResidue(
+    _get_attribute(residue, "dbResNum"),
+    _get_attribute(residue, "dbResName"),
+    crossRefDb[ crossRefDb(map) for map in get_elements_by_tagname(residue, "crossRefDb")],
+    missing
+  )
+end
+
 # Mapping Functions
 # =================
 
@@ -81,8 +90,9 @@ function siftsresidues(filename::ASCIIString, chain::ASCIIString; check_observed
   for segment in segments
     residues = _get_residues(segment)
 		for residue in residues
-		  if !check_observed || !_is_missing(residue)
-        push!(vector, SIFTSResidue(residue))
+      missing = _is_missing(residue)
+		  if !check_observed || !missing
+        push!(vector, SIFTSResidue(residue, missing))
 			end
 		end
   end
