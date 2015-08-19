@@ -1,6 +1,6 @@
 module Utils
 
-  export deleteitems!, get_n_words, hascoordinates,
+  export deleteitems!, get_n_words, hascoordinates, select_element,
 
   # eachline,
 
