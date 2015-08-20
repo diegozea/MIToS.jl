@@ -3,7 +3,7 @@ module SIFTS
   using LightXML
   using MIToS.Utils
 
-  export downloadsifts, siftsmapping, siftsresidues
+  export downloadsifts, siftsmapping, siftsPDBemapping, siftsresidues
 
   include("XMLParser.jl")
   include("ResidueMapping.jl")

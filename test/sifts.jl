@@ -13,7 +13,7 @@ Parse SIFTS
 
 const sifts_file = "./data/2vqc.xml.gz"
 
-let map = siftsmapping(sifts_file, "A", "2vqc", db="PDB")
+let map = siftsPDBemapping(sifts_file, "A", "PDB", "2vqc")
   dump(map)
   @test_throws KeyError map[9]  # Missing
   @test_throws KeyError map[80] # Missing
@@ -22,7 +22,7 @@ let map = siftsmapping(sifts_file, "A", "2vqc", db="PDB")
   @test map[79] == 73
 end
 
-let map = siftsmapping(sifts_file, "A", "2vqc", db="PDB", check_observed=false)
+let map = siftsPDBemapping(sifts_file, "A", "PDB", "2vqc", false)
   dump(map)
   @test map[9] == 3   # Missing
   @test map[80] == 74 # Missing
@@ -30,6 +30,7 @@ let map = siftsmapping(sifts_file, "A", "2vqc", db="PDB", check_observed=false)
   @test map[10] == 4
   @test map[79] == 73
 end
+
 
 # 1SSX => 15A 15B
 # 1AS5 => NMR
