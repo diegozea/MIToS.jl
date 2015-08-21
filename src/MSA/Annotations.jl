@@ -1,4 +1,4 @@
-import Base: print, show, copy, deepcopy, empty!, print, show
+import Base: print, show, copy, deepcopy, empty!, isempty, print, show
 
 # Annotations
 # ===========
@@ -14,12 +14,16 @@ type Annotations
   residues::Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}
 end
 
-# Empty Annotations
-call(::Type{Annotations}) = Annotations(sizehint!(Dict{ASCIIString, ASCIIString}(), 0),
-              sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0),
-              sizehint!(Dict{ASCIIString, ASCIIString}(), 0),
-              sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0))
+call(::Type{Annotations}) = Annotations(Dict{ASCIIString, ASCIIString}(),
+                                        Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(),
+                                        Dict{ASCIIString, ASCIIString}(),
+                                        Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}())
 
+"""Creates an empty `Annotations` of length 0 using sizehint!"""
+empty(::Type{Annotations}) = Annotations( sizehint!(Dict{ASCIIString, ASCIIString}(), 0),
+                                          sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0),
+                                          sizehint!(Dict{ASCIIString, ASCIIString}(), 0),
+                                          sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0))
 
 # Filters
 # -------
@@ -71,6 +75,8 @@ end
 for fun in [:copy, :deepcopy, :empty!]
   @eval $(fun)(ann::Annotations) = Annotations( $(fun)( ann.file ), $(fun)( ann.sequences ), $(fun)( ann.columns ), $(fun)( ann.residues ))
 end
+
+isempty(ann::Annotations) = isempty(ann.file) && isempty(ann.sequences) && isempty(ann.columns) && isempty(ann.residues)
 
 # Show & Print
 # ------------

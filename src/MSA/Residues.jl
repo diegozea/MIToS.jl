@@ -1,6 +1,6 @@
 using Base.Intrinsics
 
-import Base: convert, ==, !=, .==, zero, show, length, getindex, setindex! #, <, <=
+import Base: convert, ==, !=, .==, zero, show, length, getindex, setindex!, rand #, <, <=
 
 # Residues
 # ========
@@ -152,3 +152,9 @@ for fun in [:(==), :(!=), :(.==)] # , :(<), :(<=)
 end
 
 length(x::Residue) = length(UInt8(x))
+
+# Random
+# ------
+
+"""rand random chooses from the 20 residues, doesn't generate gaps"""
+rand(r, ::Type{Residue}) = Residue( rand(r, Int8(1):Int8(20)) )

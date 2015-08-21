@@ -59,3 +59,14 @@ for i in 1:21, j in 1:21
   end
 end
 
+print("""
+Random
+""")
+for i in 1:8000
+  @test rand(Residue) != GAP
+  @test typeof( rand(Residue) ) == Residue
+end
+@test size(rand(Residue, 20)) == (20,)
+@test typeof(rand(Residue, 20)) == Array{Residue, 1}
+@test size(rand(Residue, 20,30)) == (20,30)
+@test typeof(rand(Residue, 20, 30)) == Array{Residue, 2}

@@ -248,7 +248,7 @@ function chimerahydrogenbond(filename::ASCIIString; chain::ASCIIString="A", mode
   pairs = Set{(PDBResidueIdentifier,PDBResidueIdentifier)}()
   for line in out
     m = match(parser, line)
-    if m != nothing && length(m.captures) == 6
+    if m !== nothing && length(m.captures) == 6
       push!(pairs, (PDBResidueIdentifier(m.captures[2], m.captures[1], "ATOM", model, m.captures[3]),
             PDBResidueIdentifier(m.captures[5], m.captures[4], "ATOM", model, m.captures[6])))
     end

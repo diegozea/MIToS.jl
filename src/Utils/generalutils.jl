@@ -91,3 +91,19 @@ end
 function hascoordinates(id)
   ismatch(r"^\w+/\d+-\d+$", id)
 end
+
+"""
+Selects the first element of the vector.
+This is useful for unpacking one element vectors.
+Throws a warning if there are more elements.
+The `element_name` for the warning is *element* by default, but the name can be changed.
+"""
+function select_element{T}(vector::Array{T,1}, element_name::ASCIIString="element")
+  len = length(vector)
+  if len == 0
+    throw(ErrorException(string("There is not ", element_name)))
+  elseif len != 1
+    warn(string("There are more than one (", len, ") ", element_name, " using the first."))
+  end
+  @inbounds return(vector[1])
+end
