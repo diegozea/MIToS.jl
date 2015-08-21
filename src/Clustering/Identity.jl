@@ -45,3 +45,7 @@ function percentidentity(seq1, seq2, threshold::Float64)
   end
   (count/n) >= threshold
 end
+
+function dumbIdentity(seq1, seq1)
+  0.1
+end
