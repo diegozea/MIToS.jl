@@ -1,54 +1,100 @@
-import Base: call
+import Base: call, string, print, write, show, convert, hash, ==
 
 # dbCoordSys Types
 # ================
 
 abstract CoordinateSystem
 
-immutable PDBeCoordinates <: CoordinateSystem
+immutable PDBeCoordinate <: CoordinateSystem
   resnum::Int
 end
 
-immutable UniProtCoordinates <: CoordinateSystem
+immutable UniProtCoordinate <: CoordinateSystem
   resnum::Int
 end
 
-immutable PDBresnumCoordinates <: CoordinateSystem
+immutable PDBresnumCoordinate <: CoordinateSystem
   resnum::Int
   inscode::Nullable{Char}
 end
 
+string(coord::Union{PDBeCoordinate, UniProtCoordinate}) = string(coord.resnum)
+function string(coord::PDBresnumCoordinate)
+  if isnull(coord.inscode)
+    return(string(coord.resnum))
+  else
+    return(string(coord.resnum, get(coord.inscode)))
+  end
+end
+
+convert(::Type{Int}, coord::CoordinateSystem) = coord.resnum
+
+show{T <: CoordinateSystem}(io::IO, coord::T) = print(io, string(T, "(\"", coord, "\")"))
+print(io::IO, coord::CoordinateSystem) = print(io, string(coord))
+write(io::IO, coord::CoordinateSystem) = write(io, string(coord))
+
 abstract DataBase{T <: CoordinateSystem}
 
-immutable PDBe <: DataBase{PDBeCoordinates} end
+immutable dbPDBe <: DataBase{PDBeCoordinate} end
 
-immutable UniProt  <: DataBase{UniProtCoordinates} end
-immutable Pfam     <: DataBase{UniProtCoordinates} end
-immutable InterPro <: DataBase{UniProtCoordinates} end
-immutable NCBI     <: DataBase{UniProtCoordinates} end
+immutable dbUniProt  <: DataBase{UniProtCoordinate} end
+immutable dbPfam     <: DataBase{UniProtCoordinate} end
+immutable dbInterPro <: DataBase{UniProtCoordinate} end
+immutable dbNCBI     <: DataBase{UniProtCoordinate} end
 
-immutable PDB  <: DataBase{PDBresnumCoordinates} end
-immutable CATH <: DataBase{PDBresnumCoordinates} end
-immutable SCOP <: DataBase{PDBresnumCoordinates} end
+immutable dbPDB  <: DataBase{PDBresnumCoordinate} end
+immutable dbCATH <: DataBase{PDBresnumCoordinate} end
+immutable dbSCOP <: DataBase{PDBresnumCoordinate} end
 
-name(db::UniProt) = "UniProt"
-name(db::Pfam) = "Pfam"
-name(db::InterPro) = "InterPro"
-name(db::NCBI) = "NCBI"
-name(db::PDB ) = "PDB "
-name(db::CATH) = "CATH"
-name(db::SCOP) = "SCOP"
+name(db::dbPDBe ) = "PDBe"
 
-call(::Type{PDBeCoordinates}, str::ASCIIString) = PDBeCoordinates(parse(Int, str))
-call(::Type{UniProtCoordinates}, str::ASCIIString) = UniProtCoordinates(parse(Int, str))
-function call(::Type{PDBresnumCoordinates}, str::ASCIIString)
-  m = match(r"^(\d+)(\D?)$", str)
+name(db::dbUniProt) = "UniProt"
+name(db::dbPfam) = "Pfam"
+name(db::dbInterPro) = "InterPro"
+name(db::dbNCBI) = "NCBI"
+
+name(db::dbPDB ) = "PDB"
+name(db::dbCATH) = "CATH"
+name(db::dbSCOP) = "SCOP"
+
+call(::Type{PDBeCoordinate}, str::ASCIIString) = PDBeCoordinate(parse(Int, str))
+call(::Type{UniProtCoordinate}, str::ASCIIString) = UniProtCoordinate(parse(Int, str))
+call(::Type{PDBresnumCoordinate}, resnum::Int) = PDBresnumCoordinate(resnum, Nullable{Char}())
+call(::Type{PDBresnumCoordinate}, resnum::Int, ins::AbstractString) = PDBresnumCoordinate(resnum, ins != "" ? Nullable{Char}(ins[1]) : Nullable{Char}())
+function call(::Type{PDBresnumCoordinate}, str::ASCIIString)
+  m = match(r"^(-?\d+)(\D?)$", str)
   if m === nothing
     throw(ErrorException(string(str, " is not a valid PDBresnum.")))
   end
-  resnum = parse(Int, m.captures[1])
-  ins = m.captures[2]
-  PDBresnumCoordinates(resnum, ins != "" ? Nullable{Char}(ins[1]) : Nullable{Char}() )
+  PDBresnumCoordinate(parse(Int, m.captures[1]), m.captures[2])
+end
+
+function ==(x::PDBresnumCoordinate, y::PDBresnumCoordinate)
+  if x.resnum == y.resnum
+    x_ins_flag = isnull(x.inscode)
+    y_ins_flag = isnull(y.inscode)
+    if x_ins_flag && y_ins_flag
+      return(true)
+    elseif !x_ins_flag && !y_ins_flag
+      return(get(x.inscode) == get(x.inscode))
+    end
+  end
+  false
+end
+
+hash(x::CoordinateSystem, h) = hash(string(x), h)
+
+for (typ, sys) in [(:PDBeCoordinate, "PDBe"), (:UniProtCoordinate, "UniProt"), (:PDBresnumCoordinate, "PDBresnum")]
+  @eval begin
+    function call(::Type{$(typ)}, elem::LightXML.XMLElement)
+      system = attribute(elem, "dbCoordSys")
+      if system == $sys
+        return($(typ)(attribute(elem, "dbResNum")))
+      else
+        throw(ErrorException(string($sys, " is the expected co-ordinate system, but the system is ", system)))
+      end
+    end
+  end
 end
 
 # Mapping Types
@@ -117,61 +163,30 @@ end
 # Mapping Functions
 # =================
 
-# function siftsmapping{F <: CoordinateSystem, T <: CoordinateSystem}(filename::ASCIIString, chain::ASCIIString, db_from::Type{DataBase{F}}, id_from::ASCIIString, db_to::Type{DataBase{T}}, id_to::ASCIIString, check_observed::Bool = true)
-#   if db_from == "PDBe"
-#     sifts_PDBe_mapping(filename, chain, db_to, id_to, check_observed)
-#   end
-#   mapping = Dict{Int, Int}()
-# 	segments = _get_segments(_get_entity(_get_entities(filename), chain))
-#   for segment in segments
-#     residues = _get_residues(segment)
-# 		for residue in residues
-#       key = -1
-#       value = -1
-# 		  if !check_observed || !_is_missing(residue)
-# 			  crossref = get_elements_by_tagname(residue, "crossRefDb")
-# 				for ref in crossref
-# 				  if attribute(ref, "dbSource") == db_from && attribute(ref, "dbAccessionId") == id_from
-# 					  key = parse(Int, attribute(ref, "dbResNum"))
-# 					end
-#           if attribute(ref, "dbSource") == db_to && attribute(ref, "dbAccessionId") == id_to
-# 					  value = parse(Int, attribute(ref, "dbResNum"))
-# 					end
-# 				end
-#         if key != -1 && value != -1
-#           haskey(mapping, key) && warn(string(key, " is already in the mapping with the value ", mapping[key], ". The value is replaced by ", value))
-# 					mapping[key] = value
-#         end
-# 			end
-# 		end
-#   end
-#   sizehint!(mapping, length(mapping))
-# end
-
-function siftsmapping(filename::ASCIIString, chain::ASCIIString, db_from::ASCIIString, id_from::ASCIIString, db_to::ASCIIString, id_to::ASCIIString, check_observed::Bool = true)
-  if db_from == "PDBe"
-    sifts_PDBe_mapping(filename, chain, db_to, id_to, check_observed)
-  end
-  mapping = Dict{Int, Int}()
+function siftsmapping{F <: CoordinateSystem, T <: CoordinateSystem}(filename::ASCIIString, chain::ASCIIString,
+                                                              db_from::DataBase{F}, id_from::ASCIIString,
+                                                              db_to::DataBase{T}, id_to::ASCIIString, check_observed::Bool = true)
+  mapping = Dict{F, T}()
 	segments = _get_segments(_get_entity(_get_entities(filename), chain))
   for segment in segments
     residues = _get_residues(segment)
 		for residue in residues
-      key = -1
-      value = -1
+      key_data = Nullable{F}
+      value_data = Nullable{T}
 		  if !check_observed || !_is_missing(residue)
 			  crossref = get_elements_by_tagname(residue, "crossRefDb")
 				for ref in crossref
-				  if attribute(ref, "dbSource") == db_from && attribute(ref, "dbAccessionId") == id_from
-					  key = parse(Int, attribute(ref, "dbResNum"))
+				  if attribute(ref, "dbSource") == name(db_from) && attribute(ref, "dbAccessionId") == id_from
+					  key_data = Nullable(F(ref))
 					end
-          if attribute(ref, "dbSource") == db_to && attribute(ref, "dbAccessionId") == id_to
-					  value = parse(Int, attribute(ref, "dbResNum"))
+          if attribute(ref, "dbSource") == name(db_to) && attribute(ref, "dbAccessionId") == id_to
+					  value_data = Nullable(T(ref))
 					end
 				end
-        if key != -1 && value != -1
-          haskey(mapping, key) && warn(string(key, " is already in the mapping with the value ", mapping[key], ". The value is replaced by ", value))
-					mapping[key] = value
+        if !isnull(key_data) && !isnull(value_data)
+          key = get(key_data)
+          haskey(mapping, key) && warn(string(key, " is already in the mapping with the value ", mapping[key], ". The value is replaced by ", get(value_data)))
+					mapping[key] = get(value_data)
         end
 			end
 		end
@@ -179,8 +194,11 @@ function siftsmapping(filename::ASCIIString, chain::ASCIIString, db_from::ASCIIS
   sizehint!(mapping, length(mapping))
 end
 
-function siftsPDBemapping(filename::ASCIIString, chain::ASCIIString, db::ASCIIString, id::ASCIIString, check_observed::Bool = true)
-  mapping = Dict{Int, Int}()
+immutable dbPDBe <: DataBase{PDBeCoordinate} end
+
+function siftsmapping{T <: CoordinateSystem}(filename::ASCIIString, chain::ASCIIString, db_from::dbPDBe,
+                                             db_to::DataBase{T}, id_to::ASCIIString, check_observed::Bool = true)
+  mapping = Dict{PDBeCoordinate, T}()
 	segments = _get_segments(_get_entity(_get_entities(filename), chain))
   for segment in segments
     residues = _get_residues(segment)
@@ -188,15 +206,40 @@ function siftsPDBemapping(filename::ASCIIString, chain::ASCIIString, db::ASCIISt
       if attribute(residue, "dbSource") != "PDBe" # XML: <residue dbSource="PDBe" ...
           continue
       end
+      key = PDBeCoordinate(residue)
 		  if !check_observed || !_is_missing(residue)
-        key = parse(Int, attribute(residue, "dbResNum")) # XML: <residue dbSource="PDBe" dbCoordSys="PDBe" dbResNum="1" ...
 			  crossref = get_elements_by_tagname(residue, "crossRefDb")
 				for ref in crossref
-          if attribute(ref, "dbSource") == db && attribute(ref, "dbAccessionId") == id
-            value = attribute(ref, "dbResNum")
+				  if attribute(ref, "dbSource") == name(db_to) && attribute(ref, "dbAccessionId") == id_to
+            value = T(ref)
             haskey(mapping, key) && warn(string(key, " is already in the mapping with the value ", mapping[key], ". The value is replaced by ", value))
-					  mapping[key] = parse(Int, value)
-            break
+					  mapping[key] = value
+					end
+				end
+			end
+		end
+  end
+  sizehint!(mapping, length(mapping))
+end
+
+function siftsmapping{F <: CoordinateSystem}(filename::ASCIIString, chain::ASCIIString, db_from::DataBase{F}, id_from::ASCIIString,
+                                             db_to::dbPDBe, check_observed::Bool = true)
+  mapping = Dict{F, PDBeCoordinate}()
+	segments = _get_segments(_get_entity(_get_entities(filename), chain))
+  for segment in segments
+    residues = _get_residues(segment)
+		for residue in residues
+      if attribute(residue, "dbSource") != "PDBe" # XML: <residue dbSource="PDBe" ...
+          continue
+      end
+      value = PDBeCoordinate(residue)
+		  if !check_observed || !_is_missing(residue)
+			  crossref = get_elements_by_tagname(residue, "crossRefDb")
+				for ref in crossref
+				  if attribute(ref, "dbSource") == name(db_from) && attribute(ref, "dbAccessionId") == id_from
+            key = F(ref, "dbResNum")
+            haskey(mapping, key) && warn(string(key, " is already in the mapping with the value ", mapping[key], ". The value is replaced by ", value))
+					  mapping[key] = value
 					end
 				end
 			end

@@ -13,23 +13,22 @@ Parse SIFTS
 
 const sifts_file = "./data/2vqc.xml.gz"
 
-let map = siftsPDBemapping(sifts_file, "A", "PDB", "2vqc")
-  dump(map)
-  @test_throws KeyError map[9]  # Missing
-  @test_throws KeyError map[80] # Missing
-  @test_throws KeyError map[1]  # Missing
-  @test map[10] == 4
-  @test map[79] == 73
+let map = siftsmapping(sifts_file, "A", dbPDBe(), dbPDB(), "2vqc")
+  @test_throws KeyError map[PDBeCoordinate(9)]  # Missing
+  @test_throws KeyError map[PDBeCoordinate(80)] # Missing
+  @test_throws KeyError map[PDBeCoordinate(1)]  # Missing
+  @test map[PDBeCoordinate(10)] == PDBresnumCoordinate(4)
+  @test map[PDBeCoordinate(79)] == PDBresnumCoordinate(73, "")
 end
 
-let map = siftsPDBemapping(sifts_file, "A", "PDB", "2vqc", false)
-  dump(map)
-  @test map[9] == 3   # Missing
-  @test map[80] == 74 # Missing
-  @test map[1] == -5  # Missing
-  @test map[10] == 4
-  @test map[79] == 73
+let map = siftsmapping(sifts_file, "A", dbPDBe(), dbPDB(), "2vqc", false)
+  @test map[PDBeCoordinate(9)] == PDBresnumCoordinate(3)   # Missing
+  @test map[PDBeCoordinate(80)] == PDBresnumCoordinate(74) # Missing
+  @test map[PDBeCoordinate(1)] == PDBresnumCoordinate(-5)  # Missing # Negative Resnum
+  @test map[PDBeCoordinate(10)] == PDBresnumCoordinate(4)
+  @test map[PDBeCoordinate(79)] == PDBresnumCoordinate(73, "")
 end
+
 
 
 # 1SSX => 15A 15B
