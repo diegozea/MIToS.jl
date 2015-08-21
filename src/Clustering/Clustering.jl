@@ -4,7 +4,7 @@ module Clustering
 
   export Clusters, getnclusters, getweight, nsequences,
 
-  percentidentity,
+  percentidentity, percentidentity2
 
   hobohmI
 

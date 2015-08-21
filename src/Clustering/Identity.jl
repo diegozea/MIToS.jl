@@ -46,6 +46,32 @@ function percentidentity(seq1, seq2, threshold::Float64)
   (count/n) >= threshold
 end
 
-function dumbIdentity(seq1, seq1)
-  0.1
+"""
+percentidentity2 (just for fun)
+
+"""
+function percentidentity2(seq1, seq2, threshold::Float64)
+  len = length(seq1)
+  if len != length(seq2)
+     throw("Sequences of different length, they aren't aligned or don't come from the same alignment")
+  end
+  m=0
+  d=0
+  for i in 1:len
+    if seq1[i] == seq2[i]  
+      if seq1[i] == GAP
+        len -=1
+      else
+        m+=1
+      end
+    else
+      d+=1
+    end
+    if m>=len * threshold
+      return true
+    end
+    if d> len * (1-threshold)
+      return false
+    end
+  end
 end
