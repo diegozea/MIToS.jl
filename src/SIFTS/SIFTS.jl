@@ -1,12 +1,18 @@
 module SIFTS
 
   using LightXML
+  using AutoHashEquals
   using MIToS.Utils
+
+  import Base: hash, ==
 
   export CoordinateSystem,
   PDBeCoordinate, UniProtCoordinate, PDBresnumCoordinate,
   DataBase,
-  dbPDBe, dbUniProt, dbPfam, dbInterPro, dbNCBI, dbPDB, dbCATH, dbSCOP,
+  RefPDBe, RefUniProt, RefPfam, RefNCBI, RefPDB, RefCATH, RefSCOP,
+  dbPDBe, dbUniProt, dbPfam, dbNCBI, dbPDB, dbCATH, dbSCOP,
+
+  SIFTSResidue, has, getdatabase, getcoordinate, ischain,
 
   downloadsifts, siftsmapping, siftsresidues
 

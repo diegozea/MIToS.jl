@@ -1,4 +1,4 @@
-import Base: length, getindex, size, ndims, copy, deepcopy, start, next, done, eltype, show, push!, print, ==, !=
+import Base: length, getindex, size, ndims, copy, deepcopy, start, next, done, eltype, show, push!, print, ==, !=, !==
 
 # Mapping Values and Array Positions back and forth
 # =================================================

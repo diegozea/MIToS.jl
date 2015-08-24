@@ -35,17 +35,18 @@ function _get_entities(filename)
 	get_elements_by_tagname(siftsroot, "entity")
 end
 
-"""
-Returns the protein entity with PDB `chain` as `entityId` from the array of entities.
-"""
-function _get_entity(entities, chain::ASCIIString)
-  for entity in entities
-    # XML: <entity type="protein" entityId="A">
-    if attribute(entity, "entityId") == chain && attribute(entity, "type") == "protein"
-      return(entity)
-    end
-  end
-end
+# """
+# Returns the protein entity with PDB `chain` as `entityId` from the array of entities.
+# WARNING: Sometimes there are more chains than entities!
+# """
+# function _get_entity(entities, chain::ASCIIString)
+#   for entity in entities
+#     # XML: <entity type="protein" entityId="A">
+#     if attribute(entity, "entityId") == chain && attribute(entity, "type") == "protein"
+#       return(entity)
+#     end
+#   end
+# end
 
 """
 Gets an array of the segments, the continuous region of an entity.
@@ -107,3 +108,4 @@ function _is_missing(residue)
   end
   false
 end
+
