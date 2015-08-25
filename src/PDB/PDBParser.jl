@@ -18,7 +18,7 @@ function getpdbatoms(pdb::ASCIIString; chain::ASCIIString = "all",
 
         # 23 - 26        Integer         Residue sequence number.
         # 27             AChar           Code for insertion of residues.
-        number = replace(line[23:27],' ',"")
+        PDB_number = replace(line[23:27],' ',"")
 
         name = replace(line[18:20],' ',"")
         x = float(replace(line[31:38],' ',""))
@@ -29,7 +29,7 @@ function getpdbatoms(pdb::ASCIIString; chain::ASCIIString = "all",
 
         mdl = atom_model == 0 ? "1" : string(atom_model)
 
-        push!(atom_list, PDBAtom(PDBResidueIdentifier(number, name, line_id, mdl, atom_chain),
+        push!(atom_list, PDBAtom(PDBResidueIdentifier(Nullable{Int}(), PDB_number, name, line_id, mdl, atom_chain),
                                  Coordinates(x,y,z), atom_name, element, occupancy, B))
       end
     end

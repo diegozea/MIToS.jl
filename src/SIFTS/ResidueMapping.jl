@@ -1,14 +1,14 @@
 abstract DataBase{ResNumType}
 
 @auto_hash_equals immutable dbPDBe <: DataBase{Int}
-  resnum::Int # Cross referenced residue number
-  resname::ASCIIString # Cross referenced residue name
+  number::Int # Cross referenced residue number
+  name::ASCIIString # Cross referenced residue name
 end
 
 @auto_hash_equals immutable dbInterPro <: DataBase{ASCIIString}
   id::ASCIIString
-  resnum::ASCIIString # Cross referenced residue number
-  resname::ASCIIString # Cross referenced residue name
+  number::ASCIIString # Cross referenced residue number
+  name::ASCIIString # Cross referenced residue name
   evidence::ASCIIString
 end
 
@@ -17,8 +17,8 @@ for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
 
     @auto_hash_equals immutable $(ref_type) <: DataBase{Int}
       id::ASCIIString # The cross reference database identifier
-      resnum::Int # Cross referenced residue number
-      resname::ASCIIString # Cross referenced residue name
+      number::Int # Cross referenced residue number
+      name::ASCIIString # Cross referenced residue name
       end
 
   end
@@ -29,8 +29,8 @@ for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
 
     @auto_hash_equals immutable $(ref_type) <: DataBase{ASCIIString}
       id::ASCIIString
-      resnum::ASCIIString
-      resname::ASCIIString
+      number::ASCIIString
+      name::ASCIIString
       chain::ASCIIString
     end
 
@@ -191,7 +191,7 @@ end
 function has{T}(res::SIFTSResidue, db::DataBase{T}, id::ASCIIString, coord::T)
   data = getdatabase(res, db)
   if data !== nothing && data.id == id
-    return(data.resnum == coord)
+    return(data.number == coord)
   end
   false
 end
@@ -199,7 +199,7 @@ end
 function getcoordinate(res::SIFTSResidue, db::DataBase, id::ASCIIString)
   data = getdatabase(res, db)
   if data !== nothing && data.id == id
-    return(data.resnum)
+    return(data.number)
   end
   nothing
 end

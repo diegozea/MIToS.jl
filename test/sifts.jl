@@ -2,11 +2,13 @@ using Base.Test
 using MIToS.SIFTS
 
 print("""
+
 Tests for SIFTS Mappings
 ========================
 """)
 
 print("""
+
 Parse SIFTS
 -----------
 """)

@@ -1,26 +1,17 @@
-import Base: ==, !=, hash, isequal, length, -, norm, dot, angle, cross, vec, any
-
-immutable PDBResidueIdentifier
-	number::ASCIIString
+@auto_hash_equals immutable PDBResidueIdentifier
+  PDBe_number::Nullable{Int} # PDBe
+	PDB_number::ASCIIString # PDB
 	name::ASCIIString
 	group::ASCIIString
 	model::ASCIIString
 	chain::ASCIIString
 end
 
-hash(a::PDBResidueIdentifier) = hash(string(a.number, a.name, a.group, a.model,a.chain))
+# function !=(a::PDBResidueIdentifier, b::PDBResidueIdentifier)
+#   a.number != b.number && a.name != b.name && a.group != b.group && a.chain != b.chain && a.model != b.model
+# end
 
-isequal(a::PDBResidueIdentifier, b::PDBResidueIdentifier) = hash(a) == hash(b)
-
-function ==(a::PDBResidueIdentifier, b::PDBResidueIdentifier)
-  a.number == b.number && a.name == b.name && a.group == b.group && a.chain == b.chain && a.model == b.model
-end
-
-function !=(a::PDBResidueIdentifier, b::PDBResidueIdentifier)
-  a.number != b.number && a.name != b.name && a.group != b.group && a.chain != b.chain && a.model != b.model
-end
-
-immutable Coordinates{T<:FloatingPoint}
+@auto_hash_equals immutable Coordinates{T<:AbstractFloat}
   x::T
   y::T
   z::T
@@ -28,7 +19,7 @@ end
 
 distance(a::Coordinates, b::Coordinates) = sqrt((a.x - b.x)^2 + (a.y - b.y)^2 + (a.z - b.z)^2)
 
-contact(a::Coordinates, b::Coordinates, limit::FloatingPoint) = distance(a,b) <= limit ? true : false
+contact(a::Coordinates, b::Coordinates, limit::AbstractFloat) = distance(a,b) <= limit ? true : false
 
 -(a::Coordinates, b::Coordinates) = Coordinates(a.x - b.x, a.y - b.y, a.z - b.z)
 
@@ -55,7 +46,7 @@ function cross(a::Coordinates, b::Coordinates)
   Coordinates(normal[1], normal[2], normal[3])
 end
 
-immutable PDBAtom{T<:FloatingPoint}
+@auto_hash_equals immutable PDBAtom{T<:AbstractFloat}
   residueid::PDBResidueIdentifier
   coordinates::Coordinates{T}
   atomid::ASCIIString
@@ -66,13 +57,13 @@ end
 
 distance(a::PDBAtom, b::PDBAtom) = distance(a.coordinates, b.coordinates)
 
-contact(a::PDBAtom, b::PDBAtom, limit::FloatingPoint) = contact(a.coordinates, b.coordinates, limit)
+contact(a::PDBAtom, b::PDBAtom, limit::AbstractFloat) = contact(a.coordinates, b.coordinates, limit)
 
 angle(a::PDBAtom, b::PDBAtom, c::PDBAtom) = angle(a.coordinates, b.coordinates, c.coordinates)
 
 cross(a::PDBAtom, b::PDBAtom) = cross(a.coordinates, b.coordinates)
 
-type PDBResidue{T<:FloatingPoint}
+type PDBResidue{T<:AbstractFloat}
   id::PDBResidueIdentifier
 	atoms::Vector{PDBAtom{T}}
 end
@@ -208,7 +199,7 @@ function any(f::Function, a::PDBResidue, b::PDBResidue)
 end
 
 """Heavy, All, CA, CB (CA for GLY)"""
-function contact(a::PDBResidue, b::PDBResidue, limit::FloatingPoint; criteria::ASCIIString="All")
+function contact(a::PDBResidue, b::PDBResidue, limit::AbstractFloat; criteria::ASCIIString="All")
   if criteria == "All"
     Na = length(a)
     Nb = length(b)

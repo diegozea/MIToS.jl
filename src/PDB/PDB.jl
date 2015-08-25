@@ -1,5 +1,10 @@
 module PDB
 
+  using LightXML
+  using AutoHashEquals
+
+  import Base: ==, !=, hash, length, -, norm, dot, angle, cross, vec, any
+
   export covalentradius, vanderwaalsradius,
 
   PDBResidueIdentifier, Coordinates, PDBAtom, PDBResidue,

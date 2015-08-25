@@ -1,5 +1,3 @@
-import Base: any
-
 _with_vdw(a::PDBAtom) = (a.residueid.name, a.atomid) in keys(vanderwaalsradius)
 
 _with_cov(a::PDBAtom) = a.element in keys(covalentradius)
@@ -231,8 +229,8 @@ function stridehydrogenbond(filename::ASCIIString; model::ASCIIString="1", group
   pairs = Set{(PDBResidueIdentifier,PDBResidueIdentifier)}()
   for line in out
     if length(line) > 3 && ( line[1:3] == "DNR" || line[1:3] == "ACC" )
-      push!(pairs, (PDBResidueIdentifier(replace(line[12:15],' ', ""), replace(line[6:8],' ', ""), group, model, line[10:10]),
-            PDBResidueIdentifier(replace(line[32:35],' ', ""), replace(line[26:28],' ', ""), group, model, line[30:30])))
+      push!(pairs, (PDBResidueIdentifier(Nullable{Int}(), replace(line[12:15],' ', ""), replace(line[6:8],' ', ""), group, model, line[10:10]),
+            PDBResidueIdentifier(Nullable{Int}(), replace(line[32:35],' ', ""), replace(line[26:28],' ', ""), group, model, line[30:30])))
     end
   end
   sizehint!(pairs,length(pairs))
@@ -249,8 +247,8 @@ function chimerahydrogenbond(filename::ASCIIString; chain::ASCIIString="A", mode
   for line in out
     m = match(parser, line)
     if m !== nothing && length(m.captures) == 6
-      push!(pairs, (PDBResidueIdentifier(m.captures[2], m.captures[1], "ATOM", model, m.captures[3]),
-            PDBResidueIdentifier(m.captures[5], m.captures[4], "ATOM", model, m.captures[6])))
+      push!(pairs, (PDBResidueIdentifier(Nullable{Int}(), m.captures[2], m.captures[1], "ATOM", model, m.captures[3]),
+            PDBResidueIdentifier(Nullable{Int}(), m.captures[5], m.captures[4], "ATOM", model, m.captures[6])))
     end
   end
   sizehint!(pairs,length(pairs))
