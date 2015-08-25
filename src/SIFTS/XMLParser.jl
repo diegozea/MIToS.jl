@@ -8,7 +8,7 @@ function downloadsifts(pdbcode::ASCIIString; filename::ASCIIString="$(lowercase(
   if ismatch(r"^\w{4}$"i, pdbcode)
     download(string("ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/", lowercase(pdbcode[2:3]), "/", lowercase(pdbcode), ".xml.gz"), filename)
   else
-    throw(string(pdbcode, " is not a correct PDB"))
+    throw(ErrorException(string(pdbcode, " is not a correct PDB")))
   end
 end
 

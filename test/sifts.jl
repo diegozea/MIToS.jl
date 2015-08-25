@@ -181,3 +181,19 @@ let map = siftsresidues("./data/1iao.xml.gz")
   i = findfirst(x -> has(x, dbPDB(), "1iao", "1S") && ischain(x, "B"), map)
   getcoordinate(map[i+2], dbPDB(), "1iao", "B") == "323P"
 end
+
+print("""
+
+Test download
+=============
+""")
+
+let pdb = "2vqc"
+  filename = downloadsifts(pdb)
+  try
+    @test_throws ErrorException downloadsifts("2vqc_A")
+    @test siftsresidues(filename) == siftsresidues("./data/$(pdb).xml.gz")
+  finally
+    rm(filename)
+  end
+end
