@@ -1,123 +1,50 @@
-import Base: call, string, print, write, show, convert, isnull
+abstract DataBase{ResNumType}
 
-# dbCoordSys Types
-# ================
-
-abstract CoordinateSystem
-
-@auto_hash_equals immutable PDBeCoordinate <: CoordinateSystem
-  resnum::Int
+@auto_hash_equals immutable dbPDBe <: DataBase{Int}
+  resnum::Int # Cross referenced residue number
+  resname::ASCIIString # Cross referenced residue name
 end
 
-@auto_hash_equals immutable UniProtCoordinate <: CoordinateSystem
-  resnum::Int
+@auto_hash_equals immutable dbInterPro <: DataBase{ASCIIString}
+  id::ASCIIString
+  resnum::ASCIIString # Cross referenced residue number
+  resname::ASCIIString # Cross referenced residue name
+  evidence::ASCIIString
 end
 
-@auto_hash_equals immutable PDBresnumCoordinate <: CoordinateSystem
-  resnum::Int
-  inscode::ASCIIString
-end
-
-call(::Type{PDBresnumCoordinate}, resnum::Int) = PDBresnumCoordinate(resnum, "")
-call(::Type{PDBresnumCoordinate}, resnum::Int, ins::Char) = PDBresnumCoordinate(resnum, string(ins))
-
-convert(::Type{PDBeCoordinate}, str::ASCIIString) = PDBeCoordinate(parse(Int, str))
-convert(::Type{UniProtCoordinate}, str::ASCIIString) = UniProtCoordinate(parse(Int, str))
-function convert(::Type{PDBresnumCoordinate}, str::ASCIIString)
-  m = match(r"^(-?\d+)(\D?)$", str)
-  if m === nothing
-    throw(ErrorException(string(str, " is not a valid PDBresnum.")))
-  end
-  PDBresnumCoordinate(parse(Int, m.captures[1]), m.captures[2])
-end
-
-call(::Type{PDBeCoordinate}, str::ASCIIString) = PDBeCoordinate(parse(Int, str))
-call(::Type{UniProtCoordinate}, str::ASCIIString) = UniProtCoordinate(parse(Int, str))
-call(::Type{PDBresnumCoordinate}, str::ASCIIString) = convert(PDBresnumCoordinate, str)
-
-for (typ, sys) in [(:PDBeCoordinate, "PDBe"), (:UniProtCoordinate, "UniProt"), (:PDBresnumCoordinate, "PDBresnum")]
-  @eval begin
-    function call(::Type{$(typ)}, elem::LightXML.XMLElement)
-      system = attribute(elem, "dbCoordSys")
-      if system == $sys
-        return(convert($(typ), attribute(elem, "dbResNum")))
-      else
-        throw(ErrorException(string($sys, " is the expected co-ordinate system, but the system is ", system)))
-      end
-    end
-  end
-end
-
-string(coord::Union{PDBeCoordinate, UniProtCoordinate}) = string(coord.resnum)
-string(coord::PDBresnumCoordinate) = string(coord.resnum, coord.inscode)
-
-convert(::Type{Int}, coord::CoordinateSystem) = coord.resnum
-isnull(coord::CoordinateSystem) = Int(coord) == -9999
-
-show{T <: CoordinateSystem}(io::IO, coord::T) = print(io, string(T, "(\"", coord, "\")"))
-print(io::IO, coord::CoordinateSystem) = print(io, string(coord))
-write(io::IO, coord::CoordinateSystem) = write(io, string(coord))
-
-abstract DataBase{T <: CoordinateSystem}
-
-@auto_hash_equals immutable RefPDBe <: DataBase{PDBeCoordinate}
-  dbResNum::PDBeCoordinate # Cross referenced residue number
-  dbResName::ASCIIString # Cross referenced residue name
-end
-
-# @auto_hash_equals immutable RefInterPro <: DataBase{UniProtCoordinate}
-#   dbAccessionId::ASCIIString
-#   dbResNum::UniProtCoordinate # Cross referenced residue number
-#   dbResName::ASCIIString # Cross referenced residue name
-#   dbEvidence::ASCIIString
-# end
-
-for ref_type in [:RefUniProt, :RefPfam, :RefNCBI]
+for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
   @eval begin
 
-    @auto_hash_equals immutable $(ref_type) <: DataBase{UniProtCoordinate}
-      dbAccessionId::ASCIIString # The cross reference database identifier
-      dbResNum::UniProtCoordinate # Cross referenced residue number
-      dbResName::ASCIIString # Cross referenced residue name
+    @auto_hash_equals immutable $(ref_type) <: DataBase{Int}
+      id::ASCIIString # The cross reference database identifier
+      resnum::Int # Cross referenced residue number
+      resname::ASCIIString # Cross referenced residue name
       end
 
   end
 end
 
-for ref_type in [:RefPDB, :RefCATH, :RefSCOP]
+for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
   @eval begin
 
-    @auto_hash_equals immutable $(ref_type) <: DataBase{PDBresnumCoordinate}
-      dbAccessionId::ASCIIString
-      dbResNum::PDBresnumCoordinate
-      dbResName::ASCIIString
-      dbChainId::ASCIIString
+    @auto_hash_equals immutable $(ref_type) <: DataBase{ASCIIString}
+      id::ASCIIString
+      resnum::ASCIIString
+      resname::ASCIIString
+      chain::ASCIIString
     end
 
   end
 end
 
-const dbPDBe = RefPDBe("-9999", "")
-
-const dbUniProt = RefUniProt("", "-9999", "")
-const dbPfam = RefPfam("", "-9999", "")
-const dbNCBI = RefNCBI("", "-9999", "")
-#const dbInterPro = RefInterPro("", "-9999", "", "")
-
-const dbPDB = RefPDB("", "-9999", "", "")
-const dbSCOP = RefSCOP("", "-9999", "", "")
-const dbCATH = RefCATH("", "-9999", "", "")
-
-name(db::RefPDBe ) = "PDBe"
-
-name(db::RefUniProt) = "UniProt"
-name(db::RefPfam) = "Pfam"
-name(db::RefNCBI) = "NCBI"
-#name(db::RefInterPro) = "InterPro"
-
-name(db::RefPDB ) = "PDB"
-name(db::RefSCOP) = "SCOP"
-name(db::RefCATH) = "CATH"
+name(db::dbPDBe ) = "PDBe"
+name(db::dbUniProt) = "UniProt"
+name(db::dbPfam) = "Pfam"
+name(db::dbNCBI) = "NCBI"
+name(db::dbInterPro) = "InterPro"
+name(db::dbPDB ) = "PDB"
+name(db::dbSCOP) = "SCOP"
+name(db::dbCATH) = "CATH"
 
 """Returns "" if the attributte is missing"""
 function _get_attribute(elem::LightXML.XMLElement, attr::ASCIIString)
@@ -129,92 +56,97 @@ function _get_attribute(elem::LightXML.XMLElement, attr::ASCIIString)
   end
 end
 
-for ref_type in [:RefPDB, :RefCATH, :RefSCOP]
+for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
   @eval begin
+
     function call(::Type{$(ref_type)}, map::LightXML.XMLElement)
       $(ref_type)(
       _get_attribute(map, "dbAccessionId"),
-      PDBresnumCoordinate(map),
+      _get_attribute(map, "dbResNum"),
       _get_attribute(map, "dbResName"),
       _get_attribute(map, "dbChainId")
       )
     end
+
+    call(::Type{$(ref_type)}) = $(ref_type)("", "", "", "")
+
   end
 end
 
-for ref_type in [:RefUniProt, :RefPfam, :RefNCBI]
+for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
   @eval begin
+
     function call(::Type{$(ref_type)}, map::LightXML.XMLElement)
       $(ref_type)(
       _get_attribute(map, "dbAccessionId"),
-      UniProtCoordinate(map),
+      parse(Int, _get_attribute(map, "dbResNum")),
       _get_attribute(map, "dbResName")
       )
     end
+
+    call(::Type{$(ref_type)}) = $(ref_type)("", -9999, "")
+
   end
 end
 
-# function call(::Type{RefInterPro}, map::LightXML.XMLElement)
-#   if _get_attribute(map, "dbResNum") == "None"
-#     warn("There is not dbResNum for InterPro, using -9999")
-#     resnum = UniProtCoordinate("-9999")
-#   else
-#     resnum = UniProtCoordinate(map)
-#   end
-#   RefInterPro(
-#     _get_attribute(map, "dbAccessionId"),
-#     resnum,
-#     _get_attribute(map, "dbResName"),
-#     _get_attribute(map, "dbEvidence")
-#     )
-# end
+function call(::Type{dbInterPro}, map::LightXML.XMLElement)
+  dbInterPro(
+    _get_attribute(map, "dbAccessionId"),
+    _get_attribute(map, "dbResNum"),
+    _get_attribute(map, "dbResName"),
+    _get_attribute(map, "dbEvidence")
+    )
+end
 
-function call(::Type{RefPDBe}, map::LightXML.XMLElement)
-      RefPDBe(
-      PDBeCoordinate(map),
+call(::Type{dbInterPro}) = dbInterPro("", "", "", "")
+
+function call(::Type{dbPDBe}, map::LightXML.XMLElement)
+      dbPDBe(
+      parse(Int, _get_attribute(map, "dbResNum")),
       _get_attribute(map, "dbResName")
       )
 end
 
+call(::Type{dbPDBe}) = dbPDBe(-9999, "")
+
 @auto_hash_equals immutable SIFTSResidue
-  PDBe::RefPDBe
-  UniProt::Nullable{RefUniProt}
-  Pfam::Nullable{RefPfam}
-  NCBI::Nullable{RefNCBI}
-#  InterPro::Array{RefInterPro,1}
-  PDB::Nullable{RefPDB}
-  SCOP::Nullable{RefSCOP}
-  CATH::Nullable{RefCATH}
+  PDBe::dbPDBe
+  UniProt::Nullable{dbUniProt}
+  Pfam::Nullable{dbPfam}
+  NCBI::Nullable{dbNCBI}
+  InterPro::Array{dbInterPro, 1}
+  PDB::Nullable{dbPDB}
+  SCOP::Nullable{dbSCOP}
+  CATH::Nullable{dbCATH}
   missing::Bool # XML: <residueDetail dbSource="PDBe" property="Annotation" ...
 end
 
 function call(::Type{SIFTSResidue}, residue::LightXML.XMLElement, missing::Bool)
-  PDBe = RefPDBe(residue)
-  UniProt = Nullable{RefUniProt}()
-  Pfam = Nullable{RefPfam}()
-  NCBI = Nullable{RefNCBI}()
-#  InterPro = RefInterPro[]
-  PDB = Nullable{RefPDB}()
-  SCOP = Nullable{RefSCOP}()
-  CATH = Nullable{RefCATH}()
+  PDBe = dbPDBe(residue)
+  UniProt = Nullable{dbUniProt}()
+  Pfam = Nullable{dbPfam}()
+  NCBI = Nullable{dbNCBI}()
+  InterPro = dbInterPro[]
+  PDB = Nullable{dbPDB}()
+  SCOP = Nullable{dbSCOP}()
+  CATH = Nullable{dbCATH}()
   for crossref in get_elements_by_tagname(residue, "crossRefDb")
     db = attribute(crossref, "dbSource")
     if db == "UniProt"
-      UniProt = Nullable(RefUniProt(crossref))
+      UniProt = Nullable(dbUniProt(crossref))
     elseif db == "Pfam"
-      Pfam = Nullable(RefPfam(crossref))
+      Pfam = Nullable(dbPfam(crossref))
     elseif db == "NCBI"
-      NCBI = Nullable(RefNCBI(crossref))
-#    elseif db == "InterPro"
-#      push!(InterPro, RefInterPro(crossref))
+      NCBI = Nullable(dbNCBI(crossref))
+    elseif db == "InterPro"
+      push!(InterPro, dbInterPro(crossref))
     elseif db == "PDB"
-      PDB = Nullable(RefPDB(crossref))
+      PDB = Nullable(dbPDB(crossref))
     elseif db == "SCOP"
-      SCOP = Nullable(RefSCOP(crossref))
+      SCOP = Nullable(dbSCOP(crossref))
     elseif db == "CATH"
-      CATH = Nullable(RefCATH(crossref))
+      CATH = Nullable(dbCATH(crossref))
     else
-      # InterPro isn't supported rigth now, ResNum can be "None" instead of Int
       db != "InterPro" && warn(string(db, " is not in the MIToS' DataBases."))
     end
   end
@@ -222,7 +154,7 @@ function call(::Type{SIFTSResidue}, residue::LightXML.XMLElement, missing::Bool)
                UniProt,
                Pfam,
                NCBI,
-#               InterPro,
+               InterPro,
                PDB,
                SCOP,
                CATH,
@@ -244,35 +176,35 @@ function getdatabase(res::SIFTSResidue, db::DataBase)
 end
 
 function ischain(res::SIFTSResidue, chain::ASCIIString)
-  data = getdatabase(res, dbPDB)
+  data = getdatabase(res, dbPDB())
   if data !== nothing
-    return(data.dbChainId == chain)
+    return(data.chain == chain)
   end
   false
 end
 
 function has(res::SIFTSResidue, db::DataBase, id::ASCIIString)
  data = getdatabase(res, db)
- data === nothing ? false : return( data.dbAccessionId == id )
+ data === nothing ? false : return( data.id == id )
 end
 
 function has{T}(res::SIFTSResidue, db::DataBase{T}, id::ASCIIString, coord::T)
   data = getdatabase(res, db)
-  if data !== nothing && data.dbAccessionId == id
-    return(data.dbResNum == coord)
+  if data !== nothing && data.id == id
+    return(data.resnum == coord)
   end
   false
 end
 
-function getcoordinate{T}(res::SIFTSResidue, db::DataBase{T}, id::ASCIIString)
+function getcoordinate(res::SIFTSResidue, db::DataBase, id::ASCIIString)
   data = getdatabase(res, db)
-  if data !== nothing && data.dbAccessionId == id
-    return(data.dbResNum)
+  if data !== nothing && data.id == id
+    return(data.resnum)
   end
   nothing
 end
 
-function getcoordinate{T}(res::SIFTSResidue, db::DataBase{T}, id::ASCIIString, chain::ASCIIString)
+function getcoordinate(res::SIFTSResidue, db::DataBase, id::ASCIIString, chain::ASCIIString)
   if ischain(res, chain)
     return(getcoordinate(res, db, id))
   end
@@ -282,9 +214,13 @@ end
 # Mapping Functions
 # =================
 
-function siftsmapping{F <: CoordinateSystem, T <: CoordinateSystem}(filename::ASCIIString,
-                                                              db_from::DataBase{F}, id_from::ASCIIString,
-                                                              db_to::DataBase{T}, id_to::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
+_parse(::Type{Int}, str) = parse(Int, str)
+_parse(::Type{ASCIIString}, str) = ascii(str)
+@inline _parse(::Type{ASCIIString}, str::ASCIIString) = str
+
+function siftsmapping{F, T}(filename::ASCIIString,
+                            db_from::DataBase{F}, id_from::ASCIIString,
+                            db_to::DataBase{T}, id_to::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
   mapping = Dict{F, T}()
   for entity in _get_entities(filename)
     segments = _get_segments(entity)
@@ -292,17 +228,17 @@ function siftsmapping{F <: CoordinateSystem, T <: CoordinateSystem}(filename::AS
       residues = _get_residues(segment)
   		for residue in residues
         in_chain = chain == "all"
-        key_data = name(db_from) == "PDBe" ? Nullable(PDBeCoordinate(residue)) : Nullable{F}()
-        value_data = name(db_to) == "PDBe" ? Nullable(PDBeCoordinate(residue)) : Nullable{F}()
+        key_data = name(db_from) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{F}()
+        value_data = name(db_to) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{T}()
 	  	  if missings || !_is_missing(residue)
   			  crossref = get_elements_by_tagname(residue, "crossRefDb")
 	  			for ref in crossref
             source = attribute(ref, "dbSource")
 		  		  if source == name(db_from) && attribute(ref, "dbAccessionId") == id_from
-			  		  key_data = Nullable(F(ref))
+			  		  key_data = Nullable(_parse(F, attribute(ref, "dbResNum")))
 				  	end
             if source == name(db_to) && attribute(ref, "dbAccessionId") == id_to
-		  			  value_data = Nullable(T(ref))
+		  			  value_data = Nullable(_parse(T, attribute(ref, "dbResNum")))
 			  		end
             if !in_chain && source == "PDB" # XML: <crossRefDb dbSource="PDB" ... dbChainId="E"/>
               in_chain = attribute(ref, "dbChainId") == chain
@@ -329,7 +265,7 @@ function siftsresidues(filename::ASCIIString; chain::ASCIIString="all", missings
         missing = _is_missing(residue)
 		    if missings || !missing
           sifts_res = SIFTSResidue(residue, missing)
-          if chain == "all" || (!isnull(sifts_res.PDB) && get(sifts_res.PDB).dbChainId == chain)
+          if chain == "all" || (!isnull(sifts_res.PDB) && get(sifts_res.PDB).chain == chain)
             push!(vector, sifts_res)
           end
 			  end

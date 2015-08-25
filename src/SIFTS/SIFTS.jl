@@ -4,16 +4,10 @@ module SIFTS
   using AutoHashEquals
   using MIToS.Utils
 
-  import Base: hash, ==
+  import Base: hash, ==, call, string, print, write, show, convert, isnull
 
-  export CoordinateSystem,
-  PDBeCoordinate, UniProtCoordinate, PDBresnumCoordinate,
-  DataBase,
-  RefPDBe, RefUniProt, RefPfam, RefNCBI, RefPDB, RefCATH, RefSCOP,
-  dbPDBe, dbUniProt, dbPfam, dbNCBI, dbPDB, dbCATH, dbSCOP,
-
+  export DataBase, dbPDBe, dbInterPro, dbUniProt, dbPfam, dbNCBI, dbPDB, dbCATH, dbSCOP,
   SIFTSResidue, has, getdatabase, getcoordinate, ischain,
-
   downloadsifts, siftsmapping, siftsresidues
 
   include("XMLParser.jl")
