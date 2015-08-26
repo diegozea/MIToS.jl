@@ -8,19 +8,19 @@ The `Annotations` type is basically a container for `Dict`s with the annotations
 `Annotations` was designed for storage of annotations of the **Stockholm format**.
 """
 type Annotations
-  file::Dict{ASCIIString, ASCIIString}
+  file::OrderedDict{ASCIIString, ASCIIString}
   sequences::Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}
   columns::Dict{ASCIIString,ASCIIString}
   residues::Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}
 end
 
-call(::Type{Annotations}) = Annotations(Dict{ASCIIString, ASCIIString}(),
+call(::Type{Annotations}) = Annotations(OrderedDict{ASCIIString, ASCIIString}(),
                                         Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(),
                                         Dict{ASCIIString, ASCIIString}(),
                                         Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}())
 
-"""Creates an empty `Annotations` of length 0 using sizehint!"""
-empty(::Type{Annotations}) = Annotations( sizehint!(Dict{ASCIIString, ASCIIString}(), 0),
+"Creates an empty `Annotations` of length 0 using sizehint!"
+empty(::Type{Annotations}) = Annotations( sizehint(OrderedDict{ASCIIString, ASCIIString}(), 0), # There is not sizehint! for OrderedDict right now
                                           sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0),
                                           sizehint!(Dict{ASCIIString, ASCIIString}(), 0),
                                           sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0))
@@ -30,6 +30,11 @@ empty(::Type{Annotations}) = Annotations( sizehint!(Dict{ASCIIString, ASCIIStrin
 
 # This function is useful because of the Julia issue 12495
 _filter(str::ASCIIString, mask) = ASCIIString( str.data[mask] )
+
+"""
+For filter column and sequence mapping of the format: ",,,,10,11,,12"
+"""
+_filter_mapping(str_map::ASCIIString, mask) = join(split(str_map, ',')[mask], ',')
 
 """
 `filtersequences!(data::Annotations, ids::IndexedVector, mask::AbstractArray{Bool,1})` is useful for deleting annotations for a group of sequences.
@@ -58,13 +63,26 @@ end
 `filtercolumns!(data::Annotations, mask)` is useful for deleting annotations for a group of columns (creating a subset in place).
 """
 function filtercolumns!(data::Annotations, mask)
-  if length(data.columns) > 0 || length(data.residues) > 0
+  if length(data.residues) > 0
     for (key,value) in data.residues
       data.residues[key] = _filter(value, mask)
     end
+  end
+  if length(data.columns) > 0
     for (key,value) in data.columns
-      data.columns[key] = _filter(value, mask)
+        data.columns[key] = _filter(value, mask)
     end
+  end
+  if length(data.sequences) > 0
+    for (key,value) in data.sequences
+      if key[2] == "SeqMap"
+        data.sequences[key] = _filter_mapping(value, mask)
+      end
+    end
+  end
+  filecolumnmapping = get(data.file, "ColMap", "")
+  if filecolumnmapping != ""
+    data.file["ColMap"] = _filter_mapping(filecolumnmapping, mask)
   end
   data
 end
@@ -72,8 +90,16 @@ end
 # Copy, deepcopy and empty!
 # -------------------------
 
-for fun in [:copy, :deepcopy, :empty!]
+for fun in [:copy, :deepcopy]
   @eval $(fun)(ann::Annotations) = Annotations( $(fun)( ann.file ), $(fun)( ann.sequences ), $(fun)( ann.columns ), $(fun)( ann.residues ))
+end
+
+function empty!(ann::Annotations)
+  empty!(ann.file)
+  empty!(ann.sequences)
+  empty!(ann.columns)
+  empty!(ann.residues)
+  ann
 end
 
 isempty(ann::Annotations) = isempty(ann.file) && isempty(ann.sequences) && isempty(ann.columns) && isempty(ann.residues)
@@ -152,3 +178,9 @@ end
 @doc "`setannotcolumn!(ann, feature, annotation)` stores per column `annotation` (1 char per column) for `feature`" setannotcolumn!
 @doc "`setannotsequence!(ann, seqname, feature, annotation)` stores per sequence `annotation` for `(seqname, feature)`" setannotsequence!
 @doc "`setannotresidue!(ann, seqname, feature, annotation)` stores per residue `annotation` (1 char per residue) for `(seqname, feature)`" setannotresidue!
+
+# MIToS modification annotations
+# ===============================
+
+"Annotates on file annotations the modifications realized by MIToS on the MSA"
+annotate_modification!(ann::Annotations, modification::ASCIIString) = setannotfile!(ann, string("MIToS ", Dates.now(), " ", rand(10:99)), modification)

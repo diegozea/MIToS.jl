@@ -37,7 +37,7 @@ end
 function _pre_readstockholm(io::Union(IO, AbstractString))
   IDS  = ASCIIString[]
   SEQS = ASCIIString[]
-  GF = Dict{ASCIIString,ASCIIString}()
+  GF = OrderedDict{ASCIIString,ASCIIString}()
   GC = Dict{ASCIIString,ASCIIString}()
   GS = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
   GR = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
@@ -48,7 +48,8 @@ function _pre_readstockholm(io::Union(IO, AbstractString))
      end
   end
 
-  GF = sizehint!(GF, length(GF))
+  #GF = sizehint!(GF, length(GF))
+  GF = sizehint(GF, length(GF))
   GC = sizehint!(GC, length(GC))
   GS = sizehint!(GS, length(GS))
   GR = sizehint!(GR, length(GR))
@@ -58,8 +59,12 @@ end
 function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::Type{AnnotatedMultipleSequenceAlignment}; useidcoordinates::Bool=true, deletefullgaps::Bool=true)
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
   MSA, MAP = useidcoordinates && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
-  COLS = vcat(1:size(MSA,2))
-  msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, MAP, IndexedVector(COLS), Annotations(GF, GS, GC, GR))
+  annot = Annotations(GF, GS, GC, GR)
+  setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
+  for i in 1:length(IDS)
+    setannotsequence!(annot, IDS[i], "SeqMap", MAP[i])
+  end
+  msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, annot)
   if deletefullgaps
     deletefullgaps!(msa)
   end

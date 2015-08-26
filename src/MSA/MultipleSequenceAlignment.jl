@@ -14,8 +14,8 @@ end
 type AnnotatedMultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
   id::IndexedVector{ASCIIString}
   msa::Matrix{Residue}
-  sequencemapping::Matrix{Int}
-  filecolumnmapping::IndexedVector{Int}
+#  sequencemapping::Matrix{Int}
+#  filecolumnmapping::IndexedVector{Int}
   annotations::Annotations
 end
 
@@ -34,8 +34,8 @@ type AnnotatedAlignedSequence <: AbstractAlignedSequence
   id::ASCIIString
   index::Int
   sequence::Vector{Residue}
-  sequencemapping::Vector{Int}
-  filecolumnmapping::IndexedVector{Int}
+#  sequencemapping::Vector{Int}
+#  filecolumnmapping::IndexedVector{Int}
   annotations::Annotations
 end
 
@@ -111,7 +111,7 @@ end
 
 """Returns an `AnnotatedAlignedSequence` with all annotations of sequence from the `AnnotatedMultipleSequenceAlignment`"""
 getsequence(msa::AnnotatedMultipleSequenceAlignment, i::Int) = AnnotatedAlignedSequence(selectvalue(msa.id, i), i,  vec(msa.msa[i,:]),
-                                                                                        vec(msa.sequencemapping[i,:]), msa.filecolumnmapping,
+                                                                                        #vec(msa.sequencemapping[i,:]), msa.filecolumnmapping,
                                                                                         getsequence(msa.annotations, selectvalue(msa.id, i)))
 
 """Returns an `AlignedSequence` from the `MultipleSequenceAlignment`"""
@@ -121,7 +121,9 @@ getsequence(msa::Matrix{Residue}, i::Int) = vec(msa[i,:])
 
 function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::ASCIIString)
   i = selectindex(msa.id, id)
-  AnnotatedAlignedSequence(id, i, vec(msa.msa[i,:]), vec(msa.sequencemapping[i,:]), msa.filecolumnmapping, getsequence(msa.annotations, id))
+  AnnotatedAlignedSequence(id, i, vec(msa.msa[i,:]),
+                           #vec(msa.sequencemapping[i,:]), msa.filecolumnmapping,
+                           getsequence(msa.annotations, id))
 end
 
 function getsequence(msa::MultipleSequenceAlignment, id::ASCIIString)
@@ -142,9 +144,10 @@ For `AnnotatedMultipleSequenceAlignment`s the annotations are updated.
 """
 function filtersequences!(msa::AnnotatedMultipleSequenceAlignment, mask::BitVector)
   msa.msa = filtersequences(msa.msa, mask)
-  msa.sequencemapping = msa.sequencemapping[ mask , : ]
+  #msa.sequencemapping = msa.sequencemapping[ mask , : ]
   filtersequences!(msa.annotations, msa.id, mask)
   msa.id = msa.id[ mask ]
+  annotate_modification!(msa, string("filtersequences! : ", sum(~mask), " sequences have been deleted."))
   msa
 end
 
@@ -163,9 +166,10 @@ For `AnnotatedMultipleSequenceAlignment`s or `AnnotatedAlignedSequence`s the ann
 """
 function filtercolumns!(msa::AnnotatedMultipleSequenceAlignment, mask::BitVector)
   msa.msa = filtercolumns(msa.msa, mask)
-  msa.sequencemapping = msa.sequencemapping[ : , mask ]
-  msa.filecolumnmapping = msa.filecolumnmapping[ mask ]
+  #msa.sequencemapping = msa.sequencemapping[ : , mask ]
+  #msa.filecolumnmapping = msa.filecolumnmapping[ mask ]
   filtercolumns!(msa.annotations, mask)
+  annotate_modification!(msa, string("filtercolumns! : ", sum(~mask), " columns have been deleted."))
   msa
 end
 
@@ -176,9 +180,10 @@ end
 
 function filtercolumns!(seq::AnnotatedAlignedSequence, mask::BitVector)
   seq.sequence = filtercolumns(seq.sequence, mask)
-  seq.sequencemapping = seq.sequencemapping[ mask ]
-  seq.filecolumnmapping = seq.filecolumnmapping[ mask ]
+  #seq.sequencemapping = seq.sequencemapping[ mask ]
+  #seq.filecolumnmapping = seq.filecolumnmapping[ mask ]
   filtercolumns!(seq.annotations, mask)
+  annotate_modification!(seq, string("filtercolumns! : ", sum(~mask), " columns have been deleted."))
   seq
 end
 
@@ -190,12 +195,19 @@ end
 # Copy, deepcopy, empty!
 # ----------------------
 
-for fun in (:copy, :deepcopy, :empty!)
-  @eval $(fun)(msa::AnnotatedMultipleSequenceAlignment) = AnnotatedMultipleSequenceAlignment($(fun)(msa.id), $(fun)(msa.msa), $(fun)(msa.sequencemapping), $(fun)(msa.filecolumnmapping), $(fun)(msa.annotations))
+for fun in (:copy, :deepcopy)
+#  @eval $(fun)(msa::AnnotatedMultipleSequenceAlignment) = AnnotatedMultipleSequenceAlignment($(fun)(msa.id), $(fun)(msa.msa), $(fun)(msa.sequencemapping), $(fun)(msa.filecolumnmapping), $(fun)(msa.annotations))
+  @eval $(fun)(msa::AnnotatedMultipleSequenceAlignment) = AnnotatedMultipleSequenceAlignment($(fun)(msa.id), $(fun)(msa.msa), $(fun)(msa.annotations))
   @eval $(fun)(msa::MultipleSequenceAlignment) = MultipleSequenceAlignment($(fun)(msa.id), $(fun)(msa.msa))
-  @eval $(fun)(seq::AnnotatedAlignedSequence) = AnnotatedAlignedSequence($(fun)(seq.id), $(fun)(seq.index), $(fun)(seq.sequence), $(fun)(seq.sequencemapping), $(fun)(seq.filecolumnmapping), $(fun)(seq.annotations))
+#  @eval $(fun)(seq::AnnotatedAlignedSequence) = AnnotatedAlignedSequence($(fun)(seq.id), $(fun)(seq.index), $(fun)(seq.sequence), $(fun)(seq.sequencemapping), $(fun)(seq.filecolumnmapping), $(fun)(seq.annotations))
+  @eval $(fun)(seq::AnnotatedAlignedSequence) = AnnotatedAlignedSequence($(fun)(seq.id), $(fun)(seq.index), $(fun)(seq.sequence), $(fun)(seq.annotations))
   @eval $(fun)(seq::AlignedSequence) = AlignedSequence($(fun)(seq.id), $(fun)(seq.index), $(fun)(seq.sequence))
 end
+
+empty!(msa::AnnotatedMultipleSequenceAlignment) = (empty!(msa.id); empty!(msa.msa); empty!(msa.annotations); msa)
+empty!(msa::MultipleSequenceAlignment) = (empty!(msa.id); empty!(msa.msa); msa)
+empty!(seq::AnnotatedAlignedSequence) = (empty!(seq.id); empty!(seq.index); v(seq.sequence); empty!(seq.annotations); seq)
+empty!(seq::AlignedSequence) = (empty!(seq.id); empty!(seq.index); empty!(seq.sequence); seq)
 
 # Counting Gaps and Coverage
 # --------------------------
@@ -246,7 +258,8 @@ This function swaps the sequences 1 and `i`, also and `id` can be used.
 function setreference!(msa::AnnotatedMultipleSequenceAlignment, i::Int)
   swap!(msa.id, 1, i)
   msa.msa[1, :], msa.msa[i, :] = msa.msa[i, :], msa.msa[1, :]
-  msa.sequencemapping[1, :], msa.sequencemapping[i, :] = msa.sequencemapping[i, :], msa.sequencemapping[1, :]
+  #msa.sequencemapping[1, :], msa.sequencemapping[i, :] = msa.sequencemapping[i, :], msa.sequencemapping[1, :]
+  annotate_modification!(msa, string("setreference! : Using ", selectvalue(msa.id, 1)," instead of ", selectvalue(msa.id, i)," as reference."))
   msa
 end
 
@@ -277,11 +290,23 @@ This functions deletes/filters sequences and columns/positions on the MSA on the
  - Removes all the columns/position on the MSA with **more** than a `gaplimit` (default to `0.5`: 50% of gaps)
 """
 function gapstrip!(msa::AbstractMultipleSequenceAlignment; coveragelimit::Float64=0.75, gaplimit::Float64=0.5)
+  annotate_modification!(msa, string("gapstrip! : Deletes columns with gaps in the first sequence."))
   adjustreference!(msa)
   # Remove sequences with pour coverage of the reference sequence
-  ncolumns(msa) != 0 ? filtersequences!(msa, coverage(msa) .>= coveragelimit ) : throw("There are not columns in the MSA after the gap trimming")
+  if ncolumns(msa) != 0
+    annotate_modification!(msa, string("gapstrip! : Deletes sequences with a coverage less than ", coveragelimit))
+    filtersequences!(msa, coverage(msa) .>= coveragelimit )
+  else
+    throw("There are not columns in the MSA after the gap trimming")
+  end
   # Remove columns with a porcentage of gap greater than gaplimit
-  nsequences(msa) != 0 ? filtercolumns!(msa, columngappercentage(msa) .<= gaplimit) : throw("There are not sequences in the MSA after coverage filter")
+  if nsequences(msa) != 0
+    annotate_modification!(msa, string("gapstrip! : Deletes columns with more than ", gaplimit, " gaps."))
+    filtercolumns!(msa, columngappercentage(msa) .<= gaplimit)
+  else
+    throw("There are not sequences in the MSA after coverage filter")
+  end
+  msa
 end
 
 """
@@ -314,6 +339,17 @@ for getter in [ :getannotcolumn, :getannotfile, :getannotresidue, :getannotseque
   @eval $(getter)(msa::AnnotatedMultipleSequenceAlignment, args...) = $(getter)(msa.annotations, args...)
   @eval $(getter)(seq::AnnotatedAlignedSequence, args...) = $(getter)(seq.annotations, args...)
 end
+
+# Set annotations
+# ---------------
+
+for setter in [ :setannotcolumn!, :setannotfile!, :setannotresidue!, :setannotsequence!, :annotate_modification! ]
+  @eval $(setter)(msa::AnnotatedMultipleSequenceAlignment, args...) = $(setter)(msa.annotations, args...)
+  @eval $(setter)(seq::AnnotatedAlignedSequence, args...) = $(setter)(seq.annotations, args...)
+end
+
+# Used on AbstractMultipleSequenceAlignment methods
+@inline annotate_modification!(msa::MultipleSequenceAlignment, str::ASCIIString) = nothing
 
 # Show & Print
 # ------------

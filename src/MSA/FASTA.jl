@@ -50,8 +50,12 @@ end
 function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{AnnotatedMultipleSequenceAlignment}; useidcoordinates::Bool=true, deletefullgaps::Bool=true)
   IDS, SEQS = _pre_readfasta(io)
   MSA, MAP = useidcoordinates  && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
-  COLS = vcat(1:size(MSA,2))
-  msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, MAP, IndexedVector(COLS), empty(Annotations))
+  annot = Annotations()
+  setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
+  for i in 1:length(IDS)
+    setannotsequence!(annot, IDS[i], "SeqMap", MAP[i])
+  end
+  msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, annot)
   if deletefullgaps
     deletefullgaps!(msa)
   end
@@ -67,7 +71,10 @@ function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{M
   return(msa)
 end
 
-parse(io::Union(IO,AbstractString), format::Type{FASTA}; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = parse(io, FASTA, AnnotatedMultipleSequenceAlignment; useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps)
+parse(io::Union(IO,AbstractString), format::Type{FASTA}; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = parse(io, FASTA,
+                                                                                                                         AnnotatedMultipleSequenceAlignment;
+                                                                                                                         useidcoordinates=useidcoordinates,
+                                                                                                                         deletefullgaps=deletefullgaps)
 
 # Print FASTA
 # ===========
