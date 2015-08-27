@@ -183,4 +183,7 @@ end
 # ===============================
 
 "Annotates on file annotations the modifications realized by MIToS on the MSA"
-annotate_modification!(ann::Annotations, modification::ASCIIString) = setannotfile!(ann, string("MIToS ", Dates.now(), " ", rand(10:99)), modification)
+function annotate_modification!(ann::Annotations, modification::ASCIIString)
+  setannotfile!(ann, string("MIToS_", Dates.now(), "_", rand(100:999)), modification)
+  true # generally used on bool context: annotate && annotate_modification!(...
+end

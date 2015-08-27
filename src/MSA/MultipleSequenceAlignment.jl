@@ -142,16 +142,16 @@ filtersequences(msa::Matrix{Residue}, mask::BitVector) = msa[mask, :]
 Allows to filter sequences on a MSA using a `BitVector` mask (removes `false`s).
 For `AnnotatedMultipleSequenceAlignment`s the annotations are updated.
 """
-function filtersequences!(msa::AnnotatedMultipleSequenceAlignment, mask::BitVector)
+function filtersequences!(msa::AnnotatedMultipleSequenceAlignment, mask::BitVector, annotate::Bool=true)
   msa.msa = filtersequences(msa.msa, mask)
   #msa.sequencemapping = msa.sequencemapping[ mask , : ]
   filtersequences!(msa.annotations, msa.id, mask)
   msa.id = msa.id[ mask ]
-  annotate_modification!(msa, string("filtersequences! : ", sum(~mask), " sequences have been deleted."))
+  annotate && annotate_modification!(msa, string("filtersequences! : ", sum(~mask), " sequences have been deleted."))
   msa
 end
 
-function filtersequences!(msa::MultipleSequenceAlignment, mask::BitVector)
+function filtersequences!(msa::MultipleSequenceAlignment, mask::BitVector, annotate::Bool=false) # annotate is useful for calling this inside other functions
   msa.msa = filtersequences(msa.msa, mask)
   msa.id = msa.id[ mask ]
   msa
@@ -164,30 +164,30 @@ filtercolumns(seq::Vector{Residue}, mask::BitVector) = seq[ mask ]
 Allows to filter columns/positions on a MSA using a `BitVector` mask.
 For `AnnotatedMultipleSequenceAlignment`s or `AnnotatedAlignedSequence`s the annotations are updated.
 """
-function filtercolumns!(msa::AnnotatedMultipleSequenceAlignment, mask::BitVector)
+function filtercolumns!(msa::AnnotatedMultipleSequenceAlignment, mask::BitVector, annotate::Bool=true)
   msa.msa = filtercolumns(msa.msa, mask)
   #msa.sequencemapping = msa.sequencemapping[ : , mask ]
   #msa.filecolumnmapping = msa.filecolumnmapping[ mask ]
   filtercolumns!(msa.annotations, mask)
-  annotate_modification!(msa, string("filtercolumns! : ", sum(~mask), " columns have been deleted."))
+  annotate && annotate_modification!(msa, string("filtercolumns! : ", sum(~mask), " columns have been deleted."))
   msa
 end
 
-function filtercolumns!(msa::MultipleSequenceAlignment, mask::BitVector)
+function filtercolumns!(msa::MultipleSequenceAlignment, mask::BitVector, annotate::Bool=false) # annotate is useful for calling this inside other functions
   msa.msa = filtercolumns(msa.msa, mask)
   msa
 end
 
-function filtercolumns!(seq::AnnotatedAlignedSequence, mask::BitVector)
+function filtercolumns!(seq::AnnotatedAlignedSequence, mask::BitVector, annotate::Bool=true)
   seq.sequence = filtercolumns(seq.sequence, mask)
   #seq.sequencemapping = seq.sequencemapping[ mask ]
   #seq.filecolumnmapping = seq.filecolumnmapping[ mask ]
   filtercolumns!(seq.annotations, mask)
-  annotate_modification!(seq, string("filtercolumns! : ", sum(~mask), " columns have been deleted."))
+  annotate && annotate_modification!(seq, string("filtercolumns! : ", sum(~mask), " columns have been deleted."))
   seq
 end
 
-function filtercolumns!(seq::AlignedSequence, mask::BitVector)
+function filtercolumns!(seq::AlignedSequence, mask::BitVector, annotate::Bool=false)
   seq.sequence = filtercolumns(seq.sequence, mask)
   seq
 end
@@ -255,32 +255,32 @@ columngappercentage(msa::AbstractMultipleSequenceAlignment) = columngappercentag
 Puts the sequence `i` as reference (as the first sequence) of the MSA.
 This function swaps the sequences 1 and `i`, also and `id` can be used.
 """
-function setreference!(msa::AnnotatedMultipleSequenceAlignment, i::Int)
+function setreference!(msa::AnnotatedMultipleSequenceAlignment, i::Int, annotate::Bool=true)
   swap!(msa.id, 1, i)
   msa.msa[1, :], msa.msa[i, :] = msa.msa[i, :], msa.msa[1, :]
   #msa.sequencemapping[1, :], msa.sequencemapping[i, :] = msa.sequencemapping[i, :], msa.sequencemapping[1, :]
-  annotate_modification!(msa, string("setreference! : Using ", selectvalue(msa.id, 1)," instead of ", selectvalue(msa.id, i)," as reference."))
+  annotate && annotate_modification!(msa, string("setreference! : Using ", selectvalue(msa.id, 1)," instead of ", selectvalue(msa.id, i)," as reference."))
   msa
 end
 
-function setreference!(msa::MultipleSequenceAlignment, i::Int)
+function setreference!(msa::MultipleSequenceAlignment, i::Int, annotate::Bool=false) # annotate is useful for calling this inside other functions
   swap!(msa.id, 1, i)
   msa.msa[1, :], msa.msa[i, :] = msa.msa[i, :], msa.msa[1, :]
   msa
 end
 
-setreference!(msa::AbstractMultipleSequenceAlignment, id::ASCIIString) = setreference!(msa, selectindex(msa.id ,id))
+setreference!(msa::AbstractMultipleSequenceAlignment, id::ASCIIString, annotate::Bool=true) = setreference!(msa, selectindex(msa.id ,id), annotate)
 
-function setreference!(msa::Matrix{Residue}, i::Int)
+function setreference!(msa::Matrix{Residue}, i::Int, annotate::Bool=false)
   msa[1, :], msa[i, :] = msa[i, :], msa[1, :]
   msa
 end
 
 """Creates a new Matrix{Residue}. This function deletes positions/columns of the MSA with gaps in the reference (first) sequence"""
-adjustreference(msa::Matrix{Residue}) = msa[ : , vec(msa[1,:]) .!= GAP ]
+adjustreference(msa::Matrix{Residue}, annotate::Bool=false) = msa[ : , vec(msa[1,:]) .!= GAP ] # annotate is useful for calling this inside other functions
 
 """Removes positions/columns of the MSA with gaps in the reference (first) sequence"""
-adjustreference!(msa::AbstractMultipleSequenceAlignment) = filtercolumns!(msa, vec(msa.msa[1,:]) .!= GAP )
+adjustreference!(msa::AbstractMultipleSequenceAlignment, annotate::Bool=true) = filtercolumns!(msa, vec(msa.msa[1,:]) .!= GAP, annotate)
 
 """
 This functions deletes/filters sequences and columns/positions on the MSA on the following order:
@@ -289,20 +289,20 @@ This functions deletes/filters sequences and columns/positions on the MSA on the
  - Removes all the sequences with a coverage with respect to the number of columns/positions on the MSA **less** than a `coveragelimit` (default to `0.75`: sequences with 25% of gaps)
  - Removes all the columns/position on the MSA with **more** than a `gaplimit` (default to `0.5`: 50% of gaps)
 """
-function gapstrip!(msa::AbstractMultipleSequenceAlignment; coveragelimit::Float64=0.75, gaplimit::Float64=0.5)
-  annotate_modification!(msa, string("gapstrip! : Deletes columns with gaps in the first sequence."))
-  adjustreference!(msa)
+function gapstrip!(msa::AbstractMultipleSequenceAlignment, annotate::Bool=true; coveragelimit::Float64=0.75, gaplimit::Float64=0.5)
+  annotate && annotate_modification!(msa, string("gapstrip! : Deletes columns with gaps in the first sequence."))
+  adjustreference!(msa, annotate)
   # Remove sequences with pour coverage of the reference sequence
   if ncolumns(msa) != 0
-    annotate_modification!(msa, string("gapstrip! : Deletes sequences with a coverage less than ", coveragelimit))
-    filtersequences!(msa, coverage(msa) .>= coveragelimit )
+    annotate && annotate_modification!(msa, string("gapstrip! : Deletes sequences with a coverage less than ", coveragelimit))
+    filtersequences!(msa, coverage(msa) .>= coveragelimit, annotate)
   else
     throw("There are not columns in the MSA after the gap trimming")
   end
   # Remove columns with a porcentage of gap greater than gaplimit
   if nsequences(msa) != 0
-    annotate_modification!(msa, string("gapstrip! : Deletes columns with more than ", gaplimit, " gaps."))
-    filtercolumns!(msa, columngappercentage(msa) .<= gaplimit)
+    annotate && annotate_modification!(msa, string("gapstrip! : Deletes columns with more than ", gaplimit, " gaps."))
+    filtercolumns!(msa, columngappercentage(msa) .<= gaplimit, annotate)
   else
     throw("There are not sequences in the MSA after coverage filter")
   end
@@ -349,7 +349,7 @@ for setter in [ :setannotcolumn!, :setannotfile!, :setannotresidue!, :setannotse
 end
 
 # Used on AbstractMultipleSequenceAlignment methods
-@inline annotate_modification!(msa::MultipleSequenceAlignment, str::ASCIIString) = nothing
+@inline annotate_modification!(msa::MultipleSequenceAlignment, str::ASCIIString) = false # annotate_modification! is used on bool context: annotate && ...
 
 # Show & Print
 # ------------
