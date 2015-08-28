@@ -17,6 +17,7 @@ module MSA
   nsequences, ncolumns, gappercentage, residuepercentage, coverage,
   columngappercentage, setreference!, gapstrip!, adjustreference!, asciisequence,
   gapstrip, adjustreference, filtersequences, filtercolumns,
+  getcolumnmapping, getsequencemapping,
 
   Raw,
 

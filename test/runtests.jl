@@ -10,6 +10,7 @@ include("indexedvectors.jl")
 include("annotations.jl")
 include("rawaln_and_gaps.jl")
 include("multiplesequencealignment.jl")
+include("mapping_msa.jl")
 # PDB
 include("pdb.jl")
 #  SIFTS

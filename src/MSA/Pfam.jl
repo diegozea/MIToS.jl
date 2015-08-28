@@ -58,7 +58,7 @@ end
 
 function parse(io::Union(IO, AbstractString), format::Type{Stockholm},
                output::Type{AnnotatedMultipleSequenceAlignment}; generatemapping::Bool=false,
-               useidcoordinates::Bool=true, deletefullgaps::Bool=true)
+               useidcoordinates::Bool=false, deletefullgaps::Bool=true)
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
   annot = Annotations(GF, GS, GC, GR)
   if generatemapping
@@ -88,7 +88,7 @@ function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::T
 end
 
 parse(io, format::Type{Stockholm};  generatemapping::Bool=false,
-      useidcoordinates::Bool=true, deletefullgaps::Bool=true) = parse(io, Stockholm, AnnotatedMultipleSequenceAlignment,
+      useidcoordinates::Bool=false, deletefullgaps::Bool=true) = parse(io, Stockholm, AnnotatedMultipleSequenceAlignment,
                                                                       generatemapping=generatemapping,
                                                                       useidcoordinates=useidcoordinates,
                                                                       deletefullgaps=deletefullgaps)
