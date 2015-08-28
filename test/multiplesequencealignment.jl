@@ -452,8 +452,8 @@ let io = IOBuffer()
 end
 
 let io = IOBuffer()
-  print(io, small, Stockholm)
-  @test parse(takebuf_string(io), Stockholm) == small
+  print(io, small_na, Stockholm)
+  @test parse(takebuf_string(io), Stockholm) == small_na
 end
 
 
