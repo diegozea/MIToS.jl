@@ -13,33 +13,31 @@ end
 # Mappings
 # ========
 
+function _fill_aln_seq_ann!(aln, seq_ann::Vector{ASCIIString}, seq::Vector{UInt8}, init::Int, nres::Int, i)
+  if length(seq) != nres
+    throw(ErrorException(string("There is and aligned sequence with different number of columns [ ", length(seq), " != ", nres, " ]:\n", ascii(seq))))
+  end
+  @inbounds for j in 1:nres
+    res = seq[j]
+    aln[j,i] = Residue( res )
+    if res != UInt8('-') && res != UInt8('.')
+      seq_ann[j] = string(init)
+      init += 1
+    else
+      seq_ann[j] = ""
+    end
+  end
+  join(seq_ann, ',')
+end
+
 function _to_msa_mapping(sequences::Array{ASCIIString,1})
   nseq = size(sequences,1)
   nres = length(sequences[1])
   aln = Array(Residue,nres,nseq)
-#  mapp = zeros(Int,nseq,nres) # This needs to be zeros
   mapp = Array(ASCIIString, nseq)
   seq_ann = Array(ASCIIString, nres)
-  gaps = UInt8['.', '-']
   for i in 1:nseq
-    init = 1
-    seq = sequences[i].data
-    if length(seq) == nres
-      @inbounds for j in 1:nres
-        res = seq[j]
-        aln[j,i] = Residue( res )
-        if !( res in gaps )
-          seq_ann[j] = string(init)
-#          mapp[i, j] = init
-          init += 1
-        else
-          seq_ann[j] = ""
-        end
-      end
-      mapp[i] = join(seq_ann, ',')
-    else
-      throw( ErrorException("There is and aligned sequence with different number of columns [ $(length(seq)) != $(nres) ]:\n$(ascii(seq))") )
-    end
+    mapp[i] = _fill_aln_seq_ann!(aln, seq_ann, sequences[i].data, 1, nres, i)
   end
   (aln', mapp)
 end
@@ -48,34 +46,13 @@ function _to_msa_mapping(sequences::Array{ASCIIString,1}, ids::Array{ASCIIString
   nseq = size(sequences,1)
   nres = length(sequences[1])
   aln = Array(Residue,nres,nseq)
-#  mapp = zeros(Int,nseq,nres) # This needs to be zeros
   mapp = Array(ASCIIString, nseq)
   seq_ann = Array(ASCIIString, nres)
-  gaps = UInt8['.', '-']
   sep = r"/|-"
   for i in 1:nseq
     fields = split(ids[i],sep)
     init = length(fields) == 3 ? parse(Int, fields[2]) : 1
-    seq = sequences[i].data
-    if length(seq) == nres
-      @inbounds for j in 1:nres
-        res = seq[j]
-        aln[j,i] = Residue( res )
-        if !( res in gaps )
-          seq_ann[j] = string(init)
-#          mapp[i, j] = init
-          init += 1
-        else
-          seq_ann[j] = ""
-        end
-      end
-      mapp[i] = join(seq_ann, ',')
-    else
-      throw( ErrorException("There is and aligned sequence with different number of columns [ $(length(seq)) != $(nres) ]:\n$(ascii(seq))") )
-    end
-    if (init - 1) != parse(Int, fields[3])
-      throw( ErrorException("Different lengths: $(fields[3]) != $(init) for sequence $(ids[i])") )
-    end
+    mapp[i] = _fill_aln_seq_ann!(aln, seq_ann, sequences[i].data, init, nres, i)
   end
   (aln', mapp)
 end
