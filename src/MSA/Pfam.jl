@@ -56,19 +56,25 @@ function _pre_readstockholm(io::Union(IO, AbstractString))
   (IDS, SEQS, GF, GS, GC, GR)
 end
 
-function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::Type{AnnotatedMultipleSequenceAlignment}; useidcoordinates::Bool=true, deletefullgaps::Bool=true)
+function parse(io::Union(IO, AbstractString), format::Type{Stockholm},
+               output::Type{AnnotatedMultipleSequenceAlignment}; generatemapping::Bool=false,
+               useidcoordinates::Bool=true, deletefullgaps::Bool=true)
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
-  MSA, MAP = useidcoordinates && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
   annot = Annotations(GF, GS, GC, GR)
-  setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
-  for i in 1:length(IDS)
-    setannotsequence!(annot, IDS[i], "SeqMap", MAP[i])
+  if generatemapping
+    MSA, MAP = useidcoordinates && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
+    setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
+    for i in 1:length(IDS)
+      setannotsequence!(annot, IDS[i], "SeqMap", MAP[i])
+    end
+  else
+    MSA = convert(Matrix{Residue}, SEQS)
   end
   msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, annot)
   if deletefullgaps
     deletefullgaps!(msa)
   end
-  return(msa)
+  msa
 end
 
 function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
@@ -78,10 +84,14 @@ function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::T
   if deletefullgaps
     deletefullgaps!(msa)
   end
-  return(msa)
+  msa
 end
 
-parse(io, format::Type{Stockholm}; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = parse(io, Stockholm, AnnotatedMultipleSequenceAlignment, useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps)
+parse(io, format::Type{Stockholm};  generatemapping::Bool=false,
+      useidcoordinates::Bool=true, deletefullgaps::Bool=true) = parse(io, Stockholm, AnnotatedMultipleSequenceAlignment,
+                                                                      generatemapping=generatemapping,
+                                                                      useidcoordinates=useidcoordinates,
+                                                                      deletefullgaps=deletefullgaps)
 
 # Print Pfam
 # ==========
