@@ -31,6 +31,9 @@ for i in 1:4
   @test get_n_words(line, i) == get_n_words(line_n, i)
 end
 
+@test get_n_words("\n",1) == ASCIIString[]
+@test get_n_words("#", 1) == ASCIIString["#"]
+
 print("""
 hascoordinates
 """)

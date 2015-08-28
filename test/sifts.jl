@@ -65,12 +65,6 @@ let map = siftsmapping("./data/1ssx.xml.gz", dbPDBe(), "1ssx", dbPDB(), "1ssx", 
   @test residue_A == "15A"
   @test residue_B == "15B"
   @test residue_C == "16"
-  #@test Int(residue_A) == 15
-  #@test Int(residue_B) == 15
-  #@test Int(residue_C) == 16
-  #@test residue_A.inscode == "A"
-  #@test residue_B.inscode == "B"
-  #@test residue_C.inscode == ""
 end
 
 let map = siftsmapping("./data/1ssx.xml.gz", dbPDB(), "1ssx", dbUniProt(), "P00778", chain="A")

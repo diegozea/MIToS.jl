@@ -448,5 +448,27 @@ Test printpfam
 
 let io = IOBuffer()
   print(io, pfam, Stockholm)
-  @test parse(takebuf_string(io), Stockholm, useidcoordinates=false) == pfam
+  @test parse(takebuf_string(io), Stockholm) == pfam
+end
+
+let io = IOBuffer()
+  print(io, small, Stockholm)
+  @test parse(takebuf_string(io), Stockholm) == small
+end
+
+
+print("""
+
+Test download
+=============
+""")
+
+let pfam_code = "PF11591"
+  @test_throws ErrorException downloadpfam("2vqc")
+  filename = downloadpfam(pfam_code)
+  try
+    @test getannotfile(read(filename, Stockholm), "ID") == "2Fe-2S_Ferredox"
+  finally
+    rm(filename)
+  end
 end
