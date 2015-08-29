@@ -9,7 +9,7 @@ module MSA
   Annotations, filtersequences!, filtercolumns!, empty,
   getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
   setannotfile!, setannotcolumn!, setannotsequence!, setannotresidue!,
-  annotate_modification!,
+  annotate_modification!, delete_annotated_modifications!, printmodifications,
 
   MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment, AbstractMultipleSequenceAlignment,
   AlignedSequence, AnnotatedAlignedSequence, AbstractAlignedSequence,

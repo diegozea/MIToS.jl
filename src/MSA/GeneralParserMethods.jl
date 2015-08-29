@@ -65,7 +65,7 @@ function deletefullgaps!(msa::AbstractMultipleSequenceAlignment, annotate::Bool=
   mask = columngappercentage(msa) .!= one(Float64)
   number = sum(~mask)
   if number != 0
-    annotate && annotate_modification!(msa, string("deletefullgaps! : Deletes ", number," columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)"))
+    annotate && annotate_modification!(msa, string("deletefullgaps!  :  Deletes ", number," columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)"))
     filtercolumns!(msa, mask, annotate)
   end
   msa

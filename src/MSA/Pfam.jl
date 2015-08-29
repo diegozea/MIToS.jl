@@ -96,47 +96,22 @@ parse(io, format::Type{Stockholm};  generatemapping::Bool=false,
 # Print Pfam
 # ==========
 
-function _printfileannotations(io::IO, msa::AnnotatedMultipleSequenceAlignment)
-	if !isempty(msa.annotations.file)
-		for (key, value) in msa.annotations.file
-			println(io, string("#=GF ", key, " ", value))
-		end
-	end
-end
-
-function _printcolumnsannotations(io::IO, msa::AnnotatedMultipleSequenceAlignment)
-	if !isempty(msa.annotations.columns)
-		for (key, value) in msa.annotations.columns
-			println(io, string("#=GC ", key, "\t\t", value))
-		end
-	end
-end
-
-function _printsequencesannotations(io::IO, msa::AnnotatedMultipleSequenceAlignment)
-	if !isempty(msa.annotations.sequences)
-		for (key, value) in msa.annotations.sequences
-			println(io, string("#=GS ", key[1], " ", key[2], " ", value))
-		end
-	end
-end
-
-
 function _to_sequence_dict(annotation::Dict{Tuple{ASCIIString,ASCIIString},ASCIIString})
 	seq_dict = Dict{ASCIIString,Vector{ASCIIString}}()
 	for (key, value) in annotation
 		seq_id = key[1]
 		if seq_id in keys(seq_dict)
-			push!(seq_dict[seq_id], string(key[2], "\t", value))
+			push!(seq_dict[seq_id], string(key[2], '\t', value))
 		else
-			seq_dict[seq_id] = [ string(key[2], "\t", value) ]
+			seq_dict[seq_id] = [ string(key[2], '\t', value) ]
 		end
 	end
 	sizehint!(seq_dict, length(seq_dict))
 end
 
 function print(io::IO, msa::AnnotatedMultipleSequenceAlignment, format::Type{Stockholm})
-	_printfileannotations(io, msa)
-	_printsequencesannotations(io, msa)
+	_printfileannotations(io, msa.annotations)
+	_printsequencesannotations(io, msa.annotations)
 	res_annotations = _to_sequence_dict(msa.annotations.residues)
 	for i in 1:nsequences(msa)
 		id = selectvalue(msa.id, i)
@@ -144,11 +119,11 @@ function print(io::IO, msa::AnnotatedMultipleSequenceAlignment, format::Type{Sto
 		println(io, string(id, "\t\t", seq))
 		if id in keys(res_annotations)
 			for line in res_annotations[id]
-				println(io, string("#=GR ", id, " ", line))
+				println(io, string("#=GR ", id, '\t', line))
 			end
 		end
 	end
-	_printcolumnsannotations(io, msa)
+	_printcolumnsannotations(io, msa.annotations)
 	println(io, "//")
 end
 

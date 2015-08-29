@@ -334,7 +334,7 @@ end
 # Set annotations
 # ---------------
 
-for setter in [ :setannotcolumn!, :setannotfile!, :setannotresidue!, :setannotsequence!, :annotate_modification! ]
+for setter in [ :setannotcolumn!, :setannotfile!, :setannotresidue!, :setannotsequence!, :annotate_modification!, :delete_annotated_modifications!, :printmodifications ]
   @eval $(setter)(msa::AnnotatedMultipleSequenceAlignment, args...) = $(setter)(msa.annotations, args...)
   @eval $(setter)(seq::AnnotatedAlignedSequence, args...) = $(setter)(seq.annotations, args...)
 end
@@ -345,7 +345,7 @@ end
 # Show & Print
 # ------------
 
-"""Gives an ASCIIString with the sequence number `seq` of the MSA"""
+"Gives an ASCIIString with the sequence number `seq` of the MSA"
 asciisequence(msa::Matrix{Residue}, seq::Int) = ascii(convert(Vector{UInt8}, vec(msa[seq,:])))
 asciisequence(msa::AbstractMultipleSequenceAlignment, seq::Int) = asciisequence(msa.msa, seq)
 

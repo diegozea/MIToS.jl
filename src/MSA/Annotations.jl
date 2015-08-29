@@ -104,12 +104,6 @@ end
 
 isempty(ann::Annotations) = isempty(ann.file) && isempty(ann.sequences) && isempty(ann.columns) && isempty(ann.residues)
 
-# Show & Print
-# ------------
-
-print(io::IO, ann::Annotations) = dump(io, ann)
-show(io::IO, ann::Annotations) = dump(io, ann)
-
 # ncolumns
 # --------
 
@@ -148,9 +142,15 @@ for (fun, field) in [ (:getannotsequence, :(ann.sequences)),
   end
 end
 
-setannotfile!(ann::Annotations, feature::ASCIIString, annotation::ASCIIString) = setindex!(ann.file, annotation, feature)
+function setannotfile!(ann::Annotations, feature::ASCIIString, annotation::ASCIIString)
+  previous = get(ann.file, feature, "")
+  ann.file[feature] = previous != "" ? string(previous, '\n', annotation) : annotation
+end
 
-setannotsequence!(ann::Annotations, seqname::ASCIIString, feature::ASCIIString, annotation::ASCIIString) = setindex!(ann.sequences, annotation, (seqname, feature))
+function setannotsequence!(ann::Annotations, seqname::ASCIIString, feature::ASCIIString, annotation::ASCIIString)
+  previous = get(ann.sequences, (seqname, feature), "")
+  ann.sequences[(seqname, feature)] = previous != "" ? string(previous, '\n', annotation) : annotation
+end
 
 function setannotcolumn!(ann::Annotations, feature::ASCIIString, annotation::ASCIIString)
   len = ncolumns(ann)
@@ -184,6 +184,77 @@ end
 
 "Annotates on file annotations the modifications realized by MIToS on the MSA"
 function annotate_modification!(ann::Annotations, modification::ASCIIString)
-  setannotfile!(ann, string("MIToS_", Dates.now(), "_", rand(100:999)), modification)
+  setannotfile!(ann, string("MIToS_", Dates.now()), modification)
   true # generally used on bool context: annotate && annotate_modification!(...
 end
+
+"Deletes all the MIToS annotated modifications"
+function delete_annotated_modifications!(ann::Annotations)
+  for key in keys(ann.file)
+    if length(key) > 6 && key[1:6] == "MIToS_"
+      delete!(ann.file, key)
+    end
+  end
+end
+
+using Base.Markdown
+
+"Prints MIToS annotated modifications"
+function printmodifications(ann::Annotations)
+  for (key,value) in ann.file
+    if length(key) > 6 && key[1:6] == "MIToS_"
+      list_k = split(key, '_')
+      println("-------------------")
+      println(list_k[2])
+      println('\n', value)
+    end
+  end
+end
+
+# Show & Print Annotations
+# =================
+
+function _printfileannotations(io::IO, ann::Annotations)
+	if !isempty(ann.file)
+		for (key, value) in ann.file
+      for val in split(value, '\n')
+			  println(io, string("#=GF ", key, "   ", val))
+      end
+		end
+	end
+end
+
+function _printcolumnsannotations(io::IO, ann::Annotations)
+	if !isempty(ann.columns)
+		for (key, value) in ann.columns
+			  println(io, string("#=GC ", key, "\t\t\t", value))
+		end
+	end
+end
+
+function _printsequencesannotations(io::IO, ann::Annotations)
+	if !isempty(ann.sequences)
+		for (key, value) in ann.sequences
+      for val in split(value, '\n')
+			  println(io, string("#=GS ", key[1], '\t', key[2], ' ', val))
+      end
+		end
+	end
+end
+
+function _printresiduesannotations(io::IO, ann::Annotations)
+	if !isempty(ann.residues)
+		for (key, value) in ann.residues
+			 println(io, string("#=GR ", key[1], '\t', key[2], '\t', value))
+		end
+	end
+end
+
+function print(io::IO, ann::Annotations)
+  _printfileannotations(io, ann)
+  _printsequencesannotations(io, ann)
+  _printresiduesannotations(io, ann)
+  _printcolumnsannotations(io, ann)
+end
+
+show(io::IO, ann::Annotations) = print(io, ann)
