@@ -2,13 +2,17 @@ module PDB
 
   using LightXML
   using AutoHashEquals
+  using DataStructures
+  using Formatting
+  using MIToS.Utils
 
-  import Base: ==, !=, hash, length, -, norm, dot, angle, cross, vec, any
+  import Base: ==, hash, length, -, norm, dot, angle, cross, vec, any, print, show
+  import MIToS.Utils: findobjects, isobject
 
   export covalentradius, vanderwaalsradius,
 
   PDBResidueIdentifier, Coordinates, PDBAtom, PDBResidue,
-  distance, contact, findheavy, findatom, findCB, selectbestoccupancy,
+  distance, contact, findheavy, findatoms, findCB, selectbestoccupancy,
   angle,
 
   ishydrophobic, isaromatic, iscationic, isanionic,
@@ -17,9 +21,11 @@ module PDB
   aromaticsulphur, pication, aromatic, ionic, hydrophobic,
   stridehydrogenbond, chimerahydrogenbond,
 
-  getpdbmlatoms, getresidues, downloadpdb,
+  getpdbmlatoms, downloadpdb,
 
-  getpdbatoms
+  getpdbatoms,
+
+  isobject, findobjects, Is, Not
 
   include("AtomsData.jl")
   include("PDBResidues.jl")

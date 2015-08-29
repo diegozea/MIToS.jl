@@ -1,7 +1,7 @@
 """Group can be ATOM or HETATM"""
 function getpdbatoms(pdb::ASCIIString; chain::ASCIIString = "all",
                      model::ASCIIString = "all", group::ASCIIString = "all", atomname::ASCIIString="all", onlyheavy::Bool=false)
-  atom_list = Array(PDBAtom,0)
+  residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
   fh = open(pdb, "r")
   atom_model = 0
   for line in eachline(fh)
@@ -29,11 +29,15 @@ function getpdbatoms(pdb::ASCIIString; chain::ASCIIString = "all",
 
         mdl = atom_model == 0 ? "1" : string(atom_model)
 
-        push!(atom_list, PDBAtom(PDBResidueIdentifier(Nullable{Int}(), PDB_number, name, line_id, mdl, atom_chain),
-                                 Coordinates(x,y,z), atom_name, element, occupancy, B))
+        residue_id = PDBResidueIdentifier("", PDB_number, name, line_id, mdl, atom_chain)
+        atom_data  = PDBAtom(Coordinates(x,y,z), atom_name, element, occupancy, B)
+
+        value = get!(residue_dict, residue_id, PDBAtom[])
+        push!(value, atom_data)
+
       end
     end
   end
   close(fh)
-  atom_list
+  _generate_residues(residue_dict)
 end

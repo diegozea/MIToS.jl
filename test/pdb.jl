@@ -23,8 +23,8 @@ print("""
 let code = "2VQC"
   pdb = getpdbatoms(txt(code))
   pdbml = getpdbmlatoms(xml(code))
-  @test findfirst(x -> x.residueid.PDB_number == "4", pdb) == findfirst(x -> x.residueid.PDB_number == "4", pdbml)
-  @test findfirst(x -> x.residueid.PDB_number == "73", pdb) == findfirst(x -> x.residueid.PDB_number == "73", pdbml)
+  @test findfirst(x -> x.id.number == "4",  pdb) == findfirst(x -> x.id.number == "4",  pdbml)
+  @test findfirst(x -> x.id.number == "73", pdb) == findfirst(x -> x.id.number == "73", pdbml)
 
 end
 

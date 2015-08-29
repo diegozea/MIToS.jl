@@ -4,10 +4,13 @@ module Utils
 
   # eachline,
 
-  Format
+  Format,
+
+  Is, Not, isobject, findobjects
 
   include("generalutils.jl")
   include("EachLineString.jl")
   include("Read.jl")
+  include("FindObjects.jl")
 
 end

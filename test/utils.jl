@@ -47,3 +47,25 @@ select_element
 # print("Test warn: ")
 # @test select_element([1,2]) == 1
 @test_throws ErrorException select_element([])
+
+print("""
+
+Test findobjects
+================
+""")
+
+immutable Dummy
+  string::ASCIIString
+  int::Int
+end
+
+@test findobjects([ Dummy("a", 2), Dummy("b", 3), Dummy("c", 4) ], Not(:int,4)) == [1, 2]
+@test findobjects([ Dummy("a", 2), Dummy("b", 3), Dummy("c", 4) ], Is( :int,4)) == [3]
+
+@test findobjects([ Dummy("a", 2), Dummy("b", 3), Dummy("c", 4) ], Is( :int, x -> x > 2 ))  == [2, 3]
+@test findobjects([ Dummy("a", 2), Dummy("b", 3), Dummy("c", 4) ], Not(:int, x -> x > 2 ))  == [1]
+
+@test findobjects([ Dummy("abc", 2), Dummy("abcd", 2), Dummy("bc", 2) ], Is( :string, r"^ab")) == [1, 2]
+@test findobjects([ Dummy("abc", 2), Dummy("abcd", 2), Dummy("bc", 2) ], Not(:string, r"^ab")) == [3]
+
+@test findobjects([ Dummy("H", 2), Dummy("C", 2), Dummy("O", 2) ], Not(:string, "H")) == [2, 3]
