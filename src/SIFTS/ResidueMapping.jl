@@ -5,12 +5,16 @@ abstract DataBase{ResNumType}
   name::ASCIIString # Cross referenced residue name
 end
 
+@inline _number_type(::Type{dbPDBe}) = Int
+
 @auto_hash_equals immutable dbInterPro <: DataBase{ASCIIString}
   id::ASCIIString
   number::ASCIIString # Cross referenced residue number
   name::ASCIIString # Cross referenced residue name
   evidence::ASCIIString
 end
+
+@inline _number_type(::Type{dbInterPro}) = ASCIIString
 
 for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
   @eval begin
@@ -20,6 +24,8 @@ for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
       number::Int # Cross referenced residue number
       name::ASCIIString # Cross referenced residue name
       end
+
+    @inline _number_type(::Type{$(ref_type)}) = Int
 
   end
 end
@@ -34,17 +40,19 @@ for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
       chain::ASCIIString
     end
 
+    @inline _number_type(::Type{$(ref_type)}) = ASCIIString
+
   end
 end
 
-name(db::dbPDBe ) = "PDBe"
-name(db::dbUniProt) = "UniProt"
-name(db::dbPfam) = "Pfam"
-name(db::dbNCBI) = "NCBI"
-name(db::dbInterPro) = "InterPro"
-name(db::dbPDB ) = "PDB"
-name(db::dbSCOP) = "SCOP"
-name(db::dbCATH) = "CATH"
+@inline name(::Type{dbPDBe})    = "PDBe"
+@inline name(::Type{dbUniProt}) = "UniProt"
+@inline name(::Type{dbPfam})    = "Pfam"
+@inline name(::Type{dbNCBI})    = "NCBI"
+@inline name(::Type{dbInterPro})= "InterPro"
+@inline name(::Type{dbPDB})     = "PDB"
+@inline name(::Type{dbSCOP})    = "SCOP"
+@inline name(::Type{dbCATH})    = "CATH"
 
 """Returns "" if the attributte is missing"""
 function _get_attribute(elem::LightXML.XMLElement, attr::ASCIIString)
@@ -166,47 +174,47 @@ call(::Type{SIFTSResidue}, residue::LightXML.XMLElement) =  SIFTSResidue(residue
 # Asking to SIFTSResidue
 # ======================
 
-has(res::SIFTSResidue, db::DataBase) = !isnull(getfield(res, symbol(name(db))))
+has{T <: DataBase}(res::SIFTSResidue, ::Type{T}) = !isnull(getfield(res, symbol(name(T))))
 
-function getdatabase(res::SIFTSResidue, db::DataBase)
-  if has(res, db)
-    return( get(getfield(res, symbol(name(db)))) )
+function getdatabase{T <: DataBase}(res::SIFTSResidue, ::Type{T})
+  if has(res, T)
+    return( get(getfield(res, symbol(name(T)))) )
   end
   nothing
 end
 
 function ischain(res::SIFTSResidue, chain::ASCIIString)
-  data = getdatabase(res, dbPDB())
+  data = getdatabase(res, dbPDB)
   if data !== nothing
     return(data.chain == chain)
   end
   false
 end
 
-function has(res::SIFTSResidue, db::DataBase, id::ASCIIString)
- data = getdatabase(res, db)
+function has{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString)
+ data = getdatabase(res, T)
  data === nothing ? false : return( data.id == id )
 end
 
-function has{T}(res::SIFTSResidue, db::DataBase{T}, id::ASCIIString, coord::T)
-  data = getdatabase(res, db)
+function has{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString, coord)
+  data = getdatabase(res, T)
   if data !== nothing && data.id == id
     return(data.number == coord)
   end
   false
 end
 
-function getcoordinate(res::SIFTSResidue, db::DataBase, id::ASCIIString)
-  data = getdatabase(res, db)
+function getcoordinate{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString)
+  data = getdatabase(res, T)
   if data !== nothing && data.id == id
     return(data.number)
   end
   nothing
 end
 
-function getcoordinate(res::SIFTSResidue, db::DataBase, id::ASCIIString, chain::ASCIIString)
+function getcoordinate{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString, chain::ASCIIString)
   if ischain(res, chain)
-    return(getcoordinate(res, db, id))
+    return(getcoordinate(res, T, id))
   end
   nothing
 end
@@ -219,26 +227,28 @@ _parse(::Type{ASCIIString}, str) = ascii(str)
 @inline _parse(::Type{ASCIIString}, str::ASCIIString) = str
 
 function siftsmapping{F, T}(filename::ASCIIString,
-                            db_from::DataBase{F}, id_from::ASCIIString,
-                            db_to::DataBase{T}, id_to::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
-  mapping = Dict{F, T}()
+                            db_from::Type{F}, id_from::ASCIIString,
+                            db_to::Type{T}, id_to::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
+#                            db_from::DataBase{F}, id_from::ASCIIString,
+#                            db_to::DataBase{T}, id_to::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
+  mapping = Dict{_number_type(F), _number_type(T)}()
   for entity in _get_entities(filename)
     segments = _get_segments(entity)
     for segment in segments
       residues = _get_residues(segment)
   		for residue in residues
         in_chain = chain == "all"
-        key_data = name(db_from) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{F}()
-        value_data = name(db_to) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{T}()
+        key_data = name(db_from) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{_number_type(F)}()
+        value_data = name(db_to) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{_number_type(T)}()
 	  	  if missings || !_is_missing(residue)
   			  crossref = get_elements_by_tagname(residue, "crossRefDb")
 	  			for ref in crossref
             source = attribute(ref, "dbSource")
 		  		  if source == name(db_from) && attribute(ref, "dbAccessionId") == id_from
-			  		  key_data = Nullable(_parse(F, attribute(ref, "dbResNum")))
+			  		  key_data = Nullable(_parse(_number_type(F), attribute(ref, "dbResNum")))
 				  	end
             if source == name(db_to) && attribute(ref, "dbAccessionId") == id_to
-		  			  value_data = Nullable(_parse(T, attribute(ref, "dbResNum")))
+		  			  value_data = Nullable(_parse(_number_type(T), attribute(ref, "dbResNum")))
 			  		end
             if !in_chain && source == "PDB" # XML: <crossRefDb dbSource="PDB" ... dbChainId="E"/>
               in_chain = attribute(ref, "dbChainId") == chain
