@@ -163,19 +163,37 @@ print("""
 1NSA => Contains a single (unnamed) protein chain with sequence 7A-95A that continues 4-308.
 """)
 
-let map = siftsresidues("./data/1nsa.xml.gz")
-  four = findfirst(x -> has(x, dbPDB, "1nsa", "4"), map)
-  @test findfirst(x -> has(x, dbPDB, "1nsa", "95A"), map) + 1 == four
-  @test getcoordinate(map[four], dbPDB, "1nsa") == "4"
+print("""
+Test findobjects & siftsresidues
+""")
+
+let mapp = siftsresidues("./data/1nsa.xml.gz")
+  four = findobjects(mapp, dbPDB, Is(:id, "1nsa"), Is(:number, "4"))[1]
+  @test findobjects(mapp, dbPDB, Is(:id, "1nsa"), Is(:number, "95A"))[1] + 1 == four
+  @test get(mapp[ findobjects(mapp, dbPDB, Is(:id, "1nsa"), Is(:number, "95A")) ][1].PDB).number == "95A"
+  @test getcoordinate(mapp[four], dbPDB, "1nsa") == "4"
+end
+
+print("""
+Test collectcaptures
+""")
+
+let cap = collectcaptures(siftsresidues("./data/1nsa.xml.gz"), dbPDB, :number, dbPDB, Is(:id, "1nsa"), Is(:number, "95A"))
+  @test get(cap[ [!isnull(x) for x in cap] ][1]) == "95A"
 end
 
 print("""
 1IAO => Contains in chain B (in this order) 1S, 323P-334P, 6-94, 94A, 95-188, 1T, 2T
 """)
 
-let map = siftsresidues("./data/1iao.xml.gz")
-  i = findfirst(x -> has(x, dbPDB, "1iao", "1S") && ischain(x, "B"), map)
-  getcoordinate(map[i+2], dbPDB, "1iao", "B") == "323P"
+print("""
+Test collectobjects
+""")
+
+let mapp = siftsresidues("./data/1iao.xml.gz")
+  @test collectobjects(mapp, dbPDB, Is(:id, "1iao"), Is(:number, "1S"), Is(:chain, "B"))[1].PDBe.number == 1
+  i = findobjects(mapp, dbPDB, Is(:id, "1iao"), Is(:number, "1S"), Is(:chain, "B"))[1]
+  getcoordinate(mapp[i+2], dbPDB, "1iao", "B") == "323P"
 end
 
 print("""

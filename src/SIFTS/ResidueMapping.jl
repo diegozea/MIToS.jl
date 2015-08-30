@@ -121,6 +121,23 @@ end
   missing::Bool # XML: <residueDetail dbSource="PDBe" property="Annotation" ...
 end
 
+function show(io::IO, res::SIFTSResidue)
+  println(io, "SIFTSResidue", res.missing ?  " (missing) " : "")
+  println(io, "  PDBe:")
+  println(io, "    number: ", res.PDBe.number)
+  println(io, "    name: ", res.PDBe.name)
+  for dbname in [:UniProt, :Pfam, :NCBI, :PDB, :SCOP, :CATH]
+    dbfield = getfield(res, dbname)
+    if !isnull(dbfield)
+      println(io, "  ", dbname, ":")
+      for f in fieldnames(get(dbfield))
+        println(io, "    ", f, ": ",  getfield(get(dbfield), f))
+      end
+    end
+  end
+  println(io, "    InterPro: ",  res.InterPro)
+end
+
 function call(::Type{SIFTSResidue}, residue::LightXML.XMLElement, missing::Bool)
   PDBe = dbPDBe(residue)
   UniProt = Nullable{dbUniProt}()
@@ -183,18 +200,18 @@ function ischain(res::SIFTSResidue, chain::ASCIIString)
   false
 end
 
-function has{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString)
- data = getdatabase(res, T)
- data === nothing ? false : return( data.id == id )
-end
+# function has{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString)
+#  data = getdatabase(res, T)
+#  data === nothing ? false : return( data.id == id )
+# end
 
-function has{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString, coord)
-  data = getdatabase(res, T)
-  if data !== nothing && data.id == id
-    return(data.number == coord)
-  end
-  false
-end
+# function has{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString, coord)
+#   data = getdatabase(res, T)
+#   if data !== nothing && data.id == id
+#     return(data.number == coord)
+#   end
+#   false
+# end
 
 function getcoordinate{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString)
   data = getdatabase(res, T)
@@ -273,4 +290,78 @@ function siftsresidues(filename::ASCIIString; chain::ASCIIString="all", missings
     end
   end
   vector
+end
+
+# Find SIFTSResidue
+# -----------------
+
+function isobject{T <: DataBase}(res::SIFTSResidue, ::Type{T}, tests::AbstractTest...)
+  dbfield = getfield(res, symbol(name(T)))
+  if !isnull(dbfield)
+    return(isobject(get(dbfield), tests...))
+  end
+  false
+end
+
+function findobjects{T <: DataBase}(vector::AbstractVector{SIFTSResidue}, ::Type{T}, tests::AbstractTest...)
+  dbname = symbol(name(T))
+  len = length(vector)
+  indexes = Array(Int, len)
+  n = 0
+  for i in 1:len
+    dbfield = getfield(vector[i], dbname)
+    if !isnull(dbfield) && isobject(get(dbfield), tests...)
+      n += 1
+      indexes[n] = i
+    end
+  end
+  resize!(indexes, n)
+end
+
+function collectobjects{T <: DataBase}(vector::AbstractVector{SIFTSResidue}, ::Type{T}, tests::AbstractTest...)
+  dbname = symbol(name(T))
+  len = length(vector)
+  elements = Array(SIFTSResidue, len)
+  n = 0
+  for i in 1:len
+    dbfield = getfield(vector[i], dbname)
+    if !isnull(dbfield) && isobject(get(dbfield), tests...)
+      n += 1
+      elements[n] = vector[i]
+    end
+  end
+  resize!(elements, n)
+end
+
+"Returns `nothing` if the DataBase to test or capture is null in the SIFTSResidue"
+function capture{C <: DataBase, T <: DataBase}(res::SIFTSResidue, db_capture::Type{C}, field::Symbol, db_test::Type{T}, tests::AbstractTest...)
+  dbfield_capture = getfield(res, symbol(name(C)))
+  dbfield_test = getfield(res, symbol(name(T)))
+  if !isnull(dbfield_capture) && !isnull(dbfield_test)
+    captured = getfield(get(dbfield_capture), field)
+    for test in tests
+      if !Utils._test(get(dbfield_test), test)
+        return(Nullable{typeof(captured)}())
+      end
+    end
+    return(Nullable(captured))
+  end
+  nothing
+end
+
+"Returns the **type** of the `field` in the first object of the collection"
+function guess_type{T <: DataBase}(collection::AbstractVector{SIFTSResidue}, ::Type{T}, field::Symbol)
+  for res in collection
+    dbfield = getfield(res, symbol(name(T)))
+    if !isnull(dbfield) && field in fieldnames(dbfield)
+      return(fieldtype(typeof(dbfield), field))
+    end
+  end
+  Any
+end
+
+"""Returns a vector of Nullables with the captures of the `field`s.
+Null if any test fails or the object hasn't the `field`."""
+function collectcaptures{C <: DataBase, T <: DataBase}(vector::AbstractVector{SIFTSResidue}, db_capture::Type{C}, field::Symbol, db_test::Type{T}, tests::AbstractTest...)
+  Nullable{guess_type(vector, C, field)}[ capture(object, C, field, T, tests...) for object in vector ]
 end

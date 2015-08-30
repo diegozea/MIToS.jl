@@ -74,9 +74,9 @@ cross(a::PDBAtom, b::PDBAtom) = cross(a.coordinates, b.coordinates)
 # Find Residues/Atoms
 # ===================
 
-isobject(res::PDBResidue, tests...) = isobject(res.id, tests...)
+isobject(res::PDBResidue, tests::AbstractTest...) = isobject(res.id, tests...)
 
-findobjects(res::PDBResidue, tests...) = findobjects(res.atoms, tests...)
+findobjects(res::PDBResidue, tests::AbstractTest...) = findobjects(res.atoms, tests...)
 
 function findheavy(res::PDBResidue)
   N = length(res)

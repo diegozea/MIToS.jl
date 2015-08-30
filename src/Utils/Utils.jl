@@ -6,7 +6,7 @@ module Utils
 
   Format,
 
-  Is, Not, isobject, findobjects
+  AbstractTest, Is, In, Not, capture, isobject, findobjects, collectobjects, collectcaptures, guess_type
 
   include("generalutils.jl")
   include("EachLineString.jl")
