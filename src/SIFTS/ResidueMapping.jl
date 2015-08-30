@@ -1,13 +1,13 @@
-abstract DataBase{ResNumType}
+abstract DataBase
 
-@auto_hash_equals immutable dbPDBe <: DataBase{Int}
+@auto_hash_equals immutable dbPDBe <: DataBase
   number::Int # Cross referenced residue number
   name::ASCIIString # Cross referenced residue name
 end
 
 @inline _number_type(::Type{dbPDBe}) = Int
 
-@auto_hash_equals immutable dbInterPro <: DataBase{ASCIIString}
+@auto_hash_equals immutable dbInterPro <: DataBase
   id::ASCIIString
   number::ASCIIString # Cross referenced residue number
   name::ASCIIString # Cross referenced residue name
@@ -19,7 +19,7 @@ end
 for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
   @eval begin
 
-    @auto_hash_equals immutable $(ref_type) <: DataBase{Int}
+    @auto_hash_equals immutable $(ref_type) <: DataBase
       id::ASCIIString # The cross reference database identifier
       number::Int # Cross referenced residue number
       name::ASCIIString # Cross referenced residue name
@@ -33,7 +33,7 @@ end
 for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
   @eval begin
 
-    @auto_hash_equals immutable $(ref_type) <: DataBase{ASCIIString}
+    @auto_hash_equals immutable $(ref_type) <: DataBase
       id::ASCIIString
       number::ASCIIString
       name::ASCIIString
@@ -76,8 +76,6 @@ for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
       )
     end
 
-    call(::Type{$(ref_type)}) = $(ref_type)("", "", "", "")
-
   end
 end
 
@@ -92,8 +90,6 @@ for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
       )
     end
 
-    call(::Type{$(ref_type)}) = $(ref_type)("", -9999, "")
-
   end
 end
 
@@ -106,16 +102,12 @@ function call(::Type{dbInterPro}, map::LightXML.XMLElement)
     )
 end
 
-call(::Type{dbInterPro}) = dbInterPro("", "", "", "")
-
 function call(::Type{dbPDBe}, map::LightXML.XMLElement)
       dbPDBe(
       parse(Int, _get_attribute(map, "dbResNum")),
       _get_attribute(map, "dbResName")
       )
 end
-
-call(::Type{dbPDBe}) = dbPDBe(-9999, "")
 
 @auto_hash_equals immutable SIFTSResidue
   PDBe::dbPDBe
@@ -229,8 +221,6 @@ _parse(::Type{ASCIIString}, str) = ascii(str)
 function siftsmapping{F, T}(filename::ASCIIString,
                             db_from::Type{F}, id_from::ASCIIString,
                             db_to::Type{T}, id_to::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
-#                            db_from::DataBase{F}, id_from::ASCIIString,
-#                            db_to::DataBase{T}, id_to::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
   mapping = Dict{_number_type(F), _number_type(T)}()
   for entity in _get_entities(filename)
     segments = _get_segments(entity)
