@@ -353,8 +353,11 @@ end
 function guess_type{T <: DataBase}(collection::AbstractVector{SIFTSResidue}, ::Type{T}, field::Symbol)
   for res in collection
     dbfield = getfield(res, symbol(name(T)))
-    if !isnull(dbfield) && field in fieldnames(dbfield)
-      return(fieldtype(typeof(dbfield), field))
+    if !isnull(dbfield)
+      data = get(dbfield)
+      if field in fieldnames(data)
+        return(fieldtype(typeof(data), field))
+      end
     end
   end
   Any
