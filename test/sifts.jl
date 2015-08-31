@@ -171,7 +171,6 @@ let mapp = read("./data/1nsa.xml.gz", SIFTSXML)
   four = findobjects(mapp, dbPDB, Is(:id, "1nsa"), Is(:number, "4"))[1]
   @test findobjects(mapp, dbPDB, Is(:id, "1nsa"), Is(:number, "95A"))[1] + 1 == four
   @test get(mapp[ findobjects(mapp, dbPDB, Is(:id, "1nsa"), Is(:number, "95A")) ][1].PDB).number == "95A"
-  @test getcoordinate(mapp[four], dbPDB, "1nsa") == "4"
 end
 
 print("""
@@ -194,7 +193,6 @@ let mapp = read("./data/1iao.xml.gz", SIFTSXML)
   @test collectobjects(mapp, dbPDB, Is(:id, "1iao"), Is(:number, "1S"), Is(:chain, "B"))[1].PDBe.number == 1
   i = findobjects(mapp, dbPDB, Is(:id, "1iao"), Is(:number, "1S"), Is(:chain, "B"))[1]
   @test isobject(mapp[i+2], dbPDB, Is(:id, "1iao"), Is(:chain, "B"), Is(:number, "323P"))
-  getcoordinate(mapp[i+2], dbPDB, "1iao", "B") == "323P"
 end
 
 print("""

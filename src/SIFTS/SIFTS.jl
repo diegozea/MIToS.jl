@@ -8,8 +8,7 @@ module SIFTS
   import MIToS.Utils: isobject, findobjects, collectobjects, capture, collectcaptures, guess_type
 
   export DataBase, dbPDBe, dbInterPro, dbUniProt, dbPfam, dbNCBI, dbPDB, dbCATH, dbSCOP,
-  SIFTSResidue, getdatabase, getcoordinate, ischain,
-  downloadsifts, siftsmapping, SIFTSXML,
+  SIFTSResidue, downloadsifts, siftsmapping, SIFTSXML,
 
   # Mitos.Utils
   capture, collectcaptures, isobject, findobjects, collectobjects, Is, Not, In

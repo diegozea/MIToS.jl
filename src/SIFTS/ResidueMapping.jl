@@ -180,41 +180,6 @@ end
 
 call(::Type{SIFTSResidue}, residue::LightXML.XMLElement) =  SIFTSResidue(residue, _is_missing(residue))
 
-# Asking to SIFTSResidue
-# ======================
-
-has{T <: DataBase}(res::SIFTSResidue, ::Type{T}) = !isnull(getfield(res, symbol(name(T))))
-
-function getdatabase{T <: DataBase}(res::SIFTSResidue, ::Type{T})
-  if has(res, T)
-    return( get(getfield(res, symbol(name(T)))) )
-  end
-  nothing
-end
-
-function ischain(res::SIFTSResidue, chain::ASCIIString)
-  data = getdatabase(res, dbPDB)
-  if data !== nothing
-    return(data.chain == chain)
-  end
-  false
-end
-
-function getcoordinate{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString)
-  data = getdatabase(res, T)
-  if data !== nothing && data.id == id
-    return(data.number)
-  end
-  nothing
-end
-
-function getcoordinate{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString, chain::ASCIIString)
-  if ischain(res, chain)
-    return(getcoordinate(res, T, id))
-  end
-  nothing
-end
-
 # Mapping Functions
 # =================
 
