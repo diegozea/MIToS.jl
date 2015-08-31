@@ -6,7 +6,7 @@ module PDB
   using Formatting
   using MIToS.Utils
 
-  import Base: ==, hash, length, -, norm, dot, angle, cross, vec, any, print, show
+  import Base: ==, hash, length, -, norm, dot, angle, cross, vec, any, print, show, parse
   import MIToS.Utils: findobjects, isobject
 
   export covalentradius, vanderwaalsradius,
@@ -21,9 +21,10 @@ module PDB
   aromaticsulphur, pication, aromatic, ionic, hydrophobic,
   stridehydrogenbond, chimerahydrogenbond,
 
-  getpdbmlatoms, downloadpdb,
+  #getpdbmlatoms,
+  PDBFile, PDBML, downloadpdb,
 
-  getpdbatoms,
+  #getpdbatoms,
 
   # Mitos.Utils
   isobject, findobjects, Is, Not, In

@@ -1,6 +1,7 @@
 import Base: read
 
 using GZip
+using LightXML
 
 """
 `Format` is used for write special `reader` (and `read`) methods on it.
@@ -24,6 +25,9 @@ function read{T<:Format}(pathname::AbstractString, format::Type{T}, args...; kar
       close(io)
       rm(filename)
     end
+  elseif endswith(pathname, ".xml.gz") || endswith(pathname, ".xml")
+    root = parse_file(pathname) # LightXML.XMLDocument
+    parse(root, format, args...; kargs...)
   else
     io = endswith(pathname, ".gz") ? gzopen(pathname, "r") : open(pathname, "r")
     try

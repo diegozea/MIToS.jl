@@ -1,10 +1,11 @@
-"""Group can be ATOM or HETATM"""
-function getpdbatoms(pdb::ASCIIString; chain::ASCIIString = "all",
+immutable PDBFile <: Format end
+
+"Group can be ATOM or HETATM"
+function parse(io::Union(IO, ASCIIString), ::Type{PDBFile}; chain::ASCIIString = "all",
                      model::ASCIIString = "all", group::ASCIIString = "all", atomname::ASCIIString="all", onlyheavy::Bool=false)
   residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
-  fh = open(pdb, "r")
   atom_model = 0
-  for line in eachline(fh)
+  for line in eachline(io)
     line_id = replace(line[1:6], ' ', "")
     if line_id == "MODEL"
       atom_model += 1
@@ -38,6 +39,5 @@ function getpdbatoms(pdb::ASCIIString; chain::ASCIIString = "all",
       end
     end
   end
-  close(fh)
   _generate_residues(residue_dict)
 end

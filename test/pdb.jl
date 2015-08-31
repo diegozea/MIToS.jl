@@ -21,8 +21,8 @@ print("""
 """)
 
 let code = "2VQC"
-  pdb = getpdbatoms(txt(code))
-  pdbml = getpdbmlatoms(xml(code))
+  pdb = read(txt(code), PDBFile)
+  pdbml = read(xml(code), PDBML)
   @test findfirst(x -> x.id.number == "4",  pdb) == findfirst(x -> x.id.number == "4",  pdbml)
   @test findfirst(x -> x.id.number == "73", pdb) == findfirst(x -> x.id.number == "73", pdbml)
 
@@ -33,8 +33,8 @@ print("""
 """)
 
 let code = "1SSX"
-  pdb = getpdbatoms(txt(code))
-  pdbml = getpdbmlatoms(xml(code))
+  pdb = read(txt(code), PDBFile)
+  pdbml = read(xml(code), PDBML)
 
 end
 
