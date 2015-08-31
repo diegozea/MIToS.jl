@@ -1,10 +1,11 @@
-"""Group can be ATOM or HETATM"""
-function getpdbatoms(pdb::ASCIIString; chain::ASCIIString = "all",
+immutable PDBFile <: Format end
+
+"Group can be ATOM or HETATM"
+function parse(io::Union(IO, ASCIIString), ::Type{PDBFile}; chain::ASCIIString = "all",
                      model::ASCIIString = "all", group::ASCIIString = "all", atomname::ASCIIString="all", onlyheavy::Bool=false)
-  atom_list = Array(PDBAtom,0)
-  fh = open(pdb, "r")
+  residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
   atom_model = 0
-  for line in eachline(fh)
+  for line in eachline(io)
     line_id = replace(line[1:6], ' ', "")
     if line_id == "MODEL"
       atom_model += 1
@@ -18,7 +19,7 @@ function getpdbatoms(pdb::ASCIIString; chain::ASCIIString = "all",
 
         # 23 - 26        Integer         Residue sequence number.
         # 27             AChar           Code for insertion of residues.
-        number = replace(line[23:27],' ',"")
+        PDB_number = replace(line[23:27],' ',"")
 
         name = replace(line[18:20],' ',"")
         x = float(replace(line[31:38],' ',""))
@@ -29,11 +30,14 @@ function getpdbatoms(pdb::ASCIIString; chain::ASCIIString = "all",
 
         mdl = atom_model == 0 ? "1" : string(atom_model)
 
-        push!(atom_list, PDBAtom(PDBResidueIdentifier(number, name, line_id, mdl, atom_chain),
-                                 Coordinates(x,y,z), atom_name, element, occupancy, B))
+        residue_id = PDBResidueIdentifier("", PDB_number, name, line_id, mdl, atom_chain)
+        atom_data  = PDBAtom(Coordinates(x,y,z), atom_name, element, occupancy, B)
+
+        value = get!(residue_dict, residue_id, PDBAtom[])
+        push!(value, atom_data)
+
       end
     end
   end
-  close(fh)
-  atom_list
+  _generate_residues(residue_dict)
 end

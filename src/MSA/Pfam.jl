@@ -37,7 +37,7 @@ end
 function _pre_readstockholm(io::Union(IO, AbstractString))
   IDS  = ASCIIString[]
   SEQS = ASCIIString[]
-  GF = Dict{ASCIIString,ASCIIString}()
+  GF = OrderedDict{ASCIIString,ASCIIString}()
   GC = Dict{ASCIIString,ASCIIString}()
   GS = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
   GR = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
@@ -48,22 +48,33 @@ function _pre_readstockholm(io::Union(IO, AbstractString))
      end
   end
 
-  GF = sizehint!(GF, length(GF))
+  #GF = sizehint!(GF, length(GF))
+  GF = sizehint(GF, length(GF))
   GC = sizehint!(GC, length(GC))
   GS = sizehint!(GS, length(GS))
   GR = sizehint!(GR, length(GR))
   (IDS, SEQS, GF, GS, GC, GR)
 end
 
-function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::Type{AnnotatedMultipleSequenceAlignment}; useidcoordinates::Bool=true, deletefullgaps::Bool=true)
+function parse(io::Union(IO, AbstractString), format::Type{Stockholm},
+               output::Type{AnnotatedMultipleSequenceAlignment}; generatemapping::Bool=false,
+               useidcoordinates::Bool=false, deletefullgaps::Bool=true)
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
-  MSA, MAP = useidcoordinates && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
-  COLS = vcat(1:size(MSA,2))
-  msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, MAP, IndexedVector(COLS), Annotations(GF, GS, GC, GR))
+  annot = Annotations(GF, GS, GC, GR)
+  if generatemapping
+    MSA, MAP = useidcoordinates && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
+    setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
+    for i in 1:length(IDS)
+      setannotsequence!(annot, IDS[i], "SeqMap", MAP[i])
+    end
+  else
+    MSA = convert(Matrix{Residue}, SEQS)
+  end
+  msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, annot)
   if deletefullgaps
     deletefullgaps!(msa)
   end
-  return(msa)
+  msa
 end
 
 function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
@@ -73,55 +84,34 @@ function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::T
   if deletefullgaps
     deletefullgaps!(msa)
   end
-  return(msa)
+  msa
 end
 
-parse(io, format::Type{Stockholm}; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = parse(io, Stockholm, AnnotatedMultipleSequenceAlignment, useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps)
+parse(io, format::Type{Stockholm};  generatemapping::Bool=false,
+      useidcoordinates::Bool=false, deletefullgaps::Bool=true) = parse(io, Stockholm, AnnotatedMultipleSequenceAlignment,
+                                                                      generatemapping=generatemapping,
+                                                                      useidcoordinates=useidcoordinates,
+                                                                      deletefullgaps=deletefullgaps)
 
 # Print Pfam
 # ==========
-
-function _printfileannotations(io::IO, msa::AnnotatedMultipleSequenceAlignment)
-	if !isempty(msa.annotations.file)
-		for (key, value) in msa.annotations.file
-			println(io, string("#=GF ", key, " ", value))
-		end
-	end
-end
-
-function _printcolumnsannotations(io::IO, msa::AnnotatedMultipleSequenceAlignment)
-	if !isempty(msa.annotations.columns)
-		for (key, value) in msa.annotations.columns
-			println(io, string("#=GC ", key, "\t\t", value))
-		end
-	end
-end
-
-function _printsequencesannotations(io::IO, msa::AnnotatedMultipleSequenceAlignment)
-	if !isempty(msa.annotations.sequences)
-		for (key, value) in msa.annotations.sequences
-			println(io, string("#=GS ", key[1], " ", key[2], " ", value))
-		end
-	end
-end
-
 
 function _to_sequence_dict(annotation::Dict{Tuple{ASCIIString,ASCIIString},ASCIIString})
 	seq_dict = Dict{ASCIIString,Vector{ASCIIString}}()
 	for (key, value) in annotation
 		seq_id = key[1]
 		if seq_id in keys(seq_dict)
-			push!(seq_dict[seq_id], string(key[2], "\t", value))
+			push!(seq_dict[seq_id], string(key[2], '\t', value))
 		else
-			seq_dict[seq_id] = [ string(key[2], "\t", value) ]
+			seq_dict[seq_id] = [ string(key[2], '\t', value) ]
 		end
 	end
 	sizehint!(seq_dict, length(seq_dict))
 end
 
 function print(io::IO, msa::AnnotatedMultipleSequenceAlignment, format::Type{Stockholm})
-	_printfileannotations(io, msa)
-	_printsequencesannotations(io, msa)
+	_printfileannotations(io, msa.annotations)
+	_printsequencesannotations(io, msa.annotations)
 	res_annotations = _to_sequence_dict(msa.annotations.residues)
 	for i in 1:nsequences(msa)
 		id = selectvalue(msa.id, i)
@@ -129,11 +119,11 @@ function print(io::IO, msa::AnnotatedMultipleSequenceAlignment, format::Type{Sto
 		println(io, string(id, "\t\t", seq))
 		if id in keys(res_annotations)
 			for line in res_annotations[id]
-				println(io, string("#=GR ", id, " ", line))
+				println(io, string("#=GR ", id, '\t', line))
 			end
 		end
 	end
-	_printcolumnsannotations(io, msa)
+	_printcolumnsannotations(io, msa.annotations)
 	println(io, "//")
 end
 

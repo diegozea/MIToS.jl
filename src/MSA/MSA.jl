@@ -1,5 +1,7 @@
 module MSA
 
+  using DataStructures
+
   export Residue, GAP, @res_str,
 
   IndexedVector, selectindex, selectvalue, swap!,
@@ -7,6 +9,7 @@ module MSA
   Annotations, filtersequences!, filtercolumns!, empty,
   getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
   setannotfile!, setannotcolumn!, setannotsequence!, setannotresidue!,
+  annotate_modification!, delete_annotated_modifications!, printmodifications,
 
   MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment, AbstractMultipleSequenceAlignment,
   AlignedSequence, AnnotatedAlignedSequence, AbstractAlignedSequence,
@@ -14,6 +17,7 @@ module MSA
   nsequences, ncolumns, gappercentage, residuepercentage, coverage,
   columngappercentage, setreference!, gapstrip!, adjustreference!, asciisequence,
   gapstrip, adjustreference, filtersequences, filtercolumns,
+  getcolumnmapping, getsequencemapping,
 
   Raw,
 

@@ -1,68 +1,58 @@
-import Base: call
+abstract DataBase
 
-# dbCoordSys Types
-# ================
-
-abstract CoordinateSystem
-
-immutable PDBeCoordinates <: CoordinateSystem
-  resnum::Int
+@auto_hash_equals immutable dbPDBe <: DataBase
+  number::Int # Cross referenced residue number
+  name::ASCIIString # Cross referenced residue name
 end
 
-immutable UniProtCoordinates <: CoordinateSystem
-  resnum::Int
+@inline _number_type(::Type{dbPDBe}) = Int
+
+@auto_hash_equals immutable dbInterPro <: DataBase
+  id::ASCIIString
+  number::ASCIIString # Cross referenced residue number
+  name::ASCIIString # Cross referenced residue name
+  evidence::ASCIIString
 end
 
-immutable PDBresnumCoordinates <: CoordinateSystem
-  resnum::Int
-  inscode::Nullable{Char}
-end
+@inline _number_type(::Type{dbInterPro}) = ASCIIString
 
-abstract DataBase{T <: CoordinateSystem}
+for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
+  @eval begin
 
-immutable PDBe <: DataBase{PDBeCoordinates} end
+    @auto_hash_equals immutable $(ref_type) <: DataBase
+      id::ASCIIString # The cross reference database identifier
+      number::Int # Cross referenced residue number
+      name::ASCIIString # Cross referenced residue name
+      end
 
-immutable UniProt  <: DataBase{UniProtCoordinates} end
-immutable Pfam     <: DataBase{UniProtCoordinates} end
-immutable InterPro <: DataBase{UniProtCoordinates} end
-immutable NCBI     <: DataBase{UniProtCoordinates} end
+    @inline _number_type(::Type{$(ref_type)}) = Int
 
-immutable PDB  <: DataBase{PDBresnumCoordinates} end
-immutable CATH <: DataBase{PDBresnumCoordinates} end
-immutable SCOP <: DataBase{PDBresnumCoordinates} end
-
-name(db::UniProt) = "UniProt"
-name(db::Pfam) = "Pfam"
-name(db::InterPro) = "InterPro"
-name(db::NCBI) = "NCBI"
-name(db::PDB ) = "PDB "
-name(db::CATH) = "CATH"
-name(db::SCOP) = "SCOP"
-
-call(::Type{PDBeCoordinates}, str::ASCIIString) = PDBeCoordinates(parse(Int, str))
-call(::Type{UniProtCoordinates}, str::ASCIIString) = UniProtCoordinates(parse(Int, str))
-function call(::Type{PDBresnumCoordinates}, str::ASCIIString)
-  m = match(r"^(\d+)(\D?)$", str)
-  if m === nothing
-    throw(ErrorException(string(str, " is not a valid PDBresnum.")))
   end
-  resnum = parse(Int, m.captures[1])
-  ins = m.captures[2]
-  PDBresnumCoordinates(resnum, ins != "" ? Nullable{Char}(ins[1]) : Nullable{Char}() )
 end
 
-# Mapping Types
-# =============
+for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
+  @eval begin
 
-immutable crossRefDb
-  dbSource::ASCIIString # The database being cross referenced
-  dbVersion::ASCIIString # The cross referenced database version
-  dbCoordSys::ASCIIString # The cross referenced database co-ordinate system
-  dbAccessionId::ASCIIString # The cross reference database identifier
-  dbResNum::ASCIIString # Cross referenced residue number
-  dbResName::ASCIIString # Cross referenced residue name
-  dbChainId # Cross referenced chain id
+    @auto_hash_equals immutable $(ref_type) <: DataBase
+      id::ASCIIString
+      number::ASCIIString
+      name::ASCIIString
+      chain::ASCIIString
+    end
+
+    @inline _number_type(::Type{$(ref_type)}) = ASCIIString
+
+  end
 end
+
+@inline name(::Type{dbPDBe})    = "PDBe"
+@inline name(::Type{dbUniProt}) = "UniProt"
+@inline name(::Type{dbPfam})    = "Pfam"
+@inline name(::Type{dbNCBI})    = "NCBI"
+@inline name(::Type{dbInterPro})= "InterPro"
+@inline name(::Type{dbPDB})     = "PDB"
+@inline name(::Type{dbSCOP})    = "SCOP"
+@inline name(::Type{dbCATH})    = "CATH"
 
 """Returns "" if the attributte is missing"""
 function _get_attribute(elem::LightXML.XMLElement, attr::ASCIIString)
@@ -74,148 +64,307 @@ function _get_attribute(elem::LightXML.XMLElement, attr::ASCIIString)
   end
 end
 
-function call(::Type{crossRefDb}, map::LightXML.XMLElement)
-  crossRefDb(
-    _get_attribute(map, "dbSource"),
-    _get_attribute(map, "dbVersion"),
-    _get_attribute(map, "dbCoordSys"),
+for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
+  @eval begin
+
+    function call(::Type{$(ref_type)}, map::LightXML.XMLElement)
+      $(ref_type)(
+      _get_attribute(map, "dbAccessionId"),
+      _get_attribute(map, "dbResNum"),
+      _get_attribute(map, "dbResName"),
+      _get_attribute(map, "dbChainId")
+      )
+    end
+
+  end
+end
+
+for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
+  @eval begin
+
+    function call(::Type{$(ref_type)}, map::LightXML.XMLElement)
+      $(ref_type)(
+      _get_attribute(map, "dbAccessionId"),
+      parse(Int, _get_attribute(map, "dbResNum")),
+      _get_attribute(map, "dbResName")
+      )
+    end
+
+  end
+end
+
+function call(::Type{dbInterPro}, map::LightXML.XMLElement)
+  dbInterPro(
     _get_attribute(map, "dbAccessionId"),
     _get_attribute(map, "dbResNum"),
     _get_attribute(map, "dbResName"),
-    _get_attribute(map, "dbChainId")
+    _get_attribute(map, "dbEvidence")
     )
 end
 
-immutable SIFTSResidue
-  db::ASCIIString # dbSource
-  number::ASCIIString # dbResNum: The residue number
-  name::ASCIIString # dbResName: The residue name
-  mapping::Array{crossRefDb,1} # XML: <crossRefDb ...
+function call(::Type{dbPDBe}, map::LightXML.XMLElement)
+      dbPDBe(
+      parse(Int, _get_attribute(map, "dbResNum")),
+      _get_attribute(map, "dbResName")
+      )
+end
+
+@auto_hash_equals immutable SIFTSResidue
+  PDBe::dbPDBe
+  UniProt::Nullable{dbUniProt}
+  Pfam::Nullable{dbPfam}
+  NCBI::Nullable{dbNCBI}
+  InterPro::Array{dbInterPro, 1}
+  PDB::Nullable{dbPDB}
+  SCOP::Nullable{dbSCOP}
+  CATH::Nullable{dbCATH}
   missing::Bool # XML: <residueDetail dbSource="PDBe" property="Annotation" ...
 end
 
-function call(::Type{SIFTSResidue}, residue::LightXML.XMLElement)
-  SIFTSResidue(
-    _get_attribute(residue, "dbSource"),
-    _get_attribute(residue, "dbResNum"),
-    _get_attribute(residue, "dbResName"),
-    crossRefDb[ crossRefDb(map) for map in get_elements_by_tagname(residue, "crossRefDb")],
-    _is_missing(residue)
-  )
+function show(io::IO, res::SIFTSResidue)
+  println(io, "SIFTSResidue", res.missing ?  " (missing) " : "")
+  println(io, "  PDBe:")
+  println(io, "    number: ", res.PDBe.number)
+  println(io, "    name: ", res.PDBe.name)
+  for dbname in [:UniProt, :Pfam, :NCBI, :PDB, :SCOP, :CATH]
+    dbfield = getfield(res, dbname)
+    if !isnull(dbfield)
+      println(io, "  ", dbname, ":")
+      for f in fieldnames(get(dbfield))
+        println(io, "    ", f, ": ",  getfield(get(dbfield), f))
+      end
+    end
+  end
+  println(io, "    InterPro: ",  res.InterPro)
 end
 
 function call(::Type{SIFTSResidue}, residue::LightXML.XMLElement, missing::Bool)
-  SIFTSResidue(
-    _get_attribute(residue, "dbSource"),
-    _get_attribute(residue, "dbResNum"),
-    _get_attribute(residue, "dbResName"),
-    crossRefDb[ crossRefDb(map) for map in get_elements_by_tagname(residue, "crossRefDb")],
-    missing
-  )
+  PDBe = dbPDBe(residue)
+  UniProt = Nullable{dbUniProt}()
+  Pfam = Nullable{dbPfam}()
+  NCBI = Nullable{dbNCBI}()
+  InterPro = dbInterPro[]
+  PDB = Nullable{dbPDB}()
+  SCOP = Nullable{dbSCOP}()
+  CATH = Nullable{dbCATH}()
+  for crossref in get_elements_by_tagname(residue, "crossRefDb")
+    db = attribute(crossref, "dbSource")
+    if db == "UniProt"
+      UniProt = Nullable(dbUniProt(crossref))
+    elseif db == "Pfam"
+      Pfam = Nullable(dbPfam(crossref))
+    elseif db == "NCBI"
+      NCBI = Nullable(dbNCBI(crossref))
+    elseif db == "InterPro"
+      push!(InterPro, dbInterPro(crossref))
+    elseif db == "PDB"
+      PDB = Nullable(dbPDB(crossref))
+    elseif db == "SCOP"
+      SCOP = Nullable(dbSCOP(crossref))
+    elseif db == "CATH"
+      CATH = Nullable(dbCATH(crossref))
+    else
+      db != "InterPro" && warn(string(db, " is not in the MIToS' DataBases."))
+    end
+  end
+  SIFTSResidue(PDBe,
+               UniProt,
+               Pfam,
+               NCBI,
+               InterPro,
+               PDB,
+               SCOP,
+               CATH,
+               missing)
+end
+
+call(::Type{SIFTSResidue}, residue::LightXML.XMLElement) =  SIFTSResidue(residue, _is_missing(residue))
+
+# Asking to SIFTSResidue
+# ======================
+
+has{T <: DataBase}(res::SIFTSResidue, ::Type{T}) = !isnull(getfield(res, symbol(name(T))))
+
+function getdatabase{T <: DataBase}(res::SIFTSResidue, ::Type{T})
+  if has(res, T)
+    return( get(getfield(res, symbol(name(T)))) )
+  end
+  nothing
+end
+
+function ischain(res::SIFTSResidue, chain::ASCIIString)
+  data = getdatabase(res, dbPDB)
+  if data !== nothing
+    return(data.chain == chain)
+  end
+  false
+end
+
+# function has{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString)
+#  data = getdatabase(res, T)
+#  data === nothing ? false : return( data.id == id )
+# end
+
+# function has{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString, coord)
+#   data = getdatabase(res, T)
+#   if data !== nothing && data.id == id
+#     return(data.number == coord)
+#   end
+#   false
+# end
+
+function getcoordinate{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString)
+  data = getdatabase(res, T)
+  if data !== nothing && data.id == id
+    return(data.number)
+  end
+  nothing
+end
+
+function getcoordinate{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString, chain::ASCIIString)
+  if ischain(res, chain)
+    return(getcoordinate(res, T, id))
+  end
+  nothing
 end
 
 # Mapping Functions
 # =================
 
-# function siftsmapping{F <: CoordinateSystem, T <: CoordinateSystem}(filename::ASCIIString, chain::ASCIIString, db_from::Type{DataBase{F}}, id_from::ASCIIString, db_to::Type{DataBase{T}}, id_to::ASCIIString, check_observed::Bool = true)
-#   if db_from == "PDBe"
-#     sifts_PDBe_mapping(filename, chain, db_to, id_to, check_observed)
-#   end
-#   mapping = Dict{Int, Int}()
-# 	segments = _get_segments(_get_entity(_get_entities(filename), chain))
-#   for segment in segments
-#     residues = _get_residues(segment)
-# 		for residue in residues
-#       key = -1
-#       value = -1
-# 		  if !check_observed || !_is_missing(residue)
-# 			  crossref = get_elements_by_tagname(residue, "crossRefDb")
-# 				for ref in crossref
-# 				  if attribute(ref, "dbSource") == db_from && attribute(ref, "dbAccessionId") == id_from
-# 					  key = parse(Int, attribute(ref, "dbResNum"))
-# 					end
-#           if attribute(ref, "dbSource") == db_to && attribute(ref, "dbAccessionId") == id_to
-# 					  value = parse(Int, attribute(ref, "dbResNum"))
-# 					end
-# 				end
-#         if key != -1 && value != -1
-#           haskey(mapping, key) && warn(string(key, " is already in the mapping with the value ", mapping[key], ". The value is replaced by ", value))
-# 					mapping[key] = value
-#         end
-# 			end
-# 		end
-#   end
-#   sizehint!(mapping, length(mapping))
-# end
+_parse(::Type{Int}, str) = parse(Int, str)
+_parse(::Type{ASCIIString}, str) = ascii(str)
+@inline _parse(::Type{ASCIIString}, str::ASCIIString) = str
 
-function siftsmapping(filename::ASCIIString, chain::ASCIIString, db_from::ASCIIString, id_from::ASCIIString, db_to::ASCIIString, id_to::ASCIIString, check_observed::Bool = true)
-  if db_from == "PDBe"
-    sifts_PDBe_mapping(filename, chain, db_to, id_to, check_observed)
-  end
-  mapping = Dict{Int, Int}()
-	segments = _get_segments(_get_entity(_get_entities(filename), chain))
-  for segment in segments
-    residues = _get_residues(segment)
-		for residue in residues
-      key = -1
-      value = -1
-		  if !check_observed || !_is_missing(residue)
-			  crossref = get_elements_by_tagname(residue, "crossRefDb")
-				for ref in crossref
-				  if attribute(ref, "dbSource") == db_from && attribute(ref, "dbAccessionId") == id_from
-					  key = parse(Int, attribute(ref, "dbResNum"))
-					end
-          if attribute(ref, "dbSource") == db_to && attribute(ref, "dbAccessionId") == id_to
-					  value = parse(Int, attribute(ref, "dbResNum"))
-					end
-				end
-        if key != -1 && value != -1
-          haskey(mapping, key) && warn(string(key, " is already in the mapping with the value ", mapping[key], ". The value is replaced by ", value))
-					mapping[key] = value
-        end
-			end
-		end
+function siftsmapping{F, T}(filename::ASCIIString,
+                            db_from::Type{F}, id_from::ASCIIString,
+                            db_to::Type{T}, id_to::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
+  mapping = Dict{_number_type(F), _number_type(T)}()
+  for entity in _get_entities(filename)
+    segments = _get_segments(entity)
+    for segment in segments
+      residues = _get_residues(segment)
+  		for residue in residues
+        in_chain = chain == "all"
+        key_data = name(db_from) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{_number_type(F)}()
+        value_data = name(db_to) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{_number_type(T)}()
+	  	  if missings || !_is_missing(residue)
+  			  crossref = get_elements_by_tagname(residue, "crossRefDb")
+	  			for ref in crossref
+            source = attribute(ref, "dbSource")
+		  		  if source == name(db_from) && attribute(ref, "dbAccessionId") == id_from
+			  		  key_data = Nullable(_parse(_number_type(F), attribute(ref, "dbResNum")))
+				  	end
+            if source == name(db_to) && attribute(ref, "dbAccessionId") == id_to
+		  			  value_data = Nullable(_parse(_number_type(T), attribute(ref, "dbResNum")))
+			  		end
+            if !in_chain && source == "PDB" # XML: <crossRefDb dbSource="PDB" ... dbChainId="E"/>
+              in_chain = attribute(ref, "dbChainId") == chain
+            end
+		  		end
+          if !isnull(key_data) && !isnull(value_data) && in_chain
+            key = get(key_data)
+            haskey(mapping, key) && warn(string(key, " is already in the mapping with the value ", mapping[key], ". The value is replaced by ", get(value_data)))
+			  		mapping[key] = get(value_data)
+          end
+			  end
+		  end
+    end
   end
   sizehint!(mapping, length(mapping))
 end
 
-function siftsPDBemapping(filename::ASCIIString, chain::ASCIIString, db::ASCIIString, id::ASCIIString, check_observed::Bool = true)
-  mapping = Dict{Int, Int}()
-	segments = _get_segments(_get_entity(_get_entities(filename), chain))
-  for segment in segments
-    residues = _get_residues(segment)
-		for residue in residues
-      if attribute(residue, "dbSource") != "PDBe" # XML: <residue dbSource="PDBe" ...
-          continue
-      end
-		  if !check_observed || !_is_missing(residue)
-        key = parse(Int, attribute(residue, "dbResNum")) # XML: <residue dbSource="PDBe" dbCoordSys="PDBe" dbResNum="1" ...
-			  crossref = get_elements_by_tagname(residue, "crossRefDb")
-				for ref in crossref
-          if attribute(ref, "dbSource") == db && attribute(ref, "dbAccessionId") == id
-            value = attribute(ref, "dbResNum")
-            haskey(mapping, key) && warn(string(key, " is already in the mapping with the value ", mapping[key], ". The value is replaced by ", value))
-					  mapping[key] = parse(Int, value)
-            break
-					end
-				end
-			end
-		end
-  end
-  sizehint!(mapping, length(mapping))
-end
-
-function siftsresidues(filename::ASCIIString, chain::ASCIIString, check_observed::Bool = true)
+function siftsresidues(filename::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
   vector = SIFTSResidue[]
-	segments = _get_segments(_get_entity(_get_entities(filename), chain))
-  for segment in segments
-    residues = _get_residues(segment)
-		for residue in residues
-      missing = _is_missing(residue)
-		  if !check_observed || !missing
-        push!(vector, SIFTSResidue(residue, missing))
-			end
-		end
+  for entity in _get_entities(filename)
+    for segment in _get_segments(entity)
+      residues = _get_residues(segment)
+		  for residue in residues
+        missing = _is_missing(residue)
+		    if missings || !missing
+          sifts_res = SIFTSResidue(residue, missing)
+          if chain == "all" || (!isnull(sifts_res.PDB) && get(sifts_res.PDB).chain == chain)
+            push!(vector, sifts_res)
+          end
+			  end
+		  end
+    end
   end
   vector
+end
+
+# Find SIFTSResidue
+# -----------------
+
+function isobject{T <: DataBase}(res::SIFTSResidue, ::Type{T}, tests::AbstractTest...)
+  dbfield = getfield(res, symbol(name(T)))
+  if !isnull(dbfield)
+    return(isobject(get(dbfield), tests...))
+  end
+  false
+end
+
+function findobjects{T <: DataBase}(vector::AbstractVector{SIFTSResidue}, ::Type{T}, tests::AbstractTest...)
+  dbname = symbol(name(T))
+  len = length(vector)
+  indexes = Array(Int, len)
+  n = 0
+  for i in 1:len
+    dbfield = getfield(vector[i], dbname)
+    if !isnull(dbfield) && isobject(get(dbfield), tests...)
+      n += 1
+      indexes[n] = i
+    end
+  end
+  resize!(indexes, n)
+end
+
+function collectobjects{T <: DataBase}(vector::AbstractVector{SIFTSResidue}, ::Type{T}, tests::AbstractTest...)
+  dbname = symbol(name(T))
+  len = length(vector)
+  elements = Array(SIFTSResidue, len)
+  n = 0
+  for i in 1:len
+    dbfield = getfield(vector[i], dbname)
+    if !isnull(dbfield) && isobject(get(dbfield), tests...)
+      n += 1
+      elements[n] = vector[i]
+    end
+  end
+  resize!(elements, n)
+end
+
+"Returns `nothing` if the DataBase to test or capture is null in the SIFTSResidue"
+function capture{C <: DataBase, T <: DataBase}(res::SIFTSResidue, db_capture::Type{C}, field::Symbol, db_test::Type{T}, tests::AbstractTest...)
+  dbfield_capture = getfield(res, symbol(name(C)))
+  dbfield_test = getfield(res, symbol(name(T)))
+  if !isnull(dbfield_capture) && !isnull(dbfield_test)
+    captured = getfield(get(dbfield_capture), field)
+    for test in tests
+      if !Utils._test(get(dbfield_test), test)
+        return(Nullable{typeof(captured)}())
+      end
+    end
+    return(Nullable(captured))
+  end
+  nothing
+end
+
+"Returns the **type** of the `field` in the first object of the collection"
+function guess_type{T <: DataBase}(collection::AbstractVector{SIFTSResidue}, ::Type{T}, field::Symbol)
+  for res in collection
+    dbfield = getfield(res, symbol(name(T)))
+    if !isnull(dbfield)
+      data = get(dbfield)
+      if field in fieldnames(data)
+        return(fieldtype(typeof(data), field))
+      end
+    end
+  end
+  Any
+end
+
+"""Returns a vector of Nullables with the captures of the `field`s.
+Null if any test fails or the object hasn't the `field`."""
+function collectcaptures{C <: DataBase, T <: DataBase}(vector::AbstractVector{SIFTSResidue}, db_capture::Type{C}, field::Symbol, db_test::Type{T}, tests::AbstractTest...)
+  Nullable{guess_type(vector, C, field)}[ capture(object, C, field, T, tests...) for object in vector ]
 end

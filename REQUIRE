@@ -1,3 +1,6 @@
 julia 0.4-
 LightXML
 GZip
+AutoHashEquals
+DataStructures
+Formatting

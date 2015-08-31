@@ -8,8 +8,11 @@ include("eachlinestring.jl")
 include("residues.jl")
 include("indexedvectors.jl")
 include("annotations.jl")
-include("rawaln_and_gaps.jl")
+include("rawalnandgaps.jl")
 include("multiplesequencealignment.jl")
+include("msaannotations.jl")
+# PDB
+include("pdb.jl")
 #  SIFTS
 include("sifts.jl")
 # Information

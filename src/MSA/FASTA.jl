@@ -47,15 +47,23 @@ function _pre_readfasta(io::IO)
   (IDS, SEQS)
 end
 
-function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{AnnotatedMultipleSequenceAlignment}; useidcoordinates::Bool=true, deletefullgaps::Bool=true)
+function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{AnnotatedMultipleSequenceAlignment}; generatemapping::Bool=false, useidcoordinates::Bool=false, deletefullgaps::Bool=true)
   IDS, SEQS = _pre_readfasta(io)
-  MSA, MAP = useidcoordinates  && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
-  COLS = vcat(1:size(MSA,2))
-  msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, MAP, IndexedVector(COLS), empty(Annotations))
+  annot = Annotations()
+  if generatemapping
+    MSA, MAP = useidcoordinates  && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
+    setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
+    for i in 1:length(IDS)
+      setannotsequence!(annot, IDS[i], "SeqMap", MAP[i])
+    end
+  else
+    MSA = convert(Matrix{Residue}, SEQS)
+  end
+  msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, annot)
   if deletefullgaps
     deletefullgaps!(msa)
   end
-  return(msa)
+  msa
 end
 
 function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
@@ -64,10 +72,15 @@ function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{M
   if deletefullgaps
     deletefullgaps!(msa)
   end
-  return(msa)
+  msa
 end
 
-parse(io::Union(IO,AbstractString), format::Type{FASTA}; useidcoordinates::Bool=true, deletefullgaps::Bool=true) = parse(io, FASTA, AnnotatedMultipleSequenceAlignment; useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps)
+parse(io::Union(IO,AbstractString), format::Type{FASTA}; generatemapping::Bool=false,
+      useidcoordinates::Bool=false, deletefullgaps::Bool=true) = parse(io, FASTA,
+                                                                       AnnotatedMultipleSequenceAlignment;
+                                                                       generatemapping=generatemapping,
+                                                                       useidcoordinates=useidcoordinates,
+                                                                       deletefullgaps=deletefullgaps)
 
 # Print FASTA
 # ===========

@@ -4,10 +4,13 @@ module Utils
 
   # eachline,
 
-  Format
+  Format,
+
+  AbstractTest, Is, In, Not, capture, isobject, findobjects, collectobjects, collectcaptures, guess_type
 
   include("generalutils.jl")
   include("EachLineString.jl")
   include("Read.jl")
+  include("FindObjects.jl")
 
 end

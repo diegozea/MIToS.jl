@@ -1,34 +1,42 @@
-import Base: ==, !=, hash, isequal, length, -, norm, dot, angle, cross, vec, any
+# PDB Types
+# =========
 
-immutable PDBResidueIdentifier
-	number::ASCIIString
+@auto_hash_equals immutable PDBResidueIdentifier
+  PDBe_number::ASCIIString # PDBe
+  number::ASCIIString # PDB
 	name::ASCIIString
 	group::ASCIIString
 	model::ASCIIString
 	chain::ASCIIString
 end
 
-hash(a::PDBResidueIdentifier) = hash(string(a.number, a.name, a.group, a.model,a.chain))
-
-isequal(a::PDBResidueIdentifier, b::PDBResidueIdentifier) = hash(a) == hash(b)
-
-function ==(a::PDBResidueIdentifier, b::PDBResidueIdentifier)
-  a.number == b.number && a.name == b.name && a.group == b.group && a.chain == b.chain && a.model == b.model
+@auto_hash_equals immutable Coordinates
+  x::Float64
+  y::Float64
+  z::Float64
 end
 
-function !=(a::PDBResidueIdentifier, b::PDBResidueIdentifier)
-  a.number != b.number && a.name != b.name && a.group != b.group && a.chain != b.chain && a.model != b.model
+@auto_hash_equals immutable PDBAtom
+  coordinates::Coordinates
+  atomid::ASCIIString
+  element::ASCIIString
+  occupancy::Float64
+  B::ASCIIString
 end
 
-immutable Coordinates{T<:FloatingPoint}
-  x::T
-  y::T
-  z::T
+type PDBResidue
+  id::PDBResidueIdentifier
+  atoms::Vector{PDBAtom}
 end
+
+length(res::PDBResidue) = length(res.atoms)
+
+# Distances and geom
+# ==================
 
 distance(a::Coordinates, b::Coordinates) = sqrt((a.x - b.x)^2 + (a.y - b.y)^2 + (a.z - b.z)^2)
 
-contact(a::Coordinates, b::Coordinates, limit::FloatingPoint) = distance(a,b) <= limit ? true : false
+contact(a::Coordinates, b::Coordinates, limit::AbstractFloat) = distance(a,b) <= limit ? true : false
 
 -(a::Coordinates, b::Coordinates) = Coordinates(a.x - b.x, a.y - b.y, a.z - b.z)
 
@@ -48,36 +56,27 @@ function angle(a::Coordinates, b::Coordinates, c::Coordinates)
   end
 end
 
-vec{T}(a::Coordinates{T}) = T[a.x, a.y, a.z]
+vec(a::Coordinates) = Float64[a.x, a.y, a.z]
 
 function cross(a::Coordinates, b::Coordinates)
   normal = cross(vec(a), vec(b))
   Coordinates(normal[1], normal[2], normal[3])
 end
 
-immutable PDBAtom{T<:FloatingPoint}
-  residueid::PDBResidueIdentifier
-  coordinates::Coordinates{T}
-  atomid::ASCIIString
-  element::ASCIIString
-  occupancy::T
-  B::ASCIIString
-end
-
 distance(a::PDBAtom, b::PDBAtom) = distance(a.coordinates, b.coordinates)
 
-contact(a::PDBAtom, b::PDBAtom, limit::FloatingPoint) = contact(a.coordinates, b.coordinates, limit)
+contact(a::PDBAtom, b::PDBAtom, limit::Float64) = contact(a.coordinates, b.coordinates, limit)
 
 angle(a::PDBAtom, b::PDBAtom, c::PDBAtom) = angle(a.coordinates, b.coordinates, c.coordinates)
 
 cross(a::PDBAtom, b::PDBAtom) = cross(a.coordinates, b.coordinates)
 
-type PDBResidue{T<:FloatingPoint}
-  id::PDBResidueIdentifier
-	atoms::Vector{PDBAtom{T}}
-end
+# Find Residues/Atoms
+# ===================
 
-length(res::PDBResidue) = length(res.atoms)
+isobject(res::PDBResidue, tests::AbstractTest...) = isobject(res.id, tests...)
+
+findobjects(res::PDBResidue, tests::AbstractTest...) = findobjects(res.atoms, tests...)
 
 function findheavy(res::PDBResidue)
   N = length(res)
@@ -105,12 +104,14 @@ function findatoms(res::PDBResidue, atomid::ASCIIString)
   resize!(indices, j)
 end
 
+"Returns a vector of indices for CB (CA for GLY)"
 function findCB(res::PDBResidue)
   N = length(res)
   indices = Array(Int,N)
+  atom = res.residueid.name == "GLY" ? "CA" : "CB"
   j = 0
   @inbounds for i in 1:N
-    if (res.atoms[i].residueid.name == "GLY" && res.atoms[i].atomid == "CA") || res.atoms[i].atomid == "CB"
+    if res.atoms[i].atomid == atom
       j += 1
       indices[j] = i
     end
@@ -138,6 +139,9 @@ function selectbestoccupancy(res::PDBResidue, indices::Vector{Int})
   end
   return(indice)
 end
+
+# More Distances
+# ==============
 
 function _update_distance(a, b, i, j, dist)
   actual_dist = distance(a.atoms[i], b.atoms[j])
@@ -208,7 +212,7 @@ function any(f::Function, a::PDBResidue, b::PDBResidue)
 end
 
 """Heavy, All, CA, CB (CA for GLY)"""
-function contact(a::PDBResidue, b::PDBResidue, limit::FloatingPoint; criteria::ASCIIString="All")
+function contact(a::PDBResidue, b::PDBResidue, limit::AbstractFloat; criteria::ASCIIString="All")
   if criteria == "All"
     Na = length(a)
     Nb = length(b)
@@ -257,4 +261,54 @@ function contact(a::PDBResidue, b::PDBResidue, limit::FloatingPoint; criteria::A
     end
   end
   false
+end
+
+# For Parsing...
+# ==============
+
+"Used for parsing a PDB file into Vector{PDBResidue}"
+function _generate_residues(residue_dict::OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}})
+  len = length(residue_dict)
+  residue_vect = Array(PDBResidue, len)
+  i = 1
+  for (k,v) in residue_dict
+    residue_vect[i] = PDBResidue(k, v)
+    i += 1
+  end
+  residue_vect
+end
+
+# Show PDB* objects (using Formatting)
+# ====================================
+
+const _Format_ResidueID = FormatExpr("{:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
+const _Format_ATOM = FormatExpr("{:>50} {:>15} {:>15} {:>15} {:>15}\n")
+
+const _Format_ResidueID_Res = FormatExpr("\t\t{:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
+const _Format_ATOM_Res = FormatExpr("\t\t{:<10} {:>50} {:>15} {:>15} {:>15} {:>15}\n")
+
+function show(io::IO, id::PDBResidueIdentifier)
+  printfmt(io, _Format_ResidueID, "PDBe_number", "number", "name", "group", "model", "chain")
+  printfmt(io, _Format_ResidueID, string('"',id.PDBe_number,'"'), string('"',id.number,'"'), string('"',id.name,'"'),
+           string('"',id.group,'"'), string('"',id.model,'"'), string('"',id.chain,'"'))
+end
+
+function show(io::IO, atom::PDBAtom)
+  printfmt(io, _Format_ATOM, "coordinates", "atomid", "element", "occupancy", "B")
+  printfmt(io, _Format_ATOM, atom.coordinates, string('"',atom.atomid,'"'), string('"',atom.element,'"'),
+           atom.occupancy, string('"',atom.B,'"'))
+end
+
+function show(io::IO, res::PDBResidue)
+  println(io, "PDBResidue:\n\tid::PDBResidueIdentifier")
+  printfmt(io, _Format_ResidueID_Res, "PDBe_number", "number", "name", "group", "model", "chain")
+  printfmt(io, _Format_ResidueID_Res, string('"',res.id.PDBe_number,'"'), string('"',res.id.number,'"'),
+           string('"',res.id.name,'"'), string('"',res.id.group,'"'), string('"',res.id.model,'"'), string('"',res.id.chain,'"'))
+  len = length(res)
+  println(io, "\tatoms::Vector{PDBAtom}\tlength: ", len)
+  for i in 1:len
+    printfmt(io, _Format_ATOM_Res, "", "coordinates", "atomid", "element", "occupancy", "B")
+    printfmt(io, _Format_ATOM_Res, string(i,":"), res.atoms[i].coordinates, string('"',res.atoms[i].atomid,'"'),
+             string('"',res.atoms[i].element,'"'), res.atoms[i].occupancy, string('"',res.atoms[i].B,'"'))
+  end
 end

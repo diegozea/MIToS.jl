@@ -1,22 +1,68 @@
-using LightXML
+immutable PDBML <: Format end
 
 function _get_text(elem, name)
 	sub = find_element(elem, name)
 	if sub !== nothing
 		return(content(sub))
 	end
-	throw("There is not $name for $elem")
+	throw(ErrorException("There is not $name for $elem"))
 end
 
-function _get_atom_iterator(pdbml::ASCIIString)
-	pdbfile = parse_file(pdbml)
+function _get_ins_code(elem)
+	sub = find_element(elem, "pdbx_PDB_ins_code")
+	if sub !== nothing
+		return(content(sub))
+	else
+	  return("")
+  end
+end
+
+function _get_atom_iterator(pdbfile::LightXML.XMLDocument)
+	#pdbfile = parse_file(pdbml)
 	pdbroot = root(pdbfile)
 	child_elements(get_elements_by_tagname(pdbroot, "atom_siteCategory")[1])
 end
 
-function getpdbmlatoms(pdbml::ASCIIString; chain::ASCIIString = "all",
+# function getpdbmlatoms(pdbml::ASCIIString; chain::ASCIIString = "all",
+# 	model::ASCIIString = "all", group::ASCIIString = "all", atomname::ASCIIString="all", onlyheavy::Bool=false)
+# 	residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
+# 	atoms = _get_atom_iterator(pdbml)
+# 	for atom in atoms
+
+#    	atom_group = _get_text(atom, "group_PDB")
+# 		atom_model = _get_text(atom, "pdbx_PDB_model_num")
+# 		atom_chain = _get_text(atom, "label_asym_id")
+#    	atom_name = _get_text(atom, "label_atom_id")
+#    	element = _get_text(atom, "type_symbol")
+
+#    	if  (group=="all" || group==atom_group) && (chain=="all" || chain==atom_chain) &&
+#    	    (model=="all" || model==atom_model) && (atomname=="all" || atomname==atom_name) && (!onlyheavy || element!="H")
+
+#       PDBe_number = _get_text(atom, "label_seq_id")
+
+#       #  Residue_No  _atom_site.auth_seq_id
+#       #  Ins_Code    _atom_site.pdbx_PDB_ins_code
+#       PDB_number = string(_get_text(atom, "auth_seq_id"), _get_ins_code(atom))
+# 			name = _get_text(atom, "label_comp_id")
+# 			x = float(_get_text(atom, "Cartn_x"))
+# 			y = float(_get_text(atom, "Cartn_y"))
+# 			z = float(_get_text(atom, "Cartn_z"))
+# 			occupancy = float(_get_text(atom, "occupancy"))
+# 			B = _get_text(atom, "B_iso_or_equiv")
+
+#       residue_id = PDBResidueIdentifier(PDBe_number, PDB_number, name, atom_group, atom_model, atom_chain)
+#       atom_data  = PDBAtom(Coordinates(x,y,z), atom_name, element, occupancy, B)
+
+#       value = get!(residue_dict, residue_id, PDBAtom[])
+#       push!(value, atom_data)
+# 		end
+# 	end
+# 	_generate_residues(residue_dict)
+# end
+
+function parse(pdbml::LightXML.XMLDocument, ::Type{PDBML}; chain::ASCIIString = "all",
 	model::ASCIIString = "all", group::ASCIIString = "all", atomname::ASCIIString="all", onlyheavy::Bool=false)
-	atom_list = Array(PDBAtom,0)
+	residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
 	atoms = _get_atom_iterator(pdbml)
 	for atom in atoms
 
@@ -29,7 +75,11 @@ function getpdbmlatoms(pdbml::ASCIIString; chain::ASCIIString = "all",
    	if  (group=="all" || group==atom_group) && (chain=="all" || chain==atom_chain) &&
    	    (model=="all" || model==atom_model) && (atomname=="all" || atomname==atom_name) && (!onlyheavy || element!="H")
 
-			number = _get_text(atom, "label_seq_id")
+      PDBe_number = _get_text(atom, "label_seq_id")
+
+      #  Residue_No  _atom_site.auth_seq_id
+      #  Ins_Code    _atom_site.pdbx_PDB_ins_code
+      PDB_number = string(_get_text(atom, "auth_seq_id"), _get_ins_code(atom))
 			name = _get_text(atom, "label_comp_id")
 			x = float(_get_text(atom, "Cartn_x"))
 			y = float(_get_text(atom, "Cartn_y"))
@@ -37,36 +87,15 @@ function getpdbmlatoms(pdbml::ASCIIString; chain::ASCIIString = "all",
 			occupancy = float(_get_text(atom, "occupancy"))
 			B = _get_text(atom, "B_iso_or_equiv")
 
-			push!(atom_list, PDBAtom(PDBResidueIdentifier(number, name, atom_group, atom_model, atom_chain),
-                               Coordinates(x,y,z), atom_name, element, occupancy, B))
+      residue_id = PDBResidueIdentifier(PDBe_number, PDB_number, name, atom_group, atom_model, atom_chain)
+      atom_data  = PDBAtom(Coordinates(x,y,z), atom_name, element, occupancy, B)
+
+      value = get!(residue_dict, residue_id, PDBAtom[])
+      push!(value, atom_data)
 		end
 	end
-	atom_list
+	_generate_residues(residue_dict)
 end
-
-function _add_atom!(res::PDBResidue, atom::PDBAtom)
-	if res.id == atom.residueid
-		push!(res.atoms, atom)
-		return(res)
-	else
-		throw("It isn't the same residue: $(res.id) != $(atom.residueid) ")
-	end
-end
-
-function getresidues(atoms::Vector{PDBAtom})
-  residues = Dict{PDBResidueIdentifier, PDBResidue}()
-  for atom in atoms
-    if atom.residueid in keys(residues)
-      residues[atom.residueid] = _add_atom!(residues[atom.residueid], atom)
-    else
-      residues[atom.residueid] = PDBResidue(atom.residueid, [atom])
-    end
-  end
-  sizehint!(residues, length(residues))
-end
-
-getresidues(pdbml::ASCIIString; chain::ASCIIString = "all",	model::ASCIIString = "all",
-            group::ASCIIString = "all", onlyheavy::Bool=false) = getresidues(getatoms(pdbml, chain=chain, model=model, group=group, onlyheavy=onlyheavy))
 
 # Download PDB
 # ============
@@ -84,7 +113,7 @@ function downloadpdb(pdbcode::ASCIIString; format::ASCIIString="xml", outfile::A
     filename = string(uppercase(pdbcode), ".", lowercase(format),".gz")
     outfile = outfile == "default" ? filename : _inputnameforgzip(outfile)
     download(string("http://www.rcsb.org/pdb/files/", filename), outfile)
-    run(`gzip -d $outfile`)
+    #run(`gzip -d $outfile`)
   else
     throw(string(pdbcode, " is not a correct PDB code"))
   end

@@ -1,4 +1,8 @@
+isdefined(Base, :__precompile__) && __precompile__(false)
+
 module MIToS
+
+  export Utils, MSA, Clustering, Information, PDB, SIFTS
 
   include(joinpath("Utils", "Utils.jl"))
   include(joinpath("MSA", "MSA.jl"))
