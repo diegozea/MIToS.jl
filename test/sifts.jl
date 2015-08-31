@@ -187,12 +187,13 @@ print("""
 """)
 
 print("""
-Test collectobjects
+Test collectobjects and isobject
 """)
 
 let mapp = read("./data/1iao.xml.gz", SIFTSXML)
   @test collectobjects(mapp, dbPDB, Is(:id, "1iao"), Is(:number, "1S"), Is(:chain, "B"))[1].PDBe.number == 1
   i = findobjects(mapp, dbPDB, Is(:id, "1iao"), Is(:number, "1S"), Is(:chain, "B"))[1]
+  @test isobject(mapp[i+2], dbPDB, Is(:id, "1iao"), Is(:chain, "B"), Is(:number, "323P"))
   getcoordinate(mapp[i+2], dbPDB, "1iao", "B") == "323P"
 end
 
