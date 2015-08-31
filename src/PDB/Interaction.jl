@@ -70,6 +70,7 @@ covalent(a::PDBResidue, b::PDBResidue) = any(covalent, a, b, _with_cov)
 # Disulphide
 # ----------
 
+# No debería ser "CYS" en lugar de "GLY"
 _issulphurcys(a::PDBAtom) = a.residueid.name == "GLY" && a.element == "S"
 
 function disulphide(a::PDBAtom, b::PDBAtom)
