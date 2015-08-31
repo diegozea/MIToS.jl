@@ -29,6 +29,22 @@ let code = "2VQC"
 end
 
 print("""
+Test download
+""")
+
+let code = "2VQC"
+  pdb = read(txt(code), PDBFile)
+  filename = downloadpdb(code)
+  try
+    pdbml = read(filename, PDBML)
+    @test findfirst(x -> x.id.number == "4",  pdb) == findfirst(x -> x.id.number == "4",  pdbml)
+    @test findfirst(x -> x.id.number == "73", pdb) == findfirst(x -> x.id.number == "73", pdbml)
+  finally
+    rm(filename)
+  end
+end
+
+print("""
 1SSX => Residues with insert codes: 15A 15B
 """)
 

@@ -22,6 +22,12 @@ function _get_atom_iterator(document::LightXML.XMLDocument)
 	child_elements(get_elements_by_tagname(pdbroot, "atom_siteCategory")[1])
 end
 
+"""
+Reads a LightXML.XMLDocument representing a pdb file.
+Returns a list of PDBResidue (view MIToS.PDB.PDBResidues).
+Setting 'chain', 'model', 'group', 'atomname' and 'onlyheavy' values
+can be used to select of a subset of all residues. If not set, all residues are returned.
+"""
 function parse(pdbml::LightXML.XMLDocument, ::Type{PDBML}; chain::ASCIIString = "all",
 	model::ASCIIString = "all", group::ASCIIString = "all", atomname::ASCIIString="all", onlyheavy::Bool=false)
 	residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
@@ -70,12 +76,18 @@ function _inputnameforgzip(outfile)
   string(outfile, ".gz")
 end
 
-function downloadpdb(pdbcode::ASCIIString; format::ASCIIString="xml", outfile::ASCIIString="default")
+"""
+Download a gzipped PDB file from PDB database.
+Requires a four character `pdbcode`.
+By default the `format` is xml and uses the `baseurl` http://www.rcsb.org/pdb/files/.
+`outfile` is the path to the output file.
+"""
+function downloadpdb(pdbcode::ASCIIString; format::ASCIIString="xml", outfile::ASCIIString="default", baseurl::ASCIIString="http://www.rcsb.org/pdb/files/")
   if length(pdbcode)== 4
     filename = string(uppercase(pdbcode), ".", lowercase(format),".gz")
     outfile = outfile == "default" ? filename : _inputnameforgzip(outfile)
-    download(string("http://www.rcsb.org/pdb/files/", filename), outfile)
-    #run(`gzip -d $outfile`)
+    sepchar = baseurl[end] != '/' ? "/" : "";
+    download(string(baseurl,sepchar,filename) , outfile)
   else
     throw(string(pdbcode, " is not a correct PDB code"))
   end

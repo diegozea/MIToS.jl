@@ -3,15 +3,20 @@
 
 import MIToS.MSA: nsequences
 
+"""
+Data structure to represent sequence clusters.
+The sequence data itself is not included.
+"""
 immutable Clusters
   clustersize::Vector{Int}
   sequencecluster::Vector{Int}
   sequenceweight::Vector{Float64}
 end
 
-# Number of clusters
+"Get the number of clusters in the set."
 getnclusters(c::Clusters) = length(c.clustersize)
 
+"Get the weights of all clusters in the set."
 getweight(c::Clusters) = c.sequenceweight
 
 """```getweight(c, i::Int)```
