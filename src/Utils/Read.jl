@@ -4,7 +4,7 @@ using GZip
 using LightXML
 
 """
-`Format` is used for write special `reader` (and `read`) methods on it.
+`Format` is used for write special `parse` (and `read`) methods on it.
 """
 abstract Format
 

@@ -200,19 +200,6 @@ function ischain(res::SIFTSResidue, chain::ASCIIString)
   false
 end
 
-# function has{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString)
-#  data = getdatabase(res, T)
-#  data === nothing ? false : return( data.id == id )
-# end
-
-# function has{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString, coord)
-#   data = getdatabase(res, T)
-#   if data !== nothing && data.id == id
-#     return(data.number == coord)
-#   end
-#   false
-# end
-
 function getcoordinate{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString)
   data = getdatabase(res, T)
   if data !== nothing && data.id == id
@@ -239,7 +226,7 @@ function siftsmapping{F, T}(filename::ASCIIString,
                             db_from::Type{F}, id_from::ASCIIString,
                             db_to::Type{T}, id_to::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
   mapping = Dict{_number_type(F), _number_type(T)}()
-  for entity in _get_entities(filename)
+  for entity in _get_entities(parse_file(filename))
     segments = _get_segments(entity)
     for segment in segments
       residues = _get_residues(segment)
@@ -273,9 +260,9 @@ function siftsmapping{F, T}(filename::ASCIIString,
   sizehint!(mapping, length(mapping))
 end
 
-function siftsresidues(filename::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
+function parse(document::LightXML.XMLDocument, ::Type{SIFTSXML}; chain::ASCIIString="all", missings::Bool = true)
   vector = SIFTSResidue[]
-  for entity in _get_entities(filename)
+  for entity in _get_entities(document)
     for segment in _get_segments(entity)
       residues = _get_residues(segment)
 		  for residue in residues

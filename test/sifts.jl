@@ -93,7 +93,7 @@ let map = siftsmapping("./data/1cbn.xml.gz", dbPDBe, "1cbn", dbInterPro, "IPR001
   @test map[2] == "2" # Same ResNum for different InterPros
 end
 
-let map = siftsresidues("./data/1cbn.xml.gz", chain="A")
+let map = read("./data/1cbn.xml.gz", SIFTSXML, chain="A")
   @test length(map[1].InterPro) == 0 # Without InterPro
   @test length(map[2].InterPro) == 4 # Same ResNum for different InterPros
 end
@@ -164,10 +164,10 @@ print("""
 """)
 
 print("""
-Test findobjects & siftsresidues
+Test findobjects & read
 """)
 
-let mapp = siftsresidues("./data/1nsa.xml.gz")
+let mapp = read("./data/1nsa.xml.gz", SIFTSXML)
   four = findobjects(mapp, dbPDB, Is(:id, "1nsa"), Is(:number, "4"))[1]
   @test findobjects(mapp, dbPDB, Is(:id, "1nsa"), Is(:number, "95A"))[1] + 1 == four
   @test get(mapp[ findobjects(mapp, dbPDB, Is(:id, "1nsa"), Is(:number, "95A")) ][1].PDB).number == "95A"
@@ -178,7 +178,7 @@ print("""
 Test collectcaptures
 """)
 
-let cap = collectcaptures(siftsresidues("./data/1nsa.xml.gz"), dbPDB, :number, dbPDB, Is(:id, "1nsa"), Is(:number, "95A"))
+let cap = collectcaptures(read("./data/1nsa.xml.gz", SIFTSXML), dbPDB, :number, dbPDB, Is(:id, "1nsa"), Is(:number, "95A"))
   @test get(cap[ [!isnull(x) for x in cap] ][1]) == "95A"
 end
 
@@ -190,7 +190,7 @@ print("""
 Test collectobjects
 """)
 
-let mapp = siftsresidues("./data/1iao.xml.gz")
+let mapp = read("./data/1iao.xml.gz", SIFTSXML)
   @test collectobjects(mapp, dbPDB, Is(:id, "1iao"), Is(:number, "1S"), Is(:chain, "B"))[1].PDBe.number == 1
   i = findobjects(mapp, dbPDB, Is(:id, "1iao"), Is(:number, "1S"), Is(:chain, "B"))[1]
   getcoordinate(mapp[i+2], dbPDB, "1iao", "B") == "323P"
@@ -206,7 +206,7 @@ let pdb = "2vqc"
   filename = downloadsifts(pdb)
   try
     @test_throws ErrorException downloadsifts("2vqc_A")
-    @test siftsresidues(filename) == siftsresidues("./data/$(pdb).xml.gz")
+    @test read(filename, SIFTSXML) == read("./data/$(pdb).xml.gz", SIFTSXML)
   finally
     rm(filename)
   end
