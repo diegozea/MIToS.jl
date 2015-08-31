@@ -164,7 +164,7 @@ function call(::Type{SIFTSResidue}, residue::LightXML.XMLElement, missing::Bool)
     elseif db == "CATH"
       CATH = Nullable(dbCATH(crossref))
     else
-      db != "InterPro" && warn(string(db, " is not in the MIToS' DataBases."))
+      warn(string(db, " is not in the MIToS' DataBases."))
     end
   end
   SIFTSResidue(PDBe,
