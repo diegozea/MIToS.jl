@@ -31,6 +31,7 @@ julia> get_n_words("#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHH
  "SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH"
 ```
 """
+
 function get_n_words(line::ASCIIString, n::Int)
   N = length(line.data)
   coords = Array(ASCIIString, n)
