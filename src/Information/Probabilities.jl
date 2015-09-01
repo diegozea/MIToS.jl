@@ -365,9 +365,9 @@ end
 ### ResidueProbability calculation from ResidueCount and others
 
 # This is faster than p[:] = ( n ./ total )
-function _fill_probabilities!{TP, TN, N}(p::Array{TP,N}, n::Array{TN,N}, total::TN)
+function _fill_probabilities!{TP, TN, N}(p::Array{TP,N}, n::Array{TN,N}, total::TP)
   @inbounds for i in 1:length(p) # p and n should have the same length
-    p[i] = ( n[i] / TP(total) )
+    p[i] = ( n[i] / total)
   end
   p
 end
@@ -383,8 +383,9 @@ function fill!{TP, TC, N, UseGap}(p::ResidueProbability{TP, N, UseGap}, n::Resid
   if !updated
     update!(n)
   end
-  _fill_probabilities!(p.table, n.table, n.total)
-  _fill_probabilities!(p.marginals, n.marginals, n.total)
+  total = TP(n.total)
+  _fill_probabilities!(p.table, n.table, total)
+  _fill_probabilities!(p.marginals, n.marginals, total)
 	p
 end
 

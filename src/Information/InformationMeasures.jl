@@ -7,82 +7,87 @@ abstract SymmetricMeasure <: InformationMeasure
 
 # Entropy
 
-type Entropy <: SymmetricMeasure end
+immutable Entropy{T} <: SymmetricMeasure
+  base::T
+end
+
+call{T}(::Type{Entropy{T}}) = Entropy(T(Base.e))
 
 ## Estimate Entropy using ResidueProbability
 
-"""```estimate(Entropy(), p [, base])```
+"""```estimate(Entropy(base), p)```
 
-`p` should be a `ResidueProbability` table.
+`p` should be a `ResidueProbability` table. The result type is determined by `base`.
 """
-function estimate{T, N, UseGap}(measure::Entropy, p::ResidueProbability{T, N, UseGap})
-  H = zero(T)
+function estimate{B, T, N, UseGap}(measure::Entropy{B}, p::ResidueProbability{T, N, UseGap})
+  H = zero(B)
   for i in 1:length(p)
     @inbounds pi = p[i]
     if pi != 0.0
       H += pi * log(pi)
     end
   end
-  -H
+  -H/log(measure.base)
 end
 
-"""```estimate_on_marginal(Entropy(), p, marginal[, base])```
+"""```estimate_on_marginal(Entropy(base), p, marginal)```
 
 This function estimate the entropy H(X) if marginal is 1, H(Y) for 2, etc.
+The result type is determined by `base`.
 """
-function estimate_on_marginal{T, N, UseGap}(measure::Entropy, p::ResidueProbability{T, N, UseGap}, marginal::Int)
-  H = zero(T)
+function estimate_on_marginal{B, T, N, UseGap}(measure::Entropy{B}, p::ResidueProbability{T, N, UseGap}, marginal::Int)
+  H = zero(B)
   for i in 1:nresidues(p)
     @inbounds pi = p.marginals[i, marginal]
     if pi != 0.0
       H += pi * log(pi)
     end
   end
-  -H
+  -H/log(measure.base)
 end
 
 ## Estimate Entropy using ResidueCount
 
 """```estimate(Entropy(), n::ResidueCount [, base])```
 
-It's the fastest option (you don't spend time on probability calculations)."""
-function estimate(measure::Entropy, n::ResidueCount)
-  H = zero(Float64)
-  total = Float64(n.total)
+It's the fastest option (you don't spend time on probability calculations).
+The result type is determined by the `base`."""
+function estimate{T}(measure::Entropy{T}, n::ResidueCount)
+  H = zero(T)
+  total = T(n.total)
   for i in 1:length(n)
     @inbounds ni = n[i]
     if ni != 0.0
       H += ni * log(ni/total)
     end
   end
-  -H/total
+  (-H/total)/log(measure.base)
 end
 
-function estimate_on_marginal(measure::Entropy, n::ResidueCount, marginal::Int)
-  H = zero(Float64)
-  total = Float64(n.total)
+function estimate_on_marginal{T}(measure::Entropy{T}, n::ResidueCount, marginal::Int)
+  H = zero(T)
+  total = T(n.total)
   for i in 1:nresidues(n)
     @inbounds ni = n.marginals[i, marginal]
     if ni != 0.0
       H += ni * log(ni/total)
     end
   end
-  -H/total
+  (-H/total)/log(measure.base)
 end
-
-
-estimate(measure::Entropy, p::ResidueContingencyTables, base::Real) = estimate(measure, p) / log(base)
-estimate_on_marginal(measure::Entropy, table::ResidueContingencyTables, marginal::Int, base::Real) = estimate_on_marginal(measure, table, marginal) / log(base)
 
 # Mutual Information
 
-type MutualInformation <: SymmetricMeasure end
+immutable MutualInformation{T} #<: SymmetricMeasure
+  base::T
+end
 
+call{T}(::Type{MutualInformation{T}}) = MutualInformation(T(Base.e))
 
 """```estimate(MutualInformation(), pxy::ResidueProbability [, base])```
 
-Calculate Mutual Information from `ResidueProbability`."""
-function estimate{T, UseGap}(measure::MutualInformation, pxy::ResidueProbability{T, 2,UseGap})
+Calculate Mutual Information from `ResidueProbability`. The result type is determined by `base`."""
+function estimate{B, T, UseGap}(measure::MutualInformation{B}, pxy::ResidueProbability{T, 2,UseGap})
   MI = zero(T)
   @inbounds for j in 1:nresidues(pxy)
     pj = pxy.marginals[j,2]
@@ -96,18 +101,16 @@ function estimate{T, UseGap}(measure::MutualInformation, pxy::ResidueProbability
       end
     end
   end
-  MI
+  MI/log(measure.base)
 end
-
-estimate(measure::MutualInformation, pxy, base::Real) = estimate(measure, pxy) / log(base)
 
 """```estimate(MutualInformation(), pxy::ResidueCount [, base])```
 
-Calculate Mutual Information from `ResidueCount`.
+Calculate Mutual Information from `ResidueCount`. The result type is determined by the `base`.
 It's the fastest option (you don't spend time on probability calculations)."""
-function estimate{T, UseGap}(measure::MutualInformation, nxy::ResidueCount{T, 2,UseGap})
-  MI = zero(Float64)
-  N = Float64(nxy.total)
+function estimate{B, T, UseGap}(measure::MutualInformation{B}, nxy::ResidueCount{T, 2,UseGap})
+  MI = zero(B)
+  N = B(nxy.total)
   @inbounds for j in 1:nresidues(nxy)
     nj = nxy.marginals[j,2]
     if nj > 0.0
@@ -120,18 +123,16 @@ function estimate{T, UseGap}(measure::MutualInformation, nxy::ResidueCount{T, 2,
       end
     end
   end
-  MI/N
+  (MI/N)/log(measure.base)
 end
 
-estimate(measure::MutualInformation, pxy, base::Real) = estimate(measure, pxy) / log(base)
-
-function estimate{T, UseGap}(measure::MutualInformation, pxyz::ResidueContingencyTables{T, 3, UseGap})
+function estimate{B, T, UseGap}(measure::MutualInformation{B}, pxyz::ResidueContingencyTables{T, 3, UseGap})
   pxy = delete_dimensions(pxyz,3)
-  return( estimate_on_marginal(Entropy(), pxyz, 1) + # H(X)
-  estimate_on_marginal(Entropy(), pxyz ,2) + # H(Y)
-  estimate_on_marginal(Entropy(), pxyz, 3) - # H(Z)
-  estimate(Entropy(), pxy) - # H(X, Y)
-  estimate(Entropy(), delete_dimensions!(pxy, pxyz, 2)) - # H(X, Z)
-  estimate(Entropy(), delete_dimensions!(pxy, pxyz, 1)) + # H(Y, Z)
-  estimate(Entropy(), pxyz) ) # H(X, Y, Z)
+  return( estimate_on_marginal(Entropy(measure.base), pxyz, 1) + # H(X)
+  estimate_on_marginal(Entropy(measure.base), pxyz ,2) + # H(Y)
+  estimate_on_marginal(Entropy(measure.base), pxyz, 3) - # H(Z)
+  estimate(Entropy(measure.base), pxy) - # H(X, Y)
+  estimate(Entropy(measure.base), delete_dimensions!(pxy, pxyz, 2)) - # H(X, Z)
+  estimate(Entropy(measure.base), delete_dimensions!(pxy, pxyz, 1)) + # H(Y, Z)
+  estimate(Entropy(measure.base), pxyz) ) # H(X, Y, Z)
 end
