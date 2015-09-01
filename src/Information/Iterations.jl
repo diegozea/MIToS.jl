@@ -15,10 +15,10 @@ function estimateincolumns{T, UseGap}(aln::Matrix{Residue}, use::Type{ResidueCou
   scores
 end
 
-function estimateincolumns{T, UseGap}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{1, UseGap}}, measure::InformationMeasure;
+function estimateincolumns{T, TP, UseGap}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{TP, 1, UseGap}}, measure::InformationMeasure;
                                 usegap::Bool=false, weight::SequenceWeights=1, pseudocount::Pseudocount=AdditiveSmoothing(zero(T)))
   N = ResidueCount{T, 1, UseGap}()
-  P = ResidueProbability{1, UseGap}()
+  P = ResidueProbability{TP, 1, UseGap}()
   ncol = ncolumns(aln)
   scores = Array(Float64, ncol)
   for i in 1:ncol
@@ -50,10 +50,10 @@ function estimateincolumns{T, UseGap}(aln::Matrix{Residue}, use::Type{ResidueCou
   scores
 end
 
-function estimateincolumns{T, UseGap}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{2, UseGap}}, measure::SymmetricMeasure;
+function estimateincolumns{T, TP, UseGap}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{TP, 2, UseGap}}, measure::SymmetricMeasure;
                                 weight::SequenceWeights=1, pseudocount::Pseudocount=AdditiveSmoothing(zero(T)), diagonal::Float64=0.0)
   Nab = ResidueCount{T, 2, UseGap}()
-  Pab = ResidueProbability{2, UseGap}()
+  Pab = ResidueProbability{TP, 2, UseGap}()
   ncol = ncolumns(aln)
   scores = zeros(Float64, ncol, ncol)
   @inbounds for i in 1:(ncol-1)
@@ -72,11 +72,11 @@ function estimateincolumns{T, UseGap}(aln::Matrix{Residue}, count::Type{T}, use:
   scores
 end
 
-function estimateincolumns{T}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{2, false}}, α, β, measure::SymmetricMeasure;
+function estimateincolumns{T, TP}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{TP, 2, false}}, α, β, measure::SymmetricMeasure;
                                      weight::SequenceWeights=1, pseudocount::Pseudocount=AdditiveSmoothing(zero(T)), diagonal::Float64=0.0)
   Nab = ResidueCount{T, 2, false}()
-  Pab = ResidueProbability{2, false}()
-  Gab = ResidueProbability{2, false}()
+  Pab = ResidueProbability{TP, 2, false}()
+  Gab = ResidueProbability{TP, 2, false}()
   ncol = ncolumns(aln)
   scores = zeros(Float64, ncol, ncol)
   @inbounds for i in 1:(ncol-1)

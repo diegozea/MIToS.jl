@@ -45,7 +45,7 @@ for ndim = 1:4, usegap = Bool[true, false]
 	@test nresidues(N) == nres
 
   println("Test zeros for ResidueCount{Float64, $(ndim), $(usegap)}")
-  @test sum(N.table) == zero(Float64)
+  @test sum(N.table) == zero(BigFloat)
 
   println("Test iteration interface for ResidueCount{Float64, $(ndim), $(usegap)}")
   @test collect(N) == zeros(Int, nres^ndim)
@@ -54,12 +54,12 @@ for ndim = 1:4, usegap = Bool[true, false]
   @test size(N) == size(N.table)
 
   println("Test indexing with i for ResidueCount{Float64, $(ndim), $(usegap)}")
-  @test N[1] == zero(Float64)
-  @test N[Int(Residue('R'))] == zero(Float64)
+  @test N[1] == zero(BigFloat)
+  @test N[Int(Residue('R'))] == zero(BigFloat)
 
   println("Test setindex! with i for ResidueCount{Float64, $(ndim), $(usegap)}")
   N[3] = 1
-  @test N[3] == one(Float64)
+  @test N[3] == one(BigFloat)
 
   println("Test update! for ResidueCount{Float64, $(ndim), $(usegap)}")
   fill!(N.table, 1)
@@ -95,12 +95,12 @@ for usegap = Bool[true, false]
 	N = zeros(ResidueCount{Float64, 2, usegap})
 
   println("Test indexing with ij for ResidueCount{Float64, 2, $(usegap)}")
-  @test N[1,1] == zero(Float64)
-  @test N[Int(Residue('R')), Int(Residue('R'))] == zero(Float64)
+  @test N[1,1] == zero(BigFloat)
+  @test N[Int(Residue('R')), Int(Residue('R'))] == zero(BigFloat)
 
   println("Test setindex! with ij for ResidueCount{Float64, 2, $(usegap)}")
   N[3,3] = 1
-  @test N[3,3] == one(Float64)
+  @test N[3,3] == one(BigFloat)
 
   println("Test count! for ResidueCount{Float64, 2, $(usegap)} and ResidueCount{Float64, 1, $(usegap)}")
 	C = zeros(ResidueCount{Float64, 2, usegap})
@@ -132,7 +132,7 @@ for ndim = 1:4
 end
 
 @test size(similar(ResidueCount{Int, 1, false}(),4).marginals) == (20, 4)
-@test isa(similar(ResidueCount{Int, 1, false}(),Float64).total, Float64)
+@test isa(similar(ResidueCount{Int, 1, false}(),BigFloat).total, BigFloat)
 
 print("""
 Test count! with Clusters
@@ -163,18 +163,18 @@ Tests for ResidueProbability
 ----------------------
 """)
 
-@test size(ResidueProbability{1, false}().table) == (20,)
-@test size(ResidueProbability{1, true}().table) == (21,)
+@test size(ResidueProbability{BigFloat, 1, false}().table) == (20,)
+@test size(ResidueProbability{BigFloat, 1, true}().table) == (21,)
 
-@test size(ResidueProbability{2, false}().table) == (20,20)
-@test size(ResidueProbability{2, true}().table) == (21,21)
+@test size(ResidueProbability{BigFloat, 2, false}().table) == (20,20)
+@test size(ResidueProbability{BigFloat, 2, true}().table) == (21,21)
 
-@test size(ResidueProbability{3, false}().table) == (20,20,20)
-@test size(ResidueProbability{3, true}().table) == (21,21,21)
+@test size(ResidueProbability{BigFloat, 3, false}().table) == (20,20,20)
+@test size(ResidueProbability{BigFloat, 3, true}().table) == (21,21,21)
 
 for ndim = 1:4
-	@test size(ResidueProbability{ndim, true}().marginals) == (21, ndim)
-	@test size(ResidueProbability{ndim, false}().marginals) == (20, ndim)
+	@test size(ResidueProbability{BigFloat, ndim, true}().marginals) == (21, ndim)
+	@test size(ResidueProbability{BigFloat, ndim, false}().marginals) == (20, ndim)
 end
 
 print("""
@@ -185,47 +185,58 @@ for ndim = 1:4, usegap = Bool[true, false]
 	println("# Iteration = N: $(ndim) UseGap: $(usegap)")
   nres = usegap ? 21 : 20
 
-  println("Test zeros for ResidueProbability{$(ndim), $(usegap)}")
-  N = zeros(ResidueProbability{ndim, usegap})
-  @test sum(N.table) == zero(Float64)
+  println("Test zeros for ResidueProbability{BigFloat, $(ndim), $(usegap)}")
+  N = zeros(ResidueProbability{BigFloat, ndim, usegap})
+  @test sum(N.table) == zero(BigFloat)
 
-  println("Test iteration interface for ResidueProbability{$(ndim), $(usegap)}")
-  @test collect(N) == zeros(Float64, nres^ndim)
+  println("Test iteration interface for ResidueProbability{BigFloat, $(ndim), $(usegap)}")
+  @test collect(N) == zeros(BigFloat, nres^ndim)
 
-  println("Test size for ResidueProbability{$(ndim), $(usegap)}")
+  println("Test size for ResidueProbability{BigFloat, $(ndim), $(usegap)}")
   @test size(N) == size(N.table)
 
-  println("Test indexing with i for ResidueProbability{$(ndim), $(usegap)}")
-  @test N[1] == zero(Float64)
-  @test N[Int(Residue('R'))] == zero(Float64)
+  println("Test indexing with i for ResidueProbability{BigFloat, $(ndim), $(usegap)}")
+  @test N[1] == zero(BigFloat)
+  @test N[Int(Residue('R'))] == zero(BigFloat)
 
-  println("Test setindex! with i for ResidueProbability{$(ndim), $(usegap)}")
+  println("Test setindex! with i for ResidueProbability{BigFloat, $(ndim), $(usegap)}")
   N[3] = 1.0
-  @test N[3] == one(Float64)
+  @test N[3] == one(BigFloat)
 
-  println("Test update! for ResidueProbability{$(ndim), $(usegap)}")
-  N = zeros(ResidueProbability{ndim, usegap})
+  println("Test update! for ResidueProbability{BigFloat, $(ndim), $(usegap)}")
+  N = zeros(ResidueProbability{BigFloat, ndim, usegap})
   N[1] = 0.5
   update!(N)
-  @test N.marginals[1,1] == 0.5
+  @test N.marginals[1,1] == big"0.5"
 
-  println("Test normalize! for ResidueProbability{$(ndim), $(usegap)}")
+  println("Test normalize! for ResidueProbability{BigFloat, $(ndim), $(usegap)}")
   normalize!(N)
-  @test N[1] == 1.0
-  @test N.marginals[1,1] == 1.0
-  @test sum(N) == 1.0
+  @test N[1] == one(BigFloat)
+  @test N.marginals[1,1] == one(BigFloat)
+  @test sum(N) == one(BigFloat)
 
-  println("Test fill! with ResidueCount{Int, $(ndim), $(usegap)} for ResidueProbability{$(ndim), $(usegap)}")
+  println("Test fill! with ResidueCount{Int, $(ndim), $(usegap)} for ResidueProbability{BigFloat, $(ndim), $(usegap)}")
   C = fill!(zeros(ResidueCount{Int, ndim, usegap}), AdditiveSmoothing(1))
   P = fill!(N, C)
-  @test P[1] == 1.0/length(C.table)
-  @test P.marginals[1,1] == 1.0 / nres
-  @test_approx_eq sum(P) 1.0
+  @test P[1] == one(BigFloat) / length(C.table)
+  @test P.marginals[1,1] == one(BigFloat) / nres
+  @test_approx_eq_eps sum(P) one(BigFloat) 1e-72
 end
+
 print("""
 Iteration end
 
 """)
+
+print("""
+Test Float64
+""")
+
+let N = zeros(ResidueProbability{Float64, 3, true}), C = fill!(zeros(ResidueCount{Int, 3, true}), AdditiveSmoothing(1))
+  P = fill!(N, C)
+  @test_approx_eq sum(P) one(Float64)
+  @test isa(sum(P), Float64)
+end
 
 print("""
 
@@ -235,15 +246,15 @@ for usegap = Bool[true, false]
 	println("# Iteration = UseGap: $(usegap)")
   nres = usegap ? 21 : 20
 
-	N = zeros(ResidueProbability{2, usegap})
+	N = zeros(ResidueProbability{BigFloat, 2, usegap})
 
-  println("Test indexing with ij for ResidueProbability{2, $(usegap)}")
-  @test N[1,1] == zero(Float64)
-  @test N[Int(Residue('R')), Int(Residue('R'))] == zero(Float64)
+  println("Test indexing with ij for ResidueProbability{BigFloat, 2, $(usegap)}")
+  @test N[1,1] == zero(BigFloat)
+  @test N[Int(Residue('R')), Int(Residue('R'))] == zero(BigFloat)
 
-  println("Test setindex! with ij for ResidueProbability{2, $(usegap)}")
+  println("Test setindex! with ij for ResidueProbability{BigFloat, 2, $(usegap)}")
   N[3,3] = 1.0
-  @test N[3,3] == one(Float64)
+  @test N[3,3] == one(BigFloat)
 end
 print("""
 Iteration end
@@ -251,18 +262,18 @@ Iteration end
 """)
 
 for ndim = 1:4
-	@test size(similar(ResidueProbability{ndim, false}()).marginals) == (20, ndim)
-	@test size(similar(ResidueProbability{ndim, true}()).marginals) == (21, ndim)
+	@test size(similar(ResidueProbability{BigFloat, ndim, false}()).marginals) == (20, ndim)
+	@test size(similar(ResidueProbability{BigFloat, ndim, true}()).marginals) == (21, ndim)
 end
 
-@test size(similar(ResidueProbability{1, false}(),4).marginals) == (20, 4)
+@test size(similar(ResidueProbability{BigFloat, 1, false}(),4).marginals) == (20, 4)
 
 print("""
 Test pseudofrequencies
 """)
-Pab = fill!(zeros(ResidueProbability{2, false}), count(seq, seq))
+Pab = fill!(zeros(ResidueProbability{BigFloat, 2, false}), count(seq, seq))
 
-Gab = blosum_pseudofrequencies!(zeros(ResidueProbability{2, false}), Pab)
+Gab = blosum_pseudofrequencies!(zeros(ResidueProbability{BigFloat, 2, false}), Pab)
 @test_approx_eq sum(Gab) 1.0
 
 @test_approx_eq sum( apply_pseudofrequencies!(copy(Pab), Gab, 1, 1) ) 1.0
@@ -274,30 +285,32 @@ Pab_with_pseudofrequency = apply_pseudofrequencies!(copy(Pab), Gab, 10, 0)
 print("""
 Test probabilities
 """)
-@test probabilities(seq, weight=false_clusters).table == getweight(false_clusters)/sum(getweight(false_clusters))
-@test probabilities(seq, seq, weight=false_clusters).marginals[:,1] == getweight(false_clusters)/sum(getweight(false_clusters))
-@test probabilities(seq, seq, seq, weight=false_clusters).marginals[:,1] == getweight(false_clusters)/sum(getweight(false_clusters))
 
-@test_approx_eq probabilities(seq)[1] 0.05
-@test_approx_eq probabilities(seq, seq)[2,2] 0.05
-@test_approx_eq probabilities(seq, seq, seq)[3,3,3] 0.05
+@test probabilities(Float64, seq, weight=false_clusters).table == getweight(false_clusters)/sum(getweight(false_clusters))
+@test probabilities(Float64, seq, seq, weight=false_clusters).marginals[:,1] == getweight(false_clusters)/sum(getweight(false_clusters))
+@test probabilities(Float64, seq, seq, seq, weight=false_clusters).marginals[:,1] == getweight(false_clusters)/sum(getweight(false_clusters))
 
-@test_approx_eq probabilities(AdditiveSmoothing(1.0), seq, usegap=true)[1] 1/21.0
-Pab = probabilities(AdditiveSmoothing(1.0), seq, seq, usegap=true)
+
+@test_approx_eq probabilities(Float64, seq)[1] 0.05
+@test_approx_eq probabilities(Float32, seq, seq)[2,2] Float32(0.05)
+@test_approx_eq probabilities(BigFloat, seq, seq, seq)[3,3,3] one(BigFloat)/20
+
+@test_approx_eq probabilities(Float64, AdditiveSmoothing(1.0), seq, usegap=true)[1] 1/21.0
+Pab = probabilities(Float64, AdditiveSmoothing(1.0), seq, seq, usegap=true)
 @test_approx_eq Pab[1,1] 2.0/(21 + 21*21)
 @test_approx_eq Pab[1,2] 1.0/(21 + 21*21)
 @test_approx_eq sum(Pab) 1.0
 
-@test_approx_eq probabilities(1, 0, seq, seq)[2,2] 0.05
+@test_approx_eq probabilities(Float64, 1, 0, seq, seq)[2,2] 0.05
 
 print("""
 Test delete_dimensions
 """)
-Pxyz = probabilities(seq, seq, seq);
-@test delete_dimensions(Pxyz, 3) == probabilities(seq, seq)
-@test delete_dimensions(Pxyz, 3, 2) == probabilities(seq)
+Pxyz = probabilities(Float64, seq, seq, seq);
+@test delete_dimensions(Pxyz, 3) == probabilities(Float64, seq, seq)
+@test delete_dimensions(Pxyz, 3, 2) == probabilities(Float64, seq)
 Pxy = delete_dimensions(Pxyz, 3);
-@test delete_dimensions!(Pxy, Pxyz, 1) == probabilities(seq, seq)
+@test delete_dimensions!(Pxy, Pxyz, 1) == probabilities(Float64, seq, seq)
 @test_approx_eq sum(Pxy) 1.0
 Nxyz = count(seq, seq, seq);
 Nxy = delete_dimensions(Nxyz, 3);

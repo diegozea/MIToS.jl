@@ -15,8 +15,8 @@ type Entropy <: SymmetricMeasure end
 
 `p` should be a `ResidueProbability` table.
 """
-function estimate(measure::Entropy, p::ResidueProbability)
-  H = zero(Float64)
+function estimate{T, N, UseGap}(measure::Entropy, p::ResidueProbability{T, N, UseGap})
+  H = zero(T)
   for i in 1:length(p)
     @inbounds pi = p[i]
     if pi != 0.0
@@ -30,8 +30,8 @@ end
 
 This function estimate the entropy H(X) if marginal is 1, H(Y) for 2, etc.
 """
-function estimate_on_marginal(measure::Entropy, p::ResidueProbability, marginal::Int)
-  H = zero(Float64)
+function estimate_on_marginal{T, N, UseGap}(measure::Entropy, p::ResidueProbability{T, N, UseGap}, marginal::Int)
+  H = zero(T)
   for i in 1:nresidues(p)
     @inbounds pi = p.marginals[i, marginal]
     if pi != 0.0
@@ -82,8 +82,8 @@ type MutualInformation <: SymmetricMeasure end
 """```estimate(MutualInformation(), pxy::ResidueProbability [, base])```
 
 Calculate Mutual Information from `ResidueProbability`."""
-function estimate{UseGap}(measure::MutualInformation, pxy::ResidueProbability{2,UseGap})
-  MI = zero(Float64)
+function estimate{T, UseGap}(measure::MutualInformation, pxy::ResidueProbability{T, 2,UseGap})
+  MI = zero(T)
   @inbounds for j in 1:nresidues(pxy)
     pj = pxy.marginals[j,2]
     if pj > 0.0
