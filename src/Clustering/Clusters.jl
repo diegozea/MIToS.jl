@@ -26,6 +26,6 @@ getweight should be defined for any type used for `count!`/`count` in order to u
 """
 getweight(c::Clusters, seq::Int) = c.sequenceweight[seq]
 @inline getweight(weight::Real, i::Int) = weight
-getweight(weights::AbstractVector, i::Int) = c[i]
+getweight(weights::AbstractVector, i::Int) = weights[i]
 
 nsequences(c::Clusters) = length(c.sequencecluster)

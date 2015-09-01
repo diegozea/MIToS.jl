@@ -1,13 +1,14 @@
-abstract InformationMeasure
+abstract InformationMeasure{T}
 
-abstract SymmetricMeasure <: InformationMeasure
+abstract SymmetricMeasure{T} <: InformationMeasure{T}
 
 #estimate_on_marginals(measure::InformationMeasure, table::ResidueContingencyTables, marginal::Int) = estimate(measure, table.marginal[:,marginal])
 #estimate_on_marginals(measure::InformationMeasure, table::ResidueContingencyTables, marginal::Int, base::Real) = estimate(measure, table.marginal[:,marginal], base)
 
 # Entropy
+# =======
 
-immutable Entropy{T} <: SymmetricMeasure
+immutable Entropy{T} <: SymmetricMeasure{T}
   base::T
 end
 
@@ -77,8 +78,9 @@ function estimate_on_marginal{T}(measure::Entropy{T}, n::ResidueCount, marginal:
 end
 
 # Mutual Information
+# ==================
 
-immutable MutualInformation{T} #<: SymmetricMeasure
+immutable MutualInformation{T} <: SymmetricMeasure{T}
   base::T
 end
 
@@ -135,4 +137,25 @@ function estimate{B, T, UseGap}(measure::MutualInformation{B}, pxyz::ResidueCont
   estimate(Entropy(measure.base), delete_dimensions!(pxy, pxyz, 2)) - # H(X, Z)
   estimate(Entropy(measure.base), delete_dimensions!(pxy, pxyz, 1)) + # H(Y, Z)
   estimate(Entropy(measure.base), pxyz) ) # H(X, Y, Z)
+end
+
+# Normalized Mutual Information by Entropy
+# ========================================
+
+# nMI(X, Y) = MI(X, Y) / H(X, Y)
+
+immutable MutualInformationOverEntropy{T} <: SymmetricMeasure{T}
+  base::T
+end
+
+call{T}(::Type{MutualInformationOverEntropy{T}}) = MutualInformationOverEntropy(T(Base.e))
+
+function estimate{B}(measure::MutualInformationOverEntropy{B}, table)
+  H = estimate(Entropy(measure.base), table)
+  if H != zero(B)
+    MI = estimate(MutualInformation(measure.base), table)
+    return(MI/H)
+  else
+    return(zero(B))
+  end
 end

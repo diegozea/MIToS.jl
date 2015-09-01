@@ -11,13 +11,17 @@ module Information
   blosum_pseudofrequencies!, apply_pseudofrequencies!, probabilities,
   delete_dimensions!, delete_dimensions,
 
-  InformationMeasure, SymmetricMeasure, Entropy, MutualInformation,
-  estimate, estimate_on_marginal
+  InformationMeasure, SymmetricMeasure, Entropy,
+  MutualInformation, MutualInformationOverEntropy,
+  estimate, estimate_on_marginal,
+
+  estimateincolumns, estimateinsequences
 
   #Fixed, Pseudofrequencies, ResidueProbabilities, ResiduePairProbabilities
 
   include("BLOSUM62.jl")
   include("Probabilities.jl")
   include("InformationMeasures.jl")
+  include("Iterations.jl")
 
 end

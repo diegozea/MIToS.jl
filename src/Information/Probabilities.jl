@@ -1,13 +1,11 @@
 import  Base: zero, one, zeros, start, next, done, length, eltype,
         size, setindex!, getindex, similar, fill!, count #, print # , copy, deepcopy, fill!, getindex, setindex!
 
-#
-
 typealias SequenceWeights Union(Int, Clusters, AbstractVector)
 
 # Counts and Pseudocounts
 
-abstract Pseudocount
+abstract Pseudocount{T<:Real}
 
 """
 **Additive Smoothing** or fixed pseudocount  `λ`  for `ResidueCount` (in order to estimate probabilities when the number of samples is low).
@@ -20,7 +18,7 @@ Common values of `λ` are:
 - `sqrt(n) / p` : Minimax prior (Trybula, 1958) where `n` is the number of samples and `p` the number of parameters to estimate.  If the number of samples `n` is 400 (minimum number of sequence clusters for achieve good performance in Buslje et. al. 2009) for estimating 400 parameters (pairs of residues without counting gaps) this gives you `0.05`.
 - `0.5` : Jeffreys prior (Jeffreys, 1946).
 - `1` : Bayes-Laplace uniform prior, aka. Laplace smoothing."""
-immutable AdditiveSmoothing{T<:Real} <: Pseudocount
+immutable AdditiveSmoothing{T} <: Pseudocount{T}
   λ::T
 end
 

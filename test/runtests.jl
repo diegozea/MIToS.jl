@@ -18,3 +18,4 @@ include("sifts.jl")
 # Information
 include("probabilities.jl")
 include("informationmeasures.jl")
+include("iterations.jl")
