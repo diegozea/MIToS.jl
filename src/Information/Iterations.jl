@@ -1,13 +1,10 @@
-immutable Count{T <: Real} end
-immutable Probability{T <: Real} end
-
 # sub(aln, :, i) is ~ 0.015 seconds faster than aln[:,i] and better with the memmory (PF00085)
 # aln.msa' takes ~ 0.015 seconds in PF00085
 # Using aln.msa instead of aln in estimate_on_column_pairs is ~ 0.53 seconds faster for PF00085
 
-function estimate_on_columns{T}(aln::Matrix{Residue}, use::Type{Count{T}}, measure::InformationMeasure;
-                                usegap::Bool=false, weight::SequenceWeights=1, pseudocount::Pseudocount=AdditiveSmoothing(zero(T)))
-  N = ResidueCount{T, 1, usegap}()
+function estimateincolumns{T, UseGap}(aln::Matrix{Residue}, use::Type{ResidueCount{T, 1, UseGap}}, measure::InformationMeasure;
+                                      weight::SequenceWeights=1, pseudocount::Pseudocount=AdditiveSmoothing(zero(T)))
+  N = ResidueCount{T, 1, UseGap}()
   ncol = ncolumns(aln)
   scores = Array(Float64, ncol)
   for i in 1:ncol
@@ -18,10 +15,10 @@ function estimate_on_columns{T}(aln::Matrix{Residue}, use::Type{Count{T}}, measu
   scores
 end
 
-function estimate_on_columns{T}(aln::Matrix{Residue}, use::Type{Probability{T}}, measure::InformationMeasure;
+function estimateincolumns{T, UseGap}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{1, UseGap}}, measure::InformationMeasure;
                                 usegap::Bool=false, weight::SequenceWeights=1, pseudocount::Pseudocount=AdditiveSmoothing(zero(T)))
-  N = ResidueCount{T, 1, usegap}()
-  P = ResidueProbability{1, usegap}()
+  N = ResidueCount{T, 1, UseGap}()
+  P = ResidueProbability{1, UseGap}()
   ncol = ncolumns(aln)
   scores = Array(Float64, ncol)
   for i in 1:ncol
@@ -33,15 +30,9 @@ function estimate_on_columns{T}(aln::Matrix{Residue}, use::Type{Probability{T}},
   scores
 end
 
-estimate_on_columns{T}(aln::AbstractMultipleSequenceAlignment, use::Type{Count{T}}, measure::InformationMeasure; usegap::Bool=false, weight::SequenceWeights=1,
-                    pseudocount::Pseudocount=AdditiveSmoothing(zero(T))) = estimate_on_columns(aln.msa, use, measure; usegap=usegap, weight=weight, pseudocount=pseudocount)
-
-estimate_on_columns{T}(aln::AbstractMultipleSequenceAlignment, use::Type{Probability{T}}, measure::InformationMeasure; usegap::Bool=false, weight::SequenceWeights=1,
-                    pseudocount::Pseudocount=AdditiveSmoothing(zero(T))) = estimate_on_columns(aln.msa, use, measure; usegap=usegap, weight=weight, pseudocount=pseudocount)
-
-function estimate_on_column_pairs{T}(aln::Matrix{Residue}, use::Type{Count{T}}, measure::SymmetricMeasure;
-                                usegap::Bool=false, weight::SequenceWeights=1, pseudocount::Pseudocount=AdditiveSmoothing(zero(T)), diagonal::Float64=0.0)
-  Nab = ResidueCount{T, 2, usegap}()
+function estimateincolumns{T, UseGap}(aln::Matrix{Residue}, use::Type{ResidueCount{T, 2, UseGap}}, measure::SymmetricMeasure;
+                                weight::SequenceWeights=1, pseudocount::Pseudocount=AdditiveSmoothing(zero(T)), diagonal::Float64=0.0)
+  Nab = ResidueCount{T, 2, UseGap}()
   ncol = ncolumns(aln)
   scores = Array(Float64, ncol, ncol)
   @inbounds for i in 1:(ncol-1)
@@ -59,10 +50,10 @@ function estimate_on_column_pairs{T}(aln::Matrix{Residue}, use::Type{Count{T}}, 
   scores
 end
 
-function estimate_on_column_pairs{T}(aln::Matrix{Residue}, use::Type{Probability{T}}, measure::SymmetricMeasure;
-                                usegap::Bool=false, weight::SequenceWeights=1, pseudocount::Pseudocount=AdditiveSmoothing(zero(T)), diagonal::Float64=0.0)
-  Nab = ResidueCount{T, 2, usegap}()
-  Pab = ResidueProbability{2, usegap}()
+function estimateincolumns{T, UseGap}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{2, UseGap}}, measure::SymmetricMeasure;
+                                weight::SequenceWeights=1, pseudocount::Pseudocount=AdditiveSmoothing(zero(T)), diagonal::Float64=0.0)
+  Nab = ResidueCount{T, 2, UseGap}()
+  Pab = ResidueProbability{2, UseGap}()
   ncol = ncolumns(aln)
   scores = zeros(Float64, ncol, ncol)
   @inbounds for i in 1:(ncol-1)
@@ -81,15 +72,7 @@ function estimate_on_column_pairs{T}(aln::Matrix{Residue}, use::Type{Probability
   scores
 end
 
-estimate_on_column_pairs{T}(aln::AbstractMultipleSequenceAlignment, use::Type{Count{T}}, measure::InformationMeasure; usegap::Bool=false, weight::SequenceWeights=1,
-                    pseudocount::Pseudocount=AdditiveSmoothing(zero(T)), diagonal::Float64=0.0) = estimate_on_columns(aln.msa, use, measure; usegap=usegap,
-                                                                                                                      weight=weight, pseudocount=pseudocount, diagonal=diagonal)
-
-estimate_on_column_pairs{T}(aln::AbstractMultipleSequenceAlignment, use::Type{Probability{T}}, measure::InformationMeasure; usegap::Bool=false, weight::SequenceWeights=1,
-                    pseudocount::Pseudocount=AdditiveSmoothing(zero(T)), diagonal::Float64=0.0) = estimate_on_columns(aln.msa, use, measure; usegap=usegap,
-                                                                                                                      weight=weight, pseudocount=pseudocount, diagonal=diagonal)
-
-function estimate_on_column_pairs_blosum{T}(aln::Matrix{Residue}, use::Type{Probability{T}}, α, β, measure::SymmetricMeasure;
+function estimateincolumns{T}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{2, false}}, α, β, measure::SymmetricMeasure;
                                      weight::SequenceWeights=1, pseudocount::Pseudocount=AdditiveSmoothing(zero(T)), diagonal::Float64=0.0)
   Nab = ResidueCount{T, 2, false}()
   Pab = ResidueProbability{2, false}()
@@ -114,7 +97,7 @@ function estimate_on_column_pairs_blosum{T}(aln::Matrix{Residue}, use::Type{Prob
   scores
 end
 
-function estimate_on_column_pairs_blosum{T}(aln::AbstractMultipleSequenceAlignment, use::Type{Probability{T}}, α, β, measure::SymmetricMeasure;
-                                   weight::SequenceWeights=1, pseudocount::Pseudocount=AdditiveSmoothing(zero(T)), diagonal::Float64=0.0)
-  estimate_on_column_pairs_blosum(aln.msa, use, α, β, measure; weight=weight, pseudocount=pseudocount, diagonal=diagonal)
-end
+estimateincolumns(aln::AbstractMultipleSequenceAlignment, args...; kargs...) = estimateincolumns(aln.msa, args...; kargs...)
+
+estimateinsequences(aln::Matrix{Residue}, args...; kargs...) = estimateincolumns(transpose(aln), args...; kargs...)
+estimateinsequences(aln::AbstractMultipleSequenceAlignment, args...; kargs...) = estimateincolumns(transpose(aln.msa), args...; kargs...)
