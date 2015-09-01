@@ -25,7 +25,7 @@ end
 """
 Reads a LightXML.XMLDocument representing a pdb file.
 Returns a list of PDBResidue (view MIToS.PDB.PDBResidues).
-Setting 'chain', 'model', 'group', 'atomname' and 'onlyheavy' values
+Setting `chain`, `model`, `group`, `atomname` and `onlyheavy` values
 can be used to select of a subset of all residues. If not set, all residues are returned.
 """
 function parse(pdbml::LightXML.XMLDocument, ::Type{PDBML}; chain::ASCIIString = "all",

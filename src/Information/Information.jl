@@ -11,7 +11,7 @@ module Information
   blosum_pseudofrequencies!, apply_pseudofrequencies!, probabilities,
   delete_dimensions!, delete_dimensions,
 
-  InformationMeasure, Entropy, MutualInformation,
+  InformationMeasure, SymmetricMeasure, Entropy, MutualInformation,
   estimate, estimate_on_marginal
 
   #Fixed, Pseudofrequencies, ResidueProbabilities, ResiduePairProbabilities

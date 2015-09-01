@@ -1,11 +1,13 @@
 abstract InformationMeasure
 
+abstract SymmetricMeasure <: InformationMeasure
+
 #estimate_on_marginals(measure::InformationMeasure, table::ResidueContingencyTables, marginal::Int) = estimate(measure, table.marginal[:,marginal])
 #estimate_on_marginals(measure::InformationMeasure, table::ResidueContingencyTables, marginal::Int, base::Real) = estimate(measure, table.marginal[:,marginal], base)
 
 # Entropy
 
-type Entropy <: InformationMeasure end
+type Entropy <: SymmetricMeasure end
 
 ## Estimate Entropy using ResidueProbability
 
@@ -74,7 +76,7 @@ estimate_on_marginal(measure::Entropy, table::ResidueContingencyTables, marginal
 
 # Mutual Information
 
-type MutualInformation <: InformationMeasure end
+type MutualInformation <: SymmetricMeasure end
 
 
 """```estimate(MutualInformation(), pxy::ResidueProbability [, base])```
