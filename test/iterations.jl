@@ -10,5 +10,8 @@ let aln = read("./data/Gaoetal2011.fasta", FASTA), result = Float64[ 0     0    
                                                                      0     0     1     1     0     0.296
                                                                      0     0     0.296 0.296 0.296 0 ]
 
-@test_approx_eq_eps estimateincolumns(aln, ResidueCount{Int, 2, false}, MutualInformationOverEntropy{Float64}()) result 0.0001
-@test_approx_eq_eps estimateincolumns(aln, Int, ResidueProbability{Float64, 2, false}, MutualInformationOverEntropy{Float64}()) result 0.0001
+  @test_approx_eq_eps estimateincolumns(aln, ResidueCount{Int, 2, false}, MutualInformationOverEntropy{Float64}()) result 0.0001
+  @test_approx_eq_eps estimateincolumns(aln, Int, ResidueProbability{Float64, 2, false}, MutualInformationOverEntropy{Float64}()) result 0.0001
+  @test_approx_eq_eps estimateincolumns(aln, Float64, ResidueProbability{Float64, 2, false}, MutualInformationOverEntropy{Float64}()) result 0.0001
+  @test_approx_eq_eps estimateincolumns(aln, BigFloat, ResidueProbability{BigFloat, 2, false}, MutualInformationOverEntropy{BigFloat}()) result 0.0001
+end
