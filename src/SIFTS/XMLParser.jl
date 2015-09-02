@@ -1,3 +1,5 @@
+immutable SIFTSXML <: Format end
+
 # Download SIFTS
 # ==============
 """
@@ -30,8 +32,7 @@ WARNING: Sometimes there are more chains than entities!
 <\entry>
 ```
 """
-function _get_entities(filename)
-  sifts = parse_file(filename)
+function _get_entities(sifts)
 	siftsroot = root(sifts)
 	get_elements_by_tagname(siftsroot, "entity")
 end

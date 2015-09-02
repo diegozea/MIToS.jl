@@ -1,13 +1,11 @@
 import  Base: zero, one, zeros, start, next, done, length, eltype,
         size, setindex!, getindex, similar, fill!, count #, print # , copy, deepcopy, fill!, getindex, setindex!
 
-#
-
 typealias SequenceWeights Union(Int, Clusters, AbstractVector)
 
 # Counts and Pseudocounts
 
-abstract Pseudocount
+abstract Pseudocount{T<:Real}
 
 """
 **Additive Smoothing** or fixed pseudocount  `λ`  for `ResidueCount` (in order to estimate probabilities when the number of samples is low).
@@ -20,7 +18,7 @@ Common values of `λ` are:
 - `sqrt(n) / p` : Minimax prior (Trybula, 1958) where `n` is the number of samples and `p` the number of parameters to estimate.  If the number of samples `n` is 400 (minimum number of sequence clusters for achieve good performance in Buslje et. al. 2009) for estimating 400 parameters (pairs of residues without counting gaps) this gives you `0.05`.
 - `0.5` : Jeffreys prior (Jeffreys, 1946).
 - `1` : Bayes-Laplace uniform prior, aka. Laplace smoothing."""
-immutable AdditiveSmoothing{T<:Real} <: Pseudocount
+immutable AdditiveSmoothing{T} <: Pseudocount{T}
   λ::T
 end
 
@@ -280,52 +278,52 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap::Bool=fa
 
 ## Probabilities
 
-type ResidueProbability{N, UseGap} <: ResidueContingencyTables{Float64, N, UseGap}
-  table::Array{Float64, N}
-  marginals::Array{Float64, 2}
+type ResidueProbability{T, N, UseGap} <: ResidueContingencyTables{T, N, UseGap}
+  table::Array{T, N}
+  marginals::Array{T, 2}
 end
 
-call(::Type{ResidueProbability{1, true}}) = ResidueProbability{1, true}(Array(Float64, 21), Array(Float64, (21,1)))
-call(::Type{ResidueProbability{2, true}}) = ResidueProbability{2, true}(Array(Float64, (21, 21)), Array(Float64, (21,2)))
+call{T}(::Type{ResidueProbability{T, 1, true}}) = ResidueProbability{T, 1, true}(Array(T, 21), Array(T, (21,1)))
+call{T}(::Type{ResidueProbability{T, 2, true}}) = ResidueProbability{T, 2, true}(Array(T, (21, 21)), Array(T, (21,2)))
 
-call(::Type{ResidueProbability{1, false}}) = ResidueProbability{1, false}(Array(Float64, 20), Array(Float64, (20,1)))
-call(::Type{ResidueProbability{2, false}}) = ResidueProbability{2, false}(Array(Float64, (20, 20)), Array(Float64, (20,2)))
+call{T}(::Type{ResidueProbability{T, 1, false}}) = ResidueProbability{T, 1, false}(Array(T, 20), Array(T, (20,1)))
+call{T}(::Type{ResidueProbability{T, 2, false}}) = ResidueProbability{T, 2, false}(Array(T, (20, 20)), Array(T, (20,2)))
 
-function call{N, UseGap}(::Type{ResidueProbability{N, UseGap}})
+function call{T, N, UseGap}(::Type{ResidueProbability{T, N, UseGap}})
   nres = UseGap ? 21 : 20
-  ResidueProbability{N, UseGap}(Array(Float64, (Int[ nres for d in 1:N]...)), Array(Float64, (nres, N)))
+  ResidueProbability{T, N, UseGap}(Array(T, (Int[ nres for d in 1:N]...)), Array(T, (nres, N)))
 end
 
-zeros(::Type{ResidueProbability{1, true}}) = ResidueProbability{1, true}(zeros(Float64, 21), zeros(Float64, (21, 1)))
-zeros(::Type{ResidueProbability{2, true}}) = ResidueProbability{2, true}(zeros(Float64, (21, 21)), zeros(Float64, (21, 2)))
+zeros{T}(::Type{ResidueProbability{T, 1, true}}) = ResidueProbability{T, 1, true}(zeros(T, 21), zeros(T, (21, 1)))
+zeros{T}(::Type{ResidueProbability{T, 2, true}}) = ResidueProbability{T, 2, true}(zeros(T, (21, 21)), zeros(T, (21, 2)))
 
-zeros(::Type{ResidueProbability{1, false}}) = ResidueProbability{1, false}(zeros(Float64, 20), zeros(Float64, (20, 1)))
-zeros(::Type{ResidueProbability{2, false}}) = ResidueProbability{2, false}(zeros(Float64, (20, 20)), zeros(Float64, (20, 2)))
+zeros{T}(::Type{ResidueProbability{T, 1, false}}) = ResidueProbability{T, 1, false}(zeros(T, 20), zeros(T, (20, 1)))
+zeros{T}(::Type{ResidueProbability{T, 2, false}}) = ResidueProbability{T, 2, false}(zeros(T, (20, 20)), zeros(T, (20, 2)))
 
-function zeros{N, UseGap}(::Type{ResidueProbability{N, UseGap}})
+function zeros{T, N, UseGap}(::Type{ResidueProbability{T, N, UseGap}})
   nres = UseGap ? 21 : 20
-  ResidueProbability{N, UseGap}(zeros(Float64, (Int[ nres for d in 1:N]...)), zeros(Float64, (nres, N)))
+  ResidueProbability{T, N, UseGap}(zeros(T, (Int[ nres for d in 1:N]...)), zeros(T, (nres, N)))
 end
 
 #### Similar
 
-similar{N,UseGap}(p::ResidueProbability{N,UseGap}) = ResidueProbability{N,UseGap}()
-similar{N,UseGap}(p::ResidueProbability{N,UseGap}, D::Int) = ResidueProbability{D,UseGap}()
+similar{T, N,UseGap}(p::ResidueProbability{T, N,UseGap}) = ResidueProbability{T, N,UseGap}()
+similar{T, N,UseGap}(p::ResidueProbability{T, N,UseGap}, D::Int) = ResidueProbability{T, D,UseGap}()
 
 ### Update!
 
-function update!{UseGap}(p::ResidueProbability{1,UseGap})
+function update!{T, UseGap}(p::ResidueProbability{T, 1,UseGap})
 	p.marginals[:] = p.table
 	p
 end
 
-function update!{UseGap}(p::ResidueProbability{2,UseGap})
+function update!{T, UseGap}(p::ResidueProbability{T, 2,UseGap})
 	p.marginals[:,1] = sum(p.table, 2) # this is faster than sum(p,2)
 	p.marginals[:,2] = sum(p.table, 1)
 	p
 end
 
-function update!{N, UseGap}(p::ResidueProbability{N, UseGap})
+function update!{T, N, UseGap}(p::ResidueProbability{T, N, UseGap})
 	for i in 1:N
 		p.marginals[:,i] = sum(p.table, _tuple_without_index(i,N))
 	end
@@ -350,12 +348,12 @@ The marginals are updated in the normalization.
 
 If the marginals are updated, you can use `updated=true` for a faster normalization.
 """
-function normalize!(p::ResidueProbability; updated::Bool=false)
+function normalize!{T, N, UseGap}(p::ResidueProbability{T, N, UseGap}; updated::Bool=false)
   if !updated
     update!(p)
   end
   total = sum(p.marginals[:,1])
-  if total != 1.0
+  if total != T(1.0)
     _div!(p.table, total)
     _div!(p.marginals, total)
   end
@@ -365,34 +363,35 @@ end
 ### ResidueProbability calculation from ResidueCount and others
 
 # This is faster than p[:] = ( n ./ total )
-function _fill_probabilities!{T,N}(p::Array{Float64,N}, n::Array{T,N}, total::T)
+function _fill_probabilities!{TP, TN, N}(p::Array{TP,N}, n::Array{TN,N}, total::TP)
   @inbounds for i in 1:length(p) # p and n should have the same length
-    p[i] = ( n[i] / total )
+    p[i] = ( n[i] / total)
   end
   p
 end
 
-"""```fill!{T, N, UseGap}(p::ResidueProbability{N, UseGap}, n::ResidueCount{T, N, UseGap}; updated::Bool=false)```
+"""```fill!{T, N, UseGap}(p::ResidueProbability{T, N, UseGap}, n::ResidueCount{T, N, UseGap}; updated::Bool=false)```
 
 This function fills a preallocated `ResidueProbability` (`p`) with the probabilities calculated from `n` (`ResidueCount`).
 This function updates `n` unless `updated=true`.
 
 If `n` is updated, you can use `updated=true` for a faster calculation.
 """
-function fill!{T, N, UseGap}(p::ResidueProbability{N, UseGap}, n::ResidueCount{T, N, UseGap}; updated::Bool=false)
+function fill!{TP, TC, N, UseGap}(p::ResidueProbability{TP, N, UseGap}, n::ResidueCount{TC, N, UseGap}; updated::Bool=false)
   if !updated
     update!(n)
   end
-  _fill_probabilities!(p.table, n.table, n.total)
-  _fill_probabilities!(p.marginals, n.marginals, n.total)
+  total = TP(n.total)
+  _fill_probabilities!(p.table, n.table, total)
+  _fill_probabilities!(p.marginals, n.marginals, total)
 	p
 end
 
 ### BLOSUM based pseudofrequencies
 
-function blosum_pseudofrequencies!(Gab::ResidueProbability{2,false}, Pab::ResidueProbability{2,false})
+function blosum_pseudofrequencies!{T}(Gab::ResidueProbability{T, 2,false}, Pab::ResidueProbability{T, 2,false})
   @inbounds for a in 1:20, b in 1:20
-    Gab[a,b] = zero(Float64)
+    Gab[a,b] = zero(T)
     for i in 1:20, j in 1:20
       P = Pab[i,j]
       if P != 0
@@ -406,18 +405,18 @@ end
 
 ### Apply pseudofrequencies
 
-function apply_pseudofrequencies!(Pab::ResidueProbability{2,false}, Gab::ResidueProbability{2,false}, α, β)
+function apply_pseudofrequencies!{T}(Pab::ResidueProbability{T, 2,false}, Gab::ResidueProbability{T, 2,false}, α, β)
 	if β == 0.0
 		return(Pab)
 	end
-  frac = one(Float64) / ( α + β )
-  total = zero(Float64)
+  frac = one(T) / ( α + β )
+  total = zero(T)
   @inbounds for i in 1:20, j in 1:20
     value = ( α * Pab[i,j] + β * Gab[i,j] ) * frac
     Pab[i,j] = value
     total += value
   end
-  if total != 1.0
+  if total != one(T)
     _div!(Pab.table, total)
     update!(Pab)
   else
@@ -432,16 +431,16 @@ end
 
 `probabilities` creates a new ResidueProbability with the probabilities of residues, pairs of residues, etc. in the sequences/columns.
 """
-probabilities(res::AbstractVector{Residue}...; usegap::Bool=false,
-	weight::SequenceWeights=1) = fill!(ResidueProbability{length(res), usegap}(), count(res..., usegap=usegap, weight=weight))
+probabilities{T}(::Type{T}, res::AbstractVector{Residue}...; usegap::Bool=false,
+	weight::SequenceWeights=1) = fill!(ResidueProbability{T, length(res), usegap}(), count(res..., usegap=usegap, weight=weight))
 
-probabilities(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap::Bool=false,
-	weight::SequenceWeights=1) = fill!(ResidueProbability{length(res), usegap}(), count(pseudocount, res..., usegap=usegap, weight=weight))
+probabilities{T}(::Type{T}, pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap::Bool=false,
+	weight::SequenceWeights=1) = fill!(ResidueProbability{T, length(res), usegap}(), count(pseudocount, res..., usegap=usegap, weight=weight))
 
 """This method use BLOSUM62 based pseudofrequencies"""
-function probabilities(α, β, res1::AbstractVector{Residue}, res2::AbstractVector{Residue}; weight::SequenceWeights=1)
-	Pab = fill!(ResidueProbability{2, false}(), count(res1, res2, usegap=false, weight=weight))
-	Gab = blosum_pseudofrequencies!(ResidueProbability{2,false}(), Pab)
+function probabilities{T}(::Type{T}, α, β, res1::AbstractVector{Residue}, res2::AbstractVector{Residue}; weight::SequenceWeights=1)
+	Pab = fill!(ResidueProbability{T, 2, false}(), count(res1, res2, usegap=false, weight=weight))
+	Gab = blosum_pseudofrequencies!(ResidueProbability{T, 2,false}(), Pab)
 	apply_pseudofrequencies!(Pab, Gab, α, β)
 end
 
@@ -475,7 +474,7 @@ function delete_dimensions!{T,N,S,UseGap}(out::ResidueCount{T, S, UseGap}, in::R
   out
 end
 
-function delete_dimensions!{N,S,UseGap}(out::ResidueProbability{S, UseGap}, in::ResidueProbability{N, UseGap}, dimensions::Int...)
+function delete_dimensions!{T,N,S,UseGap}(out::ResidueProbability{T, S, UseGap}, in::ResidueProbability{T, N, UseGap}, dimensions::Int...)
   out.marginals[:] = in.marginals[:, _list_without_dimensions(N, S, dimensions...)]
   out.table[:] = sum(in.table, dimensions)
   out
@@ -487,6 +486,6 @@ This function creates a ResidueContingencyTables with the counts/probabilities o
 i.e. This is useful for getting Pxy from Pxyz.
 """
 delete_dimensions{T,N,UseGap}(in::ResidueCount{T, N, UseGap}, dimensions::Int...) = delete_dimensions!(ResidueCount{T, N-length(dimensions), UseGap}(), in, dimensions...)
-delete_dimensions{N,UseGap}(in::ResidueProbability{N, UseGap}, dimensions::Int...) = delete_dimensions!(ResidueProbability{N-length(dimensions), UseGap}(), in, dimensions...)
+delete_dimensions{T,N,UseGap}(in::ResidueProbability{T, N, UseGap}, dimensions::Int...) = delete_dimensions!(ResidueProbability{T, N-length(dimensions), UseGap}(), in, dimensions...)
 
 

@@ -164,7 +164,7 @@ function call(::Type{SIFTSResidue}, residue::LightXML.XMLElement, missing::Bool)
     elseif db == "CATH"
       CATH = Nullable(dbCATH(crossref))
     else
-      db != "InterPro" && warn(string(db, " is not in the MIToS' DataBases."))
+      warn(string(db, " is not in the MIToS' DataBases."))
     end
   end
   SIFTSResidue(PDBe,
@@ -180,54 +180,6 @@ end
 
 call(::Type{SIFTSResidue}, residue::LightXML.XMLElement) =  SIFTSResidue(residue, _is_missing(residue))
 
-# Asking to SIFTSResidue
-# ======================
-
-has{T <: DataBase}(res::SIFTSResidue, ::Type{T}) = !isnull(getfield(res, symbol(name(T))))
-
-function getdatabase{T <: DataBase}(res::SIFTSResidue, ::Type{T})
-  if has(res, T)
-    return( get(getfield(res, symbol(name(T)))) )
-  end
-  nothing
-end
-
-function ischain(res::SIFTSResidue, chain::ASCIIString)
-  data = getdatabase(res, dbPDB)
-  if data !== nothing
-    return(data.chain == chain)
-  end
-  false
-end
-
-# function has{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString)
-#  data = getdatabase(res, T)
-#  data === nothing ? false : return( data.id == id )
-# end
-
-# function has{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString, coord)
-#   data = getdatabase(res, T)
-#   if data !== nothing && data.id == id
-#     return(data.number == coord)
-#   end
-#   false
-# end
-
-function getcoordinate{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString)
-  data = getdatabase(res, T)
-  if data !== nothing && data.id == id
-    return(data.number)
-  end
-  nothing
-end
-
-function getcoordinate{T <: DataBase}(res::SIFTSResidue, ::Type{T}, id::ASCIIString, chain::ASCIIString)
-  if ischain(res, chain)
-    return(getcoordinate(res, T, id))
-  end
-  nothing
-end
-
 # Mapping Functions
 # =================
 
@@ -239,7 +191,7 @@ function siftsmapping{F, T}(filename::ASCIIString,
                             db_from::Type{F}, id_from::ASCIIString,
                             db_to::Type{T}, id_to::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
   mapping = Dict{_number_type(F), _number_type(T)}()
-  for entity in _get_entities(filename)
+  for entity in _get_entities(parse_file(filename))
     segments = _get_segments(entity)
     for segment in segments
       residues = _get_residues(segment)
@@ -273,9 +225,9 @@ function siftsmapping{F, T}(filename::ASCIIString,
   sizehint!(mapping, length(mapping))
 end
 
-function siftsresidues(filename::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
+function parse(document::LightXML.XMLDocument, ::Type{SIFTSXML}; chain::ASCIIString="all", missings::Bool = true)
   vector = SIFTSResidue[]
-  for entity in _get_entities(filename)
+  for entity in _get_entities(document)
     for segment in _get_segments(entity)
       residues = _get_residues(segment)
 		  for residue in residues

@@ -13,23 +13,11 @@ immutable Clusters
   sequenceweight::Vector{Float64}
 end
 
-"""
-Get the number of clusters in the set.
-"""
+"Get the number of clusters in the set."
 getnclusters(c::Clusters) = length(c.clustersize)
 
-
-"""
-Get the weights of all clusters in the set.
-"""
+"Get the weights of all clusters in the set."
 getweight(c::Clusters) = c.sequenceweight
-
-
-"""
-Get the sizes of all clusters in the set.
-"""
-nsequences(c::Clusters) = length(c.sequencecluster)
-
 
 """```getweight(c, i::Int)```
 
@@ -37,10 +25,7 @@ This function returns the weight of the sequence number `i`.
 getweight should be defined for any type used for `count!`/`count` in order to use his weigths.
 """
 getweight(c::Clusters, seq::Int) = c.sequenceweight[seq]
-
 @inline getweight(weight::Real, i::Int) = weight
+getweight(weights::AbstractVector, i::Int) = weights[i]
 
-getweight(weights::AbstractVector, i::Int) = c[i]
-
-
-
+nsequences(c::Clusters) = length(c.sequencecluster)

@@ -1,8 +1,9 @@
-## Public functions
+# Calculates percent identity of two aligned sequences
+# No account of the positions with gaps in both sequences in the length
 """
 Calculates the identity value between two aligned sequences.
 
-The identity value is calculated as the number of identical characters in the i-th position of both 
+The identity value is calculated as the number of identical characters in the i-th position of both
 sequences divided by the length of both sequences.
 Positions with gaps in both sequences are not counted in the length of the sequence.
 Returns a value in [0, 1] range.
@@ -24,8 +25,8 @@ function percentidentity(seq1, seq2)
 end
 
 """
-Computes quickly if two aligned sequences have a identity value greater than a given 'threshold' value.
-'threshold' should be a number in [0, 1] range.
+Computes quickly if two aligned sequences have a identity value greater than a given `threshold` value.
+`threshold` should be a number in [0, 1] range.
 Returns a boolean value.
 """
 function percentidentity(seq1, seq2, threshold::Float64)
@@ -56,36 +57,4 @@ function percentidentity(seq1, seq2, threshold::Float64)
     end
   end
   (count/n) >= threshold
-end
-
-
-"""
-Computes quickly if two aligned sequences have a identity value greater than a given 'threshold' value.
-'threshold' should be a number in [0, 1] range.
-Returns a boolean value.
-"""
-function percentidentity2(seq1, seq2, threshold::Float64)
-  len = length(seq1)
-  if len != length(seq2)
-     throw("Sequences of different length, they aren't aligned or don't come from the same alignment")
-  end
-  m=0
-  d=0
-  for i in 1:len
-    if seq1[i] == seq2[i]  
-      if seq1[i] == GAP
-        len -=1
-      else
-        m+=1
-      end
-    else
-      d+=1
-    end
-    if m>=len * threshold
-      return true
-    end
-    if d> len * (1-threshold)
-      return false
-    end
-  end
 end

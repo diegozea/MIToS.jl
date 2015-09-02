@@ -1,4 +1,4 @@
-import Base: length, getindex, setindex!, size, copy, deepcopy, empty!, convert
+import Base: length, getindex, setindex!, size, copy, deepcopy, empty!, convert, transpose, ctranspose
 
 abstract AbstractMultipleSequenceAlignment <: AbstractArray{Residue,2}
 abstract AbstractAlignedSequence <: AbstractArray{Residue,1}
@@ -53,6 +53,12 @@ getindex(msa::AbstractMultipleSequenceAlignment, i::Int) = getindex(msa.msa, i)
 getindex(seq::AbstractAlignedSequence, i::Int) = getindex(seq.sequence, i)
 setindex!(msa::AbstractMultipleSequenceAlignment, value::Residue, i::Int) =  setindex!(msa.msa, value, i)
 setindex!(seq::AbstractAlignedSequence, value::Residue, i::Int) = setindex!(seq.sequence, value, i)
+
+# Transpose
+# ---------
+
+transpose(msa::AbstractMultipleSequenceAlignment)  = transpose(msa.msa)
+ctranspose(msa::AbstractMultipleSequenceAlignment) = transpose(msa.msa) # transpose is ~ 0.00022 seconds faster than ctranspose for PF00085
 
 # Selection without Mappings
 # --------------------------
