@@ -23,7 +23,9 @@ module MSA
 
   Stockholm, downloadpfam,
 
-  FASTA
+  FASTA,
+
+  shuffle_columnwise!, shuffle_sequencewise!, shuffle_residues_sequencewise!, shuffle_residues_columnwise!
 
   include("Residues.jl")
   include("IndexedVectors.jl")
@@ -33,5 +35,6 @@ module MSA
   include("Raw.jl")
   include("Pfam.jl")
   include("FASTA.jl")
+  include("Shuffle.jl")
 
 end

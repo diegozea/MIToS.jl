@@ -11,6 +11,7 @@ include("annotations.jl")
 include("rawalnandgaps.jl")
 include("multiplesequencealignment.jl")
 include("msaannotations.jl")
+include("shuffle.jl")
 # PDB
 include("pdb.jl")
 #  SIFTS
