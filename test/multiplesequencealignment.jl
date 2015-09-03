@@ -86,8 +86,8 @@ print("""
 Test download of read(URL, ...)
 """)
 
-@test read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/Gaoetal2011.fasta"), FASTA) == small
-@test read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.fasta.gz"), FASTA) == fasta
+@test read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/Gaoetal2011.fasta", FASTA) == small
+@test read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.fasta.gz", FASTA) == fasta
 
 print("""
 Test parse for string inputs

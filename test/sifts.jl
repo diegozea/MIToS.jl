@@ -13,7 +13,7 @@ Parse SIFTS
 -----------
 """)
 
-const sifts_file = joinpath(pwd(), "data", "2vqc.xml.gz"
+const sifts_file = joinpath(pwd(), "data", "2vqc.xml.gz")
 
 print("""
 all against all
