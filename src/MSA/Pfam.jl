@@ -87,6 +87,16 @@ function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::T
   msa
 end
 
+function parse(io::Union(IO,AbstractString), format::Type{Stockholm}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true)
+  # Could be faster with a special _pre_readstockholm
+  IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
+  if deletefullgaps
+    return(deletefullgaps!(convert(Matrix{Residue}, SEQS)))
+  else
+    return(convert(Matrix{Residue}, SEQS))
+  end
+end
+
 parse(io, format::Type{Stockholm};  generatemapping::Bool=false,
       useidcoordinates::Bool=false, deletefullgaps::Bool=true) = parse(io, Stockholm, AnnotatedMultipleSequenceAlignment,
                                                                       generatemapping=generatemapping,

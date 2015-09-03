@@ -85,7 +85,7 @@ structures.
 PMCID: PMC2142204
 PMID: 1304348  [PubMed - indexed for MEDLINE]
 """
-function hobohmI(msa::MultipleSequenceAlignment, threshold::Float64)
+function hobohmI(msa::AbstractMatrix{Residue}, threshold::Float64)
   aln = getresiduesequences(msa)
   nseq = length(aln)
   cluster = zeros(Int,nseq)
