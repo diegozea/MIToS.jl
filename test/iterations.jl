@@ -13,7 +13,7 @@ print("""
 This is the example of MI(X, Y)/H(X, Y) from:
 Gao, H., Dou, Y., Yang, J., & Wang, J. (2011). New methods to measure residues coevolution in proteins. BMC bioinformatics, 12(1), 206.
 """)
-let aln = read("./data/Gaoetal2011.fasta", FASTA), result = Float64[ 0     0     0     0     0     0
+let aln = read(joinpath(pwd(), "data", "Gaoetal2011.fasta"), FASTA), result = Float64[ 0     0     0     0     0     0
                                                                      0     0     0     0     0     0
                                                                      0     0     0     1     1     0.296
                                                                      0     0     1     0     1     0.296

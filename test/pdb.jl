@@ -1,8 +1,8 @@
 using Base.Test
 using MIToS.PDB
 
-txt(code, path = "./data/") = string(path, uppercase(code), ".pdb")
-xml(code, path = "./data/") = string(path, uppercase(code), ".xml")
+txt(code) = joinpath(pwd(), "data", string(uppercase(code), ".pdb"))
+xml(code) = joinpath(pwd(), "data", string(uppercase(code), ".xml"))
 
 print("""
 

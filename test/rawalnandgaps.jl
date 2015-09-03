@@ -13,7 +13,7 @@ Parse Raw
 ---------
 """)
 
-const raw = read("./data/gaps.txt", Raw)
+const raw = read(joinpath(pwd(), "data", "gaps.txt"), Raw)
 @test asciisequence(raw, 1)  == "THAYQAIHQV"
 @test asciisequence(raw, 10) == "T---------"
 

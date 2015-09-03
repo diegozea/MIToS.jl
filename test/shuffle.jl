@@ -7,7 +7,7 @@ Test shuffle_...
 ================
 """)
 
-let aln = read("./data/PF09645_full.fasta.gz", FASTA), copy_aln_msa = copy(aln.msa),
+let aln = read(joinpath(pwd(), "data", "PF09645_full.fasta.gz"), FASTA), copy_aln_msa = copy(aln.msa),
   gaps = (aln .== GAP), lcol = mean(aln .== Residue('L'), 1), lseq = mean(aln .== Residue('L'), 2)
 
   shuffle_residues_columnwise!(aln)
@@ -17,7 +17,7 @@ let aln = read("./data/PF09645_full.fasta.gz", FASTA), copy_aln_msa = copy(aln.m
   @test lseq != mean(aln .== Residue('L'), 2)
 end
 
-let aln = read("./data/PF09645_full.fasta.gz", FASTA), copy_aln_msa = copy(aln.msa),
+let aln = read(joinpath(pwd(), "data", "PF09645_full.fasta.gz"), FASTA), copy_aln_msa = copy(aln.msa),
   gaps = (aln .== GAP), lcol = mean(aln .== Residue('L'), 1), lseq = mean(aln .== Residue('L'), 2)
 
   shuffle_residues_sequencewise!(aln)
@@ -27,7 +27,7 @@ let aln = read("./data/PF09645_full.fasta.gz", FASTA), copy_aln_msa = copy(aln.m
   @test lseq == mean(aln .== Residue('L'), 2)
 end
 
-let aln = read("./data/PF09645_full.fasta.gz", FASTA), copy_aln_msa = copy(aln.msa),
+let aln = read(joinpath(pwd(), "data", "PF09645_full.fasta.gz"), FASTA), copy_aln_msa = copy(aln.msa),
   gaps = (aln .== GAP), lcol = mean(aln .== Residue('L'), 1), lseq = mean(aln .== Residue('L'), 2)
 
   shuffle_columnwise!(aln)
@@ -37,7 +37,7 @@ let aln = read("./data/PF09645_full.fasta.gz", FASTA), copy_aln_msa = copy(aln.m
   @test lseq != mean(aln .== Residue('L'), 2)
 end
 
-let aln = read("./data/PF09645_full.fasta.gz", FASTA), copy_aln_msa = copy(aln.msa),
+let aln = read(joinpath(pwd(), "data", "PF09645_full.fasta.gz"), FASTA), copy_aln_msa = copy(aln.msa),
   gaps = (aln .== GAP), lcol = mean(aln .== Residue('L'), 1), lseq = mean(aln .== Residue('L'), 2)
 
   shuffle_sequencewise!(aln)

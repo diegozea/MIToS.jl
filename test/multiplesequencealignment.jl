@@ -29,8 +29,8 @@ Test pfam stockholm parser using the 4 sequence full MSA for PF09645
 > Pfam version 28.0, based on UniProt release 2014_07
 """)
 
-const pfam = read("./data/PF09645_full.stockholm", Stockholm)
-const pfam_na = read("./data/PF09645_full.stockholm", Stockholm, MultipleSequenceAlignment)
+const pfam = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm)
+const pfam_na = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, MultipleSequenceAlignment)
 const F112_SSV1 = collect(".....QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ.....")
 
 @test pfam_na == convert(MultipleSequenceAlignment, pfam)
@@ -74,10 +74,10 @@ Parse Fasta
 -----------
 """)
 
-const fasta = read("./data/PF09645_full.fasta.gz", FASTA)
-const small = read("./data/Gaoetal2011.fasta", FASTA)
-const fasta_na = read("./data/PF09645_full.fasta.gz", FASTA, MultipleSequenceAlignment)
-const small_na = read("./data/Gaoetal2011.fasta", FASTA, MultipleSequenceAlignment, deletefullgaps=false)
+const fasta = read(joinpath(pwd(), "data", "PF09645_full.fasta.gz"), FASTA)
+const small = read(joinpath(pwd(), "data", "Gaoetal2011.fasta"), FASTA)
+const fasta_na = read(joinpath(pwd(), "data", "PF09645_full.fasta.gz"), FASTA, MultipleSequenceAlignment)
+const small_na = read(joinpath(pwd(), "data", "Gaoetal2011.fasta"), FASTA, MultipleSequenceAlignment, deletefullgaps=false)
 
 @test fasta_na == convert(MultipleSequenceAlignment, fasta)
 @test small_na == convert(MultipleSequenceAlignment, small)
@@ -86,8 +86,8 @@ print("""
 Test download of read(URL, ...)
 """)
 
-@test read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/Gaoetal2011.fasta", FASTA) == small
-@test read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.fasta.gz", FASTA) == fasta
+@test read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/Gaoetal2011.fasta"), FASTA) == small
+@test read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.fasta.gz"), FASTA) == fasta
 
 print("""
 Test parse for string inputs
