@@ -33,6 +33,10 @@ const pfam = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm)
 const pfam_na = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, MultipleSequenceAlignment)
 const F112_SSV1 = collect(".....QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ.....")
 
+let rawpfam = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, Matrix{Residue})
+  @test rawpfam == pfam.msa
+end
+
 @test pfam_na == convert(MultipleSequenceAlignment, pfam)
 
 @test size(pfam.msa, 1) == 4
@@ -78,6 +82,10 @@ const fasta = read(joinpath(pwd(), "data", "PF09645_full.fasta.gz"), FASTA)
 const small = read(joinpath(pwd(), "data", "Gaoetal2011.fasta"), FASTA)
 const fasta_na = read(joinpath(pwd(), "data", "PF09645_full.fasta.gz"), FASTA, MultipleSequenceAlignment)
 const small_na = read(joinpath(pwd(), "data", "Gaoetal2011.fasta"), FASTA, MultipleSequenceAlignment, deletefullgaps=false)
+
+let rawfasta = read(joinpath(pwd(), "data", "PF09645_full.fasta.gz"), FASTA, Matrix{Residue})
+  @test rawfasta == fasta.msa
+end
 
 @test fasta_na == convert(MultipleSequenceAlignment, fasta)
 @test small_na == convert(MultipleSequenceAlignment, small)

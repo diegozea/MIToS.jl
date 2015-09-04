@@ -61,7 +61,7 @@ function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{A
   end
   msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, annot)
   if deletefullgaps
-    deletefullgaps!(msa)
+    deletefullgapcolumns!(msa)
   end
   msa
 end
@@ -70,7 +70,7 @@ function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{M
   IDS, SEQS = _pre_readfasta(io)
   msa = MultipleSequenceAlignment(IndexedVector(IDS), convert(Matrix{Residue}, SEQS))
   if deletefullgaps
-    deletefullgaps!(msa)
+    deletefullgapcolumns!(msa)
   end
   msa
 end
@@ -78,7 +78,7 @@ end
 function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true)
   IDS, SEQS = _pre_readfasta(io)
   if deletefullgaps
-    return(deletefullgaps!(convert(Matrix{Residue}, SEQS)))
+    return(deletefullgapcolumns(convert(Matrix{Residue}, SEQS)))
   else
     return(convert(Matrix{Residue}, SEQS))
   end

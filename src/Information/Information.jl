@@ -1,5 +1,6 @@
 module Information
 
+  using MIToS.Utils
   using MIToS.MSA
   using MIToS.Clustering
 
@@ -15,7 +16,11 @@ module Information
   MutualInformation, MutualInformationOverEntropy,
   estimate, estimate_on_marginal,
 
-  estimateincolumns, estimateinsequences
+  estimateincolumns, estimateinsequences,
+
+  APC!,
+
+  buslje09
 
   #Fixed, Pseudofrequencies, ResidueProbabilities, ResiduePairProbabilities
 
@@ -23,5 +28,7 @@ module Information
   include("Probabilities.jl")
   include("InformationMeasures.jl")
   include("Iterations.jl")
+  include("Corrections.jl")
+  include("CorrectedMutualInformation.jl")
 
 end
