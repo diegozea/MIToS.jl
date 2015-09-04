@@ -1,0 +1,48 @@
+# mutualinfo_matrix_NEWCLUSTER_pseudocount_zscore_row_w -fsa Gaoetal2011.fasta -seed 42 -apc -c -lc 0
+# Thu Sep  3 15:30:12 2015
+# User: diego
+# PWD : /home/diego
+# Host: Linux SIRRAH 3.19.0-26-generic x86_64
+# -fsa     1                    Input is fasta format
+# -seed    42                   Seed for random number [=0 time, <0 Default]
+# -apc     0                    Use APC correction [default on]
+# -c       0                    Sequence clustering [default on]
+# -lc      0.000000             Low count value
+# Command line parameters set to:
+#	[-c]                 0                    Sequence clustering [default on]
+#	[-t float]           0.000000             Threshold
+#	[-i float]           0.620000             Percent id for clustering
+#	[-xg]                1                    Exclude gaps from statistics [default on]
+#	[-lc float]          0.000000             Low count value
+#	[-a string]          ACDEFGHIKLMNPQRSTVWYX- Aminoacid alphabet
+#	[-v]                 0                    Verbose mode
+#	[-ns int]            100                  Number of samples for Z-score
+#	[-seed int]          42                   Seed for random number [=0 time, <0 Default]
+#	[-fsa]               1                    Input is fasta format
+#	[-fixg]              1                    Fixed gaps [default on]
+#	[-apc]               0                    Use APC correction [default on]
+#	[-maxgap float]      0.500000             Max fraction of gaps in positions included in calculation
+#	[-pw]                0                    Print weight on each PIR
+#	[-o int]             0                    Offset for residue enumeration
+# Number of FASTA entries read 6 from file Gaoetal2011.fasta
+# Threshold 0.000000
+# Amino acid alphabet ACDEFGHIKLMNPQRSTVWYX-
+# Nprot 6. Maxlen 6
+# Len 6
+# Nuse 6
+# Ncluster 6.000000
+MI[ 1 D ][ 2 A ] = 0.000000 1.031788 0.308666 -3.342736
+MI[ 1 D ][ 3 W ] = 0.000000 1.000037 0.313493 -3.189983
+MI[ 1 D ][ 4 A ] = 0.000000 1.043906 0.287943 -3.625396
+MI[ 1 D ][ 5 E ] = 0.000000 1.017053 0.309885 -3.282033
+MI[ 1 D ][ 6 E ] = 0.000000 1.025683 0.295956 -3.465665
+MI[ 2 A ][ 3 W ] = 0.000000 1.033416 0.294750 -3.506077
+MI[ 2 A ][ 4 A ] = 0.000000 1.059674 0.288344 -3.675040
+MI[ 2 A ][ 5 E ] = 0.000000 1.045811 0.327562 -3.192712
+MI[ 2 A ][ 6 E ] = 0.000000 1.061373 0.291361 -3.642812
+MI[ 3 W ][ 4 A ] = 0.693147 1.019248 0.297271 -1.096982
+MI[ 3 W ][ 5 E ] = 0.693147 1.020686 0.318293 -1.029050
+MI[ 3 W ][ 6 E ] = 0.462098 1.005646 0.281683 -1.929639
+MI[ 4 A ][ 5 E ] = 0.693147 1.028460 0.280228 -1.196572
+MI[ 4 A ][ 6 E ] = 0.462098 1.055008 0.284798 -2.081859
+MI[ 5 E ][ 6 E ] = 0.462098 1.037396 0.293529 -1.959935
