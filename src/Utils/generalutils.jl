@@ -107,3 +107,41 @@ function select_element{T}(vector::Array{T,1}, element_name::ASCIIString="elemen
   end
   @inbounds return(vector[1])
 end
+
+"""
+Returns a vector with the `part` ("upper" or "lower") of the square matrix `mat`.
+The `diagonal` is not included by default.
+"""
+function matrix2list{T}(mat::AbstractMatrix{T}; part="upper", diagonal::Bool=false)
+  nrow, ncol = size(mat)
+  if nrow != ncol
+    throw(ErrorException("Should be a square matrix"))
+  end
+  if diagonal
+    d = 0
+    N = div((ncol * ncol) + ncol, 2)
+  else
+    d = 1
+    N = div((ncol * ncol) - ncol, 2)
+  end
+  list = Array(T, N)
+  k = 1
+  if part=="upper"
+    for i in 1:(ncol-d)
+      for j in (i+d):ncol
+        list[k] = mat[i, j]
+        k += 1
+      end
+    end
+  elseif part=="lower"
+    for j in 1:(ncol-d)
+      for i in (j+d):ncol
+        list[k] = mat[i, j]
+        k += 1
+      end
+    end
+  else
+    throw(ErrorException("part should be \"upper\" or \"lower\""))
+  end
+  list
+end

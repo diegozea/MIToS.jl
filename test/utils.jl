@@ -49,6 +49,20 @@ select_element
 @test_throws ErrorException select_element([])
 
 print("""
+matrix2list
+""")
+
+let mat = [ 1 2 3
+            4 5 6
+            7 8 9 ]
+
+  @test matrix2list(mat) == [2, 3, 6]
+  @test matrix2list(mat, diagonal=true) == [1, 2, 3, 5, 6, 9]
+  @test matrix2list(mat, part="lower") == [4, 7, 8]
+  @test matrix2list(mat, part="lower", diagonal=true) == [1, 4, 7, 5, 8, 9]
+end
+
+print("""
 
 Test findobjects
 ================

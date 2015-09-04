@@ -6,15 +6,15 @@ const r = reverse(s);
 const g = res"GGGGGGGGGGGGGGGGGGGG";
 
 using MIToS.Information
-const Pg = probabilities(g)
-const Pgg = probabilities(g,g)
-const Pggg = probabilities(g,g,g)
-const Ps = probabilities(s)
-const Pss = probabilities(s,s)
-const Psr = probabilities(s,r)
-const Psss = probabilities(s,s,s)
+const Pg = probabilities(BigFloat, g)
+const Pgg = probabilities(BigFloat, g,g)
+const Pggg = probabilities(BigFloat, g,g,g)
+const Ps = probabilities(BigFloat, s)
+const Pss = probabilities(BigFloat, s,s)
+const Psr = probabilities(BigFloat, s,r)
+const Psss = probabilities(BigFloat, s,s,s)
 
-const  prob_random = probabilities(AdditiveSmoothing(1.0), Residue[], Residue[])
+const  prob_random = probabilities(BigFloat, AdditiveSmoothing(1.0), Residue[], Residue[])
 const count_random = count(AdditiveSmoothing(1.0), Residue[], Residue[])
 
 print("""
@@ -33,34 +33,34 @@ print("""
 Entropy: H(X)
 """)
 
-@test estimate(Entropy(), Pg) == 0.0
-@test estimate(Entropy(), Ps) == log(20)
-@test estimate(Entropy(), Ps, 2) == log(2, 20)
+@test estimate(Entropy{BigFloat}(), Pg) == zero(BigFloat)
+@test_approx_eq estimate(Entropy{BigFloat}(), Ps) log(big"20")
+@test_approx_eq estimate(Entropy{BigFloat}(2), Ps) log(2, big"20")
 
 print("""
 Joint Entropy: H(X,Y)
 """)
 
-@test estimate(Entropy(), Pgg) == 0.0
-@test estimate(Entropy(), Pss) == log(20)
-@test estimate(Entropy(), Psr) == log(19)
-@test estimate(Entropy(), Pss, 2) == log(2, 20)
-@test_approx_eq estimate(Entropy(), count_random) log(400)
-@test_approx_eq estimate(Entropy(),  prob_random) log(400)
+@test estimate(Entropy{BigFloat}(), Pgg) == zero(BigFloat)
+@test_approx_eq estimate(Entropy{BigFloat}(), Pss) log(big"20")
+@test_approx_eq estimate(Entropy{BigFloat}(), Psr) log(big"19")
+@test_approx_eq estimate(Entropy{BigFloat}(2), Pss) log(2, big"20")
+@test_approx_eq estimate(Entropy{BigFloat}(), count_random) log(big"400")
+@test_approx_eq estimate(Entropy{BigFloat}(),  prob_random) log(big"400")
 
 print("""
 Joint Entropy: H(X,Y,Z)
 """)
 
-@test estimate(Entropy(), Pggg) == 0.0
-@test estimate(Entropy(), Psss) == log(20)
+@test estimate(Entropy{BigFloat}(), Pggg) == zero(BigFloat)
+@test_approx_eq estimate(Entropy{BigFloat}(), Psss) log(big"20")
 
 print("""
 Entropy using ResidueCount
 """)
-@test estimate(Entropy(), count(g,g)) == estimate(Entropy(), Pgg)
-@test estimate(Entropy(), count(s,s)) == estimate(Entropy(), Pss)
-@test_approx_eq estimate(Entropy(), count(s,r)) estimate(Entropy(), Psr)
+@test estimate(Entropy{BigFloat}(), count(g,g)) == estimate(Entropy{BigFloat}(), Pgg)
+@test estimate(Entropy{BigFloat}(), count(s,s)) == estimate(Entropy{BigFloat}(), Pss)
+@test_approx_eq estimate(Entropy{BigFloat}(), count(s,r)) estimate(Entropy{BigFloat}(), Psr)
 
 print("""
 
@@ -68,44 +68,43 @@ Mutual Information
 ------------------
 """)
 
-@test estimate(MutualInformation(), Pgg) == 0.0
-@test estimate(MutualInformation(), probabilities(g,s)) == 0.0
-@test_approx_eq_eps estimate(MutualInformation(),  prob_random) 0.0 1e-15
+@test estimate(MutualInformation{BigFloat}(), Pgg) == zero(BigFloat)
+@test estimate(MutualInformation{BigFloat}(), probabilities(BigFloat, g,s)) == zero(BigFloat)
+@test_approx_eq estimate(MutualInformation{BigFloat}(),  prob_random) zero(BigFloat) # diff for Float64 is 1e-15
 
 print("""
 MI(X,Y) = H(X) + H(Y) - H(X,Y)
 """)
-@test estimate(MutualInformation(), Psr) == estimate_on_marginal(Entropy(), Psr, 1) + estimate_on_marginal(Entropy(), Psr, 2) - estimate(Entropy(), Psr)
-@test estimate(MutualInformation(), Pss) == estimate_on_marginal(Entropy(), Pss, 1) + estimate_on_marginal(Entropy(), Pss, 2) - estimate(Entropy(), Pss)
-@test estimate(MutualInformation(), Psr, 2) == estimate_on_marginal(Entropy(), Psr, 1, 2) + estimate_on_marginal(Entropy(), Psr, 2, 2) - estimate(Entropy(), Psr, 2)
-@test estimate(MutualInformation(), Pss, 20) == estimate_on_marginal(Entropy(), Pss, 1, 20) + estimate_on_marginal(Entropy(), Pss, 2, 20) - estimate(Entropy(), Pss, 20)
-@test_approx_eq_eps estimate(MutualInformation(), prob_random) ( estimate_on_marginal(Entropy(), prob_random, 1) +
-                                                                  estimate_on_marginal(Entropy(),  prob_random, 2) -
-                                                                  estimate(Entropy(), prob_random) ) 1e15
+@test estimate(MutualInformation{BigFloat}(), Psr) == estimate_on_marginal(Entropy{BigFloat}(), Psr, 1) + estimate_on_marginal(Entropy{BigFloat}(), Psr, 2) - estimate(Entropy{BigFloat}(), Psr)
+@test estimate(MutualInformation{BigFloat}(), Pss) == estimate_on_marginal(Entropy{BigFloat}(), Pss, 1) + estimate_on_marginal(Entropy{BigFloat}(), Pss, 2) - estimate(Entropy{BigFloat}(), Pss)
+@test estimate(MutualInformation{BigFloat}(2), Psr) == estimate_on_marginal(Entropy{BigFloat}(2), Psr, 1) + estimate_on_marginal(Entropy{BigFloat}(2), Psr, 2) - estimate(Entropy{BigFloat}(2), Psr)
+@test estimate(MutualInformation{BigFloat}(20), Pss) == estimate_on_marginal(Entropy{BigFloat}(20), Pss, 1) + estimate_on_marginal(Entropy{BigFloat}(20), Pss, 2) - estimate(Entropy{BigFloat}(20), Pss)
+@test_approx_eq_eps estimate(MutualInformation{BigFloat}(), prob_random) ( estimate_on_marginal(Entropy{BigFloat}(), prob_random, 1) +
+                                                                  estimate_on_marginal(Entropy{BigFloat}(),  prob_random, 2) -
+                                                                  estimate(Entropy{BigFloat}(), prob_random) ) 1e-74 # diff for Float64 is 1e-15
 
 print("""
 MI using ResidueCount
 """)
-@test_approx_eq estimate(MutualInformation(), count_random) 0.0
-@test estimate(MutualInformation(), count(g,g)) == estimate(MutualInformation(), Pgg)
-@test estimate(MutualInformation(), count(s,s)) == estimate(MutualInformation(), Pss)
-@test_approx_eq estimate(MutualInformation(), count(s,r)) estimate(MutualInformation(), Psr)
+@test_approx_eq estimate(MutualInformation{BigFloat}(), count_random) zero(BigFloat)
+@test estimate(MutualInformation{BigFloat}(), count(g,g)) == estimate(MutualInformation{BigFloat}(), Pgg)
+@test estimate(MutualInformation{BigFloat}(), count(s,s)) == estimate(MutualInformation{BigFloat}(), Pss)
+@test_approx_eq estimate(MutualInformation{BigFloat}(), count(s,r)) estimate(MutualInformation{BigFloat}(), Psr)
 
 print("""
 MI(X,Y,Z)
 """)
-@test estimate(MutualInformation(), Pggg) == 0.0
-@test estimate(MutualInformation(), probabilities(g,s,r)) == 0.0
-@test_approx_eq_eps estimate(MutualInformation(), probabilities(AdditiveSmoothing(1e10),s,s,s)) 0.0 1e-10
-@test_approx_eq estimate(MutualInformation(), probabilities(s,s,r)) estimate(MutualInformation(), count(s,s,r))
+@test estimate(MutualInformation{BigFloat}(), Pggg) == zero(BigFloat)
+@test estimate(MutualInformation{BigFloat}(), probabilities(BigFloat, g,s,r)) == zero(BigFloat)
+@test_approx_eq estimate(MutualInformation{BigFloat}(), probabilities(BigFloat, s,s,r)) estimate(MutualInformation{BigFloat}(), count(s,s,r))
 
 print("""
 MI(X,Y,Z) = H(X) + H(Y) + H(Z) - H(X,Y) - H(X,Z) - H(Y,Z) + H(X,Y,Z)
 """)
-@test estimate(MutualInformation(), Psss) == ( estimate_on_marginal(Entropy(), Psss, 1) + estimate_on_marginal(Entropy(), Psss, 2) + estimate_on_marginal(Entropy(), Psss, 3) -
-  estimate(Entropy(), Pss) - estimate(Entropy(), Pss) - estimate(Entropy(), Pss) + estimate(Entropy(), Psss) )
+@test estimate(MutualInformation{BigFloat}(), Psss) == ( estimate_on_marginal(Entropy{BigFloat}(), Psss, 1) + estimate_on_marginal(Entropy{BigFloat}(), Psss, 2) + estimate_on_marginal(Entropy{BigFloat}(), Psss, 3) -
+  estimate(Entropy{BigFloat}(), Pss) - estimate(Entropy{BigFloat}(), Pss) - estimate(Entropy{BigFloat}(), Pss) + estimate(Entropy{BigFloat}(), Psss) )
 
 print("""
 MI(X,Y,Z) <= min{ H(X,Y), H(X,Z), H(Y,Z) }
 """)
-@test_approx_eq estimate(MutualInformation(), Psss) estimate(MutualInformation(),Pss)
+@test_approx_eq estimate(MutualInformation{BigFloat}(), Psss) estimate(MutualInformation{BigFloat}(),Pss)

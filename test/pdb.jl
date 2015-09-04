@@ -1,8 +1,8 @@
 using Base.Test
 using MIToS.PDB
 
-txt(code, path = "./data/") = string(path, uppercase(code), ".pdb")
-xml(code, path = "./data/") = string(path, uppercase(code), ".xml")
+txt(code) = joinpath(pwd(), "data", string(uppercase(code), ".pdb"))
+xml(code) = joinpath(pwd(), "data", string(uppercase(code), ".xml"))
 
 print("""
 
@@ -26,6 +26,22 @@ let code = "2VQC"
   @test findfirst(x -> x.id.number == "4",  pdb) == findfirst(x -> x.id.number == "4",  pdbml)
   @test findfirst(x -> x.id.number == "73", pdb) == findfirst(x -> x.id.number == "73", pdbml)
 
+end
+
+print("""
+Test download
+""")
+
+let code = "2VQC"
+  pdb = read(txt(code), PDBFile)
+  filename = downloadpdb(code)
+  try
+    pdbml = read(filename, PDBML)
+    @test findfirst(x -> x.id.number == "4",  pdb) == findfirst(x -> x.id.number == "4",  pdbml)
+    @test findfirst(x -> x.id.number == "73", pdb) == findfirst(x -> x.id.number == "73", pdbml)
+  finally
+    rm(filename)
+  end
 end
 
 print("""

@@ -6,7 +6,7 @@ Tests for Mappings on Annotated Multiple Sequence Alignments
 ------------------------------------------------------------
 """)
 
-let pfam = read("./data/PF09645_full.stockholm", Stockholm,
+let pfam = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm,
                 generatemapping=true, useidcoordinates=true),
     F112_SSV1 = collect(string(".....QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQY",
                                "KNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ....."))
@@ -17,7 +17,7 @@ let pfam = read("./data/PF09645_full.stockholm", Stockholm,
   @test length(pfam.annotations.sequences) == 9
 end
 
-let fasta = read("./data/Gaoetal2011.fasta", FASTA, generatemapping=true)
+let fasta = read(joinpath(pwd(), "data", "Gaoetal2011.fasta"), FASTA, generatemapping=true)
 
   @test getsequencemapping(fasta, 1) == [1, 2, 3, 4, 5, 6]
   @test getsequencemapping(fasta, "SEQ2") == [1, 2, 3, 4, 5, 6]
@@ -30,7 +30,7 @@ Tests for annotation of modifications
 -------------------------------------
 """)
 
-let pfam = read("./data/PF09645_full.stockholm", Stockholm,
+let pfam = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm,
                 generatemapping=true, useidcoordinates=true), io = IOBuffer()
 
   print("""

@@ -72,7 +72,7 @@ function parse(io::Union(IO, AbstractString), format::Type{Stockholm},
   end
   msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, annot)
   if deletefullgaps
-    deletefullgaps!(msa)
+    deletefullgapcolumns!(msa)
   end
   msa
 end
@@ -82,9 +82,19 @@ function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::T
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
   msa = MultipleSequenceAlignment(IndexedVector(IDS), convert(Matrix{Residue}, SEQS))
   if deletefullgaps
-    deletefullgaps!(msa)
+    deletefullgapcolumns!(msa)
   end
   msa
+end
+
+function parse(io::Union(IO,AbstractString), format::Type{Stockholm}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true)
+  # Could be faster with a special _pre_readstockholm
+  IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
+  if deletefullgaps
+    return(deletefullgapcolumns(convert(Matrix{Residue}, SEQS)))
+  else
+    return(convert(Matrix{Residue}, SEQS))
+  end
 end
 
 parse(io, format::Type{Stockholm};  generatemapping::Bool=false,

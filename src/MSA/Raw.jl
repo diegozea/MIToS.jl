@@ -17,10 +17,7 @@ function parse(io::Union(IO,AbstractString), format::Type{Raw}, output::Type{Mat
   msa = convert(Matrix{Residue}, SEQS)
 
   if deletefullgaps
-    mask = columngappercentage(msa) .!= one(Float64)
-    if sum(mask) != zero(Float64)
-      return( filtercolumns(msa, mask) )
-    end
+    return(deletefullgapcolumns(msa))
   end
   msa
 end

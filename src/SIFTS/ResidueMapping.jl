@@ -187,7 +187,7 @@ _parse(::Type{Int}, str) = parse(Int, str)
 _parse(::Type{ASCIIString}, str) = ascii(str)
 @inline _parse(::Type{ASCIIString}, str::ASCIIString) = str
 
-function siftsmapping{F, T}(filename::ASCIIString,
+function siftsmapping{F, T}(filename::AbstractString,
                             db_from::Type{F}, id_from::ASCIIString,
                             db_to::Type{T}, id_to::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
   mapping = Dict{_number_type(F), _number_type(T)}()
