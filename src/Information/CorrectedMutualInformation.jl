@@ -23,7 +23,8 @@ function buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
                                clustering::Bool=true, threshold::Float64=0.62,
                                maxgap::Float64=0.5, apc::Bool=true, samples::Int=100,
                                usegap::Bool=false, fixedgaps::Bool=true)
-  aln = filtercolumns(aln, gappercentage(aln,1) .<= maxgap)
+  used = gappercentage(aln,1) .<= maxgap
+  aln = filtercolumns(aln, used)
   clusters = clustering ? hobohmI(aln, threshold) : 1
   mi = _buslje09(aln, usegap, clusters, lambda, apc)
   rand_mi = Array(Float64, size(mi, 1), size(mi, 2), samples)
@@ -33,13 +34,17 @@ function buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
   end
   rand_mean = squeeze(mean(rand_mi,3),3)
   rand_sd = squeeze(std(rand_mi,3),3)
-  (mi, (mi .- rand_mean) ./ rand_sd)
+  (collect(1:ncolumns(aln))[used],mi, rand_mean, rand_sd, (mi .- rand_mean) ./ rand_sd)
 end
 
-buslje09(aln::AnnotatedMultipleSequenceAlignment; kargs...) = buslje09(aln.msa; kargs...)
+buslje09(aln::MultipleSequenceAlignment; kargs...) = buslje09(aln.msa; kargs...)
+
+function buslje09(aln::AnnotatedMultipleSequenceAlignment; kargs...)
+  used, mi, rand_mean, rand_sd, zscore = buslje09(aln.msa; kargs...)
+  (getcolumnmapping(aln)[used], mi, rand_mean, rand_sd, zscore)
+end
 
 function buslje09{T <: Format}(filename::AbstractString, format::Type{T}; kargs...)
   aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
-  mi, zscore = buslje09(aln; kargs...)
-  (getcolumnmapping(aln), mi, zscore)
+  buslje09(aln; kargs...)
 end
