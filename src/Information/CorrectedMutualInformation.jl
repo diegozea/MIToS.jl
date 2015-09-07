@@ -1,3 +1,25 @@
+function calculatezscore{T,N}(value::AbstractArray{T,N}, average::AbstractArray{T,N}, sd::AbstractArray{T,N}, unit::T=one(T)) # tolerance::T=eps(T))
+  zscore = similar(value)
+  if size(value) == size(average) == size(sd)
+    for i in eachindex(zscore)
+      val = value[i]
+      ave = average[i]
+      sta = sd[i]
+      if isapprox(val, ave) # abs(val - ave)  <= tolerance
+        zscore[i] = 0.0
+      elseif !isapprox(sta + unit, unit) # abs(sta) > tolerance
+        # Test for 0.0 using 1.0: 0.0 + 1.0 == 1.0
+        zscore[i] = (val - ave)/sta
+      else
+        zscore[i] = NaN
+      end
+    end
+  else
+    throw(ErrorException("The elements should have the same size"))
+  end
+  zscore
+end
+
 function _buslje09(aln, usegap, clusters, lambda, apc)
   mi = estimateincolumns(aln, ResidueCount{Float64, 2, usegap}, MutualInformation{Float64}(),
                          AdditiveSmoothing{Float64}(lambda), clusters)
@@ -34,7 +56,7 @@ function buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
   end
   rand_mean = squeeze(mean(rand_mi,3),3)
   rand_sd = squeeze(std(rand_mi,3),3)
-  (collect(1:ncolumns(aln))[used],mi, rand_mean, rand_sd, (mi .- rand_mean) ./ rand_sd)
+  (collect(1:ncolumns(aln))[used],mi, rand_mean, rand_sd, calculatezscore(mi, rand_mean, rand_sd))
 end
 
 buslje09(aln::MultipleSequenceAlignment; kargs...) = buslje09(aln.msa; kargs...)
