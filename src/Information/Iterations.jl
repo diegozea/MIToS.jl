@@ -3,7 +3,7 @@
 # Using aln.msa instead of aln in estimate_on_column_pairs is ~ 0.53 seconds faster for PF00085
 
 function estimateincolumns{T, TP, UseGap}(aln::Matrix{Residue}, use::Type{ResidueCount{T, 1, UseGap}}, measure::InformationMeasure{TP},
-                                      weight::SequenceWeights=1, pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}))
+                                          pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}), weight::SequenceWeights=1)
   N = ResidueCount{T, 1, UseGap}()
   ncol = ncolumns(aln)
   scores = Array(TP, ncol)
@@ -16,7 +16,7 @@ function estimateincolumns{T, TP, UseGap}(aln::Matrix{Residue}, use::Type{Residu
 end
 
 function estimateincolumns{T <: Real, TP, UseGap}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{TP, 1, UseGap}}, measure::InformationMeasure{TP},
-                                          weight::SequenceWeights=1, pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}))
+                                                  pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}), weight::SequenceWeights=1)
   N = ResidueCount{T, 1, UseGap}()
   P = ResidueProbability{TP, 1, UseGap}()
   ncol = ncolumns(aln)
@@ -31,13 +31,13 @@ function estimateincolumns{T <: Real, TP, UseGap}(aln::Matrix{Residue}, count::T
 end
 
 function estimateincolumns{T, TP, UseGap}(aln::Matrix{Residue}, use::Type{ResidueCount{T, 2, UseGap}}, measure::SymmetricMeasure{TP},
-                                          weight::SequenceWeights=1, pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}), diagonal::TP=zero(TP))
+                                          pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}), weight::SequenceWeights=1)
   Nab = ResidueCount{T, 2, UseGap}()
   ncol = ncolumns(aln)
   scores = Array(TP, ncol, ncol)
-  @inbounds for i in 1:(ncol-1)
+  @inbounds for i in 1:ncol
     a = sub(aln,:,i)
-    for j in (i+1):ncol
+    for j in i:ncol
       b = sub(aln,:,j)
       fill!(Nab, pseudocount) # instead of fill! with 0
       count!(Nab, weight, a, b)
@@ -46,20 +46,19 @@ function estimateincolumns{T, TP, UseGap}(aln::Matrix{Residue}, use::Type{Residu
       scores[j,i] = score
     end
   end
-  @inbounds scores[diagind(scores)] = diagonal
   scores
 end
 
 function estimateincolumns{T <: Real, TP, UseGap}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{TP, 2, UseGap}},
-                                                  measure::SymmetricMeasure{TP}, weight::SequenceWeights=1,
-                                                  pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}), diagonal::TP=zero(TP))
+                                                  measure::SymmetricMeasure{TP},
+                                                  pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}), weight::SequenceWeights=1)
   Nab = ResidueCount{T, 2, UseGap}()
   Pab = ResidueProbability{TP, 2, UseGap}()
   ncol = ncolumns(aln)
   scores = zeros(TP, ncol, ncol)
-  @inbounds for i in 1:(ncol-1)
+  @inbounds for i in 1:ncol
     a = sub(aln,:,i)
-    for j in (i+1):ncol
+    for j in i:ncol
       b = sub(aln,:,j)
       fill!(Nab, pseudocount) # instead of fill! with 0
       count!(Nab, weight, a, b)
@@ -69,21 +68,20 @@ function estimateincolumns{T <: Real, TP, UseGap}(aln::Matrix{Residue}, count::T
       scores[j,i] = score
     end
   end
-  @inbounds scores[diagind(scores)] = diagonal
   scores
 end
 
 function estimateincolumns{T <: Real, TP}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{TP, 2, false}}, α, β,
-                                          measure::SymmetricMeasure{TP}, weight::SequenceWeights=1,
-                                          pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}), diagonal::TP=zero(TP))
+                                          measure::SymmetricMeasure{TP},
+                                          pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}), weight::SequenceWeights=1)
   Nab = ResidueCount{T, 2, false}()
   Pab = ResidueProbability{TP, 2, false}()
   Gab = ResidueProbability{TP, 2, false}()
   ncol = ncolumns(aln)
   scores = zeros(TP, ncol, ncol)
-  @inbounds for i in 1:(ncol-1)
+  @inbounds for i in 1:ncol
     a = sub(aln,:,i)
-    for j in (i+1):ncol
+    for j in i:ncol
       b = sub(aln,:,j)
       fill!(Nab, pseudocount) # instead of fill! with 0
       count!(Nab, weight, a, b)
@@ -95,7 +93,6 @@ function estimateincolumns{T <: Real, TP}(aln::Matrix{Residue}, count::Type{T}, 
       scores[j,i] = score
     end
   end
-  @inbounds scores[diagind(scores)] = diagonal
   scores
 end
 

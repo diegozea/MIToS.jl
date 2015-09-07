@@ -78,15 +78,17 @@ ncolumns(seq::AbstractAlignedSequence) = length(seq.sequence)
 ncolumns(seq::Vector{Residue}) = length(seq)
 
 """Gives you a `Vector{Vector{Residue}}` with all the sequences of the MSA without Annotations"""
-function getresiduesequences(msa::AbstractMultipleSequenceAlignment)
+function getresiduesequences(msa::Matrix{Residue})
   nseq = nsequences(msa)
-  tmsa = msa.msa'
+  tmsa = msa'
   sequences = Array(Vector{Residue}, nseq)
   for i in 1:nseq
     @inbounds sequences[i] = tmsa[:,i]
   end
   sequences
 end
+
+getresiduesequences(msa::AbstractMultipleSequenceAlignment) = getresiduesequences(msa.msa)
 
 # Select sequence
 # ---------------

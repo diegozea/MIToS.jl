@@ -1,0 +1,34 @@
+# /home/diego/mi_soft/bin/mutualinfo_matrix_NEWCLUSTER_pseudocount_zscore_row_w -fsa simple.fasta -lc 0 -c -apc -seed 42
+# Sun Sep  6 17:38:54 2015
+# User: root
+# PWD : unknown
+# Host: Linux SIRRAH 3.19.0-26-generic x86_64
+# -fsa     1                    Input is fasta format
+# -lc      0.000000             Low count value
+# -c       0                    Sequence clustering [default on]
+# -apc     0                    Use APC correction [default on]
+# -seed    42                   Seed for random number [=0 time, <0 Default]
+# Command line parameters set to:
+#	[-c]                 0                    Sequence clustering [default on]
+#	[-t float]           0.000000             Threshold
+#	[-i float]           0.620000             Percent id for clustering
+#	[-xg]                1                    Exclude gaps from statistics [default on]
+#	[-lc float]          0.000000             Low count value
+#	[-a string]          ACDEFGHIKLMNPQRSTVWYX- Aminoacid alphabet
+#	[-v]                 0                    Verbose mode
+#	[-ns int]            100                  Number of samples for Z-score
+#	[-seed int]          42                   Seed for random number [=0 time, <0 Default]
+#	[-fsa]               1                    Input is fasta format
+#	[-fixg]              1                    Fixed gaps [default on]
+#	[-apc]               0                    Use APC correction [default on]
+#	[-maxgap float]      0.500000             Max fraction of gaps in positions included in calculation
+#	[-pw]                0                    Print weight on each PIR
+#	[-o int]             0                    Offset for residue enumeration
+# Number of FASTA entries read 2 from file simple.fasta
+# Threshold 0.000000
+# Amino acid alphabet ACDEFGHIKLMNPQRSTVWYX-
+# Nprot 2. Maxlen 2
+# Len 2
+# Nuse 2
+# Ncluster 2.000000
+MI[ 1 A ][ 2 R ] = 0.693147 0.339642 0.346504 1.020203
