@@ -190,23 +190,27 @@ let data = readdlm(joinpath(pwd(), "data", "data_simple_soft_Busljeetal2009_meas
 
   @test_approx_eq_eps Float64(data[1, SCORE]) results[MIToS_SCORE][1,2]  0.000001
   @test_approx_eq_eps Float64(data[1, ZSCORE]) results[MIToS_ZSCORE][1,2]  0.5
+
+  println("Pearson for Z-score: ", cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])))
 end
 
 let data = readdlm(gao11_buslje09("MI")); results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=false)
-  @test_approx_eq_eps maximum(abs(convert(Vector{Float64}, data[:, SCORE]) .- matrix2list(results[MIToS_SCORE]))) 0.0 0.000001
-  #@test cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])) > 0.90
 
-  println(cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])))
+  @test_approx_eq_eps convert(Vector{Float64}, data[:, SCORE]) matrix2list(results[MIToS_SCORE]) 1e-6
+  @test_approx_eq_eps convert(Vector{Float64}, data[:, ZSCORE]) matrix2list(results[MIToS_ZSCORE]) 1.0
+
+  println("Pearson for Z-score: ", cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])))
 end
 
+let data = readdlm(gao11_buslje09("MI_clustering")); results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=false)
 
+  @test_approx_eq_eps convert(Vector{Float64}, data[:, SCORE]) matrix2list(results[MIToS_SCORE]) 1e-6
+  @test_approx_eq_eps convert(Vector{Float64}, data[:, ZSCORE]) matrix2list(results[MIToS_ZSCORE]) 1.0
 
-# let data = readdlm(gao11_buslje09("MI_clustering")); results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=false)
-#   @test_approx_eq_eps maximum(abs(convert(Vector{Float64}, data[:, SCORE]) .- matrix2list(results[2]))) 0.0 0.000001
-#   @test cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[3])) > 0.90
+  println("Pearson for Z-score: ", cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])))
+ end
 
-#   println(cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[3])))
-# end
+# # APC is very different now we are using the diagonal
 
 # let data = readdlm(gao11_buslje09("MI_APC")); results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=true)
 #   #@test_approx_eq_eps maximum(abs(convert(Vector{Float64}, data[:, SCORE]) .- matrix2list(results[2]))) 0.0 0.000001
