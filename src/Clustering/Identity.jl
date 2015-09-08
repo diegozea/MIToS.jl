@@ -1,6 +1,21 @@
 # Calculates percent identity of two aligned sequences
 # No account of the positions with gaps in both sequences in the length
 """
+seq1 and seq2 should have the same len
+"""
+function _percentidentity(seq1, seq2, len)
+  count = zero(Int)
+  colgap = zero(Int)
+  @inbounds for i in 1:len
+    if seq1[i] == seq2[i]
+      count += one(Int)
+      colgap += Int(seq1[i] == GAP)
+    end
+  end
+  (count-colgap)/(len-colgap)
+end
+
+"""
 Calculates the identity value between two aligned sequences.
 
 The identity value is calculated as the number of identical characters in the i-th position of both
@@ -13,15 +28,7 @@ function percentidentity(seq1, seq2)
   if len != length(seq2)
      throw(ErrorException("Sequences of different length, they aren't aligned or don't come from the same alignment"))
   end
-  count = zero(Int)
-  colgap = zero(Int)
-  for i in 1:len
-    if seq1[i] == seq2[i]
-      count += one(Int)
-      colgap += Int(seq1[i] == GAP)
-    end
-  end
-  (count-colgap)/(len-colgap)
+  _percentidentity(seq1, seq2, len)
 end
 
 """
@@ -57,4 +64,38 @@ function percentidentity(seq1, seq2, threshold::Float64)
     end
   end
   (count/n) >= threshold
+end
+
+# % id for a MSA
+# ==============
+
+"""
+aln should be transpose(msa)
+"""
+function _percentidentity_kernel!(scores, aln, nseq, len)
+  @inbounds for i in 1:nseq
+    a = aln[i]
+    for j in i:nseq
+      if i == j
+        scores[i,j] = 100.0
+        continue
+      end
+      scores[i,j] = _percentidentity(a, aln[j], len) * 100.0
+    end
+  end
+  scores
+end
+
+"""
+Calculates the identity between all the sequences on a MSA.
+You can indicate the output element type with the last optional parameter (`Float64` by default).
+For a MSA with a lot of sequences, you can use `Float32` or `Flot16` in order to avoid the `OutOfMemoryError()`.
+"""
+function percentidentity{T}(msa::AbstractMatrix{Residue}, out::Type{T}=Float64)
+  aln = getresiduesequences(msa)
+  nseq = length(aln)
+  len = length(aln[1])
+  scores = spzeros(T, nseq, nseq)
+  _percentidentity_kernel!(scores, aln, nseq, len)
+  Symmetric(scores)
 end
