@@ -16,6 +16,27 @@ const MIToS_ZSCORE = 5
 
 print("""
 
+Test APC!
+=========
+""")
+
+let MI = [ 0 2 4
+           2 0 6
+           4 6 0 ]
+
+  mean_col = Information._mean_column(MI)
+  mean_tot = Information._mean_total(MI)
+  @test mean_col == [3., 4., 5.]
+  @test mean_tot == 4.
+
+  MIp = APC!(convert(Matrix{Float64}, MI))
+  @test_approx_eq MIp [  NaN -1.0  0.25
+                        -1.0  NaN  1.00
+                        0.25 1.00   NaN ]
+end
+
+print("""
+
 Simple examples
 ===============
 """)
@@ -76,11 +97,16 @@ let aln = Residue[ 'A' 'A'
   let zerodiagonal = Float64[ 0.0 total
                              total 0.0 ]
 
-    mimean = mean(zerodiagonal) # MI.. == MI.j == MIi. == Mean
-    # APC = (mimean * mimean) / mimean == mimean
+    # MI.. == MI.j == MIi. == total
+    # APC = (total * total) / total == total
+    # MI - APC == total - total == 0.0
     APC!(zerodiagonal)
-    @test_approx_eq zerodiagonal[1,2] mimean
+    @test_approx_eq zerodiagonal[1,2] 0.0
   end
+
+  APC!(mi)
+  @test isnan(mi[1,1])
+  @test_approx_eq_eps mi[1,2] 0.0 1e-16
 
   print("""
 
@@ -89,9 +115,8 @@ let aln = Residue[ 'A' 'A'
   # 2 Possibilities:  A A   A A
   #                   A R   R A
   # Is almost the same MI, Z score should be 0.0
-  results = buslje09(aln, lambda=0.05, clustering=false, apc=true)
-  @test results[MIToS_ZSCORE] == [ 0.0 0.0
-                                   0.0 0.0 ]
+  results = buslje09(aln, lambda=0.05, clustering=false, apc=false)
+  @test_approx_eq results[MIToS_ZSCORE][1,2] 0.0
 
 end
 
@@ -149,13 +174,16 @@ let aln = Residue[ 'R' 'A'
   let zerodiagonal = Float64[ 0.0 total
                              total 0.0 ]
 
-    mimean = mean(zerodiagonal) # MI.. == MI.j == MIi. == Mean
-    # APC = (mimean * mimean) / mimean == mimean
+    # MI.. == MI.j == MIi. == total
+    # APC = (total * total) / total == total
+    # MI - APC == total - total == 0.0
     APC!(zerodiagonal)
-    @test_approx_eq zerodiagonal[1,2] mimean
+    @test_approx_eq zerodiagonal[1,2] 0.0
   end
 
   APC!(mi)
+  @test isnan(mi[1,1])
+  @test_approx_eq mi[1,2] 0.0
 
   print("""
 
@@ -163,19 +191,23 @@ let aln = Residue[ 'R' 'A'
   """)
   # 4 Possibilities:  R A   R A   A R   A R
   #                   A R   R A   A R   R A
+  mi = estimateincolumns(aln, Float64, ResidueProbability{Float64, 2, false}, MutualInformation{Float64}(), AdditiveSmoothing(0.05))
   other_posib = Residue[ 'A' 'R'
                          'A' 'R' ]
   other_mi = estimateincolumns(other_posib, Float64, ResidueProbability{Float64, 2, false}, MutualInformation{Float64}(), AdditiveSmoothing(0.05))
-  APC!(other_mi)
   # The mean should be:
   r_mean = 0.5 * ( mi[1,2] + other_mi[1,2] )
-  @test_approx_eq_eps mean(Float64[[mi[1,2], other_mi[1,2]][rand(1:2)] for i in 1:100]) r_mean 1e-15
   # And the std should be similar to:
   r_std = 0.5 * ( sqrt((mi[1,2]-r_mean)^2) + sqrt((other_mi[1,2]-r_mean)^2) )
-  @test_approx_eq_eps std(Float64[[mi[1,2], other_mi[1,2]][rand(1:2)] for i in 1:100]) r_std 1e-15
-  @test isapprox(r_std + 1.0, 1.0) # This is approx 0.0, so...
-  results = buslje09(aln, lambda=0.05, clustering=false, apc=true)
-  @test isnan(results[MIToS_ZSCORE][1,2]) # ...the Z score is NaN
+
+  results = buslje09(aln, lambda=0.05, clustering=false, apc=false, samples=100)
+  @test_approx_eq_eps results[MIToS_ZSCORE][1,2] ((mi[1,2] - r_mean) / r_std) 0.5
+
+  results = buslje09(aln, lambda=0.05, clustering=false, apc=false, samples=1000)
+  @test_approx_eq_eps results[MIToS_ZSCORE][1,2] ((mi[1,2] - r_mean) / r_std) 0.1
+
+  results = buslje09(aln, lambda=0.05, clustering=false, apc=false, samples=10000)
+  @test_approx_eq_eps results[MIToS_ZSCORE][1,2] ((mi[1,2] - r_mean) / r_std) 0.05
 
 end
 
@@ -185,13 +217,15 @@ Results from Buslje et. al 2009
 ===============================
 """)
 
+println("""
+MI
+""")
+
 let data = readdlm(joinpath(pwd(), "data", "data_simple_soft_Busljeetal2009_measure_MI.txt")); results = buslje09(joinpath(pwd(),
            "data", "simple.fasta"), FASTA, lambda=0.0, clustering=false, apc=false)
 
   @test_approx_eq_eps Float64(data[1, SCORE]) results[MIToS_SCORE][1,2]  0.000001
   @test_approx_eq_eps Float64(data[1, ZSCORE]) results[MIToS_ZSCORE][1,2]  0.5
-
-  println("Pearson for Z-score: ", cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])))
 end
 
 let data = readdlm(gao11_buslje09("MI")); results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=false)
@@ -202,20 +236,32 @@ let data = readdlm(gao11_buslje09("MI")); results = buslje09(Gaoetal2011, FASTA,
   println("Pearson for Z-score: ", cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])))
 end
 
+@test_approx_eq_eps buslje09(Gaoetal2011, FASTA, lambda=0.05, clustering=false, apc=false)[MIToS_SCORE][1,2] 0.33051006116310444 1e-14
+
+println("""
+MI + clustering
+""")
+
 let data = readdlm(gao11_buslje09("MI_clustering")); results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=false)
 
   @test_approx_eq_eps convert(Vector{Float64}, data[:, SCORE]) matrix2list(results[MIToS_SCORE]) 1e-6
   @test_approx_eq_eps convert(Vector{Float64}, data[:, ZSCORE]) matrix2list(results[MIToS_ZSCORE]) 1.0
 
   println("Pearson for Z-score: ", cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])))
- end
+end
 
-# # APC is very different now we are using the diagonal
+println("""
+MIp
+""")
 
-# let data = readdlm(gao11_buslje09("MI_APC")); results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=true)
-#   #@test_approx_eq_eps maximum(abs(convert(Vector{Float64}, data[:, SCORE]) .- matrix2list(results[2]))) 0.0 0.000001
-#   @test cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[3])) > 0.90
+let data = readdlm(gao11_buslje09("MI_APC")); results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=true)
 
-#   println(cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[3])))
-# end
+  @test_approx_eq_eps convert(Vector{Float64}, data[:, SCORE]) matrix2list(results[MIToS_SCORE]) 0.2
+  @test_approx_eq_eps convert(Vector{Float64}, data[:, ZSCORE]) matrix2list(results[MIToS_ZSCORE]) 3.0
+
+  @test_approx_eq_eps results[MIToS_SCORE][5,6] 0.018484 0.000001
+
+  println("Pearson for MIp: ", cor(convert(Vector{Float64}, data[:, SCORE]), matrix2list(results[MIToS_SCORE])))
+  println("Pearson for Z-score: ", cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])))
+end
 

@@ -22,7 +22,7 @@ end
 
 function _buslje09(aln, usegap, clusters, lambda, apc)
   mi = estimateincolumns(aln, ResidueCount{Float64, 2, usegap}, MutualInformation{Float64}(),
-                         AdditiveSmoothing{Float64}(lambda), clusters)
+                         AdditiveSmoothing{Float64}(lambda), clusters, false)
   if apc
     APC!(mi)
   end

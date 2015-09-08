@@ -145,3 +145,24 @@ function matrix2list{T}(mat::AbstractMatrix{T}; part="upper", diagonal::Bool=fal
   end
   list
 end
+
+
+"""
+Returns a square symmetric matrix from the vector `vec`.
+`side` is the number of rows/columns.
+The `diagonal` is not included by default, set to `true` if the diagonal elements are in the list.
+"""
+function list2matrix{T}(vec::AbstractVector{T}, side::Int; diagonal::Bool=false)
+  d = diagonal ? 0 : 1
+  mat = zeros(T, side, side)
+  k = 1
+  for i in 1:(side-d)
+    for j in (i+d):side
+      value = vec[k]
+      mat[i, j] = value
+      mat[j, i] = value
+      k += 1
+    end
+  end
+  mat
+end
