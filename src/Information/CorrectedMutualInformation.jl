@@ -47,7 +47,7 @@ function buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
                                usegap::Bool=false, fixedgaps::Bool=true)
   used = gappercentage(aln,1) .<= maxgap
   aln = filtercolumns(aln, used)
-  clusters = clustering ? hobohmI(aln, threshold) : 1
+  clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
   mi = _buslje09(aln, usegap, clusters, lambda, apc)
   rand_mi = Array(Float64, size(mi, 1), size(mi, 2), samples)
   for ns in 1:samples

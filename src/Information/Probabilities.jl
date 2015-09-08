@@ -1,7 +1,7 @@
 import  Base: zero, one, zeros, start, next, done, length, eltype,
         size, setindex!, getindex, similar, fill!, count #, print # , copy, deepcopy, fill!, getindex, setindex!
 
-typealias SequenceWeights Union(Int, Clusters, AbstractVector)
+typealias SequenceWeights Union(Clusters, NoClustering, AbstractVector)
 
 # Counts and Pseudocounts
 
@@ -221,7 +221,7 @@ for (usegap, testgap) in [ (:(true),:()), (:(false),:(aa == Int(GAP) && continue
       update!(n)
     end
 
-    count!{T}(n::ResidueCount{T, 1, $(usegap)}, res::AbstractVector{Residue}) = count!(n, one(T), res)
+    count!{T}(n::ResidueCount{T, 1, $(usegap)}, res::AbstractVector{Residue}) = count!(n, NoClustering(), res)
 
   end
 end
@@ -244,8 +244,8 @@ function count!{T}(n::ResidueCount{T, 2, false}, weights, res1::AbstractVector{R
   update!(n)
 end
 
-count!{T}(n::ResidueCount{T, 2, true}, res1::AbstractVector{Residue}, res2::AbstractVector{Residue}) = count!(n, one(T), res1, res2)
-count!{T}(n::ResidueCount{T, 2, false},res1::AbstractVector{Residue}, res2::AbstractVector{Residue}) = count!(n, one(T), res1, res2)
+count!{T}(n::ResidueCount{T, 2, true}, res1::AbstractVector{Residue}, res2::AbstractVector{Residue}) = count!(n, NoClustering(), res1, res2)
+count!{T}(n::ResidueCount{T, 2, false},res1::AbstractVector{Residue}, res2::AbstractVector{Residue}) = count!(n, NoClustering(), res1, res2)
 
 function count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, weights, res::AbstractVector{Residue}...)
   if length(res) == N
@@ -261,20 +261,20 @@ function count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, weights, res::Abstr
   end
 end
 
-count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, res::AbstractVector{Residue}...) = count!(n, one(T), res...)
+count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, res::AbstractVector{Residue}...) = count!(n, NoClustering(), res...)
 
 #### Default counters
 
-"""```count(res::AbstractVector{Residue}...; usegap=false, weight=1)```
-```count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=1)```
+"""```count(res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())```
+```count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())```
 
 `count` creates a new ResidueCount counting the number of residues, pairs of residues, etc. in the sequences/columns.
 """
 count(res::AbstractVector{Residue}...; usegap::Bool=false,
-	weight::SequenceWeights=1) = count!(zeros(ResidueCount{Float64, length(res), usegap}), weight, res...)
+	weight::SequenceWeights=NoClustering()) = count!(zeros(ResidueCount{Float64, length(res), usegap}), weight, res...)
 
 count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap::Bool=false,
-	weight::SequenceWeights=1) = apply_pseudocount!(count!(zeros(ResidueCount{Float64, length(res), usegap}), weight, res...), pseudocount)
+	weight::SequenceWeights=NoClustering()) = apply_pseudocount!(count!(zeros(ResidueCount{Float64, length(res), usegap}), weight, res...), pseudocount)
 
 ## Probabilities
 
@@ -426,19 +426,19 @@ end
 
 ## Default probabilities
 
-"""```probabilities(res::AbstractVector{Residue}...; usegap=false, weight=1)```
-```probabilities(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=1)```
+"""```probabilities(res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())```
+```probabilities(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())```
 
 `probabilities` creates a new ResidueProbability with the probabilities of residues, pairs of residues, etc. in the sequences/columns.
 """
 probabilities{T}(::Type{T}, res::AbstractVector{Residue}...; usegap::Bool=false,
-	weight::SequenceWeights=1) = fill!(ResidueProbability{T, length(res), usegap}(), count(res..., usegap=usegap, weight=weight))
+	weight::SequenceWeights=NoClustering()) = fill!(ResidueProbability{T, length(res), usegap}(), count(res..., usegap=usegap, weight=weight))
 
 probabilities{T}(::Type{T}, pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap::Bool=false,
-	weight::SequenceWeights=1) = fill!(ResidueProbability{T, length(res), usegap}(), count(pseudocount, res..., usegap=usegap, weight=weight))
+	weight::SequenceWeights=NoClustering()) = fill!(ResidueProbability{T, length(res), usegap}(), count(pseudocount, res..., usegap=usegap, weight=weight))
 
 """This method use BLOSUM62 based pseudofrequencies"""
-function probabilities{T}(::Type{T}, α, β, res1::AbstractVector{Residue}, res2::AbstractVector{Residue}; weight::SequenceWeights=1)
+function probabilities{T}(::Type{T}, α, β, res1::AbstractVector{Residue}, res2::AbstractVector{Residue}; weight::SequenceWeights=NoClustering())
 	Pab = fill!(ResidueProbability{T, 2, false}(), count(res1, res2, usegap=false, weight=weight))
 	Gab = blosum_pseudofrequencies!(ResidueProbability{T, 2,false}(), Pab)
 	apply_pseudofrequencies!(Pab, Gab, α, β)

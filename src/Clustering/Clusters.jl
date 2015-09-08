@@ -1,7 +1,9 @@
 # Clusters
 # ========
 
-import MIToS.MSA: nsequences
+abstract AbstractClusters
+
+immutable NoClustering <: AbstractClusters end
 
 """
 Data structure to represent sequence clusters.
@@ -25,7 +27,7 @@ This function returns the weight of the sequence number `i`.
 getweight should be defined for any type used for `count!`/`count` in order to use his weigths.
 """
 getweight(c::Clusters, seq::Int) = c.sequenceweight[seq]
-@inline getweight(weight::Real, i::Int) = weight
+@inline getweight(weight::NoClustering, i::Int) = 1
 getweight(weights::AbstractVector, i::Int) = weights[i]
 
 nsequences(c::Clusters) = length(c.sequencecluster)

@@ -2,7 +2,9 @@ module Clustering
 
   using MIToS.MSA
 
-  export Clusters, getnclusters, getweight, nsequences,
+  import MIToS.MSA: nsequences
+
+  export AbstractClusters, NoClustering, Clusters, getnclusters, getweight, nsequences,
 
   percentidentity,
 

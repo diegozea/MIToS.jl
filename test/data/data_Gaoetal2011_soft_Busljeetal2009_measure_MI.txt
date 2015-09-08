@@ -1,13 +1,13 @@
-# mutualinfo_matrix_NEWCLUSTER_pseudocount_zscore_row_w -fsa Gaoetal2011.fasta -seed 42 -apc -c -lc 0
-# Thu Sep  3 15:30:12 2015
+# ./mi_soft/src/mutualinfo_matrix_cluster_pseudocount_zscore_row_w_2015 -fsa Gaoetal2011.fasta -seed 42 -c -lc 0 -apc
+# Mon Sep  7 23:03:31 2015
 # User: diego
 # PWD : /home/diego
 # Host: Linux SIRRAH 3.19.0-26-generic x86_64
 # -fsa     1                    Input is fasta format
 # -seed    42                   Seed for random number [=0 time, <0 Default]
-# -apc     0                    Use APC correction [default on]
 # -c       0                    Sequence clustering [default on]
 # -lc      0.000000             Low count value
+# -apc     0                    Use APC correction [default on]
 # Command line parameters set to:
 #	[-c]                 0                    Sequence clustering [default on]
 #	[-t float]           0.000000             Threshold
