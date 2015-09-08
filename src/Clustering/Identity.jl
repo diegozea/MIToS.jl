@@ -11,7 +11,7 @@ Returns a value in [0, 1] range.
 function percentidentity(seq1, seq2)
   len = length(seq1)
   if len != length(seq2)
-     throw("Sequences of different length, they aren't aligned or don't come from the same alignment")
+     throw(ErrorException("Sequences of different length, they aren't aligned or don't come from the same alignment"))
   end
   count = zero(Int)
   colgap = zero(Int)
