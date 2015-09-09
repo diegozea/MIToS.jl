@@ -12,7 +12,7 @@ const SCORE = 9
 const ZSCORE = 12
 
 const MIToS_SCORE = 2
-const MIToS_ZSCORE = 5
+const MIToS_ZSCORE = 1
 
 print("""
 

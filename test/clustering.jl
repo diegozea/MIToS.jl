@@ -71,6 +71,16 @@ let fasta = read(joinpath(pwd(), "data", "Gaoetal2011.fasta"), FASTA)
   @test_approx_eq_eps id[1,6] 33.33 0.01
   @test_approx_eq_eps id[4,5] 83.33 0.01
   @test id[5,6] == 100.0
+
+  @test maximum(id) == 100.0
+  @test_approx_eq_eps minimum(id) 33.33 0.01
+
+  print("""
+  SequenceIdentityMatrix
+  """)
+  @test isapprox(sum(id[:,3]), 100.0 + 50.0 + 2*(200/6) + 2*(500/6))
+  id[4,3] = 80
+  @test isapprox(sum(id[:,3]), 100.0 + 80.0 + 2*(200/6) + 2*(500/6))
 end
 
 let aln = read(joinpath(pwd(), "data", "gaps.txt"), Raw)
@@ -79,5 +89,5 @@ let aln = read(joinpath(pwd(), "data", "gaps.txt"), Raw)
   @test id[1,1] == 100.0
   @test id[1,2] == 90.0
   @test id[1,3] == 80.0
-  @test_approx_eq id[2,3]  ((8/9) * 100.0)
+  @test_approx_eq id[2,3] 800/9
 end
