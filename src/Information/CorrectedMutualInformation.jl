@@ -20,9 +20,12 @@ function calculatezscore{T,N}(value::AbstractArray{T,N}, average::AbstractArray{
   zscore
 end
 
+# Busjle et. al. 2009
+# ===================
+
 function _buslje09(aln, usegap, clusters, lambda, apc)
   mi = estimateincolumns(aln, ResidueCount{Float64, 2, usegap}, MutualInformation{Float64}(),
-                         AdditiveSmoothing{Float64}(lambda), clusters)
+                         AdditiveSmoothing{Float64}(lambda), clusters, false)
   if apc
     APC!(mi)
   end
@@ -30,16 +33,28 @@ function _buslje09(aln, usegap, clusters, lambda, apc)
 end
 
 """
-#	[-c]                 1                    Sequence clustering [default on]
-#	[-i float]           0.620000             Percent id for clustering
-#	[-lc float]          0.050000             Low count value
-#	[-ns int]            100                  Number of samples for Z-score
+This function takes a MSA or a file and a `Format` as first arguments.
+Calculates a Z score and a corrected MI/MIp as described on **Busjle et. al. 2009**
 
-# [-xg]                1                    Exclude gaps from statistics [default on]
-# [-fixg]              1                    Fixed gaps [default on]
+Argument, type, default value and descriptions:
 
-# [-apc]               1                    Use APC correction [default on]
-#	[-maxgap float]      0.500000             Max fraction of gaps in positions included in calculation
+  - lambda      Float64   0.05    Low count value
+  - clustering  Bool      true    Sequence clustering (Hobohm I)
+  - threshold   Float64   0.62    Percent identity threshold for clustering
+  - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation
+  - apc         Bool      true    Use APC correction (MIp)
+  - usegap      Bool      false   Exclude gaps from statistics
+  - samples     Int       100     Number of samples for Z-score
+  - fixedgaps   Bool      true    Fix gaps positions for the random samples
+
+
+This function returns 5 arrays:
+
+  - Z score
+  - MI or MIp
+  - Mean of MI/MIp on the random samples
+  - Standard deviation of MI/MIp on the random samples
+  - List of used columns
 """
 function buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
                                clustering::Bool=true, threshold::Float64=0.62,
@@ -47,7 +62,7 @@ function buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
                                usegap::Bool=false, fixedgaps::Bool=true)
   used = gappercentage(aln,1) .<= maxgap
   aln = filtercolumns(aln, used)
-  clusters = clustering ? hobohmI(aln, threshold) : 1
+  clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
   mi = _buslje09(aln, usegap, clusters, lambda, apc)
   rand_mi = Array(Float64, size(mi, 1), size(mi, 2), samples)
   for ns in 1:samples
@@ -56,14 +71,14 @@ function buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
   end
   rand_mean = squeeze(mean(rand_mi,3),3)
   rand_sd = squeeze(std(rand_mi,3),3)
-  (collect(1:ncolumns(aln))[used],mi, rand_mean, rand_sd, calculatezscore(mi, rand_mean, rand_sd))
+  (calculatezscore(mi, rand_mean, rand_sd), mi, rand_mean, rand_sd, collect(1:ncolumns(aln))[used])
 end
 
 buslje09(aln::MultipleSequenceAlignment; kargs...) = buslje09(aln.msa; kargs...)
 
 function buslje09(aln::AnnotatedMultipleSequenceAlignment; kargs...)
-  used, mi, rand_mean, rand_sd, zscore = buslje09(aln.msa; kargs...)
-  (getcolumnmapping(aln)[used], mi, rand_mean, rand_sd, zscore)
+  zscore, mi, rand_mean, rand_sd, used = buslje09(aln.msa; kargs...)
+  (zscore, mi, rand_mean, rand_sd, getcolumnmapping(aln)[used])
 end
 
 function buslje09{T <: Format}(filename::AbstractString, format::Type{T}; kargs...)

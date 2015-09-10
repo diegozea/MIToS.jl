@@ -49,7 +49,9 @@ select_element
 @test_throws ErrorException select_element([])
 
 print("""
+
 matrix2list
+-----------
 """)
 
 let mat = [ 1 2 3
@@ -60,6 +62,20 @@ let mat = [ 1 2 3
   @test matrix2list(mat, diagonal=true) == [1, 2, 3, 5, 6, 9]
   @test matrix2list(mat, part="lower") == [4, 7, 8]
   @test matrix2list(mat, part="lower", diagonal=true) == [1, 4, 7, 5, 8, 9]
+end
+
+print("""
+
+list2matrix
+-----------
+""")
+
+let mat = [ 1 2 3
+            2 5 6
+            3 6 9 ]
+
+  @test triu(list2matrix([2, 3, 6], 3), 1) == triu(mat, 1)
+  @test list2matrix([1, 2, 3, 5, 6, 9], 3, diagonal=true) == mat
 end
 
 print("""
