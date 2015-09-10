@@ -52,6 +52,16 @@ let code = "1SSX"
   pdb = read(txt(code), PDBFile)
   pdbml = read(xml(code), PDBML)
 
+  @test findobjects(pdbml, Is(:number, "15A"))[1] == 1
+  @test findobjects(pdbml, Is(:number, "15B"))[1] == 2
+
+  print("""
+  Occupancy != 1.0
+  """)
+  @test sum([ get(occ,0) for occ in  collectcaptures(collectobjects(pdbml, Is(:number, "141"))[1].atoms, :occupancy, Is(:atom, "HH22")) ]) == 1.0
+  #@test @residues pdb model "*" chain "*" residue "141" == collectobjects(pdb, Is(:number, "141"))
+
+  #@test sum( @atoms pdbml model "1" chain "A" residue "141" atom "HH22" occupancy ) == 1
 end
 
 print("""

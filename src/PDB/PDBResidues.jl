@@ -18,7 +18,7 @@ end
 
 @auto_hash_equals immutable PDBAtom
   coordinates::Coordinates
-  atomid::ASCIIString
+  atom::ASCIIString
   element::ASCIIString
   occupancy::Float64
   B::ASCIIString
@@ -78,6 +78,45 @@ isobject(res::PDBResidue, tests::AbstractTest...) = isobject(res.id, tests...)
 
 findobjects(res::PDBResidue, tests::AbstractTest...) = findobjects(res.atoms, tests...)
 
+# @residues
+# =========
+
+_test_string(field::Symbol, test::Real) = Is(field, string(test))
+_test_string(field::Symbol, test::Union(Char, Symbol)) = Is(field, string(test))
+_test_string(field::Symbol, test::Union(ASCIIString, Regex, Function)) = Is(field, test)
+_test_string(field::Symbol, test::Union(UnitRange, IntSet, Set, Array, Base.KeyIterator)) = In(field, test)
+
+_is_wildcard(test::ASCIIString) = test == "*"
+_is_wildcard(test::Char) = test == '*'
+_is_wildcard(test) = false
+
+macro residues(pdb,
+               model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
+               chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
+               residue::Symbol, r)
+  args = TestType[]
+  if model == :model && !_is_wildcard(@eval($m))
+    push!(args, @eval( _test_string(:model, $m)))
+  end
+  if chain == :chain && !_is_wildcard(@eval($c))
+    push!(args, @eval( _test_string(:chain, $c)))
+  end
+  if residue == :residue && !_is_wildcard(@eval($r))
+    push!(args, @eval( _test_string(:number, $r)))
+  end
+  collectobjects(@eval($pdb), args...)
+end
+
+# @atoms
+# ======
+
+# macro atoms(pdb, model, m, chain, c, residue, r, atom, a, select)
+
+# end
+
+# Special find...
+# ===============
+
 function findheavy(res::PDBResidue)
   N = length(res)
   indices = Array(Int,N)
@@ -91,12 +130,12 @@ function findheavy(res::PDBResidue)
   resize!(indices, j)
 end
 
-function findatoms(res::PDBResidue, atomid::ASCIIString)
+function findatoms(res::PDBResidue, atom::ASCIIString)
   N = length(res)
   indices = Array(Int,N)
   j = 0
   @inbounds for i in 1:N
-    if res.atoms[i].atomid == atomid
+    if res.atoms[i].atom == atom
       j += 1
       indices[j] = i
     end
@@ -111,7 +150,7 @@ function findCB(res::PDBResidue)
   atom = res.residueid.name == "GLY" ? "CA" : "CB"
   j = 0
   @inbounds for i in 1:N
-    if res.atoms[i].atomid == atom
+    if res.atoms[i].atom == atom
       j += 1
       indices[j] = i
     end
@@ -294,8 +333,8 @@ function show(io::IO, id::PDBResidueIdentifier)
 end
 
 function show(io::IO, atom::PDBAtom)
-  printfmt(io, _Format_ATOM, "coordinates", "atomid", "element", "occupancy", "B")
-  printfmt(io, _Format_ATOM, atom.coordinates, string('"',atom.atomid,'"'), string('"',atom.element,'"'),
+  printfmt(io, _Format_ATOM, "coordinates", "atom", "element", "occupancy", "B")
+  printfmt(io, _Format_ATOM, atom.coordinates, string('"',atom.atom,'"'), string('"',atom.element,'"'),
            atom.occupancy, string('"',atom.B,'"'))
 end
 
@@ -307,8 +346,8 @@ function show(io::IO, res::PDBResidue)
   len = length(res)
   println(io, "\tatoms::Vector{PDBAtom}\tlength: ", len)
   for i in 1:len
-    printfmt(io, _Format_ATOM_Res, "", "coordinates", "atomid", "element", "occupancy", "B")
-    printfmt(io, _Format_ATOM_Res, string(i,":"), res.atoms[i].coordinates, string('"',res.atoms[i].atomid,'"'),
+    printfmt(io, _Format_ATOM_Res, "", "coordinates", "atom", "element", "occupancy", "B")
+    printfmt(io, _Format_ATOM_Res, string(i,":"), res.atoms[i].coordinates, string('"',res.atoms[i].atom,'"'),
              string('"',res.atoms[i].element,'"'), res.atoms[i].occupancy, string('"',res.atoms[i].B,'"'))
   end
 end

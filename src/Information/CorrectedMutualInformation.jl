@@ -61,6 +61,7 @@ function buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
                                maxgap::Float64=0.5, apc::Bool=true, samples::Int=100,
                                usegap::Bool=false, fixedgaps::Bool=true)
   used = gappercentage(aln,1) .<= maxgap
+  ncol = ncolumns(aln)
   aln = filtercolumns(aln, used)
   clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
   mi = _buslje09(aln, usegap, clusters, lambda, apc)
@@ -71,7 +72,7 @@ function buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
   end
   rand_mean = squeeze(mean(rand_mi,3),3)
   rand_sd = squeeze(std(rand_mi,3),3)
-  (calculatezscore(mi, rand_mean, rand_sd), mi, rand_mean, rand_sd, collect(1:ncolumns(aln))[used])
+  (calculatezscore(mi, rand_mean, rand_sd), mi, rand_mean, rand_sd, collect(1:ncol)[used])
 end
 
 buslje09(aln::MultipleSequenceAlignment; kargs...) = buslje09(aln.msa; kargs...)

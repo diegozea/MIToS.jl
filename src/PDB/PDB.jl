@@ -27,7 +27,9 @@ module PDB
   #getpdbatoms,
 
   # Mitos.Utils
-  isobject, findobjects, Is, Not, In
+  isobject, findobjects, Is, Not, In, collectobjects, collectcaptures,
+
+  @residues
 
   include("AtomsData.jl")
   include("PDBResidues.jl")

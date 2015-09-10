@@ -1,18 +1,18 @@
-_with_vdw(a::PDBAtom) = (a.residueid.name, a.atomid) in keys(vanderwaalsradius)
+_with_vdw(a::PDBAtom) = (a.residueid.name, a.atom) in keys(vanderwaalsradius)
 
 _with_cov(a::PDBAtom) = a.element in keys(covalentradius)
 
-ishydrophobic(a::PDBAtom) = (a.residueid.name, a.atomid) in _hydrophobic
+ishydrophobic(a::PDBAtom) = (a.residueid.name, a.atom) in _hydrophobic
 
-isaromatic(a::PDBAtom) = (a.residueid.name, a.atomid) in _aromatic
+isaromatic(a::PDBAtom) = (a.residueid.name, a.atom) in _aromatic
 
-iscationic(a::PDBAtom) = (a.residueid.name, a.atomid) in _cationic
+iscationic(a::PDBAtom) = (a.residueid.name, a.atom) in _cationic
 
-isanionic(a::PDBAtom) = (a.residueid.name, a.atomid) in _anionic
+isanionic(a::PDBAtom) = (a.residueid.name, a.atom) in _anionic
 
-ishbonddonor(a::PDBAtom) = (a.residueid.name, a.atomid) in keys(_hbond_donor)
+ishbonddonor(a::PDBAtom) = (a.residueid.name, a.atom) in keys(_hbond_donor)
 
-ishbondacceptor(a::PDBAtom) = (a.residueid.name, a.atomid) in keys(_hbond_acceptor)
+ishbondacceptor(a::PDBAtom) = (a.residueid.name, a.atom) in keys(_hbond_acceptor)
 
 """Test if the function f is true for any pair of atoms between the residues a and b,
 only test atoms that returns true for the fuction criteria"""
@@ -40,8 +40,8 @@ end
 """Returns dist <= 0.5 if the atoms aren't in vanderwaalsradius"""
 function vanderwaals(a::PDBAtom, b::PDBAtom)
   return( distance(a,b) <= 0.5 +
-          get(vanderwaalsradius, (a.residueid.name, a.atomid), 0.0) +
-          get(vanderwaalsradius, (b.residueid.name, b.atomid), 0.0) )
+          get(vanderwaalsradius, (a.residueid.name, a.atom), 0.0) +
+          get(vanderwaalsradius, (b.residueid.name, b.atom), 0.0) )
 end
 
 vanderwaals(a::PDBResidue, b::PDBResidue) = any(vanderwaals, a, b, _with_vdw)
@@ -51,8 +51,8 @@ vanderwaals(a::PDBResidue, b::PDBResidue) = any(vanderwaals, a, b, _with_vdw)
 
 """Returns dist = 0.0 if the atoms aren't in vanderwaalsradius"""
 function vanderwaalsclash(a::PDBAtom, b::PDBAtom)
-  return( distance(a,b) <= get(vanderwaalsradius, (a.residueid.name, a.atomid), 0.0) +
-          get(vanderwaalsradius, (b.residueid.name, b.atomid), 0.0) )
+  return( distance(a,b) <= get(vanderwaalsradius, (a.residueid.name, a.atom), 0.0) +
+          get(vanderwaalsradius, (b.residueid.name, b.atom), 0.0) )
 end
 
 vanderwaalsclash(a::PDBResidue, b::PDBResidue) = any(vanderwaalsclash, a, b, _with_vdw)
@@ -153,12 +153,12 @@ hydrophobic(a::PDBResidue, b::PDBResidue) = any(hydrophobic, a, b, ishydrophobic
 # --------------
 
 function _find_antecedent(res::PDBResidue, a::PDBAtom)
-  ids = _hbond_acceptor[(a.residueid.name, a.atomid)]
+  ids = _hbond_acceptor[(a.residueid.name, a.atom)]
   N = length(res)
   indices = Array(Int,N)
   j = 0
   @inbounds for i in 1:N
-    if res.atoms[i].atomid in ids
+    if res.atoms[i].atom in ids
        # && (res.atoms[i].element != "H") && (res.atoms[i] != a) && covalent(res.atoms[i], a)
       j += 1
       indices[j] = i
@@ -168,12 +168,12 @@ function _find_antecedent(res::PDBResidue, a::PDBAtom)
 end
 
 function _find_h(res::PDBResidue, a::PDBAtom)
-  ids = _hbond_donor[(a.residueid.name, a.atomid)]
+  ids = _hbond_donor[(a.residueid.name, a.atom)]
   N = length(res)
   indices = Array(Int,N)
   j = 0
   @inbounds for i in 1:N
-    if res.atoms[i].atomid in ids
+    if res.atoms[i].atom in ids
       j += 1
       indices[j] = i
     end
