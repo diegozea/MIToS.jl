@@ -55,13 +55,16 @@ let code = "1SSX"
   @test findobjects(pdbml, Is(:number, "15A"))[1] == 1
   @test findobjects(pdbml, Is(:number, "15B"))[1] == 2
 
+  @test findobjects(pdb, Is(:number, "15A"))[1] == 1
+  @test findobjects(pdb, Is(:number, "15B"))[1] == 2
+
+#  @test (@residues pdb model "*" chain "*" residue "141")[1] == collectobjects(pdb, Is(:number, "141"))[1]
+
   print("""
   Occupancy != 1.0
   """)
   @test sum([ get(occ,0) for occ in  collectcaptures(collectobjects(pdbml, Is(:number, "141"))[1].atoms, :occupancy, Is(:atom, "HH22")) ]) == 1.0
-  #@test @residues pdb model "*" chain "*" residue "141" == collectobjects(pdb, Is(:number, "141"))
-
-  #@test sum( @atoms pdbml model "1" chain "A" residue "141" atom "HH22" occupancy ) == 1
+#  @test sum( [ atom.occupancy for atom in @atoms pdbml model "1" chain "A" residue "141" atom "HH22" ] ) == 1.0
 end
 
 print("""

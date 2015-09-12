@@ -81,38 +81,59 @@ findobjects(res::PDBResidue, tests::AbstractTest...) = findobjects(res.atoms, te
 # @residues
 # =========
 
-_test_string(field::Symbol, test::Real) = Is(field, string(test))
-_test_string(field::Symbol, test::Union(Char, Symbol)) = Is(field, string(test))
-_test_string(field::Symbol, test::Union(ASCIIString, Regex, Function)) = Is(field, test)
-_test_string(field::Symbol, test::Union(UnitRange, IntSet, Set, Array, Base.KeyIterator)) = In(field, test)
+_test_stringfield(field::Symbol, test::Real) = Is(field, string(test))
+_test_stringfield(field::Symbol, test::Union(Char, Symbol)) = Is(field, string(test))
+_test_stringfield(field::Symbol, test::Union(ASCIIString, Regex, Function)) = Is(field, test)
+_test_stringfield(field::Symbol, test::Union(UnitRange, IntSet, Set, Array, Base.KeyIterator)) = In(field, test)
 
 _is_wildcard(test::ASCIIString) = test == "*"
 _is_wildcard(test::Char) = test == '*'
 _is_wildcard(test) = false
 
-macro residues(pdb,
+function _add_test_stringfield!(tests::Vector{TestType}, field::Symbol, test)
+  if !_is_wildcard(test)
+    push!(tests, _test_stringfield(field, test))
+  end
+  tests
+end
+
+function _residues_tests(model, chain, residue)
+  args = TestType[]
+  _add_test_stringfield!(args, :model, model)
+  _add_test_stringfield!(args, :chain, chain)
+  _add_test_stringfield!(args, :number, residue)
+  args
+end
+
+macro residues(residue_list,
                model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
                chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
                residue::Symbol, r)
-  args = TestType[]
-  if model == :model && !_is_wildcard(@eval($m))
-    push!(args, @eval( _test_string(:model, $m)))
+  dump(residue_list)
+  @eval dump($residue_list)
+  if model == :model && chain == :chain && residue == :residue
+    return :(collectobjects($residue_list, _residues_tests($m, $c, $r)...))
+  else
+    throw(ArgumentError("The signature is @residues ___ model ___ chain ___ residue ___"))
   end
-  if chain == :chain && !_is_wildcard(@eval($c))
-    push!(args, @eval( _test_string(:chain, $c)))
-  end
-  if residue == :residue && !_is_wildcard(@eval($r))
-    push!(args, @eval( _test_string(:number, $r)))
-  end
-  collectobjects(@eval($pdb), args...)
 end
 
 # @atoms
 # ======
 
-# macro atoms(pdb, model, m, chain, c, residue, r, atom, a, select)
-
-# end
+macro atoms(residue_list,
+               model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
+               chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
+               residue::Symbol, r,
+               atom::Symbol, a)
+  if model == :model && chain == :chain && residue == :residue && atom == :atom
+    return :(_is_wildcard($a) ?
+               [[ res.atoms for res in collectobjects($residue_list, _residues_tests($m, $c, $r)...) ]...] :
+               [[ collectobjects(res.atoms, _test_stringfield(:atom, $a)) for res in collectobjects($residue_list, _residues_tests($m, $c, $r)...) ]...])
+  else
+    throw(ArgumentError("The signature is @atoms ___ model ___ chain ___ residue ___ atom ___"))
+  end
+end
 
 # Special find...
 # ===============
