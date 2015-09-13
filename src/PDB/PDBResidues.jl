@@ -109,10 +109,8 @@ macro residues(residue_list,
                model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
                chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
                residue::Symbol, r)
-  dump(residue_list)
-  @eval dump($residue_list)
   if model == :model && chain == :chain && residue == :residue
-    return :(collectobjects($residue_list, _residues_tests($m, $c, $r)...))
+    return :(collectobjects($(esc(residue_list)), _residues_tests($m, $c, $r)...))
   else
     throw(ArgumentError("The signature is @residues ___ model ___ chain ___ residue ___"))
   end
@@ -128,8 +126,8 @@ macro atoms(residue_list,
                atom::Symbol, a)
   if model == :model && chain == :chain && residue == :residue && atom == :atom
     return :(_is_wildcard($a) ?
-               [[ res.atoms for res in collectobjects($residue_list, _residues_tests($m, $c, $r)...) ]...] :
-               [[ collectobjects(res.atoms, _test_stringfield(:atom, $a)) for res in collectobjects($residue_list, _residues_tests($m, $c, $r)...) ]...])
+               [[ res.atoms for res in collectobjects($(esc(residue_list)), MIToS.PDB._residues_tests($m, $c, $r)...) ]...] :
+               [[ collectobjects(res.atoms, _test_stringfield(:atom, $a)) for res in collectobjects($(esc(residue_list)), _residues_tests($m, $c, $r)...) ]...])
   else
     throw(ArgumentError("The signature is @atoms ___ model ___ chain ___ residue ___ atom ___"))
   end
