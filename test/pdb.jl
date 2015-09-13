@@ -58,7 +58,15 @@ let code = "1SSX"
   @test findobjects(pdb, Is(:number, "15A"))[1] == 1
   @test findobjects(pdb, Is(:number, "15B"))[1] == 2
 
+  print("""
+  test @residues
+  """)
   @test (@residues pdb model "*" chain "*" residue "141")[1] == collectobjects(pdb, Is(:number, "141"))[1]
+  # Testing the macro in let block:
+  mo = "1"
+  ch = "A"
+  re = "141"
+  @test (@residues pdb model mo chain ch residue re)[1] == (@residues pdb model "*" chain "*" residue "141")[1]
 
   print("""
   Occupancy != 1.0
