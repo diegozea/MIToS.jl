@@ -82,9 +82,9 @@ findobjects(res::PDBResidue, tests::AbstractTest...) = findobjects(res.atoms, te
 # =========
 
 _test_stringfield(field::Symbol, test::Real) = Is(field, string(test))
-_test_stringfield(field::Symbol, test::Union(Char, Symbol)) = Is(field, string(test))
-_test_stringfield(field::Symbol, test::Union(ASCIIString, Regex, Function)) = Is(field, test)
-_test_stringfield(field::Symbol, test::Union(UnitRange, IntSet, Set, Array, Base.KeyIterator)) = In(field, test)
+_test_stringfield(field::Symbol, test::Union{Char, Symbol}) = Is(field, string(test))
+_test_stringfield(field::Symbol, test::Union{ASCIIString, Regex, Function}) = Is(field, test)
+_test_stringfield(field::Symbol, test::Union{UnitRange, IntSet, Set, Array, Base.KeyIterator}) = In(field, test)
 
 _is_wildcard(test::ASCIIString) = test == "*"
 _is_wildcard(test::Char) = test == '*'

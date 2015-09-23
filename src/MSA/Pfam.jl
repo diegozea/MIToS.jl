@@ -34,7 +34,7 @@ function _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
   end
 end
 
-function _pre_readstockholm(io::Union(IO, AbstractString))
+function _pre_readstockholm(io::Union{IO, AbstractString})
   IDS  = ASCIIString[]
   SEQS = ASCIIString[]
   GF = OrderedDict{ASCIIString,ASCIIString}()
@@ -56,7 +56,7 @@ function _pre_readstockholm(io::Union(IO, AbstractString))
   (IDS, SEQS, GF, GS, GC, GR)
 end
 
-function parse(io::Union(IO, AbstractString), format::Type{Stockholm},
+function parse(io::Union{IO, AbstractString}, format::Type{Stockholm},
                output::Type{AnnotatedMultipleSequenceAlignment}; generatemapping::Bool=false,
                useidcoordinates::Bool=false, deletefullgaps::Bool=true)
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
@@ -77,7 +77,7 @@ function parse(io::Union(IO, AbstractString), format::Type{Stockholm},
   msa
 end
 
-function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
+function parse(io::Union{IO, AbstractString}, format::Type{Stockholm}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
   # Could be faster with a special _pre_readstockholm
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
   msa = MultipleSequenceAlignment(IndexedArray(IDS), convert(Matrix{Residue}, SEQS))
@@ -87,7 +87,7 @@ function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::T
   msa
 end
 
-function parse(io::Union(IO,AbstractString), format::Type{Stockholm}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true)
+function parse(io::Union{IO,AbstractString}, format::Type{Stockholm}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true)
   # Could be faster with a special _pre_readstockholm
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
   if deletefullgaps

@@ -47,7 +47,7 @@ function _pre_readfasta(io::IO)
   (IDS, SEQS)
 end
 
-function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{AnnotatedMultipleSequenceAlignment}; generatemapping::Bool=false, useidcoordinates::Bool=false, deletefullgaps::Bool=true)
+function parse(io::Union{IO,AbstractString}, format::Type{FASTA}, output::Type{AnnotatedMultipleSequenceAlignment}; generatemapping::Bool=false, useidcoordinates::Bool=false, deletefullgaps::Bool=true)
   IDS, SEQS = _pre_readfasta(io)
   annot = Annotations()
   if generatemapping
@@ -66,7 +66,7 @@ function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{A
   msa
 end
 
-function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
+function parse(io::Union{IO,AbstractString}, format::Type{FASTA}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
   IDS, SEQS = _pre_readfasta(io)
   msa = MultipleSequenceAlignment(IndexedArray(IDS), convert(Matrix{Residue}, SEQS))
   if deletefullgaps
@@ -75,7 +75,7 @@ function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{M
   msa
 end
 
-function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true)
+function parse(io::Union{IO,AbstractString}, format::Type{FASTA}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true)
   IDS, SEQS = _pre_readfasta(io)
   if deletefullgaps
     return(deletefullgapcolumns(convert(Matrix{Residue}, SEQS)))
@@ -84,7 +84,7 @@ function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{M
   end
 end
 
-parse(io::Union(IO,AbstractString), format::Type{FASTA}; generatemapping::Bool=false,
+parse(io::Union{IO,AbstractString}, format::Type{FASTA}; generatemapping::Bool=false,
       useidcoordinates::Bool=false, deletefullgaps::Bool=true) = parse(io, FASTA,
                                                                        AnnotatedMultipleSequenceAlignment;
                                                                        generatemapping=generatemapping,

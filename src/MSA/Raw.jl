@@ -7,7 +7,7 @@ immutable Raw <: Format end
 # Raw Parser
 # ==========
 
-function parse(io::Union(IO,AbstractString), format::Type{Raw}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true)
+function parse(io::Union{IO, AbstractString}, format::Type{Raw}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true)
   SEQS = ASCIIString[]
 
   for line in eachline(io)
@@ -22,7 +22,7 @@ function parse(io::Union(IO,AbstractString), format::Type{Raw}, output::Type{Mat
   msa
 end
 
-parse(io::Union(IO,AbstractString), format::Type{Raw}; deletefullgaps::Bool=true) = parse(io, Raw, Matrix{Residue}; deletefullgaps=deletefullgaps)
+parse(io::Union{IO, AbstractString}, format::Type{Raw}; deletefullgaps::Bool=true) = parse(io, Raw, Matrix{Residue}; deletefullgaps=deletefullgaps)
 
 # Print Raw
 # =========

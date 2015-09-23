@@ -7,7 +7,7 @@ Setting `chain`, `model`, `group`, `atomname` and `onlyheavy` values
 can be used to select of a subset of all residues. Group can be ATOM
 or HETATM. If not set, all residues are returned.
 """
-function parse(io::Union(IO, ASCIIString), ::Type{PDBFile}; chain::ASCIIString = "all",
+function parse(io::Union{IO, ASCIIString}, ::Type{PDBFile}; chain::ASCIIString = "all",
                      model::ASCIIString = "all", group::ASCIIString = "all", atomname::ASCIIString="all", onlyheavy::Bool=false)
   residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
   atom_model = 0
