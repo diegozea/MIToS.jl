@@ -126,8 +126,8 @@ macro atoms(residue_list,
                atom::Symbol, a)
   if model == :model && chain == :chain && residue == :residue && atom == :atom
     return :(_is_wildcard($(esc(a))) ?
-               [[ res.atoms for res in collectobjects($(esc(residue_list)), MIToS.PDB._residues_tests($(esc(m)), $(esc(c)), $(esc(r)))...) ]...] :
-               [[ collectobjects(res.atoms, _test_stringfield(:atom, $(esc(a)))) for res in collectobjects($(esc(residue_list)), _residues_tests($(esc(m)), $(esc(c)), $(esc(r)))...) ]...])
+               collect(Vector{PDBAtom}[ res.atoms for res in collectobjects($(esc(residue_list)), MIToS.PDB._residues_tests($(esc(m)), $(esc(c)), $(esc(r)))...) ]...) :
+               collect(Vector{PDBAtom}[ collectobjects(res.atoms, _test_stringfield(:atom, $(esc(a)))) for res in collectobjects($(esc(residue_list)), _residues_tests($(esc(m)), $(esc(c)), $(esc(r)))...) ]...))
   else
     throw(ArgumentError("The signature is @atoms ___ model ___ chain ___ residue ___ atom ___"))
   end
