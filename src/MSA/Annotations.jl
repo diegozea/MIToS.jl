@@ -37,12 +37,12 @@ For filter column and sequence mapping of the format: ",,,,10,11,,12"
 _filter_mapping(str_map::ASCIIString, mask) = join(split(str_map, ',')[mask], ',')
 
 """
-`filtersequences!(data::Annotations, ids::IndexedVector, mask::AbstractArray{Bool,1})` is useful for deleting annotations for a group of sequences.
-`ids` should be an `IndexedVector` with the `seqname`s of the annotated sequences and `mask` should be a logical vector.
+`filtersequences!(data::Annotations, ids::IndexedArray, mask::AbstractArray{Bool,1})` is useful for deleting annotations for a group of sequences.
+`ids` should be an `IndexedArray` with the `seqname`s of the annotated sequences and `mask` should be a logical vector.
 """
-function filtersequences!(data::Annotations, ids::IndexedVector, mask::AbstractArray{Bool,1})
+function filtersequences!(data::Annotations, ids::IndexedArray, mask::AbstractArray{Bool,1})
   if length(data.sequences) > 0 || length(data.residues) > 0
-    del = ids.values[ !mask ]
+    del = ids[ !mask ]
     for key in keys(data.residues)
       if key[1] in del
         delete!(data.residues, key)

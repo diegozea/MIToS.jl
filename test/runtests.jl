@@ -6,7 +6,7 @@ include("utils.jl")
 include("eachlinestring.jl")
 # MSA
 include("residues.jl")
-include("indexedvectors.jl")
+include("indexedarrays.jl")
 include("annotations.jl")
 include("rawalnandgaps.jl")
 include("multiplesequencealignment.jl")

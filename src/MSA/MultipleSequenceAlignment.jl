@@ -7,12 +7,12 @@ abstract AbstractAlignedSequence <: AbstractArray{Residue,1}
 # ===========================
 
 type MultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
-  id::IndexedVector{ASCIIString}
+  id::IndexedArray{ASCIIString}
   msa::Matrix{Residue}
 end
 
 type AnnotatedMultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
-  id::IndexedVector{ASCIIString}
+  id::IndexedArray{ASCIIString}
   msa::Matrix{Residue}
   annotations::Annotations
 end
@@ -114,22 +114,22 @@ function getsequence(data::Annotations, id::ASCIIString)
 end
 
 """Returns an `AnnotatedAlignedSequence` with all annotations of sequence from the `AnnotatedMultipleSequenceAlignment`"""
-getsequence(msa::AnnotatedMultipleSequenceAlignment, i::Int) = AnnotatedAlignedSequence(selectvalue(msa.id, i), i,  vec(msa.msa[i,:]),
-                                                                                        getsequence(msa.annotations, selectvalue(msa.id, i)))
+getsequence(msa::AnnotatedMultipleSequenceAlignment, i::Int) = AnnotatedAlignedSequence(msa.id[i], i,  vec(msa.msa[i,:]),
+                                                                                        getsequence(msa.annotations, msa.id[i]))
 
 """Returns an `AlignedSequence` from the `MultipleSequenceAlignment`"""
-getsequence(msa::MultipleSequenceAlignment, i::Int) = AlignedSequence(selectvalue(msa.id, i), i,  vec(msa.msa[i,:]))
+getsequence(msa::MultipleSequenceAlignment, i::Int) = AlignedSequence(msa.id[i], i,  vec(msa.msa[i,:]))
 
 getsequence(msa::Matrix{Residue}, i::Int) = vec(msa[i,:])
 
 function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::ASCIIString)
-  i = selectindex(msa.id, id)
+  i = findfirst(msa.id, id)
   AnnotatedAlignedSequence(id, i, vec(msa.msa[i,:]),
                            getsequence(msa.annotations, id))
 end
 
 function getsequence(msa::MultipleSequenceAlignment, id::ASCIIString)
-  i = selectindex(msa.id, id)
+  i = findfirst(msa.id, id)
   AlignedSequence(id, i, vec(msa.msa[i,:]))
 end
 
@@ -148,14 +148,14 @@ function filtersequences!(msa::AnnotatedMultipleSequenceAlignment, mask::BitVect
   msa.msa = filtersequences(msa.msa, mask)
   #msa.sequencemapping = msa.sequencemapping[ mask , : ]
   filtersequences!(msa.annotations, msa.id, mask)
-  msa.id = msa.id[ mask ]
+  msa.id = IndexedArray(msa.id[ mask ])
   annotate && annotate_modification!(msa, string("filtersequences! : ", sum(~mask), " sequences have been deleted."))
   msa
 end
 
 function filtersequences!(msa::MultipleSequenceAlignment, mask::BitVector, annotate::Bool=false) # annotate is useful for calling this inside other functions
   msa.msa = filtersequences(msa.msa, mask)
-  msa.id = msa.id[ mask ]
+  msa.id = IndexedArray(msa.id[ mask ])
   msa
 end
 
@@ -258,7 +258,7 @@ This function swaps the sequences 1 and `i`, also and `id` can be used.
 function setreference!(msa::AnnotatedMultipleSequenceAlignment, i::Int, annotate::Bool=true)
   swap!(msa.id, 1, i)
   msa.msa[1, :], msa.msa[i, :] = msa.msa[i, :], msa.msa[1, :]
-  annotate && annotate_modification!(msa, string("setreference! : Using ", selectvalue(msa.id, 1)," instead of ", selectvalue(msa.id, i)," as reference."))
+  annotate && annotate_modification!(msa, string("setreference! : Using ", msa.id[1]," instead of ", msa.id[i]," as reference."))
   msa
 end
 
@@ -268,7 +268,7 @@ function setreference!(msa::MultipleSequenceAlignment, i::Int, annotate::Bool=fa
   msa
 end
 
-setreference!(msa::AbstractMultipleSequenceAlignment, id::ASCIIString, annotate::Bool=true) = setreference!(msa, selectindex(msa.id ,id), annotate)
+setreference!(msa::AbstractMultipleSequenceAlignment, id::ASCIIString, annotate::Bool=true) = setreference!(msa, findfirst(msa.id ,id), annotate)
 
 function setreference!(msa::Matrix{Residue}, i::Int, annotate::Bool=false)
   msa[1, :], msa[i, :] = msa[i, :], msa[1, :]
@@ -390,4 +390,4 @@ getcolumnmapping(msa::AnnotatedMultipleSequenceAlignment) = _str2int_mapping(get
 
 getsequencemapping(msa::AnnotatedMultipleSequenceAlignment, seq_id::ASCIIString) = _str2int_mapping(getannotsequence(msa, seq_id, "SeqMap"))
 
-getsequencemapping(msa::AnnotatedMultipleSequenceAlignment, seq_num::Int) = getsequencemapping(msa, selectvalue(msa.id, seq_num))
+getsequencemapping(msa::AnnotatedMultipleSequenceAlignment, seq_num::Int) = getsequencemapping(msa, msa.id[seq_num])

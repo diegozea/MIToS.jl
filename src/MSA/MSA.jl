@@ -1,10 +1,24 @@
 module MSA
 
   using DataStructures
+  using IndexedArrays
+
+#   "`swap!(ia::IndexedArray, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `IndexedArray`"
+#   function swap!(ia::IndexedArray, to::Int, from::Int)
+#     previous_id  = ia[to]
+#     future_id    = ia[from]
+
+#     ia.items[to]   = future_id
+#     ia.items[from] = previous_id
+
+#     ia.lookup[previous_id] = from
+#     ia.lookup[future_id]   = to
+
+#     ia
+#   end
 
   export Residue, GAP, @res_str,
-
-  IndexedVector, selectindex, selectvalue, swap!,
+  swap!,
 
   Annotations, filtersequences!, filtercolumns!, empty,
   getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
@@ -28,7 +42,6 @@ module MSA
   shuffle_columnwise!, shuffle_sequencewise!, shuffle_residues_sequencewise!, shuffle_residues_columnwise!
 
   include("Residues.jl")
-  include("IndexedVectors.jl")
   include("Annotations.jl")
   include("MultipleSequenceAlignment.jl")
   include("GeneralParserMethods.jl")

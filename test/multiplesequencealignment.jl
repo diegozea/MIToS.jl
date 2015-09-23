@@ -42,7 +42,7 @@ end
 @test size(pfam.msa, 1) == 4
 @test size(pfam.msa, 2)  == length(F112_SSV1[ F112_SSV1 .!= '.' ]) # Without inserts
 @test slice(pfam.msa,4,:) == convert(Vector{Residue}, F112_SSV1[ F112_SSV1 .!= '.' ])
-@test pfam.id.values == ["C3N734_SULIY/1-95", "H2C869_9CREN/7-104", "Y070_ATV/2-70", "F112_SSV1/3-112"]
+@test pfam.id.items == ["C3N734_SULIY/1-95", "H2C869_9CREN/7-104", "Y070_ATV/2-70", "F112_SSV1/3-112"]
 @test !isempty(pfam.annotations)
 @test length(pfam.annotations.columns) == 2
 @test length(pfam.annotations.residues) == 1
@@ -130,7 +130,7 @@ const seq6 = res"DAYCMT"
 const gaores = [seq1'; seq2'; seq3'; seq4'; seq5'; seq6']
 
 @test small.msa == gaores
-@test small.id.values == ASCIIString[ "SEQ$i" for i in 1:6 ]
+@test small.id.items == ASCIIString[ "SEQ$i" for i in 1:6 ]
 
 print("""
 Are the parsers (pfam/fasta) getting the same result?

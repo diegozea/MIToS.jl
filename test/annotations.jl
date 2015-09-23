@@ -71,9 +71,9 @@ print("""
 Filters
 -------
 """)
-filtersequences!(annot, IndexedVector(["O31698/88-139", "O31698/18-71"]), [false, true])
+filtersequences!(annot, IndexedArray(["O31698/88-139", "O31698/18-71"]), [false, true])
 @test length( getannotsequence(annot) ) == 0
-filtersequences!(annot, IndexedVector(["O31698/88-139", "O31698/18-71"]), [true, false])
+filtersequences!(annot, IndexedArray(["O31698/88-139", "O31698/18-71"]), [true, false])
 @test length( getannotresidue(annot) ) == 0
 
 mask = collect("CCCCCHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEEH") .!= 'E'
