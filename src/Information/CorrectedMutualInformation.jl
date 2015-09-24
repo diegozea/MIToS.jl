@@ -1,24 +1,24 @@
-function calculatezscore{T,N}(value::AbstractArray{T,N}, average::AbstractArray{T,N}, sd::AbstractArray{T,N}, unit::T=one(T)) # tolerance::T=eps(T))
-  zscore = similar(value)
-  if size(value) == size(average) == size(sd)
-    for i in eachindex(zscore)
-      val = value[i]
-      ave = average[i]
-      sta = sd[i]
-      if isapprox(val, ave) # abs(val - ave)  <= tolerance
-        zscore[i] = 0.0
-      elseif !isapprox(sta + unit, unit) # abs(sta) > tolerance
-        # Test for 0.0 using 1.0: 0.0 + 1.0 == 1.0
-        zscore[i] = (val - ave)/sta
-      else
-        zscore[i] = NaN
-      end
-    end
-  else
-    throw(ErrorException("The elements should have the same size"))
-  end
-  zscore
-end
+# function calculatezscore{T,N}(value::AbstractArray{T,N}, average::AbstractArray{T,N}, sd::AbstractArray{T,N}, unit::T=one(T)) # tolerance::T=eps(T))
+#   zscore = similar(value)
+#   if size(value) == size(average) == size(sd)
+#     for i in eachindex(zscore)
+#       val = value[i]
+#       ave = average[i]
+#       sta = sd[i]
+#       if isapprox(val, ave) # abs(val - ave)  <= tolerance
+#         zscore[i] = 0.0
+#       elseif !isapprox(sta + unit, unit) # abs(sta) > tolerance
+#         # Test for 0.0 using 1.0: 0.0 + 1.0 == 1.0
+#         zscore[i] = (val - ave)/sta
+#       else
+#         zscore[i] = NaN
+#       end
+#     end
+#   else
+#     throw(ErrorException("The elements should have the same size"))
+#   end
+#   zscore
+# end
 
 # Busjle et. al. 2009
 # ===================
@@ -65,14 +65,15 @@ function buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
   aln = filtercolumns(aln, used)
   clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
   mi = _buslje09(aln, usegap, clusters, lambda, apc)
-  rand_mi = Array(Float64, size(mi, 1), size(mi, 2), samples)
+  #rand_mi = Array(Float64, size(mi, 1), size(mi, 2), samples)
+  rand_mi = Array(typeof(mi), samples)
   for ns in 1:samples
     fixedgaps ? shuffle_residues_sequencewise!(aln) : shuffle_sequencewise!(aln)
-    rand_mi[:,:,ns] = _buslje09(aln, usegap, clusters, lambda, apc)
+    rand_mi[ns] = _buslje09(aln, usegap, clusters, lambda, apc)
   end
-  rand_mean = squeeze(mean(rand_mi,3),3)
-  rand_sd = squeeze(std(rand_mi,3),3)
-  (calculatezscore(mi, rand_mean, rand_sd), mi, rand_mean, rand_sd, collect(1:ncol)[used])
+  rand_mean = sum(rand_mi) ./ float(samples)
+  rand_sd = std(rand_mi, mean=rand_mean)
+  (zscore(rand_mi, mi), mi, rand_mean, rand_sd, collect(1:ncol)[used])
 end
 
 buslje09(aln::MultipleSequenceAlignment; kargs...) = buslje09(aln.msa; kargs...)

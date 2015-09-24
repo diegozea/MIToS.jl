@@ -2,6 +2,7 @@ using Base.Test
 using MIToS.Information
 using MIToS.Utils
 using MIToS.MSA
+using PairwiseListMatrices
 
 const Gaoetal2011 = joinpath(pwd(), "data", "Gaoetal2011.fasta")
 
@@ -30,6 +31,32 @@ let MI = [ 0 2 4
   @test mean_tot == 4.
 
   MIp = APC!(convert(Matrix{Float64}, MI))
+  @test_approx_eq MIp [  NaN -1.0  0.25
+                        -1.0  NaN  1.00
+                        0.25 1.00   NaN ]
+end
+
+let MI = PairwiseListMatrix([2, 4, 6])
+
+  mean_col = mean_nodiag(MI, 1)
+  mean_tot = mean_nodiag(MI)
+  @test mean_col == [3. 4. 5.]
+  @test mean_tot == 4.
+
+  MIp = APC!(convert(PairwiseListMatrix{Float64, false}, MI))
+  @test_approx_eq MIp [  NaN -1.0  0.25
+                        -1.0  NaN  1.00
+                        0.25 1.00   NaN ]
+end
+
+let MI = PairwiseListMatrix([0, 2, 4, 0, 6, 0], true)
+
+  mean_col = mean_nodiag(MI, 1)
+  mean_tot = mean_nodiag(MI)
+  @test mean_col == [3. 4. 5.]
+  @test mean_tot == 4.
+
+  MIp = APC!(convert(PairwiseListMatrix{Float64, true}, MI))
   @test_approx_eq MIp [  NaN -1.0  0.25
                         -1.0  NaN  1.00
                         0.25 1.00   NaN ]

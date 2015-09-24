@@ -106,6 +106,8 @@ function estimate{B, T, UseGap}(measure::MutualInformation{B}, pxy::ResidueProba
   MI/log(measure.base)
 end
 
+@inline _mi{T}(N::T, nij, ni, nj) = ifelse(nij > zero(T) && ni > zero(T), T(nij * log((N * nij)/(ni * nj))), zero(T))
+
 """```estimate(MutualInformation(), pxy::ResidueCount [, base])```
 
 Calculate Mutual Information from `ResidueCount`. The result type is determined by the `base`.
@@ -113,15 +115,17 @@ It's the fastest option (you don't spend time on probability calculations)."""
 function estimate{B, T, UseGap}(measure::MutualInformation{B}, nxy::ResidueCount{T, 2,UseGap})
   MI = zero(B)
   N = B(nxy.total)
+  marginals = nxy.marginals
   @inbounds for j in 1:nresidues(nxy)
-    nj = nxy.marginals[j,2]
+    nj = marginals[j,2]
     if nj > 0.0
-      for i in 1:nresidues(nxy)
-        ni = nxy.marginals[i,1]
-        nij = nxy[i,j]
-        if nij > 0.0 && ni > 0.0
-          MI +=  nij * log((N * nij)/(ni*nj))
-        end
+      @inbounds @simd for i in 1:nresidues(nxy)
+        MI += _mi(N, nxy[i,j], marginals[i,1], nj)
+#         ni = nxy.marginals[i,1]
+#         nij = nxy[i,j]
+#         if nij > 0.0 && ni > 0.0
+#           MI +=  nij * log((N * nij)/(ni*nj))
+#         end
       end
     end
   end
