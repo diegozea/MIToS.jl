@@ -66,66 +66,19 @@ function percentidentity(seq1, seq2, threshold::Float64)
   (count/n) >= threshold
 end
 
-# % id for a MSA
-# ==============
-
-import Base: size, getindex, setindex!, length
-
-"""
-`SequenceIdentityMatrix` saves on the `list` field the identity percent of each pair comparison.
-The list is for each value in `i`, `j` with `i < j`.
-"""
-type SequenceIdentityMatrix{T} <: AbstractMatrix{T}
-  list::Vector{T}
-  nseq::Int
-end
-
-SequenceIdentityMatrix{T}(::Type{T}, nseq::Int) = SequenceIdentityMatrix{T}(Array(T, div(nseq*(nseq-1),2)), nseq)
-
-# Abstract Array Interface
-# ------------------------
-
-size(id::SequenceIdentityMatrix) = (id.nseq, id.nseq)
-
-@inline _listindex(i, j, n) = @fastmath div((n*(n-1))-((n-i)*(n-i-1)),2) - n + j
-
-function getindex{T}(id::SequenceIdentityMatrix{T}, i::Int, j::Int)
-  if i < j
-    return(id.list[_listindex(i, j, id.nseq)])
-  elseif i > j
-    return(id.list[_listindex(j, i, id.nseq)])
-  else
-    return(T(100.0))
-  end
-end
-
-function setindex!(id::SequenceIdentityMatrix, v, i::Int, j::Int)
-  if i < j
-    setindex!(id.list, v, _listindex(i, j, id.nseq))
-  elseif i > j
-    setindex!(id.list, v, _listindex(j, i, id.nseq))
-  end
-end
-
-length(id::SequenceIdentityMatrix) = length(id.list)
-
-# TO DO:
-# start()/next()/done()
-# similar()
-
-# percentidentity
-# ---------------
+# percentidentity for a MSA
+# =========================
 
 """
 aln should be transpose(msa)
 """
 function _percentidentity_kernel!(scores, aln, nseq, len)
   k = 0
+  list = scores.list
   @inbounds for i in 1:(nseq-1)
     a = aln[i]
     for j in (i+1):nseq
-      k += 1
-      scores.list[k] = _percentidentity(a, aln[j], len) * 100.0
+      list[k += 1] = _percentidentity(a, aln[j], len) * 100.0
     end
   end
   scores
@@ -140,7 +93,7 @@ function percentidentity{T}(msa::AbstractMatrix{Residue}, out::Type{T}=Float64)
   aln = getresiduesequences(msa)
   nseq = length(aln)
   len = length(aln[1])
-  scores = SequenceIdentityMatrix(T, nseq)
+  scores = PairwiseListMatrix(T, nseq, false, T(100.0))
   _percentidentity_kernel!(scores, aln, nseq, len)
   scores
 end

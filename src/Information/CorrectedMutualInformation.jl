@@ -32,6 +32,25 @@ function _buslje09(aln, usegap, clusters, lambda, apc)
   mi
 end
 
+function _buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
+                               clustering::Bool=true, threshold::Float64=0.62,
+                               maxgap::Float64=0.5, apc::Bool=true, samples::Int=100,
+                               usegap::Bool=false, fixedgaps::Bool=true)
+  used = gappercentage(aln,1) .<= maxgap
+  ncol = ncolumns(aln)
+  aln = filtercolumns(aln, used)
+  clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
+  mi = _buslje09(aln, usegap, clusters, lambda, apc)
+  #rand_mi = Array(Float64, size(mi, 1), size(mi, 2), samples)
+  rand_mi = Array(typeof(mi), samples)
+  for ns in 1:samples
+    fixedgaps ? shuffle_residues_sequencewise!(aln) : shuffle_sequencewise!(aln)
+    rand_mi[ns] = _buslje09(aln, usegap, clusters, lambda, apc)
+  end
+  usedcol = collect(1:ncol)[used]
+  (zscore(rand_mi, mi), mi, usedcol)
+end
+
 """
 This function takes a MSA or a file and a `Format` as first arguments.
 Calculates a Z score and a corrected MI/MIp as described on **Busjle et. al. 2009**
@@ -56,31 +75,25 @@ This function returns 5 arrays:
   - Standard deviation of MI/MIp on the random samples
   - List of used columns
 """
-function buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
-                               clustering::Bool=true, threshold::Float64=0.62,
-                               maxgap::Float64=0.5, apc::Bool=true, samples::Int=100,
-                               usegap::Bool=false, fixedgaps::Bool=true)
-  used = gappercentage(aln,1) .<= maxgap
-  ncol = ncolumns(aln)
-  aln = filtercolumns(aln, used)
-  clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
-  mi = _buslje09(aln, usegap, clusters, lambda, apc)
-  #rand_mi = Array(Float64, size(mi, 1), size(mi, 2), samples)
-  rand_mi = Array(typeof(mi), samples)
-  for ns in 1:samples
-    fixedgaps ? shuffle_residues_sequencewise!(aln) : shuffle_sequencewise!(aln)
-    rand_mi[ns] = _buslje09(aln, usegap, clusters, lambda, apc)
-  end
-  rand_mean = sum(rand_mi) ./ float(samples)
-  rand_sd = std(rand_mi, mean=rand_mean)
-  (zscore(rand_mi, mi), mi, rand_mean, rand_sd, collect(1:ncol)[used])
+function buslje09(aln::Matrix{Residue}; kargs...)
+  zscore, mi, used = _buslje09(aln; kargs...)
+  labels!(mi, used)
+  labels!(zscore, used)
+  (zscore, mi)
 end
 
 buslje09(aln::MultipleSequenceAlignment; kargs...) = buslje09(aln.msa; kargs...)
 
 function buslje09(aln::AnnotatedMultipleSequenceAlignment; kargs...)
-  zscore, mi, rand_mean, rand_sd, used = buslje09(aln.msa; kargs...)
-  (zscore, mi, rand_mean, rand_sd, getcolumnmapping(aln)[used])
+  zscore, mi, used = _buslje09(aln.msa; kargs...)
+  if haskey(getannotfile(aln), "ColMap")
+    labels!(mi, getcolumnmapping(aln)[used])
+    labels!(zscore, getcolumnmapping(aln)[used])
+  else
+    labels!(mi, used)
+    labels!(zscore, used)
+  end
+  (zscore, mi)
 end
 
 function buslje09{T <: Format}(filename::AbstractString, format::Type{T}; kargs...)

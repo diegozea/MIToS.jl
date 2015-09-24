@@ -3,6 +3,7 @@ module Information
   using MIToS.Utils
   using MIToS.MSA
   using MIToS.Clustering
+  using PairwiseListMatrices
 
   export BLOSUM62_Pi, BLOSUM62_Pij,
 
@@ -21,8 +22,6 @@ module Information
   APC!,
 
   buslje09
-
-  #Fixed, Pseudofrequencies, ResidueProbabilities, ResiduePairProbabilities
 
   include("BLOSUM62.jl")
   include("Probabilities.jl")

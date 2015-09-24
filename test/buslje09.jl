@@ -310,3 +310,5 @@ let data = readdlm(gao11_buslje09("MI_APC_clustering")); results = buslje09(Gaoe
   println("Pearson for MIp: ", cor(convert(Vector{Float64}, data[:, SCORE]), matrix2list(results[MIToS_SCORE])))
   println("Pearson for Z-score: ", cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])))
 end
+
+# TO DO: Test labels!
