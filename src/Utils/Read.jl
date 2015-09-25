@@ -8,7 +8,7 @@ using LightXML
 """
 abstract Format
 
-function _check_file(filename)
+function check_file(filename)
   if !isfile(filename)
     throw(ErrorException(string(filename, " doesn't exist!")))
   elseif filesize(filename) == 0
@@ -18,7 +18,7 @@ function _check_file(filename)
 end
 
 function _read(completename, filename, format, args...; kargs...) # for using with download, since filename doesn't have file extension
-  _check_file(filename)
+  check_file(filename)
   if endswith(completename, ".xml.gz") || endswith(completename, ".xml")
     document = parse_file(filename)
     parse(document, format, args...; kargs...)
