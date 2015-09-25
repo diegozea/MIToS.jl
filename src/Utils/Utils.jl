@@ -1,6 +1,6 @@
 module Utils
 
-  export deleteitems!, get_n_words, hascoordinates, select_element, matrix2list, list2matrix,
+  export deleteitems!, get_n_words, hascoordinates, select_element, matrix2list, list2matrix, check_file
 
   # eachline,
 
