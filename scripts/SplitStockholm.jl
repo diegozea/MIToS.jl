@@ -46,7 +46,9 @@ function main(input)
 		if line == "//\n"
 			filename = joinpath(Args["path"], string(id, ".gz"))
 			outfh = GZip.open(filename, "w")
-			write(outfh, join(lines))
+			for l in lines
+				write(outfh, l)
+			end
 			close(outfh)
 			id = "no_accessionumber"
 			empty!(lines)
