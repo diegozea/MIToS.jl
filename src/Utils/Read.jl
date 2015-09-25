@@ -14,6 +14,7 @@ function _check_file(filename)
   elseif filesize(filename) == 0
     warn(string(filename, " is empty!"))
   end
+  filename
 end
 
 function _read(completename, filename, format, args...; kargs...) # for using with download, since filename doesn't have file extension
