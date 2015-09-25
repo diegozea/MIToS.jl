@@ -6,7 +6,9 @@ using MIToS
 # -----------------------------------------------------------------------------
 
 function parse_commandline()
-    s = ArgParseSettings()
+    s = ArgParseSettings(description = "MIToS",
+                        version = "MIToS $(Pkg.installed("MIToS"))",
+                        add_version = true)
 
     @add_arg_table s begin
         "--file", "-f"
