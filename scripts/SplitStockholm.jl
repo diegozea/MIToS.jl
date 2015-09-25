@@ -1,0 +1,58 @@
+#!/usr/bin/env julia
+
+using ArgParse
+using GZip
+using MIToS.Utils # get_n_words, check_file
+
+function parse_commandline()
+    s = ArgParseSettings(description = "Splits a Stockholm file with multiple alignments into one compressed file per MSA: accessionumber.gz",
+                         version = "MIToS $(Pkg.installed("MIToS"))",
+                         add_version = true)
+
+    @add_arg_table s begin
+        "file"
+            help = "Input file"
+            required = true
+        "--path", "-p"
+        		help = "Path for the output files [default: execution directory]"
+		        arg_type = ASCIIString
+    		    default = ""
+    end
+
+    s.epilog = """
+    
+    \n
+    MIToS $(Pkg.installed("MIToS"))\n
+    \n
+    Bioinformatics Unit\n
+    Institute Leloir Foundation\n
+    Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina
+    """
+
+    return parse_args(s)
+end
+
+const Args = parse_commandline()
+
+function main(input)
+	infh = GZip.open(input)
+	lines = ASCIIString[]
+	id = "no_accessionumber"
+	for line in eachline(infh)
+		if length(line) > 7 && line[1:7] == "#=GF AC"
+			id = get_n_words(line, 3)[3]
+		end
+		push!(lines, line)
+		if line == "//\n"
+			filename = joinpath(Args["path"], string(id, ".gz"))
+			outfh = GZip.open(filename, "w")
+			write(outfh, join(lines))
+			close(outfh)
+			id = "no_accessionumber"
+			empty!(lines)
+		end
+	end
+	close(infh)
+end
+
+main(check_file(Args["file"]))
