@@ -2,6 +2,7 @@ module MSA
 
   using DataStructures
   using IndexedArrays
+  using MIToS.Utils
 
   "`swap!(ia::IndexedArray, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `IndexedArray`"
   function swap!(ia::IndexedArray, to::Int, from::Int)
@@ -16,6 +17,8 @@ module MSA
 
     ia
   end
+
+  import Base: parse, print, write
 
   export Residue, GAP, @res_str,
   swap!,

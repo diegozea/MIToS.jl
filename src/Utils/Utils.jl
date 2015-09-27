@@ -11,6 +11,7 @@ module Utils
   include("generalutils.jl")
   include("EachLineString.jl")
   include("Read.jl")
+  include("Write.jl")
   include("FindObjects.jl")
 
 end

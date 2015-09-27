@@ -1,7 +1,3 @@
-using MIToS.Utils
-
-import Base: parse, print
-
 immutable Raw <: Format end
 
 # Raw Parser
@@ -21,6 +17,7 @@ function parse(io::Union{IO, AbstractString}, format::Type{Raw}, output::Type{Ma
   end
   msa
 end
+
 
 parse(io::Union{IO, AbstractString}, format::Type{Raw}; deletefullgaps::Bool=true) = parse(io, Raw, Matrix{Residue}; deletefullgaps=deletefullgaps)
 

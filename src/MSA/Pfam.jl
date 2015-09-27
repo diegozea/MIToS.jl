@@ -1,7 +1,3 @@
-using MIToS.Utils
-
-import Base: parse, print
-
 immutable Stockholm <: Format end
 
 function _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)

@@ -1,7 +1,3 @@
-using MIToS.Utils
-
-import Base: parse, print
-
 immutable FASTA <: Format end
 
 # FASTA Parser
