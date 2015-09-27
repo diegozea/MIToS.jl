@@ -17,8 +17,11 @@ function deleteitems!(vector::Vector, items)
   resize!(vector, i-1)
 end
 
+_get_data(str::ASCIIString) = str.data
+_get_data(str::UTF8String) = collect(str)
+
 """
-`get_n_words(line::ASCIIString, n::Int)` returns a `Vector{ASCIIString}` with the first `n` (possibles) words/fields (delimited by space, tab or newline).
+`get_n_words{T <: Union{ASCIIString, UTF8String}}(line::T, n::Int)` returns a `Vector{T}` with the first `n` (possibles) words/fields (delimited by space, tab or newline).
 If there is more than `n` words, the last word returned contains the finals words and the delimiters.
 The length of the returned vector is `n` or less (if the number of words is less than `n`).
 The last newline character is always removed.
@@ -31,29 +34,31 @@ julia> get_n_words("#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHH
  "SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH"
 ```
 """
-function get_n_words(line::ASCIIString, n::Int)
-  N = length(line.data)
-  coords = Array(ASCIIString, n)
-  spaces = UInt8[' ', '\n', '\t']
+function get_n_words{T <: Union{ASCIIString, UTF8String}}(line::T, n::Int)
+  linedata = _get_data(line)
+  CharType = eltype(linedata)
+  N = length(linedata)
+  coords = Array(T, n)
+  spaces = CharType[' ', '\n', '\t']
   j = 0
   start = 0
   ended = false
   if N > 1
-    block = !(line.data[1] in spaces)
+    block = !(linedata[1] in spaces)
     if block
       start = 1
     end
     for i in 2:N-1
-      if line.data[i] in spaces
+      if linedata[i] in spaces
         if block
           j += 1
           if j == n
-            last = line.data[N] == UInt8('\n') ? N-1 : N
-            @inbounds coords[j] = ASCIIString(getindex(line.data,start:last))
+            last = linedata[N] == CharType('\n') ? N-1 : N
+            @inbounds coords[j] = UTF8String(getindex(linedata,start:last))
             ended = true
             break
           else
-            @inbounds coords[j] = ASCIIString(getindex(line.data,start:i-1))
+            @inbounds coords[j] = UTF8String(getindex(linedata,start:i-1))
           end
         end
         block = false
@@ -66,11 +71,11 @@ function get_n_words(line::ASCIIString, n::Int)
     end
     if !ended
       j += 1
-      last = line.data[N] == UInt8('\n') ? N-1 : N
-      @inbounds coords[j] = ASCIIString(getindex(line.data,start:last))
+      last = linedata[N] == CharType('\n') ? N-1 : N
+      @inbounds coords[j] = UTF8String(getindex(linedata,start:last))
     end
   elseif N==1
-    if line.data[1] in spaces
+    if linedata[1] in spaces
       j=0
     else
       j=1
