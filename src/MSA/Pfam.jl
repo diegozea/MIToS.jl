@@ -33,7 +33,7 @@ end
 function _pre_readstockholm(io::Union{IO, AbstractString})
   IDS  = ASCIIString[]
   SEQS = ASCIIString[]
-  GF = OrderedDict{ASCIIString,ASCIIString}()
+  GF = OrderedDict{ASCIIString,ByteString}()
   GC = Dict{ASCIIString,ASCIIString}()
   GS = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
   GR = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()

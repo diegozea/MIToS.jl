@@ -34,7 +34,7 @@ julia> get_n_words("#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHH
  "SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH"
 ```
 """
-function get_n_words{T <: Union{ASCIIString, UTF8String}}(line::T, n::Int)
+function get_n_words{T <: ByteString}(line::T, n::Int)
   linedata = _get_data(line)
   CharType = eltype(linedata)
   N = length(linedata)
