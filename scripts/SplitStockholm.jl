@@ -20,7 +20,7 @@ function parse_commandline()
     end
 
     s.epilog = """
-    
+
     \n
     MIToS $(Pkg.installed("MIToS"))\n
     \n
@@ -36,7 +36,7 @@ const Args = parse_commandline()
 
 function main(input)
 	infh = GZip.open(input)
-	lines = ASCIIString[]
+	lines = []
 	id = "no_accessionumber"
 	for line in eachline(infh)
 		if length(line) > 7 && line[1:7] == "#=GF AC"
@@ -47,7 +47,7 @@ function main(input)
 			filename = joinpath(Args["path"], string(id, ".gz"))
 			outfh = GZip.open(filename, "w")
 			for l in lines
-				write(outfh, l)
+				write(outfh, string(l))
 			end
 			close(outfh)
 			id = "no_accessionumber"
