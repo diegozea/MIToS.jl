@@ -1,28 +1,20 @@
 #!/usr/bin/env julia
 
 using ArgParse
-# TO DO -----------------------------------------------------------------------
-using MIToS
-# -----------------------------------------------------------------------------
+using MIToS.MSA
 
 function parse_commandline()
-# TO DO -----------------------------------------------------------------------
-    s = ArgParseSettings(description = "MIToS",
-# -----------------------------------------------------------------------------
+    s = ArgParseSettings(description = """Creates a Stockholm file with the aligned columns from a Pfam Stockholm file.
+    Insertions are deleted, since they are unaligned in a proﬁle HMM.
+    The output file *.aligned.* contains as annotations the mappings for the sequences (residue number in uniprot) and the columns in the original MSA.""",
                         version = "MIToS $(Pkg.installed("MIToS"))",
                         add_version = true)
 
     @add_arg_table s begin
         "--file", "-f"
-            help = "Input file"
+            help = "Pfam stockholm file"
         "--list", "-l"
-            help = "File with a list of input files"
-# TO DO -----------------------------------------------------------------------
-        "--arg", "-a"
-            help = "Argument"
-            arg_type = Int
-            default = 0
-# -----------------------------------------------------------------------------
+            help = "File with a list of Pfam stockholm files"
     end
 
     s.epilog = """
@@ -56,16 +48,17 @@ const files = _file_names(parsed)
 @everywhere Args = remotecall_fetch(1,()->parsed) # Parsed ARGS for each worker
 @everywhere FileList = remotecall_fetch(1,()->files) # List of Files for each worker
 
-# TO DO -----------------------------------------------------------------------
-@everywhere function Main(input) # input must be a file
+@everywhere FORMAT = fetch(MIToS.MSA.Stockholm)
+
+@everywhere function main(input)
   try
-    arg_one = Args["arg"]
-    println("RUN : $arg_one : $input")
+    name, ext = splitext(input)
+    aln = read(input, FORMAT, generatemapping=true, useidcoordinates=true, deletefullgaps=true)
+    write(string(name, ".aligned", ext), aln, FORMAT)
   catch err
     println("ERROR: ", input)
     println(err)
   end
 end
-# -----------------------------------------------------------------------------
 
-pmap(Main, FileList) # Run each file in parallel (with -l)
+pmap(main, FileList) # Run each file in parallel (with -l)
