@@ -5,7 +5,7 @@ using MIToS.MSA
 using MIToS.Clustering
 
 function parse_commandline()
-    s = ArgParseSettings(description = """Creates an *.description.csv with: the number of columns, sequences, clusters after Hobohm clustering at 62% identity.
+    s = ArgParseSettings(description = """Creates an *.description.csv from a Stockholm file with: the number of columns, sequences, clusters after Hobohm clustering at 62% identity.
     Also the mean, standard deviation and quantiles of: sequence coverage of the MSA, gap percentage and percent identity.""",
                         version = "MIToS $(Pkg.installed("MIToS"))",
                         add_version = true)
@@ -48,8 +48,10 @@ const files = _file_names(parsed)
 @everywhere Args = remotecall_fetch(1,()->parsed) # Parsed ARGS for each worker
 @everywhere FileList = remotecall_fetch(1,()->files) # List of Files for each worker
 
+@everywhere FORMAT = fetch(MIToS.MSA.Stockholm)
+
 @everywhere function _describe(io, input)
-  aln = read(input, Stockholm);
+  aln = read(input, FORMAT);
 
   println(io, input, ",", "sequences", ",", "number", ",", "", ",", size(aln, 2))
   println(io, input, ",", "columns",   ",", "number", ",", "", ",", size(aln, 2))
