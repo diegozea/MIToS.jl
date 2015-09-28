@@ -93,7 +93,7 @@ const files = _file_names(parsed)
   println(io, input, ",", "clusters",   ",", "number", ",", "", ",", ncu)
 end
 
-@everywhere function Main(input)
+@everywhere function main(input)
   name, ext = splitext(input)
   fh = open(string(name, ".description.csv"), "w")
   try
@@ -106,4 +106,4 @@ end
   end
 end
 
-pmap(Main, FileList) # Run each file in parallel (with -l)
+pmap(main, FileList) # Run each file in parallel (with -l)

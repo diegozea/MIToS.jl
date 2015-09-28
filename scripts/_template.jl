@@ -57,7 +57,7 @@ const files = _file_names(parsed)
 @everywhere FileList = remotecall_fetch(1,()->files) # List of Files for each worker
 
 # TO DO -----------------------------------------------------------------------
-@everywhere function Main(input) # input must be a file
+@everywhere function main(input) # input must be a file
   try
     arg_one = Args["arg"]
     println("RUN : $arg_one : $input")
@@ -68,4 +68,4 @@ const files = _file_names(parsed)
 end
 # -----------------------------------------------------------------------------
 
-pmap(Main, FileList) # Run each file in parallel (with -l)
+pmap(main, FileList) # Run each file in parallel (with -l)
