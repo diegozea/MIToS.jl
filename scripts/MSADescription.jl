@@ -10,7 +10,7 @@ import MIToS.Clustering
 
 function parse_commandline()
     s = ArgParseSettings(description = """Creates an *.description.csv from a Stockholm file with: the number of columns, sequences, clusters after Hobohm clustering at 62% identity.
-    Also the mean, standard deviation and quantiles of: sequence coverage of the MSA, gap percentage and percent identity.""",
+    Also the mean, standard deviation and quantiles of: sequence coverage of the MSA, gap percentage""",
                         version = "MIToS $(Pkg.installed("MIToS"))",
                         add_version = true)
 
@@ -60,16 +60,16 @@ const files = _file_names(parsed)
   println(io, input, ",", "sequences", ",", "number", ",", "", ",", size(aln, 1))
   println(io, input, ",", "columns",   ",", "number", ",", "", ",", size(aln, 2))
 
-  pid = percentidentity(aln, Float16);
-  qid = quantile(pid.list, [0., .25, .5, .75, 1.])
+#   pid = percentidentity(aln, Float16);
+#   qid = quantile(pid.list, [0., .25, .5, .75, 1.])
 
-  println(io, input, ",", "percentidentity", ",", "quantile", ",", "0.00", ",", qid[1])
-  println(io, input, ",", "percentidentity", ",", "quantile", ",", "0.25", ",", qid[2])
-  println(io, input, ",", "percentidentity", ",", "quantile", ",", "0.50", ",", qid[3])
-  println(io, input, ",", "percentidentity", ",", "quantile", ",", "0.75", ",", qid[4])
+#   println(io, input, ",", "percentidentity", ",", "quantile", ",", "0.00", ",", qid[1])
+#   println(io, input, ",", "percentidentity", ",", "quantile", ",", "0.25", ",", qid[2])
+#   println(io, input, ",", "percentidentity", ",", "quantile", ",", "0.50", ",", qid[3])
+#   println(io, input, ",", "percentidentity", ",", "quantile", ",", "0.75", ",", qid[4])
 
-  println(io, input, ",", "percentidentity",   ",", "mean", ",", "", ",", mean(pid))
-  println(io, input, ",", "percentidentity",   ",", "std",  ",", "", ",", std(pid))
+#   println(io, input, ",", "percentidentity",   ",", "mean", ",", "", ",", mean(pid))
+#   println(io, input, ",", "percentidentity",   ",", "std",  ",", "", ",", std(pid))
 
   cov = coverage(aln);
   qcv = quantile(cov, [0., .25, .5, .75, 1.])
