@@ -57,7 +57,7 @@ const files = _file_names(parsed)
 @everywhere function _describe(io, input)
   aln = read(input, FORMAT);
 
-  println(io, input, ",", "sequences", ",", "number", ",", "", ",", size(aln, 2))
+  println(io, input, ",", "sequences", ",", "number", ",", "", ",", size(aln, 1))
   println(io, input, ",", "columns",   ",", "number", ",", "", ",", size(aln, 2))
 
   pid = percentidentity(aln, Float16);

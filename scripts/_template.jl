@@ -2,7 +2,8 @@
 
 using ArgParse
 # TO DO -----------------------------------------------------------------------
-using MIToS
+import MIToS
+@everywhere using MIToS
 # -----------------------------------------------------------------------------
 
 function parse_commandline()
