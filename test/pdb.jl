@@ -61,21 +61,22 @@ let code = "1SSX"
   print("""
   test @residues
   """)
-  @test (@residues pdb model "*" chain "*" residue "141")[1] == collectobjects(pdb, Is(:number, "141"))[1]
+  @test (@residues pdb model "*" chain "*" group "*" residue "141")[1] == collectobjects(pdb, Is(:number, "141"))[1]
   # Testing the macro in let block:
   mo = "1"
   ch = "A"
+  gr = "*"
   re = "141"
-  @test (@residues pdb model mo chain ch residue re)[1] == (@residues pdb model "*" chain "*" residue "141")[1]
+  @test (@residues pdb model mo chain ch group gr residue re)[1] == (@residues pdb model "*" chain "*" group gr residue "141")[1]
 
   print("""
   Occupancy != 1.0 and @atom
   """)
   @test sum([ get(occ,0) for occ in  collectcaptures(collectobjects(pdbml, Is(:number, "141"))[1].atoms, :occupancy, Is(:atom, "HH22")) ]) == 1.0
-  @test sum( [ atom.occupancy for atom in @atoms pdbml model "1" chain "A" residue "141" atom "HH22" ] ) == 1.0
+  @test sum( [ atom.occupancy for atom in @atoms pdbml model "1" chain "A"  group "*" residue "141" atom "HH22" ] ) == 1.0
   # Testing the macro in let block:
   at = "HH22"
-  @test sum( [ atom.occupancy for atom in @atoms pdbml model mo chain ch residue re atom at ] ) == 1.0
+  @test sum( [ atom.occupancy for atom in @atoms pdbml model mo chain ch group gr residue re atom at ] ) == 1.0
 
 end
 
@@ -97,11 +98,11 @@ let code = "1CBN"
   pdb = read(txt(code), PDBFile)
   pdbml = read(xml(code), PDBML)
 
-  @test length( @residues pdb   model "1" chain "A" residue "22" ) == 2
-  @test length( @residues pdbml model "1" chain "A" residue "22" ) == 2
+  @test length( @residues pdb   model "1" chain "A" group "*" residue "22" ) == 2
+  @test length( @residues pdbml model "1" chain "A" group "*" residue "22" ) == 2
 
-  @test ASCIIString[ res.id.name for res in  @residues pdb   model "1" chain "A" residue "22" ] == ["SER", "PRO"]
-  @test ASCIIString[ res.id.name for res in  @residues pdbml model "1" chain "A" residue "22" ] == ["SER", "PRO"]
+  @test ASCIIString[ res.id.name for res in  @residues pdb   model "1" chain "A" group "*" residue "22" ] == ["SER", "PRO"]
+  @test ASCIIString[ res.id.name for res in  @residues pdbml model "1" chain "A" group "*" residue "22" ] == ["SER", "PRO"]
 end
 
 print("""
@@ -112,10 +113,10 @@ let code = "1AS5"
   pdb = read(txt(code), PDBFile)
   pdbml = read(xml(code), PDBML)
 
-  @test length( @residues pdbml model "1"  chain "A" residue "*" ) == 25
-  @test length( @residues pdbml model "14" chain "A" residue "*" ) == 25
+  @test length( @residues pdbml model "1"  chain "A" group "*" residue "*" ) == 25
+  @test length( @residues pdbml model "14" chain "A" group "*" residue "*" ) == 25
 
-  @test length( @residues pdbml model "*"  chain "A" residue "*" ) == 25*14
+  @test length( @residues pdbml model "*"  chain "A" group "*" residue "*" ) == 25*14
 end
 
 print("""
@@ -132,14 +133,14 @@ let code = "1DPO"
   # But 'A':'H' chains for PDBML (label_asym_id)
   @test unique(ASCIIString[ res.id.chain for res in pdbml]) == ASCIIString[ string(chain) for chain in 'A':'H' ]
 
-  @test ASCIIString[ res.id.name for res in @residues pdb   model "1" chain "A" residue r"^184[A-Z]?$" ] == ASCIIString["GLY", "PHE"]
-  @test ASCIIString[ res.id.name for res in @residues pdbml model "1" chain "A" residue r"^184[A-Z]?$" ] == ASCIIString["GLY", "PHE"]
+  @test ASCIIString[ res.id.name for res in @residues pdb   model "1" chain "A" group "*" residue r"^184[A-Z]?$" ] == ASCIIString["GLY", "PHE"]
+  @test ASCIIString[ res.id.name for res in @residues pdbml model "1" chain "A" group "*" residue r"^184[A-Z]?$" ] == ASCIIString["GLY", "PHE"]
 
-  @test ASCIIString[ res.id.name for res in @residues pdb   model "1" chain "A" residue r"^188[A-Z]?$" ] == ASCIIString["GLY", "LYS"]
-  @test ASCIIString[ res.id.name for res in @residues pdbml model "1" chain "A" residue r"^188[A-Z]*" ] == ASCIIString["GLY", "LYS"]
+  @test ASCIIString[ res.id.name for res in @residues pdb   model "1" chain "A" group "*" residue r"^188[A-Z]?$" ] == ASCIIString["GLY", "LYS"]
+  @test ASCIIString[ res.id.name for res in @residues pdbml model "1" chain "A" group "*" residue r"^188[A-Z]*" ] == ASCIIString["GLY", "LYS"]
 
-  @test ASCIIString[ res.id.name for res in @residues pdb   model "1" chain "A" residue r"^221[A-Z]?$" ] == ASCIIString["ALA", "LEU"]
-  @test ASCIIString[ res.id.name for res in @residues pdbml model "1" chain "A" residue r"^221[A-Z]?$" ] == ASCIIString["ALA", "LEU"]
+  @test ASCIIString[ res.id.name for res in @residues pdb   model "1" chain "A" group "*" residue r"^221[A-Z]?$" ] == ASCIIString["ALA", "LEU"]
+  @test ASCIIString[ res.id.name for res in @residues pdbml model "1" chain "A" group "*" residue r"^221[A-Z]?$" ] == ASCIIString["ALA", "LEU"]
 end
 
 print("""
@@ -151,8 +152,11 @@ let code = "1IGY"
   pdb = read(txt(code), PDBFile)
   pdbml = read(xml(code), PDBML)
 
-  @test ASCIIString[ res.id.name for res in @residues pdb   model "1" chain "B" residue r"^82[A-Z]?$" ] == ["LEU", "SER", "SER", "LEU"]
-  @test ASCIIString[ res.id.name for res in @residues pdbml model "1" chain "B" residue r"^82[A-Z]?$" ] == ["LEU", "SER", "SER", "LEU"]
+  @test ASCIIString[ res.id.name for res in @residues pdb   model "1" chain "B" group "*" residue r"^82[A-Z]?$" ] == ["LEU", "SER", "SER", "LEU"]
+  @test ASCIIString[ res.id.name for res in @residues pdbml model "1" chain "B" group "*" residue r"^82[A-Z]?$" ] == ["LEU", "SER", "SER", "LEU"]
+
+  @test sum( [ res.id.group for res in @residues pdb model "1" chain "D" group "*" residue "*" ] .== "HETATM" ) == length( @residues pdb model "1" chain "D" group "HETATM" residue "*" )
+  @test sum( [ res.id.group for res in @residues pdb model "1" chain "D" group "*" residue "*" ] .== "ATOM" ) == length( @residues pdb model "1" chain "D" group "ATOM" residue "*" )
 end
 
 print("""
@@ -167,8 +171,8 @@ let code = "1HAG"
   @test unique(ASCIIString[ res.id.chain for res in pdbml ]) == ["A", "B", "C", "D", "E"]
 
   # The chain E of PDB is the chain A of PDBML
-  @test ASCIIString[ res.id.number for res in @residues pdb   model "1" chain "E" residue r"^1[A-Z]?$" ] == ASCIIString[ string(1, code) for code in vcat(collect('H':-1:'A'), "") ]
-  @test ASCIIString[ res.id.number for res in @residues pdbml model "1" chain "A" residue r"^1[A-Z]?$" ] == ASCIIString[ string(1, code) for code in vcat(collect('H':-1:'A'), "") ]
+  @test ASCIIString[ res.id.number for res in @residues pdb   model "1" chain "E" group "*" residue r"^1[A-Z]?$" ] == ASCIIString[ string(1, code) for code in vcat(collect('H':-1:'A'), "") ]
+  @test ASCIIString[ res.id.number for res in @residues pdbml model "1" chain "A" group "*" residue r"^1[A-Z]?$" ] == ASCIIString[ string(1, code) for code in vcat(collect('H':-1:'A'), "") ]
 end
 
 print("""
@@ -199,8 +203,8 @@ let code = "1IAO"
   pdb = read(txt(code), PDBFile)
   pdbml = read(xml(code), PDBML)
 
-  pdb_B   = @residues pdb   model "1" chain "B" residue "*"
-  pdbml_B = @residues pdbml model "1" chain "B" residue "*"
+  pdb_B   = @residues pdb   model "1" chain "B" group "*" residue "*"
+  pdbml_B = @residues pdbml model "1" chain "B" group "*" residue "*"
 
   @test pdb_B[   findobjects(pdb_B,   Is(:number, "2S"))[1]   + 1].id.number == "323P"
   @test pdb_B[   findobjects(pdb_B,   Is(:number, "334P"))[1] + 1].id.number == "6"

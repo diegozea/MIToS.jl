@@ -97,39 +97,69 @@ function _add_test_stringfield!(tests::Vector{TestType}, field::Symbol, test)
   tests
 end
 
-function _residues_tests(model, chain, residue)
+function _residues_tests(model, chain, group, residue)
   args = TestType[]
   _add_test_stringfield!(args, :model, model)
   _add_test_stringfield!(args, :chain, chain)
+  _add_test_stringfield!(args, :group, group)
   _add_test_stringfield!(args, :number, residue)
   args
 end
 
+residues(residue_list, model, chain, group, residue) = collectobjects(residue_list, _residues_tests(model, chain, group, residue)...)
+
 macro residues(residue_list,
                model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
                chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
+               group::Symbol, g,
                residue::Symbol, r)
-  if model == :model && chain == :chain && residue == :residue
-    return :(collectobjects($(esc(residue_list)), _residues_tests($(esc(m)), $(esc(c)), $(esc(r)))...))
+  if model == :model && chain == :chain && group == :group && residue == :residue
+    return :(residues($(esc(residue_list)), $(esc(m)), $(esc(c)), $(esc(g)), $(esc(r))))
   else
-    throw(ArgumentError("The signature is @residues ___ model ___ chain ___ residue ___"))
+    throw(ArgumentError("The signature is @residues ___ model ___ chain ___ group ___ residue ___"))
+  end
+end
+
+function residuesdict(residue_list, model, chain, group, residue)
+  res_index = findobjects(residue_list, _residues_tests(model, chain, group, residue)...)
+  dict = sizehint( OrderedDict{ASCIIString, PDBResidue}() , length(res_index) )
+  for i in res_index
+    dict[ residue_list[i].id.number ] = residue_list[i]
+  end
+  dict
+end
+
+macro residuesdict(residue_list,
+                   model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
+                   chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
+                   group::Symbol, g,
+                   residue::Symbol, r)
+  if model == :model && chain == :chain && group == :group && residue == :residue
+    return :(residuesdict($(esc(residue_list)), $(esc(m)), $(esc(c)), $(esc(g)), $(esc(r))))
+  else
+    throw(ArgumentError("The signature is @residues ___ model ___ chain ___ group ___ residue ___"))
   end
 end
 
 # @atoms
 # ======
 
+function atoms(residue_list, model, chain, group, residue, atom)
+  _is_wildcard(atom) ?
+    collect(Vector{PDBAtom}[ res.atoms for res in collectobjects(residue_list, _residues_tests(model, chain, group, residue)...) ]...) :
+    collect(Vector{PDBAtom}[ collectobjects(res.atoms, _test_stringfield(:atom, atom)) for res in collectobjects(residue_list, _residues_tests(model, chain, group, residue)...) ]...)
+end
+
 macro atoms(residue_list,
                model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
                chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
+               group::Symbol, g,
                residue::Symbol, r,
                atom::Symbol, a)
-  if model == :model && chain == :chain && residue == :residue && atom == :atom
-    return :(_is_wildcard($(esc(a))) ?
-               collect(Vector{PDBAtom}[ res.atoms for res in collectobjects($(esc(residue_list)), MIToS.PDB._residues_tests($(esc(m)), $(esc(c)), $(esc(r)))...) ]...) :
-               collect(Vector{PDBAtom}[ collectobjects(res.atoms, _test_stringfield(:atom, $(esc(a)))) for res in collectobjects($(esc(residue_list)), _residues_tests($(esc(m)), $(esc(c)), $(esc(r)))...) ]...))
+  if model == :model && chain == :chain && group == :group && residue == :residue && atom == :atom
+    return :(atoms($(esc(residue_list)), $(esc(m)), $(esc(c)), $(esc(g)), $(esc(r)), $(esc(a))))
   else
-    throw(ArgumentError("The signature is @atoms ___ model ___ chain ___ residue ___ atom ___"))
+    throw(ArgumentError("The signature is @atoms ___ model ___ chain ___ group ___ residue ___ atom ___"))
   end
 end
 

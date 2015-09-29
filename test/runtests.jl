@@ -16,6 +16,7 @@ include("shuffle.jl")
 include("clustering.jl")
 # PDB
 include("pdb.jl")
+include("contacts.jl")
 #  SIFTS
 include("sifts.jl")
 # Information
