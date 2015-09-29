@@ -46,6 +46,12 @@ let code = "1IGY"
     else
       @test !hydrophobic(res1, res2)
     end
+    
+    if resnum1 == "211" && resnum2 == "312"
+      @test vanderwaalsclash(res1, res2)
+    else
+      @test !vanderwaalsclash(res1, res2)
+    end
 
     @test !aromaticsulphur(res1, res2)
     @test !pication(res1, res2)
