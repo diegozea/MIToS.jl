@@ -117,14 +117,29 @@ pication(a::PDBResidue, b::PDBResidue) = any(pication, a, b, _iscationicoraromat
 # Aromatic
 # --------
 
-function aromatic(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
-  if isaromatic(a, resname_a) && isaromatic(b, resname_b)
-    return(distance(a,b) <= 6.0)
-  end
-  return(false)
-end
+# function aromatic(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
+#   if isaromatic(a, resname_a) && isaromatic(b, resname_b)
+#     return(distance(a,b) <= 6.0)
+#   end
+#   return(false)
+# end
 
-aromatic(a::PDBResidue, b::PDBResidue) = any(aromatic, a, b, isaromatic)
+# aromatic(a::PDBResidue, b::PDBResidue) = any(aromatic, a, b, isaromatic)
+
+function aromatic(a::PDBResidue, b::PDBResidue)
+  if a.id.name in _aromatic_res && b.id.name in _aromatic_res
+    plane_a = bestoccupancy!(_get_plane(a))
+    plane_b = bestoccupancy!(_get_plane(b))
+    points_a = Coordinates[ atom.coordinates for atom in plane_a ]
+    points_b = Coordinates[ atom.coordinates for atom in plane_b ]
+    centre_a = sum(points_a)./length(points_a)
+    centre_b = sum(points_b)./length(points_b)
+    #normal_a, centre_a = (cross(points_a[2] - points_a[1], points_a[3] - points_a[1]), sum(points_a)./length(points_a))
+    #normal_b, centre_b = (cross(points_b[2] - points_b[1], points_b[3] - points_b[1]), sum(points_b)./length(points_b))
+    return( distance(centre_a, centre_b) <= 6.0 )
+  end
+  false
+end
 
 # Ionic
 # -----

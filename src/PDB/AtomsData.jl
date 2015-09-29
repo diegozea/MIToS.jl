@@ -238,6 +238,8 @@ const _hydrophobic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ALA","CB"),
 ("VAL","CG1"),
 ("VAL","CG2") ] )
 
+const _aromatic_res = Set{ASCIIString}( [ "HIS", "PHE", "TRP", "TYR" ] )
+
 const _aromatic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("HIS","CD2"),
 ("HIS","CE1"),
 ("HIS","CG"),

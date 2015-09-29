@@ -10,7 +10,7 @@
 	chain::ASCIIString
 end
 
-@auto_hash_equals immutable Coordinates
+@auto_hash_equals immutable Coordinates # <: FixedVectorNoTuple{Float64, 3}
   x::Float64
   y::Float64
   z::Float64
@@ -38,11 +38,20 @@ distance(a::Coordinates, b::Coordinates) = sqrt((a.x - b.x)^2 + (a.y - b.y)^2 + 
 
 contact(a::Coordinates, b::Coordinates, limit::AbstractFloat) = distance(a,b) <= limit ? true : false
 
--(a::Coordinates, b::Coordinates) = Coordinates(a.x - b.x, a.y - b.y, a.z - b.z)
-
+#-------------------------------------------------------------------------------#
+vec(a::Coordinates) = Float64[a.x, a.y, a.z]
 norm(a::Coordinates) = sqrt(a.x^2 + a.y^2 + a.z^2)
-
 dot(a::Coordinates, b::Coordinates) = (a.x * b.x) + (a.y * b.y) + (a.z * b.z)
+size(a::Coordinates) = (3,)
+length(a::Coordinates) = 3
+-(a::Coordinates, b::Coordinates) = Coordinates(a.x - b.x, a.y - b.y, a.z - b.z)
++(a::Coordinates, b::Coordinates) = Coordinates(a.x + b.x, a.y + b.y, a.z + b.z)
+./(a::Coordinates, b::Int) = Coordinates(a.x / b, a.y / b, a.z / b )
+function cross(a::Coordinates, b::Coordinates)
+  normal = cross(vec(a), vec(b))
+  Coordinates(normal[1], normal[2], normal[3])
+end
+#-------------------------------------------------------------------------------#
 
 """Angle (in degrees) at b between a-b and b-c"""
 function angle(a::Coordinates, b::Coordinates, c::Coordinates)
@@ -54,13 +63,6 @@ function angle(a::Coordinates, b::Coordinates, c::Coordinates)
   else
     return(0.0)
   end
-end
-
-vec(a::Coordinates) = Float64[a.x, a.y, a.z]
-
-function cross(a::Coordinates, b::Coordinates)
-  normal = cross(vec(a), vec(b))
-  Coordinates(normal[1], normal[2], normal[3])
 end
 
 distance(a::PDBAtom, b::PDBAtom) = distance(a.coordinates, b.coordinates)
@@ -349,6 +351,40 @@ function contact(a::PDBResidue, b::PDBResidue, limit::AbstractFloat; criteria::A
     end
   end
   false
+end
+
+# For Aromatic
+# ============
+
+function _get_plane(residue::PDBResidue)
+  name = residue.id.name
+  plane = PDBAtom[]
+  for atom in residue.atoms
+    if (name, atom.atom) in PDB._aromatic
+      push!(plane, atom)
+    end
+  end
+  plane
+end
+
+function bestoccupancy!(atoms::Vector{PDBAtom})
+  N = length(atoms)
+  name = atoms[1].atom
+  occupancy = atoms[1].occupancy
+  for i in 2:N
+    if atoms[i].occupancy > occupancy && atoms[i].atom == name
+      splice!(atoms, i-1)
+    end
+    name = atoms[i].atom
+    occupancy = atoms[i].occupancy
+  end
+  atoms
+end
+
+function _simple_normal_and_centre(atoms::Vector{PDBAtom})
+  bestoccupancy!(atoms)
+  points = Coordinates[ a.coordinates for a in atoms ]
+  (cross(points[2] - points[1], points[3] - points[1]), sum(points)./length(points))
 end
 
 # For Parsing...

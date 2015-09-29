@@ -5,14 +5,15 @@ module PDB
   using DataStructures
   using Formatting
   using MIToS.Utils
+  # using FixedSizeArrays
 
-  import Base: ==, hash, length, -, norm, dot, angle, cross, vec, any, print, show, parse
+  import Base: ==, hash, length, size, -, +, ./, norm, dot, angle, cross, vec, any, print, show, parse
   import MIToS.Utils: findobjects, isobject
 
   export covalentradius, vanderwaalsradius,
 
   PDBResidueIdentifier, Coordinates, PDBAtom, PDBResidue,
-  distance, contact, findheavy, findatoms, findCB, selectbestoccupancy,
+  distance, contact, findheavy, findatoms, findCB, selectbestoccupancy, bestoccupancy!,
   angle,
 
   ishydrophobic, isaromatic, iscationic, isanionic,
