@@ -47,7 +47,14 @@ let code = "1IGY"
       @test !hydrophobic(res1, res2)
     end
 
-
+    @test !aromaticsulphur(res1, res2)
+    @test !pication(res1, res2)
+    @test !disulphide(res1, res2)
+    @test !aromatic(res1, res2)
+    @test !hydrogenbond(res1, res2)
+    @test !hydrogenbond(res1, res2)
+    @test !covalent(res1, res2)
+    
   end
 
 end
