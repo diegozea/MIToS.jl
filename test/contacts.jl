@@ -18,6 +18,11 @@ let code = "1IGY"
   pdb = read(txt(code), PDBFile)
   # pdbml = read(xml(code), PDBML)
 
+  print("""
+
+  All the interface between chain A and D
+  """)
+
   # Contacts: Chain A (4 residues) y Chain D (3 residues)
   C1 = @residuesdict pdb model "1" chain "A" group "ATOM" residue "*"
   C2 = @residuesdict pdb model "1" chain "D" group "ATOM" residue "*"
@@ -52,7 +57,7 @@ let code = "1IGY"
     else
       @test !hydrophobic(res1, res2)
     end
-    
+
     if resnum1 == "211" && resnum2 == "312"
       @test vanderwaalsclash(res1, res2)
     else
@@ -66,7 +71,23 @@ let code = "1IGY"
     @test !hydrogenbond(res1, res2)
     @test !hydrogenbond(res1, res2)
     @test !covalent(res1, res2)
-    
+
   end
+
+  print("""
+  aromatic between chain A and B
+  """)
+
+  C1 = @residuesdict pdb model "1" chain "A" group "ATOM" residue "*"
+  C2 = @residuesdict pdb model "1" chain "B" group "ATOM" residue "*"
+
+  @test aromatic(C1["36"],  C2["103"])
+  @test aromatic(C1["94"],  C2["47"])
+  @test aromatic(C1["94"],  C2["50"])
+  @test aromatic(C1["96"],  C2["47"])
+  @test aromatic(C1["98"],  C2["103"])
+  @test aromatic(C1["135"], C2["174"])
+
+  @test !aromatic(C1["96"],  C2["50"])
 
 end
