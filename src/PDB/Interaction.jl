@@ -61,10 +61,12 @@ vanderwaalsclash(a::PDBResidue, b::PDBResidue) = any(vanderwaalsclash, a, b, _wi
 # Covalent
 # --------
 
-function covalent(a::PDBAtom, b::PDBAtom)
+function covalent(a::PDBAtom, b::PDBAtom, resname_a, resname_b) # any(... calls it with the res names
   return( distance(a,b) <= get(covalentradius, a.element, 0.0) +
           get(covalentradius, b.element, 0.0) )
 end
+
+covalent(a::PDBAtom, b::PDBAtom) = covalent(a, b, "", "")
 
 covalent(a::PDBResidue, b::PDBResidue) = any(covalent, a, b, _with_cov)
 
