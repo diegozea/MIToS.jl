@@ -211,8 +211,8 @@ end
 
 function _hydrogenbond_don_acc(donor::PDBResidue, acceptor::PDBResidue)
   if donor != acceptor
-    indices_donor = find(ishbonddonor, donor.atoms)
-    indices_acceptor = find(ishbondacceptor, acceptor.atoms)
+    indices_donor = find(x -> ishbonddonor(x, donor.id.name), donor.atoms)
+    indices_acceptor = find(x -> ishbondacceptor(x, acceptor.id.name), acceptor.atoms)
     if length(indices_donor) != 0 && length(indices_acceptor) != 0
       return(_hbond_kernel(donor, acceptor, indices_donor, indices_acceptor))
     end
