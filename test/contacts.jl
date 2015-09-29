@@ -41,7 +41,7 @@ let code = "1IGY"
       @test !ionic(res1, res2)
     end
 
-    if (resnum1 == "211" && resnum1 == "312") || (resnum1 == "212" && resnum1 == "237")
+    if (resnum1 == "211" && resnum2 == "312") || (resnum1 == "212" && resnum2 == "237")
       @test vanderwaals(res1, res2)
     else
       @test !vanderwaals(res1, res2)
