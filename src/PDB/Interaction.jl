@@ -127,7 +127,7 @@ pication(a::PDBResidue, b::PDBResidue) = any(pication, a, b, _iscationicoraromat
 # aromatic(a::PDBResidue, b::PDBResidue) = any(aromatic, a, b, isaromatic)
 
 function aromatic(a::PDBResidue, b::PDBResidue)
-  if a.id.name in _aromatic_res && b.id.name in _aromatic_res
+  if a.id.name in _aromatic_res && b.id.name in _aromatic_res && distance(a, b) <= 6.0
     plane_a = bestoccupancy!(_get_plane(a))
     plane_b = bestoccupancy!(_get_plane(b))
     points_a = Coordinates[ atom.coordinates for atom in plane_a ]
