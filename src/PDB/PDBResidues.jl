@@ -358,13 +358,30 @@ end
 
 function _get_plane(residue::PDBResidue)
   name = residue.id.name
-  plane = PDBAtom[]
-  for atom in residue.atoms
-    if (name, atom.atom) in PDB._aromatic
-      push!(plane, atom)
+  planes = Vector{PDBAtom}[]
+  if name != "TRP"
+    plane = PDBAtom[]
+    for atom in residue.atoms
+      if (name, atom.atom) in PDB._aromatic
+        push!(plane, atom)
+      end
     end
+    push!(planes, plane)
+  else
+    plane1 = PDBAtom[]
+    plane2 = PDBAtom[]
+    for atom in residue.atoms
+      if atom.atom in Set{ASCIIString}(["CE2", "CD2", "CZ2", "CZ3", "CH2", "CE3"])
+        push!(plane1, atom)
+      end
+      if atom.atom in Set{ASCIIString}(["CG", "CD1", "NE1", "CE2", "CD2"])
+        push!(plane2, atom)
+      end
+    end
+    push!(planes, plane1)
+    push!(planes, plane2)
   end
-  plane
+  planes
 end
 
 function bestoccupancy!(atoms::Vector{PDBAtom})
@@ -381,11 +398,17 @@ function bestoccupancy!(atoms::Vector{PDBAtom})
   atoms
 end
 
-function _simple_normal_and_centre(atoms::Vector{PDBAtom})
-  bestoccupancy!(atoms)
-  points = Coordinates[ a.coordinates for a in atoms ]
-  (cross(points[2] - points[1], points[3] - points[1]), sum(points)./length(points))
+function _centre(planes::Vector{Vector{PDBAtom}})
+  subset = Vector{PDBAtom}[ bestoccupancy!(atoms) for atoms in planes ]
+  polyg = Vector{Coordinates}[ Coordinates[ a.coordinates for a in atoms ] for atoms in subset ]
+  Coordinates[ sum(points)./length(points) for  points in polyg ]
 end
+
+# function _simple_normal_and_centre(atoms::Vector{PDBAtom})
+#   bestoccupancy!(atoms)
+#   points = Coordinates[ a.coordinates for a in atoms ]
+#   (cross(points[2] - points[1], points[3] - points[1]), sum(points)./length(points))
+# end
 
 # For Parsing...
 # ==============
