@@ -13,6 +13,7 @@ const covalentradius = Dict{ASCIIString,Float64}("C" => 0.77,
                                                  "S" => 1.04,
                                                  "H" => 0.31 )
 
+# There are not terminals atoms i.e. OXT
 """van der Waals radius in Å from the Additional file 1 of
 Bickerton, G. R., Higueruelo, A. P., & Blundell, T. L. (2011).
 Comprehensive, atomic-level characterization of structurally characterized protein-protein interactions: the PICCOLO database.
@@ -267,6 +268,7 @@ const _aromatic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("HIS","CD2"),
 ("TYR","CG"),
 ("TYR","CZ") ] )
 
+# There are not terminals atoms i.e. OXT
 const _cationic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ARG","CZ"),
 ("ARG","NE"),
 ("ARG","NH1"),
@@ -278,6 +280,7 @@ const _cationic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ARG","CZ"),
 ("HIS","NE2"),
 ("LYS","NZ") ] )
 
+# There are not terminals atoms i.e. OXT
 const _anionic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ASP","CG"),
 ("ASP","OD1"),
 ("ASP","OD2"),

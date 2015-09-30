@@ -50,10 +50,12 @@ vanderwaals(a::PDBResidue, b::PDBResidue) = any(vanderwaals, a, b, _with_vdw)
 # van der Waals clash
 # -------------------
 
-"""Returns dist = 0.0 if the atoms aren't in vanderwaalsradius"""
+"""Returns true if the distance between the atoms is less than the sum of the vanderwaalsradius of the atoms.
+If the atoms aren't on the list (i.e. OXT), the vanderwaalsradius of the element is used.
+If there is not data in the dict,  dist = 0.0 is used."""
 function vanderwaalsclash(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
-  return( distance(a,b) <= get(vanderwaalsradius, (resname_a, a.atom), 0.0) +
-          get(vanderwaalsradius, (resname_b, b.atom), 0.0) )
+  return( distance(a,b) <= get(vanderwaalsradius, (resname_a, a.atom), get(vanderwaalsradius, (resname_a, a.element), 0.0)) +
+          get(vanderwaalsradius, (resname_b, b.atom), get(vanderwaalsradius, (resname_b, b.element), 0.0)) )
 end
 
 vanderwaalsclash(a::PDBResidue, b::PDBResidue) = any(vanderwaalsclash, a, b, _with_vdw)
