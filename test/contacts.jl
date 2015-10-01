@@ -40,25 +40,25 @@ let code = "1IGY"
     @test contact(res1, res2, 6.5)
 
     if resnum2 == "309" && (resnum1 == "184" || resnum1 == "187")
-      @test ionic(res1, res2)
+      @test  ionic(res1, res2)
     else
       @test !ionic(res1, res2)
     end
 
     if (resnum1 == "211" && resnum2 == "312") || (resnum1 == "212" && resnum2 == "237")
-      @test vanderwaals(res1, res2)
+      @test  vanderwaals(res1, res2)
     else
       @test !vanderwaals(res1, res2)
     end
 
     if resnum1 == "212" && resnum2 == "237"
-      @test hydrophobic(res1, res2)
+      @test  hydrophobic(res1, res2)
     else
       @test !hydrophobic(res1, res2)
     end
 
     if resnum1 == "211" && resnum2 == "312"
-      @test vanderwaalsclash(res1, res2)
+      @test  vanderwaalsclash(res1, res2)
     else
       @test !vanderwaalsclash(res1, res2)
     end
@@ -116,8 +116,8 @@ let pdb = read(joinpath(pwd(), "data", "1AKS.xml.gz"), PDBML)
   @test !aromatic(CA["57"], CB["215"])
   @test !aromatic(CA["90"], CB["237"])
 
-  # @test  ionic(CA["87"], CB["245"]) # 1aksAB	A	87	LYS	NZ	B	245	ASN	OXT
-  # @test  ionic(CA["107"],CB["245"])
+  @test  ionic(CA["87"], CB["245"]) # 1aksAB	A	87	LYS	NZ	B	245	ASN	OXT
+  @test  ionic(CA["107"],CB["245"])
   @test  ionic(CA["135"],CB["159"])
 
   @test  covalent(CA["22"], CB["157"])
@@ -162,7 +162,7 @@ let pdb = read(joinpath(pwd(), "data", "1AKS.xml.gz"), PDBML)
                       ("141","155"), ("136","159"), ("100","180"), ("29","198"), ("30","198"), ("45","198"),
                       ("134","161"), ("142","152"), ("144","152"), ("42","195"), ("43","195"), ("57","195"),
                       ("57","214"), ("72","153"), ("73","153"), ("74","153"), ("102","214"), ("143","149"),
-                      ("143","150"), ("144","150"), ("145","146"), ("145","150"), ("100","177"), # ("145","147") # OXT
+                      ("143","150"), ("144","150"), ("145","146"), ("145","150"), ("100","177"), ("145","147"), # OXT
                       ("102","229"), ("91","237"), ("101","234"), ("143","151"), ("121","200"), ("133","162"), ("134","162"), ("137","200")]
 
     @test vanderwaalsclash(CA[res1], CB[res2])
