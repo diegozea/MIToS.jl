@@ -17,6 +17,9 @@ let code = "1IGY"
   pdb = read(txt(code), PDBFile)
   # pdbml = read(xml(code), PDBML)
 
+  # Modify the next line if ligands are added to AtomsData.jl
+  @test sum([ check_atoms_for_interactions(res) for res in pdb ]) == sum([ res.id.group == "ATOM" for res in pdb ])
+
   print("""
 
   All the interface between chain A and D

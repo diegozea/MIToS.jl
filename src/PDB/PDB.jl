@@ -10,7 +10,7 @@ module PDB
   import Base: ==, hash, length, size, -, +, ./, norm, dot, angle, cross, vec, any, print, show, parse
   import MIToS.Utils: findobjects, isobject
 
-  export covalentradius, vanderwaalsradius,
+  export covalentradius, vanderwaalsradius, check_atoms_for_interactions,
 
   PDBResidueIdentifier, Coordinates, PDBAtom, PDBResidue,
   distance, contact, findheavy, findatoms, findCB, selectbestoccupancy, bestoccupancy!,
@@ -32,8 +32,8 @@ module PDB
 
   @residues, residues, @atoms, atoms, @residuesdict, residuesdict
 
-  include("AtomsData.jl")
   include("PDBResidues.jl")
+  include("AtomsData.jl")
   include("Interaction.jl")
   include("PDBMLParser.jl")
   include("PDBParser.jl")
