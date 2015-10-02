@@ -14,7 +14,7 @@ function parse_commandline()
             help = "PDB code"
         "--list", "-l"
             help = "File with a list of PDB codes (one per line)"
-        "--format", "-o"
+        "--format", "-t"
             help = "Format. It should be pdb or xml"
             arg_type = ASCIIString
             default = "xml"
