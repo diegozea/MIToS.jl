@@ -37,6 +37,10 @@ function parse_commandline()
             help = "Group of atoms to be used, should be ATOM, HETATM or * for all"
             arg_type = ASCIIString
             default = "*"
+        "--intra", "-i"
+            help = "Only intra chain distances"
+            arg_type = Bool
+            default = true
         "--gzip", "-z"
             help = "GZipped output"
             arg_type = Bool
@@ -87,18 +91,22 @@ const files = _file_names(parsed)
     dtyp = ascii(Args["distance"])
     form = ascii(Args["format"])
     if form == "pdb"
-      pdb = read(input, PDBFile)
+      res = read(input, PDBFile)
     elseif form == "pdbml"
-      pdb = read(input, PDBML)
+      res = read(input, PDBML)
     else
       throw(ErrorException("--format should be pdb or pdbml."))
     end
-    res = residues(pdb, ascii(Args["model"]), ascii(Args["chain"]), ascii(Args["group"]), "*")
+    res = residues(res, ascii(Args["model"]), ascii(Args["chain"]), ascii(Args["group"]), "*")
     N = length(res)
+    intra = Bool(Args["intra"])
     for i in 1:(N-1)
       for j in (i+1):N
         @inbounds res1 = res[i]
         @inbounds res2 = res[j]
+        if intra && res1.id.chain != res2.id.chain
+          continue
+        end
         dist = distance(res1, res2, criteria=dtyp)
         println(fh, res1.id.model, ",", res1.id.chain, ",", res1.id.group, ",", res1.id.PDBe_number, ",", res1.id.number, ",", res1.id.name, ",",
                 res2.id.model, ",", res2.id.chain, ",", res2.id.group, ",", res2.id.PDBe_number, ",", res2.id.number, ",", res2.id.name, ",",
