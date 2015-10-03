@@ -312,3 +312,52 @@ let data = readdlm(gao11_buslje09("MI_APC_clustering")); results = buslje09(Gaoe
 end
 
 # TO DO: Test labels!
+
+print("""
+
+Test for BLMI
+=============
+""")
+
+let file = joinpath(pwd(), "data", "simple.fasta"),
+    busl = buslje09(file, FASTA),
+    blmi = BLMI(file, FASTA)
+
+  @test_approx_eq busl[1] blmi[1]
+  @test_approx_eq busl[2] blmi[2]
+end
+
+print("""
+
+Test for Pairwise Gap Percentage
+================================
+""")
+
+let file = joinpath(pwd(), "data", "simple.fasta"),
+    mat = [ 0. 0.
+            0. 0. ]
+
+  (gu, gi) = pairwisegappercentage(file, FASTA)
+
+  @test gu == mat
+  @test gi == mat
+end
+
+let file = joinpath(pwd(), "data", "gaps.txt")
+
+  gu, gi = pairwisegappercentage(file, Raw)
+  cl = hobohmI(read(file, Raw), 0.62)
+  ncl = getnclusters(cl)
+
+  @test_approx_eq gu[1, 1] 0.0
+  @test_approx_eq gi[1, 1] 0.0
+
+  @test_approx_eq gu[1, 2] getweight(cl, 10)/ncl
+  @test_approx_eq gi[1, 2] 0.0
+
+  @test_approx_eq gu[10, 9] (ncl - getweight(cl, 1))/ncl
+  @test_approx_eq gi[10, 9] (ncl - getweight(cl, 1) - getweight(cl, 2))/ncl
+
+  @test_approx_eq gu[10, 10] (ncl - getweight(cl, 1))/ncl
+  @test_approx_eq gu[10, 10] (ncl - getweight(cl, 1))/ncl
+end

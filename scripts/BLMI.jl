@@ -10,8 +10,7 @@ import PairwiseListMatrices
 @everywhere using PairwiseListMatrices
 
 function parse_commandline()
-    s = ArgParseSettings(description = """Calculates and saves on *.busjle09.csv a Z score and a corrected MI/MIp as described on:\n\n\n
-    Buslje, C. M., Santos, J., Delfino, J. M., & Nielsen, M. (2009). Correction for phylogeny, small number of observations and data redundancy improves the identification of coevolving amino acid pairs using mutual information. Bioinformatics, 25(9), 1125-1131.""",
+    s = ArgParseSettings(description = """Calculates and saves on *.BLMI.csv a Z score and a corrected MI/MIp using BLOSUM62 based pseudo frequencies and clustering of sequences using Hobohm I.""",
                         version = "MIToS $(Pkg.installed("MIToS"))",
                         add_version = true)
 
@@ -24,16 +23,12 @@ function parse_commandline()
             help = "Format of the MSA: stockholm, raw or fasta"
             arg_type = ASCIIString
             default = "stockholm"
-        "--lambda", "-a"
-            help = "Low count value"
+        "--beta", "-b"
+            help = "β for BLOSUM62 pseudo frequencies"
             arg_type = Float64
-            default = 0.05
-        "--clustering", "-c"
-            help = "Sequence clustering (Hobohm I)"
-            arg_type = Bool
-            default = true
+            default = 4.6
         "--threshold", "-i"
-            help = "Percent identity threshold for clustering"
+            help = "Percent identity threshold for sequence clustering (Hobohm I)"
             arg_type = Float64
             default = 0.62
         "--maxgap", "-g"
@@ -44,10 +39,6 @@ function parse_commandline()
             help = "Use APC correction (MIp)"
             arg_type = Bool
             default = true
-        "--usegap", "-G"
-            help = "Use gaps on statistics"
-            arg_type = Bool
-            default = false
         "--samples", "-s"
             help = "Number of samples for Z-score"
             arg_type = Int
@@ -89,13 +80,11 @@ const files = _file_names(parsed)
 @everywhere Args = remotecall_fetch(1,()->parsed) # Parsed ARGS for each worker
 @everywhere FileList = remotecall_fetch(1,()->files) # List of Files for each worker
 
+# TO DO -----------------------------------------------------------------------
 @everywhere function main(input) # input must be a file
   name, ext = splitext(input)
-  fh = open(string(name, ".buslje09.csv"), "w")
-  println(fh, "# MIToS ", Pkg.installed("MIToS"), " Buslje09.jl ", now())
-  println(fh, "# \tBuslje, C. M., Santos, J., Delfino, J. M., & Nielsen, M. (2009).")
-  println(fh, "# \tCorrection for phylogeny, small number of observations and data redundancy improves the identification of coevolving amino acid pairs using mutual information.")
-  println(fh, "# \tBioinformatics, 25(9), 1125-1131.""")
+  fh = open(string(name, ".BLMI.csv"), "w")
+  println(fh, "# MIToS ", Pkg.installed("MIToS"), " BLMI.jl ", now())
   println(fh, "# used arguments:")
   for (key, value) in Args
     println(fh, "# \t", key, "\t\t", value)
@@ -111,11 +100,9 @@ const files = _file_names(parsed)
     else
       throw(ErrorException("--format should be stockholm, raw or fasta."))
     end
-    zscore, mip = buslje09(msa,lambda=Args["lambda"],
-                               clustering=Args["clustering"], threshold=Args["threshold"],
-                               maxgap=Args["maxgap"], apc=Args["apc"], samples=Args["samples"],
-                               usegap=Args["usegap"], fixedgaps=Args["fixedgaps"])
-    println(fh, "i,j,", Args["apc"] ? "ZMIp" : "ZMI", ",", Args["apc"] ? "MIp" : "MI")
+    zscore, mip = BLMI(msa, beta=Args["beta"], threshold=Args["threshold"],
+                       maxgap=Args["maxgap"], apc=Args["apc"], samples=Args["samples"], fixedgaps=Args["fixedgaps"])
+    println(fh, "i,j,", Args["apc"] ? "BLZMIp" : "BLZMI", ",", Args["apc"] ? "BLMIp" : "BLMI")
     table = hcat(to_table(zscore, false), to_table(mip, false)[:,3])
     writecsv(fh, table)
   catch err
@@ -125,5 +112,6 @@ const files = _file_names(parsed)
     close(fh)
   end
 end
+# -----------------------------------------------------------------------------
 
 pmap(main, FileList) # Run each file in parallel (with -l)

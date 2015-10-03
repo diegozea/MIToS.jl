@@ -157,3 +157,17 @@ function estimate{B}(measure::MutualInformationOverEntropy{B}, table)
     return(zero(B))
   end
 end
+
+# Pairwise Gap Percentage
+# =======================
+
+immutable GapUnionPercentage{T} <: SymmetricMeasure{T} end
+immutable GapIntersectionPercentage{T} <: SymmetricMeasure{T} end
+
+function estimate{B, T}(measure::GapIntersectionPercentage{B}, nxy::ResidueCount{T, 2, true})
+  B(nxy[21, 21]) / B(sum(nxy))
+end
+
+function estimate{B, T}(measure::GapUnionPercentage{B}, nxy::ResidueCount{T, 2, true})
+  B(nxy.marginals[21, 1] + nxy.marginals[21, 2] - nxy[21, 21]) / B(sum(nxy))
+end

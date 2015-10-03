@@ -108,3 +108,21 @@ print("""
 MI(X,Y,Z) <= min{ H(X,Y), H(X,Z), H(Y,Z) }
 """)
 @test_approx_eq estimate(MutualInformation{BigFloat}(), Psss) estimate(MutualInformation{BigFloat}(),Pss)
+
+print("""
+
+Pairwise Gap Percentage
+-----------------------
+""")
+
+@test estimate(GapUnionPercentage{Float64}(),        count(res"AA--", res"--AA", usegap=true)) == 1.0
+@test estimate(GapIntersectionPercentage{Float64}(), count(res"AA--", res"--AA", usegap=true)) == 0.0
+
+@test estimate(GapUnionPercentage{Float64}(),        count(res"AA--", res"--AA", usegap=true, weight=Float64[.25, .25, .25, .25])) == 1.0
+@test estimate(GapIntersectionPercentage{Float64}(), count(res"AA--", res"--AA", usegap=true, weight=Float64[.25, .25, .25, .25])) == 0.0
+
+@test estimate(GapUnionPercentage{Float64}(),        count(res"AAA-", res"AA--", usegap=true)) == 0.5
+@test estimate(GapIntersectionPercentage{Float64}(), count(res"AAA-", res"AA--", usegap=true)) == 0.25
+
+@test estimate(GapUnionPercentage{Float64}(),        count(res"AAA-", res"AA--", usegap=true, weight=Float64[.2, .2, .2, .4])) == 0.6
+@test estimate(GapIntersectionPercentage{Float64}(), count(res"AAA-", res"AA--", usegap=true, weight=Float64[.2, .2, .2, .4])) == 0.4

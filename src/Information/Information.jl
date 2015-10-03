@@ -16,12 +16,13 @@ module Information
   InformationMeasure, SymmetricMeasure, Entropy,
   MutualInformation, MutualInformationOverEntropy,
   estimate, estimate_on_marginal,
+  GapUnionPercentage, GapIntersectionPercentage,
 
   estimateincolumns, estimateinsequences,
 
   APC!,
 
-  buslje09
+  buslje09, BLMI, pairwisegappercentage
 
   include("BLOSUM62.jl")
   include("Probabilities.jl")
