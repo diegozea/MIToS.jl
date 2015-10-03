@@ -3,7 +3,9 @@
 using ArgParse
 
 import MIToS.PDB
+import GZip
 @everywhere using MIToS.PDB
+@everywhere using GZip
 
 function parse_commandline()
     s = ArgParseSettings(description = "Calculates residues distance and writes them into a *.distances.csv file.",
@@ -35,6 +37,10 @@ function parse_commandline()
             help = "Group of atoms to be used, should be ATOM, HETATM or * for all"
             arg_type = ASCIIString
             default = "*"
+        "--gzip", "-z"
+            help = "GZipped output"
+            arg_type = Bool
+            default = true
     end
 
     s.epilog = """
@@ -70,7 +76,7 @@ const files = _file_names(parsed)
 
 @everywhere function main(input) # input must be a file
   name, ext = splitext(input)
-  fh = open(string(name, ".distances.csv"), "w")
+  fh = Args["gzip"] ? GZip.open(string(name, ".distances.csv.gz"), "w") : open(string(name, ".distances.csv"), "w")
   println(fh, "# MIToS ", Pkg.installed("MIToS"), " Distances.jl ", now())
   println(fh, "# used arguments:")
   for (key, value) in Args
