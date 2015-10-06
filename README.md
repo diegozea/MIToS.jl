@@ -1,5 +1,5 @@
 # MIToS
-## Mutual Information Tools for protein Sequence analysis in Julia
+### Mutual Information Tools for protein Sequence analysis in Julia  
 
 Linux, OSX: [![Build Status](https://travis-ci.org/diegozea/MIToS.jl.svg?branch=master)](https://travis-ci.org/diegozea/MIToS.jl)
 
@@ -10,5 +10,5 @@ Code Coverage: [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/
 
 
 
-#### Structural Bioinformatics Unit
+#### Structural Bioinformatics Unit  
 [![FIL](http://mistic.leloir.org.ar/imgs/logo_horizontal.png)](http://www.leloir.org.ar/)
