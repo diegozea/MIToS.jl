@@ -4,10 +4,10 @@
 @auto_hash_equals immutable PDBResidueIdentifier
   PDBe_number::ASCIIString # PDBe
   number::ASCIIString # PDB
-	name::ASCIIString
-	group::ASCIIString
-	model::ASCIIString
-	chain::ASCIIString
+  name::ASCIIString
+  group::ASCIIString
+  model::ASCIIString
+  chain::ASCIIString
 end
 
 @auto_hash_equals immutable Coordinates # <: FixedVectorNoTuple{Float64, 3}
