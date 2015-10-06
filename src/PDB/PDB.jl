@@ -23,7 +23,7 @@ module PDB
   stridehydrogenbond, chimerahydrogenbond,
 
   #getpdbmlatoms,
-  PDBFile, PDBML, downloadpdb,
+  PDBFile, PDBML, downloadpdb, getpdbdescription,
 
   #getpdbatoms,
 

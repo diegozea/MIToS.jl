@@ -220,3 +220,12 @@ let code = "1IAO"
   @test pdbml_B[ findobjects(pdbml_B, Is(:number, "188"))[1]  + 1].id.number == "1T"
   @test pdbml_B[ findobjects(pdbml_B, Is(:number, "1T"))[1]   + 1].id.number == "2T"
 end
+
+print("""
+
+RESTful PDB Interface
+=====================
+""")
+
+@test getpdbdescription("4HHB")["resolution"] == "1.74"
+@test_throws KeyError getpdbdescription("104D")["resolution"] # NMR

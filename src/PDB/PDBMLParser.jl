@@ -92,3 +92,21 @@ function downloadpdb(pdbcode::ASCIIString; format::ASCIIString="xml", outfile::A
     throw(string(pdbcode, " is not a correct PDB code"))
   end
 end
+
+# RESTful PDB interface
+# =====================
+
+"""
+Access general information about a PDB entry (e.g., Header information) using the RESTful interface of the PDB database (describePDB).
+Returns a Dict for the four character `pdbcode`.
+"""
+function getpdbdescription(pdbcode::ASCIIString)
+  if length(pdbcode)== 4
+        query = string("http://www.rcsb.org/pdb/rest/describePDB?structureId=", lowercase(pdbcode))
+        xmlroot = root(parse_file(download(query)))
+        description = get_elements_by_tagname(xmlroot, "PDB")[1]
+        return( attributes_dict(description) )
+  else
+    throw(string(pdbcode, " is not a correct PDB code"))
+  end
+end
