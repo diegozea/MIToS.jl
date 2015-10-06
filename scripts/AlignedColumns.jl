@@ -6,7 +6,7 @@ using MIToS.MSA
 function parse_commandline()
     s = ArgParseSettings(description = """Creates a file in Stockholm format with the aligned columns from a Pfam Stockholm file.
     Insertions are deleted, as they are unaligned in a proﬁle HMM.
-    The output file *.aligned.* contains as annotations Uniprot residue number mapped to column numbers in the original MSA.""",
+    The output file *.aligned.* contains as annotations UniProt residue numbers and column numbers in the original MSA.""",
                         version = "MIToS $(Pkg.installed("MIToS"))",
                         add_version = true)
 
