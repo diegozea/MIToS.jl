@@ -34,14 +34,14 @@ MIToS starting point was an improvement of the algorithm published by Buslje et.
     * `MutualInformationOverEntropy`
   * Corrections to the MI values for co-evolution estimation:
     * `APC!` for MIp
-    * `buslje09` for the Z score and MIp from Buslje et. al. [1]
+    * `buslje09` for the Z score and MIp from Buslje et. al. 2009 [1]
 * **Utils** for common utils functions and types for MIToS.
 
 #### Scripts   
 
 **MIToS** implements several useful scripts for command line execution (without requiring Julia coding):  
   
-* **Buslje09.jl** : Calculates a Z score and a corrected MI/MIp as described on Buslje et. al. [1].
+* **Buslje09.jl** : Calculates a Z score and a corrected MI/MIp as described on Buslje et. al. 2009 [1].
 * **DownloadPDB.jl** : Download gzipped files from PDB.
 * **Distances.jl** : Calculates residues distance from a PDB file.
 * **SplitStockholm.jl** : Splits a Stockholm file with multiple alignments into one compressed file per MSA
