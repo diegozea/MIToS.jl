@@ -4,9 +4,9 @@ using ArgParse
 using MIToS.MSA
 
 function parse_commandline()
-    s = ArgParseSettings(description = """Creates a Stockholm file with the aligned columns from a Pfam Stockholm file.
-    Insertions are deleted, since they are unaligned in a proﬁle HMM.
-    The output file *.aligned.* contains as annotations the mappings for the sequences (residue number in uniprot) and the columns in the original MSA.""",
+    s = ArgParseSettings(description = """Creates a file in Stockholm format with the aligned columns from a Pfam Stockholm file.
+    Insertions are deleted, as they are unaligned in a proﬁle HMM.
+    The output file *.aligned.* contains as annotations Uniprot residue number mapped to column numbers in the original MSA.""",
                         version = "MIToS $(Pkg.installed("MIToS"))",
                         add_version = true)
 
