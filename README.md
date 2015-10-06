@@ -7,7 +7,7 @@ Windows: [![Build status](https://ci.appveyor.com/api/projects/status/h6o72b5dtd
 
 Code Coverage: [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/diegozea/MIToS.jl?branch=master) [![codecov.io](http://codecov.io/github/diegozea/MIToS.jl/coverage.svg?branch=master)](http://codecov.io/github/diegozea/MIToS.jl?branch=master)
 
-This implements Mutual Information (MI) analysis and several useful tools for Multiple Sequence Alignments (MSA)s and PDB structures management in Julia language. MI is useful for determining covariation between positions in a MSA. Mutual information derived scores can be useful for determining structural contacts and functional sites on proteins [1,2].
+This implementation of Mutual Information (MI) analysis and several useful tools for Multiple Sequence Alignments (MSA)s and PDB structures management in Julia language. MI is useful for determining covariation between positions in a MSA. Mutual information derived scores can be useful for determining structural contacts and functional sites on proteins [1,2].
 
 MIToS starting point was an improvement of the algorithm published by Buslje et. al. [1]. A BLOSUM62-based pseudocount strategy, similar to Altschul et. al. [3], was implemented for getting a better performance with few number of sequences in the MSA. **MIToS** implements all the necessary tools for using, developing and testing scores based on MI in different modules:   
 
