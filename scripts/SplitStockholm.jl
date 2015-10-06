@@ -5,7 +5,7 @@ using GZip
 using MIToS.Utils # get_n_words, check_file
 
 function parse_commandline()
-    s = ArgParseSettings(description = "Splits a Stockholm file with multiple alignments into one compressed file per MSA: accessionumber.gz",
+    s = ArgParseSettings(description = "Splits a file with multiple sequence alignments in Stockholm format, creating one compressed file per MSA in Stockholm format: accessionumber.gz",
                          version = "MIToS $(Pkg.installed("MIToS"))",
                          add_version = true)
 
@@ -25,7 +25,7 @@ function parse_commandline()
     MIToS $(Pkg.installed("MIToS"))\n
     \n
     Bioinformatics Unit\n
-    Institute Leloir Foundation\n
+    Leloir Institute Foundation\n
     Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina
     """
 
