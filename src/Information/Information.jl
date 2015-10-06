@@ -8,8 +8,8 @@ module Information
   export BLOSUM62_Pi, BLOSUM62_Pij,
 
   SequenceWeights, Pseudocount, AdditiveSmoothing,
-	ResidueContingencyTables, ResidueCount, ResidueProbability,
-	nresidues, update!, apply_pseudocount!, count!, normalize!,
+  ResidueContingencyTables, ResidueCount, ResidueProbability,
+  nresidues, update!, apply_pseudocount!, count!, normalize!,
   blosum_pseudofrequencies!, apply_pseudofrequencies!, probabilities,
   delete_dimensions!, delete_dimensions,
 
