@@ -54,7 +54,7 @@ function parse_commandline()
     MIToS $(Pkg.installed("MIToS"))\n
     \n
     Bioinformatics Unit\n
-    Institute Leloir Foundation\n
+    Leloir Institute Foundation\n
     Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina
     """
 
