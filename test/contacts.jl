@@ -15,10 +15,25 @@ print("""
 
 let code = "1IGY"
   pdb = read(txt(code), PDBFile)
-  # pdbml = read(xml(code), PDBML)
 
   # Modify the next line if ligands are added to AtomsData.jl
   @test sum([ check_atoms_for_interactions(res) for res in pdb ]) == sum([ res.id.group == "ATOM" for res in pdb ])
+
+  print("""
+
+  Test findheavy
+  """)
+
+  for res in pdb
+    heavy = findheavy(res)
+    for i in 1:length(res.atoms)
+      if i in heavy
+        @test res.atoms[i].element != "H"
+      else
+        @test res.atoms[i].element == "H"
+      end
+    end
+  end
 
   print("""
 

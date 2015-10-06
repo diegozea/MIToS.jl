@@ -22,10 +22,7 @@ module PDB
   aromaticsulphur, pication, aromatic, ionic, hydrophobic,
   stridehydrogenbond, chimerahydrogenbond,
 
-  #getpdbmlatoms,
   PDBFile, PDBML, downloadpdb, getpdbdescription,
-
-  #getpdbatoms,
 
   # Mitos.Utils
   isobject, findobjects, Is, Not, In, collectobjects, collectcaptures,
