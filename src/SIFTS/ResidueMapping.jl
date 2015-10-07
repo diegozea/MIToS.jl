@@ -187,6 +187,9 @@ _parse(::Type{Int}, str) = parse(Int, str)
 _parse(::Type{ASCIIString}, str) = ascii(str)
 @inline _parse(::Type{ASCIIString}, str::ASCIIString) = str
 
+"""Parses a SIFTS XML file and returns a `Dict` between residue numbers of two `DataBase`s  with the given identifiers.
+A `chain` could be specified ("all" by default). 
+If `missings` is `true` (default) all the residues are used, even if they haven’t coordinates in the PDB file."""
 function siftsmapping{F, T}(filename::AbstractString,
                             db_from::Type{F}, id_from::ASCIIString,
                             db_to::Type{T}, id_to::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
