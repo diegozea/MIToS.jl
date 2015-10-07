@@ -3,11 +3,11 @@ import Base: read
 using GZip
 using LightXML
 
-"""
-`Format` is used for write special `parse` (and `read`) methods on it.
-"""
+"`Format` is used for write special `parse` (and `read`) methods on it."
 abstract Format
 
+"""Returns the `filename`. 
+Throws an `ErrorException` if the file doesn't exist, or a warning if the file is empty."""
 function check_file(filename)
   if !isfile(filename)
     throw(ErrorException(string(filename, " doesn't exist!")))
