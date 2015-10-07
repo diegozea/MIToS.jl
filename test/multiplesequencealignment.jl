@@ -50,6 +50,8 @@ end
 @test pfam.annotations.columns["seq_cons"] == "...NshphAclhaKILppKtElolEDIlAQFEISsosAYsI.+sL+hICEpH.-ECpsppKsRKTlhh.hKpEphppptpEp..ppItKIhsAp................"
 @test pfam.annotations.sequences[("F112_SSV1/3-112","DR")] == "PDB; 2VQC A; 4-73;"
 
+@test getseq2pdb(pfam)["F112_SSV1/3-112"] == [("2VQC","A")]
+
 print("""
 Test parse for string inputs
 """)

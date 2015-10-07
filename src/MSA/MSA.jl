@@ -38,7 +38,7 @@ module MSA
 
   Raw,
 
-  Stockholm, downloadpfam,
+  Stockholm, downloadpfam, getseq2pdb,
 
   FASTA,
 
