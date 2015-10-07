@@ -24,7 +24,7 @@ MIToS starting point was an improvement of the algorithm published by Buslje et.
 * **SIFTS** has functions for downloading and parsing PDB SIFTS XML files:  
   * `DataBase` and subtypes `db...` (i.e. `dbUniProt`) for a residue-level mapping between databases.
   * `siftsmapping` function to allow an easy-to-use `Dict` mapping. 
-  * `SIFTSResidue` type for a low-level interface to the SIFTS mapping.
+  * `SIFTSResidue` is a immutable composite types with the SIFTS mapping for the residue.
 * **Information** functions and types for measuring information content:  
   * BLOSUM62 probabilities: `BLOSUM62_Pi` and `BLOSUM62_Pij`
   * `ResidueContingencyTables` for counting or store the probabilities of `Residues` (using the 20 residues BLOSUM62 alphabet) it also allows gaps count.
