@@ -16,7 +16,7 @@ MIToS starting point was an improvement of the algorithm published by Buslje et.
   * `Annotations` can store the sequence and column mapping after operations like `gapstrip!` or `adjustreference!`.
   * Read and write `FASTA`, `Stockholm` or `Raw` formats.
   * Functions for shuffling the MSA: `shuffle_...`
-* **Clustering** defines a `Clusters` type for clustering sequences from a MSA and implements Hobohm I [4] for sequence weighting: `hobohmI`  
+* **Clustering** defines a `Clusters` type with the clusters information of the sequences in an MSA. `hobohmI` implements Hobohm I algorithm [4] and gives sequence weights according to the number of sequences in the clusters. 
 * **PDB** defines fuctions for parsing and working with `PDBFile` and `PDBML` formats:  
   * Defines the types: `PDBResidue`, `PDBResidueIdentifier`, `PDBAtom`, `Coordinates`
   * Functions for estimation of `distance` , `contact` between `PDBResidue`s and type of interactions as: `vanderwaals`, `ionic`, etc.
