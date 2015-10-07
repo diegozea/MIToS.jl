@@ -33,7 +33,7 @@ MIToS starting point was an improvement of the algorithm published by Buslje et.
     * `MutualInformation`
     * `MutualInformationOverEntropy`
   * Corrections to the MI values for co-evolution estimation:
-    * `APC!` for MIp
+    * `APC!` for MIp [5]
     * `buslje09` for the Z score and MIp from Buslje et. al. 2009 [1]
 * **Utils** for common utils functions and types in MIToS.
 
@@ -54,6 +54,7 @@ MIToS starting point was an improvement of the algorithm published by Buslje et.
 2. Buslje, C. M., Teppa, E., Di Doménico, T., Delfino, J. M., & Nielsen, M. **Networks of high mutual information define the structural proximity of catalytic sites: implications for catalytic residue identification.** *PLoS Comput Biol 2010*, 6(11), e1000978-e1000978.
 3. Altschul, S. F., Madden, T. L., Schäffer, A. A., Zhang, J., Zhang, Z., Miller, W., & Lipman, D. J. **Gapped BLAST and PSI-BLAST: a new generation of protein database search programs.** *Nucleic acids research 1997*, 25(17), 3389-3402.
 4. Hobohm, U., Scharf, M., Schneider, R., & Sander, C. **Selection of representative protein data sets.** *Protein Science 1992*, 1(3), 409-417.
+5. Dunn, Stanley D., Lindi M. Wahl, and Gregory B. Gloor. **Mutual information without the influence of phylogeny or entropy dramatically improves residue contact prediction.** *Bioinformatics 2008*, 24(3), 333-340.
 
 
 #### Structural Bioinformatics Unit  
