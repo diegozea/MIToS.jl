@@ -7,27 +7,27 @@ Windows: [![Build status](https://ci.appveyor.com/api/projects/status/h6o72b5dtd
 
 Code Coverage: [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/diegozea/MIToS.jl?branch=master) [![codecov.io](http://codecov.io/github/diegozea/MIToS.jl/coverage.svg?branch=master)](http://codecov.io/github/diegozea/MIToS.jl?branch=master)
 
-This implementation of Mutual Information (MI) analysis and several useful tools for Multiple Sequence Alignments (MSA)s and PDB structures management in Julia language. MI is useful for determining covariation between positions in a MSA. Mutual information derived scores can be useful for determining structural contacts and functional sites on proteins [1,2].
+MIToS is an environment for Mutual Information (MI) analysis and implements several useful tools for Multiple Sequence Alignments (MSAs) and PDB structures management in Julia language. MI allows determining covariation between positions in a MSA. MI derived scores are good predictors of residue contacts and functional sites in proteins [1,2].
 
-MIToS starting point was an improvement of the algorithm published by Buslje et. al. [1]. A BLOSUM62-based pseudocount strategy, similar to Altschul et. al. [3], was implemented for getting a better performance with few number of sequences in the MSA. **MIToS** implements all the necessary tools for using, developing and testing scores based on MI in different modules:   
+MIToS starting point was an improvement of the algorithm published by Buslje et. al. [1]. A BLOSUM62-based pseudocount strategy, similar to Altschul et. al. [3], was implemented for a better performance in the range of MSAs with low number of sequences. **MIToS** offers all the necessary tools for using, developing and testing MI based scores, in different modules:   
 
 * **MSA** defines multiple functions and types for dealing with MSAs:  
-  * `AnnotatedMultipleSequenceAlignment` is a type for saves a MSA and its `Annotations`, useful for working with MSAs on `Stockholm`/Pfam format. 
+  * `AnnotatedMultipleSequenceAlignment` is a type for saving MSAs and their  `Annotations`, it is useful for working on MSAs in `Stockholm` format. 
   * `Annotations` can store the sequence and column mapping after operations like `gapstrip!` or `adjustreference!`.
   * Read and write `FASTA`, `Stockholm` or `Raw` formats.
   * Functions for shuffling the MSA: `shuffle_...`
 * **Clustering** defines a `Clusters` type for clustering sequences from a MSA and implements Hobohm I [4] for sequence weighting: `hobohmI`  
 * **PDB** defines fuctions for parsing and working with `PDBFile` and `PDBML` formats:  
   * Defines the types: `PDBResidue`, `PDBResidueIdentifier`, `PDBAtom`, `Coordinates`
-  * Functions for estimation of `distance` and `contact` between `PDBResidue`s, also another type of interactions like: `vanderwaals`, `ionic`, etc.
+  * Functions for estimation of `distance` , `contact` between `PDBResidue`s and type of interactions as: `vanderwaals`, `ionic`, etc.
   * Macros and functions for getting residues or atoms from a list/vector of residues, i.e.: `@residues`
-* **SIFTS** has functions for download and parse per PDB SIFTS XML files:  
-  * `DataBase` and subtypes `db...` (i.e. `dbUniProt`) for a residue level mapping between databases.
-  * `siftsmapping` function for getting a easy-to-use `Dict` mapping. 
-  * `SIFTSResidue` type for a low level interface to the SIFTS mapping.
-* **Information** has functions and types for measuring information content:  
+* **SIFTS** has functions for downloading and parsing PDB SIFTS XML files:  
+  * `DataBase` and subtypes `db...` (i.e. `dbUniProt`) for a residue-level mapping between databases.
+  * `siftsmapping` function to allow an easy-to-use `Dict` mapping. 
+  * `SIFTSResidue` type for a low-level interface to the SIFTS mapping.
+* **Information** functions and types for measuring information content:  
   * BLOSUM62 probabilities: `BLOSUM62_Pi` and `BLOSUM62_Pij`
-  * `ResidueContingencyTables` for counting or store the probabilities of `Residues` (using the 20 residues BLOSUM62 alphabet and allows to count gaps)
+  * `ResidueContingencyTables` for counting or store the probabilities of `Residues` (using the 20 residues BLOSUM62 alphabet) it also allows gaps count.
   * `InformationMeasure`s:
     * `Entropy`
     * `MutualInformation`
@@ -35,18 +35,18 @@ MIToS starting point was an improvement of the algorithm published by Buslje et.
   * Corrections to the MI values for co-evolution estimation:
     * `APC!` for MIp
     * `buslje09` for the Z score and MIp from Buslje et. al. 2009 [1]
-* **Utils** for common utils functions and types for MIToS.
+* **Utils** for common utils functions and types in MIToS.
 
 #### Scripts   
 
 **MIToS** implements several useful scripts for command line execution (without requiring Julia coding):  
   
 * **Buslje09.jl** : Calculates a Z score and a corrected MI/MIp as described on Buslje et. al. 2009 [1].
-* **DownloadPDB.jl** : Download gzipped files from PDB.
-* **Distances.jl** : Calculates residues distance from a PDB file.
+* **DownloadPDB.jl** : Downloads gzipped files from PDB.
+* **Distances.jl** : Calculates residues distances in a PDB file.
 * **SplitStockholm.jl** : Splits a Stockholm file with multiple alignments into one compressed file per MSA
-* **AlignedColumns.jl** : Creates a Stockholm file with the aligned columns from a Pfam Stockholm file (insertions are deleted) saving the mapping for the sequences (residue number in UniProt) and the columns in the original MSA.
-* **MSADescription.jl** : Calclulates from a Stockholm file the number of columns, sequences and clusters after Hobohm I clustering at 62% identity. Also gives the mean, standard deviation and quantiles of: sequence coverage of the MSA, gap percentage.
+* **AlignedColumns.jl** : Creates a Stockholm file with the aligned columns from a Pfam Stockholm file (insertions are deleted) saving the mapping (residue number in UniProt) and the columns in the original MSA.
+* **MSADescription.jl** : Calclulates the number of columns, sequences and clusters after Hobohm I clustering at 62% identity given a stockholm file as imput. It also gives the mean, standard deviation and quantiles of: sequence coverage of the MSA and gap percentage.
 
 #### References  
 
