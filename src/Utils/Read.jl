@@ -17,6 +17,9 @@ function check_file(filename)
   filename
 end
 
+"Returns `true` if the file exists and isn't empty."
+isnotemptyfile(filename) = isfile(filename) && filesize(filename) > 0    
+
 function _read(completename, filename, format, args...; kargs...) # for using with download, since filename doesn't have file extension
   check_file(filename)
   if endswith(completename, ".xml.gz") || endswith(completename, ".xml")
