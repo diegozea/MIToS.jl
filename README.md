@@ -1,6 +1,8 @@
 # MIToS
 ### Mutual Information Tools for protein Sequence analysis
 
+Julia 0.4: [![MIToS](http://pkg.julialang.org/badges/MIToS_0.4.svg)](http://pkg.julialang.org/?pkg=MIToS)  
+
 Linux, OSX: [![Build Status](https://travis-ci.org/diegozea/MIToS.jl.svg?branch=master)](https://travis-ci.org/diegozea/MIToS.jl)
 
 Windows: [![Build status](https://ci.appveyor.com/api/projects/status/h6o72b5dtdeto336/branch/master?svg=true)](https://ci.appveyor.com/project/diegozea/mitos-jl/branch/master)
