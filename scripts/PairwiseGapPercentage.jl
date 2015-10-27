@@ -27,6 +27,7 @@ function parse_commandline()
             help = "Sequence clustering (Hobohm I)"
             arg_type = Bool
             default = true
+            eval_arg = true
         "--threshold", "-i"
             help = "Percent identity threshold for clustering"
             arg_type = Float64

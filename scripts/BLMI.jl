@@ -39,6 +39,7 @@ function parse_commandline()
             help = "Use APC correction (MIp)"
             arg_type = Bool
             default = true
+            eval_arg = true
         "--samples", "-s"
             help = "Number of samples for Z-score"
             arg_type = Int
@@ -47,6 +48,7 @@ function parse_commandline()
             help = "Fix gaps positions for the random samples"
             arg_type = Bool
             default = true
+            eval_arg = true
     end
 
     s.epilog = """

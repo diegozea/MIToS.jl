@@ -41,10 +41,12 @@ function parse_commandline()
             help = "Only intra chain distances"
             arg_type = Bool
             default = true
+            eval_arg = true
         "--gzip", "-z"
             help = "GZipped output"
             arg_type = Bool
             default = true
+            eval_arg = true
     end
 
     s.epilog = """

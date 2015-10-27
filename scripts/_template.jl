@@ -23,6 +23,7 @@ function parse_commandline()
             help = "Argument"
             arg_type = Int
             default = 0
+          # eval_arg = true for arg_type = Bool
 # -----------------------------------------------------------------------------
     end
 
