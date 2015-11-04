@@ -3,8 +3,9 @@ os:
   - linux
   - osx
 julia:
+  - 0.4
 #  - release
-  - nightly
+#  - nightly
 notifications:
   email: false
 script:

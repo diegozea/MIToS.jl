@@ -86,25 +86,26 @@ end
 
 call{T}(::Type{MutualInformation{T}}) = MutualInformation(T(Base.e))
 
+@inline _mi{T}(::Type{T}, pij, pi, pj) = ifelse(pij > zero(T) && pi > zero(T), T(pij * log(pij/(pi*pj))), zero(T))
+
 """```estimate(MutualInformation(), pxy::ResidueProbability [, base])```
 
 Calculate Mutual Information from `ResidueProbability`. The result type is determined by `base`."""
 function estimate{B, T, UseGap}(measure::MutualInformation{B}, pxy::ResidueProbability{T, 2,UseGap})
-  MI = zero(T)
+  MI = zero(B)
+  marginals = pxy.marginals
   @inbounds for j in 1:nresidues(pxy)
-    pj = pxy.marginals[j,2]
+    pj = marginals[j,2]
     if pj > 0.0
-      for i in 1:nresidues(pxy)
-        pi = pxy.marginals[i,1]
-        pij = pxy[i,j]
-        if pij > 0.0 && pi > 0.0
-          MI +=  pij * log(pij/(pi*pj))
-        end
+      @inbounds @simd for i in 1:nresidues(pxy)
+        MI +=  _mi(B, pxy[i,j], marginals[i,1], pj)
       end
     end
   end
   MI/log(measure.base)
 end
+
+@inline _mi{T}(N::T, nij, ni, nj) = ifelse(nij > zero(T) && ni > zero(T), T(nij * log((N * nij)/(ni * nj))), zero(T))
 
 """```estimate(MutualInformation(), pxy::ResidueCount [, base])```
 
@@ -113,15 +114,12 @@ It's the fastest option (you don't spend time on probability calculations)."""
 function estimate{B, T, UseGap}(measure::MutualInformation{B}, nxy::ResidueCount{T, 2,UseGap})
   MI = zero(B)
   N = B(nxy.total)
+  marginals = nxy.marginals
   @inbounds for j in 1:nresidues(nxy)
-    nj = nxy.marginals[j,2]
+    nj = marginals[j,2]
     if nj > 0.0
-      for i in 1:nresidues(nxy)
-        ni = nxy.marginals[i,1]
-        nij = nxy[i,j]
-        if nij > 0.0 && ni > 0.0
-          MI +=  nij * log((N * nij)/(ni*nj))
-        end
+      @inbounds @simd for i in 1:nresidues(nxy)
+        MI += _mi(N, nxy[i,j], marginals[i,1], nj)
       end
     end
   end
@@ -158,4 +156,18 @@ function estimate{B}(measure::MutualInformationOverEntropy{B}, table)
   else
     return(zero(B))
   end
+end
+
+# Pairwise Gap Percentage
+# =======================
+
+immutable GapUnionPercentage{T} <: SymmetricMeasure{T} end
+immutable GapIntersectionPercentage{T} <: SymmetricMeasure{T} end
+
+function estimate{B, T}(measure::GapIntersectionPercentage{B}, nxy::ResidueCount{T, 2, true})
+  B(nxy[21, 21]) / B(sum(nxy))
+end
+
+function estimate{B, T}(measure::GapUnionPercentage{B}, nxy::ResidueCount{T, 2, true})
+  B(nxy.marginals[21, 1] + nxy.marginals[21, 2] - nxy[21, 21]) / B(sum(nxy))
 end

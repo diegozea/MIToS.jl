@@ -1,28 +1,29 @@
-_with_vdw(a::PDBAtom) = (a.residueid.name, a.atomid) in keys(vanderwaalsradius)
+_with_vdw(a::PDBAtom, resname_a::ASCIIString) = (resname_a, a.atom) in keys(vanderwaalsradius)
 
-_with_cov(a::PDBAtom) = a.element in keys(covalentradius)
+_with_cov(a::PDBAtom, resname_a::ASCIIString) = a.element in keys(covalentradius)
 
-ishydrophobic(a::PDBAtom) = (a.residueid.name, a.atomid) in _hydrophobic
+ishydrophobic(a::PDBAtom, resname_a::ASCIIString) = (resname_a, a.atom) in _hydrophobic
 
-isaromatic(a::PDBAtom) = (a.residueid.name, a.atomid) in _aromatic
+isaromatic(a::PDBAtom, resname_a::ASCIIString) = (resname_a, a.atom) in _aromatic
 
-iscationic(a::PDBAtom) = (a.residueid.name, a.atomid) in _cationic
+iscationic(a::PDBAtom, resname_a::ASCIIString) = (resname_a, a.atom) in _cationic
 
-isanionic(a::PDBAtom) = (a.residueid.name, a.atomid) in _anionic
+isanionic(a::PDBAtom, resname_a::ASCIIString) = (resname_a, a.atom) in _anionic
 
-ishbonddonor(a::PDBAtom) = (a.residueid.name, a.atomid) in keys(_hbond_donor)
+ishbonddonor(a::PDBAtom, resname_a::ASCIIString) = (resname_a, a.atom) in keys(_hbond_donor)
 
-ishbondacceptor(a::PDBAtom) = (a.residueid.name, a.atomid) in keys(_hbond_acceptor)
+ishbondacceptor(a::PDBAtom, resname_a::ASCIIString) = (resname_a, a.atom) in keys(_hbond_acceptor)
 
 """Test if the function f is true for any pair of atoms between the residues a and b,
 only test atoms that returns true for the fuction criteria"""
 function any(f::Function, a::PDBResidue, b::PDBResidue, criteria::Function)
-  indices_a = find(criteria, a.atoms)
-  indices_b = find(criteria, b.atoms)
+  resname_a, resname_b = a.id.name, b.id.name
+  indices_a = find(x -> criteria(x, resname_a), a.atoms)
+  indices_b = find(x -> criteria(x, resname_b), b.atoms)
   if length(indices_a) != 0 && length(indices_b) != 0
     @inbounds for i in indices_a
       for j in indices_b
-        if f(a.atoms[i], b.atoms[j])
+        if f(a.atoms[i], b.atoms[j], resname_a, resname_b)
           return(true)
         end
       end
@@ -38,10 +39,10 @@ end
 # -------------
 
 """Returns dist <= 0.5 if the atoms aren't in vanderwaalsradius"""
-function vanderwaals(a::PDBAtom, b::PDBAtom)
+function vanderwaals(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
   return( distance(a,b) <= 0.5 +
-          get(vanderwaalsradius, (a.residueid.name, a.atomid), 0.0) +
-          get(vanderwaalsradius, (b.residueid.name, b.atomid), 0.0) )
+          get(vanderwaalsradius, (resname_a, a.atom), 0.0) +
+          get(vanderwaalsradius, (resname_b, b.atom), 0.0) )
 end
 
 vanderwaals(a::PDBResidue, b::PDBResidue) = any(vanderwaals, a, b, _with_vdw)
@@ -49,10 +50,12 @@ vanderwaals(a::PDBResidue, b::PDBResidue) = any(vanderwaals, a, b, _with_vdw)
 # van der Waals clash
 # -------------------
 
-"""Returns dist = 0.0 if the atoms aren't in vanderwaalsradius"""
-function vanderwaalsclash(a::PDBAtom, b::PDBAtom)
-  return( distance(a,b) <= get(vanderwaalsradius, (a.residueid.name, a.atomid), 0.0) +
-          get(vanderwaalsradius, (b.residueid.name, b.atomid), 0.0) )
+"""Returns true if the distance between the atoms is less than the sum of the vanderwaalsradius of the atoms.
+If the atoms aren't on the list (i.e. OXT), the vanderwaalsradius of the element is used.
+If there is not data in the dict,  dist = 0.0 is used."""
+function vanderwaalsclash(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
+  return( distance(a,b) <= get(vanderwaalsradius, (resname_a, a.atom), get(vanderwaalsradius, (resname_a, a.element), 0.0)) +
+          get(vanderwaalsradius, (resname_b, b.atom), get(vanderwaalsradius, (resname_b, b.element), 0.0)) )
 end
 
 vanderwaalsclash(a::PDBResidue, b::PDBResidue) = any(vanderwaalsclash, a, b, _with_vdw)
@@ -60,20 +63,22 @@ vanderwaalsclash(a::PDBResidue, b::PDBResidue) = any(vanderwaalsclash, a, b, _wi
 # Covalent
 # --------
 
-function covalent(a::PDBAtom, b::PDBAtom)
+function covalent(a::PDBAtom, b::PDBAtom, resname_a, resname_b) # any(... calls it with the res names
   return( distance(a,b) <= get(covalentradius, a.element, 0.0) +
           get(covalentradius, b.element, 0.0) )
 end
+
+covalent(a::PDBAtom, b::PDBAtom) = covalent(a, b, "", "")
 
 covalent(a::PDBResidue, b::PDBResidue) = any(covalent, a, b, _with_cov)
 
 # Disulphide
 # ----------
 
-_issulphurcys(a::PDBAtom) = a.residueid.name == "CYS" && a.element == "S"
+_issulphurcys(a::PDBAtom, resname_a) = resname_a == "CYS" && a.element == "S"
 
-function disulphide(a::PDBAtom, b::PDBAtom)
-  if _issulphurcys(a) && _issulphurcys(b)
+function disulphide(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
+  if _issulphurcys(a, resname_a) && _issulphurcys(b, resname_b)
     return(distance(a,b) <= 2.08)
   end
   return(false)
@@ -86,62 +91,62 @@ disulphide(a::PDBResidue, b::PDBResidue) = any(disulphide, a, b, _issulphurcys)
 
 _issulphur(a::PDBAtom) = a.element == "S"
 
-function aromaticsulphur(a::PDBAtom, b::PDBAtom)
-  if ( _issulphur(a) && isaromatic(b) ) || ( _issulphur(b) && isaromatic(a) )
+function aromaticsulphur(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
+  if ( _issulphur(a) && isaromatic(b, resname_b) ) || ( _issulphur(b) && isaromatic(a, resname_a) )
     return(distance(a,b) <= 5.3)
   end
   return(false)
 end
 
-_issulphuroraromatic(a::PDBAtom) = _issulphur(a) || isaromatic(a)
+_issulphuroraromatic(a::PDBAtom, resname_a) = _issulphur(a) || isaromatic(a, resname_a)
 
 aromaticsulphur(a::PDBResidue, b::PDBResidue) = any(aromaticsulphur, a, b, _issulphuroraromatic)
 
 # Π-Cation
 # --------
 
-function pication(a::PDBAtom, b::PDBAtom)
-  if ( iscationic(a) && isaromatic(b) ) || ( iscationic(b) && isaromatic(a) )
+function pication(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
+  if ( iscationic(a, resname_a) && isaromatic(b, resname_b) ) || ( iscationic(b, resname_b) && isaromatic(a, resname_a) )
     return(distance(a,b) <= 6.0)
   end
   return(false)
 end
 
-_iscationicoraromatic(a::PDBAtom) = iscationic(a) || isaromatic(a)
+_iscationicoraromatic(a::PDBAtom, resname_a) = iscationic(a, resname_a) || isaromatic(a, resname_a)
 
 pication(a::PDBResidue, b::PDBResidue) = any(pication, a, b, _iscationicoraromatic)
 
 # Aromatic
 # --------
 
-function aromatic(a::PDBAtom, b::PDBAtom)
-  if isaromatic(a) && isaromatic(b)
-    return(distance(a,b) <= 6.0)
+function aromatic(a::PDBResidue, b::PDBResidue)
+  if a.id.name in _aromatic_res && b.id.name in _aromatic_res && distance(a, b) <= 6.0
+    centres_a = _centre(_get_plane(a))
+    centres_b = _centre(_get_plane(b))
+    return( any( Bool[ distance(centroid_a, centroid_b) <= 6.0 for centroid_a in centres_a, centroid_b in centres_b ] ) )
   end
-  return(false)
+  false
 end
-
-aromatic(a::PDBResidue, b::PDBResidue) = any(aromatic, a, b, isaromatic)
 
 # Ionic
 # -----
 
-function ionic(a::PDBAtom, b::PDBAtom)
-  if ( iscationic(a) && isanionic(b) ) || ( iscationic(b) && isanionic(a) )
+function ionic(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
+  if ( iscationic(a, resname_a) && isanionic(b, resname_b) ) || ( iscationic(b, resname_b) && isanionic(a, resname_a) )
     return(distance(a,b) <= 6.0)
   end
   return(false)
 end
 
-_iscationicoranionic(a::PDBAtom) = iscationic(a) || isanionic(a)
+_iscationicoranionic(a::PDBAtom, resname_a) = iscationic(a, resname_a) || isanionic(a, resname_a)
 
 ionic(a::PDBResidue, b::PDBResidue) = any(ionic, a, b, _iscationicoranionic)
 
 # Hydrophobic contact
 # -------------------
 
-function hydrophobic(a::PDBAtom, b::PDBAtom)
-  if ishydrophobic(a) && ishydrophobic(b)
+function hydrophobic(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
+  if ishydrophobic(a, resname_a) && ishydrophobic(b, resname_b)
     return(distance(a,b) <= 5.0)
   end
   return(false)
@@ -153,12 +158,12 @@ hydrophobic(a::PDBResidue, b::PDBResidue) = any(hydrophobic, a, b, ishydrophobic
 # --------------
 
 function _find_antecedent(res::PDBResidue, a::PDBAtom)
-  ids = _hbond_acceptor[(a.residueid.name, a.atomid)]
+  ids = _hbond_acceptor[(res.id.name, a.atom)]
   N = length(res)
   indices = Array(Int,N)
   j = 0
   @inbounds for i in 1:N
-    if res.atoms[i].atomid in ids
+    if res.atoms[i].atom in ids
        # && (res.atoms[i].element != "H") && (res.atoms[i] != a) && covalent(res.atoms[i], a)
       j += 1
       indices[j] = i
@@ -168,12 +173,12 @@ function _find_antecedent(res::PDBResidue, a::PDBAtom)
 end
 
 function _find_h(res::PDBResidue, a::PDBAtom)
-  ids = _hbond_donor[(a.residueid.name, a.atomid)]
+  ids = _hbond_donor[(res.id.name, a.atom)]
   N = length(res)
   indices = Array(Int,N)
   j = 0
   @inbounds for i in 1:N
-    if res.atoms[i].atomid in ids
+    if res.atoms[i].atom in ids
       j += 1
       indices[j] = i
     end
@@ -210,8 +215,8 @@ end
 
 function _hydrogenbond_don_acc(donor::PDBResidue, acceptor::PDBResidue)
   if donor != acceptor
-    indices_donor = find(ishbonddonor, donor.atoms)
-    indices_acceptor = find(ishbondacceptor, acceptor.atoms)
+    indices_donor = find(x -> ishbonddonor(x, donor.id.name), donor.atoms)
+    indices_acceptor = find(x -> ishbondacceptor(x, acceptor.id.name), acceptor.atoms)
     if length(indices_donor) != 0 && length(indices_acceptor) != 0
       return(_hbond_kernel(donor, acceptor, indices_donor, indices_acceptor))
     end

@@ -4,13 +4,13 @@
 @auto_hash_equals immutable PDBResidueIdentifier
   PDBe_number::ASCIIString # PDBe
   number::ASCIIString # PDB
-	name::ASCIIString
-	group::ASCIIString
-	model::ASCIIString
-	chain::ASCIIString
+  name::ASCIIString
+  group::ASCIIString
+  model::ASCIIString
+  chain::ASCIIString
 end
 
-@auto_hash_equals immutable Coordinates
+@auto_hash_equals immutable Coordinates # <: FixedVectorNoTuple{Float64, 3}
   x::Float64
   y::Float64
   z::Float64
@@ -18,7 +18,7 @@ end
 
 @auto_hash_equals immutable PDBAtom
   coordinates::Coordinates
-  atomid::ASCIIString
+  atom::ASCIIString
   element::ASCIIString
   occupancy::Float64
   B::ASCIIString
@@ -38,11 +38,20 @@ distance(a::Coordinates, b::Coordinates) = sqrt((a.x - b.x)^2 + (a.y - b.y)^2 + 
 
 contact(a::Coordinates, b::Coordinates, limit::AbstractFloat) = distance(a,b) <= limit ? true : false
 
--(a::Coordinates, b::Coordinates) = Coordinates(a.x - b.x, a.y - b.y, a.z - b.z)
-
+#-------------------------------------------------------------------------------#
+vec(a::Coordinates) = Float64[a.x, a.y, a.z]
 norm(a::Coordinates) = sqrt(a.x^2 + a.y^2 + a.z^2)
-
 dot(a::Coordinates, b::Coordinates) = (a.x * b.x) + (a.y * b.y) + (a.z * b.z)
+size(a::Coordinates) = (3,)
+length(a::Coordinates) = 3
+-(a::Coordinates, b::Coordinates) = Coordinates(a.x - b.x, a.y - b.y, a.z - b.z)
++(a::Coordinates, b::Coordinates) = Coordinates(a.x + b.x, a.y + b.y, a.z + b.z)
+./(a::Coordinates, b::Int) = Coordinates(a.x / b, a.y / b, a.z / b )
+function cross(a::Coordinates, b::Coordinates)
+  normal = cross(vec(a), vec(b))
+  Coordinates(normal[1], normal[2], normal[3])
+end
+#-------------------------------------------------------------------------------#
 
 """Angle (in degrees) at b between a-b and b-c"""
 function angle(a::Coordinates, b::Coordinates, c::Coordinates)
@@ -54,13 +63,6 @@ function angle(a::Coordinates, b::Coordinates, c::Coordinates)
   else
     return(0.0)
   end
-end
-
-vec(a::Coordinates) = Float64[a.x, a.y, a.z]
-
-function cross(a::Coordinates, b::Coordinates)
-  normal = cross(vec(a), vec(b))
-  Coordinates(normal[1], normal[2], normal[3])
 end
 
 distance(a::PDBAtom, b::PDBAtom) = distance(a.coordinates, b.coordinates)
@@ -78,6 +80,94 @@ isobject(res::PDBResidue, tests::AbstractTest...) = isobject(res.id, tests...)
 
 findobjects(res::PDBResidue, tests::AbstractTest...) = findobjects(res.atoms, tests...)
 
+# @residues
+# =========
+
+_test_stringfield(field::Symbol, test::Real) = Is(field, string(test))
+_test_stringfield(field::Symbol, test::Union{Char, Symbol}) = Is(field, string(test))
+_test_stringfield(field::Symbol, test::Union{ASCIIString, Regex, Function}) = Is(field, test)
+_test_stringfield(field::Symbol, test::Union{UnitRange, IntSet, Set, Array, Base.KeyIterator}) = In(field, test)
+
+_is_wildcard(test::ASCIIString) = test == "*"
+_is_wildcard(test::Char) = test == '*'
+_is_wildcard(test) = false
+
+function _add_test_stringfield!(tests::Vector{TestType}, field::Symbol, test)
+  if !_is_wildcard(test)
+    push!(tests, _test_stringfield(field, test))
+  end
+  tests
+end
+
+function _residues_tests(model, chain, group, residue)
+  args = TestType[]
+  _add_test_stringfield!(args, :model, model)
+  _add_test_stringfield!(args, :chain, chain)
+  _add_test_stringfield!(args, :group, group)
+  _add_test_stringfield!(args, :number, residue)
+  args
+end
+
+residues(residue_list, model, chain, group, residue) = collectobjects(residue_list, _residues_tests(model, chain, group, residue)...)
+
+macro residues(residue_list,
+               model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
+               chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
+               group::Symbol, g,
+               residue::Symbol, r)
+  if model == :model && chain == :chain && group == :group && residue == :residue
+    return :(residues($(esc(residue_list)), $(esc(m)), $(esc(c)), $(esc(g)), $(esc(r))))
+  else
+    throw(ArgumentError("The signature is @residues ___ model ___ chain ___ group ___ residue ___"))
+  end
+end
+
+function residuesdict(residue_list, model, chain, group, residue)
+  res_index = findobjects(residue_list, _residues_tests(model, chain, group, residue)...)
+  dict = sizehint( OrderedDict{ASCIIString, PDBResidue}() , length(res_index) )
+  for i in res_index
+    dict[ residue_list[i].id.number ] = residue_list[i]
+  end
+  dict
+end
+
+macro residuesdict(residue_list,
+                   model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
+                   chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
+                   group::Symbol, g,
+                   residue::Symbol, r)
+  if model == :model && chain == :chain && group == :group && residue == :residue
+    return :(residuesdict($(esc(residue_list)), $(esc(m)), $(esc(c)), $(esc(g)), $(esc(r))))
+  else
+    throw(ArgumentError("The signature is @residues ___ model ___ chain ___ group ___ residue ___"))
+  end
+end
+
+# @atoms
+# ======
+
+function atoms(residue_list, model, chain, group, residue, atom)
+  _is_wildcard(atom) ?
+    collect(Vector{PDBAtom}[ res.atoms for res in collectobjects(residue_list, _residues_tests(model, chain, group, residue)...) ]...) :
+    collect(Vector{PDBAtom}[ collectobjects(res.atoms, _test_stringfield(:atom, atom)) for res in collectobjects(residue_list, _residues_tests(model, chain, group, residue)...) ]...)
+end
+
+macro atoms(residue_list,
+               model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
+               chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
+               group::Symbol, g,
+               residue::Symbol, r,
+               atom::Symbol, a)
+  if model == :model && chain == :chain && group == :group && residue == :residue && atom == :atom
+    return :(atoms($(esc(residue_list)), $(esc(m)), $(esc(c)), $(esc(g)), $(esc(r)), $(esc(a))))
+  else
+    throw(ArgumentError("The signature is @atoms ___ model ___ chain ___ group ___ residue ___ atom ___"))
+  end
+end
+
+# Special find...
+# ===============
+
 function findheavy(res::PDBResidue)
   N = length(res)
   indices = Array(Int,N)
@@ -91,12 +181,12 @@ function findheavy(res::PDBResidue)
   resize!(indices, j)
 end
 
-function findatoms(res::PDBResidue, atomid::ASCIIString)
+function findatoms(res::PDBResidue, atom::ASCIIString)
   N = length(res)
   indices = Array(Int,N)
   j = 0
   @inbounds for i in 1:N
-    if res.atoms[i].atomid == atomid
+    if res.atoms[i].atom == atom
       j += 1
       indices[j] = i
     end
@@ -111,7 +201,7 @@ function findCB(res::PDBResidue)
   atom = res.residueid.name == "GLY" ? "CA" : "CB"
   j = 0
   @inbounds for i in 1:N
-    if res.atoms[i].atomid == atom
+    if res.atoms[i].atom == atom
       j += 1
       indices[j] = i
     end
@@ -263,6 +353,63 @@ function contact(a::PDBResidue, b::PDBResidue, limit::AbstractFloat; criteria::A
   false
 end
 
+# For Aromatic
+# ============
+
+function _get_plane(residue::PDBResidue)
+  name = residue.id.name
+  planes = Vector{PDBAtom}[]
+  if name != "TRP"
+    plane = PDBAtom[]
+    for atom in residue.atoms
+      if (name, atom.atom) in PDB._aromatic
+        push!(plane, atom)
+      end
+    end
+    push!(planes, plane)
+  else
+    plane1 = PDBAtom[]
+    plane2 = PDBAtom[]
+    for atom in residue.atoms
+      if atom.atom in Set{ASCIIString}(["CE2", "CD2", "CZ2", "CZ3", "CH2", "CE3"])
+        push!(plane1, atom)
+      end
+      if atom.atom in Set{ASCIIString}(["CG", "CD1", "NE1", "CE2", "CD2"])
+        push!(plane2, atom)
+      end
+    end
+    push!(planes, plane1)
+    push!(planes, plane2)
+  end
+  planes
+end
+
+function bestoccupancy!(atoms::Vector{PDBAtom})
+  N = length(atoms)
+  name = atoms[1].atom
+  occupancy = atoms[1].occupancy
+  for i in 2:N
+    if atoms[i].occupancy > occupancy && atoms[i].atom == name
+      splice!(atoms, i-1)
+    end
+    name = atoms[i].atom
+    occupancy = atoms[i].occupancy
+  end
+  atoms
+end
+
+function _centre(planes::Vector{Vector{PDBAtom}})
+  subset = Vector{PDBAtom}[ bestoccupancy!(atoms) for atoms in planes ]
+  polyg = Vector{Coordinates}[ Coordinates[ a.coordinates for a in atoms ] for atoms in subset ]
+  Coordinates[ sum(points)./length(points) for  points in polyg ]
+end
+
+# function _simple_normal_and_centre(atoms::Vector{PDBAtom})
+#   bestoccupancy!(atoms)
+#   points = Coordinates[ a.coordinates for a in atoms ]
+#   (cross(points[2] - points[1], points[3] - points[1]), sum(points)./length(points))
+# end
+
 # For Parsing...
 # ==============
 
@@ -294,8 +441,8 @@ function show(io::IO, id::PDBResidueIdentifier)
 end
 
 function show(io::IO, atom::PDBAtom)
-  printfmt(io, _Format_ATOM, "coordinates", "atomid", "element", "occupancy", "B")
-  printfmt(io, _Format_ATOM, atom.coordinates, string('"',atom.atomid,'"'), string('"',atom.element,'"'),
+  printfmt(io, _Format_ATOM, "coordinates", "atom", "element", "occupancy", "B")
+  printfmt(io, _Format_ATOM, atom.coordinates, string('"',atom.atom,'"'), string('"',atom.element,'"'),
            atom.occupancy, string('"',atom.B,'"'))
 end
 
@@ -307,8 +454,8 @@ function show(io::IO, res::PDBResidue)
   len = length(res)
   println(io, "\tatoms::Vector{PDBAtom}\tlength: ", len)
   for i in 1:len
-    printfmt(io, _Format_ATOM_Res, "", "coordinates", "atomid", "element", "occupancy", "B")
-    printfmt(io, _Format_ATOM_Res, string(i,":"), res.atoms[i].coordinates, string('"',res.atoms[i].atomid,'"'),
+    printfmt(io, _Format_ATOM_Res, "", "coordinates", "atom", "element", "occupancy", "B")
+    printfmt(io, _Format_ATOM_Res, string(i,":"), res.atoms[i].coordinates, string('"',res.atoms[i].atom,'"'),
              string('"',res.atoms[i].element,'"'), res.atoms[i].occupancy, string('"',res.atoms[i].B,'"'))
   end
 end

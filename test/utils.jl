@@ -34,6 +34,16 @@ end
 @test get_n_words("\n",1) == ASCIIString[]
 @test get_n_words("#", 1) == ASCIIString["#"]
 
+let str = "#=GF CC   (Römling U.  and Galperin M.Y. “Bacterial cellulose\n"
+
+  @test get_n_words(str, 3) == UTF8String["#=GF", "CC", "(Römling U.  and Galperin M.Y. “Bacterial cellulose"]
+end
+
+let str = "#=GF CC   not present in all SecA2–SecY2 systems. This family of Asp5 is\n"
+
+  @test get_n_words(str, 3) == UTF8String["#=GF", "CC", "not present in all SecA2–SecY2 systems. This family of Asp5 is"]
+end
+
 print("""
 hascoordinates
 """)

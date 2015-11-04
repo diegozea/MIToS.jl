@@ -13,6 +13,8 @@ const covalentradius = Dict{ASCIIString,Float64}("C" => 0.77,
                                                  "S" => 1.04,
                                                  "H" => 0.31 )
 
+const _3_letter_aa = ASCIIString[ "ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE", "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL" ]
+
 """van der Waals radius in Å from the Additional file 1 of
 Bickerton, G. R., Higueruelo, A. P., & Blundell, T. L. (2011).
 Comprehensive, atomic-level characterization of structurally characterized protein-protein interactions: the PICCOLO database.
@@ -185,6 +187,26 @@ const vanderwaalsradius = Dict{Tuple{ASCIIString,ASCIIString},Float64}(("ALA","C
 ("VAL","N") => 1.64,
 ("VAL","O") => 1.42 )
 
+function _add_CTER_O!(dict)
+  for aa in _3_letter_aa
+    push!(dict, (aa, "OXT"))
+    push!(dict, (aa, "OT2"))
+    push!(dict, (aa, "OT1"))
+  end
+  dict
+end
+
+function _add_CTER_O!(dict, value)
+  for aa in _3_letter_aa
+    push!(dict, (aa, "OXT") => value)
+    push!(dict, (aa, "OT2") => value)
+    push!(dict, (aa, "OT1") => value)
+  end
+  dict
+end
+
+_add_CTER_O!(vanderwaalsradius, 1.42) # Using 1.42 because OXT is the terminal oxigen I assume same vdw radii than O
+
 const _hydrophobic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ALA","CB"),
 ("ARG","CB"),
 ("ARG","CG"),
@@ -238,6 +260,8 @@ const _hydrophobic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ALA","CB"),
 ("VAL","CG1"),
 ("VAL","CG2") ] )
 
+const _aromatic_res = Set{ASCIIString}( [ "HIS", "PHE", "TRP", "TYR" ] )
+
 const _aromatic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("HIS","CD2"),
 ("HIS","CE1"),
 ("HIS","CG"),
@@ -282,6 +306,8 @@ const _anionic = Set{Tuple{ASCIIString, ASCIIString}}( [ ("ASP","CG"),
 ("GLU","CD"),
 ("GLU","OE1"),
 ("GLU","OE2") ] )
+
+_add_CTER_O!(_anionic)
 
 """Keys come from Table 1 of Bickerton et. al. 2011,
 The hydrogen names of the donor comes from: http://biomachina.org/courses/modeling/download/topallh22x.pro
@@ -357,3 +383,56 @@ const _hbond_acceptor = Dict{Tuple{ASCIIString, ASCIIString}, Vector{ASCIIString
 ("TRP","O") => ["C"], ("TRP","OT1") => ["C"], ("TRP","OXT") => ["C"], ("TRP","OT2") => ["C"],
 ("TYR","O") => ["C"], ("TYR","OT1") => ["C"], ("TYR","OXT") => ["C"], ("TYR","OT2") => ["C"],
 ("VAL","O") => ["C"], ("VAL","OT1") => ["C"], ("VAL","OXT") => ["C"], ("VAL","OT2") => ["C"] )
+
+function _generate_dict!(dict, input_dict)
+  for (res, atom) in keys(input_dict)
+    if haskey(dict, res)
+      push!(dict[res], atom)
+    else
+      dict[res] = Set{ASCIIString}(ASCIIString[ atom ])
+    end
+  end
+  dict
+end
+
+function _generate_dict!(dict, input_set::Set{Tuple{ASCIIString,ASCIIString}})
+  for (res, atom) in input_set
+    if haskey(dict, res)
+      push!(dict[res], atom)
+    else
+      dict[res] = Set{ASCIIString}(ASCIIString[ atom ])
+    end
+  end
+  dict
+end
+
+function _generate_interaction_keys(vdw, hyd, aro, cat, ani)
+  dict = Dict{ASCIIString, Set{ASCIIString}}()
+  _generate_dict!(dict, vdw)
+  _generate_dict!(dict, hyd)
+  _generate_dict!(dict, aro)
+  _generate_dict!(dict, cat)
+  _generate_dict!(dict, ani)
+  dict
+end
+
+const _interaction_keys = _generate_interaction_keys(vanderwaalsradius, _hydrophobic, _aromatic, _cationic, _anionic)
+
+_generate_atoms_set(res::PDBResidue) = ASCIIString[ atom.atom for atom in res.atoms[findheavy(res)] ]
+
+function check_atoms_for_interactions(res::PDBResidue)
+  atoms = _generate_atoms_set(res)
+  if haskey(_interaction_keys, res.id.name)
+    used = _interaction_keys[res.id.name]
+  else
+    warn(string("RESIDUE: ", res.id.name, " is unknown for MIToS.PDB (AtomsData.jl)"))
+    return(false)
+  end
+  for atom in atoms
+    if !( atom in used )
+      warn(string("RESIDUE ", res.id.name," ATOM ", atom, " is unknown for MIToS.PDB (AtomsData.jl)"))
+      return( false )
+    end
+  end
+  true
+end

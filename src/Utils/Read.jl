@@ -3,24 +3,32 @@ import Base: read
 using GZip
 using LightXML
 
-"""
-`Format` is used for write special `parse` (and `read`) methods on it.
-"""
+"`Format` is used for write special `parse` (and `read`) methods on it."
 abstract Format
 
-function _check_file(filename)
+"""Returns the `filename`.
+Throws an `ErrorException` if the file doesn't exist, or a warning if the file is empty."""
+function check_file(filename)
   if !isfile(filename)
     throw(ErrorException(string(filename, " doesn't exist!")))
   elseif filesize(filename) == 0
     warn(string(filename, " is empty!"))
   end
+  filename
 end
 
+"Returns `true` if the file exists and isn't empty."
+isnotemptyfile(filename) = isfile(filename) && filesize(filename) > 0
+
 function _read(completename, filename, format, args...; kargs...) # for using with download, since filename doesn't have file extension
-  _check_file(filename)
+  check_file(filename)
   if endswith(completename, ".xml.gz") || endswith(completename, ".xml")
     document = parse_file(filename)
-    parse(document, format, args...; kargs...)
+    try
+      parse(document, format, args...; kargs...)
+    finally
+      free(document)
+    end
   else
     io = endswith(completename, ".gz") ? gzopen(filename, "r") : open(filename, "r")
     try

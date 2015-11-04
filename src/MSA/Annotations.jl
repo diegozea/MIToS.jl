@@ -8,19 +8,19 @@ The `Annotations` type is basically a container for `Dict`s with the annotations
 `Annotations` was designed for storage of annotations of the **Stockholm format**.
 """
 type Annotations
-  file::OrderedDict{ASCIIString, ASCIIString}
+  file::OrderedDict{ASCIIString, ByteString}
   sequences::Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}
   columns::Dict{ASCIIString,ASCIIString}
   residues::Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}
 end
 
-call(::Type{Annotations}) = Annotations(OrderedDict{ASCIIString, ASCIIString}(),
+call(::Type{Annotations}) = Annotations(OrderedDict{ASCIIString, ByteString}(),
                                         Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(),
                                         Dict{ASCIIString, ASCIIString}(),
                                         Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}())
 
 "Creates an empty `Annotations` of length 0 using sizehint!"
-empty(::Type{Annotations}) = Annotations( sizehint(OrderedDict{ASCIIString, ASCIIString}(), 0), # There is not sizehint! for OrderedDict right now
+empty(::Type{Annotations}) = Annotations( sizehint(OrderedDict{ASCIIString, ByteString}(), 0), # There is not sizehint! for OrderedDict right now
                                           sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0),
                                           sizehint!(Dict{ASCIIString, ASCIIString}(), 0),
                                           sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0))
@@ -37,12 +37,12 @@ For filter column and sequence mapping of the format: ",,,,10,11,,12"
 _filter_mapping(str_map::ASCIIString, mask) = join(split(str_map, ',')[mask], ',')
 
 """
-`filtersequences!(data::Annotations, ids::IndexedVector, mask::AbstractArray{Bool,1})` is useful for deleting annotations for a group of sequences.
-`ids` should be an `IndexedVector` with the `seqname`s of the annotated sequences and `mask` should be a logical vector.
+`filtersequences!(data::Annotations, ids::IndexedArray, mask::AbstractArray{Bool,1})` is useful for deleting annotations for a group of sequences.
+`ids` should be an `IndexedArray` with the `seqname`s of the annotated sequences and `mask` should be a logical vector.
 """
-function filtersequences!(data::Annotations, ids::IndexedVector, mask::AbstractArray{Bool,1})
+function filtersequences!(data::Annotations, ids::IndexedArray, mask::AbstractArray{Bool,1})
   if length(data.sequences) > 0 || length(data.residues) > 0
-    del = ids.values[ !mask ]
+    del = ids[ !mask ]
     for key in keys(data.residues)
       if key[1] in del
         delete!(data.residues, key)
@@ -142,7 +142,7 @@ for (fun, field) in [ (:getannotsequence, :(ann.sequences)),
   end
 end
 
-function setannotfile!(ann::Annotations, feature::ASCIIString, annotation::ASCIIString)
+function setannotfile!(ann::Annotations, feature::ASCIIString, annotation::ByteString)
   previous = get(ann.file, feature, "")
   ann.file[feature] = previous != "" ? string(previous, '\n', annotation) : annotation
 end

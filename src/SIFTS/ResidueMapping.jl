@@ -187,40 +187,48 @@ _parse(::Type{Int}, str) = parse(Int, str)
 _parse(::Type{ASCIIString}, str) = ascii(str)
 @inline _parse(::Type{ASCIIString}, str::ASCIIString) = str
 
+"""Parses a SIFTS XML file and returns a `Dict` between residue numbers of two `DataBase`s  with the given identifiers.
+A `chain` could be specified ("all" by default).
+If `missings` is `true` (default) all the residues are used, even if they haven’t coordinates in the PDB file."""
 function siftsmapping{F, T}(filename::AbstractString,
                             db_from::Type{F}, id_from::ASCIIString,
                             db_to::Type{T}, id_to::ASCIIString; chain::ASCIIString="all", missings::Bool = true)
   mapping = Dict{_number_type(F), _number_type(T)}()
-  for entity in _get_entities(parse_file(filename))
-    segments = _get_segments(entity)
-    for segment in segments
-      residues = _get_residues(segment)
-  		for residue in residues
-        in_chain = chain == "all"
-        key_data = name(db_from) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{_number_type(F)}()
-        value_data = name(db_to) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{_number_type(T)}()
-	  	  if missings || !_is_missing(residue)
-  			  crossref = get_elements_by_tagname(residue, "crossRefDb")
-	  			for ref in crossref
-            source = attribute(ref, "dbSource")
-		  		  if source == name(db_from) && attribute(ref, "dbAccessionId") == id_from
-			  		  key_data = Nullable(_parse(_number_type(F), attribute(ref, "dbResNum")))
-				  	end
-            if source == name(db_to) && attribute(ref, "dbAccessionId") == id_to
-		  			  value_data = Nullable(_parse(_number_type(T), attribute(ref, "dbResNum")))
-			  		end
-            if !in_chain && source == "PDB" # XML: <crossRefDb dbSource="PDB" ... dbChainId="E"/>
-              in_chain = attribute(ref, "dbChainId") == chain
+  xdoc = parse_file(filename)
+  try
+    for entity in _get_entities(xdoc)
+      segments = _get_segments(entity)
+      for segment in segments
+        residues = _get_residues(segment)
+  		  for residue in residues
+          in_chain = chain == "all"
+          key_data = name(db_from) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{_number_type(F)}()
+          value_data = name(db_to) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{_number_type(T)}()
+	  	    if missings || !_is_missing(residue)
+  			    crossref = get_elements_by_tagname(residue, "crossRefDb")
+	  			  for ref in crossref
+              source = attribute(ref, "dbSource")
+		  		    if source == name(db_from) && attribute(ref, "dbAccessionId") == id_from
+			  		    key_data = Nullable(_parse(_number_type(F), attribute(ref, "dbResNum")))
+				  	  end
+              if source == name(db_to) && attribute(ref, "dbAccessionId") == id_to
+		  			    value_data = Nullable(_parse(_number_type(T), attribute(ref, "dbResNum")))
+			  		  end
+              if !in_chain && source == "PDB" # XML: <crossRefDb dbSource="PDB" ... dbChainId="E"/>
+                in_chain = attribute(ref, "dbChainId") == chain
+              end
+		  		  end
+            if !isnull(key_data) && !isnull(value_data) && in_chain
+              key = get(key_data)
+              haskey(mapping, key) && warn(string(key, " is already in the mapping with the value ", mapping[key], ". The value is replaced by ", get(value_data)))
+			  		  mapping[key] = get(value_data)
             end
-		  		end
-          if !isnull(key_data) && !isnull(value_data) && in_chain
-            key = get(key_data)
-            haskey(mapping, key) && warn(string(key, " is already in the mapping with the value ", mapping[key], ". The value is replaced by ", get(value_data)))
-			  		mapping[key] = get(value_data)
-          end
-			  end
-		  end
+			    end
+		    end
+      end
     end
+  finally
+    free(xdoc)
   end
   sizehint!(mapping, length(mapping))
 end

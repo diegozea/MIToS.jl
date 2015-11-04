@@ -3,26 +3,26 @@ module Information
   using MIToS.Utils
   using MIToS.MSA
   using MIToS.Clustering
+  using PairwiseListMatrices
 
   export BLOSUM62_Pi, BLOSUM62_Pij,
 
   SequenceWeights, Pseudocount, AdditiveSmoothing,
-	ResidueContingencyTables, ResidueCount, ResidueProbability,
-	nresidues, update!, apply_pseudocount!, count!, normalize!,
+  ResidueContingencyTables, ResidueCount, ResidueProbability,
+  nresidues, update!, apply_pseudocount!, count!, normalize!,
   blosum_pseudofrequencies!, apply_pseudofrequencies!, probabilities,
   delete_dimensions!, delete_dimensions,
 
   InformationMeasure, SymmetricMeasure, Entropy,
   MutualInformation, MutualInformationOverEntropy,
   estimate, estimate_on_marginal,
+  GapUnionPercentage, GapIntersectionPercentage,
 
   estimateincolumns, estimateinsequences,
 
   APC!,
 
-  buslje09
-
-  #Fixed, Pseudofrequencies, ResidueProbabilities, ResiduePairProbabilities
+  buslje09, BLMI, pairwisegappercentage
 
   include("BLOSUM62.jl")
   include("Probabilities.jl")

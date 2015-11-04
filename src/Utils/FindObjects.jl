@@ -15,6 +15,15 @@ end
 
 _test{T}(object, test::In{T}) = getfield(object, test.field) in test.value
 
+function _test{T}(object, test::In{T})
+  field = getfield(object, test.field)
+  et = eltype(T)
+  if isa(field, ASCIIString) && et <: Real
+    return( parse(et, field) in test.value )
+  end
+  et(field) in test.value
+end
+
 _test{T}(object, test::Is{T}) = getfield(object, test.field) == test.value
 _test(object, test::Is{Regex}) = ismatch(test.value, getfield(object, test.field))
 _test(object, test::Is{Function}) = test.value(getfield(object, test.field))

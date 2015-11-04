@@ -1,7 +1,3 @@
-using MIToS.Utils
-
-import Base: parse, print
-
 immutable FASTA <: Format end
 
 # FASTA Parser
@@ -47,7 +43,7 @@ function _pre_readfasta(io::IO)
   (IDS, SEQS)
 end
 
-function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{AnnotatedMultipleSequenceAlignment}; generatemapping::Bool=false, useidcoordinates::Bool=false, deletefullgaps::Bool=true)
+function parse(io::Union{IO,AbstractString}, format::Type{FASTA}, output::Type{AnnotatedMultipleSequenceAlignment}; generatemapping::Bool=false, useidcoordinates::Bool=false, deletefullgaps::Bool=true)
   IDS, SEQS = _pre_readfasta(io)
   annot = Annotations()
   if generatemapping
@@ -59,23 +55,23 @@ function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{A
   else
     MSA = convert(Matrix{Residue}, SEQS)
   end
-  msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, annot)
+  msa = AnnotatedMultipleSequenceAlignment(IndexedArray(IDS), MSA, annot)
   if deletefullgaps
     deletefullgapcolumns!(msa)
   end
   msa
 end
 
-function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
+function parse(io::Union{IO,AbstractString}, format::Type{FASTA}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
   IDS, SEQS = _pre_readfasta(io)
-  msa = MultipleSequenceAlignment(IndexedVector(IDS), convert(Matrix{Residue}, SEQS))
+  msa = MultipleSequenceAlignment(IndexedArray(IDS), convert(Matrix{Residue}, SEQS))
   if deletefullgaps
     deletefullgapcolumns!(msa)
   end
   msa
 end
 
-function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true)
+function parse(io::Union{IO,AbstractString}, format::Type{FASTA}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true)
   IDS, SEQS = _pre_readfasta(io)
   if deletefullgaps
     return(deletefullgapcolumns(convert(Matrix{Residue}, SEQS)))
@@ -84,7 +80,7 @@ function parse(io::Union(IO,AbstractString), format::Type{FASTA}, output::Type{M
   end
 end
 
-parse(io::Union(IO,AbstractString), format::Type{FASTA}; generatemapping::Bool=false,
+parse(io::Union{IO,AbstractString}, format::Type{FASTA}; generatemapping::Bool=false,
       useidcoordinates::Bool=false, deletefullgaps::Bool=true) = parse(io, FASTA,
                                                                        AnnotatedMultipleSequenceAlignment;
                                                                        generatemapping=generatemapping,
@@ -96,7 +92,7 @@ parse(io::Union(IO,AbstractString), format::Type{FASTA}; generatemapping::Bool=f
 
 function print(io::IO, msa::AbstractMultipleSequenceAlignment, format::Type{FASTA})
 	for i in 1:nsequences(msa)
-		id = selectvalue(msa.id, i)
+		id = msa.id[i]
 		seq = asciisequence(msa, i)
 		println(io, string(">", id, "\n", seq))
 	end

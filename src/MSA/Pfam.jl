@@ -1,7 +1,3 @@
-using MIToS.Utils
-
-import Base: parse, print
-
 immutable Stockholm <: Format end
 
 function _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
@@ -34,10 +30,10 @@ function _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
   end
 end
 
-function _pre_readstockholm(io::Union(IO, AbstractString))
+function _pre_readstockholm(io::Union{IO, AbstractString})
   IDS  = ASCIIString[]
   SEQS = ASCIIString[]
-  GF = OrderedDict{ASCIIString,ASCIIString}()
+  GF = OrderedDict{ASCIIString,ByteString}()
   GC = Dict{ASCIIString,ASCIIString}()
   GS = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
   GR = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
@@ -56,7 +52,7 @@ function _pre_readstockholm(io::Union(IO, AbstractString))
   (IDS, SEQS, GF, GS, GC, GR)
 end
 
-function parse(io::Union(IO, AbstractString), format::Type{Stockholm},
+function parse(io::Union{IO, AbstractString}, format::Type{Stockholm},
                output::Type{AnnotatedMultipleSequenceAlignment}; generatemapping::Bool=false,
                useidcoordinates::Bool=false, deletefullgaps::Bool=true)
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
@@ -70,24 +66,24 @@ function parse(io::Union(IO, AbstractString), format::Type{Stockholm},
   else
     MSA = convert(Matrix{Residue}, SEQS)
   end
-  msa = AnnotatedMultipleSequenceAlignment(IndexedVector(IDS), MSA, annot)
+  msa = AnnotatedMultipleSequenceAlignment(IndexedArray(IDS), MSA, annot)
   if deletefullgaps
     deletefullgapcolumns!(msa)
   end
   msa
 end
 
-function parse(io::Union(IO, AbstractString), format::Type{Stockholm}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
+function parse(io::Union{IO, AbstractString}, format::Type{Stockholm}, output::Type{MultipleSequenceAlignment}; deletefullgaps::Bool=true)
   # Could be faster with a special _pre_readstockholm
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
-  msa = MultipleSequenceAlignment(IndexedVector(IDS), convert(Matrix{Residue}, SEQS))
+  msa = MultipleSequenceAlignment(IndexedArray(IDS), convert(Matrix{Residue}, SEQS))
   if deletefullgaps
     deletefullgapcolumns!(msa)
   end
   msa
 end
 
-function parse(io::Union(IO,AbstractString), format::Type{Stockholm}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true)
+function parse(io::Union{IO,AbstractString}, format::Type{Stockholm}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true)
   # Could be faster with a special _pre_readstockholm
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
   if deletefullgaps
@@ -124,7 +120,7 @@ function print(io::IO, msa::AnnotatedMultipleSequenceAlignment, format::Type{Sto
 	_printsequencesannotations(io, msa.annotations)
 	res_annotations = _to_sequence_dict(msa.annotations.residues)
 	for i in 1:nsequences(msa)
-		id = selectvalue(msa.id, i)
+		id = msa.id[i]
 		seq = asciisequence(msa, i)
 		println(io, string(id, "\t\t", seq))
 		if id in keys(res_annotations)
@@ -139,7 +135,7 @@ end
 
 function print(io::IO, msa::MultipleSequenceAlignment, format::Type{Stockholm})
 	for i in 1:nsequences(msa)
-		id = selectvalue(msa.id, i)
+		id = msa.id[i]
 		seq = asciisequence(msa, i)
 		println(io, string(id, "\t\t", seq))
 	end
@@ -162,4 +158,28 @@ function downloadpfam(pfamcode::ASCIIString; filename::ASCIIString="$pfamcode.st
   else
     throw( ErrorException( string(pfamcode, " is not a correct Pfam code") ) )
   end
+end
+
+# PDB ids from Pfam sequence annotations
+# ======================================
+
+const _regex_PDB_from_GS = r"PDB;\s+(\w+)\s+(\w);\s+\w+-\w+;" # i.e.: "PDB; 2VQC A; 4-73;\n"
+
+"Generates from a Pfam `msa` a `Dict{ASCIIString, Vector{Tuple{ASCIIString,ASCIIString}}}` with sequence ID as key and list of tuples of PDB code and chain as values."
+function getseq2pdb(msa::AnnotatedMultipleSequenceAlignment)
+    dict = Dict{ASCIIString, Vector{Tuple{ASCIIString,ASCIIString}}}()
+    for (k, v) in getannotsequence(msa)
+        id, annot = k
+        # i.e.: "#=GS F112_SSV1/3-112 DR PDB; 2VQC A; 4-73;\n"
+        if annot == "DR" && ismatch(_regex_PDB_from_GS, v)
+            for m in eachmatch(_regex_PDB_from_GS, v)
+                if haskey(dict, id)
+                    push!(dict[id], (m.captures[1], m.captures[2]))
+                else
+                    dict[id] = Tuple{ASCIIString,ASCIIString}[ (m.captures[1], m.captures[2]) ]
+                end
+            end
+        end
+    end
+    sizehint!(dict, length(dict))
 end

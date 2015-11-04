@@ -1,6 +1,7 @@
 module Clustering
 
   using MIToS.MSA
+  using PairwiseListMatrices
 
   import MIToS.MSA: nsequences
 

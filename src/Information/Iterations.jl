@@ -34,20 +34,17 @@ function estimateincolumns{T, TP, UseGap}(aln::Matrix{Residue}, use::Type{Residu
                                           pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}), weight::SequenceWeights=NoClustering(), usediagonal::Bool=true, diagonalvalue::TP=zero(TP))
   Nab = ResidueCount{T, 2, UseGap}()
   ncol = ncolumns(aln)
-  scores = Array(TP, ncol, ncol)
+  scores = PairwiseListMatrix(TP, ncol, usediagonal, diagonalvalue) # Array(TP, ncol, ncol)
   @inbounds for i in 1:ncol
     a = sub(aln,:,i)
     for j in i:ncol
       if !usediagonal && i == j
-        scores[i,j] = diagonalvalue
         continue
       end
       b = sub(aln,:,j)
       fill!(Nab, pseudocount) # instead of fill! with 0
       count!(Nab, weight, a, b)
-      score = estimate(measure, Nab)
-      scores[i,j] = score
-      scores[j,i] = score
+      scores[i,j] = estimate(measure, Nab)
     end
   end
   scores
@@ -59,21 +56,18 @@ function estimateincolumns{T <: Real, TP, UseGap}(aln::Matrix{Residue}, count::T
   Nab = ResidueCount{T, 2, UseGap}()
   Pab = ResidueProbability{TP, 2, UseGap}()
   ncol = ncolumns(aln)
-  scores = zeros(TP, ncol, ncol)
+  scores = PairwiseListMatrix(TP, ncol, usediagonal, diagonalvalue) # zeros(TP, ncol, ncol)
   @inbounds for i in 1:ncol
     a = sub(aln,:,i)
     for j in i:ncol
       if !usediagonal && i == j
-        scores[i,j] = diagonalvalue
         continue
       end
       b = sub(aln,:,j)
       fill!(Nab, pseudocount) # instead of fill! with 0
       count!(Nab, weight, a, b)
       fill!(Pab, Nab)
-      score = estimate(measure, Pab)
-      scores[i,j] = score
-      scores[j,i] = score
+      scores[i,j] = estimate(measure, Pab)
     end
   end
   scores
@@ -86,12 +80,11 @@ function estimateincolumns{T <: Real, TP}(aln::Matrix{Residue}, count::Type{T}, 
   Pab = ResidueProbability{TP, 2, false}()
   Gab = ResidueProbability{TP, 2, false}()
   ncol = ncolumns(aln)
-  scores = zeros(TP, ncol, ncol)
+  scores = PairwiseListMatrix(TP, ncol, usediagonal, diagonalvalue) # zeros(TP, ncol, ncol)
   @inbounds for i in 1:ncol
     a = sub(aln,:,i)
     for j in i:ncol
       if !usediagonal && i == j
-        scores[i,j] = diagonalvalue
         continue
       end
       b = sub(aln,:,j)
@@ -100,9 +93,7 @@ function estimateincolumns{T <: Real, TP}(aln::Matrix{Residue}, count::Type{T}, 
       fill!(Pab, Nab)
       blosum_pseudofrequencies!(Gab, Pab)
       apply_pseudofrequencies!(Pab, Gab, α, β)
-      score = estimate(measure, Pab)
-      scores[i,j] = score
-      scores[j,i] = score
+      scores[i,j] = estimate(measure, Pab)
     end
   end
   scores

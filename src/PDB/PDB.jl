@@ -5,14 +5,15 @@ module PDB
   using DataStructures
   using Formatting
   using MIToS.Utils
+  # using FixedSizeArrays
 
-  import Base: ==, hash, length, -, norm, dot, angle, cross, vec, any, print, show, parse
+  import Base: ==, hash, length, size, -, +, ./, norm, dot, angle, cross, vec, any, print, show, parse
   import MIToS.Utils: findobjects, isobject
 
-  export covalentradius, vanderwaalsradius,
+  export covalentradius, vanderwaalsradius, check_atoms_for_interactions,
 
   PDBResidueIdentifier, Coordinates, PDBAtom, PDBResidue,
-  distance, contact, findheavy, findatoms, findCB, selectbestoccupancy,
+  distance, contact, findheavy, findatoms, findCB, selectbestoccupancy, bestoccupancy!,
   angle,
 
   ishydrophobic, isaromatic, iscationic, isanionic,
@@ -21,16 +22,15 @@ module PDB
   aromaticsulphur, pication, aromatic, ionic, hydrophobic,
   stridehydrogenbond, chimerahydrogenbond,
 
-  #getpdbmlatoms,
-  PDBFile, PDBML, downloadpdb,
-
-  #getpdbatoms,
+  PDBFile, PDBML, downloadpdb, getpdbdescription,
 
   # Mitos.Utils
-  isobject, findobjects, Is, Not, In
+  isobject, findobjects, Is, Not, In, collectobjects, collectcaptures,
 
-  include("AtomsData.jl")
+  @residues, residues, @atoms, atoms, @residuesdict, residuesdict
+
   include("PDBResidues.jl")
+  include("AtomsData.jl")
   include("Interaction.jl")
   include("PDBMLParser.jl")
   include("PDBParser.jl")
