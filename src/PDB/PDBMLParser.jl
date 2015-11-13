@@ -69,8 +69,7 @@ end
 # ============
 
 function _inputnameforgzip(outfile)
-  len = length(outfile)
-  if len > 3 && outfile[len-2:len] == ".gz"
+  if endswith(outfile, ".gz")
     return(outfile)
   end
   string(outfile, ".gz")
@@ -82,11 +81,11 @@ Requires a four character `pdbcode`.
 By default the `format` is xml and uses the `baseurl` http://www.rcsb.org/pdb/files/.
 `outfile` is the path/name of the output file.
 """
-function downloadpdb(pdbcode::ASCIIString; format::ASCIIString="xml", outfile::ASCIIString="default", baseurl::ASCIIString="http://www.rcsb.org/pdb/files/")
+function downloadpdb(pdbcode::AbstractString; format::ASCIIString="xml", outfile::AbstractString="default", baseurl::ASCIIString="http://www.rcsb.org/pdb/files/")
   if length(pdbcode)== 4
     filename = string(uppercase(pdbcode), ".", lowercase(format),".gz")
     outfile = outfile == "default" ? filename : _inputnameforgzip(outfile)
-    sepchar = baseurl[end] != '/' ? "/" : "";
+    sepchar = endswith(baseurl,"/") ? "" : "/";
     download(string(baseurl,sepchar,filename) , outfile)
   else
     throw(string(pdbcode, " is not a correct PDB code"))
