@@ -80,7 +80,7 @@ end
 Download a gzipped PDB file from PDB database.
 Requires a four character `pdbcode`.
 By default the `format` is xml and uses the `baseurl` http://www.rcsb.org/pdb/files/.
-`outfile` is the path to the output file.
+`outfile` is the path/name of the output file.
 """
 function downloadpdb(pdbcode::ASCIIString; format::ASCIIString="xml", outfile::ASCIIString="default", baseurl::ASCIIString="http://www.rcsb.org/pdb/files/")
   if length(pdbcode)== 4
