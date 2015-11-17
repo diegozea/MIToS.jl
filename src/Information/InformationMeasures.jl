@@ -2,9 +2,6 @@ abstract InformationMeasure{T}
 
 abstract SymmetricMeasure{T} <: InformationMeasure{T}
 
-#estimate_on_marginals(measure::InformationMeasure, table::ResidueContingencyTables, marginal::Int) = estimate(measure, table.marginal[:,marginal])
-#estimate_on_marginals(measure::InformationMeasure, table::ResidueContingencyTables, marginal::Int, base::Real) = estimate(measure, table.marginal[:,marginal], base)
-
 # Entropy
 # =======
 

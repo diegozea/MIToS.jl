@@ -22,7 +22,10 @@ module Information
 
   APC!,
 
-  buslje09, BLMI, pairwisegappercentage
+  buslje09, BLMI, pairwisegappercentage,
+
+  # Formats from MIToS.MSA:
+  Raw, Stockholm, FASTA
 
   include("BLOSUM62.jl")
   include("Probabilities.jl")

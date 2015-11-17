@@ -327,6 +327,19 @@ let file = joinpath(pwd(), "data", "simple.fasta"),
   @test_approx_eq busl[2] blmi[2]
 end
 
+
+let busl = buslje09(Gaoetal2011, FASTA, lambda=0.0),
+    blmi = BLMI(Gaoetal2011, FASTA, lambda=0.0, beta=0.0) # BLMI should be equal to Buslje09 if beta is zero
+
+  @test_approx_eq busl[2] blmi[2] # MIapc
+end
+
+let busl = buslje09(Gaoetal2011, FASTA, lambda=0.5),
+    blmi = BLMI(Gaoetal2011, FASTA, lambda=0.5, beta=0.0) # BLMI should be equal to Buslje09 if beta is zero
+
+  @test_approx_eq busl[2] blmi[2] # MIapc
+end
+
 print("""
 
 Test for Pairwise Gap Percentage
