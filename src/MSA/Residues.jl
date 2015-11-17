@@ -1,6 +1,6 @@
 using Base.Intrinsics
 
-import Base: convert, ==, !=, .==, zero, show, length, getindex, setindex!, rand #, <, <=
+import Base: convert, ==, !=, .==, zero, show, length, getindex, setindex!, rand, string #, <, <=
 
 # Residues
 # ========
@@ -106,6 +106,8 @@ convert(::Type{Residue}, x::Char)  = _to_residue[ Int(x) ];
 convert(::Type{Residue}, str::ASCIIString) = Residue[ Residue(char) for char in str.data ]
 convert(::Type{Residue}, str::Vector{UInt8}) = convert(Vector{Residue}, str)
 convert(::Type{ASCIIString}, seq::AbstractVector{Residue}) = ASCIIString( UInt8[ UInt8(res) for res in seq ] )
+
+string(seq::AbstractVector{Residue}) = ascii(seq) # "AR..." instead of the standar "[A,R,..."
 
 # For convert a MSA stored as Vector{ASCIIString} to Matrix{Residue}
 function convert(::Type{Matrix{Residue}}, sequences::Array{ASCIIString,1})

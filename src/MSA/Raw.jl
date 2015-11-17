@@ -3,7 +3,7 @@ immutable Raw <: Format end
 # Raw Parser
 # ==========
 
-function parse(io::Union{IO, AbstractString}, format::Type{Raw}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true)
+function parse(io::Union{IO, AbstractString}, format::Type{Raw}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true, checkalphabet::Bool=false)
   SEQS = ASCIIString[]
 
   for line in eachline(io)
@@ -12,13 +12,18 @@ function parse(io::Union{IO, AbstractString}, format::Type{Raw}, output::Type{Ma
 
   msa = convert(Matrix{Residue}, SEQS)
 
-  if deletefullgaps
-    return(deletefullgapcolumns(msa))
+  if deletefullgaps && (!checkalphabet)
+    return( deletefullgapcolumns(msa) )
+  elseif deletefullgaps && checkalphabet
+    return( deletefullgapcolumns( deletenotalphabetsequences(msa), SEQS) )
+  elseif (!deletefullgaps) && checkalphabet
+    return( deletenotalphabetsequences(msa), SEQS )
+  else
+    return(msa)
   end
-  msa
 end
 
-function parse(io::Union{IO,AbstractString}, format::Type{Raw}, output::Type{AnnotatedMultipleSequenceAlignment}; generatemapping::Bool=false, deletefullgaps::Bool=true)
+function parse(io::Union{IO,AbstractString}, format::Type{Raw}, output::Type{AnnotatedMultipleSequenceAlignment}; generatemapping::Bool=false, deletefullgaps::Bool=true, checkalphabet::Bool=false)
   SEQS = ASCIIString[]
   for line in eachline(io)
     push!(SEQS, chomp(line))
@@ -34,13 +39,16 @@ function parse(io::Union{IO,AbstractString}, format::Type{Raw}, output::Type{Ann
     MSA = convert(Matrix{Residue}, SEQS)
   end
   msa = AnnotatedMultipleSequenceAlignment(IndexedArray(ASCIIString[ string(i) for i in 1:length(SEQS)]), MSA, annot)
+  if checkalphabet
+    deletenotalphabetsequences!(msa, SEQS)
+  end
   if deletefullgaps
     deletefullgapcolumns!(msa)
   end
   msa
 end
 
-parse(io::Union{IO, AbstractString}, format::Type{Raw}; deletefullgaps::Bool=true) = parse(io, Raw, Matrix{Residue}; deletefullgaps=deletefullgaps)
+parse(io::Union{IO, AbstractString}, format::Type{Raw}; deletefullgaps::Bool=true, checkalphabet::Bool=false) = parse(io, Raw, Matrix{Residue}; deletefullgaps=deletefullgaps, checkalphabet=checkalphabet)
 
 # Print Raw
 # =========

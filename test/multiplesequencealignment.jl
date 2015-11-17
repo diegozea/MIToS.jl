@@ -2,11 +2,9 @@ using Base.Test
 using MIToS.MSA
 
 # Fields of MultipleSequenceAlignment
-#const msa_fields = Symbol[:id, :msa, :sequencemapping, :filecolumnmapping, :annotations]
 const msa_fields = Symbol[:id, :msa, :annotations]
 
 # Fields of AlignedAlignedSequence
-#const seq_fields = Symbol[:id, :index, :sequence, :sequencemapping, :filecolumnmapping, :annotations]
 const seq_fields = Symbol[:id, :index, :sequence, :annotations]
 
 print("""
@@ -143,7 +141,22 @@ for field in msa_fields
     @eval @test fasta.$field == pfam.$field
   end
 end
-# @test isempty(fasta.annotations)
+
+print("""
+Test parse with ambiguous or not standard residues (are gaps on MIToS)
+""")
+
+let default = read(joinpath(pwd(), "data", "alphabet.fasta"), FASTA, generatemapping=true),
+  notused = read(joinpath(pwd(), "data", "alphabet.fasta"), FASTA, checkalphabet=true)
+
+  @test Base.vec(default[1,:]) == res"ARNDCQEGHILKMFPSTWYV"
+  for i in 2:nsequences(default)
+    @test Base.vec(default[i,:]) == res"AR-DCQEGHILKMFPSTWYV"
+    @test  getsequencemapping(default,1) == getsequencemapping(default,i)
+  end
+
+  @test nsequences(notused) == 1
+end
 
 print("""
 

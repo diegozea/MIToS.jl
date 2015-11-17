@@ -30,6 +30,7 @@ Convert to and from ASCIIString
 @test res"ARNDCQEGHILKMFPSTWYV-" == Residue[ Residue(char) for char in alphabet]
 @test Residue(alphabet) == Residue[ Residue(char) for char in alphabet]
 @test ascii(Residue(alphabet)) == alphabet
+@test string(Residue(alphabet)) == alphabet # "AR..." instead of the standar "[A,R,..."
 
 const msa =  ["DAWAEF",
               "DAWAED",
@@ -44,6 +45,21 @@ const badmsa=["DAWAEF",
                                               'D' 'A' 'Y' 'C' 'M' 'D']
 
 @test_throws ErrorException convert(Matrix{Residue}, badmsa)
+
+print("""
+Ambiguous or not standard residues (are gaps on MIToS)
+""")
+
+for res in Char['X', # Any amino acid
+			          'B', # Aspartic acid or Asparagine
+			          'Z', # Glutamine or Glutamic acid
+			          'O', # Pyrrolysine
+			          'U', # Selenocysteine
+			          'J'] # Leucine or Isoleucine
+
+  @test Residue(res) == GAP
+
+end
 
 print("""
 Comparisons
