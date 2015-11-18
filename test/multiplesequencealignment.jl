@@ -147,7 +147,7 @@ Test parse with ambiguous or not standard residues (are gaps on MIToS)
 """)
 
 let default = read(joinpath(pwd(), "data", "alphabet.fasta"), FASTA, generatemapping=true),
-  notused = read(joinpath(pwd(), "data", "alphabet.fasta"), FASTA, checkalphabet=true)
+    notused = read(joinpath(pwd(), "data", "alphabet.fasta"), FASTA, checkalphabet=true) # deletenotalphabetsequences! is called also for Raw & Stockholm
 
   @test Base.vec(default[1,:]) == res"ARNDCQEGHILKMFPSTWYV"
   for i in 2:nsequences(default)
@@ -156,6 +156,7 @@ let default = read(joinpath(pwd(), "data", "alphabet.fasta"), FASTA, generatemap
   end
 
   @test nsequences(notused) == 1
+  @test nsequences(read(joinpath(pwd(), "data", "alphabet.fasta"), FASTA, Matrix{Residue}, checkalphabet=true)) == 1 # _strings_to_msa is called also for Raw & Stockholm
 end
 
 print("""
