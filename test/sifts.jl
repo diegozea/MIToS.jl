@@ -205,7 +205,7 @@ let pdb = "2vqc"
   filename = downloadsifts(pdb)
   try
     @test_throws ErrorException downloadsifts("2vqc_A")
-    @test read(filename, SIFTSXML) == read(joinpath(pwd(), "data", "$(pdb).xml.gz"), SIFTSXML)
+    @test length(read(filename, SIFTSXML)) == length(read(joinpath(pwd(), "data", "$(pdb).xml.gz"), SIFTSXML))
   finally
     rm(filename)
   end
