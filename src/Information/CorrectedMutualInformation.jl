@@ -19,14 +19,17 @@ function _buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
   aln = filtercolumns(aln, used)
   clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
   mi = _buslje09(aln, usegap, clusters, lambda, apc)
-  #rand_mi = Array(Float64, size(mi, 1), size(mi, 2), samples)
-  rand_mi = Array(typeof(mi), samples)
-  for ns in 1:samples
-    fixedgaps ? shuffle_residues_sequencewise!(aln) : shuffle_sequencewise!(aln)
-    rand_mi[ns] = _buslje09(aln, usegap, clusters, lambda, apc)
-  end
   usedcol = collect(1:ncol)[used]
-  (zscore(rand_mi, mi), mi, usedcol)
+  if samples > 0
+    rand_mi = Array(typeof(mi), samples)
+    for ns in 1:samples
+      fixedgaps ? shuffle_residues_sequencewise!(aln) : shuffle_sequencewise!(aln)
+      rand_mi[ns] = _buslje09(aln, usegap, clusters, lambda, apc)
+    end
+    return(zscore(rand_mi, mi), mi, usedcol)
+  else
+    return(zeros(mi), mi, usedcol)
+  end
 end
 
 """
@@ -96,13 +99,17 @@ function _BLMI(aln::Matrix{Residue}; beta::Float64=4.6, threshold::Float64=0.62,
   clusters = hobohmI(aln, threshold)
   numbercl = getnclusters(clusters)
   mi = _BLMI(aln, clusters, numbercl, beta, apc, lambda)
-  rand_mi = Array(typeof(mi), samples)
-  for ns in 1:samples
-    fixedgaps ? shuffle_residues_sequencewise!(aln) : shuffle_sequencewise!(aln)
-    rand_mi[ns] = _BLMI(aln, clusters, numbercl, beta, apc, lambda)
-  end
   usedcol = collect(1:ncol)[used]
-  (zscore(rand_mi, mi), mi, usedcol)
+  if samples > 0
+    rand_mi = Array(typeof(mi), samples)
+    for ns in 1:samples
+      fixedgaps ? shuffle_residues_sequencewise!(aln) : shuffle_sequencewise!(aln)
+      rand_mi[ns] = _BLMI(aln, clusters, numbercl, beta, apc, lambda)
+    end
+    return(zscore(rand_mi, mi), mi, usedcol)
+  else
+    return(zeros(mi), mi, usedcol)
+  end
 end
 
 """
