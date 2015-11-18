@@ -92,16 +92,7 @@ end
 function parse(io::Union{IO,AbstractString}, format::Type{Stockholm}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true, checkalphabet::Bool=false)
   # Could be faster with a special _pre_readstockholm
   IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
-  msa = convert(Matrix{Residue}, SEQS)
-  if deletefullgaps && (!checkalphabet)
-    return( deletefullgapcolumns(msa) )
-  elseif deletefullgaps && checkalphabet
-    return( deletefullgapcolumns( deletenotalphabetsequences(msa), SEQS) )
-  elseif (!deletefullgaps) && checkalphabet
-    return( deletenotalphabetsequences(msa), SEQS )
-  else
-    return(msa)
-  end
+  _strings_to_msa(SEQS, deletefullgaps, checkalphabet)
 end
 
 parse(io, format::Type{Stockholm};  generatemapping::Bool=false,

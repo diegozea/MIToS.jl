@@ -10,17 +10,7 @@ function parse(io::Union{IO, AbstractString}, format::Type{Raw}, output::Type{Ma
     push!(SEQS, chomp(line))
   end
 
-  msa = convert(Matrix{Residue}, SEQS)
-
-  if deletefullgaps && (!checkalphabet)
-    return( deletefullgapcolumns(msa) )
-  elseif deletefullgaps && checkalphabet
-    return( deletefullgapcolumns( deletenotalphabetsequences(msa), SEQS) )
-  elseif (!deletefullgaps) && checkalphabet
-    return( deletenotalphabetsequences(msa), SEQS )
-  else
-    return(msa)
-  end
+  _strings_to_msa(SEQS, deletefullgaps, checkalphabet)
 end
 
 function parse(io::Union{IO,AbstractString}, format::Type{Raw}, output::Type{AnnotatedMultipleSequenceAlignment}; generatemapping::Bool=false, deletefullgaps::Bool=true, checkalphabet::Bool=false)

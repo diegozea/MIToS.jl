@@ -80,16 +80,7 @@ end
 
 function parse(io::Union{IO,AbstractString}, format::Type{FASTA}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true, checkalphabet::Bool=false)
   IDS, SEQS = _pre_readfasta(io)
-  msa = convert(Matrix{Residue}, SEQS)
-  if deletefullgaps && (!checkalphabet)
-    return( deletefullgapcolumns(msa) )
-  elseif deletefullgaps && checkalphabet
-    return( deletefullgapcolumns( deletenotalphabetsequences(msa), SEQS) )
-  elseif (!deletefullgaps) && checkalphabet
-    return( deletenotalphabetsequences(msa), SEQS )
-  else
-    return(msa)
-  end
+  _strings_to_msa(SEQS, deletefullgaps, checkalphabet)
 end
 
 parse(io::Union{IO,AbstractString}, format::Type{FASTA}; generatemapping::Bool=false,

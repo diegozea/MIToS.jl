@@ -114,3 +114,16 @@ function deletenotalphabetsequences(msa::Matrix{Residue}, seqs::Vector{ASCIIStri
   end
   msa
 end
+
+function _strings_to_msa(seqs::Vector{ASCIIString}, deletefullgaps::Bool, checkalphabet::Bool)
+  msa = convert(Matrix{Residue}, seqs)
+  if deletefullgaps && (!checkalphabet)
+    return( deletefullgapcolumns(msa) )
+  elseif deletefullgaps && checkalphabet
+    return( deletefullgapcolumns( deletenotalphabetsequences(msa), seqs) )
+  elseif (!deletefullgaps) && checkalphabet
+    return( deletenotalphabetsequences(msa), seqs )
+  else
+    return(msa)
+  end
+end
