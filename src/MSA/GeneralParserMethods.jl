@@ -74,7 +74,9 @@ end
 
 The keyword argument `generatemapping` (`false` by default) indicates if the mapping of the sequences ("SeqMap") and columns ("ColMap") should be generated and saved in the annotations.
 If `useidcoordinates` is `true` (default: `false`) the sequence IDs of the form "ID/start-end" are parsed and used for determining the start and end positions when the mappings are generated.
-`deletefullgaps` (`true` by default) indicates if columns 100% gaps (generally inserts from a HMM) must be removed from the MSA.""" parse
+`deletefullgaps` (`true` by default) indicates if columns 100% gaps (generally inserts from a HMM) must be removed from the MSA.
+If the keyword argument `checkalphabet` is `true` (`false` by default), the sequences with residues outside the alphabet are deleted.
+By default, this ambiguous or not standard residues  are raplaced by gaps.""" parse
 
 # Delete sequences with ambiguous or not standard residues
 # ========================================================
