@@ -11,7 +11,7 @@ import PairwiseListMatrices
 
 function parse_commandline()
     s = ArgParseSettings(description = """Calculates the percentage identity between all the sequences of an MSA and creates an *.pidstats.csv file with:
-    mean, standard deviation, median, minimum and maximum values of the percentage identity and the number of columns and sequences.
+    The number of columns and sequences. The mean, standard deviation, median, minimum and maximum values and first and third quantiles of the percentage identity.
     It could also create and *.pidlist.csv file with the percentage identity for each pairwise comparison.""",
                         version = "MIToS $(Pkg.installed("MIToS"))",
                         add_version = true)
@@ -25,7 +25,7 @@ function parse_commandline()
             help = "Format of the MSA: stockholm, raw or fasta"
             arg_type = ASCIIString
             default = "stockholm"
-        "--pidlist", "-p"
+        "--savelist", "-s"
             help = "Create and *.pidlist.csv file with the percentage identity for each pairwise comparison."
             arg_type = Bool
             default = false
@@ -65,14 +65,14 @@ const files = _file_names(parsed)
 
 @everywhere function main(input)
   name, ext = splitext(input)
-  savelist = Args["pidlist"]
+  savelist = Args["savelist"]
   fh = open(string(name, ".pidstats.csv"), "w")
   println(fh, "# MIToS ", Pkg.installed("MIToS"), " PercentIdentity.jl ", now())
   println(fh, "# used arguments:")
   for (key, value) in Args
     println(fh, "# \t", key, "\t\t", value)
   end
-  println(fh, "ncol,nseq,mean,std,min,max,median")
+  println(fh, "ncol,nseq,mean,std,min,firstq,median,thirdq,max")
   try
     form = ascii(Args["format"])
     if form == "stockholm"
@@ -85,7 +85,10 @@ const files = _file_names(parsed)
       throw(ErrorException("--format should be stockholm, raw or fasta."))
     end
     plm = percentidentity(msa, Float16)
-    println(fh, size(msa, 2), ",", size(msa, 1), ",", mean(plm.list), ",", std(plm.list), ",", minimum(plm.list), ",", maximum(plm.list), ",", median(plm.list))
+    mean_pid = mean(plm.list)
+    min_pid, max_pid = extrema(plm.list)
+    first, med, third = quantile(plm.list, Float64[0.25,0.5,0.75])
+    println(fh, size(msa, 2), ",", size(msa, 1), ",", mean_pid, ",", stdm(plm.list, mean_pid), ",", min_pid, ",", first, ",", med, ",", third, ",", max_pid)
     flush(fh)
     savelist && writecsv(string(name, ".pidlist.csv"), to_table(plm, false))
   catch err
