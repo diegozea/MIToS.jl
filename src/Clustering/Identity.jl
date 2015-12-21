@@ -97,3 +97,32 @@ function percentidentity{T}(msa::AbstractMatrix{Residue}, out::Type{T}=Float64)
   _percentidentity_kernel!(scores, aln, nseq, len)
   scores
 end
+
+# Mean Percent Identity of an MSA
+# ===============================
+
+"""
+Returns the mean of the percent identity between the sequences of a MSA.
+If the MSA has 300 sequences or less, the mean is exact.
+If the MSA has more sequences, 44850 random pairs of sequences are used for the estimation.
+The number of samples can be changed using the second argument.
+"""
+function meanpercentidentity(msa, nsamples::Int=44850) # lengthlist(300, false) == 44850
+  nseq, ncol = size(msa)
+  if lengthlist(nseq, Val{false}) <= nsamples
+    return( mean_nodiag(percentidentity(msa)) )
+  else
+    samples = Set{Tuple{Int,Int}}()
+    sizehint!(samples, nsamples)
+    sum = 0.0
+    while length(samples) < nsamples
+      i = rand(1:(nseq-1))
+      j = rand((i+1):nseq)
+      if !in((i,j), samples)
+        push!(samples, (i,j))
+        sum += percentidentity(msa[i,:], msa[j,:])
+      end
+    end
+    return( (sum/nsamples) * 100.0 )
+  end
+end

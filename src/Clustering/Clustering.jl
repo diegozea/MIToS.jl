@@ -7,7 +7,7 @@ module Clustering
 
   export AbstractClusters, NoClustering, Clusters, getnclusters, getweight, nsequences,
 
-  percentidentity,
+  percentidentity, meanpercentidentity,
 
   hobohmI
 
