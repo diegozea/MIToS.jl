@@ -36,11 +36,7 @@ module MSA
   gapstrip, adjustreference, filtersequences, filtercolumns,
   getcolumnmapping, getsequencemapping,
 
-  Raw,
-
-  Stockholm, downloadpfam, getseq2pdb,
-
-  FASTA,
+  Raw, Stockholm, FASTA,
 
   shuffle_columnwise!, shuffle_sequencewise!, shuffle_residues_sequencewise!, shuffle_residues_columnwise!
 
@@ -49,7 +45,7 @@ module MSA
   include("MultipleSequenceAlignment.jl")
   include("GeneralParserMethods.jl")
   include("Raw.jl")
-  include("Pfam.jl")
+  include("Stockholm.jl")
   include("FASTA.jl")
   include("Shuffle.jl")
 

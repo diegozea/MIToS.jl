@@ -2,6 +2,8 @@
 
 ### Changes from v0.1 to v0.2
 
+* `Pfam` module for working with *Pfam* alignments.
+
 * `BLMI` has `lambda` as a keyword argument for using additive smoothing.
 
 * `read`/`parse` added the keyword argument `checkalphabet` for deleting sequences with non standard amino acids.

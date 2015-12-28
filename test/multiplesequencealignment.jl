@@ -48,8 +48,6 @@ end
 @test pfam.annotations.columns["seq_cons"] == "...NshphAclhaKILppKtElolEDIlAQFEISsosAYsI.+sL+hICEpH.-ECpsppKsRKTlhh.hKpEphppptpEp..ppItKIhsAp................"
 @test pfam.annotations.sequences[("F112_SSV1/3-112","DR")] == "PDB; 2VQC A; 4-73;"
 
-@test getseq2pdb(pfam)["F112_SSV1/3-112"] == [("2VQC","A")]
-
 print("""
 Test parse for string inputs
 """)
@@ -478,24 +476,4 @@ end
 let io = IOBuffer()
   print(io, small_na, Stockholm)
   @test parse(takebuf_string(io), Stockholm) == small_na
-end
-
-
-print("""
-
-Test download
-=============
-""")
-
-let pfam_code = "PF11591"
-  @test_throws ErrorException downloadpfam("2vqc")
-  filename = downloadpfam(pfam_code)
-  try
-    aln = read(filename, Stockholm)
-    if size(aln) == (6,34)
-      @test getannotfile(aln, "ID") == "2Fe-2S_Ferredox"
-    end
-  finally
-    rm(filename)
-  end
 end

@@ -24,3 +24,11 @@ include("probabilities.jl")
 include("informationmeasures.jl")
 include("iterations.jl")
 include("buslje09.jl")
+# Pfam
+include("pfam.jl")
+
+print("""
+
+----- =D -----
+
+""")
