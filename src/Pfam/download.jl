@@ -1,5 +1,6 @@
 # Download Pfam
 # =============
+
 """
 Download a gzipped stockholm full alignment for the `pfamcode`.
 The extension of the downloaded file is `.stockholm.gz` by default. The `filename` can be changed, but the `.gz` at the end is mandatory.
