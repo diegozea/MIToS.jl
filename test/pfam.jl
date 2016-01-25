@@ -1,6 +1,9 @@
 using Base.Test
 using MIToS.Pfam
 using MIToS.PDB
+using MIToS.Information
+using PairwiseListMatrices
+using ROCAnalysis
 
 print("""
 
@@ -43,24 +46,25 @@ let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, gen
   #     123456789012345678  msa col
   #     345678901234567890  uniprot 3-20
   #    ****              *
+  #12345678901234567890123  ColMap
 
-  @test_throws KeyError map[0]  # insert
-  @test map[1]  == ""           # missing
-  @test map[2]  == "4"
-  @test map[3]  == "5"
-  @test map[18] == "20"
+  @test_throws KeyError map[5]  # insert
+  @test map[6]  == ""           # missing
+  @test map[7]  == "4"
+  @test map[8]  == "5"
+  @test map[23] == "20"
 
   #.....QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ..... msa seq
   #.....X---HHHHHHHHHHHHHHHSEE-HHHHHHHH---HHHHHHHHHHHHHHHHH-TTTEEEEE-SS-EEEEE--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX..... pdb ss
-  #                                                                                                        11111111111      msa col hundreds
-  #              11111111112222222222333333333344444444445555555555666666666677777777778888888888999999999900000000001      msa col tens
-  #     12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890      msa col ones
+  #                                                                                                   111111111111111111111 ColMap hundreds
+  #         111111111122222222223333333333444444444455555555556666666666777777777788888888889999999999000000000011111111112 ColMap tens
+  #123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890 ColMap ones
   #                                                                           **                                     **
 
-  @test_throws KeyError map[111]   # insert
-  @test map[110] == ""             # missing
-  @test map[72]  == ""             # missing
-  @test map[71]  == "73"
+  @test_throws KeyError map[116]   # insert
+  @test map[115] == ""             # missing
+  @test map[77]  == ""             # missing
+  @test map[76]  == "73"
 
 end
 
@@ -80,13 +84,14 @@ let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, gen
   #     -45              20 pdb
   #.....QTLNSYKMAEIMYKILEK  msa seq
   #     123456789012345678  msa col
+  #12345678901234567890123  ColMap
   #     345678901234567890  uniprot 3-20
-  #    ****              *
+  #     ***              *
 
   @test_throws KeyError res["3"]
-  @test res[map[2]].id.number == "4"
+  @test res[map[7]].id.number == "4"
 
-  contacts = msacontacts(res, map)
+  contacts = msacontacts(msa, res, map)
   missings = sum(isnan(contacts), 1)
 
   @test size(contacts) == (110,110)
@@ -107,3 +112,35 @@ let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, gen
   @test ncontacts[3]  == 6
 
 end
+
+print("""
+
+Test AUC and Contact Masks
+==========================
+""")
+
+let ntru = 1000,
+  nfal = 100025,
+  score_tru =  2 + 2randn(ntru),
+  score_fal = -2 + 2randn(nfal),
+  msacontacts = PairwiseListMatrix(vcat(ones(Float64, ntru), zeros(Float64, nfal)), false),
+  score = PairwiseListMatrix(vcat(score_tru, score_fal), false)
+
+  @test AUC(score, msacontacts) == 1 - auc(roc(score_tru, score_fal))
+  @test round(AUC(score, msacontacts) - (1.0 - 0.078), 2) == 0.00
+end
+
+# let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, generatemapping=true, useidcoordinates=true),
+#     map = msacolumn2pdbresidue("F112_SSV1/3-112", "2VQC", "A", "PF09645", msa, ascii(joinpath(pwd(), "data", "2vqc.xml.gz"))),
+#     res = residuesdict(read(joinpath(pwd(), "data", "2VQC.xml"), PDBML), "1", "A", "ATOM", "*"),
+#     contacts = msacontacts(res, map)
+
+#   print("""
+
+#   AUC Example using MI
+#   --------------------
+#   """)
+
+#   AUC(buslje09(msa, samples=0)[2], contacts)
+
+# end

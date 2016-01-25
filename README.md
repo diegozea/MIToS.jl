@@ -37,7 +37,7 @@ MIToS starting point was an improvement of the algorithm published by Buslje et.
   * Corrections to the MI values for co-evolution estimation:
     * `APC!` for MIp [5]
     * `buslje09` for the Z score and MIp from Buslje et. al. 2009 [1]
-* **Pfam** has methods for working with *Pfam* alignments.
+* **Pfam** module has methods for working with *Pfam* alignments and useful parameter optimization functions to be used with those MSAs.
 * **Utils** for common utils functions and types in MIToS.
 
 #### Scripts

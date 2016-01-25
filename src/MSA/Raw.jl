@@ -21,6 +21,7 @@ function parse(io::Union{IO,AbstractString}, format::Type{Raw}, output::Type{Ann
   annot = Annotations()
   if generatemapping
     MSA, MAP = _to_msa_mapping(SEQS)
+    setannotfile!(annot, "NCol", string(size(MSA,2)))
     setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
     for i in 1:length(SEQS)
       setannotsequence!(annot, string(i), "SeqMap", MAP[i])

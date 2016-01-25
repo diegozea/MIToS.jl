@@ -2,7 +2,9 @@
 
 ### Changes from v0.1 to v0.2
 
-* `Pfam` module for working with *Pfam* alignments.
+* `NCol` file annotation with the number of columns in the original MSA.
+
+* `Pfam` module for working with *Pfam* alignments and useful parameter optimization functions.
 
 * `BLMI` has `lambda` as a keyword argument for using additive smoothing.
 

@@ -72,7 +72,8 @@ end
 
 @doc """`parse(io::Union{IO, AbstractString}, format[, output; generatemapping::Bool=false, useidcoordinates::Bool=false, deletefullgaps::Bool=true ])`
 
-The keyword argument `generatemapping` (`false` by default) indicates if the mapping of the sequences ("SeqMap") and columns ("ColMap") should be generated and saved in the annotations.
+The keyword argument `generatemapping` (`false` by default) indicates if the mapping of the sequences ("SeqMap") and columns ("ColMap")
+and the number of columns in the original MSA ("NCol") should be generated and saved in the annotations.
 If `useidcoordinates` is `true` (default: `false`) the sequence IDs of the form "ID/start-end" are parsed and used for determining the start and end positions when the mappings are generated.
 `deletefullgaps` (`true` by default) indicates if columns 100% gaps (generally inserts from a HMM) must be removed from the MSA.
 By default, the ambiguous or not standard residues are replaced by gaps (i.e. `J` for leucine or isoleucine).

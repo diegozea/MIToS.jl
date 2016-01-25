@@ -49,6 +49,7 @@ function parse(io::Union{IO,AbstractString}, format::Type{FASTA}, output::Type{A
   annot = Annotations()
   if generatemapping
     MSA, MAP = useidcoordinates  && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
+    setannotfile!(annot, "NCol", string(size(MSA,2)))
     setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
     for i in 1:length(IDS)
       setannotsequence!(annot, IDS[i], "SeqMap", MAP[i])
