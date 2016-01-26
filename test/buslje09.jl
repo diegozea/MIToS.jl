@@ -1,8 +1,8 @@
-using Base.Test
-using MIToS.Information
-using MIToS.Utils
-using MIToS.MSA
-using PairwiseListMatrices
+# using Base.Test
+# using MIToS.Information
+# using MIToS.Utils
+# using MIToS.MSA
+# using PairwiseListMatrices
 
 const Gaoetal2011 = joinpath(pwd(), "data", "Gaoetal2011.fasta")
 

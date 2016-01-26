@@ -1,5 +1,5 @@
+# using Base.Test
 using IndexedArrays
-using Base.Test
 
 const pdb_list = ["2HHB", "1IRD", "1DN3"]
 

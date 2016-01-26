@@ -1,6 +1,6 @@
-using Base.Test
-using MIToS.Clustering
-using MIToS.MSA
+# using Base.Test
+# using MIToS.Clustering
+# using MIToS.MSA
 
 println("""
 

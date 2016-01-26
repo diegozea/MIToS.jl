@@ -1,5 +1,5 @@
-using Base.Test
-using MIToS.MSA
+# using Base.Test
+# using MIToS.MSA
 
 print("""
 Tests for Mappings on Annotated Multiple Sequence Alignments

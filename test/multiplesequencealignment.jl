@@ -1,5 +1,5 @@
-using Base.Test
-using MIToS.MSA
+# using Base.Test
+# using MIToS.MSA
 
 # Fields of MultipleSequenceAlignment
 const msa_fields = Symbol[:id, :msa, :annotations]

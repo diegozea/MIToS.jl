@@ -1,5 +1,5 @@
-using Base.Test
-using MIToS.PDB
+# using Base.Test
+# using MIToS.PDB
 
 txt(code) = joinpath(pwd(), "data", string(uppercase(code), ".pdb"))
 xml(code) = joinpath(pwd(), "data", string(uppercase(code), ".xml"))
