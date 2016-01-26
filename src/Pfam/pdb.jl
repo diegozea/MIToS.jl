@@ -144,8 +144,8 @@ Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of 
 `score` and `msacontact` lists are vinculated (inner join) by their labels (i.e. column number in the file).
 `msacontact` should have 1.0 for true contacts and 0.0 for not contacts (NaN or other numbers for missing values).
 """
-function AUC{S, C <: AbstractFloat}(scores::PairwiseListMatrix{S,false}, msacontacts::PairwiseListMatrix{C,false})
-  sco, con = join(scores, msacontacts)
+function AUC{S <: AbstractFloat, C <: AbstractFloat}(scores::PairwiseListMatrix{S,false}, msacontacts::PairwiseListMatrix{C,false})
+  sco, con = join(scores, msacontacts, kind=:inner)
   true_contacts, false_contacts = get_contact_mask(con)
   AUC(sco, true_contacts, false_contacts)
 end

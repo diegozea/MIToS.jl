@@ -127,20 +127,20 @@ let ntru = 90,
     score = PairwiseListMatrix(vcat(score_tru, score_fal), Int16[x for x in 1:20], false),
     correct = 1 - auc(roc(score_tru, score_fal))
 
-  @test AUC(score, msacontacts) .== correct
+  @test AUC(score, msacontacts) == correct
 
 end
+
+print("""
+
+AUC Example using MI
+--------------------
+""")
 
 let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, generatemapping=true, useidcoordinates=true),
     map = msacolumn2pdbresidue("F112_SSV1/3-112", "2VQC", "A", "PF09645", msa, ascii(joinpath(pwd(), "data", "2vqc.xml.gz"))),
     res = residuesdict(read(joinpath(pwd(), "data", "2VQC.xml"), PDBML), "1", "A", "ATOM", "*"),
     contacts = msacontacts(msa, res, map)
-
-  print("""
-
-  AUC Example using MI
-  --------------------
-  """)
 
   @test round( AUC(buslje09(msa, samples=0)[2], contacts) , 4) == 0.5291
 end
