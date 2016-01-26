@@ -119,12 +119,12 @@ Test AUC and Contact Masks
 ==========================
 """)
 
-let ntru = 1000,
-    nfal = 100025,
+let ntru = 90,
+    nfal = 100,
     score_tru = Float16[ 2 + 2x for x in randn(ntru)],
     score_fal = Float16[-2 + 2x for x in randn(nfal)],
-    msacontacts = PairwiseListMatrix(vcat(ones(Float16, ntru), zeros(Float16, nfal)), Int16[x for x in 1:450], false),
-    score = PairwiseListMatrix(vcat(score_tru, score_fal), Int16[x for x in 1:450], false),
+    msacontacts = PairwiseListMatrix(vcat(ones(Float16, ntru), zeros(Float16, nfal)), Int16[x for x in 1:20], false),
+    score = PairwiseListMatrix(vcat(score_tru, score_fal), Int16[x for x in 1:20], false),
     correct = 1 - auc(roc(score_tru, score_fal))
 
   @test AUC(score, msacontacts) .== correct
