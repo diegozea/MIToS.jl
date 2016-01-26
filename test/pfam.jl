@@ -123,24 +123,22 @@ let ntru = 1000,
   nfal = 100025,
   score_tru =  2 + 2randn(ntru),
   score_fal = -2 + 2randn(nfal),
-  msacontacts = PairwiseListMatrix(vcat(ones(Float64, ntru), zeros(Float64, nfal)), false),
-  score = PairwiseListMatrix(vcat(score_tru, score_fal), false)
+  msacontacts = PairwiseListMatrix(vcat(ones(Float64, ntru), zeros(Float64, nfal)), collect(1:450), false),
+  score = PairwiseListMatrix(vcat(score_tru, score_fal), collect(1:450), false)
 
   @test AUC(score, msacontacts) == 1 - auc(roc(score_tru, score_fal))
-  @test round(AUC(score, msacontacts) - (1.0 - 0.078), 2) == 0.00
 end
 
-# let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, generatemapping=true, useidcoordinates=true),
-#     map = msacolumn2pdbresidue("F112_SSV1/3-112", "2VQC", "A", "PF09645", msa, ascii(joinpath(pwd(), "data", "2vqc.xml.gz"))),
-#     res = residuesdict(read(joinpath(pwd(), "data", "2VQC.xml"), PDBML), "1", "A", "ATOM", "*"),
-#     contacts = msacontacts(res, map)
+let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, generatemapping=true, useidcoordinates=true),
+    map = msacolumn2pdbresidue("F112_SSV1/3-112", "2VQC", "A", "PF09645", msa, ascii(joinpath(pwd(), "data", "2vqc.xml.gz"))),
+    res = residuesdict(read(joinpath(pwd(), "data", "2VQC.xml"), PDBML), "1", "A", "ATOM", "*"),
+    contacts = msacontacts(msa, res, map)
 
-#   print("""
+  print("""
 
-#   AUC Example using MI
-#   --------------------
-#   """)
+  AUC Example using MI
+  --------------------
+  """)
 
-#   AUC(buslje09(msa, samples=0)[2], contacts)
-
-# end
+  @test round( AUC(buslje09(msa, samples=0)[2], contacts) , 4) == 0.5291
+end

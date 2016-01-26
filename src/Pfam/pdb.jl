@@ -104,10 +104,6 @@ end
 # AUC (contact prediction)
 # ========================
 
-##############################
-# MODIFICAR PARA USAR ColMap #
-##############################
-
 """
 This function takes a `msacontacts` or its list of contacts `contact_list` with 1.0 for true contacts and 0.0 for not contacts (NaN or other numbers for missing values).
 Returns two `BitVector`s, the first with `true`s where `contact_list` is 1.0 and the second with `true`s where `contact_list` is 0.0. There are useful for AUC calculations.
@@ -134,7 +130,8 @@ get_contact_mask(msacontacts::PairwiseListMatrix{Float64,false}) = get_contact_m
 Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the `scores_list` for `true_contacts` prediction.
 The three vectors should have the same length and `false_contacts` should be `true` where there are not contacts.
 """
-AUC{T}(scores_list::Vector{T}, true_contacts::BitVector, false_contacts::BitVector) = 1 - auc(roc(scores_list[true_contacts], scores_list[false_contacts]))
+AUC{T}(scores_list::Vector{T}, true_contacts::BitVector, false_contacts::BitVector) = 1 - auc(roc(scores_list[true_contacts  & !isnan(scores_list)],
+                                                                                                  scores_list[false_contacts & !isnan(scores_list)]))
 
 """
 Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the `scores` for `true_contacts` prediction.
@@ -144,12 +141,12 @@ AUC{T}(scores::PairwiseListMatrix{T,false}, true_contacts::BitVector, false_cont
 
 """
 Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the `scores` for `msacontact` prediction.
+`score` and `msacontact` lists are vinculated (inner join) by their labels (i.e. column number in the file).
 `msacontact` should have 1.0 for true contacts and 0.0 for not contacts (NaN or other numbers for missing values).
 """
 function AUC{T}(scores::PairwiseListMatrix{T,false}, msacontacts::PairwiseListMatrix{Float64,false})
-  scores_list  = getlist(scores)
-  contact_list = getlist(msacontacts)
-  length(scores_list) != length(contact_list) && throw(ErrorException("Lists need to have the same number of elements."))
-  true_contacts, false_contacts = get_contact_mask(contact_list)
-  AUC(scores_list, true_contacts, false_contacts)
+  sco, con = join(scores, msacontacts)
+  true_contacts, false_contacts = get_contact_mask(con)
+  AUC(sco, true_contacts, false_contacts)
 end
+
