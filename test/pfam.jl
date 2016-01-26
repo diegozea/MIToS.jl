@@ -120,13 +120,15 @@ Test AUC and Contact Masks
 """)
 
 let ntru = 1000,
-  nfal = 100025,
-  score_tru =  2 + 2randn(ntru),
-  score_fal = -2 + 2randn(nfal),
-  msacontacts = PairwiseListMatrix(vcat(ones(Float64, ntru), zeros(Float64, nfal)), collect(1:450), false),
-  score = PairwiseListMatrix(vcat(score_tru, score_fal), collect(1:450), false)
+    nfal = 100025,
+    score_tru =  2 + 2randn(ntru),
+    score_fal = -2 + 2randn(nfal),
+    msacontacts = PairwiseListMatrix(vcat(ones(Float64, ntru), zeros(Float64, nfal)), collect(1:450), false),
+    score = PairwiseListMatrix(vcat(score_tru, score_fal), collect(1:450), false),
+    correct = 1 - auc(roc(score_tru, score_fal))
 
-  @test AUC(score, msacontacts) == 1 - auc(roc(score_tru, score_fal))
+  @test AUC(score, msacontacts) == correct
+
 end
 
 let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, generatemapping=true, useidcoordinates=true),
