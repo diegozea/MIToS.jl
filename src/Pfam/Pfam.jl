@@ -11,7 +11,7 @@ module Pfam
 
   export  Stockholm, downloadpfam, getseq2pdb,
           msacolumn2pdbresidue, msacontacts,
-          get_contact_mask, AUC
+          getcontactmasks, AUC
 
   include("download.jl")
   include("pdb.jl")

@@ -108,7 +108,7 @@ end
 This function takes a `msacontacts` or its list of contacts `contact_list` with 1.0 for true contacts and 0.0 for not contacts (NaN or other numbers for missing values).
 Returns two `BitVector`s, the first with `true`s where `contact_list` is 1.0 and the second with `true`s where `contact_list` is 0.0. There are useful for AUC calculations.
 """
-function get_contact_mask{T <: AbstractFloat}(contact_list::Vector{T})
+function getcontactmasks{T <: AbstractFloat}(contact_list::Vector{T})
   N = length(contact_list)
   true_contacts  = falses(N)
   false_contacts = trues(N) # In general, there are few contacts
@@ -124,7 +124,7 @@ function get_contact_mask{T <: AbstractFloat}(contact_list::Vector{T})
   true_contacts, false_contacts
 end
 
-get_contact_mask{T <: AbstractFloat}(msacontacts::PairwiseListMatrix{T,false}) = get_contact_mask(getlist(msacontacts))
+getcontactmasks{T <: AbstractFloat}(msacontacts::PairwiseListMatrix{T,false}) = getcontactmasks(getlist(msacontacts))
 
 """
 Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the `scores_list` for `true_contacts` prediction.
@@ -146,6 +146,6 @@ Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of 
 """
 function AUC{S <: AbstractFloat, C <: AbstractFloat}(scores::PairwiseListMatrix{S,false}, msacontacts::PairwiseListMatrix{C,false})
   sco, con = join(scores, msacontacts, kind=:inner)
-  true_contacts, false_contacts = get_contact_mask(con)
+  true_contacts, false_contacts = getcontactmasks(con)
   AUC(sco, true_contacts, false_contacts)
 end

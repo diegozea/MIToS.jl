@@ -3,6 +3,7 @@
 
 # IJulia notebook checkpoints
 .ipynb_checkpoints
+/cookbook/*.gz
 
 # vim temporary files
 *~
