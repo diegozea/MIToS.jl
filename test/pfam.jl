@@ -153,6 +153,17 @@ let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, gen
 
   println("")
 
+  print("""
+
+  Test hasresidues
+  """)
+
+  mask = hasresidues(msa, map)
+
+  @test mask[1] == false
+  @test mask[2] == true
+  @test sum(mask) == length(msares)
+
 end
 
 print("""

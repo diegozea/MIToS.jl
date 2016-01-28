@@ -71,7 +71,20 @@ msacolumn2pdbresidue(seqid::ASCIIString, pdbid::ASCIIString, chain::ASCIIString,
            msa::AnnotatedMultipleSequenceAlignment) = msacolumn2pdbresidue(seqid, pdbid, chain,
            ascii(split(getannotfile(msa, "AC"), '.')[1]), msa)
 
-# PDB contacts for each column
+"Returns a `BitVector` where there is a `true` for each column with PDB residue."
+function hasresidues(msa::AnnotatedMultipleSequenceAlignment, column2residues::Dict{Int,ASCIIString})
+  colmap = getcolumnmapping(msa)
+  ncol = length(colmap)
+  mask = falses(ncol)
+  for i in 1:ncol
+    if get(column2residues, colmap[i], "") != ""
+      mask[i] = true
+    end
+  end
+  mask
+end
+
+# PDB residues for each column
 # ============================
 
 """
@@ -85,7 +98,7 @@ This returns an `OrderedDict{Int,PDBResidue}` from input column number (ColMap) 
 Residues on iserts are not included.
 """
 function msaresidues(msa::AnnotatedMultipleSequenceAlignment, residues::OrderedDict{ASCIIString,PDBResidue}, column2residues::Dict{Int,ASCIIString})
-  colmap   = getcolumnmapping(msa)
+  colmap = getcolumnmapping(msa)
   msares = sizehint(OrderedDict{Int,PDBResidue}(), length(colmap))
   for col in colmap
     resnum = get(column2residues, col, "")
@@ -95,6 +108,9 @@ function msaresidues(msa::AnnotatedMultipleSequenceAlignment, residues::OrderedD
   end
   sizehint(msares, length(msares))
 end
+
+# Contact Map
+# ===========
 
 """
 This function takes an `AnnotatedMultipleSequenceAlignment` with correct *ColMap* annotations and two dicts:
