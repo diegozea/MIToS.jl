@@ -79,6 +79,28 @@ This function takes an `AnnotatedMultipleSequenceAlignment` with correct *ColMap
 
 1. The first is an `OrderedDict{ASCIIString,PDBResidue}` from PDB residue number to `PDBResidue`.
 
+2. The second is a `Dict{Int,ASCIIString}` from MSA column number **on the input file** to PDB residue number.
+
+This returns an `OrderedDict{Int,PDBResidue}` from input column number (ColMap) to `PDBResidue`.
+Residues on iserts are not included.
+"""
+function msaresidues(msa::AnnotatedMultipleSequenceAlignment, residues::OrderedDict{ASCIIString,PDBResidue}, column2residues::Dict{Int,ASCIIString})
+  colmap   = getcolumnmapping(msa)
+  msares = sizehint(OrderedDict{Int,PDBResidue}(), length(colmap))
+  for col in colmap
+    resnum = get(column2residues, col, "")
+    if resnum != ""
+      msares[col] = residues[resnum]
+    end
+  end
+  sizehint(msares, length(msares))
+end
+
+"""
+This function takes an `AnnotatedMultipleSequenceAlignment` with correct *ColMap* annotations and two dicts:
+
+1. The first is an `OrderedDict{ASCIIString,PDBResidue}` from PDB residue number to `PDBResidue`.
+
 2. The second is a `Dict{Int,ASCIIString}` from **MSA column number on the input file** to PDB residue number.
 
 This returns a `PairwiseListMatrix{Float64,false}` of `0.0` and `1.0` where `1.0` indicates a residue contact

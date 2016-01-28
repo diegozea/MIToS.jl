@@ -39,7 +39,8 @@ Test Mapping PDB/Pfam
 """)
 
 let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, generatemapping=true, useidcoordinates=true),
-    map = msacolumn2pdbresidue("F112_SSV1/3-112", "2VQC", "A", "PF09645", msa, ascii(joinpath(pwd(), "data", "2vqc.xml.gz")))
+    map = msacolumn2pdbresidue("F112_SSV1/3-112", "2VQC", "A", "PF09645", msa, ascii(joinpath(pwd(), "data", "2vqc.xml.gz"))),
+    res = residuesdict(read(joinpath(pwd(), "data", "2VQC.xml"), PDBML), "1", "A", "ATOM", "*")
 
   #     -45              20 pdb
   #.....QTLNSYKMAEIMYKILEK  msa seq
@@ -66,6 +67,25 @@ let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, gen
   @test map[77]  == ""             # missing
   @test map[76]  == "73"
 
+  print("""
+
+  Test Residues
+  -------------
+  """)
+
+  msares = msaresidues(msa, res, map)
+
+  @test_throws KeyError msares[5]   # insert
+  @test_throws KeyError msares[6]   # missing
+  @test msares[7].id.name  == "THR" # T
+  @test msares[8].id.name  == "LEU" # L
+  @test msares[23].id.name == "LYS" # K
+
+  @test_throws KeyError msares[116]   # insert
+  @test_throws KeyError msares[117]   # missing
+  @test_throws KeyError msares[77]    # missing
+  @test msares[76].id.name == "LYS"   # K
+
 end
 
 print("""
@@ -91,7 +111,7 @@ let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, gen
   @test_throws KeyError res["3"]
   @test res[map[7]].id.number == "4"
 
-  contacts = msacontacts(msa, res, map)
+  contacts = msacontacts(msa, res, map, 6.05)
   missings = sum(isnan(contacts), 1)
 
   @test size(contacts) == (110,110)
@@ -110,6 +130,28 @@ let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, gen
   @test ncontacts[1]  == 0
   @test ncontacts[2]  == 2
   @test ncontacts[3]  == 6
+
+  print("""
+
+  Test MSA contact map using PDBResidues from the MSA
+  ---------------------------------------------------
+  """)
+
+  println("")
+
+  msares = msaresidues(msa, res, map)
+
+  ncol = ncolumns(msa)
+  colmap = getcolumnmapping(msa)
+
+  for i in 1:(ncol-1), j in (i+1):ncol
+    if (colmap[i] in keys(msares)) && (colmap[j] in keys(msares))
+      print(".")
+      @test (contacts[i,j] .== 1.0) == contact(msares[ colmap[i] ], msares[ colmap[j] ], 6.05)
+    end
+  end
+
+  println("")
 
 end
 
@@ -142,5 +184,5 @@ let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, gen
     res = residuesdict(read(joinpath(pwd(), "data", "2VQC.xml"), PDBML), "1", "A", "ATOM", "*"),
     contacts = msacontacts(msa, res, map)
 
-  @test round( AUC(buslje09(msa, samples=0)[2], contacts) , 4) == 0.5291
+  @test round( AUC(buslje09(msa, lambda=0.05, threshold=0.62, samples=0)[2], contacts) , 4) == 0.5291
 end

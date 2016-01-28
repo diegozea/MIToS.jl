@@ -10,7 +10,7 @@ module Pfam
   using ROCAnalysis
 
   export  Stockholm, downloadpfam, getseq2pdb,
-          msacolumn2pdbresidue, msacontacts,
+          msacolumn2pdbresidue, msacontacts, msaresidues,
           getcontactmasks, AUC
 
   include("download.jl")
