@@ -39,7 +39,7 @@ Test Mapping PDB/Pfam
 """)
 
 let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, generatemapping=true, useidcoordinates=true),
-    map = msacolumn2pdbresidue("F112_SSV1/3-112", "2VQC", "A", "PF09645", msa, ascii(joinpath(pwd(), "data", "2vqc.xml.gz"))),
+    map = msacolumn2pdbresidue(msa, "F112_SSV1/3-112", "2VQC", "A", "PF09645", ascii(joinpath(pwd(), "data", "2vqc.xml.gz"))),
     res = residuesdict(read(joinpath(pwd(), "data", "2VQC.xml"), PDBML), "1", "A", "ATOM", "*")
 
   #     -45              20 pdb
@@ -95,7 +95,7 @@ Test Contacts
 """)
 
 let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, generatemapping=true, useidcoordinates=true),
-    map = msacolumn2pdbresidue("F112_SSV1/3-112", "2VQC", "A", "PF09645", msa, ascii(joinpath(pwd(), "data", "2vqc.xml.gz"))),
+    map = msacolumn2pdbresidue(msa, "F112_SSV1/3-112", "2VQC", "A", "PF09645", ascii(joinpath(pwd(), "data", "2vqc.xml.gz"))),
     res = residuesdict(read(joinpath(pwd(), "data", "2VQC.xml"), PDBML), "1", "A", "ATOM", "*")
 
   @test length(res) == 70
@@ -191,7 +191,7 @@ AUC Example using MI
 """)
 
 let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, generatemapping=true, useidcoordinates=true),
-    map = msacolumn2pdbresidue("F112_SSV1/3-112", "2VQC", "A", "PF09645", msa, ascii(joinpath(pwd(), "data", "2vqc.xml.gz"))),
+    map = msacolumn2pdbresidue(msa, "F112_SSV1/3-112", "2VQC", "A", "PF09645", ascii(joinpath(pwd(), "data", "2vqc.xml.gz"))),
     res = residuesdict(read(joinpath(pwd(), "data", "2VQC.xml"), PDBML), "1", "A", "ATOM", "*"),
     contacts = msacontacts(msa, res, map)
 

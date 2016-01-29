@@ -35,15 +35,16 @@ end
 # ================
 
 """
-This function returns a `Dict{Int64,ASCIIString}` with **MSA column numbers on the input file** as keys and PDB residue numbers as values.
+This function returns a `Dict{Int64,ASCIIString}` with **MSA column numbers on the input file** as keys and PDB residue numbers (`""` for missings) as values.
 The mapping is performed using SIFTS. This function needs correct *ColMap* and *SeqMap* annotations.
+This checks correspondence of the residues between the sequence and SIFTS (It throws a warning if the are differences).
 If you are working with a **downloaded Pfam MSA without modifications**, you should `read` it using `generatemapping=true` and `useidcoordinates=true`.
 """
-function msacolumn2pdbresidue(seqid::ASCIIString,
+function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
+    seqid::ASCIIString,
     pdbid::ASCIIString,
     chain::ASCIIString,
     pfamid::ASCIIString,
-    msa::AnnotatedMultipleSequenceAlignment,
     siftsfile::ASCIIString)
 
   siftsres = read(siftsfile, SIFTSXML, chain=chain, missings=true)
@@ -82,19 +83,15 @@ function msacolumn2pdbresidue(seqid::ASCIIString,
   m
 end
 
-"If you don't indicate the Pfam accession number (`pfamid`), this function tries to read the *AC* file annotation."
-msacolumn2pdbresidue(seqid::ASCIIString, pdbid::ASCIIString, chain::ASCIIString,
-           msa::AnnotatedMultipleSequenceAlignment, siftsfile::ASCIIString) = msacolumn2pdbresidue(seqid, pdbid, chain,
-           ascii(split(getannotfile(msa, "AC"), '.')[1]), msa, siftsfile::ASCIIString)
-
 "If you don't indicate the path to the `siftsfile` used in the mapping, this function downloads the SIFTS file in the current folder."
-msacolumn2pdbresidue(seqid::ASCIIString, pdbid::ASCIIString, chain::ASCIIString,
-           pfamid::ASCIIString, msa::AnnotatedMultipleSequenceAlignment) = msacolumn2pdbresidue(seqid, pdbid, chain,
-           pfamid, msa, downloadsifts(pdbid))
+msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
+                     seqid::ASCIIString, pdbid::ASCIIString, chain::ASCIIString,
+                     pfamid::ASCIIString) = msacolumn2pdbresidue(msa, seqid, pdbid, chain, pfamid, downloadsifts(pdbid))
 
-msacolumn2pdbresidue(seqid::ASCIIString, pdbid::ASCIIString, chain::ASCIIString,
-           msa::AnnotatedMultipleSequenceAlignment) = msacolumn2pdbresidue(seqid, pdbid, chain,
-           ascii(split(getannotfile(msa, "AC"), '.')[1]), msa)
+"If you don't indicate the Pfam accession number (`pfamid`), this function tries to read the *AC* file annotation."
+msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
+                     seqid::ASCIIString, pdbid::ASCIIString, chain::ASCIIString) = msacolumn2pdbresidue(msa, seqid, pdbid, chain,
+           ascii(split(getannotfile(msa, "AC"), '.')[1]))
 
 "Returns a `BitVector` where there is a `true` for each column with PDB residue."
 function hasresidues(msa::AnnotatedMultipleSequenceAlignment, column2residues::Dict{Int,ASCIIString})
