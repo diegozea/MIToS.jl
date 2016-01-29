@@ -45,16 +45,41 @@ function msacolumn2pdbresidue(seqid::ASCIIString,
     pfamid::ASCIIString,
     msa::AnnotatedMultipleSequenceAlignment,
     siftsfile::ASCIIString)
-    siftsmap = siftsmapping(siftsfile, dbPfam, pfamid, dbPDB, lowercase(pdbid), chain=chain, missings=false)
-    seqmap   = getsequencemapping(msa, seqid)
-    colmap   = getcolumnmapping(msa)
-    N = ncolumns(msa)
-    m = Dict{Int,ASCIIString}()
-    sizehint!(m, N)
-    for i in 1:N
-      m[colmap[i]] = get(siftsmap, seqmap[i], "")
+
+  siftsres = read(siftsfile, SIFTSXML, chain=chain, missings=true)
+
+  up2res = Dict{Int,Tuple{ASCIIString,ASCIIString}}()
+  for res in siftsres
+    if !isnull(res.Pfam) && get(res.Pfam).id == uppercase(pfamid)
+      pfnum  = get(res.Pfam).number
+      pfname = get(res.Pfam).name
+      if !isnull(res.PDB) && (get(res.PDB).id == lowercase(pdbid)) && !res.missing
+        up2res[pfnum] = (pfname, get(res.PDB).number)
+      else
+        up2res[pfnum] = (pfname, "")
+      end
     end
-    m
+  end
+
+  seq      = ascii(getsequence(msa,  seqid))
+  seqmap   = getsequencemapping(msa, seqid)
+  colmap   = getcolumnmapping(msa)
+  N        = ncolumns(msa)
+
+  m = Dict{Int,ASCIIString}()
+  sizehint!(m, N)
+  for i in 1:N
+    up_number = seqmap[i]
+    if up_number != 0
+      up_res, pdb_resnum = get(up2res, up_number, ("",""))
+      if string(seq[i]) == up_res
+        m[colmap[i]] = pdb_resnum
+      else
+        warn(string("Sequence residue at ", i, " (", seq[i], ") != Pfam/UniProt residue (", up_res, ")"))
+      end
+    end
+  end
+  m
 end
 
 "If you don't indicate the Pfam accession number (`pfamid`), this function tries to read the *AC* file annotation."
