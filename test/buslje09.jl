@@ -145,6 +145,9 @@ let aln = Residue[ 'A' 'A'
   results = buslje09(aln, lambda=0.05, clustering=false, apc=false)
   @test_approx_eq results[MIToS_ZSCORE][1,2] 0.0
 
+  @test aln == Residue[ 'A' 'A'
+                        'A' 'R' ]
+
 end
 
 let aln = Residue[ 'R' 'A'
@@ -236,6 +239,9 @@ let aln = Residue[ 'R' 'A'
   results = buslje09(aln, lambda=0.05, clustering=false, apc=false, samples=10000)
   @test_approx_eq_eps results[MIToS_ZSCORE][1,2] ((mi[1,2] - r_mean) / r_std) 0.05
 
+  @test aln == Residue[ 'R' 'A'
+                        'A' 'R' ]
+
 end
 
 print("""
@@ -325,13 +331,18 @@ let file = joinpath(pwd(), "data", "simple.fasta"),
 
   @test_approx_eq busl[1] blmi[1]
   @test_approx_eq busl[2] blmi[2]
+
 end
 
 
-let busl = buslje09(Gaoetal2011, FASTA, lambda=0.0, samples=0),
-    blmi = BLMI(Gaoetal2011, FASTA, lambda=0.0, beta=0.0, samples=0) # BLMI should be equal to Buslje09 if beta is zero
+let msa = read(Gaoetal2011, FASTA),
+    busl = buslje09(Gaoetal2011, FASTA, lambda=0.0, samples=0),
+    blmi = BLMI(msa, lambda=0.0, beta=0.0, samples=5) # BLMI should be equal to Buslje09 if beta is zero
 
   @test_approx_eq busl[2] blmi[2] # MIapc
+
+  @test msa == read(Gaoetal2011, FASTA)
+
 end
 
 let busl = buslje09(Gaoetal2011, FASTA, lambda=0.5, samples=0),
