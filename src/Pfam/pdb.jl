@@ -76,7 +76,7 @@ function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
       if string(seq[i]) == up_res
         m[colmap[i]] = pdb_resnum
       else
-        warn(string(pfam, " ", seqid, " ", pdbid, " ", chain, " : MSA sequence residue at ", i, " (", seq[i], ") != SIFTS residue (UniProt/Pfam: ", up_res, ", PDB: ", pdb_resnum, ")"))
+        warn(string(pfamid, " ", seqid, " ", pdbid, " ", chain, " : MSA sequence residue at ", i, " (", seq[i], ") != SIFTS residue (UniProt/Pfam: ", up_res, ", PDB: ", pdb_resnum, ")"))
       end
     end
   end
