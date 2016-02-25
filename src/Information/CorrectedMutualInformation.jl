@@ -90,8 +90,8 @@ function _BLMI(aln, clusters, alpha, beta, apc, lambda::Float64=zero(Float64))
   mi
 end
 
-function _BLMI(aln::Matrix{Residue}; beta::Float64=4.6, threshold::Float64=0.62,
-                                     maxgap::Float64=0.5, apc::Bool=true, samples::Int=100,
+function _BLMI(aln::Matrix{Residue}; beta::Float64=8.512, threshold::Float64=0.62,
+                                     maxgap::Float64=0.5, apc::Bool=true, samples::Int=50,
                                      fixedgaps::Bool=true, lambda::Float64=zero(Float64))
   used = gappercentage(aln,1) .<= maxgap
   ncol = ncolumns(aln)
@@ -114,23 +114,23 @@ end
 
 """
 This function takes a MSA or a file and a `Format` as first arguments.
-Calculates a Z score (BLMI) and a corrected MI/MIp as described on **Busjle et. al. 2009** but using using BLOSUM62 pseudo frequencies instead of a fixed pseudocount.
+Calculates a Z score (ZBLMI) and a corrected MI/MIp as described on **Busjle et. al. 2009** but using using BLOSUM62 pseudo frequencies instead of a fixed pseudocount.
 
 Argument, type, default value and descriptions:
 
-  - beta        Float64   4.6     β for BLOSUM62 pseudo frequencies
+  - beta        Float64   8.512   β for BLOSUM62 pseudo frequencies
   - lambda      Float64   0.0     Low count value
   - threshold   Float64   0.62    Percent identity threshold for sequence clustering (Hobohm I)
   - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation
   - apc         Bool      true    Use APC correction (MIp)
-  - samples     Int       100     Number of samples for Z-score
+  - samples     Int       50      Number of samples for Z-score
   - fixedgaps   Bool      true    Fix gaps positions for the random samples
 
 
 This function returns:
 
-  - Z score (BLMI)
-  - MI or MIp using BLOSUM62 pseudo frequencies
+  - Z score (ZBLMI)
+  - MI or MIp using BLOSUM62 pseudo frequencies (BLMI/BLMIp)
 """
 function BLMI(aln::Matrix{Residue}; kargs...)
   zscore, mi, used = _BLMI(aln; kargs...)

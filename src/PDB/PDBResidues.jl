@@ -124,7 +124,7 @@ end
 
 function residuesdict(residue_list, model, chain, group, residue)
   res_index = findobjects(residue_list, _residues_tests(model, chain, group, residue)...)
-  dict = sizehint( OrderedDict{ASCIIString, PDBResidue}() , length(res_index) )
+  dict = sizehint!( OrderedDict{ASCIIString, PDBResidue}() , length(res_index) )
   for i in res_index
     dict[ residue_list[i].id.number ] = residue_list[i]
   end

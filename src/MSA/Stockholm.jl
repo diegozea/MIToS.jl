@@ -45,7 +45,7 @@ function _pre_readstockholm(io::Union{IO, AbstractString})
   end
 
   #GF = sizehint!(GF, length(GF))
-  GF = sizehint(GF, length(GF))
+  GF = sizehint!(GF, length(GF))
   GC = sizehint!(GC, length(GC))
   GS = sizehint!(GS, length(GS))
   GR = sizehint!(GR, length(GR))

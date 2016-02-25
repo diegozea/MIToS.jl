@@ -121,14 +121,14 @@ Residues on iserts are not included.
 """
 function msaresidues(msa::AnnotatedMultipleSequenceAlignment, residues::OrderedDict{ASCIIString,PDBResidue}, column2residues::Dict{Int,ASCIIString})
   colmap = getcolumnmapping(msa)
-  msares = sizehint(OrderedDict{Int,PDBResidue}(), length(colmap))
+  msares = sizehint!(OrderedDict{Int,PDBResidue}(), length(colmap))
   for col in colmap
     resnum = get(column2residues, col, "")
     if resnum != ""
       msares[col] = residues[resnum]
     end
   end
-  sizehint(msares, length(msares))
+  sizehint!(msares, length(msares))
 end
 
 # Contact Map

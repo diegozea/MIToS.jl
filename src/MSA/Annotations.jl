@@ -20,7 +20,7 @@ call(::Type{Annotations}) = Annotations(OrderedDict{ASCIIString, ByteString}(),
                                         Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}())
 
 "Creates an empty `Annotations` of length 0 using sizehint!"
-empty(::Type{Annotations}) = Annotations( sizehint(OrderedDict{ASCIIString, ByteString}(), 0), # There is not sizehint! for OrderedDict right now
+empty(::Type{Annotations}) = Annotations( sizehint!(OrderedDict{ASCIIString, ByteString}(), 0), # There is not sizehint! for OrderedDict right now
                                           sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0),
                                           sizehint!(Dict{ASCIIString, ASCIIString}(), 0),
                                           sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0))

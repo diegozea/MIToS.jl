@@ -26,7 +26,7 @@ function parse_commandline()
         "--beta", "-b"
             help = "β for BLOSUM62 pseudo frequencies"
             arg_type = Float64
-            default = 4.6
+            default = 8.512
         "--threshold", "-i"
             help = "Percent identity threshold for sequence clustering (Hobohm I)"
             arg_type = Float64
@@ -43,7 +43,7 @@ function parse_commandline()
         "--samples", "-s"
             help = "Number of samples for Z-score"
             arg_type = Int
-            default = 100
+            default = 50
         "--fixedgaps", "-F"
             help = "Fix gaps positions for the random samples"
             arg_type = Bool
@@ -104,7 +104,7 @@ const files = _file_names(parsed)
     end
     zscore, mip = BLMI(msa, beta=Args["beta"], threshold=Args["threshold"],
                        maxgap=Args["maxgap"], apc=Args["apc"], samples=Args["samples"], fixedgaps=Args["fixedgaps"])
-    println(fh, "i,j,", Args["apc"] ? "BLZMIp" : "BLZMI", ",", Args["apc"] ? "BLMIp" : "BLMI")
+    println(fh, "i,j,", Args["apc"] ? "ZBLMIp" : "ZBLMI", ",", Args["apc"] ? "BLMIp" : "BLMI")
     table = hcat(to_table(zscore, false), to_table(mip, false)[:,3])
     writecsv(fh, table)
   catch err
