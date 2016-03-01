@@ -1,7 +1,7 @@
 # Contributing
-MIToS is and **Open Source** project, and there are different ways to contribute to MIToS.
-Please, use [GitHub issues](https://github.com/diegozea/MIToS.jl/issues) to **report bugs** or to ask for new features.
-We welcome contributions in the form of pull requests. For your code to be considered it must meet the following guidelines.
+MIToS is and **Open Source** project and there are different ways to contribute.
+Please, use [GitHub issues](https://github.com/diegozea/MIToS.jl/issues) to **report bugs** or to **ask for new features**.
+We welcome contributions in the form of **pull requests**. For your code to be considered it must meet the following guidelines.
 - By making a pull request, you're agreeing to license your code under a MIT license.
 - Types and functions must be documented using Julia's docstrings.
 - All significant code must be tested.
