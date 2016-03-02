@@ -1,12 +1,12 @@
 """
 The MSA module of MIToS has utilities for working with Multiple Sequence Alignments of protein Sequences (MSA).  
-  
-**Features**  
-    - Read and write MSAs in `Stockholm`, `FASTA` or `Raw` format
-    - Handle MSA annotations
-    - Edit the MSA, e.g. delete columns or sequences, change sequence order, shuffling...
-    - Keep track of positions and annotations after modifications on the MSA
-    - Describe a MSA, e.g. mean percent identity, sequence coverage, gap percentage... 
+    
+**Features**   
+    - Read and write MSAs in `Stockholm`, `FASTA` or `Raw` format  
+    - Handle MSA annotations   
+    - Edit the MSA, e.g. delete columns or sequences, change sequence order, shuffling...  
+    - Keep track of positions and annotations after modifications on the MSA   
+    - Describe a MSA, e.g. mean percent identity, sequence coverage, gap percentage...   
     
 ```julia
 using MIToS.MSA
