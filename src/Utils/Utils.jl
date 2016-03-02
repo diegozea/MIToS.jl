@@ -14,9 +14,4 @@ module Utils
   include("Write.jl")
   include("FindObjects.jl")
 
-  module Docs
-    export @moduledoc, @typedoc, @functiondoc, @constantdoc
-    include("docs.jl")
-  end
-
 end

@@ -1,4 +1,6 @@
 """
+## MSA
+
 The MSA module of MIToS has utilities for working with Multiple Sequence Alignments of protein Sequences (MSA).
 
 **Features**
@@ -20,7 +22,11 @@ using DataStructures    # OrderedDicts for Annotations
 using IndexedArrays     # IndexedArray for sequence names in MSAs
 using MIToS.Utils
 
-"`swap!(ia::IndexedArray, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `IndexedArray`"
+"""
+#### swap!
+
+`swap!(ia::IndexedArray, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `IndexedArray`
+"""
 function swap!(ia::IndexedArray, to::Int, from::Int)
     previous_id  = ia[to]
     future_id    = ia[from]
@@ -44,7 +50,8 @@ getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
 setannotfile!, setannotcolumn!, setannotsequence!, setannotresidue!,
 annotate_modification!, delete_annotated_modifications!, printmodifications,
 
-MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment, AbstractMultipleSequenceAlignment,
+MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment,
+AbstractMultipleSequenceAlignment,
 AlignedSequence, AnnotatedAlignedSequence, AbstractAlignedSequence,
 getresidues, getsequence, getresiduesequences,
 nsequences, ncolumns, gappercentage, residuepercentage, coverage,
@@ -54,7 +61,8 @@ getcolumnmapping, getsequencemapping,
 
 Raw, Stockholm, FASTA,
 
-shuffle_columnwise!, shuffle_sequencewise!, shuffle_residues_sequencewise!, shuffle_residues_columnwise!
+shuffle_columnwise!, shuffle_sequencewise!, shuffle_residues_sequencewise!,
+shuffle_residues_columnwise!
 
 include("Residues.jl")
 include("Annotations.jl")

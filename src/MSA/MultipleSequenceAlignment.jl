@@ -1,16 +1,28 @@
-import Base: length, getindex, setindex!, size, copy, deepcopy, empty!, convert, transpose, ctranspose
+import Base: length, getindex, setindex!, size, copy, deepcopy, empty!,
+             convert, transpose, ctranspose
 
-abstract AbstractMultipleSequenceAlignment <: AbstractArray{Residue,2}
-abstract AbstractAlignedSequence <: AbstractArray{Residue,1}
+"The most basic implementation of a MIToS MSA is a `Matrix` of `Residue`s."
+abstract AbstractMultipleSequenceAlignment <: AbstractMatrix{Residue}
+
+"MIToS sequences are `Vector`s of `Residue`s."
+abstract AbstractAlignedSequence <: AbstractVector{Residue}
 
 # Multiple Sequence Alignment
 # ===========================
 
+"""
+This MSA type include the `Matrix` of `Residue`s and the sequence names.
+To allow fast indexing of MSAs using **sequence identifiers**,
+they are saved as an `IndexedArray`.
+"""
 type MultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
     id::IndexedArray{ASCIIString}
     msa::Matrix{Residue}
 end
 
+"""
+
+"""
 type AnnotatedMultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
     id::IndexedArray{ASCIIString}
     msa::Matrix{Residue}
