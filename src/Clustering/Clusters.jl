@@ -10,9 +10,9 @@ Data structure to represent sequence clusters.
 The sequence data itself is not included.
 """
 immutable Clusters
-  clustersize::Vector{Int}
-  sequencecluster::Vector{Int}
-  sequenceweight::Vector{Float64}
+    clustersize::Vector{Int}
+    sequencecluster::Vector{Int}
+    sequenceweight::Vector{Float64}
 end
 
 "Get the number of clusters in the set."

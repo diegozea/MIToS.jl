@@ -92,7 +92,7 @@ convert(::Type{UInt8}, x::Residue) = _to_uint8[ Int( x ) ]
 const _to_residue = fill(GAP,256)
 
 for i in 1:length( _to_char )
-  _to_residue[ Int(_to_char[i]) ] = Residue(i)
+    _to_residue[ Int(_to_char[i]) ] = Residue(i)
 end
 
 convert(::Type{Residue}, x::UInt8) = _to_residue[ Int(x) ];
@@ -111,18 +111,18 @@ string(seq::AbstractVector{Residue}) = ascii(seq) # "AR..." instead of the stand
 
 # For convert a MSA stored as Vector{ASCIIString} to Matrix{Residue}
 function convert(::Type{Matrix{Residue}}, sequences::Array{ASCIIString,1})
-  nseq = length(sequences)
-  nres = length(sequences[1])
-  aln = Array(Residue,nres,nseq)
-  for col in 1:nseq
-    seq = sequences[col].data
-    if length(seq) == nres
-      aln[:,col] = Residue( seq )
-    else
-      throw(ErrorException("There is an aligned sequence with different number of columns [ $(length(seq)) != $(nres) ]: $(ascii(seq))"))
+    nseq = length(sequences)
+    nres = length(sequences[1])
+    aln = Array(Residue,nres,nseq)
+    for col in 1:nseq
+        seq = sequences[col].data
+        if length(seq) == nres
+            aln[:,col] = Residue( seq )
+        else
+            throw(ErrorException("There is an aligned sequence with different number of columns [ $(length(seq)) != $(nres) ]: $(ascii(seq))"))
+        end
     end
-  end
-  aln'
+    aln'
 end
 
 """
@@ -138,7 +138,7 @@ julia> res"MYSEQ"
 ```
 """
 macro res_str(str)
-  Residue(str)
+    Residue(str)
 end
 
 # Show
@@ -150,7 +150,7 @@ show(io::IO, x::Residue) = write(io, convert(Char, x))
 # -----------
 
 for fun in [:(==), :(!=), :(.==)] # , :(<), :(<=)
-  @eval $(fun)(x::Residue,y::Residue) = $(fun)(Int8(x), Int8(y))
+    @eval $(fun)(x::Residue,y::Residue) = $(fun)(Int8(x), Int8(y))
 end
 
 length(x::Residue) = length(UInt8(x))

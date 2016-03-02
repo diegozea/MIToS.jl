@@ -13,5 +13,6 @@ module Utils
   include("Read.jl")
   include("Write.jl")
   include("FindObjects.jl")
+  include("docs.jl")
 
 end

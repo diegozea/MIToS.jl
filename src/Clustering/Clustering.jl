@@ -1,18 +1,19 @@
 module Clustering
 
-  using MIToS.MSA
-  using PairwiseListMatrices
+using MIToS.MSA
+using PairwiseListMatrices
 
-  import MIToS.MSA: nsequences
+import MIToS.MSA: nsequences
 
-  export AbstractClusters, NoClustering, Clusters, getnclusters, getweight, nsequences,
+export  AbstractClusters, NoClustering, Clusters, getnclusters,
+getweight, nsequences,
 
-  percentidentity, meanpercentidentity,
+percentidentity, meanpercentidentity,
 
-  hobohmI
+hobohmI
 
-  include("Clusters.jl")
-  include("Identity.jl")
-  include("Hobohm.jl")
+include("Clusters.jl")
+include("Identity.jl")
+include("Hobohm.jl")
 
 end
