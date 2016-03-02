@@ -19,7 +19,9 @@ call(::Type{Annotations}) = Annotations(OrderedDict{ASCIIString, ByteString}(),
                                         Dict{ASCIIString, ASCIIString}(),
                                         Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}())
 
-"Creates an empty `Annotations` of length 0 using sizehint!"
+"""
+Creates empty MSA `Annotations` of length 0 using `sizehint!`
+"""
 empty(::Type{Annotations}) = Annotations( sizehint!(OrderedDict{ASCIIString, ByteString}(), 0), # There is not sizehint! for OrderedDict right now
                                          sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0),
                                          sizehint!(Dict{ASCIIString, ASCIIString}(), 0),
@@ -182,13 +184,17 @@ end
 # MIToS modification annotations
 # ===============================
 
-"Annotates on file annotations the modifications realized by MIToS on the MSA"
+"""
+Annotates on file annotations the modifications realized by MIToS on the MSA
+"""
 function annotate_modification!(ann::Annotations, modification::ASCIIString)
     setannotfile!(ann, string("MIToS_", Dates.now()), modification)
     true # generally used on bool context: annotate && annotate_modification!(...
 end
 
-"Deletes all the MIToS annotated modifications"
+"""
+Deletes all the MIToS annotated modifications
+"""
 function delete_annotated_modifications!(ann::Annotations)
     for key in keys(ann.file)
         if length(key) > 6 && key[1:6] == "MIToS_"
@@ -199,7 +205,9 @@ end
 
 using Base.Markdown
 
-"Prints MIToS annotated modifications"
+"""
+Prints MIToS annotated modifications
+"""
 function printmodifications(ann::Annotations)
     for (key,value) in ann.file
         if length(key) > 6 && key[1:6] == "MIToS_"

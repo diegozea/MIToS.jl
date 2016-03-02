@@ -1,4 +1,6 @@
-"Shuffles the residues in each column, keeping fixed the gap positions"
+"""
+Shuffles the residues in each column, keeping fixed the gap positions
+"""
 function shuffle_residues_columnwise!(aln::Matrix{Residue})
     nseq, nres = size(aln)
     for i in 1:nres
@@ -20,14 +22,18 @@ function shuffle_residues_columnwise!(aln::Matrix{Residue})
 end
 
 # 0.00084 seconds faster than an implemetation similar to shuffle_residues_columnwise (PF00085)
-"Shuffles the residues in each sequence, keeping fixed the gap positions"
+"""
+Shuffles the residues in each sequence, keeping fixed the gap positions
+"""
 function shuffle_residues_sequencewise!(aln::Matrix{Residue})
     taln = transpose(aln)
     shuffle_residues_columnwise!(taln)
     transpose!(aln, taln)
 end
 
-"Shuffles the residues in each sequence"
+"""
+Shuffles the residues in each sequence
+"""
 function shuffle_sequencewise!(aln::Matrix{Residue})
     nseq, nres = size(aln)
     for i in 1:nseq
@@ -39,7 +45,9 @@ function shuffle_sequencewise!(aln::Matrix{Residue})
     aln
 end
 
-"Shuffles the residues in each column"
+"""
+Shuffles the residues in each column
+"""
 function shuffle_columnwise!(aln::Matrix{Residue})
     nseq, nres = size(aln)
     for i in 1:nres

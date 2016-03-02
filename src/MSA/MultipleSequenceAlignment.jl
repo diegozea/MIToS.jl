@@ -1,10 +1,15 @@
 import Base: length, getindex, setindex!, size, copy, deepcopy, empty!,
              convert, transpose, ctranspose
 
-"The most basic implementation of a MIToS MSA is a `Matrix` of `Residue`s."
+"""
+MIToS MSAs are subtypes of `AbstractMatrix{Residue}`,
+because the most basic implementation of a MIToS MSA is a `Matrix` of `Residue`s.
+"""
 abstract AbstractMultipleSequenceAlignment <: AbstractMatrix{Residue}
 
-"MIToS sequences are `Vector`s of `Residue`s."
+"""
+MIToS sequences are subtypes of `AbstractVector{Residue}`.
+"""
 abstract AbstractAlignedSequence <: AbstractVector{Residue}
 
 # Multiple Sequence Alignment
@@ -21,7 +26,7 @@ type MultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
 end
 
 """
-
+...
 """
 type AnnotatedMultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
     id::IndexedArray{ASCIIString}
@@ -57,7 +62,8 @@ for meth in (:size, :length)
     @eval $(meth)(seq::AbstractAlignedSequence) = $(meth)(seq.sequence)
 end
 
-for T in (:(AlignedSequence), :(AnnotatedAlignedSequence), :(MultipleSequenceAlignment), :(AnnotatedMultipleSequenceAlignment))
+for T in (:(AlignedSequence), :(AnnotatedAlignedSequence),
+          :(MultipleSequenceAlignment), :(AnnotatedMultipleSequenceAlignment))
     @eval Base.linearindexing(::Type{$(T)}) = Base.LinearFast()
 end
 
@@ -75,21 +81,29 @@ ctranspose(msa::AbstractMultipleSequenceAlignment) = transpose(msa.msa) # transp
 # Selection without Mappings
 # --------------------------
 
-"""Allows you to access the residues in a `Matrix{Residues}`/`Vector{Residues}` without annotations."""
+"""
+Allows you to access the residues in a `Matrix{Residues}`/`Vector{Residues}` without annotations.
+"""
 getresidues(msa::AbstractMultipleSequenceAlignment) = msa.msa
 getresidues(seq::AbstractAlignedSequence) = seq.sequence
 
-"""Gives you the number of sequences on the `MultipleSequenceAlignment`"""
+"""
+Gives you the number of sequences on the `MultipleSequenceAlignment`
+"""
 nsequences(msa::AbstractMultipleSequenceAlignment) = size(msa.msa, 1)
 nsequences(msa::Matrix{Residue}) = size(msa, 1)
 
-"""Gives you the number of columns/positions on the MSA or aligned sequence"""
+"""
+Gives you the number of columns/positions on the MSA or aligned sequence
+"""
 ncolumns(msa::AbstractMultipleSequenceAlignment) = size(msa.msa, 2)
 ncolumns(msa::Matrix{Residue}) = size(msa, 2)
 ncolumns(seq::AbstractAlignedSequence) = length(seq.sequence)
 ncolumns(seq::Vector{Residue}) = length(seq)
 
-"""Gives you a `Vector{Vector{Residue}}` with all the sequences of the MSA without Annotations"""
+"""
+Gives you a `Vector{Vector{Residue}}` with all the sequences of the MSA without Annotations
+"""
 function getresiduesequences(msa::Matrix{Residue})
     nseq = nsequences(msa)
     tmsa = msa'
@@ -104,7 +118,9 @@ getresiduesequences(msa::AbstractMultipleSequenceAlignment) = getresiduesequence
 
 # Select sequence
 # ---------------
-"""Gives you the annotations of the Sequence"""
+"""
+Gives you the annotations of the Sequence
+"""
 function getsequence(data::Annotations, id::ASCIIString)
     GS = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
     GR = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
@@ -125,12 +141,18 @@ function getsequence(data::Annotations, id::ASCIIString)
     Annotations(data.file, GS, data.columns, GR)
 end
 
-"""Returns an `AnnotatedAlignedSequence` with all annotations of sequence from the `AnnotatedMultipleSequenceAlignment`"""
-getsequence(msa::AnnotatedMultipleSequenceAlignment, i::Int) = AnnotatedAlignedSequence(msa.id[i], i,  vec(msa.msa[i,:]),
-                                                                                        getsequence(msa.annotations, msa.id[i]))
+"""
+Returns an `AnnotatedAlignedSequence` with all annotations of sequence from the `AnnotatedMultipleSequenceAlignment`
+"""
+getsequence(msa::AnnotatedMultipleSequenceAlignment,
+            i::Int) = AnnotatedAlignedSequence(msa.id[i], i,  vec(msa.msa[i,:]),
+                                               getsequence(msa.annotations, msa.id[i]))
 
-"""Returns an `AlignedSequence` from the `MultipleSequenceAlignment`"""
-getsequence(msa::MultipleSequenceAlignment, i::Int) = AlignedSequence(msa.id[i], i,  vec(msa.msa[i,:]))
+"""
+Returns an `AlignedSequence` from the `MultipleSequenceAlignment`
+"""
+getsequence(msa::MultipleSequenceAlignment,
+            i::Int) = AlignedSequence(msa.id[i], i, vec(msa.msa[i,:]))
 
 getsequence(msa::Matrix{Residue}, i::Int) = vec(msa[i,:])
 
@@ -156,7 +178,8 @@ filtersequences(msa::Matrix{Residue}, mask::BitVector) = msa[mask, :]
 Allows to filter sequences on a MSA using a `BitVector` mask (removes `false`s).
 For `AnnotatedMultipleSequenceAlignment`s the annotations are updated.
 """
-function filtersequences!(msa::AnnotatedMultipleSequenceAlignment, mask::BitVector, annotate::Bool=true)
+function filtersequences!(msa::AnnotatedMultipleSequenceAlignment,
+                          mask::BitVector, annotate::Bool=true)
     msa.msa = filtersequences(msa.msa, mask)
     #msa.sequencemapping = msa.sequencemapping[ mask , : ]
     filtersequences!(msa.annotations, msa.id, mask)
@@ -165,7 +188,8 @@ function filtersequences!(msa::AnnotatedMultipleSequenceAlignment, mask::BitVect
     msa
 end
 
-function filtersequences!(msa::MultipleSequenceAlignment, mask::BitVector, annotate::Bool=false) # annotate is useful for calling this inside other functions
+function filtersequences!(msa::MultipleSequenceAlignment,
+                          mask::BitVector, annotate::Bool=false) # annotate is useful for calling this inside other functions
     msa.msa = filtersequences(msa.msa, mask)
     msa.id = IndexedArray(msa.id[ mask ])
     msa
@@ -178,12 +202,14 @@ filtercolumns(seq::Vector{Residue}, mask::BitVector) = seq[ mask ]
 Allows to filter columns/positions on a MSA using a `BitVector` mask.
 For `AnnotatedMultipleSequenceAlignment`s or `AnnotatedAlignedSequence`s the annotations are updated.
 """
-function filtercolumns!(msa::AnnotatedMultipleSequenceAlignment, mask::BitVector, annotate::Bool=true)
+function filtercolumns!(msa::AnnotatedMultipleSequenceAlignment,
+                        mask::BitVector, annotate::Bool=true)
     msa.msa = filtercolumns(msa.msa, mask)
     #msa.sequencemapping = msa.sequencemapping[ : , mask ]
     #msa.filecolumnmapping = msa.filecolumnmapping[ mask ]
     filtercolumns!(msa.annotations, mask)
-    annotate && annotate_modification!(msa, string("filtercolumns! : ", sum(~mask), " columns have been deleted."))
+    annotate && annotate_modification!(msa, string("filtercolumns! : ",
+                                                   sum(~mask), " columns have been deleted."))
     msa
 end
 
@@ -197,7 +223,8 @@ function filtercolumns!(seq::AnnotatedAlignedSequence, mask::BitVector, annotate
     #seq.sequencemapping = seq.sequencemapping[ mask ]
     #seq.filecolumnmapping = seq.filecolumnmapping[ mask ]
     filtercolumns!(seq.annotations, mask)
-    annotate && annotate_modification!(seq, string("filtercolumns! : ", sum(~mask), " columns have been deleted."))
+    annotate && annotate_modification!(seq, string("filtercolumns! : ",
+                                                   sum(~mask), " columns have been deleted."))
     seq
 end
 
@@ -216,16 +243,21 @@ for fun in (:copy, :deepcopy)
     @eval $(fun)(seq::AlignedSequence) = AlignedSequence($(fun)(seq.id), $(fun)(seq.index), $(fun)(seq.sequence))
 end
 
-empty!(msa::AnnotatedMultipleSequenceAlignment) = (empty!(msa.id); empty!(msa.msa); empty!(msa.annotations); msa)
+empty!(msa::AnnotatedMultipleSequenceAlignment) = (empty!(msa.id); empty!(msa.msa);
+                                                   empty!(msa.annotations); msa)
 empty!(msa::MultipleSequenceAlignment) = (empty!(msa.id); empty!(msa.msa); msa)
-empty!(seq::AnnotatedAlignedSequence) = (empty!(seq.id); empty!(seq.index); v(seq.sequence); empty!(seq.annotations); seq)
-empty!(seq::AlignedSequence) = (empty!(seq.id); empty!(seq.index); empty!(seq.sequence); seq)
+empty!(seq::AnnotatedAlignedSequence) = (empty!(seq.id); empty!(seq.index);
+                                         v(seq.sequence); empty!(seq.annotations); seq)
+empty!(seq::AlignedSequence) = (empty!(seq.id); empty!(seq.index);
+                                empty!(seq.sequence); seq)
 
 # Counting Gaps and Coverage
 # --------------------------
 
-"""Calculates the percentage of gaps on the `Array` (alignment, sequence, column, etc.).
-This function can take an extra `dim` argument for calculation of the gap percentage over the given dimension"""
+"""
+Calculates the percentage of gaps on the `Array` (alignment, sequence, column, etc.).
+This function can take an extra `dim` argument for calculation of the gap percentage over the given dimension
+"""
 function gappercentage(x::AbstractArray{Residue})
     counter = 0
     len = 0
@@ -236,10 +268,13 @@ function gappercentage(x::AbstractArray{Residue})
     float(counter) / float(len)
 end
 
-gappercentage(x::AbstractArray{Residue}, dim::Int) = vec( mapslices(gappercentage, x, dim) )
+gappercentage(x::AbstractArray{Residue},
+              dim::Int) = vec( mapslices(gappercentage, x, dim) )
 
-"""Calculates the percentage of residues (no gaps) on the `Array` (alignment, sequence, column, etc.)
-This function can take an extra `dim` argument for calculation of the residue percentage over the given dimension"""
+"""
+Calculates the percentage of residues (no gaps) on the `Array` (alignment, sequence, column, etc.)
+This function can take an extra `dim` argument for calculation of the residue percentage over the given dimension
+"""
 function residuepercentage(x::AbstractArray{Residue})
     counter = 0
     len = 0
@@ -250,13 +285,18 @@ function residuepercentage(x::AbstractArray{Residue})
     float(counter) / float(len)
 end
 
-residuepercentage(x::AbstractArray{Residue}, dim::Int) = vec( mapslices(residuepercentage, x, dim) )
+residuepercentage(x::AbstractArray{Residue},
+                  dim::Int) = vec( mapslices(residuepercentage, x, dim) )
 
-"""Coverage of the sequences with respect of the number of positions on the MSA"""
+"""
+Coverage of the sequences with respect of the number of positions on the MSA
+"""
 coverage(msa::Matrix{Residue}) = residuepercentage(msa, 2)
 coverage(msa::AbstractMultipleSequenceAlignment) = coverage(msa.msa)
 
-"""Percentage of gaps per column/position on the MSA"""
+"""
+Percentage of gaps per column/position on the MSA
+"""
 columngappercentage(msa::Matrix{Residue}) = gappercentage(msa, 1)
 columngappercentage(msa::AbstractMultipleSequenceAlignment) = columngappercentage(msa.msa)
 
@@ -270,7 +310,8 @@ This function swaps the sequences 1 and `i`, also and `id` can be used.
 function setreference!(msa::AnnotatedMultipleSequenceAlignment, i::Int, annotate::Bool=true)
     swap!(msa.id, 1, i)
     msa.msa[1, :], msa.msa[i, :] = msa.msa[i, :], msa.msa[1, :]
-    annotate && annotate_modification!(msa, string("setreference! : Using ", msa.id[1]," instead of ", msa.id[i]," as reference."))
+    annotate && annotate_modification!(msa, string("setreference! : Using ",
+                                                   msa.id[1]," instead of ", msa.id[i]," as reference."))
     msa
 end
 
@@ -280,18 +321,25 @@ function setreference!(msa::MultipleSequenceAlignment, i::Int, annotate::Bool=fa
     msa
 end
 
-setreference!(msa::AbstractMultipleSequenceAlignment, id::ASCIIString, annotate::Bool=true) = setreference!(msa, findfirst(msa.id ,id), annotate)
+setreference!(msa::AbstractMultipleSequenceAlignment, id::ASCIIString,
+              annotate::Bool=true) = setreference!(msa, findfirst(msa.id ,id), annotate)
 
 function setreference!(msa::Matrix{Residue}, i::Int, annotate::Bool=false)
     msa[1, :], msa[i, :] = msa[i, :], msa[1, :]
     msa
 end
 
-"""Creates a new Matrix{Residue}. This function deletes positions/columns of the MSA with gaps in the reference (first) sequence"""
-adjustreference(msa::Matrix{Residue}, annotate::Bool=false) = msa[ : , vec(msa[1,:]) .!= GAP ] # annotate is useful for calling this inside other functions
+"""
+Creates a new Matrix{Residue}. This function deletes positions/columns of the MSA with gaps in the reference (first) sequence
+"""
+adjustreference(msa::Matrix{Residue},
+                annotate::Bool=false) = msa[ : , vec(msa[1,:]) .!= GAP ] # annotate is useful for calling this inside other functions
 
-"""Removes positions/columns of the MSA with gaps in the reference (first) sequence"""
-adjustreference!(msa::AbstractMultipleSequenceAlignment, annotate::Bool=true) = filtercolumns!(msa, vec(msa.msa[1,:]) .!= GAP, annotate)
+"""
+Removes positions/columns of the MSA with gaps in the reference (first) sequence
+"""
+adjustreference!(msa::AbstractMultipleSequenceAlignment,
+                 annotate::Bool=true) = filtercolumns!(msa, vec(msa.msa[1,:]) .!= GAP, annotate)
 
 """
 This functions deletes/filters sequences and columns/positions on the MSA on the following order:
@@ -300,19 +348,22 @@ This functions deletes/filters sequences and columns/positions on the MSA on the
  - Removes all the sequences with a coverage with respect to the number of columns/positions on the MSA **less** than a `coveragelimit` (default to `0.75`: sequences with 25% of gaps)
  - Removes all the columns/position on the MSA with **more** than a `gaplimit` (default to `0.5`: 50% of gaps)
 """
-function gapstrip!(msa::AbstractMultipleSequenceAlignment, annotate::Bool=true; coveragelimit::Float64=0.75, gaplimit::Float64=0.5)
+function gapstrip!(msa::AbstractMultipleSequenceAlignment, annotate::Bool=true;
+                   coveragelimit::Float64=0.75, gaplimit::Float64=0.5)
     annotate && annotate_modification!(msa, string("gapstrip! : Deletes columns with gaps in the first sequence."))
     adjustreference!(msa, annotate)
     # Remove sequences with pour coverage of the reference sequence
     if ncolumns(msa) != 0
-        annotate && annotate_modification!(msa, string("gapstrip! : Deletes sequences with a coverage less than ", coveragelimit))
+        annotate && annotate_modification!(msa, string("gapstrip! : Deletes sequences with a coverage less than ",
+                                                       coveragelimit))
         filtersequences!(msa, coverage(msa) .>= coveragelimit, annotate)
     else
         throw("There are not columns in the MSA after the gap trimming")
     end
     # Remove columns with a porcentage of gap greater than gaplimit
     if nsequences(msa) != 0
-        annotate && annotate_modification!(msa, string("gapstrip! : Deletes columns with more than ", gaplimit, " gaps."))
+        annotate && annotate_modification!(msa, string("gapstrip! : Deletes columns with more than ",
+                                                       gaplimit, " gaps."))
         filtercolumns!(msa, columngappercentage(msa) .<= gaplimit, annotate)
     else
         throw("There are not sequences in the MSA after coverage filter")
@@ -327,7 +378,8 @@ Creates a new `Matrix{Residue}` with deleted sequences and columns/positions on 
  - Removes all the sequences with a coverage with respect to the number of columns/positions on the MSA **less** than a `coveragelimit` (default to `0.75`: sequences with 25% of gaps)
  - Removes all the columns/position on the MSA with **more** than a `gaplimit` (default to `0.5`: 50% of gaps)
 """
-function gapstrip(msa::Matrix{Residue}; coveragelimit::Float64=0.75, gaplimit::Float64=0.5)
+function gapstrip(msa::Matrix{Residue}; coveragelimit::Float64=0.75,
+                  gaplimit::Float64=0.5)
     msa = adjustreference(msa)
     # Remove sequences with pour coverage of the reference sequence
     if ncolumns(msa) != 0
@@ -360,12 +412,15 @@ for setter in [ :setannotcolumn!, :setannotfile!, :setannotresidue!, :setannotse
 end
 
 # Used on AbstractMultipleSequenceAlignment methods
-@inline annotate_modification!(msa::MultipleSequenceAlignment, str::ASCIIString) = false # annotate_modification! is used on bool context: annotate && ...
+@inline annotate_modification!(msa::MultipleSequenceAlignment,
+                               str::ASCIIString) = false # annotate_modification! is used on bool context: annotate && ...
 
 # Show & Print
 # ------------
 
-"Gives an ASCIIString with the sequence number `seq` of the MSA"
+"""
+Gives an ASCIIString with the sequence number `seq` of the MSA
+"""
 asciisequence(msa::Matrix{Residue}, seq::Int) = ascii(convert(Vector{UInt8}, vec(msa[seq,:])))
 asciisequence(msa::AbstractMultipleSequenceAlignment, seq::Int) = asciisequence(msa.msa, seq)
 
@@ -400,6 +455,8 @@ end
 
 getcolumnmapping(msa::AnnotatedMultipleSequenceAlignment) = _str2int_mapping(getannotfile(msa, "ColMap"))
 
-getsequencemapping(msa::AnnotatedMultipleSequenceAlignment, seq_id::ASCIIString) = _str2int_mapping(getannotsequence(msa, seq_id, "SeqMap"))
+getsequencemapping(msa::AnnotatedMultipleSequenceAlignment,
+                   seq_id::ASCIIString) = _str2int_mapping(getannotsequence(msa, seq_id, "SeqMap"))
 
-getsequencemapping(msa::AnnotatedMultipleSequenceAlignment, seq_num::Int) = getsequencemapping(msa, msa.id[seq_num])
+getsequencemapping(msa::AnnotatedMultipleSequenceAlignment,
+                   seq_num::Int) = getsequencemapping(msa, msa.id[seq_num])

@@ -116,7 +116,8 @@ convert(::Type{Residue}, x::Char)  = _to_residue[ Int(x) ];
 
 convert(::Type{Residue}, str::ASCIIString) = Residue[ Residue(char) for char in str.data ]
 convert(::Type{Residue}, str::Vector{UInt8}) = convert(Vector{Residue}, str)
-convert(::Type{ASCIIString}, seq::AbstractVector{Residue}) = ASCIIString( UInt8[ UInt8(res) for res in seq ] )
+convert(::Type{ASCIIString}, seq::AbstractVector{Residue}) = ASCIIString(
+    UInt8[ UInt8(res) for res in seq ] )
 
 string(seq::AbstractVector{Residue}) = ascii(seq) # "AR..." instead of the standar "[A,R,..."
 
@@ -130,25 +131,26 @@ function convert(::Type{Matrix{Residue}}, sequences::Array{ASCIIString,1})
         if length(seq) == nres
             aln[:,col] = Residue( seq )
         else
-            throw(ErrorException("There is an aligned sequence with different number of columns [ $(length(seq)) != $(nres) ]: $(ascii(seq))"))
+            throw(ErrorException(
+            "There is an aligned sequence with different number of columns [ $(length(seq)) != $(nres) ]: $(ascii(seq))"
+            ))
         end
     end
     aln'
 end
 
 """
-Macros of the form `@name_str` are applied to string as prefixes: `name"..."`.
-In particular, the MIToS macro `@res_str` takes a string and returns a `Vector` of `Residues` (sequence).
+The MIToS macro `@res_str` takes a string and returns a `Vector` of `Residues` (sequence).
 
 ```julia
 
-julia> res"MYSEQ"
+julia> res"MIToS"
 5-element Array{MIToS.MSA.Residue,1}:
  M
- Y
+ I
+ T
+ -
  S
- E
- Q
 
 ```
 """
@@ -173,5 +175,21 @@ length(x::Residue) = length(UInt8(x))
 # Random
 # ------
 
-"`rand` random chooses from the 20 residues, doesn't generate gaps"
+"""
+It chooses from the 20 natural residues (it doesn't generate gaps).
+
+```julia
+
+julia> rand(Residue)
+T
+
+julia> rand(Residue, 4, 4)
+4x4 Array{MIToS.MSA.Residue,2}:
+ L  E  F  L
+ R  Y  L  K
+ K  V  S  G
+ Q  V  M  T
+
+```
+"""
 rand(r, ::Type{Residue}) = Residue( rand(r, Int8(1):Int8(20)) )

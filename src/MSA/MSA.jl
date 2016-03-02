@@ -1,6 +1,4 @@
 """
-## MSA
-
 The MSA module of MIToS has utilities for working with Multiple Sequence Alignments of protein Sequences (MSA).
 
 **Features**
@@ -23,8 +21,6 @@ using IndexedArrays     # IndexedArray for sequence names in MSAs
 using MIToS.Utils
 
 """
-#### swap!
-
 `swap!(ia::IndexedArray, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `IndexedArray`
 """
 function swap!(ia::IndexedArray, to::Int, from::Int)
