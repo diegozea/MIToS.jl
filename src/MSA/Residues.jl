@@ -1,25 +1,24 @@
 using Base.Intrinsics
 
-import Base: convert, ==, !=, .==, zero, show, length, getindex, setindex!, rand, string #, <, <=
+import Base: convert, ==, !=, .==, zero, show, length,
+             getindex, setindex!, rand, string
 
 # Residues
 # ========
 
 """
-Most of the **MIToS** design is created around the `Residue` bitstype.
-This type is used for encode the 20 amino acid residues and one gap character `GAP` as integers.
-This is useful for faster indexing of the probabilities and counts matrices.
+Most of the **MIToS** design is created around the `Residue` bitstype. It represents the 20 natural amino acids and a GAP value to represent insertion, deletion but also missing data: ambiguous residues and non natural amino acids.
+Each residue is encoded as an integer number, this allows fast indexing operation using Residues of probability or frequency matrices.
 
-**Residue creation and conversion**  
+**Residue creation and conversion**
 
-Creation of `Residue`s and `convert` should be treated carefully.
-`Residue` is encoded as an 8 bits type similar to `Int8`.
-In order to get faster indexing using `Int(x::Residue)` conversion to and from `Int`.
-`Int8` and other signed integers returns the encoded integer value.
-But conversions to and from `Char`s and `Uint8` (for conversion from and to `ASCIIString`s using `Residue()` and `ascii()`)
-are useful for IO using the character representation. The residues are encoded in the following way:
+Creation and `convert`ion of `Residue`s should be treated carefully.
+`Residue` is encoded as an 8 bits type similar to `Int8`, to get faster indexing using `Int(x::Residue)`.
+In this way, `Int`, `Int8` and other signed integers returns the integer value encoded by the residue.
+Conversions to and from `Char`s and `Uint8` are different, to use the `Char`acter representation in IO operations.
 
-```
+```julia
+
 julia> alanine = Residue('A')
 A
 
@@ -92,7 +91,8 @@ const GAP = Residue(21)
 # Conversions for input and output.
 # Inserts (lowercase and dots) and invalid characters will be converted into gaps ('-').
 
-const _to_char  = Char['A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V','-']
+const _to_char  = Char['A','R','N','D','C','Q','E','G','H','I','L',
+                       'K','M','F','P','S','T','W','Y','V','-']
 
 convert(::Type{Char}, x::Residue) = _to_char[ Int( x ) ]
 
@@ -137,8 +137,11 @@ function convert(::Type{Matrix{Residue}}, sequences::Array{ASCIIString,1})
 end
 
 """
-`@res_str` can be used for easy creation of `Vector{Residue}`
-```
+Macros of the form `@name_str` are applied to string as prefixes: `name"..."`.
+In particular, the MIToS macro `@res_str` takes a string and returns a `Vector` of `Residues` (sequence).
+
+```julia
+
 julia> res"MYSEQ"
 5-element Array{MIToS.MSA.Residue,1}:
  M
@@ -146,6 +149,7 @@ julia> res"MYSEQ"
  S
  E
  Q
+
 ```
 """
 macro res_str(str)
@@ -169,5 +173,5 @@ length(x::Residue) = length(UInt8(x))
 # Random
 # ------
 
-"""rand random chooses from the 20 residues, doesn't generate gaps"""
+"`rand` random chooses from the 20 residues, doesn't generate gaps"
 rand(r, ::Type{Residue}) = Residue( rand(r, Int8(1):Int8(20)) )

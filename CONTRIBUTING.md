@@ -10,7 +10,7 @@ We welcome contributions in the form of **pull requests**. For your code to be c
 - Indent with 4 spaces.
 - Type names are camel case, with the first letter capitalized. E.g. `MultipleSequenceAlignment`.
 - Function names, apart from constructors, are all lowercase. Include underscores between words only if the name would be hard to read without. E.g. `covalentradius`, `check_atoms_for_interactions`.
-- Generally try to keep lines below 80-columns, unless splitting a long line onto multiple lines makes it harder to read.
+- Generally try to keep lines below 92-columns, unless splitting a long line onto multiple lines makes it harder to read.
 - Separate logical blocks of code with blank lines.
 - Functions that get or set variables in a type should not be prefixed with 'get' or 'set'. The getter should be named for the variable it sets, and the setter should have the same name as the getter, with the suffix !.
 
