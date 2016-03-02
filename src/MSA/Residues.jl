@@ -6,24 +6,34 @@ import Base: convert, ==, !=, .==, zero, show, length, getindex, setindex!, rand
 # ========
 
 """
-Residue
-=======
-
-**MIToS** design is created around the `Residue` bitstype.
+Most of the **MIToS** design is created around the `Residue` bitstype.
 This type is used for encode the 20 amino acid residues and one gap character `GAP` as integers.
 This is useful for faster indexing of the probabilities and counts matrices.
 
-Residue creation and conversion
--------------------------------
+**Residue creation and conversion**  
+
 Creation of `Residue`s and `convert` should be treated carefully.
 `Residue` is encoded as an 8 bits type similar to `Int8`.
 In order to get faster indexing using `Int(x::Residue)` conversion to and from `Int`.
 `Int8` and other signed integers returns the encoded integer value.
 But conversions to and from `Char`s and `Uint8` (for conversion from and to `ASCIIString`s using `Residue()` and `ascii()`)
 are useful for IO using the character representation. The residues are encoded in the following way:
+
 ```
-julia> for char in "ARNDCQEGHILKMFPSTWYV-"
-           println(string(char, " ", Int(Residue(char))))
+julia> alanine = Residue('A')
+A
+
+julia> Int(alanine)
+1
+
+julia> Char(alanine)
+'A'
+
+julia> UInt8(alanine) # 0x41 == 65 == 'A'
+0x41
+
+julia> for residue in res"ARNDCQEGHILKMFPSTWYV-"
+           println(residue, " ", Int(residue))
        end
 A 1
 R 2
@@ -46,6 +56,7 @@ W 18
 Y 19
 V 20
 - 21
+
 ```
 """
 bitstype 8 Residue
