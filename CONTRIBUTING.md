@@ -1,7 +1,7 @@
 # Contributing
 
 MIToS is and **Open Source** project and there are different ways to contribute.
-Please, use [GitHub issues](https://github.com/diegozea/MIToS.jl/issues) to **report bugs** or to **ask for new features**.
+Please, use [GitHub issues](https://github.com/diegozea/MIToS.jl/issues) to **report errors/bugs** or to **ask for new features**.  
 We welcome contributions in the form of **pull requests**. For your code to be considered it must meet the following guidelines.
 
 - By making a pull request, you're agreeing to license your code under a MIT license.
@@ -18,7 +18,6 @@ We welcome contributions in the form of **pull requests**. For your code to be c
 
 ### Documentation
 
-- Please do not include navigation menus on IJulia documentation notebooks
 - Do not include headers/titles in the docstrings
 - Please include examples if it's possible
 
