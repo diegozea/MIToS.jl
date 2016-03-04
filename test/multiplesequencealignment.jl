@@ -158,6 +158,14 @@ let default = read(joinpath(pwd(), "data", "alphabet.fasta"), FASTA, generatemap
 end
 
 print("""
+Dots are part of the alphabet for input.
+""")
+
+let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, checkalphabet=true)
+  @test size(pfam.msa, 1) == 4
+end
+
+print("""
 
 Selection without Mappings
 --------------------------
