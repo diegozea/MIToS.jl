@@ -87,7 +87,7 @@ But, if the keyword argument `checkalphabet` is `true` (`false` by default), the
 # Delete sequences with ambiguous or not standard residues
 # ========================================================
 
-const _alphabet = "ARNDCQEGHILKMFPSTWYV-"
+const _alphabet = "ARNDCQEGHILKMFPSTWYV-."
 
 function _checkalphabet(seqs::Vector{ASCIIString})
     N = length(seqs)
