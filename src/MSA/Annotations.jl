@@ -144,17 +144,25 @@ for (fun, field) in [ (:getannotsequence, :(ann.sequences)),
     end
 end
 
+function _test_feature_name(feature::ASCIIString)
+    length(feature) <= 50 || throw(ErrorException("Feature name has a limit of 50 characters."))
+    ismatch(r"\s", feature) && throw(ErrorException("Feature name must not have spaces."))
+end
+
 function setannotfile!(ann::Annotations, feature::ASCIIString, annotation::ByteString)
+    _test_feature_name(feature)
     previous = get(ann.file, feature, "")
     ann.file[feature] = previous != "" ? string(previous, '\n', annotation) : annotation
 end
 
 function setannotsequence!(ann::Annotations, seqname::ASCIIString, feature::ASCIIString, annotation::ASCIIString)
+    _test_feature_name(feature)
     previous = get(ann.sequences, (seqname, feature), "")
     ann.sequences[(seqname, feature)] = previous != "" ? string(previous, '\n', annotation) : annotation
 end
 
 function setannotcolumn!(ann::Annotations, feature::ASCIIString, annotation::ASCIIString)
+    _test_feature_name(feature)
     len = ncolumns(ann)
     if (len == -1) || (len == length(annotation))
         setindex!(ann.columns, annotation, feature)
@@ -164,6 +172,7 @@ function setannotcolumn!(ann::Annotations, feature::ASCIIString, annotation::ASC
 end
 
 function setannotresidue!(ann::Annotations, seqname::ASCIIString, feature::ASCIIString, annotation::ASCIIString)
+    _test_feature_name(feature)
     len = ncolumns(ann)
     if (len == -1) || (len == length(annotation))
         setindex!(ann.residues, annotation, (seqname, feature))
@@ -220,7 +229,7 @@ function printmodifications(ann::Annotations)
 end
 
 # Show & Print Annotations
-# =================
+# ========================
 
 function _printfileannotations(io::IO, ann::Annotations)
     if !isempty(ann.file)

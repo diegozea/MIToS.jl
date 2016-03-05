@@ -29,6 +29,9 @@ Getters & Setters
 """)
   setannotresidue!(annot, "O31698/18-71", "SS", "CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH")
 
+  @test_throws ErrorException setannotresidue!(annot, "O31698/18-71", randstring(51),    "CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH")
+  @test_throws ErrorException setannotresidue!(annot, "O31698/18-71", "My Feature Name", "CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH")
+
   @test ncolumns(annot) == 37
 
   setannotfile!(annot, "AC", "PF00571")

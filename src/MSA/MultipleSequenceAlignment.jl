@@ -1,5 +1,5 @@
 import Base: length, getindex, setindex!, size, copy, deepcopy, empty!,
-             convert, transpose, ctranspose
+             convert, transpose, ctranspose, names
 
 """
 MIToS MSAs are subtypes of `AbstractMatrix{Residue}`,
@@ -172,14 +172,14 @@ getindex(msa::AbstractMultipleSequenceAlignment, id::ASCIIString) = getsequence(
 # Filters
 # -------
 
-filtersequences(msa::Matrix{Residue}, mask::BitVector) = msa[mask, :]
+filtersequences(msa::Matrix{Residue}, mask::AbstractVector{Bool}) = msa[mask, :]
 
 """
-Allows to filter sequences on a MSA using a `BitVector` mask (removes `false`s).
+Allows to filter sequences on a MSA using a `AbstractVector{Bool}` mask (removes `false`s).
 For `AnnotatedMultipleSequenceAlignment`s the annotations are updated.
 """
 function filtersequences!(msa::AnnotatedMultipleSequenceAlignment,
-                          mask::BitVector, annotate::Bool=true)
+                          mask::AbstractVector{Bool}, annotate::Bool=true)
     msa.msa = filtersequences(msa.msa, mask)
     #msa.sequencemapping = msa.sequencemapping[ mask , : ]
     filtersequences!(msa.annotations, msa.id, mask)
@@ -189,21 +189,21 @@ function filtersequences!(msa::AnnotatedMultipleSequenceAlignment,
 end
 
 function filtersequences!(msa::MultipleSequenceAlignment,
-                          mask::BitVector, annotate::Bool=false) # annotate is useful for calling this inside other functions
+                          mask::AbstractVector{Bool}, annotate::Bool=false) # annotate is useful for calling this inside other functions
     msa.msa = filtersequences(msa.msa, mask)
     msa.id = IndexedArray(msa.id[ mask ])
     msa
 end
 
-filtercolumns(msa::Matrix{Residue}, mask::BitVector) = msa[ : , mask ]
-filtercolumns(seq::Vector{Residue}, mask::BitVector) = seq[ mask ]
+filtercolumns(msa::Matrix{Residue}, mask::AbstractVector{Bool}) = msa[ : , mask ]
+filtercolumns(seq::Vector{Residue}, mask::AbstractVector{Bool}) = seq[ mask ]
 
 """
-Allows to filter columns/positions on a MSA using a `BitVector` mask.
+Allows to filter columns/positions on a MSA using a `AbstractVector{Bool}` mask.
 For `AnnotatedMultipleSequenceAlignment`s or `AnnotatedAlignedSequence`s the annotations are updated.
 """
 function filtercolumns!(msa::AnnotatedMultipleSequenceAlignment,
-                        mask::BitVector, annotate::Bool=true)
+                        mask::AbstractVector{Bool}, annotate::Bool=true)
     msa.msa = filtercolumns(msa.msa, mask)
     #msa.sequencemapping = msa.sequencemapping[ : , mask ]
     #msa.filecolumnmapping = msa.filecolumnmapping[ mask ]
@@ -213,12 +213,12 @@ function filtercolumns!(msa::AnnotatedMultipleSequenceAlignment,
     msa
 end
 
-function filtercolumns!(msa::MultipleSequenceAlignment, mask::BitVector, annotate::Bool=false) # annotate is useful for calling this inside other functions
+function filtercolumns!(msa::MultipleSequenceAlignment, mask::AbstractVector{Bool}, annotate::Bool=false) # annotate is useful for calling this inside other functions
     msa.msa = filtercolumns(msa.msa, mask)
     msa
 end
 
-function filtercolumns!(seq::AnnotatedAlignedSequence, mask::BitVector, annotate::Bool=true)
+function filtercolumns!(seq::AnnotatedAlignedSequence, mask::AbstractVector{Bool}, annotate::Bool=true)
     seq.sequence = filtercolumns(seq.sequence, mask)
     #seq.sequencemapping = seq.sequencemapping[ mask ]
     #seq.filecolumnmapping = seq.filecolumnmapping[ mask ]
@@ -228,7 +228,7 @@ function filtercolumns!(seq::AnnotatedAlignedSequence, mask::BitVector, annotate
     seq
 end
 
-function filtercolumns!(seq::AlignedSequence, mask::BitVector, annotate::Bool=false)
+function filtercolumns!(seq::AlignedSequence, mask::AbstractVector{Bool}, annotate::Bool=false)
     seq.sequence = filtercolumns(seq.sequence, mask)
     seq
 end
@@ -305,7 +305,7 @@ columngappercentage(msa::AbstractMultipleSequenceAlignment) = columngappercentag
 
 """
 Puts the sequence `i` as reference (as the first sequence) of the MSA.
-This function swaps the sequences 1 and `i`, also and `id` can be used.
+This function swaps the sequences 1 and `i`, also an `id` can be used to select the sequence.
 """
 function setreference!(msa::AnnotatedMultipleSequenceAlignment, i::Int, annotate::Bool=true)
     swap!(msa.id, 1, i)
@@ -394,6 +394,16 @@ function gapstrip(msa::Matrix{Residue}; coveragelimit::Float64=0.75,
     end
     msa
 end
+
+# MSA getters
+# -----------
+
+"Returns the annotations of a MSA or a sequence."
+annotations(msa::AnnotatedMultipleSequenceAlignment) = msa.annotations
+annotations(seq::AnnotatedAlignedSequence) = seq.annotations
+
+"Returns the names of the MSA sequences."
+names(msa::AbstractMultipleSequenceAlignment) = msa.id
 
 # Get annotations
 # ---------------

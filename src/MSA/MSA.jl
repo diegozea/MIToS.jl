@@ -45,6 +45,7 @@ Annotations, filtersequences!, filtercolumns!, empty,
 getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
 setannotfile!, setannotcolumn!, setannotsequence!, setannotresidue!,
 annotate_modification!, delete_annotated_modifications!, printmodifications,
+annotations,
 
 MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment,
 AbstractMultipleSequenceAlignment,

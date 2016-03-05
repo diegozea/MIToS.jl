@@ -291,7 +291,9 @@ filtersequences! with and without annotations
 @test getsequence(filtersequences!(copy(pfam), [1,2,3,4] .> 2), 2) == getsequence(pfam,4)
 
 @test getsequence(filtersequences!(copy(pfam_na), [1,2,3,4] .== 3), 1) == getsequence(pfam_na,3)
-@test getsequence(filtersequences!(copy(pfam_na), [1,2,3,4] .> 2), 2) == getsequence(pfam_na,4)
+@test getsequence(filtersequences!(copy(pfam_na), [1,2,3,4] .> 2), 2) == getsequence(pfam_na,4) # BitVector
+
+@test getsequence(filtersequences!(copy(pfam_na), Bool[false,false,true,true] ), 2) == getsequence(pfam_na,4) # Vector{Bool}
 
 print("""
 filtercolumns! with and without annotations
