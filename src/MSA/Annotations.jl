@@ -6,6 +6,12 @@ import Base: print, show, copy, deepcopy, empty!, isempty, print, show
 """
 The `Annotations` type is basically a container for `Dict`s with the annotations of a multiple sequence alignment.
 `Annotations` was designed for storage of annotations of the **Stockholm format**.
+
+MIToS also uses MSA annotations to keep track of:
+
+- **Modifications** of the MSA (`MIToS_...`) as deletion of sequences or columns.
+- Positions numbers in the original MSA file (**column mapping:** `ColMap`)
+- Position of the residues in the sequence (**sequence mapping:** `SeqMap`)
 """
 type Annotations
     file::OrderedDict{ASCIIString, ByteString}
