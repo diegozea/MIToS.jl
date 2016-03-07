@@ -3,10 +3,7 @@
 using ArgParse
 
 import MIToS.MSA
-import MIToS.Clustering
-
 @everywhere using MIToS.MSA
-@everywhere using MIToS.Clustering
 
 function parse_commandline()
     s = ArgParseSettings(description = """Creates an *.description.csv from a Stockholm file with: the number of columns, sequences, clusters after Hobohm clustering at 62% identity.

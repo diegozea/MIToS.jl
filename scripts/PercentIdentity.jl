@@ -4,8 +4,6 @@ using ArgParse
 
 import MIToS.MSA
 @everywhere using MIToS.MSA
-import MIToS.Clustering
-@everywhere using MIToS.Clustering
 import PairwiseListMatrices
 @everywhere using PairwiseListMatrices
 

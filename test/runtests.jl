@@ -2,7 +2,6 @@ using Base.Test
 using MIToS
 using MIToS.Utils
 using MIToS.MSA
-using MIToS.Clustering
 using MIToS.Information
 using MIToS.PDB
 using MIToS.SIFTS

@@ -62,7 +62,12 @@ Raw, Stockholm, FASTA,
 shuffle_columnwise!, shuffle_sequencewise!, shuffle_residues_sequencewise!,
 shuffle_residues_columnwise!,
 
-percentidentity, meanpercentidentity
+percentidentity, meanpercentidentity,
+
+AbstractClusters, NoClustering, Clusters,
+nclusters, getweight, nsequences,
+
+hobohmI
 
 include("Residues.jl")
 include("Annotations.jl")
@@ -73,5 +78,7 @@ include("Stockholm.jl")
 include("FASTA.jl")
 include("Shuffle.jl")
 include("Identity.jl")
+include("Clusters.jl")
+include("Hobohm.jl")
 
 end

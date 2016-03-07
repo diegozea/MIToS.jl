@@ -2,7 +2,6 @@ module Information
 
   using MIToS.Utils
   using MIToS.MSA
-  using MIToS.Clustering
   using PairwiseListMatrices
 
   export BLOSUM62_Pi, BLOSUM62_Pij,

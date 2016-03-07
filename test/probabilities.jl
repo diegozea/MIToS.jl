@@ -1,6 +1,5 @@
 # using Base.Test
 # using MIToS.Information
-# using MIToS.Clustering
 # using MIToS.MSA
 
 let false_clusters = Clusters(zeros(20),zeros(20),rand(20)),

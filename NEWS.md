@@ -2,7 +2,7 @@
 
 ### Changes from v0.1 to v0.2
 
-* *[breaking change]* Percent identity functions were moved from `Clutering` to `MSA` module.
+* *[breaking change]* The `Clutering` was deleted and its functions moved to the `MSA` module.
 
 * *[breaking change]* The `getnclusters` function is now `nclusters` in the `Clutering` module.
 
