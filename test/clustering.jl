@@ -90,3 +90,12 @@ let aln = read(joinpath(pwd(), "data", "gaps.txt"), Raw)
   @test id[1,3] == 80.0
   @test_approx_eq id[2,3] 800/9
 end
+
+let msa = vcat( transpose(res"--GGG-"),
+                transpose(res"---GGG") )
+#                  identities 000110 sum 2
+#            aligned residues 001111 sum 4
+
+    @test percentidentity(msa)[1, 2] == 50.0 # 2 / 4
+    @test meanpercentidentity(msa)   == 50.0
+end
