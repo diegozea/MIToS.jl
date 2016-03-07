@@ -82,19 +82,19 @@ const files = _file_names(parsed)
   println(io, input, ",", "coverage",   ",", "mean", ",", "", ",", mean(cov))
   println(io, input, ",", "coverage",   ",", "std",  ",", "", ",", std(cov))
 
-  gap = gappercentage(aln, 1);
+  gap = gapfraction(aln, 1);
   qgp = quantile(gap, [0., .25, .5, .75, 1.])
 
-  println(io, input, ",", "gappercentage", ",", "quantile", ",", "0.00", ",", qgp[1])
-  println(io, input, ",", "gappercentage", ",", "quantile", ",", "0.25", ",", qgp[2])
-  println(io, input, ",", "gappercentage", ",", "quantile", ",", "0.50", ",", qgp[3])
-  println(io, input, ",", "gappercentage", ",", "quantile", ",", "0.75", ",", qgp[4])
+  println(io, input, ",", "gapfraction", ",", "quantile", ",", "0.00", ",", qgp[1])
+  println(io, input, ",", "gapfraction", ",", "quantile", ",", "0.25", ",", qgp[2])
+  println(io, input, ",", "gapfraction", ",", "quantile", ",", "0.50", ",", qgp[3])
+  println(io, input, ",", "gapfraction", ",", "quantile", ",", "0.75", ",", qgp[4])
 
-  println(io, input, ",", "gappercentage",   ",", "mean", ",", "", ",", mean(gap))
-  println(io, input, ",", "gappercentage",   ",", "std",  ",", "", ",", std(gap))
+  println(io, input, ",", "gapfraction",   ",", "mean", ",", "", ",", mean(gap))
+  println(io, input, ",", "gapfraction",   ",", "std",  ",", "", ",", std(gap))
 
   hob = hobohmI(aln, 0.62);
-  ncu = getnclusters(hob)
+  ncu = nclusters(hob)
 
   println(io, input, ",", "clusters",   ",", "number", ",", "", ",", ncu)
 end

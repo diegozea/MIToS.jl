@@ -361,7 +361,7 @@ let file = joinpath(pwd(), "data", "simple.fasta"),
     mat = [ 0. 0.
             0. 0. ]
 
-  (gu, gi) = pairwisegappercentage(file, FASTA)
+  (gu, gi) = pairwisegapfraction(file, FASTA)
 
   @test gu == mat
   @test gi == mat
@@ -369,9 +369,9 @@ end
 
 let file = joinpath(pwd(), "data", "gaps.txt")
 
-  gu, gi = pairwisegappercentage(file, Raw)
+  gu, gi = pairwisegapfraction(file, Raw)
   cl = hobohmI(read(file, Raw), 0.62)
-  ncl = getnclusters(cl)
+  ncl = nclusters(cl)
 
   @test_approx_eq gu[1, 1] 0.0
   @test_approx_eq gi[1, 1] 0.0

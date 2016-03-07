@@ -49,7 +49,7 @@ Hobohm I
 let fasta = read(joinpath(pwd(), "data", "Gaoetal2011.fasta"), FASTA)
   clusters = hobohmI(fasta, 0.62)
 
-  @test getnclusters(clusters) == 2
+  @test nclusters(clusters) == 2
   @test nsequences(clusters) == 6
   @test getweight(clusters, 1) == 1/3
   @test getweight(clusters, 6) == 1/3

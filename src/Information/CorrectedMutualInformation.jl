@@ -14,7 +14,7 @@ function _buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
                                clustering::Bool=true, threshold::Float64=0.62,
                                maxgap::Float64=0.5, apc::Bool=true, samples::Int=100,
                                usegap::Bool=false, fixedgaps::Bool=true)
-  used = gappercentage(aln,1) .<= maxgap
+  used = gapfraction(aln,1) .<= maxgap
   ncol = ncolumns(aln)
   aln = filtercolumns(aln, used)
   clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
@@ -93,11 +93,11 @@ end
 function _BLMI(aln::Matrix{Residue}; beta::Float64=8.512, threshold::Float64=0.62,
                                      maxgap::Float64=0.5, apc::Bool=true, samples::Int=50,
                                      fixedgaps::Bool=true, lambda::Float64=zero(Float64))
-  used = gappercentage(aln,1) .<= maxgap
+  used = gapfraction(aln,1) .<= maxgap
   ncol = ncolumns(aln)
   aln = filtercolumns(aln, used)
   clusters = hobohmI(aln, threshold)
-  numbercl = getnclusters(clusters)
+  numbercl = nclusters(clusters)
   mi = _BLMI(aln, clusters, numbercl, beta, apc, lambda)
   usedcol = collect(1:ncol)[used]
   if samples > 0
@@ -161,7 +161,7 @@ end
 # MIToS Pairwise Gap Percentage
 # =============================
 
-function _pairwisegappercentage(aln::Matrix{Residue}; clustering::Bool=true, threshold::Float64=0.62)
+function _pairwisegapfraction(aln::Matrix{Residue}; clustering::Bool=true, threshold::Float64=0.62)
   ncol = ncolumns(aln)
   clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
   gu = estimateincolumns(aln, ResidueCount{Float64, 2, true}, GapUnionPercentage{Float64}(), zero(AdditiveSmoothing{Float64}), clusters, true)
@@ -184,17 +184,17 @@ This function returns:
   - pairwise gap percentage (union)
   - pairwise gap percentage (intersection)
 """
-function pairwisegappercentage(aln::Matrix{Residue}; kargs...)
-  gu, gi, used = _pairwisegappercentage(aln; kargs...)
+function pairwisegapfraction(aln::Matrix{Residue}; kargs...)
+  gu, gi, used = _pairwisegapfraction(aln; kargs...)
   labels!(gu, used)
   labels!(gi, used)
   (gu, gi)
 end
 
-pairwisegappercentage(aln::MultipleSequenceAlignment; kargs...) = pairwisegappercentage(aln.msa; kargs...)
+pairwisegapfraction(aln::MultipleSequenceAlignment; kargs...) = pairwisegapfraction(aln.msa; kargs...)
 
-function pairwisegappercentage(aln::AnnotatedMultipleSequenceAlignment; kargs...)
-  gu, gi, used = _pairwisegappercentage(aln.msa; kargs...)
+function pairwisegapfraction(aln::AnnotatedMultipleSequenceAlignment; kargs...)
+  gu, gi, used = _pairwisegapfraction(aln.msa; kargs...)
   if haskey(getannotfile(aln), "ColMap")
     map = getcolumnmapping(aln)
     labels!(gu, map)
@@ -206,9 +206,9 @@ function pairwisegappercentage(aln::AnnotatedMultipleSequenceAlignment; kargs...
   (gu, gi)
 end
 
-function pairwisegappercentage{T <: Format}(filename::AbstractString, format::Type{T}; kargs...)
+function pairwisegapfraction{T <: Format}(filename::AbstractString, format::Type{T}; kargs...)
   aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
-  pairwisegappercentage(aln; kargs...)
+  pairwisegapfraction(aln; kargs...)
 end
 
 

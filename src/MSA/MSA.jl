@@ -16,8 +16,9 @@ using MIToS.MSA
 """
 module MSA
 
-using DataStructures    # OrderedDicts for Annotations
-using IndexedArrays     # IndexedArray for sequence names in MSAs
+using DataStructures        # OrderedDicts for Annotations
+using IndexedArrays         # IndexedArray for sequence names in MSAs
+using PairwiseListMatrices  # Percent Identity Matrices
 using MIToS.Utils
 
 """
@@ -51,15 +52,17 @@ MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment,
 AbstractMultipleSequenceAlignment,
 AlignedSequence, AnnotatedAlignedSequence, AbstractAlignedSequence,
 getresidues, getsequence, getresiduesequences,
-nsequences, ncolumns, gappercentage, residuepercentage, coverage,
-columngappercentage, setreference!, gapstrip!, adjustreference!, asciisequence,
+nsequences, ncolumns, gapfraction, residuefraction, coverage,
+columngapfraction, setreference!, gapstrip!, adjustreference!, asciisequence,
 gapstrip, adjustreference, filtersequences, filtercolumns,
 getcolumnmapping, getsequencemapping,
 
 Raw, Stockholm, FASTA,
 
 shuffle_columnwise!, shuffle_sequencewise!, shuffle_residues_sequencewise!,
-shuffle_residues_columnwise!
+shuffle_residues_columnwise!,
+
+percentidentity, meanpercentidentity
 
 include("Residues.jl")
 include("Annotations.jl")
@@ -69,5 +72,6 @@ include("Raw.jl")
 include("Stockholm.jl")
 include("FASTA.jl")
 include("Shuffle.jl")
+include("Identity.jl")
 
 end

@@ -5,15 +5,12 @@ using PairwiseListMatrices
 
 import MIToS.MSA: nsequences
 
-export  AbstractClusters, NoClustering, Clusters, getnclusters,
+export  AbstractClusters, NoClustering, Clusters, nclusters,
 getweight, nsequences,
-
-percentidentity, meanpercentidentity,
 
 hobohmI
 
 include("Clusters.jl")
-include("Identity.jl")
 include("Hobohm.jl")
 
 end

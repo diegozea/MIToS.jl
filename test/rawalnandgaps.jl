@@ -48,17 +48,17 @@ Test %
 ------
 """)
 
-  @test gappercentage(raw) == 0.45
-  @test gappercentage(raw, 1) == [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
-  @test gappercentage(raw, 2) == [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+  @test gapfraction(raw) == 0.45
+  @test gapfraction(raw, 1) == [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+  @test gapfraction(raw, 2) == [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 
-  @test residuepercentage(raw) == 0.55
-  @test residuepercentage(raw, 1) == [1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]
-  @test residuepercentage(raw, 2) == [1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]
+  @test residuefraction(raw) == 0.55
+  @test residuefraction(raw, 1) == [1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]
+  @test residuefraction(raw, 2) == [1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]
 
   @test coverage(raw) == [1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]
 
-  @test columngappercentage(raw) == [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+  @test columngapfraction(raw) == [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 
   print("""
 

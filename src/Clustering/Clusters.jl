@@ -16,7 +16,7 @@ immutable Clusters
 end
 
 "Get the number of clusters in the set."
-getnclusters(c::Clusters) = length(c.clustersize)
+nclusters(c::Clusters) = length(c.clustersize)
 
 "Get the weights of all clusters in the set."
 getweight(c::Clusters) = c.sequenceweight

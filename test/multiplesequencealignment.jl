@@ -371,25 +371,25 @@ Test Gaps and Coverage
 ----------------------
 """)
 
-@test gappercentage(small) == 0.0
-@test gappercentage(getsequence(small,1)) == 0.0
-@test gappercentage(small[1,:]) == 0.0
+@test gapfraction(small) == 0.0
+@test gapfraction(getsequence(small,1)) == 0.0
+@test gapfraction(small[1,:]) == 0.0
 
-@test gappercentage(getsequence(pfam,4)) == 0.0
-@test gappercentage(getsequence(pfam_na,4)) == 0.0
+@test gapfraction(getsequence(pfam,4)) == 0.0
+@test gapfraction(getsequence(pfam_na,4)) == 0.0
 
-@test gappercentage(convert(Vector{Residue}, F112_SSV1)) == mean(F112_SSV1 .== '.')
+@test gapfraction(convert(Vector{Residue}, F112_SSV1)) == mean(F112_SSV1 .== '.')
 
-@test gappercentage(pfam[:,1]) == 0.75
-@test gappercentage(pfam_na[:,1]) == 0.75
+@test gapfraction(pfam[:,1]) == 0.75
+@test gapfraction(pfam_na[:,1]) == 0.75
 
 print("""
-Test residuepercentage
+Test residuefraction
 """)
 
-@test residuepercentage(small) == 1.0
-@test residuepercentage(getsequence(pfam, 4)) == 1.0
-@test residuepercentage(pfam[:,1]) == 0.25
+@test residuefraction(small) == 1.0
+@test residuefraction(getsequence(pfam, 4)) == 1.0
+@test residuefraction(pfam[:,1]) == 0.25
 
 print("""
 Test coverage
@@ -438,8 +438,8 @@ let copy_pfam = copy(pfam), copy_pfam_na = copy(pfam_na)
   setreference!(copy_pfam_na, 1)
   gapstrip!(copy_pfam)
   gapstrip!(copy_pfam_na)
-  residuepercentage(copy_pfam[1,:]) == 1.0
-  residuepercentage(copy_pfam_na[1,:]) == 1.0
+  residuefraction(copy_pfam[1,:]) == 1.0
+  residuefraction(copy_pfam_na[1,:]) == 1.0
 end
 
 print("""
@@ -449,8 +449,8 @@ Test adjustreference!
 let copy_pfam = copy(pfam), copy_pfam_na = copy(pfam_na)
   adjustreference!(copy_pfam)
   adjustreference!(copy_pfam_na)
-  residuepercentage(copy_pfam[1,:]) == 1.0
-  residuepercentage(copy_pfam_na[1,:]) == 1.0
+  residuefraction(copy_pfam[1,:]) == 1.0
+  residuefraction(copy_pfam_na[1,:]) == 1.0
 end
 
 print("""

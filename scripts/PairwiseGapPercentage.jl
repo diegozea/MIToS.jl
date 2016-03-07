@@ -84,7 +84,7 @@ const files = _file_names(parsed)
     else
       throw(ErrorException("--format should be stockholm, raw or fasta."))
     end
-    gapsunion, gapsinter = pairwisegappercentage(msa, clustering=Args["clustering"], threshold=Args["threshold"])
+    gapsunion, gapsinter = pairwisegapfraction(msa, clustering=Args["clustering"], threshold=Args["threshold"])
     println(fh, "i,j,gapunion,gapintersection")
     table = hcat(to_table(gapsunion, true), to_table(gapsinter, true)[:,3])
     writecsv(fh, table)

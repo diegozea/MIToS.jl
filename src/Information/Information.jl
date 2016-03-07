@@ -22,7 +22,7 @@ module Information
 
   APC!,
 
-  buslje09, BLMI, pairwisegappercentage,
+  buslje09, BLMI, pairwisegapfraction,
 
   # Formats from MIToS.MSA:
   Raw, Stockholm, FASTA
