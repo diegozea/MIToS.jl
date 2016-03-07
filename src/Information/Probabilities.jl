@@ -1,7 +1,7 @@
 import  Base: zero, one, zeros, start, next, done, length, eltype,
         size, setindex!, getindex, similar, fill!, count #, print # , copy, deepcopy, fill!, getindex, setindex!
 
-typealias SequenceWeights Union{Clusters, NoClustering, AbstractVector}
+typealias SequenceWeights Union{ClusteringResult, AbstractVector} # AbstractVector because getweight(cl) returns a Vector
 
 # Counts and Pseudocounts
 

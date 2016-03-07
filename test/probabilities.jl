@@ -2,7 +2,7 @@
 # using MIToS.Information
 # using MIToS.MSA
 
-let false_clusters = Clusters(zeros(20),zeros(20),rand(20)),
+let false_clusters = SequenceClusters(zeros(20),zeros(20),rand(20)),
   seq = res"ARNDCQEGHILKMFPSTWYV-"
 
   print("""
@@ -134,7 +134,7 @@ Test similar
   @test isa(similar(ResidueCount{Int, 1, false}(),BigFloat).total, BigFloat)
 
   print("""
-Test count! with Clusters
+Test count! with SequenceClusters
 """)
   @test_throws BoundsError count!(zeros(ResidueCount{Float64, 1, true}), false_clusters, seq)
   @test count!(zeros(ResidueCount{Float64, 1, false}), false_clusters, seq).table == getweight(false_clusters)

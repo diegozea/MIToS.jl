@@ -2,7 +2,13 @@
 
 ### Changes from v0.1 to v0.2
 
-* *[breaking change]* The `Clutering` was deleted and its functions moved to the `MSA` module.
+* *[breaking change]* The `Clustering` module was deleted and its functions moved to the `MSA` module.
+
+  * `MSA` uses `ClusteringResult` from the `Clustering.jl` package instead of `AbstractClusters`.
+
+  * `Clusters` was renamed to `SequenceClusters`
+
+  * `MSA` adds the `counts` and `assignments` functions from the `Clustering.jl` interface.
 
 * *[breaking change]* The `getnclusters` function is now `nclusters` in the `Clutering` module.
 

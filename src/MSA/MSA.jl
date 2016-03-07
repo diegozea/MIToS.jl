@@ -19,6 +19,7 @@ module MSA
 using DataStructures        # OrderedDicts for Annotations
 using IndexedArrays         # IndexedArray for sequence names in MSAs
 using PairwiseListMatrices  # Percent Identity Matrices
+using Clustering            # Used for sequence clustering: ClusteringResult
 using MIToS.Utils
 
 """
@@ -38,6 +39,8 @@ function swap!(ia::IndexedArray, to::Int, from::Int)
 end
 
 import Base: parse, print, write
+
+import Clustering: ClusteringResult, nclusters, counts, assignments
 
 export Residue, GAP, @res_str,
 swap!,
@@ -64,8 +67,10 @@ shuffle_residues_columnwise!,
 
 percentidentity, meanpercentidentity,
 
-AbstractClusters, NoClustering, Clusters,
-nclusters, getweight, nsequences,
+ClusteringResult, # from Clustering.jl
+nclusters, counts, assignments, # from Clustering.jl
+NoClustering, SequenceClusters,
+getweight, nsequences,
 
 hobohmI
 
