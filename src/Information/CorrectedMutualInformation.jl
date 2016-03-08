@@ -11,7 +11,7 @@ function _buslje09(aln, usegap, clusters, lambda, apc)
 end
 
 function _buslje09(aln::Matrix{Residue}; lambda::Float64=0.05,
-                               clustering::Bool=true, threshold::Float64=0.62,
+                               clustering::Bool=true, threshold=62,
                                maxgap::Float64=0.5, apc::Bool=true, samples::Int=100,
                                usegap::Bool=false, fixedgaps::Bool=true)
   used = gapfraction(aln,1) .<= maxgap
@@ -40,7 +40,7 @@ Argument, type, default value and descriptions:
 
   - lambda      Float64   0.05    Low count value
   - clustering  Bool      true    Sequence clustering (Hobohm I)
-  - threshold   Float64   0.62    Percent identity threshold for clustering
+  - threshold             62      Percent identity threshold for clustering
   - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation
   - apc         Bool      true    Use APC correction (MIp)
   - usegap      Bool      false   Use gaps on statistics
@@ -90,7 +90,7 @@ function _BLMI(aln, clusters, alpha, beta, apc, lambda::Float64=zero(Float64))
   mi
 end
 
-function _BLMI(aln::Matrix{Residue}; beta::Float64=8.512, threshold::Float64=0.62,
+function _BLMI(aln::Matrix{Residue}; beta::Float64=8.512, threshold=62,
                                      maxgap::Float64=0.5, apc::Bool=true, samples::Int=50,
                                      fixedgaps::Bool=true, lambda::Float64=zero(Float64))
   used = gapfraction(aln,1) .<= maxgap
@@ -120,7 +120,7 @@ Argument, type, default value and descriptions:
 
   - beta        Float64   8.512   β for BLOSUM62 pseudo frequencies
   - lambda      Float64   0.0     Low count value
-  - threshold   Float64   0.62    Percent identity threshold for sequence clustering (Hobohm I)
+  - threshold             62      Percent identity threshold for sequence clustering (Hobohm I)
   - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation
   - apc         Bool      true    Use APC correction (MIp)
   - samples     Int       50      Number of samples for Z-score
@@ -161,7 +161,7 @@ end
 # MIToS Pairwise Gap Percentage
 # =============================
 
-function _pairwisegapfraction(aln::Matrix{Residue}; clustering::Bool=true, threshold::Float64=0.62)
+function _pairwisegapfraction(aln::Matrix{Residue}; clustering::Bool=true, threshold=62)
   ncol = ncolumns(aln)
   clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
   gu = estimateincolumns(aln, ResidueCount{Float64, 2, true}, GapUnionPercentage{Float64}(), zero(AdditiveSmoothing{Float64}), clusters, true)
@@ -177,7 +177,7 @@ Calculates the percentage of gaps on columns pairs (union and intersection) usin
 Argument, type, default value and descriptions:
 
   - clustering  Bool      true    Sequence clustering (Hobohm I)
-  - threshold   Float64   0.62    Percent identity threshold for sequence clustering (Hobohm I)
+  - threshold             62      Percent identity threshold for sequence clustering (Hobohm I)
 
 This function returns:
 

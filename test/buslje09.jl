@@ -370,7 +370,7 @@ end
 let file = joinpath(pwd(), "data", "gaps.txt")
 
   gu, gi = pairwisegapfraction(file, Raw)
-  cl = hobohmI(read(file, Raw), 0.62)
+  cl = hobohmI(read(file, Raw), 62)
   ncl = nclusters(cl)
 
   @test_approx_eq gu[1, 1] 0.0

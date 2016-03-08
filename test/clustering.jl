@@ -19,18 +19,18 @@ print("""
 
 @test_throws ErrorException percentidentity(res"AH", res"AGH")
 
-@test percentidentity(res"AH", res"AH") == 1.
-@test percentidentity(res"AH", res"AG") == .5
+@test percentidentity(res"AH", res"AH") == 100.
+@test percentidentity(res"AH", res"AG") == 50.
 @test percentidentity(res"AH", res"RG") == 0.
-@test percentidentity(res"AH-", res"AG-") == .5
-@test percentidentity(res"A--", res"AG-") == .5
+@test percentidentity(res"AH-", res"AG-") == 50.
+@test percentidentity(res"A--", res"AG-") == 50.
 
 print("""
 -> Bool
 """)
 
-@test percentidentity(res"A--", res"AG-", 0.4)
-@test !percentidentity(res"A--", res"AG-", 0.6)
+@test percentidentity(res"A--", res"AG-", 40.)
+@test !percentidentity(res"A--", res"AG-", 60)
 
 print("""
 
@@ -46,7 +46,7 @@ Hobohm I
 # DAYCMT  33.3  83.3
 
 let fasta = read(joinpath(pwd(), "data", "Gaoetal2011.fasta"), FASTA)
-  clusters = hobohmI(fasta, 0.62)
+  clusters = hobohmI(fasta, 62)
 
   @test nclusters(clusters) == 2
   @test nsequences(clusters) == 6

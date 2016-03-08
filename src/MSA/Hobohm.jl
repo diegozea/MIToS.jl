@@ -7,7 +7,7 @@ These matrices are assumed to be empty (only zeroes) and their length is assumed
 of sequences in the alignment (`aln`).
 `threshold` is the minimum identity value between two sequences to be in the same cluster.
 """
-function _fill_hobohmI!(cluster::Vector{Int}, clustersize::Vector{Int}, aln::Vector{Vector{Residue}}, threshold::Float64)
+function _fill_hobohmI!(cluster::Vector{Int}, clustersize::Vector{Int}, aln::Vector{Vector{Residue}}, threshold)
     cluster_id = 0
     nseq = length(aln)
     for i in 1:(nseq-1)
@@ -50,7 +50,7 @@ Sequence clustering using the Hobohm I method from Hobohm et. al. 1992.
 
 *Hobohm, Uwe, et al. "Selection of representative protein data sets." Protein Science 1.3 (1992): 409-417.*
 """
-function hobohmI(msa::AbstractMatrix{Residue}, threshold::Float64)
+function hobohmI(msa::AbstractMatrix{Residue}, threshold)
     aln = getresiduesequences(msa)
     nseq = length(aln)
     cluster = zeros(Int,nseq)

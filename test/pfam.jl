@@ -195,5 +195,5 @@ let msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, gen
     res = residuesdict(read(joinpath(pwd(), "data", "2VQC.xml"), PDBML), "1", "A", "ATOM", "*"),
     contacts = msacontacts(msa, res, map)
 
-  @test round( AUC(buslje09(msa, lambda=0.05, threshold=0.62, samples=0)[2], contacts) , 4) == 0.5291
+  @test round( AUC(buslje09(msa, lambda=0.05, threshold=62.0, samples=0)[2], contacts) , 4) == 0.5291
 end

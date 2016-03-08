@@ -12,7 +12,7 @@ function _percentidentity(seq1, seq2, len)
             colgap += Int(seq1[i] == GAP)
         end
     end
-    (count-colgap)/(len-colgap)
+    100.0 * (count-colgap)/(len-colgap)
 end
 
 """
@@ -21,8 +21,6 @@ Calculates the fraction of identities between two aligned sequences.
 The identity value is calculated as the number of identical characters in the i-th position of both
 sequences divided by the length of both sequences.
 Positions with gaps in both sequences are not counted in the length of the sequence.
-Returns the fraction of identities, a value in the range [0, 1].
-One should multiply this fraction by 100 to get the percentage identity (PID).
 """
 function percentidentity(seq1, seq2)
     len = length(seq1)
@@ -34,16 +32,16 @@ end
 
 """
 Computes quickly if two aligned sequences have a identity value greater than a given `threshold` value.
-`threshold` should be a number in [0, 1] range (fraction of identities).
 Returns a boolean value.
 """
-function percentidentity(seq1, seq2, threshold::Float64)
+function percentidentity(seq1, seq2, threshold)
+    fraction = threshold / 100.0
     len = length(seq1)
     if len != length(seq2)
         throw("Sequences of different length, they aren't aligned or don't come from the same alignment")
     end
     n = len
-    limit_count = n * threshold
+    limit_count = n * fraction
     diff = 0
     count = 0
     for i in 1:len
@@ -55,7 +53,7 @@ function percentidentity(seq1, seq2, threshold::Float64)
                 end
             else
                 n -= 1
-                limit_count = n * threshold
+                limit_count = n * fraction
             end
         else
             diff += 1
@@ -64,7 +62,7 @@ function percentidentity(seq1, seq2, threshold::Float64)
             end
         end
     end
-    (count/n) >= threshold
+    (count/n) >= fraction
 end
 
 # percentidentity for a MSA
@@ -79,7 +77,7 @@ function _percentidentity_kernel!(scores, aln, nseq, len)
     @inbounds for i in 1:(nseq-1)
         a = aln[i]
         for j in (i+1):nseq
-            list[k += 1] = _percentidentity(a, aln[j], len) * 100.0
+            list[k += 1] = _percentidentity(a, aln[j], len)
         end
     end
     scores
@@ -124,6 +122,6 @@ function meanpercentidentity(msa, nsamples::Int=44850) # lengthlist(300, false) 
                 sum += percentidentity(msa[i,:], msa[j,:])
             end
         end
-        return( (sum/nsamples) * 100.0 )
+        return( (sum/nsamples) )
     end
 end

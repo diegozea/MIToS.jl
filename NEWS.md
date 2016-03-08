@@ -12,7 +12,8 @@
 
 * *[breaking change]* The `getnclusters` function is now `nclusters` in the `Clutering` module.
 
-* *[breaking change]* All the MSA `...percentage` functions were renamed to `...fraction`.
+* *[breaking change]* All the MSA `...percentage` functions were renamed to `...fraction` and `percent...` functions now return real percentages (not fractions) values.
+Functions taking identity thresholds, now also take real percentages (values between 0.0 and 100.0).
 
 * New functions added to `MSA` module
 
