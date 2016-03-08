@@ -33,7 +33,11 @@ abstract ResidueContingencyTables{T, N, UseGap} <: AbstractArray{T, N}
 
 Base.linearindexing(::ResidueContingencyTables)	= Base.LinearFast()
 
-"""`getindex(n::ResidueContingencyTables, i::Int)` gives you access to the table, use `Int()` for indexing with `Residues`"""
+"""
+`getindex(n::ResidueContingencyTables, i::Int)`
+
+Gives access to the table. Use `Int()` for indexing with `Residue`s.
+"""
 getindex(n::ResidueContingencyTables, i::Int)	= getindex(n.table, i)
 
 """`setindex!(n::ResidueCount, v, i::Int)` set a value into the table, but doesn't update the marginals (and total).
@@ -73,11 +77,14 @@ eltype{T,N,UseGap}(::Type{ResidueContingencyTables{T, N, UseGap}}) = T
 
 ## Counts
 
-"""`ResidueCount{T, N, UseGap}` is used for counting residues in columns (or sequences) of an MSA.
+"""
+`ResidueCount{T, N, UseGap}` is used for counting residues in columns (or sequences) of an MSA.
 `N` is the dimensionality and should be an `Int`, i.e. 2 if 2 columns are used for counting pairs.
-`UseGap` is a `Bool`, `true` means that **ResidueCount** counts gaps in the position 21."""
-# The field marginal is used for pre allocation of marginal sums.
-# The field total is used for saving the total.
+`UseGap` is a `Bool`, `true` means that **ResidueCount** counts gaps in the position 21.
+
+- The field marginal is used for pre allocation of marginal sums.
+- The field total is used for storing the table sum.
+"""
 type ResidueCount{T, N, UseGap} <: ResidueContingencyTables{T, N, UseGap}
   table::Array{T, N}
   marginals::Array{T, 2}
