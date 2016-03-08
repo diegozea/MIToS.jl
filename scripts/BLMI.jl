@@ -30,7 +30,7 @@ function parse_commandline()
         "--threshold", "-i"
             help = "Percent identity threshold for sequence clustering (Hobohm I)"
             arg_type = Float64
-            default = 0.62
+            default = 62.0
         "--maxgap", "-g"
             help = "Maximum fraction of gaps in positions included in calculation"
             arg_type = Float64

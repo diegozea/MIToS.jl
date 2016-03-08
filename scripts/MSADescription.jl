@@ -90,7 +90,7 @@ const files = _file_names(parsed)
   println(io, input, ",", "gapfraction",   ",", "mean", ",", "", ",", mean(gap))
   println(io, input, ",", "gapfraction",   ",", "std",  ",", "", ",", std(gap))
 
-  hob = hobohmI(aln, 0.62);
+  hob = hobohmI(aln, 62);
   ncu = nclusters(hob)
 
   println(io, input, ",", "clusters",   ",", "number", ",", "", ",", ncu)
