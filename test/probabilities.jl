@@ -155,6 +155,8 @@ Test count
   @test count(AdditiveSmoothing(1.0), seq, usegap=true).total == 21 + 21
   @test count(AdditiveSmoothing(1.0), seq, seq, usegap=true).total == 21 + (21*21)
 
+  @test count(AdditiveSmoothing(1), seq, usegap=true) == count(AdditiveSmoothing(1.0), seq, usegap=true)
+  @test count(AdditiveSmoothing(1), seq, seq, usegap=true) == count(AdditiveSmoothing(1.0), seq, seq, usegap=true)
 
   print("""
 

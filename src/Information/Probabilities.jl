@@ -203,6 +203,10 @@ function apply_pseudocount!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::Ad
 	n
 end
 
+"""
+`fill!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::AdditiveSmoothing{T})`
+fills a preallocated `ResidueCount` (`p`) with the pseudocount (`pse`).
+"""
 function fill!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::AdditiveSmoothing{T})
 	nres = nresidues(n)
 	margi_sum = pse.λ * (nres^(N-1))
@@ -272,8 +276,11 @@ count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, res::AbstractVector{Residue}
 
 #### Default counters
 
-"""```count(res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())```
-```count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())```
+"""
+```
+count(res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())
+count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())
+```
 
 `count` creates a new ResidueCount counting the number of residues, pairs of residues, etc. in the sequences/columns.
 """
@@ -282,6 +289,9 @@ count(res::AbstractVector{Residue}...; usegap::Bool=false,
 
 count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap::Bool=false,
 	weight::SequenceWeights=NoClustering()) = apply_pseudocount!(count!(zeros(ResidueCount{Float64, length(res), usegap}), weight, res...), pseudocount)
+
+count{T}(pseudocount::AdditiveSmoothing{T}, res::AbstractVector{Residue}...; usegap::Bool=false,
+	weight::SequenceWeights=NoClustering()) = apply_pseudocount!(count!(zeros(ResidueCount{T, length(res), usegap}), weight, res...), pseudocount)
 
 ## Probabilities
 
@@ -377,7 +387,8 @@ function _fill_probabilities!{TP, TN, N}(p::Array{TP,N}, n::Array{TN,N}, total::
   p
 end
 
-"""```fill!{T, N, UseGap}(p::ResidueProbability{T, N, UseGap}, n::ResidueCount{T, N, UseGap}; updated::Bool=false)```
+"""
+`fill!{T, N, UseGap}(p::ResidueProbability{T, N, UseGap}, n::ResidueCount{T, N, UseGap}; updated::Bool=false)`
 
 This function fills a preallocated `ResidueProbability` (`p`) with the probabilities calculated from `n` (`ResidueCount`).
 This function updates `n` unless `updated=true`.
@@ -433,8 +444,11 @@ end
 
 ## Default probabilities
 
-"""```probabilities(res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())```
-```probabilities(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())```
+"""
+```
+probabilities(res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())
+probabilities(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())
+```
 
 `probabilities` creates a new ResidueProbability with the probabilities of residues, pairs of residues, etc. in the sequences/columns.
 """
@@ -444,7 +458,10 @@ probabilities{T}(::Type{T}, res::AbstractVector{Residue}...; usegap::Bool=false,
 probabilities{T}(::Type{T}, pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap::Bool=false,
 	weight::SequenceWeights=NoClustering()) = fill!(ResidueProbability{T, length(res), usegap}(), count(pseudocount, res..., usegap=usegap, weight=weight))
 
-"""This method use BLOSUM62 based pseudofrequencies"""
+"""
+`probabilities(T, α, β, res1, res2, [weight])` use BLOSUM62 based pseudofrequencies.
+α is the weight of the evidence, and β the weight of the pseudofrequencies.
+"""
 function probabilities{T}(::Type{T}, α, β, res1::AbstractVector{Residue}, res2::AbstractVector{Residue}; weight::SequenceWeights=NoClustering())
 	Pab = fill!(ResidueProbability{T, 2, false}(), count(res1, res2, usegap=false, weight=weight))
 	Gab = blosum_pseudofrequencies!(ResidueProbability{T, 2,false}(), Pab)
@@ -469,7 +486,7 @@ function _list_without_dimensions(len::Int, out_len::Int, dimensions::Int...)
 end
 
 """
-```delete_dimensions!(out::ResidueContingencyTables, in::ResidueContingencyTables, dimensions::Int...)
+`delete_dimensions!(out::ResidueContingencyTables, in::ResidueContingencyTables, dimensions::Int...)`
 
 This function fills a ResidueContingencyTables with the counts/probabilities on `in` after the deletion of `dimensions`.
 i.e. This is useful for getting Pxy from Pxyz.
