@@ -345,7 +345,7 @@ adjustreference!(msa::AbstractMultipleSequenceAlignment,
 This functions deletes/filters sequences and columns/positions on the MSA on the following order:
 
  - Removes all the columns/position on the MSA with gaps on the reference sequence (first sequence)
- - Removes all the sequences with a coverage with respect to the number of columns/positions on the MSA **less** than a `coveragelimit` (default to `0.75`: sequences with 25% of gaps)
+ - Removes all the sequences with a coverage (with respect to the number of columns/positions on the MSA) **less** than a `coveragelimit` (default to `0.75`)
  - Removes all the columns/position on the MSA with **more** than a `gaplimit` (default to `0.5`: 50% of gaps)
 """
 function gapstrip!(msa::AbstractMultipleSequenceAlignment, annotate::Bool=true;

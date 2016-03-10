@@ -1,6 +1,12 @@
 import  Base: zero, one, zeros, start, next, done, length, eltype,
         size, setindex!, getindex, similar, fill!, count #, print # , copy, deepcopy, fill!, getindex, setindex!
 
+"""
+`SequenceWeights` is an alias for `Union{ClusteringResult, AbstractVector}`.
+
+This is the type of the keyword argment `weight` of `count`, `probabilities` and derived functions.
+The type should define `getweight` to be useful in those functions.
+"""
 typealias SequenceWeights Union{ClusteringResult, AbstractVector} # AbstractVector because getweight(cl) returns a Vector
 
 # Counts and Pseudocounts
@@ -17,7 +23,8 @@ Common values of `λ` are:
 - `1 / p` : Perks prior (Perks, 1947) where `p` the number of parameters (i.e. residues, pairs of residues) to estimate. If `p` is the number of residues (`20` without counting gaps), this gives you `0.05`.
 - `sqrt(n) / p` : Minimax prior (Trybula, 1958) where `n` is the number of samples and `p` the number of parameters to estimate.  If the number of samples `n` is 400 (minimum number of sequence clusters for achieve good performance in Buslje et. al. 2009) for estimating 400 parameters (pairs of residues without counting gaps) this gives you `0.05`.
 - `0.5` : Jeffreys prior (Jeffreys, 1946).
-- `1` : Bayes-Laplace uniform prior, aka. Laplace smoothing."""
+- `1` : Bayes-Laplace uniform prior, aka. Laplace smoothing.
+"""
 immutable AdditiveSmoothing{T} <: Pseudocount{T}
   λ::T
 end
@@ -40,8 +47,10 @@ Gives access to the table. Use `Int()` for indexing with `Residue`s.
 """
 getindex(n::ResidueContingencyTables, i::Int)	= getindex(n.table, i)
 
-"""`setindex!(n::ResidueCount, v, i::Int)` set a value into the table, but doesn't update the marginals (and total).
-Use `Int()` for indexing with `Residues`. Use `update!` in order to calculate again the marginals (and total)."""
+"""
+`setindex!(n::ResidueCount, v, i::Int)` set a value into the table, but doesn't update the marginals (and total).
+Use `Int()` for indexing with `Residues`. Use `update!` in order to calculate again the marginals (and total).
+"""
 setindex!(n::ResidueContingencyTables, v, i::Int) = setindex!(n.table, v, i)
 
 #### Length & Size
@@ -134,6 +143,7 @@ function _tuple_without_index(index::Int, N::Int)
 	(used...)
 end
 
+"Updates the marginals values (and total value for `ResidueCount`) of a `ResidueContingencyTables`"
 function update!{T,UseGap}(n::ResidueCount{T,1,UseGap})
 	n.marginals[:] = n.table
 	n.total = sum(n.table)
@@ -193,6 +203,11 @@ for (dim, gap, margi_exp, total_exp) in [ (:1, :true,  :(pse.λ), :(pse.λ * 21)
 
 end
 
+"""
+`apply_pseudocount!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::AdditiveSmoothing{T})`
+
+Uses an instance of `AdditiveSmoothing` to efficiently fill with a constant value each element of the table.
+"""
 function apply_pseudocount!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::AdditiveSmoothing{T})
 	nres = nresidues(n)
 	margi_sum = pse.λ * (nres^(N-1))
@@ -272,6 +287,66 @@ function count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, weights, res::Abstr
   end
 end
 
+"""
+`count!` adds counts from vector of residues to a `ResidueCount` object.
+It can take a SequenceWeights object as second argument.
+
+```julia
+
+julia> using MIToS.Information
+
+julia> using MIToS.MSA
+
+julia> seq = Residue[ i for i in 1:20];
+
+julia> Ni = count(seq)
+20-element MIToS.Information.ResidueCount{Float64,1,false}:
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+ 1.0
+
+julia> count!(Ni, seq)
+20-element MIToS.Information.ResidueCount{Float64,1,false}:
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+ 2.0
+
+```
+"""
 count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, res::AbstractVector{Residue}...) = count!(n, NoClustering(), res...)
 
 #### Default counters
@@ -295,6 +370,13 @@ count{T}(pseudocount::AdditiveSmoothing{T}, res::AbstractVector{Residue}...; use
 
 ## Probabilities
 
+"""
+`ResidueProbability{T, N, UseGap}` is used to store residue probabilities.
+`N` is the dimensionality and should be an `Int`, e.g. 2 to store probabilities of residue pairs.
+`UseGap` is a `Bool`, `true` means that gap probabilities are stored in the position 21 of each dimension.
+
+- The field marginal is used for pre allocation of marginal sums.
+"""
 type ResidueProbability{T, N, UseGap} <: ResidueContingencyTables{T, N, UseGap}
   table::Array{T, N}
   marginals::Array{T, 2}
@@ -357,7 +439,8 @@ function _div!(array, value)
   array
 end
 
-"""```normalize!(p::ResidueProbability; updated::Bool=false)```
+"""
+`normalize!(p::ResidueProbability; updated::Bool=false)`
 
 This function makes the sum of the probabilities to be one.
 The sum is calculated using the `probabilities` field by default (It is assumed that the marginal are not updated).
@@ -407,6 +490,15 @@ end
 
 ### BLOSUM based pseudofrequencies
 
+"""
+`blosum_pseudofrequencies!(Gab::ResidueProbability{T, 2,false}, Pab::ResidueProbability{T, 2,false})`
+
+This function uses the conditional probability matrix `BLOSUM62_Pij` to fill a preallocated `Gab` with pseudo frequencies.
+`blosum_pseudofrequencies!` also needs the real frequencies/probabilities `Pab`.
+This observed probabilities are then used to estimate the pseudo frequencies.
+
+`Gab = Σcd  Pcd ⋅ BLOSUM62( a | c ) ⋅ BLOSUM62( b | d )`
+"""
 function blosum_pseudofrequencies!{T}(Gab::ResidueProbability{T, 2,false}, Pab::ResidueProbability{T, 2,false})
   @inbounds for a in 1:20, b in 1:20
     Gab[a,b] = zero(T)
@@ -423,6 +515,14 @@ end
 
 ### Apply pseudofrequencies
 
+"""
+`apply_pseudofrequencies!{T}(Pab::ResidueProbability{T, 2,false}, Gab::ResidueProbability{T, 2,false}, α, β)`
+
+Apply pseudofrequencies `Gab` over `Pab`, as weighted mean.
+Where α is the weight of the real frequencies `Pab` and β the weight of the pseudofrequencies.
+
+`Pab = (α ⋅ Pab + β ⋅ Gab )/(α + β)`
+"""
 function apply_pseudofrequencies!{T}(Pab::ResidueProbability{T, 2,false}, Gab::ResidueProbability{T, 2,false}, α, β)
 	if β == 0.0
 		return(Pab)
@@ -504,7 +604,8 @@ function delete_dimensions!{T,N,S,UseGap}(out::ResidueProbability{T, S, UseGap},
   out
 end
 
-"""```delete_dimensions(in::ResidueContingencyTables, dimensions::Int...)```
+"""
+`delete_dimensions(in::ResidueContingencyTables, dimensions::Int...)`
 
 This function creates a ResidueContingencyTables with the counts/probabilities on `in` after the deletion of `dimensions`.
 i.e. This is useful for getting Pxy from Pxyz.
