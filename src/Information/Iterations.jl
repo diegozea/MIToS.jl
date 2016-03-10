@@ -2,7 +2,7 @@
 # aln.msa' takes ~ 0.015 seconds in PF00085
 # Using aln.msa instead of aln in estimate_on_column_pairs is ~ 0.53 seconds faster for PF00085
 
-function estimateincolumns{T, TP, UseGap}(aln::Matrix{Residue}, use::Type{ResidueCount{T, 1, UseGap}}, measure::InformationMeasure{TP},
+function estimateincolumns{T, TP, UseGap}(aln::Matrix{Residue}, use::Type{ResidueCount{T, 1, UseGap}}, measure::AbstractMeasure{TP},
                                           pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}), weight::SequenceWeights=NoClustering())
   N = ResidueCount{T, 1, UseGap}()
   ncol = ncolumns(aln)
@@ -15,7 +15,7 @@ function estimateincolumns{T, TP, UseGap}(aln::Matrix{Residue}, use::Type{Residu
   scores
 end
 
-function estimateincolumns{T <: Real, TP, UseGap}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{TP, 1, UseGap}}, measure::InformationMeasure{TP},
+function estimateincolumns{T <: Real, TP, UseGap}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{TP, 1, UseGap}}, measure::AbstractMeasure{TP},
                                                   pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}), weight::SequenceWeights=NoClustering())
   N = ResidueCount{T, 1, UseGap}()
   P = ResidueProbability{TP, 1, UseGap}()

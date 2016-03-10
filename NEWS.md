@@ -15,6 +15,8 @@
 * *[breaking change]* All the MSA `...percentage` functions were renamed to `...fraction` and `percent...` functions now return real percentages (not fractions) values.
 Functions taking identity thresholds, now also take real percentages (values between 0.0 and 100.0).
 
+* `InformationMeasure` renamed to `AbstractMeasure`
+
 * New functions added to `MSA` module
 
   * `annotations`, `names`

@@ -33,7 +33,7 @@ module Information
   blosum_pseudofrequencies!, apply_pseudofrequencies!, probabilities,
   delete_dimensions!, delete_dimensions,
 
-  InformationMeasure, SymmetricMeasure, Entropy,
+  AbstractMeasure, SymmetricMeasure, Entropy,
   MutualInformation, MutualInformationOverEntropy,
   estimate, estimate_on_marginal,
   GapUnionPercentage, GapIntersectionPercentage,
