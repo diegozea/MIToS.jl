@@ -24,7 +24,7 @@ call{T}(::Type{Entropy{T}}) = Entropy(T(Base.e))
 function estimate{B, T, N, UseGap}(measure::Entropy{B}, p::ResidueProbability{T, N, UseGap})
   H = zero(B)
   for i in 1:length(p)
-    @inbounds pi = p[i]
+    @inbounds pi = B(p[i])
     if pi != 0.0
       H += pi * log(pi)
     end
@@ -33,7 +33,7 @@ function estimate{B, T, N, UseGap}(measure::Entropy{B}, p::ResidueProbability{T,
 end
 
 """
-`estimate_on_marginal(Entropy(base), p, marginal)`
+`estimate_on_marginal(Entropy{T}(base), p, marginal)`
 
 This function estimate the entropy H(X) if marginal is 1, H(Y) for 2, etc.
 The result type is determined by `base`.
@@ -41,7 +41,7 @@ The result type is determined by `base`.
 function estimate_on_marginal{B, T, N, UseGap}(measure::Entropy{B}, p::ResidueProbability{T, N, UseGap}, marginal::Int)
   H = zero(B)
   for i in 1:nresidues(p)
-    @inbounds pi = p.marginals[i, marginal]
+    @inbounds pi = B(p.marginals[i, marginal])
     if pi != 0.0
       H += pi * log(pi)
     end
@@ -52,7 +52,7 @@ end
 ## Estimate Entropy using ResidueCount
 
 """
-`estimate(Entropy(), n::ResidueCount [, base])`
+`estimate(Entropy{T}(base), n::ResidueCount)`
 
 It's the fastest option (you don't spend time on probability calculations).
 The result type is determined by the `base`.
@@ -61,7 +61,7 @@ function estimate{T}(measure::Entropy{T}, n::ResidueCount)
   H = zero(T)
   total = T(n.total)
   for i in 1:length(n)
-    @inbounds ni = n[i]
+    @inbounds ni = T(n[i])
     if ni != 0.0
       H += ni * log(ni/total)
     end
@@ -73,7 +73,7 @@ function estimate_on_marginal{T}(measure::Entropy{T}, n::ResidueCount, marginal:
   H = zero(T)
   total = T(n.total)
   for i in 1:nresidues(n)
-    @inbounds ni = n.marginals[i, marginal]
+    @inbounds ni = T(n.marginals[i, marginal])
     if ni != 0.0
       H += ni * log(ni/total)
     end
@@ -186,9 +186,9 @@ immutable GapUnionPercentage{T} <: SymmetricMeasure{T} end
 immutable GapIntersectionPercentage{T} <: SymmetricMeasure{T} end
 
 function estimate{B, T}(measure::GapIntersectionPercentage{B}, nxy::ResidueCount{T, 2, true})
-  100.0 * B(nxy[21, 21]) / B(sum(nxy))
+  B(100.0) * B(nxy[21, 21]) / B(sum(nxy))
 end
 
 function estimate{B, T}(measure::GapUnionPercentage{B}, nxy::ResidueCount{T, 2, true})
-  100.0 * B(nxy.marginals[21, 1] + nxy.marginals[21, 2] - nxy[21, 21]) / B(sum(nxy))
+  B(100.0) * B(nxy.marginals[21, 1] + nxy.marginals[21, 2] - nxy[21, 21]) / B(sum(nxy))
 end

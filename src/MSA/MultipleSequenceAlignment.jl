@@ -288,15 +288,11 @@ end
 residuefraction(x::AbstractArray{Residue},
                   dim::Int) = vec( mapslices(residuefraction, x, dim) )
 
-"""
-Coverage of the sequences with respect of the number of positions on the MSA
-"""
+"Coverage of the sequences with respect of the number of positions on the MSA"
 coverage(msa::Matrix{Residue}) = residuefraction(msa, 2)
 coverage(msa::AbstractMultipleSequenceAlignment) = coverage(msa.msa)
 
-"""
-Fraction of gaps per column/position on the MSA
-"""
+"Fraction of gaps per column/position on the MSA"
 columngapfraction(msa::Matrix{Residue}) = gapfraction(msa, 1)
 columngapfraction(msa::AbstractMultipleSequenceAlignment) = columngapfraction(msa.msa)
 

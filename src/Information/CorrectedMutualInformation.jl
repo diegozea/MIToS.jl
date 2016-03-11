@@ -38,6 +38,7 @@ Calculates a Z score and a corrected MI/MIp as described on **Busjle et. al. 200
 
 Argument, type, default value and descriptions:
 
+```
   - lambda      Float64   0.05    Low count value
   - clustering  Bool      true    Sequence clustering (Hobohm I)
   - threshold             62      Percent identity threshold for clustering
@@ -46,12 +47,14 @@ Argument, type, default value and descriptions:
   - usegap      Bool      false   Use gaps on statistics
   - samples     Int       100     Number of samples for Z-score
   - fixedgaps   Bool      true    Fix gaps positions for the random samples
-
+```
 
 This function returns:
 
+```
   - Z score
   - MI or MIp
+```
 """
 function buslje09(aln::Matrix{Residue}; kargs...)
   zscore, mi, used = _buslje09(aln; kargs...)
@@ -118,6 +121,7 @@ Calculates a Z score (ZBLMI) and a corrected MI/MIp as described on **Busjle et.
 
 Argument, type, default value and descriptions:
 
+```
   - beta        Float64   8.512   β for BLOSUM62 pseudo frequencies
   - lambda      Float64   0.0     Low count value
   - threshold             62      Percent identity threshold for sequence clustering (Hobohm I)
@@ -125,12 +129,14 @@ Argument, type, default value and descriptions:
   - apc         Bool      true    Use APC correction (MIp)
   - samples     Int       50      Number of samples for Z-score
   - fixedgaps   Bool      true    Fix gaps positions for the random samples
-
+```
 
 This function returns:
 
+```
   - Z score (ZBLMI)
   - MI or MIp using BLOSUM62 pseudo frequencies (BLMI/BLMIp)
+```
 """
 function BLMI(aln::Matrix{Residue}; kargs...)
   zscore, mi, used = _BLMI(aln; kargs...)
