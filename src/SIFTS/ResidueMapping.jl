@@ -129,7 +129,7 @@ function show(io::IO, res::SIFTSResidue)
   for dbname in [:UniProt, :Pfam, :NCBI, :PDB, :SCOP, :CATH]
     dbfield = getfield(res, dbname)
     if !isnull(dbfield)
-      println(io, "  ", dbname, ":")
+      println(io, "  ", dbname, " (Nullable) :")
       for f in fieldnames(get(dbfield))
         println(io, "    ", f, ": ",  getfield(get(dbfield), f))
       end
@@ -255,6 +255,7 @@ end
 # Find SIFTSResidue
 # -----------------
 
+"Returns `true` if the tests are successfully passed for that `DataBase` sub-type on that `SIFTSResidue`."
 function isobject{T <: DataBase}(res::SIFTSResidue, ::Type{T}, tests::AbstractTest...)
   dbfield = getfield(res, symbol(name(T)))
   if !isnull(dbfield)
@@ -293,7 +294,13 @@ function collectobjects{T <: DataBase}(vector::AbstractVector{SIFTSResidue}, ::T
   resize!(elements, n)
 end
 
-"Returns `nothing` if the DataBase to test or capture is null in the SIFTSResidue"
+"""
+`capture(res::SIFTSResidue, db_capture, field, db_test, tests...)`
+
+Takes a `SIFTSResidue`, a `db...` type and a `Symbol` with the name of the `field` to capture from that database.
+Returns a `Nullable` with the field content if the `tests` are passed over a determined database (`db_test`).
+The function Returns `nothing` if the DataBase to test or capture is null in the `SIFTSResidue`.
+"""
 function capture{C <: DataBase, T <: DataBase}(res::SIFTSResidue, db_capture::Type{C}, field::Symbol, db_test::Type{T}, tests::AbstractTest...)
   dbfield_capture = getfield(res, symbol(name(C)))
   dbfield_test = getfield(res, symbol(name(T)))
@@ -323,8 +330,12 @@ function guess_type{T <: DataBase}(collection::AbstractVector{SIFTSResidue}, ::T
   Any
 end
 
-"""Returns a vector of Nullables with the captures of the `field`s.
-Null if any test fails or the object hasn't the `field`."""
+"""
+`collectcaptures(vector::AbstractVector{SIFTSResidue}, db_capture, field, db_test, tests)`
+
+Calls the `capture` function and returns a vector of `Nullable`s with the captured `field`s.
+The element is null if any test fails or the object hasn't the `field`.
+"""
 function collectcaptures{C <: DataBase, T <: DataBase}(vector::AbstractVector{SIFTSResidue}, db_capture::Type{C}, field::Symbol, db_test::Type{T}, tests::AbstractTest...)
   Nullable{guess_type(vector, C, field)}[ capture(object, C, field, T, tests...) for object in vector ]
 end
