@@ -1,0 +1,1533 @@
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Information-API">Information API<a class="anchor-link" href="#Information-API">&#182;</a></h1><ul>
+<li><a href="#Types">Types</a><ul>
+<li><a href="#Pseudocounts">Pseudocounts</a></li>
+<li><a href="#Contingency-tables">Contingency tables</a></li>
+<li><a href="#Information-measures">Information-measures</a></li>
+<li><a href="#Imported-from-MIToS.MSA">Imported from MIToS.MSA</a></li>
+</ul>
+</li>
+<li><a href="#Constants">Constants</a></li>
+<li><a href="#Methods">Methods</a><ul>
+<li><a href="#Working-with-Contingency-tables">Working with Contingency tables</a></li>
+<li><a href="#Estimate">Estimate</a></li>
+<li><a href="#Measures">Measures</a></li>
+<li><a href="#Imported-from-Base">Imported from Base</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>INFO: Recompiling stale cache file /home/diego/.julia/lib/v0.4/MIToS.ji for module MIToS.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[2]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>The <code>Information</code> module of MIToS defines types and functions useful to calculate information measures (e.g. <em>Mutual Information</em> (MI) and <em>Entropy</em>) over a Multiple Sequence Alignment (MSA). This module was designed to count <code>Residue</code>s (defined in the <code>MSA</code> module) in special contingency tables (as fast as possible) and to derive probabilities from this counts. Also, includes methods for applying corrections to that tables, e.g. pseudocounts and pseudo frequencies. Finally, <code>Information</code> allows to use this probabilities and counts to estimate information measures and other frequency based values.</p>
+<p><strong>Features</strong></p>
+<ul>
+<li>Estimate multi dimensional frequencies and probabilities tables from sequences, MSAs, etc...</li>
+<li>Correction for small number of observations</li>
+<li>Correction for data redundancy on a MSA</li>
+<li>Estimate information measures</li>
+<li>Calculate corrected mutual information between residues</li>
+</ul>
+<div class="highlight"><pre><span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <strong>Julia help mode</strong>
+    </div>
+    <div class="panel-body">
+        <p>If you type <code>?</code> at the beginning of the Julia REPL line, you will enter in the Julia help mode. In this mode, Julia prints the help or <strong>documentation</strong> of the entered element. This is a nice way of getting information about MIToS functions, types, etc. from Julia.</p>
+    </div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h2 id="Types">Types<a class="anchor-link" href="#Types">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">SequenceWeights</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[3]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>SequenceWeights</code> is an alias for <code>Union{ClusteringResult, AbstractVector}</code>.</p>
+<p>This is the type of the keyword argment <code>weight</code> of <code>count</code>, <code>probabilities</code> and derived functions. The type should define <code>getweight</code> to be useful in those functions.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Pseudocounts">Pseudocounts<a class="anchor-link" href="#Pseudocounts">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">Docs</span><span class="o">.</span><span class="n">typesummary</span><span class="p">(</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">Pseudocount</span> <span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>WARNING: both DataArrays and StatsBase export &quot;autocor&quot;; uses of it in module DataFrames must be qualified
+WARNING: both DataArrays and StatsBase export &quot;inverse_rle&quot;; uses of it in module DataFrames must be qualified
+WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in module DataFrames must be qualified
+</pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt output_prompt">Out[4]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">abstract</span><span class="nc"> MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">Pseudocount</span><span class="p">{</span><span class="n">T</span><span class="o">&lt;:</span><span class="n">Real</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="kt">Any</span>
+</pre></div>
+<p><strong>Subtypes:</strong></p>
+<div class="highlight"><pre><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">AdditiveSmoothing</span><span class="p">{</span><span class="n">T</span><span class="o">&lt;:</span><span class="n">Real</span><span class="p">}</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">AdditiveSmoothing</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[5]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><strong>Additive Smoothing</strong> or fixed pseudocount  <code>λ</code>  for <code>ResidueCount</code> (in order to estimate probabilities when the number of samples is low).</p>
+<p>Common values of <code>λ</code> are:</p>
+<ul>
+<li><code>0</code> :  No cell frequency prior, gives you the maximum likelihood estimator.</li>
+<li><code>0.05</code> is the optimum value for <code>λ</code> found in Buslje et. al. 2009, similar results was obtained for <code>λ</code> in the range [0.025, 0.075].</li>
+<li><code>1 / p</code> : Perks prior (Perks, 1947) where <code>p</code> the number of parameters (i.e. residues, pairs of residues) to estimate. If <code>p</code> is the number of residues (<code>20</code> without counting gaps), this gives you <code>0.05</code>.</li>
+<li><code>sqrt(n) / p</code> : Minimax prior (Trybula, 1958) where <code>n</code> is the number of samples and <code>p</code> the number of parameters to estimate.  If the number of samples <code>n</code> is 400 (minimum number of sequence clusters for achieve good performance in Buslje et. al. 2009) for estimating 400 parameters (pairs of residues without counting gaps) this gives you <code>0.05</code>.</li>
+<li><code>0.5</code> : Jeffreys prior (Jeffreys, 1946).</li>
+<li><code>1</code> : Bayes-Laplace uniform prior, aka. Laplace smoothing.</li>
+</ul>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Contingency-tables">Contingency tables<a class="anchor-link" href="#Contingency-tables">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">Docs</span><span class="o">.</span><span class="n">typesummary</span><span class="p">(</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">ResidueContingencyTables</span> <span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[6]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">abstract</span><span class="nc"> MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">ResidueContingencyTables</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">UseGap</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">AbstractArray</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">}</span>
+</pre></div>
+<p><strong>Subtypes:</strong></p>
+<div class="highlight"><pre><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">ResidueCount</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">UseGap</span><span class="p">}</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">ResidueProbability</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">UseGap</span><span class="p">}</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">ResidueCount</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>ResidueCount{T, N, UseGap}</code> is used for counting residues in columns (or sequences) of an MSA. <code>N</code> is the dimensionality and should be an <code>Int</code>, i.e. 2 if 2 columns are used for counting pairs. <code>UseGap</code> is a <code>Bool</code>, <code>true</code> means that <strong>ResidueCount</strong> counts gaps in the position 21.</p>
+<ul>
+<li>The field marginal is used for pre allocation of marginal sums.</li>
+<li>The field total is used for storing the table sum.</li>
+</ul>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">ResidueProbability</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>ResidueProbability{T, N, UseGap}</code> is used to store residue probabilities. <code>N</code> is the dimensionality and should be an <code>Int</code>, e.g. 2 to store probabilities of residue pairs. <code>UseGap</code> is a <code>Bool</code>, <code>true</code> means that gap probabilities are stored in the position 21 of each dimension.</p>
+<ul>
+<li>The field marginal is used for pre allocation of marginal sums.</li>
+</ul>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Information-measures">Information measures<a class="anchor-link" href="#Information-measures">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">Docs</span><span class="o">.</span><span class="n">typesummary</span><span class="p">(</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">AbstractMeasure</span> <span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[9]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">abstract</span><span class="nc"> MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">AbstractMeasure</span><span class="p">{</span><span class="n">T</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="kt">Any</span>
+</pre></div>
+<p><strong>Subtypes:</strong></p>
+<div class="highlight"><pre><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">SymmetricMeasure</span><span class="p">{</span><span class="n">T</span><span class="p">}</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">Docs</span><span class="o">.</span><span class="n">typesummary</span><span class="p">(</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">SymmetricMeasure</span> <span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">abstract</span><span class="nc"> MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">SymmetricMeasure</span><span class="p">{</span><span class="n">T</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">AbstractMeasure</span><span class="p">{</span><span class="n">T</span><span class="p">}</span>
+</pre></div>
+<p><strong>Subtypes:</strong></p>
+<div class="highlight"><pre><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">Entropy</span><span class="p">{</span><span class="n">T</span><span class="p">}</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">GapIntersectionPercentage</span><span class="p">{</span><span class="n">T</span><span class="p">}</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">GapUnionPercentage</span><span class="p">{</span><span class="n">T</span><span class="p">}</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">MutualInformationOverEntropy</span><span class="p">{</span><span class="n">T</span><span class="p">}</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">MutualInformation</span><span class="p">{</span><span class="n">T</span><span class="p">}</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">Entropy</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[11]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Shannon entropy (H)</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">MutualInformation</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[12]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Mutual Information (MI)</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">MutualInformationOverEntropy</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Normalized Mutual Information (nMI) by Entropy.</p>
+<p><code>nMI(X, Y) = MI(X, Y) / H(X, Y)</code></p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">GapUnionPercentage</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[14]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>GapUnionPercentage</code></p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">GapIntersectionPercentage</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>GapIntersectionPercentage</code></p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Imported-from-MIToS.MSA">Imported from MIToS.MSA<a class="anchor-link" href="#Imported-from-MIToS.MSA">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">Raw</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Raw</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">Stockholm</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Stockholm</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">FASTA</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">FASTA</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h2 id="Constants">Constants<a class="anchor-link" href="#Constants">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">BLOSUM62_Pi</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>BLOSUM62 probabilities <em>P(aa)</em> for each residue. SUM:  0.9987</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">BLOSUM62_Pij</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[20]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Normalization is done row based. The firts row contains the <em>P(aa|A)</em> and so one...</p>
+<p><code>A      R      N      D      C      Q      E      G      H      I      L      K      M      F      P      S      T      W      Y      V</code></p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h2 id="Methods">Methods<a class="anchor-link" href="#Methods">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">APC</span><span class="o">!</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>APC (Dunn et. al. 2008)</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Working-with-Contingency-tables">Working with Contingency tables<a class="anchor-link" href="#Working-with-Contingency-tables">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">probabilities</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[22]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>probabilities(T, α, β, res1, res2, [weight])</code> use BLOSUM62 based pseudofrequencies. α is the weight of the evidence, and β the weight of the pseudofrequencies.</p>
+
+<pre><code>probabilities(res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())
+probabilities(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())</code></pre>
+<p><code>probabilities</code> creates a new ResidueProbability with the probabilities of residues, pairs of residues, etc. in the sequences/columns.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">count</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[23]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+
+<pre><code>count(p, itr) -&gt; Integer</code></pre>
+<p>Count the number of elements in <code>itr</code> for which predicate <code>p</code> returns <code>true</code>.</p>
+
+<pre><code>count(res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())
+count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, weight=NoClustering())</code></pre>
+<p><code>count</code> creates a new ResidueCount counting the number of residues, pairs of residues, etc. in the sequences/columns.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">count</span><span class="o">!</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[24]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>count!</code> adds counts from vector of residues to a <code>ResidueCount</code> object. It can take a SequenceWeights object as second argument.</p>
+<div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">seq</span> <span class="o">=</span> <span class="n">Residue</span><span class="p">[</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="p">:</span><span class="mi">20</span><span class="p">];</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">Ni</span> <span class="o">=</span> <span class="n">count</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+<span class="mi">20</span><span class="o">-</span><span class="n">element</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">ResidueCount</span><span class="p">{</span><span class="kt">Float64</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">false</span><span class="p">}:</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+ <span class="mf">1.0</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">count</span><span class="o">!</span><span class="p">(</span><span class="n">Ni</span><span class="p">,</span> <span class="n">seq</span><span class="p">)</span>
+<span class="mi">20</span><span class="o">-</span><span class="n">element</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">ResidueCount</span><span class="p">{</span><span class="kt">Float64</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">false</span><span class="p">}:</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+ <span class="mf">2.0</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">normalize</span><span class="o">!</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[25]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>normalize!(p::ResidueProbability; updated::Bool=false)</code></p>
+<p>This function makes the sum of the probabilities to be one. The sum is calculated using the <code>probabilities</code> field by default (It is assumed that the marginal are not updated). The marginals are updated in the normalization.</p>
+<p>If the marginals are updated, you can use <code>updated=true</code> for a faster normalization.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">nresidues</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[26]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><code>MIToS.Information.nresidues</code> is a generic <code>Function</code>.</p>
+<div class="highlight"><pre><span class="c"># 2 methods for generic function &quot;nresidues&quot;:</span>
+<span class="n">nresidues</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">}(</span><span class="n">n</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">ResidueContingencyTables</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">true</span><span class="p">})</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">Information</span><span class="o">/</span><span class="n">Probabilities</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">74</span>
+<span class="n">nresidues</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">}(</span><span class="n">n</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">ResidueContingencyTables</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">false</span><span class="p">})</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">Information</span><span class="o">/</span><span class="n">Probabilities</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">75</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">update</span><span class="o">!</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[27]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Updates the marginals values (and total value for <code>ResidueCount</code>) of a <code>ResidueContingencyTables</code></p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">apply_pseudocount</span><span class="o">!</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[28]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>apply_pseudocount!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::AdditiveSmoothing{T})</code></p>
+<p>Uses an instance of <code>AdditiveSmoothing</code> to efficiently fill with a constant value each element of the table.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">blosum_pseudofrequencies</span><span class="o">!</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[29]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>blosum_pseudofrequencies!(Gab::ResidueProbability{T, 2,false}, Pab::ResidueProbability{T, 2,false})</code></p>
+<p>This function uses the conditional probability matrix <code>BLOSUM62_Pij</code> to fill a preallocated <code>Gab</code> with pseudo frequencies. <code>blosum_pseudofrequencies!</code> also needs the real frequencies/probabilities <code>Pab</code>. This observed probabilities are then used to estimate the pseudo frequencies.</p>
+<p><code>Gab = Σcd  Pcd ⋅ BLOSUM62( a | c ) ⋅ BLOSUM62( b | d )</code></p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">apply_pseudofrequencies</span><span class="o">!</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[30]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>apply_pseudofrequencies!{T}(Pab::ResidueProbability{T, 2,false}, Gab::ResidueProbability{T, 2,false}, α, β)</code></p>
+<p>Apply pseudofrequencies <code>Gab</code> over <code>Pab</code>, as weighted mean. Where α is the weight of the real frequencies <code>Pab</code> and β the weight of the pseudofrequencies.</p>
+<p><code>Pab = (α ⋅ Pab + β ⋅ Gab )/(α + β)</code></p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">delete_dimensions</span><span class="o">!</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[31]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>delete_dimensions!(out::ResidueContingencyTables, in::ResidueContingencyTables, dimensions::Int...)</code></p>
+<p>This function fills a ResidueContingencyTables with the counts/probabilities on <code>in</code> after the deletion of <code>dimensions</code>. i.e. This is useful for getting Pxy from Pxyz.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">delete_dimensions</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[32]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>delete_dimensions(in::ResidueContingencyTables, dimensions::Int...)</code></p>
+<p>This function creates a ResidueContingencyTables with the counts/probabilities on <code>in</code> after the deletion of <code>dimensions</code>. i.e. This is useful for getting Pxy from Pxyz.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Estimate">Estimate<a class="anchor-link" href="#Estimate">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">estimate</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[33]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>estimate(MutualInformation(), pxy::ResidueCount [, base])</code></p>
+<p>Calculate Mutual Information from <code>ResidueCount</code>. The result type is determined by the <code>base</code>. It's the fastest option (you don't spend time on probability calculations).</p>
+<p><code>estimate(MutualInformation(), pxy::ResidueProbability [, base])</code></p>
+<p>Calculate Mutual Information from <code>ResidueProbability</code>. The result type is determined by <code>base</code>.</p>
+<p><code>estimate(Entropy{T}(base), n::ResidueCount)</code></p>
+<p>It's the fastest option (you don't spend time on probability calculations). The result type is determined by the <code>base</code>.</p>
+<p><code>estimate(Entropy(base), p)</code></p>
+<p><code>p</code> should be a <code>ResidueProbability</code> table. The result type is determined by <code>base</code>.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">estimate_on_marginal</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[34]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>estimate_on_marginal(Entropy{T}(base), p, marginal)</code></p>
+<p>This function estimate the entropy H(X) if marginal is 1, H(Y) for 2, etc. The result type is determined by <code>base</code>.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">estimateinsequences</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[35]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>This function <code>estimate</code> a <code>measure</code> over sequences or sequence pairs. It has the same arguments than <code>estimateincolumns</code>, look the documentation of the last.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[36]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">estimateincolumns</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[36]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>estimateincolumns(aln, [count,] use, [α, β,] measure, [pseudocount,] [weight,] [usediagonal, diagonalvalue])</code></p>
+<p>This function <code>estimate</code> a <code>AbstractMeasure</code> in columns or pair of columns of a MSA.</p>
+<ul>
+<li><code>aln</code> : This argument is mandatory and it should be a <code>Matrix{Residue}</code>. Use the function <code>getresidues</code> (from the MSA module) over a MSA object to get the needed matrix.</li>
+<li><code>count</code> : This argument is optional. It should be defined when <code>use</code> is a <code>ResidueProbability</code> object. It indicates the element type of the counting table.</li>
+<li><code>use</code> : This argument is mandatory and indicates the sub-type of <code>ResidueContingencyTables</code> used by <code>estimate</code> inside the function. If the table has one dimension (<code>N</code>=<code>1</code>), the occurrences/probabilities are counted for each sequence/column. If the table has two dimension (<code>N</code>=<code>2</code>), pairs of sequences/columns are used. The dimension <code>N</code> and the <code>UseGap</code> parameter of <code>Residueount{T, N, UseGap}</code> or <code>ResidueProbability{T, N, UseGap}</code> determines the output and behaviour of this functions. If <code>UseGap</code> is true, gaps are used in the estimations.</li>
+<li><code>α</code> : This argument is optional, and indicates the weight of real frequencies to apply BLOSUM62 based pseudo frequencies.</li>
+<li><code>β</code> : This argument is optional, and indicates the weight of BLOSUM62 based pseudo frequencies.</li>
+<li><code>measure</code> : This argument is mandatory and indicates the measure to be used by <code>estimate</code> inside the function.</li>
+<li><code>pseudocount</code> : This argument is optional. It should be an <code>AdditiveSmoothing</code> instance (default to zero).</li>
+<li><code>weight</code> : This argument is optional. It should be an instance of <code>ClusteringResult</code> or <code>AbstractVector</code> (vector of weights). Each sequence has weight 1 (<code>NoClustering()</code>) by default.</li>
+<li><code>usediagonal</code> : This functions return a <code>Vector</code> in the one dimensional case, or a <code>PairwiseListMatrix</code> in the bidimensional case. This argument only have sense in the bidimensional case and indicates if the list on the <code>PairwiseListMatrix</code> should include the diagonal (default to <code>true</code>).</li>
+<li><code>diagonalvalue</code> : This argument is optional (default to zero). Indicates the value of output diagonal elements.</li>
+</ul>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Measures">Measures<a class="anchor-link" href="#Measures">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">buslje09</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[37]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>This function takes a MSA or a file and a <code>Format</code> as first arguments. Calculates a Z score and a corrected MI/MIp as described on <strong>Busjle et. al. 2009</strong></p>
+<p>Argument, type, default value and descriptions:</p>
+
+<pre><code>  - lambda      Float64   0.05    Low count value
+  - clustering  Bool      true    Sequence clustering (Hobohm I)
+  - threshold             62      Percent identity threshold for clustering
+  - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation
+  - apc         Bool      true    Use APC correction (MIp)
+  - usegap      Bool      false   Use gaps on statistics
+  - samples     Int       100     Number of samples for Z-score
+  - fixedgaps   Bool      true    Fix gaps positions for the random samples</code></pre>
+<p>This function returns:</p>
+
+<pre><code>  - Z score
+  - MI or MIp</code></pre>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">BLMI</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[38]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>This function takes a MSA or a file and a <code>Format</code> as first arguments. Calculates a Z score (ZBLMI) and a corrected MI/MIp as described on <strong>Busjle et. al. 2009</strong> but using using BLOSUM62 pseudo frequencies instead of a fixed pseudocount.</p>
+<p>Argument, type, default value and descriptions:</p>
+
+<pre><code>  - beta        Float64   8.512   β for BLOSUM62 pseudo frequencies
+  - lambda      Float64   0.0     Low count value
+  - threshold             62      Percent identity threshold for sequence clustering (Hobohm I)
+  - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation
+  - apc         Bool      true    Use APC correction (MIp)
+  - samples     Int       50      Number of samples for Z-score
+  - fixedgaps   Bool      true    Fix gaps positions for the random samples</code></pre>
+<p>This function returns:</p>
+
+<pre><code>  - Z score (ZBLMI)
+  - MI or MIp using BLOSUM62 pseudo frequencies (BLMI/BLMIp)</code></pre>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">pairwisegapfraction</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[39]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>This function takes a MSA or a file and a <code>Format</code> as first arguments. Calculates the percentage of gaps on columns pairs (union and intersection) using sequence clustering (Hobohm I).</p>
+<p>Argument, type, default value and descriptions:</p>
+<ul>
+<li>clustering  Bool      true    Sequence clustering (Hobohm I)</li>
+<li>threshold             62      Percent identity threshold for sequence clustering (Hobohm I)</li>
+</ul>
+<p>This function returns:</p>
+<ul>
+<li>pairwise gap percentage (union)</li>
+<li>pairwise gap percentage (intersection)</li>
+</ul>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Imported-from-Base">Imported from Base<a class="anchor-link" href="#Imported-from-Base">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[40]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">fill</span><span class="o">!</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[40]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+
+<pre><code>fill!(A, x)</code></pre>
+<p>Fill array <code>A</code> with the value <code>x</code>. If <code>x</code> is an object reference, all elements will refer to the same object. <code>fill!(A, Foo())</code> will return <code>A</code> filled with the result of evaluating <code>Foo()</code> once.</p>
+<p><code>fill!{T, N, UseGap}(p::ResidueProbability{T, N, UseGap}, n::ResidueCount{T, N, UseGap}; updated::Bool=false)</code></p>
+<p>This function fills a preallocated <code>ResidueProbability</code> (<code>p</code>) with the probabilities calculated from <code>n</code> (<code>ResidueCount</code>). This function updates <code>n</code> unless <code>updated=true</code>.</p>
+<p>If <code>n</code> is updated, you can use <code>updated=true</code> for a faster calculation.</p>
+<p><code>fill!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::AdditiveSmoothing{T})</code> fills a preallocated <code>ResidueCount</code> (<code>p</code>) with the pseudocount (<code>pse</code>).</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+
+</div>
+</div>
+</div>

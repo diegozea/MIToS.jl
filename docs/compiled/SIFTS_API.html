@@ -1,0 +1,955 @@
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="PDB-API">PDB API<a class="anchor-link" href="#PDB-API">&#182;</a></h1><ul>
+<li><a href="#Types">Types</a><ul>
+<li><a href="#SIFTS">SIFTS</a></li>
+<li><a href="#Databases">Databases</a></li>
+<li><a href="#Formats">Formats</a></li>
+<li><a href="#Utils">Utils</a></li>
+</ul>
+</li>
+<li><a href="#Methods">Methods</a><ul>
+<li><a href="#Imported-from-MIToS.Utils">Imported from MIToS.Utils</a></li>
+<li><a href="#Imported-from-Base">Imported from Base</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[2]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>The <code>SIFTS</code> module of MIToS allows to obtain the residue-level mapping between databases stored in the SIFTS XML files. It makes easy to assign PDB residues to UniProt/Pfam positions. Given the fact that pairwise alignments can lead to misleading association between residues in both sequences, SIFTS offers  more reliable association between sequence and structure residue numbers.</p>
+<p><strong>Features</strong></p>
+<ul>
+<li>Download and parse SIFTS XML files</li>
+<li>Store residue-level mapping in Julia</li>
+<li>Easy generation of <code>Dict</code>s between residues numbers</li>
+</ul>
+<div class="highlight"><pre><span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <strong>Julia help mode</strong>
+    </div>
+    <div class="panel-body">
+        <p>If you type <code>?</code> at the beginning of the Julia REPL line, you will enter in the Julia help mode. In this mode, Julia prints the help or <strong>documentation</strong> of the entered element. This is a nice way of getting information about MIToS functions, types, etc. from Julia.</p>
+    </div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h2 id="Types">Types<a class="anchor-link" href="#Types">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">DataBase</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>WARNING: both DataArrays and StatsBase export &quot;autocor&quot;; uses of it in module DataFrames must be qualified
+WARNING: both DataArrays and StatsBase export &quot;inverse_rle&quot;; uses of it in module DataFrames must be qualified
+WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in module DataFrames must be qualified
+</pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt output_prompt">Out[3]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">abstract</span><span class="nc"> MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">DataBase</span> <span class="o">&lt;:</span> <span class="kt">Any</span>
+</pre></div>
+<p><strong>Subtypes:</strong></p>
+<div class="highlight"><pre><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbCATH</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbInterPro</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbNCBI</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbPDB</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbPDBe</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbPfam</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbSCOP</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbUniProt</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="SIFTS">SIFTS<a class="anchor-link" href="#SIFTS">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">SIFTSResidue</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[4]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">SIFTSResidue</span> <span class="o">&lt;:</span> <span class="kt">Any</span>
+</pre></div>
+<p><strong>Fields:</strong></p>
+<div class="highlight"><pre><span class="n">PDBe</span>     <span class="p">::</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbPDBe</span>
+<span class="n">UniProt</span>  <span class="p">::</span> <span class="n">Nullable</span><span class="p">{</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbUniProt</span><span class="p">}</span>
+<span class="n">Pfam</span>     <span class="p">::</span> <span class="n">Nullable</span><span class="p">{</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbPfam</span><span class="p">}</span>
+<span class="n">NCBI</span>     <span class="p">::</span> <span class="n">Nullable</span><span class="p">{</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbNCBI</span><span class="p">}</span>
+<span class="n">InterPro</span> <span class="p">::</span> <span class="n">Array</span><span class="p">{</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbInterPro</span><span class="p">,</span><span class="mi">1</span><span class="p">}</span>
+<span class="n">PDB</span>      <span class="p">::</span> <span class="n">Nullable</span><span class="p">{</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbPDB</span><span class="p">}</span>
+<span class="n">SCOP</span>     <span class="p">::</span> <span class="n">Nullable</span><span class="p">{</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbSCOP</span><span class="p">}</span>
+<span class="n">CATH</span>     <span class="p">::</span> <span class="n">Nullable</span><span class="p">{</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbCATH</span><span class="p">}</span>
+<span class="n">missing</span>  <span class="p">::</span> <span class="kt">Bool</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Databases">Databases<a class="anchor-link" href="#Databases">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbPDBe</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[5]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbPDBe</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">DataBase</span>
+</pre></div>
+<p><strong>Fields:</strong></p>
+<div class="highlight"><pre><span class="n">number</span> <span class="p">::</span> <span class="kt">Int64</span>
+<span class="n">name</span>   <span class="p">::</span> <span class="n">ASCIIString</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbInterPro</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[6]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbInterPro</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">DataBase</span>
+</pre></div>
+<p><strong>Fields:</strong></p>
+<div class="highlight"><pre><span class="n">id</span>       <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">number</span>   <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">name</span>     <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">evidence</span> <span class="p">::</span> <span class="n">ASCIIString</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbUniProt</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbUniProt</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">DataBase</span>
+</pre></div>
+<p><strong>Fields:</strong></p>
+<div class="highlight"><pre><span class="n">id</span>     <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">number</span> <span class="p">::</span> <span class="kt">Int64</span>
+<span class="n">name</span>   <span class="p">::</span> <span class="n">ASCIIString</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbPfam</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbPfam</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">DataBase</span>
+</pre></div>
+<p><strong>Fields:</strong></p>
+<div class="highlight"><pre><span class="n">id</span>     <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">number</span> <span class="p">::</span> <span class="kt">Int64</span>
+<span class="n">name</span>   <span class="p">::</span> <span class="n">ASCIIString</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbNCBI</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[9]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbNCBI</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">DataBase</span>
+</pre></div>
+<p><strong>Fields:</strong></p>
+<div class="highlight"><pre><span class="n">id</span>     <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">number</span> <span class="p">::</span> <span class="kt">Int64</span>
+<span class="n">name</span>   <span class="p">::</span> <span class="n">ASCIIString</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbPDB</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbPDB</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">DataBase</span>
+</pre></div>
+<p><strong>Fields:</strong></p>
+<div class="highlight"><pre><span class="n">id</span>     <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">number</span> <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">name</span>   <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">chain</span>  <span class="p">::</span> <span class="n">ASCIIString</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbCATH</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[11]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbCATH</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">DataBase</span>
+</pre></div>
+<p><strong>Fields:</strong></p>
+<div class="highlight"><pre><span class="n">id</span>     <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">number</span> <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">name</span>   <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">chain</span>  <span class="p">::</span> <span class="n">ASCIIString</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbSCOP</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[12]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">dbSCOP</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">DataBase</span>
+</pre></div>
+<p><strong>Fields:</strong></p>
+<div class="highlight"><pre><span class="n">id</span>     <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">number</span> <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">name</span>   <span class="p">::</span> <span class="n">ASCIIString</span>
+<span class="n">chain</span>  <span class="p">::</span> <span class="n">ASCIIString</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Formats">Formats<a class="anchor-link" href="#Formats">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">SIFTSXML</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">SIFTSXML</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Utils">Utils<a class="anchor-link" href="#Utils">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">Is</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[14]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Is</span><span class="p">{</span><span class="n">T</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span>
+</pre></div>
+<p><strong>Fields:</strong></p>
+<div class="highlight"><pre><span class="n">field</span> <span class="p">::</span> <span class="n">Symbol</span>
+<span class="n">value</span> <span class="p">::</span> <span class="n">T</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">Not</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Not</span><span class="p">{</span><span class="n">T</span><span class="o">&lt;:</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestOperation</span>
+</pre></div>
+<p><strong>Fields:</strong></p>
+<div class="highlight"><pre><span class="n">test</span> <span class="p">::</span> <span class="n">T</span><span class="o">&lt;:</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">In</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">In</span><span class="p">{</span><span class="n">T</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span>
+</pre></div>
+<p><strong>Fields:</strong></p>
+<div class="highlight"><pre><span class="n">field</span> <span class="p">::</span> <span class="n">Symbol</span>
+<span class="n">value</span> <span class="p">::</span> <span class="n">T</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h2 id="Methods">Methods<a class="anchor-link" href="#Methods">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">downloadsifts</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Download the gzipped SIFTS xml  for the <code>pdbcode</code>. The extension of the downloaded file is <code>.xml.gz</code> by default. The <code>filename</code> can be changed, but the <code>.gz</code> at the end is mandatory.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">siftsmapping</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Parses a SIFTS XML file and returns a <code>Dict</code> between residue numbers of two <code>DataBase</code>s  with the given identifiers. A <code>chain</code> could be specified ("all" by default). If <code>missings</code> is <code>true</code> (default) all the residues are used, even if they haven’t coordinates in the PDB file.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Imported-from-MIToS.Utils">Imported from MIToS.Utils<a class="anchor-link" href="#Imported-from-MIToS.Utils">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">capture</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Returns a <code>Nullable</code> of the <code>field</code>. The object is <code>null</code> if any test fails</p>
+<p>Returns <code>nothing</code> if the DataBase to test or capture is null in the SIFTSResidue</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">collectcaptures</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[20]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Returns a vector of Nullables with the captures of the <code>field</code>s. Null if any test fails or the object hasn't the <code>field</code>.</p>
+<p>Returns a vector of Nullables with the captures of the <code>field</code>s. Null if any test fails or the object hasn't the <code>field</code>.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">isobject</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Returns <code>true</code> if all the tests are satisfied</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">findobjects</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[22]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Returns a vector of the indexes for which <code>isobject</code> is true.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">collectobjects</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[23]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Returns a vector with the objects for which <code>isobject</code> is true given the Tests.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Imported-from-Base">Imported from Base<a class="anchor-link" href="#Imported-from-Base">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span><span class="o">.</span><span class="n">parse</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[24]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+
+<pre><code>parse(str, start; greedy=true, raise=true)</code></pre>
+<p>Parse the expression string and return an expression (which could later be passed to eval for execution). <code>start</code> is the index of the first character to start parsing. If <code>greedy</code> is <code>true</code> (default), <code>parse</code> will try to consume as much input as it can; otherwise, it will stop as soon as it has parsed a valid expression. Incomplete but otherwise syntactically valid expressions will return <code>Expr(:incomplete, "(error message)")</code>. If <code>raise</code> is <code>true</code> (default), syntax errors other than incomplete expressions will raise an error. If <code>raise</code> is <code>false</code>, <code>parse</code> will return an expression that will raise an error upon evaluation.</p>
+
+<pre><code>parse(str; raise=true)</code></pre>
+<p>Parse the expression string greedily, returning a single expression. An error is thrown if there are additional characters after the first expression. If <code>raise</code> is <code>true</code> (default), syntax errors will raise an error; otherwise, <code>parse</code> will return an expression that will raise an error upon evaluation.</p>
+
+<pre><code>parse(type, str, [base])</code></pre>
+<p>Parse a string as a number. If the type is an integer type, then a base can be specified (the default is 10). If the type is a floating point type, the string is parsed as a decimal floating point number. If the string does not contain a valid number, an error is raised.</p>
+
+<pre><code>parse(Colorant, desc)</code></pre>
+<p>Parse a color description.</p>
+<p>This parses subset of HTML/CSS color specifications. In particular, everything is supported but: "currentColor".</p>
+<p>It does support named colors (though it uses X11 named colors, which are slightly different than W3C named colors in some cases), "rgb()", "hsl()", "#RGB", and "#RRGGBB' syntax.</p>
+<p>Args: - <code>Colorant</code>: literal "Colorant" will parse according to the <code>desc</code> string (usually returning an <code>RGB</code>); any more specific choice will return a color of the specified type. - <code>desc</code>: A color name or description.</p>
+<p>Returns:   An <code>RGB{U8}</code> color, unless:     - "hsl(h,s,l)" was used, in which case an <code>HSL</code> color;     - "rgba(r,g,b,a)" was used, in which case an <code>RGBA</code> color;     - "hsla(h,s,l,a)" was used, in which case an <code>HSLA</code> color;     - a specific <code>Colorant</code> type was specified in the first argument</p>
+<p><code>parse(io::Union{IO, AbstractString}, format[, output; generatemapping::Bool=false, useidcoordinates::Bool=false, deletefullgaps::Bool=true ])</code></p>
+<p>The keyword argument <code>generatemapping</code> (<code>false</code> by default) indicates if the mapping of the sequences ("SeqMap") and columns ("ColMap") and the number of columns in the original MSA ("NCol") should be generated and saved in the annotations. If <code>useidcoordinates</code> is <code>true</code> (default: <code>false</code>) the sequence IDs of the form "ID/start-end" are parsed and used for determining the start and end positions when the mappings are generated. <code>deletefullgaps</code> (<code>true</code> by default) indicates if columns 100% gaps (generally inserts from a HMM) must be removed from the MSA. By default, the ambiguous or not standard residues are replaced by gaps (i.e. <code>J</code> for leucine or isoleucine). But, if the keyword argument <code>checkalphabet</code> is <code>true</code> (<code>false</code> by default), the sequences with residues that do not belong to the defined alphabet are deleted.</p>
+<p>Reads a text file of a PDB entry. Returns a list of PDBResidue (view MIToS.PDB.PDBResidues). Setting <code>chain</code>, <code>model</code>, <code>group</code>, <code>atomname</code> and <code>onlyheavy</code> values can be used to select of a subset of all residues. Group can be ATOM or HETATM. If not set, all residues are returned.</p>
+<p>Reads a LightXML.XMLDocument representing a pdb file. Returns a list of PDBResidue (view MIToS.PDB.PDBResidues). Setting <code>chain</code>, <code>model</code>, <code>group</code>, <code>atomname</code> and <code>onlyheavy</code> values can be used to select of a subset of all residues. If not set, all residues are returned.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
