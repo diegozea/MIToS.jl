@@ -9,6 +9,8 @@
 
 /docs/*.*
 !/docs/*.ipynb
+!/docs/docs.js
+!/docs/compile.jl
 
 # vim temporary files
 *~
