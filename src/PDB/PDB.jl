@@ -1,3 +1,19 @@
+"""
+The module `PDB` defines types and methods to work with protein structures inside Julia.
+It is useful to link structural and sequential information, and
+needed for measure the predictive performance at protein contact prediction of mutual information scores.
+
+**Features**
+
+- Read and parse PDF and PDBML files
+- Calculate distance and contacts between atoms or residues
+- Determine interaction between residues
+
+```julia
+
+using PDB
+```
+"""
 module PDB
 
   using LightXML

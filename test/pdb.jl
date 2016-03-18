@@ -78,6 +78,13 @@ let code = "1SSX"
   at = "HH22"
   @test sum( [ atom.occupancy for atom in @atoms pdbml model mo chain ch group gr residue re atom at ] ) == 1.0
 
+  print("""
+  @atom with residue wildcard
+  """)
+
+  # ATOM      2  CA  ALA A  15A     22.554  11.619   6.400  1.00  6.14           C
+  @test atoms(pdb, mo, ch, "ATOM", "*", r"C.+")[1].atom == "CA"
+
 end
 
 print("""

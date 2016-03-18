@@ -1,12 +1,15 @@
-"""Covalent radius in Å of each element from the Additional file 1 of PICCOLO [1].
+"""
+Covalent radius in Å of each element from the Additional file 1 of PICCOLO [1].
 Hydrogen was updated using the value on Table 2 from Cordero et. al. [2].
+
 1. Bickerton, G. R., Higueruelo, A. P., & Blundell, T. L. (2011).
 Comprehensive, atomic-level characterization of structurally
 characterized protein-protein interactions: the PICCOLO database.
 BMC bioinformatics, 12(1), 313.
 2. Cordero, B., Gómez, V., Platero-Prats, A. E., Revés, M.,
 Echeverría, J., Cremades, E., ... & Alvarez, S. (2008).
-Covalent radii revisited. Dalton Transactions, (21), 2832-2838."""
+Covalent radii revisited. Dalton Transactions, (21), 2832-2838.
+"""
 const covalentradius = Dict{ASCIIString,Float64}("C" => 0.77,
                                                  "N" => 0.70,
                                                  "O" => 0.66,
@@ -15,10 +18,13 @@ const covalentradius = Dict{ASCIIString,Float64}("C" => 0.77,
 
 const _3_letter_aa = ASCIIString[ "ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE", "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL" ]
 
-"""van der Waals radius in Å from the Additional file 1 of
-Bickerton, G. R., Higueruelo, A. P., & Blundell, T. L. (2011).
+"""
+van der Waals radius in Å from the Additional file 1 of Bickerton et. al. 2011
+
+- Bickerton, G. R., Higueruelo, A. P., & Blundell, T. L. (2011).
 Comprehensive, atomic-level characterization of structurally characterized protein-protein interactions: the PICCOLO database.
-BMC bioinformatics, 12(1), 313."""
+BMC bioinformatics, 12(1), 313.
+"""
 const vanderwaalsradius = Dict{Tuple{ASCIIString,ASCIIString},Float64}(("ALA","C") => 1.61,
 ("ALA","CA") => 1.88,
 ("ALA","CB") => 1.88,

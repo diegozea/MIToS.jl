@@ -36,7 +36,8 @@ length(res::PDBResidue) = length(res.atoms)
 
 distance(a::Coordinates, b::Coordinates) = sqrt((a.x - b.x)^2 + (a.y - b.y)^2 + (a.z - b.z)^2)
 
-contact(a::Coordinates, b::Coordinates, limit::AbstractFloat) = distance(a,b) <= limit ? true : false
+"distance(a,b) <= limit"
+contact(a::Coordinates, b::Coordinates, limit::AbstractFloat) = distance(a,b) <= limit
 
 #-------------------------------------------------------------------------------#
 vec(a::Coordinates) = Float64[a.x, a.y, a.z]
@@ -148,8 +149,8 @@ end
 
 function atoms(residue_list, model, chain, group, residue, atom)
   _is_wildcard(atom) ?
-    collect(Vector{PDBAtom}[ res.atoms for res in collectobjects(residue_list, _residues_tests(model, chain, group, residue)...) ]...) :
-    collect(Vector{PDBAtom}[ collectobjects(res.atoms, _test_stringfield(:atom, atom)) for res in collectobjects(residue_list, _residues_tests(model, chain, group, residue)...) ]...)
+    vcat(Vector{PDBAtom}[ res.atoms for res in residues(residue_list, model, chain, group, residue) ]...) :
+    vcat(Vector{PDBAtom}[ collectobjects(res.atoms, _test_stringfield(:atom, atom)) for res in residues(residue_list, model, chain, group, residue) ]...)
 end
 
 macro atoms(residue_list,
@@ -198,7 +199,7 @@ end
 function findCB(res::PDBResidue)
   N = length(res)
   indices = Array(Int,N)
-  atom = res.residueid.name == "GLY" ? "CA" : "CB"
+  atom = res.id.name == "GLY" ? "CA" : "CB"
   j = 0
   @inbounds for i in 1:N
     if res.atoms[i].atom == atom
