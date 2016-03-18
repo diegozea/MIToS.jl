@@ -1,0 +1,335 @@
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Quick-Example">Quick Example<a class="anchor-link" href="#Quick-Example">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In this simple demonstration, you will see how to calculate <strong>ZBLMIp</strong> (Z score of the corrected MIp using BLOSUM62 pseudo frequencies)for <a href="http://pfam.xfam.org/">Pfam<span class="fa fa-external-link" aria-hidden="true"></span></a> MSA from <a href="#MIToS-in-the-Julia-REPL">Julia REPL</a> or using a <a href="#MIToS-in-system-command-line">MIToS script in the system command line</a>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="MIToS-in-the-Julia-REPL">MIToS in the Julia REPL<a class="anchor-link" href="#MIToS-in-the-Julia-REPL">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If you load the <code>Pfam</code> module from <code>MIToS</code>, you will get access to a set of functions that work with Pfam MSAs. In this case, we are going to use it for download a <a href="https://en.wikipedia.org/wiki/Stockholm_format">Stockholm <span class="fa fa-external-link" aria-hidden="true"></span></a> MSA from the Pfam website and read it into Julia.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Pfam</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">pfam_file</span> <span class="o">=</span> <span class="n">downloadpfam</span><span class="p">(</span><span class="s">&quot;PF10660&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  6675  100  6675    0     0   5944      0  0:00:01  0:00:01 --:--:--  5949
+</pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt output_prompt">Out[4]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&quot;PF10660.stockholm.gz&quot;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">msa</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">pfam_file</span><span class="p">,</span> <span class="n">Stockholm</span><span class="p">,</span> <span class="n">generatemapping</span><span class="o">=</span><span class="n">true</span><span class="p">,</span> <span class="n">useidcoordinates</span><span class="o">=</span><span class="n">true</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[5]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>161x64 MIToS.MSA.AnnotatedMultipleSequenceAlignment:
+ -  -  -  -  -  -  L  L  Q  D  G  V  A  …  L  G  Q  K  V  -  -  -  -  -  -  -
+ -  -  -  -  -  -  -  -  -  -  -  -  -     A  Y  K  K  F  F  S  K  G  -  -  -
+ -  -  -  -  -  -  -  -  -  -  -  -  -     A  V  R  P  F  L  P  K  K  K  Q  Q
+ M  E  S  V  A  R  I  V  K  V  Q  L  P     A  V  R  P  F  L  P  K  K  K  Q  Q
+ M  E  S  I  A  R  V  I  K  V  Q  L  P     A  I  R  P  F  L  P  K  K  K  Q  Q
+ M  E  S  V  A  R  I  V  K  V  Q  L  P  …  A  V  R  P  F  F  P  K  K  K  Q  Q
+ -  -  -  -  -  -  -  -  -  -  -  -  -     A  Y  K  S  L  C  C  K  D  K  C  -
+ M  E  S  I  S  K  I  I  K  I  Q  L  P     T  I  R  P  F  L  P  K  K  K  K  Q
+ M  E  A  I  A  K  L  I  K  V  Q  L  P     T  Y  K  F  F  Q  P  K  A  -  -  -
+ M  N  V  L  Q  S  I  V  R  V  H  I  P     -  -  -  -  -  -  -  -  -  -  -  -
+ M  E  P  I  A  H  L  V  K  V  S  V  P  …  S  Y  R  A  F  C  P  R  -  -  -  -
+ -  -  -  -  -  -  -  -  -  -  -  -  -     A  Y  K  K  F  M  V  K  E  K  R  -
+ -  -  -  -  -  -  -  -  -  -  -  -  -     A  Y  K  K  F  F  S  K  D  K  C  -
+ ⋮              ⋮              ⋮        ⋱           ⋮              ⋮         
+ M  E  T  L  S  G  L  V  K  T  T  L  P     -  -  -  -  -  -  -  -  -  -  -  -
+ M  E  S  V  S  S  L  V  K  I  H  I  P  …  T  Y  R  T  I  K  P  K  Q  -  -  -
+ -  -  -  -  -  -  -  -  -  -  -  -  -     A  Y  K  K  I  L  S  K  D  K  C  -
+ M  Q  S  L  S  H  A  V  K  T  S  L  P     S  Y  Q  A  L  C  P  A  A  Q  R  -
+ M  E  P  I  S  H  L  V  K  S  S  L  P     A  Y  L  A  Y  C  P  A  A  R  -  -
+ -  -  S  I  S  A  I  L  S  L  S  L  P     A  I  R  P  F  L  P  K  K  K  Q  Q
+ -  -  -  -  -  -  -  -  -  -  -  -  -  …  A  Y  K  K  F  I  S  K  D  K  C  -
+ -  -  -  -  -  -  -  -  -  -  -  -  -     A  Y  K  K  F  Y  V  K  E  N  R  -
+ -  -  -  -  -  -  -  -  -  -  -  -  -     A  Y  K  R  F  Y  V  K  D  H  R  -
+ -  -  -  -  -  -  -  -  -  -  -  -  -     A  Y  K  K  F  Y  V  K  D  H  R  N
+ M  Y  F  V  S  N  V  V  K  V  T  I  P     S  Y  Q  T  I  -  -  -  -  -  -  -
+ M  E  P  I  S  H  L  V  K  S  S  L  P  …  A  Y  L  A  F  C  P  A  A  Q  C  -</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <strong>Generation of sequence and column mappings</strong>
+    </div>
+    <div class="panel-body">
+        <p>The keyword argument <code>generatemapping</code> of <code>read</code> allows to generate sequence and column mappings for the MSA. <em>Column mapping</em> is the map between of each column on the MSA object and the column number in the file. <em>Sequence mappings</em> will use the start and end coordinates in the sequence ids for enumerate each residue in the sequence if <code>useidcoordinates</code> is <code>true</code>.</p>
+    </div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>Information</code> module of <code>MIToS</code> has functions to calculate measures from the <a href="https://en.wikipedia.org/wiki/Information_theory">Information Theory<span class="fa fa-external-link" aria-hidden="true"></span></a>, such as Entropy and Mutual Information (MI), on a MSA. In this example, we will estimate covariation between columns of the MSA with a corrected MI that use the BLOSUM62 matrix for calculate pseudo frequencies (<code>BLMI</code>).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">ZBLMIp</span><span class="p">,</span> <span class="n">BLMIp</span> <span class="o">=</span> <span class="n">BLMI</span><span class="p">(</span><span class="n">msa</span><span class="p">)</span>
+
+<span class="n">ZBLMIp</span> <span class="c"># shows ZBLMIp scores</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>64x64 PairwiseListMatrices.PairwiseListMatrix{Float64,false}:
+ NaN            1.56262     0.239193  …   -1.17974    -0.622457    0.695333
+   1.56262    NaN           2.64115        1.16704     1.32713    -1.22019 
+   0.239193     2.64115   NaN              2.96858     1.39513    -3.21801 
+   0.835961    -0.456962    0.495683      -0.201893   -1.89052    -1.98134 
+   0.249354     2.17151     2.397         -0.792945   -2.87666    -3.90599 
+  -1.19825     -1.5252      2.53624   …    1.01085    -0.691987   -4.04071 
+   0.20842      2.22535     0.120801      -0.700507   -0.112798   -2.48018 
+   0.833349     0.097069    1.94286       -3.72233    -1.61278    -2.33391 
+   1.78692      1.04378    -1.71028        2.83256     1.29089    -2.09074 
+  -0.349539    -1.17072     1.01534        0.01366     1.39854    -4.43937 
+  -0.547949     2.33443    -0.273207  …    1.90971    -0.517314   -4.05952 
+   1.4914       1.77455    -1.1792         2.46771     0.932046   -1.20247 
+   2.0943      -0.405082    0.243714      -2.08763    -1.37484    -0.222933
+   ⋮                                  ⋱                                    
+  -0.724685    -0.921425    2.69126        1.44932     0.769455   -0.487522
+   0.0481902   -1.57116    -2.16681       -0.923719    0.629735    2.99909 
+  -1.32159      0.872023    3.12734       -1.59675    -2.78218     0.519065
+  -1.47853     -0.884435    0.234348  …    0.451821    1.33643     1.71634 
+  -1.24025      0.866529    1.61024       -1.15414    -0.832358   -3.63529 
+  -1.77163     -1.11848     2.02756        0.737751   -0.451622    2.20685 
+  -0.909804    -0.529833   -2.82596        2.50721     3.05442     1.36146 
+  -0.0351008    0.940607    0.345064       1.97096    -0.705832   -2.03795 
+  -1.10853     -0.938862    0.387233  …   -0.75831    -1.23159    -0.308462
+  -1.17974      1.16704     2.96858      NaN          -2.42898     1.64234 
+  -0.622457     1.32713     1.39513       -2.42898   NaN          -0.862004
+   0.695333    -1.22019    -3.21801        1.64234    -0.862004  NaN       </pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="MIToS-in-system-command-line">MIToS in system command line<a class="anchor-link" href="#MIToS-in-system-command-line">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Calculate ZBLMIp on the system shell is easy using the MIToS script called <code>BLMI.jl</code>. This script reads a MSA file, and writes a file with the same base name of the input but with the <code>.BLMI.csv</code> extension.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="p">;</span><span class="n">BLMI</span><span class="o">.</span><span class="n">jl</span> <span class="o">-</span><span class="n">f</span> <span class="n">PF14972</span><span class="o">.</span><span class="n">stockholm</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="p">;</span><span class="n">head</span> <span class="o">-</span><span class="mi">20</span> <span class="n">PF14972</span><span class="o">.</span><span class="n">stockholm</span><span class="o">.</span><span class="n">BLMI</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre># MIToS 0.1.1+ BLMI.jl 2016-02-26T02:21:07
+# used arguments:
+# 	list		nothing
+# 	format		stockholm
+# 	threshold		0.62
+# 	apc		true
+# 	maxgap		0.5
+# 	samples		50
+# 	file		PF14972.stockholm.gz
+# 	fixedgaps		true
+# 	beta		8.512
+i,j,ZBLMIp,BLMIp
+1,2,-.7004979287302624,-.10773158935175786
+1,3,-1.2705630050564432,-.14636730384499808
+1,4,.011154688282294722,-.004889231952564216
+1,5,-.2676871957834277,-.03250207598779911
+1,6,.7673531754724379,.041348234477362855
+1,7,-1.2539399615584093,-.14679683902400162
+1,8,.10805836461787835,-.022688091751868172
+1,9,-.46031183144933563,-.05100794737701467
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <strong>Julia shell mode</strong>
+    </div>
+    <div class="panel-body">
+        <p>A semicolon (<code>;</code>) next to Julia prompt, at the beginning of the line, enters the shell mode. This mode uses the system shell to execute system commands.</p>
+    </div>
+</div>
+</div>
+</div>
+</div>

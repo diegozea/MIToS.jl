@@ -1,0 +1,194 @@
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Installation">Installation<a class="anchor-link" href="#Installation">&#182;</a></h1><p>First you need the <a href="http://julialang.org/downloads/">current release of Julia<span class="fa fa-external-link" aria-hidden="true"></span></a> installed. The MIToS' stable version can be installed by typing on the Julia REPL:</p>
+<div class="highlight"><pre><span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;MIToS&quot;</span><span class="p">)</span>
+</pre></div>
+<p>If everything goes well with the installation, MIToS will be loaded without errors by typing:</p>
+<div class="highlight"><pre><span class="k">using</span> <span class="n">MIToS</span>
+</pre></div>
+<p>You can optionally do an exhaustive test of your installed version of MIToS with <code>Pkg.test</code> (it takes few seconds):</p>
+<div class="highlight"><pre><span class="n">Pkg</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="s">&quot;MIToS&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <strong>Ways to run Julia</strong>
+    </div>
+    <div class="panel-body">
+        <dl class="dl-horizontal">
+
+          <dt>
+              <a href="http://docs.julialang.org/en/stable/manual/getting-started/">
+                  Julia REPL
+                  <span class="fa fa-external-link" aria-hidden="true"></span>
+              </a>
+          </dt>
+          <dd>Built-in Julia command line. Start an Julia interactive session (REPL) by double-clicking the Julia executable or running <code>julia</code> from the system command line.</dd>
+
+          <dt>
+              <a href="https://www.juliabox.org/">
+                  JuliaBox
+                  <span class="fa fa-external-link" aria-hidden="true"></span>
+              </a>
+          </dt>
+          <dd>You can try Julia from your <em>web browser</em>. <em>No installation is required.</em></dd>
+
+          <dt>
+              <a href="https://github.com/JuliaLang/IJulia.jl">
+                  IJulia
+                  <span class="fa fa-external-link" aria-hidden="true"></span>
+              </a>
+          </dt>
+          <dd><em>Jupyter/IPython notebook</em> for Julia. It was used for generating the <em>this</em> documentation.</dd>
+
+          <dt>
+              <a href="http://junolab.org/">
+                  Juno
+                  <span class="fa fa-external-link" aria-hidden="true"></span>
+              </a>
+          </dt>
+          <dd>Integrated Development Environment (IDE).</dd>
+
+        </dl>
+    </div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Location-of-scripts">Location of scripts<a class="anchor-link" href="#Location-of-scripts">&#182;</a></h2><p>The MIToS’ scripts are located in the <code>MIToS/scripts</code> folder and can be runned from your system command line.<br>
+It’s possible to ask Julia for the location of the installed package using <code>Pkg.dir</code></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">joinpath</span><span class="p">(</span><span class="n">Pkg</span><span class="o">.</span><span class="n">dir</span><span class="p">(</span><span class="s">&quot;MIToS&quot;</span><span class="p">),</span> <span class="s">&quot;scripts&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[1]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&quot;/home/dzea/.julia/v0.4/MIToS/scripts&quot;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You might want to add this folder into your <code>PATH</code> to easily access MIToS’ scripts.</p>
+<h3 id="How-to-add-the-script-folder-to-PATH-in-Bash?">How to add the script folder to <code>PATH</code> in Bash?<a class="anchor-link" href="#How-to-add-the-script-folder-to-PATH-in-Bash?">&#182;</a></h3><p>You can do it by adding the path of the MIToS script folder into the <code>~/.bashrc</code> file:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">open</span><span class="p">(</span><span class="n">joinpath</span><span class="p">(</span><span class="n">homedir</span><span class="p">(),</span> <span class="s">&quot;.bashrc&quot;</span><span class="p">),</span> <span class="s">&quot;r+&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="n">fh</span>
+    <span class="n">path_to_scripts</span> <span class="o">=</span> <span class="n">joinpath</span><span class="p">(</span><span class="n">Pkg</span><span class="o">.</span><span class="n">dir</span><span class="p">(</span><span class="s">&quot;MIToS&quot;</span><span class="p">),</span> <span class="s">&quot;scripts&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">all</span><span class="p">(</span><span class="n">line</span> <span class="o">-&gt;</span> <span class="o">!</span><span class="n">contains</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">path_to_scripts</span><span class="p">),</span> <span class="n">eachline</span><span class="p">(</span><span class="n">fh</span><span class="p">))</span>
+        <span class="n">println</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="s">&quot;export PATH=</span><span class="se">\&quot;</span><span class="s">\</span><span class="si">$</span><span class="s">PATH:&quot;</span><span class="p">,</span> <span class="n">path_to_scripts</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="p">;</span><span class="n">tail</span> <span class="o">-</span><span class="mi">1</span> <span class="o">~/.</span><span class="n">bashrc</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>export PATH=&quot;$PATH:/home/dzea/.julia/v0.4/MIToS/scripts&quot;
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <strong>Julia shell mode</strong>
+    </div>
+    <div class="panel-body">
+        <p>A semicolon (<code>;</code>) next to Julia prompt, at the beginning of the line, enters the shell mode. This mode uses the system shell to execute system commands.</p>
+    </div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>

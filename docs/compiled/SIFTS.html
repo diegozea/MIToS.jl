@@ -1,0 +1,972 @@
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="SIFTS">SIFTS<a class="anchor-link" href="#SIFTS">&#182;</a></h1><p>The <code>SIFTS</code> module of MIToS allows to obtain the residue-level mapping between databases stored in the SIFTS XML files. It makes easy to assign PDB residues to UniProt/Pfam positions.<br>
+Given the fact that pairwise alignments can lead to misleading association between residues in both sequences, SIFTS offers  more reliable association between sequence and structure residue numbers.</p>
+<h2 id="Features">Features<a class="anchor-link" href="#Features">&#182;</a></h2><ul>
+<li>Download and parse SIFTS XML files</li>
+<li>Store residue-level mapping in Julia</li>
+<li>Easy generation of <code>Dict</code>s between residues numbers</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="c"># Truncate IJulia outputs at:</span>
+<span class="n">ENV</span><span class="p">[</span><span class="s">&quot;LINES&quot;</span><span class="p">]</span>   <span class="o">=</span> <span class="mi">15</span> 
+<span class="n">ENV</span><span class="p">[</span><span class="s">&quot;COLUMNS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Simplest-residue-level-mapping">Simplest residue-level mapping<a class="anchor-link" href="#Simplest-residue-level-mapping">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>INFO: Recompiling stale cache file /home/diego/.julia/lib/v0.4/MIToS.ji for module MIToS.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This module export the function <code>siftsmapping</code> to generate a <code>Dict</code> between residue numbers. This function takes 5 positional arguments. 1) The name of the SIFTS XML file to parse, 2) the source database 3) the source protein/structure identifier, 4) the destiny database and 5) the destiny protein/structure identifier. Optionally it’s possible to indicate a particular PDB <code>chain</code> and if <code>missings</code> will be used.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Databases should be indicated using an available sub-type of <code>DataBase</code>. Keys and values types will be depend on the residue number type in that database.</p>
+<table>
+<thead><tr>
+<th>Type <code>db...</code></th>
+<th>Database</th>
+<th>Residue number type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dbPDBe</code></td>
+<td><strong>PDBe</strong> (Protein Data Bank in Europe)</td>
+<td><code>Int</code></td>
+</tr>
+<tr>
+<td><code>dbInterPro</code></td>
+<td><strong>InterPro</strong></td>
+<td><code>ASCIIString</code></td>
+</tr>
+<tr>
+<td><code>dbUniProt</code></td>
+<td><strong>UniProt</strong></td>
+<td><code>Int</code></td>
+</tr>
+<tr>
+<td><code>dbPfam</code></td>
+<td><strong>Pfam</strong> (Protein families database)</td>
+<td><code>Int</code></td>
+</tr>
+<tr>
+<td><code>dbNCBI</code></td>
+<td><strong>NCBI</strong> (National Center for Biotechnology Information)</td>
+<td><code>Int</code></td>
+</tr>
+<tr>
+<td><code>dbPDB</code></td>
+<td><strong>PDB</strong> (Protein Data Bank)</td>
+<td><code>ASCIIString</code></td>
+</tr>
+<tr>
+<td><code>dbCATH</code></td>
+<td><strong>CATH</strong></td>
+<td><code>ASCIIString</code></td>
+</tr>
+<tr>
+<td><code>dbSCOP</code></td>
+<td><strong>SCOP</strong> (Structural Classification of Proteins)</td>
+<td><code>ASCIIString</code></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To download the XML SIFTS file of a determined PDB use the <code>downloadsifts</code> function.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">siftsfile</span> <span class="o">=</span> <span class="n">downloadsifts</span><span class="p">(</span><span class="s">&quot;1IVO&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 53644  100 53644    0     0   8324      0  0:00:06  0:00:06 --:--:-- 12663
+</pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt output_prompt">Out[3]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&quot;1ivo.xml.gz&quot;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The following example, shows the residue number mapping between <em>Pfam</em> and <em>PDB</em>. <em>Pfam</em> uses <em>UniProt</em> coordinates and <em>PDB</em> uses their own residue numbers with insertion codes. Note that <span class="text-warning">the `siftsmapping` function is case sensitive</span>, and that <span class="text-warning">SIFTS stores PDB identifiers using lowercase characters</span>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">siftsmap</span> <span class="o">=</span> <span class="n">siftsmapping</span><span class="p">(</span> <span class="n">siftsfile</span><span class="p">,</span> 
+                    <span class="n">dbPfam</span><span class="p">,</span> <span class="s">&quot;PF00757&quot;</span><span class="p">,</span> 
+                    <span class="n">dbPDB</span><span class="p">,</span> <span class="s">&quot;1ivo&quot;</span><span class="p">,</span> <span class="c"># SIFTS stores PDB identifiers in lowercase</span>
+                    <span class="n">chain</span><span class="o">=</span><span class="s">&quot;A&quot;</span><span class="p">,</span> <span class="c"># In this example we are only using the chain A of the PDB</span>
+                    <span class="n">missings</span><span class="o">=</span><span class="n">false</span><span class="p">)</span> <span class="c"># Residues without coordinates aren&#39;t used in the mapping</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[4]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Dict{Int64,ASCIIString} with 162 entries:
+  329 =&gt; &quot;305&quot;
+  210 =&gt; &quot;186&quot;
+  288 =&gt; &quot;264&quot;
+  241 =&gt; &quot;217&quot;
+  267 =&gt; &quot;243&quot;
+  306 =&gt; &quot;282&quot;
+  275 =&gt; &quot;251&quot;
+  197 =&gt; &quot;173&quot;
+  215 =&gt; &quot;191&quot;
+  181 =&gt; &quot;157&quot;
+  ⋮   =&gt; ⋮</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h2 id="Storing-residue-level-mapping">Storing residue-level mapping<a class="anchor-link" href="#Storing-residue-level-mapping">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If you need more than the residue number mapping between two databases, you could access all the residue-level cross references using the function <code>read</code> in the <code>SIFTSXML``Format</code> file. The <code>parse</code> function (and therefore the <code>read</code> function) for the <code>SIFTSXML</code> format, also takes the keyword arguments <code>chain</code> and <code>missings</code>. The <code>read</code>/<code>parse</code> function returns a <code>Vector</code> of <code>SIFTSResidue</code>s objects that stores the cross references between residues in each database.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">siftsresidues</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">siftsfile</span><span class="p">,</span> <span class="n">SIFTSXML</span><span class="p">,</span> <span class="n">chain</span><span class="o">=</span><span class="s">&quot;A&quot;</span><span class="p">,</span> <span class="n">missings</span><span class="o">=</span><span class="n">false</span><span class="p">)</span> <span class="c"># Array{SIFTSResidue,1}</span>
+
+<span class="n">residue_data</span> <span class="o">=</span> <span class="n">siftsresidues</span><span class="p">[</span><span class="mi">300</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>SIFTSResidue
+  PDBe:
+    number: 301
+    name: LYS
+  UniProt(Nullable) :
+    id: P00533
+    number: 325
+    name: K
+  Pfam(Nullable) :
+    id: PF00757
+    number: 325
+    name: K
+  NCBI(Nullable) :
+    id: 9606
+    number: 325
+    name: K
+  PDB(Nullable) :
+    id: 1ivo
+    number: 301
+    name: LYS
+    chain: A
+  SCOP(Nullable) :
+    id: 76847
+    number: 301
+    name: LYS
+    chain: A
+  CATH(Nullable) :
+    id: 2.10.220.10
+    number: 301
+    name: LYS
+    chain: A
+    InterPro: [MIToS.SIFTS.dbInterPro(&quot;IPR009030&quot;,&quot;325&quot;,&quot;K&quot;,&quot;SSF57184&quot;)]
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You are free to access the <code>SIFTSResidue</code> fields in order to get the desired information. <code>SIFTSResidue</code> objects contain <code>db...</code> objects (sub-types of <code>DataBase</code>), with the cross referenced information. You should note that, except for the <code>PDBe</code> and <code>InterPro</code> fields, the fields are <code>Nullable</code>s objects so, you need to use the <code>get</code> function to access the <code>db...</code> object. For example, getting the UniProt residue name (one letter code of the amino acid) would be:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">get</span><span class="p">(</span><span class="n">residue_data</span><span class="o">.</span><span class="n">UniProt</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&quot;K&quot;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>But you don't need the <code>get</code>function to access the three letter code of the residue in <code>PDBe</code></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">residue_data</span><span class="o">.</span><span class="n">PDBe</span><span class="o">.</span><span class="n">name</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&quot;LYS&quot;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>SIFTSResidue</code> also store information about if that residue is <code>missing</code> in the PDB structure:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">residue_data</span><span class="o">.</span><span class="n">missing</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>false</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Accessing-residue-level-cross-references">Accessing residue-level cross references<a class="anchor-link" href="#Accessing-residue-level-cross-references">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To easily ask for information to the <code>Vector{SIFTSResidue}</code> use the following functions and the tests: <code>Is</code>, <code>In</code> and/or <code>Not</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="capture"><code>capture</code><a class="anchor-link" href="#capture">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Takes a <code>SIFTSResidue</code>, a <code>db...</code> type and a <code>Symbol</code> with the name of the field to capture from that database. Returns a <code>Nullable</code> with the field content if the test are passed over a determined database.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="c"># Captures the residue name in UniProt if the residue number in PDB is &quot;301&quot;</span>
+<span class="n">capture</span><span class="p">(</span><span class="n">residue_data</span><span class="p">,</span> <span class="n">dbUniProt</span><span class="p">,</span> <span class="p">:</span><span class="n">name</span><span class="p">,</span> <span class="n">dbPDB</span><span class="p">,</span> <span class="n">Is</span><span class="p">(:</span><span class="n">number</span><span class="p">,</span> <span class="s">&quot;301&quot;</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[32]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Nullable(&quot;K&quot;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="collectcaptures"><code>collectcaptures</code><a class="anchor-link" href="#collectcaptures">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Returns a vector of <code>Nullable</code>s with the <code>capture</code>s of the <code>field</code>s. The element is null if any test fails or the object hasn't the <code>field</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="c"># Captures PDB residue numbers if the Pfam id is &quot;PF00757&quot;</span>
+<span class="n">captures</span> <span class="o">=</span> <span class="n">collectcaptures</span><span class="p">(</span><span class="n">siftsresidues</span><span class="p">,</span> <span class="n">dbPDB</span><span class="p">,</span> <span class="p">:</span><span class="n">number</span><span class="p">,</span> <span class="n">dbPfam</span><span class="p">,</span> <span class="n">Is</span><span class="p">(:</span><span class="n">id</span><span class="p">,</span> <span class="s">&quot;PF00757&quot;</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[37]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>511-element Array{Nullable{ASCIIString},1}:
+ Nullable{ASCIIString}()
+ Nullable{ASCIIString}()
+ Nullable{ASCIIString}()
+ Nullable{ASCIIString}()
+ Nullable{ASCIIString}()
+ ⋮                      
+ Nullable{ASCIIString}()
+ Nullable{ASCIIString}()
+ Nullable{ASCIIString}()
+ Nullable{ASCIIString}()
+ Nullable{ASCIIString}()</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">captures</span><span class="p">[</span> <span class="p">[</span><span class="o">!</span><span class="n">isnull</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="k">for</span> <span class="n">res</span> <span class="k">in</span> <span class="n">captures</span><span class="p">]</span> <span class="p">]</span> <span class="c"># Selects not null elements</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[38]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>162-element Array{Nullable{ASCIIString},1}:
+ Nullable(&quot;153&quot;)
+ Nullable(&quot;154&quot;)
+ Nullable(&quot;155&quot;)
+ Nullable(&quot;156&quot;)
+ Nullable(&quot;157&quot;)
+ ⋮              
+ Nullable(&quot;310&quot;)
+ Nullable(&quot;311&quot;)
+ Nullable(&quot;312&quot;)
+ Nullable(&quot;313&quot;)
+ Nullable(&quot;314&quot;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="isobject"><code>isobject</code><a class="anchor-link" href="#isobject">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Returns <code>true</code> if the tests are successfully passed for that <code>DataBase</code> sub-type on that <code>SIFTSResidue</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="c"># Is it a basic amino acid?</span>
+<span class="c"># Is the UniProt residue name in the list [&quot;H&quot;, &quot;K&quot;, &quot;R&quot;]</span>
+<span class="n">isobject</span><span class="p">(</span><span class="n">residue_data</span><span class="p">,</span> <span class="n">dbUniProt</span><span class="p">,</span> <span class="n">SIFTS</span><span class="o">.</span><span class="n">In</span><span class="p">(:</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;H&quot;</span><span class="p">,</span> <span class="s">&quot;K&quot;</span><span class="p">,</span> <span class="s">&quot;R&quot;</span><span class="p">]))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[42]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>true</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="findobjects"><code>findobjects</code><a class="anchor-link" href="#findobjects">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Returns a vector of the indexes for which <code>isobject</code> is <code>true</code> in the input vector.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[49]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="c"># Which of the residues are basic?</span>
+<span class="c"># Which of the residues have UniProt residue names in the list [&quot;H&quot;, &quot;K&quot;, &quot;R&quot;]?</span>
+<span class="n">indexes</span> <span class="o">=</span> <span class="n">findobjects</span><span class="p">(</span><span class="n">siftsresidues</span><span class="p">,</span> <span class="n">dbUniProt</span><span class="p">,</span> <span class="n">SIFTS</span><span class="o">.</span><span class="n">In</span><span class="p">(:</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;H&quot;</span><span class="p">,</span> <span class="s">&quot;K&quot;</span><span class="p">,</span> <span class="s">&quot;R&quot;</span><span class="p">]))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[49]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>69-element Array{Int64,1}:
+   3
+   4
+  12
+  22
+  28
+   ⋮
+ 482
+ 496
+ 502
+ 506
+ 508</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[52]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="p">[</span> <span class="n">get</span><span class="p">(</span><span class="n">siftsresidues</span><span class="p">[</span> <span class="n">idx</span> <span class="p">]</span><span class="o">.</span><span class="n">UniProt</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="k">in</span> <span class="n">indexes</span> <span class="p">]</span> <span class="c"># UniProt data of the basic residues</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[52]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>69-element Array{Any,1}:
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;,28,&quot;K&quot;) 
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;,29,&quot;K&quot;) 
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;,37,&quot;K&quot;) 
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;,47,&quot;H&quot;) 
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;,53,&quot;R&quot;) 
+ ⋮                                      
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;,507,&quot;H&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;,521,&quot;R&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;,527,&quot;R&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;,531,&quot;R&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;,533,&quot;R&quot;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="collectobjects"><code>collectobjects</code><a class="anchor-link" href="#collectobjects">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Returns a vector with the objects for which <code>isobject</code> is <code>true</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[58]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="c"># Collect SIFTSResidues with UniProt names in [&quot;H&quot;, &quot;K&quot;, &quot;R&quot;]</span>
+<span class="n">basicresidues</span> <span class="o">=</span> <span class="n">collectobjects</span><span class="p">(</span><span class="n">siftsresidues</span><span class="p">,</span> <span class="n">dbUniProt</span><span class="p">,</span> <span class="n">SIFTS</span><span class="o">.</span><span class="n">In</span><span class="p">(:</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;H&quot;</span><span class="p">,</span> <span class="s">&quot;K&quot;</span><span class="p">,</span> <span class="s">&quot;R&quot;</span><span class="p">]))</span>
+
+<span class="n">get</span><span class="p">(</span><span class="n">basicresidues</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">UniProt</span><span class="p">)</span> <span class="c"># UniProt data of the first basic residue</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[58]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>MIToS.SIFTS.dbUniProt(&quot;P00533&quot;,28,&quot;K&quot;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h4 id="Example:-Which-residues-are-missing-in-the-PDB-structure">Example: Which residues are missing in the PDB structure<a class="anchor-link" href="#Example:-Which-residues-are-missing-in-the-PDB-structure">&#182;</a></h4><p>Given that <code>SIFTSResidue</code> objects store a <code>missing</code> residue flag, it’s easy to get a vector where there is a <code>true</code> value if the residue is missing in the structure.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[80]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">sifts_1ivo</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">siftsfile</span><span class="p">,</span> <span class="n">SIFTSXML</span><span class="p">,</span> <span class="n">chain</span><span class="o">=</span><span class="s">&quot;A&quot;</span><span class="p">)</span> <span class="c"># Array{SIFTSResidue,1} of the 1IVO chain A</span>
+
+<span class="p">[</span><span class="n">res</span><span class="o">.</span><span class="n">missing</span> <span class="k">for</span> <span class="n">res</span> <span class="k">in</span> <span class="n">sifts_1ivo</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[80]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>622-element Array{Any,1}:
+  true
+ false
+ false
+ false
+ false
+     ⋮
+  true
+  true
+  true
+  true
+  true</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>However, if you need to filter using other conditions, you’ll find useful the <code>isobject</code> function. In this example, we are going to ask for the <em>UniProt id</em> (to avoid problems with fragments, tags or chimeric/fusion proteins). We are also using <code>isobject</code> to select an specific PDB chain.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[95]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">file_1jqz</span> <span class="o">=</span> <span class="n">downloadsifts</span><span class="p">(</span><span class="s">&quot;1JQZ&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 20705  100 20705    0     0   4116      0  0:00:05  0:00:05 --:--:--  5413
+</pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt output_prompt">Out[95]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&quot;1jqz.xml.gz&quot;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[96]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">sifts_1jqz</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">file_1jqz</span><span class="p">,</span> <span class="n">SIFTSXML</span><span class="p">)</span> <span class="c"># It has an amino terminal his tag</span>
+
+<span class="n">missings</span> <span class="o">=</span> <span class="p">[</span> <span class="n">isobject</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">dbUniProt</span><span class="p">,</span> <span class="n">Is</span><span class="p">(:</span><span class="n">id</span><span class="p">,</span> <span class="s">&quot;P05230&quot;</span><span class="p">))</span> <span class="o">&amp;</span> 
+             <span class="n">isobject</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">dbPDB</span><span class="p">,</span> <span class="n">Is</span><span class="p">(:</span><span class="n">chain</span><span class="p">,</span> <span class="s">&quot;A&quot;</span><span class="p">))</span> <span class="o">&amp;</span> 
+             <span class="n">res</span><span class="o">.</span><span class="n">missing</span> <span class="k">for</span> <span class="n">res</span> <span class="k">in</span> <span class="n">sifts_1jqz</span>             <span class="p">]</span>
+
+<span class="n">println</span><span class="p">(</span><span class="s">&quot;There are only &quot;</span><span class="p">,</span> <span class="n">sum</span><span class="p">(</span><span class="n">missings</span><span class="p">),</span> <span class="s">&quot; missing residues in the chain A, associated to UniProt P05230&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>There are only 3 missing residues in the chain A, associated to UniProt P05230
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[97]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">println</span><span class="p">(</span><span class="s">&quot;But there are &quot;</span><span class="p">,</span> <span class="n">sum</span><span class="p">([</span> <span class="n">res</span><span class="o">.</span><span class="n">missing</span> <span class="k">for</span> <span class="n">res</span> <span class="k">in</span> <span class="n">sifts_1jqz</span> <span class="p">]),</span> <span class="s">&quot; missing residues in the PDB file.&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>But there are 10 missing residues in the PDB file.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
