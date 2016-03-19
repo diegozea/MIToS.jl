@@ -6,6 +6,8 @@ var pages = {
             {
                 ipynb : "Quick_example",
             },
+        ],
+    modules : [
             {
 			    ipynb : "MSA",
             },
