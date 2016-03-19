@@ -1,0 +1,23 @@
+.lvl1{
+  padding-left: 0px;
+}
+
+.lvl2{
+  padding-left: 20px;
+}
+
+.lvl3{
+  padding-left: 40px;
+}
+
+.title{
+  padding-bottom: 20px;
+}
+
+.prompt{
+  display: none;
+}
+
+.output_stderr{
+  display: none;
+}
