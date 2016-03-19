@@ -5,7 +5,7 @@ var pages = {
             },
             {
                 ipynb : "Quick_example",
-            },
+            }
         ],
     modules : [
             {
@@ -35,5 +35,5 @@ var pages = {
                 ipynb : "PDB_API",
 		    }
         ]
-    }
+    };
 
