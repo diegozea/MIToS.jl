@@ -21,3 +21,7 @@
 .output_stderr{
   display: none;
 }
+
+body{
+  padding-top: 70px;
+}

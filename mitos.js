@@ -16,7 +16,7 @@ $(document).ready(function(){
         $("#includedContent").load(direction);
   };
 
-  fillcontent("https://cdn.rawgit.com/diegozea/MIToS.jl/master/docs/compiled/Quick_example.html");
+  fillcontent("home.html");
 
   $(".link").click(function(){
 

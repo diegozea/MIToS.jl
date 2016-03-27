@@ -1,7 +1,7 @@
 <html>
 <head>
 
-    <!-- IPYTHON -->
+<!-- IPYTHON -->
 
 <style type="text/css">
 /*!
@@ -149,7 +149,7 @@ div#notebook {
     </script>
     <!-- End of mathjax configuration -->
 
-    <!-- END IPYTHON -->
+<!-- END IPYTHON -->
 
   <script src="js/jquery-2.1.4.min.js"></script>
   <script src="js/handlebars-v3.0.3.js"></script>
@@ -163,12 +163,39 @@ div#notebook {
 
 </head>
 <body>
-    <div class="container">
+
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="link navbar-brand" href="#" data-src="home.html">MIToS</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="#">Modules</a></li>
+        <li><a href="#">Scripts</a></li>
+        <li><a href="#">Cookbook</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+          <li><a href="https://github.com/diegozea/MIToS.jl"><i class="fa fa-github fa-lg"></i> GitHub</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<div class="container">
 
       <div class="row">
 
         <div class="col-md-10" id="includedContent"> <!-- Content column -->
-          <h1> MIToS </h1>
         </div>
 
         <div class="col-md-2 well" id="NavCol"> <!-- Navegation Column -->
