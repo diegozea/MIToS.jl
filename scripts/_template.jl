@@ -1,9 +1,9 @@
 #!/usr/bin/env julia
 
-using MIToS.Utils.Commandline
+using MIToS.Utils.Scripts
 
 Args = parse_commandline(
-# TO DO -----------------------------------------------------------------------
+    # TO DO ----------------------------------------------------------------------
     ["--arg", "-a"],
     Dict(
         :help => "Argument",
@@ -13,7 +13,7 @@ Args = parse_commandline(
     # Keywords...
     description="Made with MIToS",
     output=".mitos."
-# -----------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------
     )
 
 set_parallel(Args["parallel"])
@@ -21,29 +21,24 @@ set_parallel(Args["parallel"])
 @everywhere begin
 
     const args = remotecall_fetch(1,()->Args)
-    const file = args["FILE"]
-    const list = args["list"]
-    const output = args["output"]
 
-    # TO DO -----------------------------------------------------------------------
+    import MIToS.Utils.Scripts: script
+
+    # TO DO ----------------------------------------------------------------------
     using MIToS
-    # -----------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------
 
-    function main(input) # input must be a file or STDIN from FILE (call_main)
-        fh_out = open_output(input, Main.output)
-        try
-            # TO DO -----------------------------------------------------------------------
-            arg_one = args["arg"]
-            println(fh_out, "RUN : $arg_one : $input")
-            # -----------------------------------------------------------------------------
-        catch err
-            println("ERROR: ", input)
-            println(err)
-        finally
-            close(fh_out)
-        end
+    function script(input::Union{Base.LibuvStream,  AbstractString},
+                    args,
+                    fh_out::Union{Base.LibuvStream, IO})
+        # TO DO ------------------------------------------------------------------
+        arg_one = args["arg"]
+        println(fh_out, "RUN : $arg_one")
+        println("$input : ")
+        println(readall(input))
+        # ------------------------------------------------------------------------
     end
 
 end
 
-runfun(main, file, list)
+runscript(args)

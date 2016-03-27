@@ -1,127 +1,103 @@
 #!/usr/bin/env julia
 
-using ArgParse
+using MIToS.Utils.Scripts
 
-import MIToS.PDB
-import GZip
-@everywhere using MIToS.PDB
-@everywhere using GZip
+Args = parse_commandline(
+    # TO DO ----------------------------------------------------------------------
+    ["--distance", "-d"],
+    Dict(
+        :help => "The distance to be calculated, options: All, Heavy, CA, CB",
+        :arg_type => ASCIIString,
+        :default => "All"
+    ),
+    ["--format", "-f"],
+    Dict(
+        :help => "Format of the PDB file: It should be PDBFile or PDBML",
+        :arg_type => ASCIIString,
+        :default => "PDBFile"
+    ),
+    ["--model", "-m"],
+    Dict(
+        :help => "The model to be used, * for all",
+        :arg_type => ASCIIString,
+        :default => "1"
+    ),
+    ["--chain", "-c"],
+    Dict(
+        :help => "The chain to be used, * for all",
+        :arg_type => ASCIIString,
+        :default => "*"
+    ),
+    ["--group", "-g"],
+    Dict(
+        :help => "Group of atoms to be used, should be ATOM, HETATM or * for all",
+        :arg_type => ASCIIString,
+        :default => "*"
+    ),
+    ["--intra", "-i"],
+    Dict(
+        :help => "Only intra chain distances",
+        :action => :store_false
+    ),
+    # Keywords...
+    description="""
+    Calculates residues distance and writes them into a *.distances.csv.gz gzipped file.
+    """,
+    output=".distances.csv.gz"
+    # ----------------------------------------------------------------------------
+    )
 
-function parse_commandline()
-    s = ArgParseSettings(description = "Calculates residues distance and writes them into a *.distances.csv file.",
-                        version = "MIToS $(Pkg.installed("MIToS"))",
-                        add_version = true)
+set_parallel(Args["parallel"])
 
-    @add_arg_table s begin
-        "--file", "-f"
-            help = "Input PDB file"
-        "--list", "-l"
-            help = "File with a list of input PDB files"
-        "--distance", "-d"
-            help = "The distance to be calculated, options: All, Heavy, CA, CB"
-            arg_type = ASCIIString
-            default = "All"
-        "--format", "-t"
-            help = "Format of the PDB file: It should be pdb or pdbml"
-            arg_type = ASCIIString
-            default = "pdb"
-        "--model", "-m"
-            help = "The model to be used, * for all"
-            arg_type = ASCIIString
-            default = "1"
-        "--chain", "-c"
-            help = "The chain to be used, * for all"
-            arg_type = ASCIIString
-            default = "*"
-        "--group", "-g"
-            help = "Group of atoms to be used, should be ATOM, HETATM or * for all"
-            arg_type = ASCIIString
-            default = "*"
-        "--intra", "-i"
-            help = "Only intra chain distances"
-            arg_type = Bool
-            default = true
-            eval_arg = true
-        "--gzip", "-z"
-            help = "GZipped output"
-            arg_type = Bool
-            default = true
-            eval_arg = true
-    end
+@everywhere begin
 
-    s.epilog = """
-    \n
-    MIToS $(Pkg.installed("MIToS"))\n
-    \n
-    Bioinformatics Unit\n
-    Leloir Institute Foundation\n
-    Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina
-    """
+    const args = remotecall_fetch(1,()->Args)
 
-    return parse_args(s)
-end
+    import MIToS.Utils.Scripts: script
 
-const parsed = parse_commandline()
+    # TO DO ----------------------------------------------------------------------
+    using MIToS.PDB
+    # ----------------------------------------------------------------------------
 
-function _file_names(args)
-  file = args["file"]
-  list = args["list"]
-  if file !== nothing && list === nothing
-    return ASCIIString[ file ]
-  elseif list !== nothing && file === nothing
-    return ASCIIString[ chomp(line) for line in open(readlines, list, "r") ]
-  else
-    throw(ErrorException("You must use --file or --list and the filename; --help for more information."))
-  end
-end
-
-const files = _file_names(parsed)
-
-@everywhere Args = remotecall_fetch(1,()->parsed) # Parsed ARGS for each worker
-@everywhere FileList = remotecall_fetch(1,()->files) # List of Files for each worker
-
-@everywhere function main(input) # input must be a file
-  name, ext = splitext(input)
-  fh = Args["gzip"] ? GZip.open(string(name, ".distances.csv.gz"), "w") : open(string(name, ".distances.csv"), "w")
-  println(fh, "# MIToS ", Pkg.installed("MIToS"), " Distances.jl ", now())
-  println(fh, "# used arguments:")
-  for (key, value) in Args
-    println(fh, "# \t", key, "\t\t", value)
-  end
-  println(fh, "model_i,chain_i,group_i,pdbe_i,number_i,name_i,model_j,chain_j,group_j,pdbe_j,number_j,name_j,distance")
-  try
-    dtyp = ascii(Args["distance"])
-    form = ascii(Args["format"])
-    if form == "pdb"
-      res = read(input, PDBFile)
-    elseif form == "pdbml"
-      res = read(input, PDBML)
-    else
-      throw(ErrorException("--format should be pdb or pdbml."))
-    end
-    res = residues(res, ascii(Args["model"]), ascii(Args["chain"]), ascii(Args["group"]), "*")
-    N = length(res)
-    intra = Bool(Args["intra"])
-    for i in 1:(N-1)
-      for j in (i+1):N
-        @inbounds res1 = res[i]
-        @inbounds res2 = res[j]
-        if intra && res1.id.chain != res2.id.chain
-          continue
+    function script(input::Union{Base.LibuvStream,  AbstractString},
+                    args,
+                    fh_out::Union{Base.LibuvStream, IO})
+        # TO DO ------------------------------------------------------------------
+        println(fh_out, "# MIToS ", Pkg.installed("MIToS"), " Distances.jl ", now())
+        println(fh_out, "# used arguments:")
+        for (key, value) in args
+            println(fh_out, "# \t", key, "\t\t", value)
         end
-        dist = distance(res1, res2, criteria=dtyp)
-        println(fh, res1.id.model, ",", res1.id.chain, ",", res1.id.group, ",", res1.id.PDBe_number, ",", res1.id.number, ",", res1.id.name, ",",
-                res2.id.model, ",", res2.id.chain, ",", res2.id.group, ",", res2.id.PDBe_number, ",", res2.id.number, ",", res2.id.name, ",",
-                dist )
-      end
+        println(fh_out, "model_i,chain_i,group_i,pdbe_i,number_i,name_i,model_j,chain_j,group_j,pdbe_j,number_j,name_j,distance")
+        dtyp = ascii(args["distance"])
+        form = ascii(args["format"])
+        dump(input)
+        if form == "PDBFile"
+            res = read(input, PDBFile)
+        elseif form == "PDBML"
+            res = read(input, PDBML)
+        else
+            throw(ErrorException("--format should be PDBFile or PDBML."))
+        end
+        res = residues(res, ascii(args["model"]), ascii(args["chain"]), ascii(args["group"]), "*")
+        N = length(res)
+        intra = Bool(args["intra"])
+        for i in 1:(N-1)
+            for j in (i+1):N
+                @inbounds res1 = res[i]
+                @inbounds res2 = res[j]
+                if intra && res1.id.chain != res2.id.chain
+                    continue
+                end
+                dist = distance(res1, res2, criteria=dtyp)
+                println(fh_out, res1.id.model, ",", res1.id.chain, ",", res1.id.group, ",", res1.id.PDBe_number, ",", res1.id.number, ",", res1.id.name, ",",
+                        res2.id.model, ",", res2.id.chain, ",", res2.id.group, ",", res2.id.PDBe_number, ",", res2.id.number, ",", res2.id.name, ",",
+                        dist )
+            end
+        end
+        # ------------------------------------------------------------------------
     end
-  catch err
-    println("ERROR: ", input)
-    println(err)
-  finally
-    close(fh)
-  end
+
 end
 
-pmap(main, FileList) # Run each file in parallel (with -l)
-
+runscript(args)

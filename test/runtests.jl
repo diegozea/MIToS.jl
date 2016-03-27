@@ -33,6 +33,8 @@ include("iterations.jl")
 include("buslje09.jl")
 # Pfam
 include("pfam.jl")
+# Scripts
+include("scripts.jl")
 
 print("""
 

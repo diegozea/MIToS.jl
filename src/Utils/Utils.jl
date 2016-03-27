@@ -20,14 +20,16 @@ include("FindObjects.jl")
 # COMMAND LINE
 # ============
 
-module Commandline
+module Scripts
 
-export parse_commandline, runfun, set_parallel, open_output, close_output
+export parse_commandline,
+runscript, run_single_script, script,
+set_parallel, open_output, close_output
 
-using ArgParse
+using ArgParse, GZip
 
-include("Commandline.jl")
+include("scripts.jl")
 
-end # Commandline
+end # Scripts
 
 end # Utils

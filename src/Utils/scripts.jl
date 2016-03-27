@@ -1,6 +1,7 @@
 "Parse MIToS scripts command line arguments."
 function parse_commandline(args...; description::AbstractString="Made with MIToS",
-                                    output::AbstractString=".mitos.")
+                                    output::AbstractString=".mitos.",
+                                    stdout::Bool=true)
     mitos_version  = Pkg.installed("MIToS")
     settings = ArgParseSettings(description = description,
                                 version = "MIToS $mitos_version",
@@ -28,11 +29,13 @@ function parse_commandline(args...; description::AbstractString="Made with MIToS
                       ),
                   ["--output", "-o"],
                   Dict(
-                      :help => """Name of the output file.
+                      :help => string( """Name of the output file. Output will be gzip if the extension is ".gz".
                       If it starts with a dot, the name is used as a suffix or extension of the input filename.
-                      If it ends with a dot, is used as a suffix.
-                      If the output name starts and ends with dots, it's used as an interfix before the extension.
-                      If a single file is used and there is not a file name (STDIN), the output will be print into STDOUT.""",
+                      If it ends with a dot, is used as a prefix.
+                      If the output name starts and ends with dots, it's used as an interfix before the extension.""",
+                      stdout ? """If a single file is used and there is not a file name (STDIN), the output will be print into
+                      STDOUT, unless a output filename is used. You can use "STDOUT" to force print into STDOUT.
+                      STDOUT can not be use with --list.""" : ""),
                       :arg_type => AbstractString,
                       :default => output
                       ),
@@ -71,7 +74,7 @@ function _generate_output_name(file, output)
 
     else
 
-        return("")
+        return("STDOUT")
 
     end
 end
@@ -79,8 +82,8 @@ end
 "Opens the output file or returns STDOUT."
 function open_output(file, output)
     output_name = _generate_output_name(file, output)
-    if output_name != ""
-        fh = open(output_name, "w")
+    if output_name != "STDOUT"
+        fh = endswith(output_name, ".gz") ? GZip.open(output_name, "w") : open(output_name, "w")
         return(fh)
     else
         return(STDOUT)
@@ -93,36 +96,6 @@ function close_output(fh_out)
     nothing
 end
 
-"""
-If FILE is not used, calls main with STDIN. Otherwise calls main with the FILE.
-If `list` is `true`, `pmap`/`map` is used over eachline of the input.
-"""
-function runfun(fun, file::Void, list::Bool)
-    if list
-        if nprocs() == 1
-            map(x->fun(chomp(x)),  eachline(STDIN))
-        else
-            pmap(x->fun(chomp(x)), eachline(STDIN))
-        end
-    else
-        fun(STDIN)
-    end
-end
-
-function runfun(fun, file::AbstractString, list::Bool)
-    if list
-        open(file, "r") do fh
-            if nprocs() == 1
-                map(x->fun(chomp(x)),  eachline(fh))
-            else
-                pmap(x->fun(chomp(x)), eachline(fh))
-            end
-        end
-    else
-        fun(file)
-    end
-end
-
 "Adds the needed number of workers."
 function set_parallel(parallel)
     N = nprocs()
@@ -132,3 +105,41 @@ function set_parallel(parallel)
     nothing
 end
 
+script(x, y, z) = throw("Define your script function!")
+
+"""
+Opens and closes the output stream, tries to run the defined script.
+"""
+function run_single_script(input, args)
+    fh_out = open_output(input, args["output"])
+    try
+        script(input, args, fh_out)
+    catch err
+        println("ERROR: ", input)
+        println(err)
+    finally
+        close(fh_out)
+    end
+end
+
+"""
+If FILE is not used, calls run_single_script with STDIN. Otherwise calls run_single_script with the FILE.
+If `list` is `true`, for loop or `pmap` is used over eachline of the input.
+"""
+function runscript(args)
+    file = args["FILE"]
+    if args["list"]
+        fh_in = file === nothing ? STDIN : open(file, "r")
+        if nprocs() != 1
+            pmap(eachline(fh_in)) do line
+                run_single_script(chomp(line), args)
+            end
+        else
+            for line in eachline(fh_in)
+                run_single_script(chomp(line), args)
+            end
+        end
+    else
+        run_single_script(file === nothing ? STDIN : file, args)
+    end
+end
