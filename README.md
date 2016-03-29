@@ -40,11 +40,11 @@ This module use the previous modules to work with Pfam MSAs. It also has useful 
 
 #### References
 
-1. Buslje, C. M., Santos, J., Delfino, J. M., & Nielsen, M. **Correction for phylogeny, small number of observations and data redundancy improves the identification of coevolving amino acid pairs using mutual information.** *Bioinformatics 2009*, 25(9), 1125-1131.
-2. Buslje, C. M., Teppa, E., Di Doménico, T., Delfino, J. M., & Nielsen, M. **Networks of high mutual information define the structural proximity of catalytic sites: implications for catalytic residue identification.** *PLoS Comput Biol 2010*, 6(11), e1000978-e1000978.
-3. Altschul, S. F., Madden, T. L., Schäffer, A. A., Zhang, J., Zhang, Z., Miller, W., & Lipman, D. J. **Gapped BLAST and PSI-BLAST: a new generation of protein database search programs.** *Nucleic acids research 1997*, 25(17), 3389-3402.
-4. Hobohm, U., Scharf, M., Schneider, R., & Sander, C. **Selection of representative protein data sets.** *Protein Science 1992*, 1(3), 409-417.
-5. Dunn, Stanley D., Lindi M. Wahl, and Gregory B. Gloor. **Mutual information without the influence of phylogeny or entropy dramatically improves residue contact prediction.** *Bioinformatics 2008*, 24(3), 333-340.
+1. Buslje, Cristina Marino, et al. "Correction for phylogeny, small number of observations and data redundancy improves the identification of coevolving amino acid pairs using mutual information." Bioinformatics 25.9 (2009): 1125-1131.
+2. Buslje, Cristina Marino, et al. "Networks of high mutual information define the structural proximity of catalytic sites: implications for catalytic residue identification." PLoS Comput Biol 6.11 (2010): e1000978.
+3. Altschul, Stephen F., et al. "Gapped BLAST and PSI-BLAST: a new generation of protein database search programs." Nucleic acids research 25.17 (1997): 3389-3402.
+4. Hobohm, Uwe, et al. "Selection of representative protein data sets." Protein Science 1.3 (1992): 409-417.
+5. Dunn, Stanley D., Lindi M. Wahl, and Gregory B. Gloor. "Mutual information without the influence of phylogeny or entropy dramatically improves residue contact prediction." Bioinformatics 24.3 (2008): 333-340.
 
 #### Structural Bioinformatics Unit
 [![FIL](http://mistic.leloir.org.ar/imgs/logo_horizontal.png)](http://www.leloir.org.ar/)
