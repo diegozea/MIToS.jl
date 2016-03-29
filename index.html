@@ -180,9 +180,9 @@ div#notebook {
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li><a href="#">Modules</a></li>
-        <li><a href="#">Scripts</a></li>
-        <li><a href="#">Cookbook</a></li>
+        <li class="link" data-src="https://cdn.rawgit.com/diegozea/MIToS.jl/master/docs/compiled/Installation.html"><a href="#">Installation</a></li>
+        <li class="link" data-src="https://cdn.rawgit.com/diegozea/MIToS.jl/master/docs/compiled/Modules.html"><a href="#">Modules</a></li>
+        <li class="link" data-src="https://cdn.rawgit.com/diegozea/MIToS.jl/master/docs/compiled/Scripts.html"><a href="#">Scripts</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
           <li><a href="https://github.com/diegozea/MIToS.jl"><i class="fa fa-github fa-lg"></i> GitHub</a></li>
@@ -215,14 +215,12 @@ div#notebook {
           data-src="https://cdn.rawgit.com/diegozea/MIToS.jl/master/docs/compiled/{{ipynb}}.html">
           <a href="#">{{ipynb}}</a></li>
   {{/each}}
-  <li class="lvl1">Modules</li>
   {{#each modules}}
       <li role="presentation"
           class="link lvl2"
           data-src="https://cdn.rawgit.com/diegozea/MIToS.jl/master/docs/compiled/{{ipynb}}.html">
           <a href="#">{{ipynb}}</a></li>
   {{/each}}
-  <li class="lvl1">API</li>
   {{#each api}}
       <li role="presentation"
           class="link lvl2"
