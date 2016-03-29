@@ -28,4 +28,11 @@ $(document).ready(function(){
     fillcontent(direction);
   });
 
+  $(".internallink").click(function(){
+
+    var direction = $(this).data("src");
+
+    fillcontent(direction);
+  });
+
 });
