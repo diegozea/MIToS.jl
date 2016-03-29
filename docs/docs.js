@@ -27,15 +27,19 @@ var pages = {
     api : [
             {
 		    	ipynb : "MSA_API",
+                name : "MSA",
             },
             {
     			ipynb : "Information_API",
+                name : "Information",
             },
             {
                 ipynb : "SIFTS_API",
+                name : "SIFTS",
     		},
             {
                 ipynb : "PDB_API",
+                name : "PDB",
 		    }
         ]
     };
