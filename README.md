@@ -13,47 +13,30 @@ Code Coverage: [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/
 
 MIToS is an environment for Mutual Information (MI) analysis and implements several useful tools for Multiple Sequence Alignments (MSAs) and PDB structures management in the Julia language. MI allows determining covariation between positions in a MSA. MI derived scores are good predictors of residue contacts and functional sites in proteins [1,2].
 
-MIToS starting point was an improvement of the algorithm published by Buslje et. al. [1]. A BLOSUM62-based pseudocount strategy, similar to Altschul et. al. [3], was implemented for a better performance in the range of MSAs with low number of sequences. **MIToS** offers all the necessary tools for using, developing and testing MI based scores, in different modules:
+MIToS starting point was an improvement of the algorithm published by Buslje et. al. [1]. A BLOSUM62-based pseudocount strategy, similar to Altschul et. al. [3], was implemented for a better performance in the range of MSAs with low number of sequences. **MIToS** offers all the necessary tools for using, developing and testing MI based scores, in different modules.
 
-* **MSA** defines multiple functions and types for dealing with MSAs:
-  * `AnnotatedMultipleSequenceAlignment` is a type for saving MSAs and their  `Annotations`, it is useful for working on MSAs in `Stockholm` format.
-  * `Annotations` can store the sequence and column mapping after operations like `gapstrip!` or `adjustreference!`.
-  * Read and write `FASTA`, `Stockholm` or `Raw` formats.
-  * Functions for shuffling the MSA: `shuffle_...`
-  * Defines a `Clusters` type for the sequence clustering information of a MSA.
-    * `hobohmI` implements the Hobohm I algorithm [4] and gives sequence weights according to the number of sequences in each clusters.
-* **PDB** defines functions for parsing and working with `PDBFile` and `PDBML` formats:
-  * Defines the types: `PDBResidue`, `PDBResidueIdentifier`, `PDBAtom`, `Coordinates`
-  * Functions for estimation of `distance` , `contact` between `PDBResidue`s and type of interactions as: `vanderwaals`, `ionic`, etc.
-  * Macros and functions for getting residues or atoms from a list/vector of residues, i.e.: `@residues`
-* **SIFTS** has functions for downloading and parsing PDB SIFTS XML files:
-  * `DataBase` and subtypes `db...` (i.e. `dbUniProt`) for a residue-level mapping between databases.
-  * `siftsmapping` function to allow an easy-to-use `Dict` mapping.
-  * `SIFTSResidue` is a immutable composite types with the SIFTS mapping for the residue.
-* **Information** functions and types for measuring information content:
-  * BLOSUM62 probabilities: `BLOSUM62_Pi` and `BLOSUM62_Pij`
-  * `ResidueContingencyTables` for counting or store the probabilities of `Residues` (using the 20 residues BLOSUM62 alphabet) it also allows gaps count.
-  * `InformationMeasure`s:
-    * `Entropy`
-    * `MutualInformation`
-    * `MutualInformationOverEntropy`
-  * Corrections to the MI values for co-evolution estimation:
-    * `APC!` for MIp [5]
-    * `buslje09` for the Z score and MIp from Buslje et. al. 2009 [1]
-* **Pfam** module has methods for working with *Pfam* alignments and useful parameter optimization functions to be used with those MSAs.
-* **Utils** for common utils functions and types in MIToS.
+#### Modules
+MIToS tools are separated on different modules, related to different tasks.
+- **MSA** This module defines multiple functions and types for dealing with MSAs and their annotations. It also includes facilities for sequence clustering.
+- **PDB** This module defines types and methods to work with protein structures from PDB.
+- **SIFTS** This module allows access to SIFTS residue-level mapping of UniProt, Pfam and other databases with PDB entries.
+- **Information** This module defines residue contingency tables and methods on them to estimate information measure from MSAs. It includes functions to estimate corrected mutual information (ZMIp, ZBLMIp) between MSA columns.
+- **Pfam** 
+This module use the previous modules to work with Pfam MSAs. It also has useful parameter optimization functions to be used with Pfam alignments.
+- **Utils** MIToS has also an Utils module with common utils functions and types used in this package.
 
 #### Scripts
 
 **MIToS** implements several useful scripts for command line execution (without requiring Julia coding):
 
-* **Buslje09.jl** : Calculates a Z score and a corrected MI/MIp as described on Buslje et. al. 2009 [1].
+* **Buslje09.jl** : Calculates the corrected MI/MIp described on Buslje et. al. 2009 [1].
+* **BLMI.jl** : Calculates corrected mutual information using BLOSUM62 based-pseudocounts.
 * **DownloadPDB.jl** : Downloads gzipped files from PDB.
 * **Distances.jl** : Calculates residues distances in a PDB file.
 * **SplitStockholm.jl** : Splits a Stockholm file with multiple alignments into one compressed file per MSA
 * **AlignedColumns.jl** : Creates a Stockholm file with the aligned columns from a Pfam Stockholm file (insertions are deleted) saving the mapping (residue number in UniProt) and the columns in the original MSA.
 * **PercentIdentity.jl** : Calculates the percentage identity between all the sequences of an MSA and saves mean, median, minimum, etc.
-* **MSADescription.jl** : Calclulates the number of columns, sequences and clusters after Hobohm I clustering at 62% identity given a stockholm file as imput. It also gives the mean, standard deviation and quantiles of: sequence coverage of the MSA and gap percentage.
+* **MSADescription.jl** : Calclulates the number of columns, sequences and clusters after Hobohm I clustering at 62% identity given a stockholm file as imput. It also gives the percent information mean and mean, standard deviation and quantiles of: sequence coverage of the MSA and gap percentage.
 
 #### References
 
@@ -62,7 +45,6 @@ MIToS starting point was an improvement of the algorithm published by Buslje et.
 3. Altschul, S. F., Madden, T. L., Schäffer, A. A., Zhang, J., Zhang, Z., Miller, W., & Lipman, D. J. **Gapped BLAST and PSI-BLAST: a new generation of protein database search programs.** *Nucleic acids research 1997*, 25(17), 3389-3402.
 4. Hobohm, U., Scharf, M., Schneider, R., & Sander, C. **Selection of representative protein data sets.** *Protein Science 1992*, 1(3), 409-417.
 5. Dunn, Stanley D., Lindi M. Wahl, and Gregory B. Gloor. **Mutual information without the influence of phylogeny or entropy dramatically improves residue contact prediction.** *Bioinformatics 2008*, 24(3), 333-340.
-
 
 #### Structural Bioinformatics Unit
 [![FIL](http://mistic.leloir.org.ar/imgs/logo_horizontal.png)](http://www.leloir.org.ar/)
