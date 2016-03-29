@@ -167,31 +167,7 @@ div#notebook {
 </head>
 <body>
 
-<nav class="navbar navbar-default navbar-fixed-top">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="link navbar-brand" href="#" data-src="home.html">MIToS</a>
-    </div>
-
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="link" data-src="https://rawgit.com/diegozea/MIToS.jl/master/docs/compiled/Installation.html"><a href="#">Installation</a></li>
-        <li class="link" data-src="https://rawgit.com/diegozea/MIToS.jl/master/docs/compiled/Modules.html"><a href="#">Modules</a></li>
-        <li class="link" data-src="https://rawgit.com/diegozea/MIToS.jl/master/docs/compiled/Scripts.html"><a href="#">Scripts</a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-          <li><a href="https://github.com/diegozea/MIToS.jl"><i class="fa fa-github fa-lg"></i> GitHub</a></li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
+<nav class="navbar navbar-default navbar-fixed-top" id="NavHeader"> <!-- Navegation Header -->
 </nav>
 
 <div class="container">
@@ -218,6 +194,9 @@ div#notebook {
           data-src="https://rawgit.com/diegozea/MIToS.jl/master/docs/compiled/{{ipynb}}.html">
           <a href="#">{{ipynb}}</a></li>
   {{/each}}
+  <li role="presentation"
+          class="lvl1">
+          Modules</li>
   {{#each modules}}
       <li role="presentation"
           class="link lvl2"
@@ -232,7 +211,7 @@ div#notebook {
           class="link lvl2"
           data-src="https://rawgit.com/diegozea/MIToS.jl/master/docs/compiled/{{ipynb}}.html">
           <a href="#">{{ipynb}}</a></li>
-    {{/each}}
+  {{/each}}
   </ul>
 </script>
 
@@ -241,4 +220,57 @@ div#notebook {
   <div id="load">
   </div>
 
+</script>
+
+<script id="header-template" type="text/x-handlebars-template">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="link navbar-brand" href="#" data-src="home.html">MIToS</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        {{#each manual}}
+        <li class="link" data-src="https://rawgit.com/diegozea/MIToS.jl/master/docs/compiled/{{ipynb}}.html"><a href="#">{{ipynb}}</a></li>
+        {{/each}}
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+          Modules
+          <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            {{#each modules}}
+                <li class="menulink"
+                data-src="https://rawgit.com/diegozea/MIToS.jl/master/docs/compiled/{{ipynb}}.html">
+                <a href="#">{{ipynb}}</a></li>
+            {{/each}}
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+          API
+          <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            {{#each api}}
+                <li class="menulink"
+                data-src="https://rawgit.com/diegozea/MIToS.jl/master/docs/compiled/{{ipynb}}.html">
+                <a href="#">{{ipynb}}</a></li>
+            {{/each}}
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+          <li><a href="https://github.com/diegozea/MIToS.jl"><i class="fa fa-github fa-lg"></i> GitHub</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
 </script>
