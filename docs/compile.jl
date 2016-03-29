@@ -11,6 +11,7 @@ function main()
 
                 run(`ipython nbconvert --to=html --template=basic $name.ipynb`)
 
+                run(`mv $name.html compiled/$name.html`)
             end
        end
     end
