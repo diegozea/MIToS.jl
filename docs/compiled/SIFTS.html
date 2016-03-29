@@ -17,30 +17,6 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="c"># Truncate IJulia outputs at:</span>
-<span class="n">ENV</span><span class="p">[</span><span class="s">&quot;LINES&quot;</span><span class="p">]</span>   <span class="o">=</span> <span class="mi">15</span> 
-<span class="n">ENV</span><span class="p">[</span><span class="s">&quot;COLUMNS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">;</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Simplest-residue-level-mapping">Simplest residue-level mapping<a class="anchor-link" href="#Simplest-residue-level-mapping">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
@@ -65,6 +41,52 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Contents">Contents<a class="anchor-link" href="#Contents">&#182;</a></h2><ul>
+<li><a href="#Simplest-residue-level-mapping">Simplest residue-level mapping</a></li>
+<li><a href="#Storing-residue-level-mapping">Storing residue-level mapping</a></li>
+<li><a href="#Accessing-residue-level-cross-references">Accessing residue-level cross references</a><ul>
+<li><a href="#capture">capture</a> </li>
+<li><a href="#collectcaptures">collectcaptures</a> </li>
+<li><a href="#isobject">isobject</a></li>
+<li><a href="#findobjects">findobjects</a></li>
+<li><a href="#collectobjects">collectobjects</a></li>
+</ul>
+</li>
+<li><a href="#Example:-Which-residues-are-missing-in-the-PDB-structure">Example: Which residues are missing in the PDB structure</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="c"># Truncate IJulia outputs at:</span>
+<span class="n">ENV</span><span class="p">[</span><span class="s">&quot;LINES&quot;</span><span class="p">]</span>   <span class="o">=</span> <span class="mi">15</span> 
+<span class="n">ENV</span><span class="p">[</span><span class="s">&quot;COLUMNS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Simplest-residue-level-mapping">Simplest residue-level mapping<a class="anchor-link" href="#Simplest-residue-level-mapping">&#182;</a></h2>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">

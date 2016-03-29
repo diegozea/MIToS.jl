@@ -5,6 +5,12 @@ var pages = {
             },
             {
                 ipynb : "Quick_example",
+            },
+            {
+                ipynb : "Scripts",
+            },
+            {
+                ipynb : "Modules",
             }
         ],
     modules : [
