@@ -4,13 +4,10 @@ var pages = {
 		        ipynb : "Installation",
             },
             {
-                ipynb : "Quick_example",
+                ipynb : "Example",
             },
             {
                 ipynb : "Scripts",
-            },
-            {
-                ipynb : "Modules",
             }
         ],
     modules : [
