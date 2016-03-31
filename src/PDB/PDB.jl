@@ -21,6 +21,7 @@ module PDB
   using DataStructures
   using Formatting
   using MIToS.Utils
+  using PairwiseListMatrices
   # using FixedSizeArrays
 
   import Base: ==, hash, length, size, -, +, ./, norm, dot, angle, cross, vec, any, print, show, parse

@@ -354,6 +354,28 @@ function contact(a::PDBResidue, b::PDBResidue, limit::AbstractFloat; criteria::A
   false
 end
 
+# Vectorize
+# ---------
+
+"If `distance` takes a `Vector{PDBResidue}` returns a `BitMatrix` with all the pairwise comparisons."
+function contact(vec::Vector{PDBResidue}, limit::AbstractFloat; criteria::ASCIIString="All")
+    N = length(vec)
+    cmap = trues(N,N)
+    for i in 1:(N-1)
+        for j in (i+1):N
+            cmap[i, j] = cmap [j, i] = contact(vec[i], vec[j], limit, criteria=criteria)
+        end
+    end
+    cmap
+end
+
+"If `distance` takes a `Vector{PDBResidue}` returns a `PairwiseListMatrix{Float64, false}` with all the pairwise comparisons."
+function distance(vec::Vector{PDBResidue}; criteria::ASCIIString="All")
+    PLM = PairwiseListMatrix(Float64, length(vec), false, 0.0)
+    @iterateupper PLM false list[k] = :($distance)( :($vec)[i], :($vec)[j], criteria=:($criteria))
+    PLM
+end
+
 # For Aromatic
 # ============
 

@@ -216,8 +216,3 @@ function pairwisegapfraction{T <: Format}(filename::AbstractString, format::Type
   aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
   pairwisegapfraction(aln; kargs...)
 end
-
-
-
-
-

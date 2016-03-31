@@ -211,3 +211,21 @@ let pdb = read(joinpath(pwd(), "data", "1AKS.xml.gz"), PDBML)
   end
 
 end
+
+print("""
+
+Vectorized contact/distance
+---------------------------
+""")
+
+let code = "2VQC",
+    pdb = read(txt(code), PDBFile)
+
+    dist = distance(pdb)
+    cont = contact(pdb, 6.05)
+
+    @test dist[1,1] == 0.0
+    @test cont[1,1]
+
+    @test all((dist .<= 6.05) .== cont)
+end
