@@ -255,19 +255,28 @@ println("""
 MI
 """)
 
-let data = readdlm(joinpath(pwd(), "data", "data_simple_soft_Busljeetal2009_measure_MI.txt")); results = buslje09(joinpath(pwd(),
-           "data", "simple.fasta"), FASTA, lambda=0.0, clustering=false, apc=false)
+let data = readdlm(joinpath(pwd(), "data", "data_simple_soft_Busljeetal2009_measure_MI.txt")),
+    results = buslje09(joinpath(pwd(), "data", "simple.fasta"), FASTA, lambda=0.0, clustering=false, apc=false)
 
   @test_approx_eq_eps Float64(data[1, SCORE]) results[MIToS_SCORE][1,2] 1e-6
   @test_approx_eq_eps Float64(data[1, ZSCORE]) results[MIToS_ZSCORE][1,2]  1.5
 end
 
-let data = readdlm(gao11_buslje09("MI")); results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=false)
+let data = readdlm(gao11_buslje09("MI")),
+    results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=false)
 
   @test_approx_eq_eps convert(Vector{Float64}, data[:, SCORE]) matrix2list(results[MIToS_SCORE]) 1e-6
   @test_approx_eq_eps convert(Vector{Float64}, data[:, ZSCORE]) matrix2list(results[MIToS_ZSCORE]) 1.5
 
   println("Pearson for Z-score: ", cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])))
+
+  print("""
+
+  cMI
+  """)
+  @test cumulative(results[1], -Inf) == Base.vec(sum(results[1], 1))
+  #                                                      1.38629 = 0.693147 + 0.693147
+  @test all( ( cumulative(results[2], 0.5) .- [0.0, 0.0, 1.38629, 1.38629, 1.38629, 0.0] ) .< 0.00001 )
 end
 
 @test_approx_eq_eps buslje09(Gaoetal2011, FASTA, lambda=0.05, clustering=false, apc=false)[MIToS_SCORE][1,2] 0.33051006116310444 1e-14
@@ -277,7 +286,8 @@ println("""
 MI + clustering
 """)
 
-let data = readdlm(gao11_buslje09("MI_clustering")); results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=false)
+let data = readdlm(gao11_buslje09("MI_clustering")),
+    results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=false)
 
   @test_approx_eq_eps convert(Vector{Float64}, data[:, SCORE]) matrix2list(results[MIToS_SCORE]) 1e-6
   @test_approx_eq_eps convert(Vector{Float64}, data[:, ZSCORE]) matrix2list(results[MIToS_ZSCORE]) 1.5

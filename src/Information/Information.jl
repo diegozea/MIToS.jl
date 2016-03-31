@@ -38,7 +38,7 @@ module Information
   estimate, estimate_on_marginal,
   GapUnionPercentage, GapIntersectionPercentage,
 
-  estimateincolumns, estimateinsequences,
+  estimateincolumns, estimateinsequences, cumulative,
 
   APC!,
 

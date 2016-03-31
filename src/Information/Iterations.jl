@@ -130,3 +130,32 @@ It has the same arguments than `estimateincolumns`, look the documentation of th
 """
 estimateinsequences(aln::Matrix{Residue}, args...) = estimateincolumns(transpose(aln), args...)
 estimateinsequences(aln::AbstractMultipleSequenceAlignment, args...) = estimateincolumns(transpose(aln.msa), args...)
+
+# cMI
+# ===
+
+"""
+`cumulative` allows to calculate cumulative scores (i.e. cMI) as defined in Buslje et. al. 2010
+
+*"We calculated a cumulative mutual information score (cMI) for each residue
+as the sum of MI values above a certain threshold for every amino acid pair where the particular residue appears.
+This value defines to what degree a given amino acid takes part in a mutual information network."*
+Buslje, Cristina Marino, Elin Teppa, Tomas Di Doménico, José María Delfino, and Morten Nielsen.
+*Networks of high mutual information define the structural proximity of catalytic sites: implications for catalytic residue identification.*
+PLoS Comput Biol 6, no. 11 (2010): e1000978.
+"""
+function cumulative{T, UseDiag}(mat::PairwiseListMatrix{T, UseDiag}, threshold::T)
+    nrow, ncol = size(mat)
+    cum = zeros(T, ncol)
+    @inbounds for col in 1:ncol
+        for row in 1:nrow
+            if col != row
+                elem = mat[row, col]
+                if !isnan(elem) && elem >= threshold
+                    cum[col] += elem
+                end
+            end
+        end
+    end
+    cum
+end
