@@ -91,6 +91,12 @@ let aln = read(joinpath(pwd(), "data", "gaps.txt"), Raw)
   @test_approx_eq id[2,3] 800/9
 end
 
+print("""
+
+Test meanpercentidentity
+------------------------
+""")
+
 let msa = vcat( transpose(res"--GGG-"),
                 transpose(res"---GGG") )
 #                  identities 000110 sum 2
@@ -98,4 +104,12 @@ let msa = vcat( transpose(res"--GGG-"),
 
     @test percentidentity(msa)[1, 2] == 50.0 # 2 / 4
     @test meanpercentidentity(msa)   == 50.0
+end
+
+let msa    = rand(Residue, 400, 2),
+    msa300 = msa[1:300, :]
+
+    @test mean(percentidentity(msa300).list) == meanpercentidentity(msa300)
+    @test_approx_eq_eps mean(percentidentity(msa).list) meanpercentidentity(msa) 0.5
+    @test mean(percentidentity(msa).list) == meanpercentidentity(msa, exact=true)
 end
