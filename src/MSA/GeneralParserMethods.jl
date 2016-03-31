@@ -84,6 +84,22 @@ If `useidcoordinates` is `true` (default: `false`) the sequence IDs of the form 
 By default, the ambiguous or not standard residues are replaced by gaps (i.e. `J` for leucine or isoleucine).
 But, if the keyword argument `checkalphabet` is `true` (`false` by default), the sequences with residues that do not belong to the defined alphabet are deleted.""" parse
 
+# Keepinserts
+# ===========
+
+"""
+Function to keep insert columns in `parse`.
+It uses the first sequence to generate the "Aligned" annotation,
+and after that, convert all the characters to uppercase.
+"""
+function _keepinserts!(SEQS, annot)
+    aligned = map(SEQS[1]) do char
+        isupper(char) || char == '-' ? '1' : '0'
+    end
+    setannotfile!(annot, "Aligned", aligned)
+    map!(uppercase, SEQS)
+end
+
 # Delete sequences with ambiguous or not standard residues
 # ========================================================
 

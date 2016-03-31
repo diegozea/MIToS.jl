@@ -72,6 +72,17 @@ F112_SSV1/3-112                .....QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRA
 
 print("""
 
+Keep insert columns
+-------------------
+""")
+
+let aln = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, keepinserts=true)
+    @test (collect(getannotfile(aln, "Aligned")) .== '1') == (F112_SSV1 .!= '.') # Aligned columns
+    @test asciisequence(aln, 1) == replace(uppercase("...mp---NSYQMAEIMYKILQQKKEISLEDILAQFEISASTAYNVQRTLRMICEKHPDECEVQTKNRRTIFKWIKNEETTEEGQEE--QEIEKILNAQPAE-------------k...."), '.', '-')
+end
+
+print("""
+
 Parse Fasta
 -----------
 """)
@@ -464,6 +475,7 @@ Test asciisequence
 """)
 
 @test asciisequence(small, 4) == "DAYCMD"
+@test asciisequence(pfam, 1) == asciisequence(pfam, "C3N734_SULIY/1-95")
 
 print("""
 Test printfasta

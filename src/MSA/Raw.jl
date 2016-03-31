@@ -3,22 +3,27 @@ immutable Raw <: Format end
 # Raw Parser
 # ==========
 
-function parse(io::Union{IO, AbstractString}, format::Type{Raw}, output::Type{Matrix{Residue}}; deletefullgaps::Bool=true, checkalphabet::Bool=false)
+function _get_seqs(io::Union{IO, AbstractString})
     SEQS = ASCIIString[]
-
     for line in eachline(io)
         push!(SEQS, chomp(line))
     end
+    SEQS
+end
 
+function parse(io::Union{IO, AbstractString}, format::Type{Raw}, output::Type{Matrix{Residue}};
+               deletefullgaps::Bool=true, checkalphabet::Bool=false)
+    SEQS = _get_seqs(io)
     _strings_to_msa(SEQS, deletefullgaps, checkalphabet)
 end
 
-function parse(io::Union{IO,AbstractString}, format::Type{Raw}, output::Type{AnnotatedMultipleSequenceAlignment}; generatemapping::Bool=false, deletefullgaps::Bool=true, checkalphabet::Bool=false)
-    SEQS = ASCIIString[]
-    for line in eachline(io)
-        push!(SEQS, chomp(line))
-    end
+function parse(io::Union{IO,AbstractString}, format::Type{Raw}, output::Type{AnnotatedMultipleSequenceAlignment};
+               generatemapping::Bool=false, deletefullgaps::Bool=true, checkalphabet::Bool=false, keepinserts::Bool=false)
+    SEQS = _get_seqs(io)
     annot = Annotations()
+    if keepinserts
+        _keepinserts!(SEQS, annot)
+    end
     if generatemapping
         MSA, MAP = _to_msa_mapping(SEQS)
         setannotfile!(annot, "NCol", string(size(MSA,2)))
@@ -39,7 +44,9 @@ function parse(io::Union{IO,AbstractString}, format::Type{Raw}, output::Type{Ann
     msa
 end
 
-parse(io::Union{IO, AbstractString}, format::Type{Raw}; deletefullgaps::Bool=true, checkalphabet::Bool=false) = parse(io, Raw, Matrix{Residue}; deletefullgaps=deletefullgaps, checkalphabet=checkalphabet)
+parse(io::Union{IO, AbstractString}, format::Type{Raw};
+      deletefullgaps::Bool=true, checkalphabet::Bool=false) = parse(io, Raw, Matrix{Residue};
+                                       deletefullgaps=deletefullgaps, checkalphabet=checkalphabet)
 
 # Print Raw
 # =========

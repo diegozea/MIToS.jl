@@ -429,6 +429,7 @@ Gives an ASCIIString with the sequence number `seq` of the MSA
 """
 asciisequence(msa::Matrix{Residue}, seq::Int) = ascii(convert(Vector{UInt8}, vec(msa[seq,:])))
 asciisequence(msa::AbstractMultipleSequenceAlignment, seq::Int) = asciisequence(msa.msa, seq)
+asciisequence(msa::AbstractMultipleSequenceAlignment, id::ASCIIString) = asciisequence(msa.msa, findfirst(msa.id, id))
 
 # Mapping annotations
 # ===================
