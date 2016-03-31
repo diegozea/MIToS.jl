@@ -357,7 +357,7 @@ end
 # Vectorize
 # ---------
 
-"If `distance` takes a `Vector{PDBResidue}` returns a `BitMatrix` with all the pairwise comparisons."
+"If `contact` takes a `Vector{PDBResidue}` returns a `BitMatrix` with all the pairwise comparisons."
 function contact(vec::Vector{PDBResidue}, limit::AbstractFloat; criteria::ASCIIString="All")
     N = length(vec)
     cmap = trues(N,N)
