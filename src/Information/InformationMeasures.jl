@@ -81,6 +81,41 @@ function estimate_on_marginal{T}(measure::Entropy{T}, n::ResidueCount, marginal:
   (-H/total)/log(measure.base)
 end
 
+# Kullback-Leibler
+# ================
+
+"""
+Kullback-Leibler (KL). This `SymmetricMeasure` has two fields.
+The first is the base of the logarithm and the second is the backgroud frequency.
+"""
+immutable KullbackLeibler{T} <: SymmetricMeasure{T}
+  base::T
+  background::AbstractArray{T}
+end
+
+call{T}(::Type{KullbackLeibler{T}}, background::AbstractArray{T}) = KullbackLeibler(T(Base.e), background)
+
+"""
+`estimate(KullbackLeibler(base, background), p)`
+
+`p` should be a `ResidueProbability` table, and `background` must have the size of `p`.
+The result type is determined by `base` and `background`.
+"""
+function estimate{B, T, N, UseGap}(measure::KullbackLeibler{B}, p::ResidueProbability{T, N, UseGap})
+  q = measure.background
+  if size(q) != size(p) || length(q) != length(p)
+    throw(ErrorException("p and background should have the same size and length."))
+  end
+  KL = zero(B)
+  @inbounds for i in 1:length(p)
+    pi = B(p[i])
+    if pi != 0.0
+      KL += pi * log(pi/q[i])
+    end
+  end
+  -KL/log(measure.base)
+end
+
 # Mutual Information
 # ==================
 

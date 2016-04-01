@@ -62,6 +62,19 @@ Entropy using ResidueCount
 
   print("""
 
+Kullback-Leibler
+----------------
+""")
+
+  @test estimate(Information.KullbackLeibler{Float64}(Float64[1/20 for i in 1:20]), Ps) == 0.0
+  @test estimate(Information.KullbackLeibler{Float64}(BLOSUM62_Pi), Ps) != 0.0
+  @test_approx_eq estimate(Information.KullbackLeibler{Float64}(BLOSUM62_Pi), Ps) sum(log(20 .* BLOSUM62_Pi)/20)
+
+  @test estimate(Information.KullbackLeibler{BigFloat}(Ps), Ps) == zero(BigFloat)
+  @test estimate(Information.KullbackLeibler{BigFloat}(Psr), Psr) == zero(BigFloat)
+
+  print("""
+
 Mutual Information
 ------------------
 """)
