@@ -14,7 +14,7 @@ function parse_commandline()
             help = "PDB code"
         "--list", "-l"
             help = "File with a list of PDB codes (one per line)"
-        "--format", "-t"
+        "--format", "-f"
             help = "Format. It should be pdb or xml"
             arg_type = ASCIIString
             default = "xml"
@@ -54,10 +54,10 @@ const files = _file_names(parsed)
 @everywhere function main(input) # input must be a file
   try
     format = Args["format"]
-    if format == "xml" || format == "pdb"
+    if format == "PDBML" || format == "PDBFile"
       MIToS.PDB.downloadpdb(input, format=format)
     else
-      throw(ErrorException("--format should be xml or pdb"))
+      throw(ErrorException("--format should be PDBML or PDBFile"))
     end
   catch err
     println("ERROR: ", input)
