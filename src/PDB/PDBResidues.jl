@@ -376,6 +376,40 @@ function distance(vec::Vector{PDBResidue}; criteria::ASCIIString="All")
     PLM
 end
 
+# Proximity average
+# -----------------
+
+"""
+`proximitymean` calculates the proximity mean/average for each residue as the average score (from a `scores` list)
+of all the residues within a certain physical distance to a given amino acid (the score of that residue is not included in the mean).
+The default values are 6.05 for the distance threshold/`limit` and "Heavy" for the `criteria` keyword argument.
+This function allows to calculate pMI (proximity mutual information) and pC (proximity conservation) as in Buslje et. al. 2010.
+
+Buslje, Cristina Marino, Elin Teppa, Tomas Di Doménico, José María Delfino, and Morten Nielsen.
+*Networks of high mutual information define the structural proximity of catalytic sites: implications for catalytic residue identification.*
+PLoS Comput Biol 6, no. 11 (2010): e1000978.
+"""
+function proximitymean{T}(residues::Vector{PDBResidue}, scores::AbstractVector{T}, limit::AbstractFloat=6.05; criteria::ASCIIString="Heavy")
+    N = length(residues)
+    if N != length(scores)
+        throw(ErrorException("Vectors must have the same length."))
+    end
+    count = zeros(Int, N)
+    sum   = zeros(T, N)
+    @inbounds for i in 1:(N-1)
+        res_i = residues[i]
+        for j in (i+1):N
+            if contact(res_i, residues[j], limit, criteria=criteria)
+                count[i] += 1
+                count[j] += 1
+                sum[i] += scores[j]
+                sum[j] += scores[i]
+            end
+        end
+    end
+    sum ./ count
+end
+
 # For Aromatic
 # ============
 

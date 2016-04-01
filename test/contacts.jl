@@ -229,3 +229,21 @@ let code = "2VQC",
 
     @test all((dist .<= 6.05) .== cont)
 end
+
+print("""
+
+Proximity Mean
+--------------
+""")
+
+let code = "2VQC",
+    pdb = read(txt(code), PDBFile),
+    residues = @residues pdb model "1" chain "A" group "ATOM" residue x -> x in ["62", "64", "65"]
+
+    @test contact(residues, 6.05) == ( [1 1 0
+                                        1 1 1
+                                        0 1 1 ] .== 1 ) # All == Heavy (2VQC doesn't have Hs)
+
+    @test proximitymean(residues, [1.0, 2.0, 3.0], 6.05) == [2.0, 2.0, 2.0]
+    @test proximitymean(residues, [10., 15., 30.], 6.05) == [15., 20., 15.]
+end

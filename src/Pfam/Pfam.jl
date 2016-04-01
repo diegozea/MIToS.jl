@@ -1,3 +1,18 @@
+"""
+The `Pfam` module, defines functions to measure the protein contact prediction performance of information measure between column pairs from a Pfam MSA.
+
+**Features**
+
+- Read and download Pfam MSAs
+- Obtain PDB information from alignment annotations
+- Map between sequence/alignment residues/columns and PDB structures
+- Measure of AUC (ROC curve) for contact prediction of MI scores
+
+```julia
+
+using MIToS.Pfam
+```
+"""
 module Pfam
 
   using MIToS.Utils

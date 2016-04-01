@@ -11,7 +11,7 @@ needed for measure the predictive performance at protein contact prediction of m
 
 ```julia
 
-using PDB
+using MIToS.PDB
 ```
 """
 module PDB
@@ -31,7 +31,7 @@ module PDB
 
   PDBResidueIdentifier, Coordinates, PDBAtom, PDBResidue,
   distance, contact, findheavy, findatoms, findCB, selectbestoccupancy, bestoccupancy!,
-  angle,
+  angle, proximitymean,
 
   ishydrophobic, isaromatic, iscationic, isanionic,
   ishbonddonor, ishbondacceptor, hydrogenbond,
