@@ -477,7 +477,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Stockholm</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Stockholm</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
 </pre></div>
 
 </div>
@@ -509,7 +509,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">FASTA</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">FASTA</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
 </pre></div>
 
 </div>
@@ -541,7 +541,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Raw</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Raw</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
 </pre></div>
 
 </div>
@@ -564,7 +564,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="n">Docs</span><span class="o">.</span><span class="n">typesummary</span><span class="p">(</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">ClusteringResult</span> <span class="p">)</span> <span class="c"># imported from Clustering.jl</span>
@@ -578,13 +578,23 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_text output_error">
-<pre>
-LoadError: UndefVarError: MIToS not defined
-while loading In[1], in expression starting on line 1
-</pre>
+<div class="output_area"><div class="prompt output_prompt">Out[14]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="k">abstract</span><span class="nc"> Clustering</span><span class="o">.</span><span class="n">ClusteringResult</span> <span class="o">&lt;:</span> <span class="kt">Any</span>
+</pre></div>
+<p><strong>Subtypes:</strong></p>
+<div class="highlight"><pre><span class="n">Clustering</span><span class="o">.</span><span class="n">AffinityPropResult</span>
+<span class="n">Clustering</span><span class="o">.</span><span class="n">DbscanResult</span>
+<span class="n">Clustering</span><span class="o">.</span><span class="n">KmeansResult</span><span class="p">{</span><span class="n">T</span><span class="o">&lt;:</span><span class="n">AbstractFloat</span><span class="p">}</span>
+<span class="n">Clustering</span><span class="o">.</span><span class="n">KmedoidsResult</span><span class="p">{</span><span class="n">T</span><span class="p">}</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">NoClustering</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">SequenceClusters</span>
+</pre></div>
+
 </div>
+
 </div>
 
 </div>
@@ -612,7 +622,7 @@ while loading In[1], in expression starting on line 1
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">NoClustering</span> <span class="o">&lt;:</span> <span class="n">Clustering</span><span class="o">.</span><span class="n">ClusteringResult</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">NoClustering</span> <span class="o">&lt;:</span> <span class="n">Clustering</span><span class="o">.</span><span class="n">ClusteringResult</span>
 </pre></div>
 
 </div>
@@ -1529,7 +1539,7 @@ while loading In[1], in expression starting on line 1
 <p>This functions deletes/filters sequences and columns/positions on the MSA on the following order:</p>
 <ul>
 <li>Removes all the columns/position on the MSA with gaps on the reference sequence (first sequence)</li>
-<li>Removes all the sequences with a coverage with respect to the number of columns/positions on the MSA <strong>less</strong> than a <code>coveragelimit</code> (default to <code>0.75</code>: sequences with 25% of gaps)</li>
+<li>Removes all the sequences with a coverage (with respect to the number of columns/positions on the MSA) <strong>less</strong> than a <code>coveragelimit</code> (default to <code>0.75</code>)</li>
 <li>Removes all the columns/position on the MSA with <strong>more</strong> than a <code>gaplimit</code> (default to <code>0.5</code>: 50% of gaps)</li>
 </ul>
 
@@ -1684,7 +1694,7 @@ while loading In[1], in expression starting on line 1
 <p>No documentation found.</p>
 <p><code>MIToS.MSA.filtersequences</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 1 method for generic function &quot;filtersequences&quot;:</span>
-<span class="n">filtersequences</span><span class="p">(</span><span class="n">msa</span><span class="p">::</span><span class="n">Array</span><span class="p">{</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Residue</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span> <span class="n">mask</span><span class="p">::</span><span class="n">AbstractArray</span><span class="p">{</span><span class="kt">Bool</span><span class="p">,</span><span class="mi">1</span><span class="p">})</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">MSA</span><span class="o">/</span><span class="n">MultipleSequenceAlignment</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">175</span>
+<span class="n">filtersequences</span><span class="p">(</span><span class="n">msa</span><span class="p">::</span><span class="n">Array</span><span class="p">{</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Residue</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span> <span class="n">mask</span><span class="p">::</span><span class="n">AbstractArray</span><span class="p">{</span><span class="kt">Bool</span><span class="p">,</span><span class="mi">1</span><span class="p">})</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">MSA</span><span class="o">/</span><span class="n">MultipleSequenceAlignment</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">175</span>
 </pre></div>
 
 </div>
@@ -1717,8 +1727,8 @@ while loading In[1], in expression starting on line 1
 <p>No documentation found.</p>
 <p><code>MIToS.MSA.filtercolumns</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 2 methods for generic function &quot;filtercolumns&quot;:</span>
-<span class="n">filtercolumns</span><span class="p">(</span><span class="n">msa</span><span class="p">::</span><span class="n">Array</span><span class="p">{</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Residue</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span> <span class="n">mask</span><span class="p">::</span><span class="n">AbstractArray</span><span class="p">{</span><span class="kt">Bool</span><span class="p">,</span><span class="mi">1</span><span class="p">})</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">MSA</span><span class="o">/</span><span class="n">MultipleSequenceAlignment</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">198</span>
-<span class="n">filtercolumns</span><span class="p">(</span><span class="n">seq</span><span class="p">::</span><span class="n">Array</span><span class="p">{</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Residue</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span> <span class="n">mask</span><span class="p">::</span><span class="n">AbstractArray</span><span class="p">{</span><span class="kt">Bool</span><span class="p">,</span><span class="mi">1</span><span class="p">})</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">MSA</span><span class="o">/</span><span class="n">MultipleSequenceAlignment</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">199</span>
+<span class="n">filtercolumns</span><span class="p">(</span><span class="n">msa</span><span class="p">::</span><span class="n">Array</span><span class="p">{</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Residue</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span> <span class="n">mask</span><span class="p">::</span><span class="n">AbstractArray</span><span class="p">{</span><span class="kt">Bool</span><span class="p">,</span><span class="mi">1</span><span class="p">})</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">MSA</span><span class="o">/</span><span class="n">MultipleSequenceAlignment</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">198</span>
+<span class="n">filtercolumns</span><span class="p">(</span><span class="n">seq</span><span class="p">::</span><span class="n">Array</span><span class="p">{</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Residue</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span> <span class="n">mask</span><span class="p">::</span><span class="n">AbstractArray</span><span class="p">{</span><span class="kt">Bool</span><span class="p">,</span><span class="mi">1</span><span class="p">})</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">MSA</span><span class="o">/</span><span class="n">MultipleSequenceAlignment</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">199</span>
 </pre></div>
 
 </div>
@@ -1751,7 +1761,7 @@ while loading In[1], in expression starting on line 1
 <p>No documentation found.</p>
 <p><code>MIToS.MSA.getcolumnmapping</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 1 method for generic function &quot;getcolumnmapping&quot;:</span>
-<span class="n">getcolumnmapping</span><span class="p">(</span><span class="n">msa</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">AnnotatedMultipleSequenceAlignment</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">MSA</span><span class="o">/</span><span class="n">MultipleSequenceAlignment</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">466</span>
+<span class="n">getcolumnmapping</span><span class="p">(</span><span class="n">msa</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">AnnotatedMultipleSequenceAlignment</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">MSA</span><span class="o">/</span><span class="n">MultipleSequenceAlignment</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">463</span>
 </pre></div>
 
 </div>
@@ -1784,8 +1794,8 @@ while loading In[1], in expression starting on line 1
 <p>No documentation found.</p>
 <p><code>MIToS.MSA.getsequencemapping</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 2 methods for generic function &quot;getsequencemapping&quot;:</span>
-<span class="n">getsequencemapping</span><span class="p">(</span><span class="n">msa</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">AnnotatedMultipleSequenceAlignment</span><span class="p">,</span> <span class="n">seq_id</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">MSA</span><span class="o">/</span><span class="n">MultipleSequenceAlignment</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">468</span>
-<span class="n">getsequencemapping</span><span class="p">(</span><span class="n">msa</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">AnnotatedMultipleSequenceAlignment</span><span class="p">,</span> <span class="n">seq_num</span><span class="p">::</span><span class="kt">Int64</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">MSA</span><span class="o">/</span><span class="n">MultipleSequenceAlignment</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">471</span>
+<span class="n">getsequencemapping</span><span class="p">(</span><span class="n">msa</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">AnnotatedMultipleSequenceAlignment</span><span class="p">,</span> <span class="n">seq_id</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">MSA</span><span class="o">/</span><span class="n">MultipleSequenceAlignment</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">465</span>
+<span class="n">getsequencemapping</span><span class="p">(</span><span class="n">msa</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">AnnotatedMultipleSequenceAlignment</span><span class="p">,</span> <span class="n">seq_num</span><span class="p">::</span><span class="kt">Int64</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">MSA</span><span class="o">/</span><span class="n">MultipleSequenceAlignment</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">468</span>
 </pre></div>
 
 </div>
@@ -1963,7 +1973,7 @@ while loading In[1], in expression starting on line 1
 <div class="output_area"><div class="prompt output_prompt">Out[59]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>Returns the mean of the percent identity between the sequences of a MSA. If the MSA has 300 sequences or less, the mean is exact. If the MSA has more sequences, 44850 random pairs of sequences are used for the estimation. The number of samples can be changed using the second argument.</p>
+<p>Returns the mean of the percent identity between the sequences of a MSA. If the MSA has 300 sequences or less, the mean is exact. If the MSA has more sequences and the <code>exact</code> keyword is <code>false</code> (defualt), 44850 random pairs of sequences are used for the estimation. The number of samples can be changed using the second argument. Use <code>exact=true</code> to perform all the pairwise comparison (the calculation could be slow).</p>
 
 </div>
 

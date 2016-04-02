@@ -1,0 +1,506 @@
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Pfam">Pfam<a class="anchor-link" href="#Pfam">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>MIToS defines methods and types useful for any MSA. The <code>Pfam</code> module uses other MIToS modules in the context of Pfam MSAs, where it’s possible to us determine how structure and sequence information should be mapped. This module defines functions that go from a Pfam MSA to the protein contact prediction performance of pairwise scores estimated from that MSA.</p>
+<h2 id="Features">Features<a class="anchor-link" href="#Features">&#182;</a></h2><ul>
+<li><a href="#Getting-a-Pfam-MSA"><strong>Download and read</strong></a> Pfam MSAs</li>
+<li>Obtain <a href="#Getting-PDB-information-from-an-MSA"><strong>PDB information</strong></a> from alignment annotations</li>
+<li><a href="#Getting-PDB-information-from-an-MSA"><strong>Map</strong></a> between sequence/alignment residues/columns and PDB structures</li>
+<li>Measure of <a href="#PDB-contacts-and-AUC"><strong>AUC</strong></a> (ROC curve) for <a href="#PDB-contacts-and-AUC"><strong>protein contact</strong></a> prediction of MI scores</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Pfam</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Contents">Contents<a class="anchor-link" href="#Contents">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li><a href="#Getting-a-Pfam-MSA">Getting a Pfam MSA</a></li>
+<li><a href="#Getting-PDB-information-from-an-MSA">Getting PDB information from and MSA</a></li>
+<li><a href="#PDB-contacts-and-AUC">PDB contacts and AUC</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="c"># Truncate IJulia outputs at:</span>
+<span class="n">ENV</span><span class="p">[</span><span class="s">&quot;LINES&quot;</span><span class="p">]</span>   <span class="o">=</span> <span class="mi">15</span> 
+<span class="n">ENV</span><span class="p">[</span><span class="s">&quot;COLUMNS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h2 id="Getting-a-Pfam-MSA">Getting a Pfam MSA<a class="anchor-link" href="#Getting-a-Pfam-MSA">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The function <code>downloadpfam</code> takes a Pfam accession and downloads a Pfam MSA in Stockholm format. Use <code>read</code> function and the <code>Stockholm</code> <code>Format</code> to get a <code>AnnotatedMultipleSequenceAlignment</code> object with the MSA and its Pfam annotations. You must set <code>generatemapping</code> and <code>useidcoordinates</code> to <code>true</code> the first time you read the downloaded MSA. This is necessary to some of the methods in the <code>Pfam</code> module.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[41]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">pfamfile</span> <span class="o">=</span> <span class="n">downloadpfam</span><span class="p">(</span><span class="s">&quot;PF12464&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 73781  100 73781    0     0  32697      0  0:00:02  0:00:02 --:--:-- 32704
+</pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt output_prompt">Out[41]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&quot;PF12464.stockholm.gz&quot;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">msa</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">pfamfile</span><span class="p">,</span> <span class="n">Stockholm</span><span class="p">,</span> <span class="n">generatemapping</span><span class="o">=</span><span class="n">true</span><span class="p">,</span> <span class="n">useidcoordinates</span><span class="o">=</span><span class="n">true</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[42]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>1157x53 MIToS.MSA.AnnotatedMultipleSequenceAlignment:
+ R  M  S  S  G  Q  L  Y  I  …  M  K  G  F  F  G  A  C  G
+ -  C  R  L  G  E  L  Y  N     I  R  D  L  L  G  K  T  G
+ R  M  L  A  G  L  P  Y  R     L  A  E  I  L  G  K  C  G
+ K  M  L  A  G  E  L  Y  D     L  K  E  L  L  G  -  -  -
+ R  M  L  L  G  L  P  Y  K     T  R  E  I  L  Y  K  V  G
+ ⋮              ⋮           ⋱     ⋮              ⋮      
+ K  M  T  A  G  E  W  Y  C     L  A  L  L  F  A  K  -  -
+ K  M  I  A  G  D  L  Y  F     V  K  E  T  F  G  S  V  G
+ -  -  -  -  -  L  P  Y  Y     L  R  K  L  L  G  K  T  G
+ R  M  I  S  G  M  L  Y  N  …  L  R  E  I  L  G  S  I  -
+ K  M  I  Q  G  E  L  Y  Y     -  -  -  -  -  -  -  -  -</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h2 id="Getting-PDB-information-from-an-MSA">Getting PDB information from an MSA<a class="anchor-link" href="#Getting-PDB-information-from-an-MSA">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The function <code>getseq2pdb</code> parses the MSA annotations to return a <code>Dict</code> from the sequence identifier in the MSA to PDB and chain codes.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[43]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">getseq2pdb</span><span class="p">(</span><span class="n">msa</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[43]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Dict{ASCIIString,Array{Tuple{ASCIIString,ASCIIString},1}} with 5 entries:
+  &quot;Q18A66_PEPD6/6-5… =&gt; [(&quot;4ISX&quot;,&quot;A&quot;),(&quot;3SRT&quot;,&quot;B&quot;),(&quot;3SRT&quot;,…
+  &quot;THGA_ECOLI/8-59&quot;  =&gt; [(&quot;1KRR&quot;,&quot;B&quot;),(&quot;1KRU&quot;,&quot;A&quot;),(&quot;1KRV&quot;,…
+  &quot;MAA_ECOLI/7-58&quot;   =&gt; [(&quot;1OCX&quot;,&quot;C&quot;),(&quot;1OCX&quot;,&quot;A&quot;),(&quot;1OCX&quot;,…
+  &quot;Q9KLB0_VIBCH/8-5… =&gt; [(&quot;3NZ2&quot;,&quot;J&quot;),(&quot;3NZ2&quot;,&quot;D&quot;),(&quot;3NZ2&quot;,…
+  &quot;Q81N16_BACAN/7-5… =&gt; [(&quot;3HJJ&quot;,&quot;C&quot;),(&quot;3IGJ&quot;,&quot;C&quot;),(&quot;3IGJ&quot;,…</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Once you know the association between PDB chains and sequences, you can use that information together with the <code>msacolumn2pdbresidue</code> function to get the PDB residue number that correspond to each MSA column for given a determined sequence and PDB chain. That function downloads information from SIFTS to generate the mapping.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[44]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">col2res</span> <span class="o">=</span> <span class="n">msacolumn2pdbresidue</span><span class="p">(</span><span class="n">msa</span><span class="p">,</span> <span class="s">&quot;MAA_ECOLI/7-58&quot;</span><span class="p">,</span> <span class="s">&quot;1OCX&quot;</span><span class="p">,</span> <span class="s">&quot;C&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 22683  100 22683    0     0   4074      0  0:00:05  0:00:05 --:--:--  4436
+</pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt output_prompt">Out[44]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Dict{Int64,ASCIIString} with 51 entries:
+  46  =&gt; &quot;21&quot;
+  134 =&gt; &quot;48&quot;
+  136 =&gt; &quot;50&quot;
+  55  =&gt; &quot;29&quot;
+  66  =&gt; &quot;38&quot;
+  58  =&gt; &quot;32&quot;
+  59  =&gt; &quot;33&quot;
+  142 =&gt; &quot;56&quot;
+  139 =&gt; &quot;53&quot;
+  57  =&gt; &quot;31&quot;
+  ⋮   =&gt; ⋮</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The returned dictionary can be used to get the PDB residue associated to each column (using the <code>msaresidues</code> function)...</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[47]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span>
+<span class="n">pdbfile</span> <span class="o">=</span> <span class="n">downloadpdb</span><span class="p">(</span><span class="s">&quot;1OCX&quot;</span><span class="p">)</span>
+<span class="n">pdb</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">pdbfile</span><span class="p">,</span> <span class="n">PDBML</span><span class="p">)</span>
+<span class="n">resdict</span> <span class="o">=</span> <span class="p">@</span><span class="n">residuesdict</span> <span class="n">pdb</span> <span class="n">model</span> <span class="s">&quot;1&quot;</span> <span class="n">chain</span> <span class="s">&quot;C&quot;</span> <span class="n">group</span> <span class="s">&quot;ATOM&quot;</span> <span class="n">residue</span> <span class="s">&quot;*&quot;</span>
+
+<span class="n">msaresidues</span><span class="p">(</span><span class="n">msa</span><span class="p">,</span> <span class="n">resdict</span><span class="p">,</span> <span class="n">col2res</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+100  355k  100  355k    0     0   178k      0  0:00:01  0:00:01 --:--:--  757k
+</pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt output_prompt">Out[47]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>DataStructures.OrderedDict{Int64,MIToS.PDB.PDBResidue} with 51 entries:
+  14 =&gt; PDBResidue:…
+  15 =&gt; PDBResidue:…
+  16 =&gt; PDBResidue:…
+  17 =&gt; PDBResidue:…
+  18 =&gt; PDBResidue:…
+  19 =&gt; PDBResidue:…
+  20 =&gt; PDBResidue:…
+  21 =&gt; PDBResidue:…
+  22 =&gt; PDBResidue:…
+  24 =&gt; PDBResidue:…
+  ⋮  =&gt; ⋮</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>...or to delete the columns without PDB residues (using the <code>hasresidues</code> function):</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[48]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span>
+<span class="n">filtercolumns</span><span class="o">!</span><span class="p">(</span><span class="n">msa</span><span class="p">,</span> <span class="n">hasresidues</span><span class="p">(</span><span class="n">msa</span><span class="p">,</span> <span class="n">col2res</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[48]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>1157x51 MIToS.MSA.AnnotatedMultipleSequenceAlignment:
+ R  M  S  S  G  Q  L  Y  I  …  L  M  K  G  F  F  G  A  C
+ -  C  R  L  G  E  L  Y  N     I  I  R  D  L  L  G  K  T
+ R  M  L  A  G  L  P  Y  R     L  L  A  E  I  L  G  K  C
+ K  M  L  A  G  E  L  Y  D     I  L  K  E  L  L  G  -  -
+ R  M  L  L  G  L  P  Y  K     L  T  R  E  I  L  Y  K  V
+ ⋮              ⋮           ⋱           ⋮              ⋮
+ K  M  T  A  G  E  W  Y  C     A  L  A  L  L  F  A  K  -
+ K  M  I  A  G  D  L  Y  F     R  V  K  E  T  F  G  S  V
+ -  -  -  -  -  L  P  Y  Y     R  L  R  K  L  L  G  K  T
+ R  M  I  S  G  M  L  Y  N  …  M  L  R  E  I  L  G  S  I
+ K  M  I  Q  G  E  L  Y  Y     -  -  -  -  -  -  -  -  -</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="PDB-contacts-and-AUC">PDB contacts and AUC<a class="anchor-link" href="#PDB-contacts-and-AUC">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>Dict</code> between MSA columns and PDB residue number also can be used to generate a protein contact map associated to the MSA.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[52]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="n">cmap</span> <span class="o">=</span> <span class="n">msacontacts</span><span class="p">(</span><span class="n">msa</span><span class="p">,</span> <span class="n">resdict</span><span class="p">,</span> <span class="n">col2res</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[52]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>51x51 PairwiseListMatrices.PairwiseListMatrix{Float64,false}:
+ NaN      1.0    1.0    1.0  …    0.0    0.0    0.0
+   1.0  NaN      1.0    1.0       0.0    0.0    0.0
+   1.0    1.0  NaN      1.0       0.0    0.0    0.0
+   1.0    1.0    1.0  NaN         0.0    0.0    0.0
+   1.0    1.0    1.0    1.0       0.0    0.0    0.0
+   ⋮                         ⋱                  ⋮  
+   0.0    0.0    0.0    0.0       1.0    0.0    0.0
+   0.0    0.0    0.0    0.0       1.0    1.0    1.0
+   0.0    0.0    0.0    0.0     NaN      1.0    1.0
+   0.0    0.0    0.0    0.0       1.0  NaN      1.0
+   0.0    0.0    0.0    0.0  …    1.0    1.0  NaN  </pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>That protein contact map can be used to calculate the Area Under the ROC Curve for a given score with the <code>AUC</code> function.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[58]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span>
+<span class="n">ZMIp</span><span class="p">,</span> <span class="n">MIp</span> <span class="o">=</span> <span class="n">buslje09</span><span class="p">(</span><span class="n">msa</span><span class="p">)</span>
+
+<span class="n">AUC</span><span class="p">(</span><span class="n">ZMIp</span><span class="p">,</span> <span class="n">cmap</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[58]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>0.7549031963326455</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>

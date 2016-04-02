@@ -96,7 +96,7 @@ function _keepinserts!(SEQS, annot)
     aligned = map(SEQS[1]) do char
         isupper(char) || char == '-' ? '1' : '0'
     end
-    setannotfile!(annot, "Aligned", aligned)
+    setannotcolumn!(annot, "Aligned", aligned)
     map!(uppercase, SEQS)
 end
 

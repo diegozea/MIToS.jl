@@ -281,7 +281,7 @@ Given that lowercase characters and dots are converted to gaps, unaligned insert
         <strong>If you want to keep the insert columns...</strong>
     </div>
     <div class="panel-body">
-        Convert to upper case your file before using the <code>read</code> function. 
+        Use the keyword argument <code>keepinserts</code> to <code>true</code> in <code>read<code>/</code>parse</code>. This only works with an <code>AnnotatedMultipleSequenceAlignment</code> output. A column annotation (<code>"Aligned"</code>) is stored, where the insert columns are marked with <code>0</code> and aligned columns with <code>1</code>.
     </div>
 </div>
 </div>
@@ -520,7 +520,7 @@ KKDLFYKDIEGRLDELKHGRPKKEKASLGEKFNKAFVIALGLMILIGLIFTLIGV-
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Julia REPL shows the <code>Annotations</code> type as they are represented in the <a href="https://en.wikipedia.org/wiki/Stockholm_format">Stockholm format<span class="fa fa-external-link" aria-hidden="true"></span></a>. You can get the <code>Annotations</code> inside an annotated MSA or sequence using the <code>annotations</code> function.</p>
+<p>Julia REPL shows the <code>Annotations</code> type as they are represented in the <a href="https://en.wikipedia.org/wiki/Stockholm_format">Stockholm format<span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a>. You can get the <code>Annotations</code> inside an annotated MSA or sequence using the <code>annotations</code> function.</p>
 
 </div>
 </div>
@@ -881,7 +881,7 @@ As you can see, the new sequence annotation is now part of our MSA annotations.<
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The most simple input for the command line tool <a href="#https://rostlab.org/owiki/index.php/FreeContact">freecontact<span class="fa fa-external-link" aria-hidden="true"></span></a> (if you don’t want to set <code>--mincontsep</code>) is a <code>Raw</code> MSA file with a reference sequence without insertions or gaps. This is easy to get with MIToS using <code>read</code> (deletes the insert columns), <code>setreference!</code> (to choose a reference), <code>adjustreference!</code> (to delete columns with gaps in the reference) and <code>write</code> (to save it in <code>Raw</code> format) functions.</p>
+<p>The most simple input for the command line tool <a href="#https://rostlab.org/owiki/index.php/FreeContact">freecontact<span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a> (if you don’t want to set <code>--mincontsep</code>) is a <code>Raw</code> MSA file with a reference sequence without insertions or gaps. This is easy to get with MIToS using <code>read</code> (deletes the insert columns), <code>setreference!</code> (to choose a reference), <code>adjustreference!</code> (to delete columns with gaps in the reference) and <code>write</code> (to save it in <code>Raw</code> format) functions.</p>
 
 </div>
 </div>
@@ -1900,7 +1900,7 @@ MLESEVSGNAPHSLWIVGAADICRIALECIPLPKRLLAIKVSGTWSGMPWAIPDNIQTLLTSTWEPKFDTPEDRAHFCDS
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The <code>gapfraction</code> and <code>coverage</code> functions return a vector of number between <code>0.0</code> and <code>1.0</code> (fraction of...). Sometime it’s useful to plot this data to quickly understand the MSA structure. In this example, we are going to use the <a href="#http://plots.readthedocs.org/en/latest/">Plots<span class="fa fa-external-link" aria-hidden="true"></span></a> package for plotting, with a <a href="#http://spencerlyon.com/PlotlyJS.jl/">PlotlyJS<span class="fa fa-external-link" aria-hidden="true"></span></a> backend, but you are free to use any of the Julia plotting libraries.</p>
+<p>The <code>gapfraction</code> and <code>coverage</code> functions return a vector of number between <code>0.0</code> and <code>1.0</code> (fraction of...). Sometime it’s useful to plot this data to quickly understand the MSA structure. In this example, we are going to use the <a href="#http://plots.readthedocs.org/en/latest/">Plots<span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a> package for plotting, with a <a href="#http://spencerlyon.com/PlotlyJS.jl/">PlotlyJS<span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a> backend, but you are free to use any of the Julia plotting libraries.</p>
 
 </div>
 </div>
@@ -2196,7 +2196,7 @@ After:	48		108
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>MIToS stores the matrix of percentage of identity between the aligned sequences as a PairwiseListMatrix
-from the <a href="#http://diegozea.github.io/PairwiseListMatrices.jl/">PairwiseListMatrices<span class="fa fa-external-link" aria-hidden="true"></span></a> package. This matrix type saves RAM, allowing the storage of  big matrices. In this example, we use the <code>to_table</code> function of <em>PairwiseListMatrices</em> to convert the matrix into a table with indices.</p>
+from the <a href="#http://diegozea.github.io/PairwiseListMatrices.jl/">PairwiseListMatrices<span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a> package. This matrix type saves RAM, allowing the storage of  big matrices. In this example, we use the <code>to_table</code> function of <em>PairwiseListMatrices</em> to convert the matrix into a table with indices.</p>
 
 </div>
 </div>
@@ -2290,7 +2290,7 @@ from the <a href="#http://diegozea.github.io/PairwiseListMatrices.jl/">PairwiseL
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The function <code>meanpercentidentity</code> gives the mean value of the percent identity distribution for MSA with less than 300 sequences, or a quick estimate (mean PID in a random sample of sequence pairs) otherwise.</p>
+<p>The function <code>meanpercentidentity</code> gives the mean value of the percent identity distribution for MSA with less than 300 sequences, or a quick estimate (mean PID in a random sample of sequence pairs) otherwise unless you set <code>exact</code> to <code>true</code>.</p>
 
 </div>
 </div>
@@ -2329,7 +2329,7 @@ from the <a href="#http://diegozea.github.io/PairwiseListMatrices.jl/">PairwiseL
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>One can easily plot that matrix and its distribution using the <code>heatmap</code> and <code>histogram</code> functions of the <a href="#https://github.com/tbreloff/Plots.jl">Plots<span class="fa fa-external-link" aria-hidden="true"></span></a> package.</p>
+<p>One can easily plot that matrix and its distribution using the <code>heatmap</code> and <code>histogram</code> functions of the <a href="#https://github.com/tbreloff/Plots.jl">Plots<span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a> package.</p>
 
 </div>
 </div>
@@ -2415,8 +2415,8 @@ from the <a href="#http://diegozea.github.io/PairwiseListMatrices.jl/">PairwiseL
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The <code>MSA</code> module allows to clusterize sequences in a MSA. The <code>hobohmI</code> function takes as input a MSA followed by an identity threshold value, and returns a <code>SequenceCluster</code> type with the result of a <a href="#http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2142204/">Hobohm I<span class="fa fa-external-link" aria-hidden="true"></span></a> sequence clustering. The Hobohm I algorithm will add a sequence to an existing cluster, if the percentage of identity is equal or greater than the threshold.<br>
-The <code>SequenceCluster</code> is sub-type of <code>ClusteringResult</code> from the <a href="#http://clusteringjl.readthedocs.org/en/latest/index.html">Clustering.jl<span class="fa fa-external-link" aria-hidden="true"></span></a> package. One advantage of use a sub-type of <code>ClusteringResult</code>is that you are able to use any method defined on <code>Clustering.jl</code> like <code>varinfo</code> (Variation of Information) for example. Also, you can use any clustering algorithm included in <em>Clustering.jl</em>, and convert its result to an <code>SequenceCluster</code> object to use them with MIToS.<br>
+<p>The <code>MSA</code> module allows to clusterize sequences in a MSA. The <code>hobohmI</code> function takes as input a MSA followed by an identity threshold value, and returns a <code>SequenceCluster</code> type with the result of a <a href="#http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2142204/">Hobohm I<span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a> sequence clustering. The Hobohm I algorithm will add a sequence to an existing cluster, if the percentage of identity is equal or greater than the threshold.<br>
+The <code>SequenceCluster</code> is sub-type of <code>ClusteringResult</code> from the <a href="#http://clusteringjl.readthedocs.org/en/latest/index.html">Clustering.jl<span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a> package. One advantage of use a sub-type of <code>ClusteringResult</code>is that you are able to use any method defined on <code>Clustering.jl</code> like <code>varinfo</code> (Variation of Information) for example. Also, you can use any clustering algorithm included in <em>Clustering.jl</em>, and convert its result to an <code>SequenceCluster</code> object to use them with MIToS.<br>
 <code>MSA</code> defines the functions <code>nclusters</code> to get the resulting number of clusters, <code>counts</code> to get the number of sequences on each cluster and <code>assignments</code> to get the cluster number of each sequence. The most important method is <code>getweight</code>, which returns the weight of each sequence. This method is used in the <code>Information</code> module of MIToS to reduce redundancy.</p>
 
 </div>
@@ -2532,7 +2532,7 @@ The <code>SequenceCluster</code> is sub-type of <code>ClusteringResult</code> fr
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We are going to use the <a href="#http://dataframesjl.readthedocs.org/en/latest/">DataFrames<span class="fa fa-external-link" aria-hidden="true"></span></a> package to easily select the sequence with highest coverage of each cluster.</p>
+<p>We are going to use the <a href="#http://dataframesjl.readthedocs.org/en/latest/">DataFrames<span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a> package to easily select the sequence with highest coverage of each cluster.</p>
 
 </div>
 </div>

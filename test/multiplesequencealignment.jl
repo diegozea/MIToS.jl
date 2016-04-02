@@ -77,7 +77,7 @@ Keep insert columns
 """)
 
 let aln = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, keepinserts=true)
-    @test (collect(getannotfile(aln, "Aligned")) .== '1') == (F112_SSV1 .!= '.') # Aligned columns
+    @test (collect(getannotcolumn(aln, "Aligned")) .== '1') == (F112_SSV1 .!= '.') # Aligned columns
     @test asciisequence(aln, 1) == replace(uppercase("...mp---NSYQMAEIMYKILQQKKEISLEDILAQFEISASTAYNVQRTLRMICEKHPDECEVQTKNRRTIFKWIKNEETTEEGQEE--QEIEKILNAQPAE-------------k...."), '.', '-')
 end
 

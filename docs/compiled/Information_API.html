@@ -37,20 +37,6 @@
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>INFO: Recompiling stale cache file /home/diego/.julia/lib/v0.4/MIToS.ji for module MIToS.
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -418,6 +404,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="highlight"><pre><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">Entropy</span><span class="p">{</span><span class="n">T</span><span class="p">}</span>
 <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">GapIntersectionPercentage</span><span class="p">{</span><span class="n">T</span><span class="p">}</span>
 <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">GapUnionPercentage</span><span class="p">{</span><span class="n">T</span><span class="p">}</span>
+<span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">KullbackLeibler</span><span class="p">{</span><span class="n">T</span><span class="p">}</span>
 <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">MutualInformationOverEntropy</span><span class="p">{</span><span class="n">T</span><span class="p">}</span>
 <span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">MutualInformation</span><span class="p">{</span><span class="n">T</span><span class="p">}</span>
 </pre></div>
@@ -432,7 +419,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">Entropy</span>
@@ -446,7 +433,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[11]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[14]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Shannon entropy (H)</p>
@@ -461,7 +448,36 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">KullbackLeibler</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Kullback-Leibler (KL). This <code>SymmetricMeasure</code> has two fields. The first is the base of the logarithm and the second is the backgroud frequency.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">MutualInformation</span>
@@ -475,7 +491,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[12]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Mutual Information (MI)</p>
@@ -490,7 +506,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">MutualInformationOverEntropy</span>
@@ -504,7 +520,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Normalized Mutual Information (nMI) by Entropy.</p>
@@ -520,7 +536,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">GapUnionPercentage</span>
@@ -534,7 +550,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[14]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>GapUnionPercentage</code></p>
@@ -549,7 +565,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">GapIntersectionPercentage</span>
@@ -563,7 +579,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>GapIntersectionPercentage</code></p>
@@ -588,7 +604,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">Raw</span>
@@ -602,12 +618,12 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[20]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Raw</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Raw</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
 </pre></div>
 
 </div>
@@ -620,7 +636,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">Stockholm</span>
@@ -634,12 +650,12 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Stockholm</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Stockholm</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
 </pre></div>
 
 </div>
@@ -652,7 +668,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">FASTA</span>
@@ -666,12 +682,12 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[22]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">FASTA</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">FASTA</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
 </pre></div>
 
 </div>
@@ -694,7 +710,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">BLOSUM62_Pi</span>
@@ -708,7 +724,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[23]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>BLOSUM62 probabilities <em>P(aa)</em> for each residue. SUM:  0.9987</p>
@@ -723,7 +739,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">BLOSUM62_Pij</span>
@@ -737,7 +753,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[20]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[24]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Normalization is done row based. The firts row contains the <em>P(aa|A)</em> and so one...</p>
@@ -763,7 +779,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">APC</span><span class="o">!</span>
@@ -777,10 +793,40 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[25]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>APC (Dunn et. al. 2008)</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[45]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">cumulative</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[45]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>cumulative</code> allows to calculate cumulative scores (i.e. cMI) as defined in Buslje et. al. 2010</p>
+<p><em>"We calculated a cumulative mutual information score (cMI) for each residue as the sum of MI values above a certain threshold for every amino acid pair where the particular residue appears. This value defines to what degree a given amino acid takes part in a mutual information network."</em> Buslje, Cristina Marino, Elin Teppa, Tomas Di Doménico, José María Delfino, and Morten Nielsen. <em>Networks of high mutual information define the structural proximity of catalytic sites: implications for catalytic residue identification.</em> PLoS Comput Biol 6, no. 11 (2010): e1000978.</p>
 
 </div>
 
@@ -802,7 +848,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">probabilities</span>
@@ -816,7 +862,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[22]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[26]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>probabilities(T, α, β, res1, res2, [weight])</code> use BLOSUM62 based pseudofrequencies. α is the weight of the evidence, and β the weight of the pseudofrequencies.</p>
@@ -835,7 +881,7 @@ probabilities(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">count</span>
@@ -849,7 +895,7 @@ probabilities(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[23]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[27]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 
@@ -870,7 +916,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="prompt input_prompt">In&nbsp;[28]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">count</span><span class="o">!</span>
@@ -884,7 +930,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[24]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[28]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>count!</code> adds counts from vector of residues to a <code>ResidueCount</code> object. It can take a SequenceWeights object as second argument.</p>
@@ -951,7 +997,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">normalize</span><span class="o">!</span>
@@ -965,7 +1011,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[25]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[29]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>normalize!(p::ResidueProbability; updated::Bool=false)</code></p>
@@ -982,7 +1028,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">nresidues</span>
@@ -996,14 +1042,14 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[26]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[30]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><code>MIToS.Information.nresidues</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 2 methods for generic function &quot;nresidues&quot;:</span>
-<span class="n">nresidues</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">}(</span><span class="n">n</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">ResidueContingencyTables</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">true</span><span class="p">})</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">Information</span><span class="o">/</span><span class="n">Probabilities</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">74</span>
-<span class="n">nresidues</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">}(</span><span class="n">n</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">ResidueContingencyTables</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">false</span><span class="p">})</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">Information</span><span class="o">/</span><span class="n">Probabilities</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">75</span>
+<span class="n">nresidues</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">}(</span><span class="n">n</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">ResidueContingencyTables</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">true</span><span class="p">})</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">Information</span><span class="o">/</span><span class="n">Probabilities</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">74</span>
+<span class="n">nresidues</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">}(</span><span class="n">n</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">ResidueContingencyTables</span><span class="p">{</span><span class="n">T</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">false</span><span class="p">})</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">Information</span><span class="o">/</span><span class="n">Probabilities</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">75</span>
 </pre></div>
 
 </div>
@@ -1016,7 +1062,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">update</span><span class="o">!</span>
@@ -1030,7 +1076,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[27]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[31]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Updates the marginals values (and total value for <code>ResidueCount</code>) of a <code>ResidueContingencyTables</code></p>
@@ -1045,7 +1091,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">apply_pseudocount</span><span class="o">!</span>
@@ -1059,7 +1105,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[28]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[32]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>apply_pseudocount!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::AdditiveSmoothing{T})</code></p>
@@ -1075,7 +1121,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[29]:</div>
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">blosum_pseudofrequencies</span><span class="o">!</span>
@@ -1089,7 +1135,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[29]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[33]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>blosum_pseudofrequencies!(Gab::ResidueProbability{T, 2,false}, Pab::ResidueProbability{T, 2,false})</code></p>
@@ -1106,7 +1152,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[30]:</div>
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">apply_pseudofrequencies</span><span class="o">!</span>
@@ -1120,7 +1166,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[30]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[34]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>apply_pseudofrequencies!{T}(Pab::ResidueProbability{T, 2,false}, Gab::ResidueProbability{T, 2,false}, α, β)</code></p>
@@ -1137,7 +1183,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">delete_dimensions</span><span class="o">!</span>
@@ -1151,7 +1197,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[31]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[35]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>delete_dimensions!(out::ResidueContingencyTables, in::ResidueContingencyTables, dimensions::Int...)</code></p>
@@ -1167,7 +1213,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="prompt input_prompt">In&nbsp;[36]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">delete_dimensions</span>
@@ -1181,7 +1227,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[32]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[36]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>delete_dimensions(in::ResidueContingencyTables, dimensions::Int...)</code></p>
@@ -1207,7 +1253,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">estimate</span>
@@ -1221,13 +1267,15 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[33]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[37]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>estimate(MutualInformation(), pxy::ResidueCount [, base])</code></p>
 <p>Calculate Mutual Information from <code>ResidueCount</code>. The result type is determined by the <code>base</code>. It's the fastest option (you don't spend time on probability calculations).</p>
 <p><code>estimate(MutualInformation(), pxy::ResidueProbability [, base])</code></p>
 <p>Calculate Mutual Information from <code>ResidueProbability</code>. The result type is determined by <code>base</code>.</p>
+<p><code>estimate(KullbackLeibler(base, background), p)</code></p>
+<p><code>p</code> should be a <code>ResidueProbability</code> table, and <code>background</code> must have the size of <code>p</code>. The result type is determined by <code>base</code> and <code>background</code>.</p>
 <p><code>estimate(Entropy{T}(base), n::ResidueCount)</code></p>
 <p>It's the fastest option (you don't spend time on probability calculations). The result type is determined by the <code>base</code>.</p>
 <p><code>estimate(Entropy(base), p)</code></p>
@@ -1243,7 +1291,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">estimate_on_marginal</span>
@@ -1257,7 +1305,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[34]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[38]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>estimate_on_marginal(Entropy{T}(base), p, marginal)</code></p>
@@ -1273,7 +1321,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[35]:</div>
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">estimateinsequences</span>
@@ -1287,7 +1335,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[35]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[39]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>This function <code>estimate</code> a <code>measure</code> over sequences or sequence pairs. It has the same arguments than <code>estimateincolumns</code>, look the documentation of the last.</p>
@@ -1302,7 +1350,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[36]:</div>
+<div class="prompt input_prompt">In&nbsp;[40]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">estimateincolumns</span>
@@ -1316,7 +1364,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[36]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[40]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>estimateincolumns(aln, [count,] use, [α, β,] measure, [pseudocount,] [weight,] [usediagonal, diagonalvalue])</code></p>
@@ -1354,7 +1402,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[37]:</div>
+<div class="prompt input_prompt">In&nbsp;[41]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">buslje09</span>
@@ -1368,7 +1416,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[37]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[41]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>This function takes a MSA or a file and a <code>Format</code> as first arguments. Calculates a Z score and a corrected MI/MIp as described on <strong>Busjle et. al. 2009</strong></p>
@@ -1397,7 +1445,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">BLMI</span>
@@ -1411,7 +1459,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[38]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[42]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>This function takes a MSA or a file and a <code>Format</code> as first arguments. Calculates a Z score (ZBLMI) and a corrected MI/MIp as described on <strong>Busjle et. al. 2009</strong> but using using BLOSUM62 pseudo frequencies instead of a fixed pseudocount.</p>
@@ -1439,7 +1487,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[39]:</div>
+<div class="prompt input_prompt">In&nbsp;[43]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">pairwisegapfraction</span>
@@ -1453,7 +1501,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[39]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[43]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>This function takes a MSA or a file and a <code>Format</code> as first arguments. Calculates the percentage of gaps on columns pairs (union and intersection) using sequence clustering (Hobohm I).</p>
@@ -1488,7 +1536,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[40]:</div>
+<div class="prompt input_prompt">In&nbsp;[44]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Information</span><span class="o">.</span><span class="n">fill</span><span class="o">!</span>
@@ -1502,7 +1550,7 @@ count(pseudocount::Pseudocount, res::AbstractVector{Residue}...; usegap=false, w
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[40]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[44]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 
