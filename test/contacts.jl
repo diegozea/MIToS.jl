@@ -246,4 +246,7 @@ let code = "2VQC",
 
     @test proximitymean(residues, [1.0, 2.0, 3.0], 6.05) == [2.0, 2.0, 2.0]
     @test proximitymean(residues, [10., 15., 30.], 6.05) == [15., 20., 15.]
+
+    @test proximitymean(residues, [1.0, 2.0, 3.0], 6.05, include=true) == [3./2., 6./3., 5./2.]
+    @test proximitymean(residues, [10., 15., 30.], 6.05, include=true) == [25./2., 55./3., 45./2.]
 end
