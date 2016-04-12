@@ -27,9 +27,12 @@ set_parallel(Args["parallel"])
     function script(input::Union{Base.LibuvStream,  AbstractString},
                     args,
                     fh_out::Union{Base.LibuvStream, IO})
-
-        aln = read(input, Stockholm, generatemapping=true, useidcoordinates=true, deletefullgaps=true)
-        print(fh_out, aln, Stockholm)
+        try
+            aln = read(input, Stockholm, generatemapping=true, useidcoordinates=true, deletefullgaps=true)
+            print(fh_out, aln, Stockholm)
+        catch err
+            warn(string("ERROR for ", input, ": ", err))
+        end
 
     end
     # -----------------------------------------------------------------------------

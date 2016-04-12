@@ -9,6 +9,11 @@ Args = parse_commandline(
         :arg_type => ASCIIString,
         :default => "Stockholm"
     ),
+    ["--exact", "-e"],
+    Dict(
+        :help => "If it's true, the mean percent identity is exact (using all the pairwise comparisons).",
+        :action => :store_true
+    ),
     description="""
     Creates an *.description.csv from a Stockholm file with: the number of columns, sequences, clusters after Hobohm clustering at 62% identity and mean percent identity.
     Also the mean, standard deviation and quantiles of: sequence coverage of the MSA, gap percentage.
@@ -70,7 +75,7 @@ set_parallel(Args["parallel"])
         println(fh_out, input, ",", "coverage",   ",", "mean", ",", "", ",", mean(cov))
         println(fh_out, input, ",", "coverage",   ",", "std",  ",", "", ",", std(cov))
 
-        println(fh_out, input, ",", "percentidentity",   ",", "mean", ",", "", ",", meanpercentidentity(aln))
+        println(fh_out, input, ",", "percentidentity",   ",", "mean", ",", "", ",", meanpercentidentity(aln, exact=args["exact"]))
 
         gap = gapfraction(aln, 1);
         qgp = quantile(gap, [0., .25, .5, .75, 1.])
