@@ -113,7 +113,7 @@ function estimate{B, T, N, UseGap}(measure::KullbackLeibler{B}, p::ResidueProbab
       KL += pi * log(pi/q[i])
     end
   end
-  -KL/log(measure.base)
+  KL/log(measure.base)
 end
 
 # Mutual Information
