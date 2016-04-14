@@ -3,7 +3,8 @@
 
 const _regex_PDB_from_GS = r"PDB;\s+(\w+)\s+(\w);\s+\w+-\w+;" # i.e.: "PDB; 2VQC A; 4-73;\n"
 
-"""Generates from a Pfam `msa` a `Dict{ASCIIString, Vector{Tuple{ASCIIString,ASCIIString}}}`.
+"""
+Generates from a Pfam `msa` a `Dict{ASCIIString, Vector{Tuple{ASCIIString,ASCIIString}}}`.
 Keys are sequence IDs and each value is a list of tuples containing PDB code and chain.
 
 ```
@@ -117,7 +118,7 @@ This function takes an `AnnotatedMultipleSequenceAlignment` with correct *ColMap
 2. The second is a `Dict{Int,ASCIIString}` from MSA column number **on the input file** to PDB residue number.
 
 This returns an `OrderedDict{Int,PDBResidue}` from input column number (ColMap) to `PDBResidue`.
-Residues on iserts are not included.
+Residues on inserts are not included.
 """
 function msaresidues(msa::AnnotatedMultipleSequenceAlignment, residues::OrderedDict{ASCIIString,PDBResidue}, column2residues::Dict{Int,ASCIIString})
   colmap = getcolumnmapping(msa)
