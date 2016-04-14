@@ -236,3 +236,19 @@ RESTful PDB Interface
 
 @test getpdbdescription("4HHB")["resolution"] == "1.74"
 @test_throws KeyError getpdbdescription("104D")["resolution"] # NMR
+
+print("""
+
+Write PDB files
+===============
+""")
+
+let code = "2VQC", io = IOBuffer()
+    pdb = read(txt(code), PDBFile)
+    print(io, pdb, PDBFile)
+    printed = split(takebuf_string(io), '\n')
+
+    @test length(printed) == 608 # Only ATOM & HETATM + 1 because the trailing \n
+    @test printed[1]   == "ATOM      1  N   THR A   4       2.431  19.617   6.520  1.00 24.37           N  "
+    @test printed[607] == "HETATM  607  O   HOH A2025      13.807  38.993   2.453  1.00 33.00           O  "
+end
