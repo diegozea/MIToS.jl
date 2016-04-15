@@ -38,73 +38,81 @@ end
 """
 This function returns a `Dict{Int64,ASCIIString}` with **MSA column numbers on the input file** as keys and PDB residue numbers (`""` for missings) as values.
 The mapping is performed using SIFTS. This function needs correct *ColMap* and *SeqMap* annotations.
-This checks correspondence of the residues between the sequence and SIFTS (It throws a warning if the are differences).
+This checks correspondence of the residues between the MSA sequence and SIFTS (It throws a warning if there are differences).
+If the keyword argument `strict` is `true` (default: `false`), throws an Error, instead of a Warning, when residues don't match.
+If the keyword argument `checkpdbname` is `true` (default: `false`), throws an Error if the three letter name of the PDB residue isn't the MSA residue.
 If you are working with a **downloaded Pfam MSA without modifications**, you should `read` it using `generatemapping=true` and `useidcoordinates=true`.
 """
 function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
-    seqid::ASCIIString,
-    pdbid::ASCIIString,
-    chain::ASCIIString,
-    pfamid::ASCIIString,
-    siftsfile::ASCIIString)
+                              seqid::ASCIIString,
+                              pdbid::ASCIIString,
+                              chain::ASCIIString,
+                              pfamid::ASCIIString,
+                              siftsfile::ASCIIString;
+                              strict::Bool=false,
+                              checkpdbname::Bool=false)
 
-  siftsres = read(siftsfile, SIFTSXML, chain=chain, missings=true)
+    siftsres = read(siftsfile, SIFTSXML, chain=chain, missings=true)
 
-  up2res = Dict{Int,Tuple{ASCIIString,ASCIIString}}()
-  for res in siftsres
-    if !isnull(res.Pfam) && get(res.Pfam).id == uppercase(pfamid)
-      pfnum  = get(res.Pfam).number
-      pfname = get(res.Pfam).name
-      if !isnull(res.PDB) && (get(res.PDB).id == lowercase(pdbid)) && !res.missing
-        up2res[pfnum] = (pfname, get(res.PDB).number)
-      else
-        up2res[pfnum] = (pfname, "")
-      end
+    up2res = Dict{Int, Tuple{ASCIIString, ASCIIString, Char}}()
+    for res in siftsres
+        if !isnull(res.Pfam) && get(res.Pfam).id == uppercase(pfamid)
+            pfnum  = get(res.Pfam).number
+            pfname = get(res.Pfam).name
+            if !isnull(res.PDB) && (get(res.PDB).id == lowercase(pdbid)) && !res.missing
+                up2res[pfnum] = checkpdbname ? (pfname, get(res.PDB).number, three2residue(get(res.PDB).name)) : (pfname, get(res.PDB).number, '-')
+            else
+                up2res[pfnum] = checkpdbname ? (pfname, "", isnull(res.PDB) ? "" : three2residue(get(res.PDB).name)) : (pfname, "", '-')
+            end
+        end
     end
-  end
 
-  seq      = ascii(getsequence(msa,  seqid))
-  seqmap   = getsequencemapping(msa, seqid)
-  colmap   = getcolumnmapping(msa)
-  N        = ncolumns(msa)
+    seq      = ascii(getsequence(msa,  seqid))
+    seqmap   = getsequencemapping(msa, seqid)
+    colmap   = getcolumnmapping(msa)
+    N        = ncolumns(msa)
 
-  m = Dict{Int,ASCIIString}()
-  sizehint!(m, N)
-  for i in 1:N
-    up_number = seqmap[i]
-    if up_number != 0
-      up_res, pdb_resnum = get(up2res, up_number, ("",""))
-      if string(seq[i]) == up_res
-        m[colmap[i]] = pdb_resnum
-      else
-        warn(string(pfamid, " ", seqid, " ", pdbid, " ", chain, " : MSA sequence residue at ", i, " (", seq[i], ") != SIFTS residue (UniProt/Pfam: ", up_res, ", PDB: ", pdb_resnum, ")"))
-      end
+    m = Dict{Int,ASCIIString}()
+    sizehint!(m, N)
+    for i in 1:N
+        up_number = seqmap[i]
+        if up_number != 0
+            up_res, pdb_resnum, pdb_res = get(up2res, up_number, ("","",'-'))
+            if string(seq[i]) == up_res
+                m[colmap[i]] = pdb_resnum
+            else
+                msg = string(pfamid, " ", seqid, " ", pdbid, " ", chain, " : MSA sequence residue at ", i, " (", seq[i], ") != SIFTS residue (UniProt/Pfam: ", up_res, ", PDB: ", pdb_resnum, ")")
+                strict ? throw(ErrorException(msg)) : warn(msg)
+            end
+            if ( checkpdbname && (seq[i] != pdb_res) )
+                throw(ErrorException(string(pfamid, " ", seqid, " ", pdbid, " ", chain, " : MSA sequence residue at ", i, " (", seq[i], ") != PDB residue at ", pdb_resnum, " (", pdb_res, ")")))
+            end
+        end
     end
-  end
-  m
+    m
 end
 
 "If you don't indicate the path to the `siftsfile` used in the mapping, this function downloads the SIFTS file in the current folder."
 msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
                      seqid::ASCIIString, pdbid::ASCIIString, chain::ASCIIString,
-                     pfamid::ASCIIString) = msacolumn2pdbresidue(msa, seqid, pdbid, chain, pfamid, downloadsifts(pdbid))
+                     pfamid::ASCIIString; kargs...) = msacolumn2pdbresidue(msa, seqid, pdbid, chain, pfamid, downloadsifts(pdbid); kargs...)
 
 "If you don't indicate the Pfam accession number (`pfamid`), this function tries to read the *AC* file annotation."
 msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
-                     seqid::ASCIIString, pdbid::ASCIIString, chain::ASCIIString) = msacolumn2pdbresidue(msa, seqid, pdbid, chain,
-           ascii(split(getannotfile(msa, "AC"), '.')[1]))
+                     seqid::ASCIIString, pdbid::ASCIIString, chain::ASCIIString; kargs...) = msacolumn2pdbresidue(msa, seqid, pdbid, chain,
+                                                                                                                  ascii(split(getannotfile(msa, "AC"), '.')[1]); kargs...)
 
 "Returns a `BitVector` where there is a `true` for each column with PDB residue."
 function hasresidues(msa::AnnotatedMultipleSequenceAlignment, column2residues::Dict{Int,ASCIIString})
-  colmap = getcolumnmapping(msa)
-  ncol = length(colmap)
-  mask = falses(ncol)
-  for i in 1:ncol
-    if get(column2residues, colmap[i], "") != ""
-      mask[i] = true
+    colmap = getcolumnmapping(msa)
+    ncol = length(colmap)
+    mask = falses(ncol)
+    for i in 1:ncol
+        if get(column2residues, colmap[i], "") != ""
+            mask[i] = true
+        end
     end
-  end
-  mask
+    mask
 end
 
 # PDB residues for each column
@@ -121,15 +129,15 @@ This returns an `OrderedDict{Int,PDBResidue}` from input column number (ColMap) 
 Residues on inserts are not included.
 """
 function msaresidues(msa::AnnotatedMultipleSequenceAlignment, residues::OrderedDict{ASCIIString,PDBResidue}, column2residues::Dict{Int,ASCIIString})
-  colmap = getcolumnmapping(msa)
-  msares = sizehint!(OrderedDict{Int,PDBResidue}(), length(colmap))
-  for col in colmap
-    resnum = get(column2residues, col, "")
-    if resnum != ""
-      msares[col] = residues[resnum]
+    colmap = getcolumnmapping(msa)
+    msares = sizehint!(OrderedDict{Int,PDBResidue}(), length(colmap))
+    for col in colmap
+        resnum = get(column2residues, col, "")
+        if resnum != ""
+            msares[col] = residues[resnum]
+        end
     end
-  end
-  sizehint!(msares, length(msares))
+    sizehint!(msares, length(msares))
 end
 
 # Contact Map
@@ -146,20 +154,20 @@ This returns a `PairwiseListMatrix{Float64,false}` of `0.0` and `1.0` where `1.0
 (inter residue distance less or equal to 6.05 angstroms between any heavy atom). `NaN` indicates a missing value.
 """
 function msacontacts(msa::AnnotatedMultipleSequenceAlignment, residues::OrderedDict{ASCIIString,PDBResidue}, column2residues::Dict{Int,ASCIIString}, distance_limit::Float64=6.05)
-  colmap   = getcolumnmapping(msa)
-  contacts = PairwiseListMatrices.PairwiseListMatrix(Float64, length(column2residues), colmap, false, NaN)
-  @inbounds @iterateupper contacts false begin
+    colmap   = getcolumnmapping(msa)
+    contacts = PairwiseListMatrices.PairwiseListMatrix(Float64, length(column2residues), colmap, false, NaN)
+    @inbounds @iterateupper contacts false begin
 
-    resnumi = get(:($column2residues), :($colmap)[i], "")
-    resnumj = get(:($column2residues), :($colmap)[j], "")
-    if resnumi != "" && resnumj != "" && haskey(:($residues), resnumi) && haskey(:($residues), resnumj)
-      list[k] = Float64(:($contact)(:($residues)[resnumi], :($residues)[resnumj], :($distance_limit)))
-    else
-      list[k] = NaN
+        resnumi = get(:($column2residues), :($colmap)[i], "")
+        resnumj = get(:($column2residues), :($colmap)[j], "")
+        if resnumi != "" && resnumj != "" && haskey(:($residues), resnumi) && haskey(:($residues), resnumj)
+            list[k] = Float64(:($contact)(:($residues)[resnumi], :($residues)[resnumj], :($distance_limit)))
+        else
+            list[k] = NaN
+        end
+
     end
-
-  end
-  contacts
+    contacts
 end
 
 # AUC (contact prediction)
@@ -170,19 +178,19 @@ This function takes a `msacontacts` or its list of contacts `contact_list` with 
 Returns two `BitVector`s, the first with `true`s where `contact_list` is 1.0 and the second with `true`s where `contact_list` is 0.0. There are useful for AUC calculations.
 """
 function getcontactmasks{T <: AbstractFloat}(contact_list::Vector{T})
-  N = length(contact_list)
-  true_contacts  = falses(N)
-  false_contacts = trues(N) # In general, there are few contacts
-  @inbounds for i in 1:N
-    value = contact_list[i]
-    if value == 1.0
-      true_contacts[i] = true
+    N = length(contact_list)
+    true_contacts  = falses(N)
+    false_contacts = trues(N) # In general, there are few contacts
+    @inbounds for i in 1:N
+        value = contact_list[i]
+        if value == 1.0
+            true_contacts[i] = true
+        end
+        if value != 0.0
+            false_contacts[i] = false
+        end
     end
-    if value != 0.0
-      false_contacts[i] = false
-    end
-  end
-  true_contacts, false_contacts
+    true_contacts, false_contacts
 end
 
 getcontactmasks{T <: AbstractFloat}(msacontacts::PairwiseListMatrix{T,false}) = getcontactmasks(getlist(msacontacts))
@@ -206,7 +214,7 @@ Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of 
 `msacontact` should have 1.0 for true contacts and 0.0 for not contacts (NaN or other numbers for missing values).
 """
 function AUC{S <: AbstractFloat, C <: AbstractFloat}(scores::PairwiseListMatrix{S,false}, msacontacts::PairwiseListMatrix{C,false})
-  sco, con = join(scores, msacontacts, kind=:inner)
-  true_contacts, false_contacts = getcontactmasks(con)
-  AUC(sco, true_contacts, false_contacts)
+    sco, con = join(scores, msacontacts, kind=:inner)
+    true_contacts, false_contacts = getcontactmasks(con)
+    AUC(sco, true_contacts, false_contacts)
 end
