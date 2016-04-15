@@ -86,3 +86,18 @@ Random
   @test typeof(rand(Residue, 20, 30)) == Array{Residue, 2}
 
 end
+
+print("""
+
+Three letters <=> One letter (Residue)
+--------------------------------------
+""")
+
+@test three2residue("ALA") == Residue('A')
+@test three2residue("Ala") == Residue('A')
+@test three2residue("ala") == Residue('A')
+
+@test_throws ErrorException three2residue("AL")
+@test_throws ErrorException three2residue("Alanine")
+
+@test residue2three(Residue('A')) == "ALA"

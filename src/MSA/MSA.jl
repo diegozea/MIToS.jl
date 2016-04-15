@@ -42,7 +42,7 @@ import Base: parse, print, write
 
 import Clustering: ClusteringResult, nclusters, counts, assignments
 
-export Residue, GAP, @res_str,
+export Residue, GAP, @res_str, residue2three, three2residue,
 swap!,
 
 Annotations, filtersequences!, filtercolumns!, empty,
