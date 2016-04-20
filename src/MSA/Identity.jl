@@ -133,3 +133,129 @@ function meanpercentidentity(msa, nsamples::Int=44850; exact::Bool=false) # leng
         return( (sum/nvalues) )
     end
 end
+
+# Similarity percent
+# ==================
+
+"""
+Calculates the similarity percent between two aligned sequences.
+The 100% is the length of the aligned sequences minus the number of columns with gaps in both sequences.
+Two residues are considered similar if they below to the same group.
+The `groups` (third positional argument) can be indicated with a vector of length 20,
+having the group labels of each `Residue` in the following order (mandatory):
+A, R, N, D, C, Q, E, G, H, I, L, K, M, F, P, S, T, W, Y, V
+
+**MIToS default groups** are:
+
+```julia
+[
+:nonpolar, # A
+:positive, # R
+:polar,    # N
+:negative, # D
+:cysteine, # C
+:polar,    # Q
+:negative, # E
+:glycine,  # G
+:positive, # H
+:nonpolar, # I
+:nonpolar, # L
+:positive, # K
+:nonpolar, # M
+:aromatic, # F
+:proline,  # P
+:polar,    # S
+:polar,    # T
+:aromatic, # W
+:aromatic, # Y
+:nonpolar  # V
+]
+
+```
+
+Other residue groups:
+
+**SMS (Sequence Manipulation Suite)** Ident and Sim: GAVLI, FYW, ST, KRH, DENQ, P, CM
+
+*Stothard P (2000)
+The Sequence Manipulation Suite: JavaScript programs for analyzing and formatting protein and DNA sequences.
+Biotechniques 28:1102-1104.*
+
+```julia
+
+[1, 4, 5, 5, 7, 5, 5, 1, 4, 1, 1, 4, 7, 2, 6, 3, 3, 2, 2, 1]
+
+```
+
+**Bio3D 2.2** seqidentity: GA, MVLI, FYW, ST, KRH, DE, NQ, P, C
+
+*Grant, B.J. et al. (2006) Bioinformatics 22, 2695--2696.*
+
+```julia
+
+[1, 5, 7, 6, 9, 7, 6, 1, 5, 2, 2, 5, 2, 3, 8, 4, 4, 3, 3, 2]
+
+```
+"""
+function percentsimilarity{T}(seq1::Vector{Residue}, seq2::Vector{Residue},
+    groups::Vector{T} =
+    [:nonpolar,    # A
+        :positive, # R
+        :polar,    # N
+        :negative, # D
+        :cysteine, # C
+        :polar,    # Q
+        :negative, # E
+        :glycine,  # G
+        :positive, # H
+        :nonpolar, # I
+        :nonpolar, # L
+        :positive, # K
+        :nonpolar, # M
+        :aromatic, # F
+        :proline,  # P
+        :polar,    # S
+        :polar,    # T
+        :aromatic, # W
+        :aromatic, # Y
+        :nonpolar  # V
+        ])
+
+    if length(groups) != 20
+        throw(ErrorException("Groups should have 20 labels for the residues: A, R, N, D, C, Q, E, G, H, I, L, K, M, F, P, S, T, W, Y, V"))
+    end
+
+    len = length(seq1)
+    if len != length(seq2)
+        throw(ErrorException("Sequences of different length, they aren't aligned or don't come from the same alignment"))
+    end
+
+    count = zero(Int)
+    colgap = zero(Int)
+    @inbounds for i in 1:len
+        res1 = Int(seq1[i])
+        res2 = Int(seq2[i])
+        isgap1 = res1 == Int(GAP)
+        isgap2 = res2 == Int(GAP)
+        if isgap1 && isgap2
+            colgap += 1
+        end
+        if !isgap1 && !isgap2
+            count += Int(groups[res1] == groups[res2])
+        end
+    end
+
+    (100.0 * count)/(len-colgap)
+end
+
+"""
+Calculates the similarity percent between all the sequences on a MSA.
+You can indicate the output element type with the `out` keyword argument (`Float64` by default).
+For a MSA with a lot of sequences, you can use `out=Float32` or `out=Flot16` in order to avoid the `OutOfMemoryError()`.
+"""
+function percentsimilarity(msa::AbstractMatrix{Residue}, args...; out::Type=Float64)
+    aln = getresiduesequences(msa)
+    scores = PairwiseListMatrix(out, length(aln), false, out(100.0))
+    @iterateupper scores false list[k] = :($percentsimilarity)(:($aln)[i], :($aln)[j], :($args)...)
+    scores
+end

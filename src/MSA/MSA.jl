@@ -65,7 +65,7 @@ Raw, Stockholm, FASTA,
 shuffle_columnwise!, shuffle_sequencewise!, shuffle_residues_sequencewise!,
 shuffle_residues_columnwise!,
 
-percentidentity, meanpercentidentity,
+percentidentity, meanpercentidentity, percentsimilarity,
 
 ClusteringResult, # from Clustering.jl
 nclusters, counts, assignments, # from Clustering.jl
