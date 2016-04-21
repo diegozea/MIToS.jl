@@ -134,7 +134,11 @@ function msaresidues(msa::AnnotatedMultipleSequenceAlignment, residues::OrderedD
     for col in colmap
         resnum = get(column2residues, col, "")
         if resnum != ""
-            msares[col] = residues[resnum]
+            if haskey(residues, resnum)
+                msares[col] = residues[resnum]
+            else
+                warn("MSA column $col : The residue number $resnum isn't in the residues Dict.")
+            end
         end
     end
     sizehint!(msares, length(msares))
