@@ -98,10 +98,14 @@ let code = "1SSX",
     atoms_141 = @atoms    pdbml model "1" chain "A"  group "*" residue "141" atom "HH22"
     resid_141 = @residues pdbml model "1" chain "A"  group "*" residue "141"
 
+
+
     @test bestoccupancy(atoms_141)[1].occupancy == 0.75
+    @test bestoccupancy(reverse(atoms_141))[1].occupancy == 0.75
     @test bestoccupancy(PDBAtom[ atoms_141[2] ])[1].occupancy == 0.25
 
-    @test selectbestoccupancy(resid_141[1], collect(1:length(resid_141[1]))) == 1
+    @test length(resid_141[1]) == 48
+    @test selectbestoccupancy(resid_141[1], collect(1:48)) == 1
     @test selectbestoccupancy(resid_141[1], [1, 2]) == 1
 
     @test_throws ErrorException selectbestoccupancy(resid_141[1], Int[])
@@ -114,6 +118,21 @@ let code = "1SSX",
     # ATOM      2  CA  ALA A  15A     22.554  11.619   6.400  1.00  6.14           C
     @test atoms(pdb, mo, ch, "ATOM", "*", r"C.+")[1].atom == "CA"
 
+end
+
+print("""
+`read` only atoms with the best occupancy (occupancyfilter=true)
+""")
+
+let code = "1SSX",
+    pdb = read(txt(code), PDBFile, occupancyfilter=true),
+    pdbml = read(xml(code), PDBML, occupancyfilter=true),
+    resid_141 = @residues pdbml model "1" chain "A"  group "*" residue "141"
+
+    @test length( @atoms pdbml model "1" chain "A"  group "*" residue "141" atom "HH22" ) == 1
+    @test length( @atoms pdb   model "1" chain "A"  group "*" residue "141" atom "HH22" ) == 1
+
+    @test length(resid_141[1]) == 24
 end
 
 print("""

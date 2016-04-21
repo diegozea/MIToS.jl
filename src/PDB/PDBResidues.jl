@@ -215,7 +215,7 @@ end
 
 """
 Takes a `PDBResidue` and a `Vector` of atom indices.
-Returns the index value of the `Vector` for which the occupancy is maximum.
+Returns the index value of the `Vector` with maximum occupancy.
 """
 function selectbestoccupancy(res::PDBResidue, indices::Vector{Int})
     Ni = length(indices)
@@ -239,7 +239,7 @@ function selectbestoccupancy(res::PDBResidue, indices::Vector{Int})
 end
 
 """
-Takes a `Vector` of `PDBAtom`s and returns the atoms with best occupancy.
+Takes a `Vector` of `PDBAtom`s and returns a `Vector` of the `PDBAtom`s with best occupancy.
 """
 function bestoccupancy(atoms::Vector{PDBAtom})
     N = length(atoms)
@@ -496,15 +496,8 @@ end
 # ==============
 
 "Used for parsing a PDB file into Vector{PDBResidue}"
-function _generate_residues(residue_dict::OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}})
-    len = length(residue_dict)
-    residue_vect = Array(PDBResidue, len)
-    i = 1
-    for (k,v) in residue_dict
-        residue_vect[i] = PDBResidue(k, v)
-        i += 1
-    end
-    residue_vect
+function _generate_residues(residue_dict::OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}, occupancyfilter::Bool=false)
+    occupancyfilter ? PDBResidue[ PDBResidue(k, bestoccupancy(v)) for (k,v) in residue_dict ] : PDBResidue[ PDBResidue(k, v) for (k,v) in residue_dict ]
 end
 
 # Show PDB* objects (using Formatting)

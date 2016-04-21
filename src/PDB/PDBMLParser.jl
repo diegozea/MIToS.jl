@@ -31,10 +31,11 @@ If the keyword argument `label` (default: `true`) is `false`,
 the **auth_** attributes will be use instead of the **label_** attributes for `chain`, `atom` and residue `name` fields.
 The **auth_** attributes are alternatives provided by an author in order to match the identification/values
 used in the publication that describes the structure.
+If the keyword argument `occupancyfilter` (default: `false`) is `true`, only the atoms with the best occupancy are returned.
 """
 function parse(pdbml::LightXML.XMLDocument, ::Type{PDBML}; chain::ASCIIString = "all",
                model::ASCIIString = "all", group::ASCIIString = "all", atomname::ASCIIString="all",
-               onlyheavy::Bool=false, label::Bool=true)
+               onlyheavy::Bool=false, label::Bool=true, occupancyfilter::Bool=false)
 
     residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
 
@@ -74,7 +75,7 @@ function parse(pdbml::LightXML.XMLDocument, ::Type{PDBML}; chain::ASCIIString = 
             push!(value, atom_data)
         end
     end
-    _generate_residues(residue_dict)
+    _generate_residues(residue_dict, occupancyfilter)
 end
 
 # Download PDB
