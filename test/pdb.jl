@@ -127,12 +127,19 @@ print("""
 let code = "1SSX",
     pdb = read(txt(code), PDBFile, occupancyfilter=true),
     pdbml = read(xml(code), PDBML, occupancyfilter=true),
-    resid_141 = @residues pdbml model "1" chain "A"  group "*" residue "141"
 
-    @test length( @atoms pdbml model "1" chain "A"  group "*" residue "141" atom "HH22" ) == 1
+    res_pdb   = @residues pdbml model "1" chain "A"  group "*" residue "141"
+    res_pdbml = @residues pdbml model "1" chain "A"  group "*" residue "141"
+
+    atm_pdbml = @atoms pdbml model "1" chain "A"  group "*" residue "141" atom "HH22"
+
+    @test length( atm_pdbml ) == 1
+    @test atm_pdbml[1].occupancy == 0.75
     @test length( @atoms pdb   model "1" chain "A"  group "*" residue "141" atom "HH22" ) == 1
 
-    @test length(resid_141[1]) == 24
+    @test length(res_pdb[1])   == 24
+    @test length(res_pdbml[1]) == 24
+
 end
 
 print("""
