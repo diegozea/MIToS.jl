@@ -30,7 +30,7 @@ import MIToS.Utils: findobjects, isobject
 export covalentradius, vanderwaalsradius, check_atoms_for_interactions,
 
 PDBResidueIdentifier, Coordinates, PDBAtom, PDBResidue,
-distance, contact, findheavy, findatoms, findCB, selectbestoccupancy, bestoccupancy!,
+distance, contact, findheavy, findatoms, findCB, selectbestoccupancy, bestoccupancy,
 angle, proximitymean,
 
 ishydrophobic, isaromatic, iscationic, isanionic,
@@ -51,5 +51,7 @@ include("AtomsData.jl")
 include("Interaction.jl")
 include("PDBMLParser.jl")
 include("PDBParser.jl")
+
+@deprecate bestoccupancy! bestoccupancy
 
 end

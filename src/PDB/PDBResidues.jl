@@ -224,7 +224,7 @@ function selectbestoccupancy(res::PDBResidue, indices::Vector{Int})
     end
     Na = length(res)
     if Ni == 0 || Ni > Na
-        throw("There are no atom indices or they are more atom indices ($Ni) than atoms in the Residue ($Na)")
+        throw(ErrorException("There are no atom indices or they are more atom indices ($Ni) than atoms in the Residue ($Na)"))
     end
     indice = indices[1]
     occupancy = 0.0
@@ -239,9 +239,9 @@ function selectbestoccupancy(res::PDBResidue, indices::Vector{Int})
 end
 
 """
-Takes a `Vector` of `PDBAtom`s and select the atoms with best occupancy.
+Takes a `Vector` of `PDBAtom`s and returns the atoms with best occupancy.
 """
-function bestoccupancy!(atoms::Vector{PDBAtom})
+function bestoccupancy(atoms::Vector{PDBAtom})
     N = length(atoms)
     if N == 0
         warn("There are no atoms.")
@@ -481,13 +481,13 @@ function _get_plane(residue::PDBResidue)
 end
 
 function _centre(planes::Vector{Vector{PDBAtom}})
-    subset = Vector{PDBAtom}[ bestoccupancy!(atoms) for atoms in planes ]
+    subset = Vector{PDBAtom}[ bestoccupancy(atoms) for atoms in planes ]
     polyg = Vector{Coordinates}[ Coordinates[ a.coordinates for a in atoms ] for atoms in subset ]
     Coordinates[ sum(points)./length(points) for  points in polyg ]
 end
 
 # function _simple_normal_and_centre(atoms::Vector{PDBAtom})
-#   bestoccupancy!(atoms)
+#   atoms = bestoccupancy(atoms)
 #   points = Coordinates[ a.coordinates for a in atoms ]
 #   (cross(points[2] - points[1], points[3] - points[1]), sum(points)./length(points))
 # end

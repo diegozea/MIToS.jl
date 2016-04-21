@@ -27,17 +27,29 @@ Reads a LightXML.XMLDocument representing a pdb file.
 Returns a list of PDBResidue (view MIToS.PDB.PDBResidues).
 Setting `chain`, `model`, `group`, `atomname` and `onlyheavy` values
 can be used to select of a subset of all residues. If not set, all residues are returned.
+If the keyword argument `label` (default: `true`) is `false`,
+the **auth_** attributes will be use instead of the **label_** attributes for `chain`, `atom` and residue `name` fields.
+The **auth_** attributes are alternatives provided by an author in order to match the identification/values
+used in the publication that describes the structure.
 """
 function parse(pdbml::LightXML.XMLDocument, ::Type{PDBML}; chain::ASCIIString = "all",
-               model::ASCIIString = "all", group::ASCIIString = "all", atomname::ASCIIString="all", onlyheavy::Bool=false)
+               model::ASCIIString = "all", group::ASCIIString = "all", atomname::ASCIIString="all",
+               onlyheavy::Bool=false, label::Bool=true)
+
     residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
+
+    prefix = label ? "label" : "auth"
+    chain_attribute = string(prefix, "_asym_id")
+    atom_attribute = string(prefix, "_atom_id")
+    comp_attribute = string(prefix, "_comp_id")
+
     atoms = _get_atom_iterator(pdbml)
     for atom in atoms
 
         atom_group = _get_text(atom, "group_PDB")
         atom_model = _get_text(atom, "pdbx_PDB_model_num")
-        atom_chain = _get_text(atom, "label_asym_id")
-        atom_name = _get_text(atom, "label_atom_id")
+        atom_chain = _get_text(atom, chain_attribute)
+        atom_name = _get_text(atom, atom_attribute)
         element = _get_text(atom, "type_symbol")
 
         if  (group=="all" || group==atom_group) && (chain=="all" || chain==atom_chain) &&
@@ -48,7 +60,7 @@ function parse(pdbml::LightXML.XMLDocument, ::Type{PDBML}; chain::ASCIIString = 
             #  Residue_No  _atom_site.auth_seq_id
             #  Ins_Code    _atom_site.pdbx_PDB_ins_code
             PDB_number = string(_get_text(atom, "auth_seq_id"), _get_ins_code(atom))
-            name = _get_text(atom, "label_comp_id")
+            name = _get_text(atom, comp_attribute)
             x = float(_get_text(atom, "Cartn_x"))
             y = float(_get_text(atom, "Cartn_y"))
             z = float(_get_text(atom, "Cartn_z"))

@@ -38,7 +38,7 @@ function percentidentity(seq1, seq2, threshold)
     fraction = threshold / 100.0
     len = length(seq1)
     if len != length(seq2)
-        throw("Sequences of different length, they aren't aligned or don't come from the same alignment")
+        throw(ErrorException("Sequences of different length, they aren't aligned or don't come from the same alignment"))
     end
     n = len
     limit_count = n * fraction
