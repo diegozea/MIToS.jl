@@ -159,7 +159,7 @@ This returns a `PairwiseListMatrix{Float64,false}` of `0.0` and `1.0` where `1.0
 """
 function msacontacts(msa::AnnotatedMultipleSequenceAlignment, residues::OrderedDict{ASCIIString,PDBResidue}, column2residues::Dict{Int,ASCIIString}, distance_limit::Float64=6.05)
     colmap   = getcolumnmapping(msa)
-    contacts = PairwiseListMatrices.PairwiseListMatrix(Float64, length(column2residues), colmap, false, NaN)
+    contacts = PairwiseListMatrices.PairwiseListMatrix(Float64, ncolumns(msa), colmap, false, NaN)
     @inbounds @iterateupper contacts false begin
 
         resnumi = get(:($column2residues), :($colmap)[i], "")
