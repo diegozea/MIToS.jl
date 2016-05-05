@@ -19,8 +19,8 @@ let a = [ 1  1 0
     sa[:,:] = sa .- ma
     a[:,:]  = a  .- ma # center != 0
 
-    @test_approx_eq_eps mean(b,1) [0.0, 0.0, 0.0] 1e-14
-    @test_approx_eq_eps mean(sa,1) [0.0, 0.0, 0.0] 1e-14
+    @test_approx_eq_eps mean(b,1) [0.0, 0.0, 0.0] 1e-13
+    @test_approx_eq_eps mean(sa,1) [0.0, 0.0, 0.0] 1e-13
 
     F = kabsch(b, sa) # Reference: b
     R = sa * F
@@ -32,8 +32,8 @@ let a = [ 1  1 0
     @test_approx_eq RR[4,:] .- RR[1,:] [1.0, 0.0, 0.0]
     @test_approx_eq sqrt( (RR[1,1] - RR[4,1])^2 + (RR[1,2] - RR[4,2])^2 ) 1.0
 
-    @test_approx_eq_eps rmsd(R, b) 0.0 1e-14
-    @test_approx_eq_eps rmsd(RR[1:3,:], b) 0.0 1e-14
+    @test_approx_eq_eps rmsd(R, b) 0.0 1e-13
+    @test_approx_eq_eps rmsd(RR[1:3,:], b) 0.0 1e-13
 end
 
 let P = [51.65 -1.90 50.07
@@ -49,8 +49,8 @@ let P = [51.65 -1.90 50.07
     center!(P)
     center!(Q)
 
-    @test_approx_eq_eps mean(P, 1) zeros(3) 1e-14
-    @test_approx_eq_eps mean(Q, 1) zeros(3) 1e-14
+    @test_approx_eq_eps mean(P, 1) zeros(3) 1e-13
+    @test_approx_eq_eps mean(Q, 1) zeros(3) 1e-13
 
     rotationmatrix = kabsch(P, Q)
     rotated = Q * rotationmatrix
@@ -118,10 +118,10 @@ let hemoglobin = read(joinpath(pwd(), "data", "2hhb.pdb.gz"), PDBFile, group="AT
     Centered
     """)
 
-    @test_approx_eq_eps mean(ca_a1,1) zeros(3) 1e-14
-    @test_approx_eq_eps mean(ca_a2,1) zeros(3) 1e-14
-    @test_approx_eq_eps mean(ca_b1,1) zeros(3) 1e-14
-    @test_approx_eq_eps mean(ca_b2,1) zeros(3) 1e-14
+    @test_approx_eq_eps mean(ca_a1,1) zeros(3) 1e-13
+    @test_approx_eq_eps mean(ca_a2,1) zeros(3) 1e-13
+    @test_approx_eq_eps mean(ca_b1,1) zeros(3) 1e-13
+    @test_approx_eq_eps mean(ca_b2,1) zeros(3) 1e-13
 
     @test PDB._iscentered(ca_a1)
     @test PDB._iscentered(ca_a2)

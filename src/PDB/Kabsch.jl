@@ -136,7 +136,7 @@ function _change_B(atom::PDBAtom, B::ASCIIString)
             B)
 end
 
-_iscentered(x::Float64, y::Float64, z::Float64) = (abs(x) <= 1e-14) && (abs(y) <= 1e-14) && (abs(z) <= 1e-14)
+_iscentered(x::Float64, y::Float64, z::Float64) = (abs(x) <= 1e-13) && (abs(y) <= 1e-13) && (abs(z) <= 1e-13)
 
 _iscentered(meanCα::Vector{Float64}) = _iscentered(meanCα[1], meanCα[2], meanCα[3])
 
