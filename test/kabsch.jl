@@ -57,7 +57,7 @@ let P = [51.65 -1.90 50.07
 
     @test_approx_eq rmsd(P, rotated) 0.0030426652601371583
 
-    # Internal distances musn't change
+    # Internal distances mustn't change
     @test_approx_eq Float64[ sqrt(sumabs2(Q[j,:] .- Q[i,:])) for i in 1:4, j in 1:4 ] Qdistances # Translated
     @test_approx_eq Float64[ sqrt(sumabs2(rotated[j,:] .- rotated[i,:])) for i in 1:4, j in 1:4 ] Qdistances # Translated  and rotated
 end
@@ -114,17 +114,41 @@ let hemoglobin = read(joinpath(pwd(), "data", "2hhb.pdb.gz"), PDBFile, group="AT
     ca_b1 = CAmatrix(b1)
     ca_b2 = CAmatrix(b2)
 
-    @test PDB._iscentered(ca_a1)
-    @test PDB._iscentered(ca_a2)
-    @test PDB._iscentered(ca_b1)
-    @test PDB._iscentered(ca_b2)
+    print("""
+    Centered
+    """)
 
     @test_approx_eq_eps mean(ca_a1,1) zeros(3) 1e-14
     @test_approx_eq_eps mean(ca_a2,1) zeros(3) 1e-14
     @test_approx_eq_eps mean(ca_b1,1) zeros(3) 1e-14
     @test_approx_eq_eps mean(ca_b2,1) zeros(3) 1e-14
 
+    @test PDB._iscentered(ca_a1)
+    @test PDB._iscentered(ca_a2)
+    @test PDB._iscentered(ca_b1)
+    @test PDB._iscentered(ca_b2)
+
+    print("""
+    RMSD
+    """)
+
     @test rα == rmsd(ca_a1, ca_a2)
     @test rβ == rmsd(ca_b1, ca_b2)
-end
 
+    print("""
+    coordinatesmatrix, centeredresidues and centeredcoordinates
+    """)
+
+    @test_approx_eq coordinatesmatrix(centeredresidues(α1)) coordinatesmatrix(a1)
+    @test_approx_eq coordinatesmatrix(centeredresidues(β1)) coordinatesmatrix(b1)
+
+    @test_approx_eq centeredcoordinates(α1) coordinatesmatrix(a1)
+    @test_approx_eq centeredcoordinates(β1) coordinatesmatrix(b1)
+
+    print("""
+    Superimpose with centered PDBs
+    """)
+
+    b12, b22, rβ2 = superimpose(b1, b2)
+    @test_approx_eq rβ2 rβ
+end
