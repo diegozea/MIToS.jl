@@ -24,6 +24,7 @@ include("clustering.jl")
 # PDB
 include("pdb.jl")
 include("contacts.jl")
+include("kabsch.jl")
 #  SIFTS
 include("sifts.jl")
 # Information

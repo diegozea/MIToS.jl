@@ -9,3 +9,4 @@ PairwiseListMatrices
 ArgParse
 ROCAnalysis
 Clustering
+FixedSizeArrays

@@ -10,10 +10,13 @@
     chain::ASCIIString
 end
 
-@auto_hash_equals immutable Coordinates # <: FixedVectorNoTuple{Float64, 3}
+@auto_hash_equals immutable Coordinates <: FixedVectorNoTuple{3, Float64}
     x::Float64
     y::Float64
     z::Float64
+    function Coordinates(a::NTuple{3, Float64})
+        new(a[1], a[2], a[3])
+    end
 end
 
 @auto_hash_equals immutable PDBAtom
@@ -31,28 +34,31 @@ end
 
 length(res::PDBResidue) = length(res.atoms)
 
-# Distances and geom
-# ==================
+# Coordinates
+# ===========
+
+vec(a::Coordinates) = Float64[a.x, a.y, a.z]
+
+# # Functions defined in FixedSizeArray:
+# norm(a::Coordinates) = sqrt(a.x^2 + a.y^2 + a.z^2)
+# dot(a::Coordinates, b::Coordinates) = (a.x * b.x) + (a.y * b.y) + (a.z * b.z)
+# size(a::Coordinates) = (3,)
+# length(a::Coordinates) = 3
+# -(a::Coordinates, b::Coordinates) = Coordinates(a.x - b.x, a.y - b.y, a.z - b.z)
+# +(a::Coordinates, b::Coordinates) = Coordinates(a.x + b.x, a.y + b.y, a.z + b.z)
+# ./(a::Coordinates, b::Int) = Coordinates(a.x / b, a.y / b, a.z / b )
+# function cross(a::Coordinates, b::Coordinates)
+#    normal = cross(vec(a), vec(b))
+#    Coordinates(normal[1], normal[2], normal[3])
+# end
+
+# Distances and geometry
+# ----------------------
 
 distance(a::Coordinates, b::Coordinates) = sqrt((a.x - b.x)^2 + (a.y - b.y)^2 + (a.z - b.z)^2)
 
 "distance(a,b) <= limit"
 contact(a::Coordinates, b::Coordinates, limit::AbstractFloat) = distance(a,b) <= limit
-
-#-------------------------------------------------------------------------------#
-vec(a::Coordinates) = Float64[a.x, a.y, a.z]
-norm(a::Coordinates) = sqrt(a.x^2 + a.y^2 + a.z^2)
-dot(a::Coordinates, b::Coordinates) = (a.x * b.x) + (a.y * b.y) + (a.z * b.z)
-size(a::Coordinates) = (3,)
-length(a::Coordinates) = 3
--(a::Coordinates, b::Coordinates) = Coordinates(a.x - b.x, a.y - b.y, a.z - b.z)
-+(a::Coordinates, b::Coordinates) = Coordinates(a.x + b.x, a.y + b.y, a.z + b.z)
-./(a::Coordinates, b::Int) = Coordinates(a.x / b, a.y / b, a.z / b )
-function cross(a::Coordinates, b::Coordinates)
-    normal = cross(vec(a), vec(b))
-    Coordinates(normal[1], normal[2], normal[3])
-end
-#-------------------------------------------------------------------------------#
 
 """Angle (in degrees) at b between a-b and b-c"""
 function angle(a::Coordinates, b::Coordinates, c::Coordinates)
@@ -483,7 +489,7 @@ end
 function _centre(planes::Vector{Vector{PDBAtom}})
     subset = Vector{PDBAtom}[ bestoccupancy(atoms) for atoms in planes ]
     polyg = Vector{Coordinates}[ Coordinates[ a.coordinates for a in atoms ] for atoms in subset ]
-    Coordinates[ sum(points)./length(points) for  points in polyg ]
+    Coordinates[ sum(points)./Float64(length(points)) for points in polyg ]
 end
 
 # function _simple_normal_and_centre(atoms::Vector{PDBAtom})

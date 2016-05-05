@@ -22,7 +22,7 @@ using DataStructures
 using Formatting
 using MIToS.Utils
 using PairwiseListMatrices
-# using FixedSizeArrays
+using FixedSizeArrays
 
 import Base: ==, hash, length, size, -, +, ./, norm, dot, angle, cross, vec, any, print, show, parse
 import MIToS.Utils: findobjects, isobject
@@ -41,6 +41,11 @@ stridehydrogenbond, chimerahydrogenbond,
 
 PDBFile, PDBML, downloadpdb, getpdbdescription,
 
+kabsch, center!, rmsd,
+getCA, CAmatrix, coordinatesmatrix,
+centeredcoordinates, centeredresidues,
+superimpose,
+
 # Mitos.Utils
 isobject, findobjects, Is, Not, In, collectobjects, collectcaptures,
 
@@ -51,6 +56,7 @@ include("AtomsData.jl")
 include("Interaction.jl")
 include("PDBMLParser.jl")
 include("PDBParser.jl")
+include("Kabsch.jl")
 
 @deprecate bestoccupancy! bestoccupancy
 
