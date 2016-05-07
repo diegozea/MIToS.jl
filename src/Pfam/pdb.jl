@@ -39,6 +39,7 @@ end
 This function returns a `Dict{Int64,ASCIIString}` with **MSA column numbers on the input file** as keys and PDB residue numbers (`""` for missings) as values.
 The mapping is performed using SIFTS. This function needs correct *ColMap* and *SeqMap* annotations.
 This checks correspondence of the residues between the MSA sequence and SIFTS (It throws a warning if there are differences).
+Missing residues are included if the keyword argument `missing` is `true` (default: `false`).
 If the keyword argument `strict` is `true` (default: `false`), throws an Error, instead of a Warning, when residues don't match.
 If the keyword argument `checkpdbname` is `true` (default: `false`), throws an Error if the three letter name of the PDB residue isn't the MSA residue.
 If you are working with a **downloaded Pfam MSA without modifications**, you should `read` it using `generatemapping=true` and `useidcoordinates=true`.
@@ -50,9 +51,10 @@ function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
                               pfamid::ASCIIString,
                               siftsfile::ASCIIString;
                               strict::Bool=false,
-                              checkpdbname::Bool=false)
+                              checkpdbname::Bool=false,
+                              missings::Bool=false)
 
-    siftsres = read(siftsfile, SIFTSXML, chain=chain, missings=true)
+    siftsres = read(siftsfile, SIFTSXML, chain=chain, missings=missings)
 
     up2res = Dict{Int, Tuple{ASCIIString, ASCIIString, Char}}()
     for res in siftsres
