@@ -42,7 +42,7 @@ stridehydrogenbond, chimerahydrogenbond,
 PDBFile, PDBML, downloadpdb, getpdbdescription,
 
 kabsch, center!, rmsd,
-getCA, CAmatrix, coordinatesmatrix,
+getCA, CAmatrix, coordinatesmatrix, change_coordinates,
 centeredcoordinates, centeredresidues,
 superimpose,
 

@@ -100,11 +100,11 @@ An optional positional argument `CA` (default: `true`) defines if only Cα carbo
 """
 function centeredresidues(residues::AbstractVector{PDBResidue}, CA::Bool=true)
     coordinates = centeredcoordinates(residues, CA)
-    _change_coordinates(residues, coordinates)
+    change_coordinates(residues, coordinates)
 end
 
 "Returns a new `PDBAtom` but with a new `coordinates`"
-function _change_coordinates(atom::PDBAtom, coordinates::Coordinates)
+function change_coordinates(atom::PDBAtom, coordinates::Coordinates)
     PDBAtom(coordinates,
             copy(atom.atom),
             copy(atom.element),
@@ -113,14 +113,14 @@ function _change_coordinates(atom::PDBAtom, coordinates::Coordinates)
 end
 
 "Returns a new `Vector{PDBResidues}` with (x,y,z) from a coordinates `Matrix{Float64}`"
-function _change_coordinates(residues::AbstractVector{PDBResidue}, coordinates::Matrix{Float64})
+function change_coordinates(residues::AbstractVector{PDBResidue}, coordinates::Matrix{Float64})
     nres = length(residues)
     updated = Array(PDBResidue, nres)
     j = 0
     for i in 1:nres
         res = residues[i]
         centeredatoms = map(res.atoms) do atom
-            _change_coordinates(atom, Coordinates(vec(coordinates[j += 1,:])))
+            change_coordinates(atom, Coordinates(vec(coordinates[j += 1,:])))
         end
         updated[i] = PDBResidue(res.id, centeredatoms)
     end
@@ -173,15 +173,15 @@ function superimpose(A::Vector{PDBResidue}, B::Vector{PDBResidue})
         @inbounds Axyz[:,3] -= meanACα[3]
         RotationMatrix = PDB.kabsch(ACα, BCα)
         return(
-            _change_coordinates(A, Axyz),
-            _change_coordinates(B, Bxyz * RotationMatrix),
+            change_coordinates(A, Axyz),
+            change_coordinates(B, Bxyz * RotationMatrix),
             PDB.rmsd(ACα, BCα * RotationMatrix)
             )
     else
         RotationMatrix = PDB.kabsch(ACα, BCα)
         return(
             A,
-            _change_coordinates(B, Bxyz * RotationMatrix),
+            change_coordinates(B, Bxyz * RotationMatrix),
             PDB.rmsd(ACα, BCα * RotationMatrix)
             )
     end
