@@ -143,3 +143,7 @@ function runscript(args)
         run_single_script(file === nothing ? STDIN : file, args)
     end
 end
+
+"Decides if read or parse, uses parse with STDIN"
+readorparse(input::AbstractString, args...; kargs...) = read(input, args...; kargs...)
+readorparse(input::Base.LibuvStream, args...; kargs...) = parse(input, args...; kargs...)

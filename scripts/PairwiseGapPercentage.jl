@@ -54,11 +54,11 @@ set_parallel(Args["parallel"])
         end
         form = ascii(args["format"])
         if form == "Stockholm"
-            msa = read(input, Stockholm)
+            msa = readorparse(input, Stockholm)
         elseif form == "FASTA"
-            msa = read(input, FASTA)
+            msa = readorparse(input, FASTA)
         elseif form == "Raw"
-            msa = read(input, Raw)
+            msa = readorparse(input, Raw)
         else
             throw(ErrorException("--format should be Stockholm, Raw or FASTA."))
         end

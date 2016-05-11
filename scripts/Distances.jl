@@ -73,9 +73,9 @@ set_parallel(Args["parallel"])
         form = ascii(args["format"])
         dump(input)
         if form == "PDBFile"
-            res = read(input, PDBFile)
+            res = readorparse(input, PDBFile)
         elseif form == "PDBML"
-            res = read(input, PDBML)
+            res = readorparse(input, PDBML)
         else
             throw(ErrorException("--format should be PDBFile or PDBML."))
         end

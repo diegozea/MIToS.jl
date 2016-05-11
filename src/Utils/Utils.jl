@@ -24,7 +24,8 @@ module Scripts
 
 export parse_commandline,
 runscript, run_single_script, script,
-set_parallel, open_output, close_output
+set_parallel, open_output, close_output,
+readorparse
 
 using ArgParse, GZip
 
