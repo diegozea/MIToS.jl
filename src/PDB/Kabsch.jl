@@ -112,17 +112,29 @@ function change_coordinates(atom::PDBAtom, coordinates::Coordinates)
             copy(atom.B))
 end
 
+
+"""
+Returns a new `PDBResidues` with (x,y,z) from a coordinates `Matrix{Float64}`
+You can give an `offset` indicating in wich matrix row starts the (x,y,z) coordinates of the residue.
+"""
+function change_coordinates(residue::PDBResidue, coordinates::Matrix{Float64}, offset::Int=1)
+    centeredatoms = map(residue.atoms) do atom
+        atoms = change_coordinates(atom, Coordinates(vec(coordinates[offset,:])))
+        offset += 1
+        return atoms
+    end
+    PDBResidue(residue.id, centeredatoms)
+end
+
 "Returns a new `Vector{PDBResidues}` with (x,y,z) from a coordinates `Matrix{Float64}`"
 function change_coordinates(residues::AbstractVector{PDBResidue}, coordinates::Matrix{Float64})
     nres = length(residues)
     updated = Array(PDBResidue, nres)
-    j = 0
+    j = 1
     for i in 1:nres
-        res = residues[i]
-        centeredatoms = map(res.atoms) do atom
-            change_coordinates(atom, Coordinates(vec(coordinates[j += 1,:])))
-        end
-        updated[i] = PDBResidue(res.id, centeredatoms)
+        residue = residues[i]
+        updated[i] = change_coordinates(residue, coordinates, j)
+        j += length(residue)
     end
     updated
 end
