@@ -21,38 +21,42 @@ using MIToS.Information
 """
 module Information
 
-  using MIToS.Utils
-  using MIToS.MSA
-  using PairwiseListMatrices
+using MIToS.Utils
+using MIToS.MSA
+using PairwiseListMatrices
 
-  export BLOSUM62_Pi, BLOSUM62_Pij,
+export BLOSUM62_Pi, BLOSUM62_Pij,
 
-  SequenceWeights, Pseudocount, AdditiveSmoothing,
-  ResidueContingencyTables, ResidueCount, ResidueProbability,
-  nresidues, update!, apply_pseudocount!, count!, normalize!,
-  blosum_pseudofrequencies!, apply_pseudofrequencies!, probabilities,
-  delete_dimensions!, delete_dimensions,
+SequenceWeights, Pseudocount, AdditiveSmoothing,
+ResidueContingencyTables, ResidueCount, ResidueProbability,
+nresidues, update!, apply_pseudocount!, count!, normalize!,
+blosum_pseudofrequencies!, apply_pseudofrequencies!, probabilities,
+delete_dimensions!, delete_dimensions,
 
-  AbstractMeasure, SymmetricMeasure,
-  Entropy, KullbackLeibler,
-  MutualInformation, MutualInformationOverEntropy,
-  estimate, estimate_on_marginal,
-  GapUnionPercentage, GapIntersectionPercentage,
+AbstractMeasure, SymmetricMeasure,
+Entropy, KullbackLeibler,
+MutualInformation, MutualInformationOverEntropy,
+estimate, estimate_on_marginal,
+GapUnionPercentage, GapIntersectionPercentage,
 
-  estimateincolumns, estimateinsequences, cumulative,
+estimateincolumns, estimateinsequences, cumulative,
 
-  APC!,
+APC!,
 
-  buslje09, BLMI, pairwisegapfraction,
+buslje09, BLMI, pairwisegapfraction,
 
-  # Formats from MIToS.MSA:
-  Raw, Stockholm, FASTA
+# Formats from MIToS.MSA:
+Raw, Stockholm, FASTA,
 
-  include("BLOSUM62.jl")
-  include("Probabilities.jl")
-  include("InformationMeasures.jl")
-  include("Iterations.jl")
-  include("Corrections.jl")
-  include("CorrectedMutualInformation.jl")
+# Externals
+gaussdca
+
+include("BLOSUM62.jl")
+include("Probabilities.jl")
+include("InformationMeasures.jl")
+include("Iterations.jl")
+include("Corrections.jl")
+include("CorrectedMutualInformation.jl")
+include("Externals.jl")
 
 end

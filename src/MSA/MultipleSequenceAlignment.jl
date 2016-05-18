@@ -205,8 +205,6 @@ For `AnnotatedMultipleSequenceAlignment`s or `AnnotatedAlignedSequence`s the ann
 function filtercolumns!(msa::AnnotatedMultipleSequenceAlignment,
                         mask::AbstractVector{Bool}, annotate::Bool=true)
     msa.msa = filtercolumns(msa.msa, mask)
-    #msa.sequencemapping = msa.sequencemapping[ : , mask ]
-    #msa.filecolumnmapping = msa.filecolumnmapping[ mask ]
     filtercolumns!(msa.annotations, mask)
     annotate && annotate_modification!(msa, string("filtercolumns! : ",
                                                    sum(~mask), " columns have been deleted."))
@@ -220,8 +218,6 @@ end
 
 function filtercolumns!(seq::AnnotatedAlignedSequence, mask::AbstractVector{Bool}, annotate::Bool=true)
     seq.sequence = filtercolumns(seq.sequence, mask)
-    #seq.sequencemapping = seq.sequencemapping[ mask ]
-    #seq.filecolumnmapping = seq.filecolumnmapping[ mask ]
     filtercolumns!(seq.annotations, mask)
     annotate && annotate_modification!(seq, string("filtercolumns! : ",
                                                    sum(~mask), " columns have been deleted."))
@@ -232,6 +228,9 @@ function filtercolumns!(seq::AlignedSequence, mask::AbstractVector{Bool}, annota
     seq.sequence = filtercolumns(seq.sequence, mask)
     seq
 end
+
+filtercolumns(seq::AbstractAlignedSequence, args...) = filtercolumns!(deepcopy(seq), args...)
+filtercolumns(msa::AbstractMultipleSequenceAlignment, args...) = filtercolumns!(deepcopy(msa), args...)
 
 # Copy, deepcopy, empty!
 # ----------------------

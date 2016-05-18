@@ -92,7 +92,7 @@ function percentidentity{T}(msa::AbstractMatrix{Residue}, out::Type{T}=Float64)
     aln = getresiduesequences(msa)
     nseq = length(aln)
     len = length(aln[1])
-    scores = PairwiseListMatrix(T, nseq, false, T(100.0))
+    scores = sequencepairsmatrix(msa, T, false, T(100.0))
     _percentidentity_kernel!(scores, aln, nseq, len)
     scores
 end
@@ -255,7 +255,7 @@ For a MSA with a lot of sequences, you can use `out=Float32` or `out=Flot16` in 
 """
 function percentsimilarity(msa::AbstractMatrix{Residue}, args...; out::Type=Float64)
     aln = getresiduesequences(msa)
-    scores = PairwiseListMatrix(out, length(aln), false, out(100.0))
+    scores = sequencepairsmatrix(msa, out, false, out(100.0))
     @iterateupper scores false list[k] = :($percentsimilarity)(:($aln)[i], :($aln)[j], :($args)...)
     scores
 end

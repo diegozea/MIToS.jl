@@ -38,7 +38,7 @@ function swap!(ia::IndexedArray, to::Int, from::Int)
     ia
 end
 
-import Base: parse, print, write
+import Base: parse, print, write, convert
 
 import Clustering: ClusteringResult, nclusters, counts, assignments
 
@@ -65,6 +65,9 @@ Raw, Stockholm, FASTA,
 shuffle_columnwise!, shuffle_sequencewise!, shuffle_residues_sequencewise!,
 shuffle_residues_columnwise!,
 
+sequencepairsmatrix, columnpairsmatrix,
+columnlabels, sequencelabels,
+
 percentidentity, meanpercentidentity, percentsimilarity,
 
 ClusteringResult, # from Clustering.jl
@@ -82,6 +85,7 @@ include("Raw.jl")
 include("Stockholm.jl")
 include("FASTA.jl")
 include("Shuffle.jl")
+include("PLM.jl")
 include("Identity.jl")
 include("Clusters.jl")
 include("Hobohm.jl")

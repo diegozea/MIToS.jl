@@ -17,8 +17,8 @@ include("Write.jl")
 include("FindObjects.jl")
 
 
-# COMMAND LINE
-# ============
+# COMMAND LINE: Scripts Module
+# ============================
 
 module Scripts
 

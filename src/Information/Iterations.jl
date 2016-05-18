@@ -24,7 +24,7 @@ Each sequence has weight 1 (`NoClustering()`) by default.
 This argument only have sense in the bidimensional case and indicates if the list on the `PairwiseListMatrix` should include the diagonal (default to `true`).
 - `diagonalvalue` : This argument is optional (default to zero). Indicates the value of output diagonal elements.
 """
-function estimateincolumns{T, TP, UseGap}(aln::Matrix{Residue}, use::Type{ResidueCount{T, 1, UseGap}}, measure::AbstractMeasure{TP},
+function estimateincolumns{T, TP, UseGap}(aln::AbstractMatrix{Residue}, use::Type{ResidueCount{T, 1, UseGap}}, measure::AbstractMeasure{TP},
                                           pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}), weight::SequenceWeights=NoClustering())
   N = ResidueCount{T, 1, UseGap}()
   ncol = ncolumns(aln)
@@ -37,7 +37,7 @@ function estimateincolumns{T, TP, UseGap}(aln::Matrix{Residue}, use::Type{Residu
   scores
 end
 
-function estimateincolumns{T <: Real, TP, UseGap}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{TP, 1, UseGap}}, measure::AbstractMeasure{TP},
+function estimateincolumns{T <: Real, TP, UseGap}(aln::AbstractMatrix{Residue}, count::Type{T}, use::Type{ResidueProbability{TP, 1, UseGap}}, measure::AbstractMeasure{TP},
                                                   pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}), weight::SequenceWeights=NoClustering())
   N = ResidueCount{T, 1, UseGap}()
   P = ResidueProbability{TP, 1, UseGap}()
@@ -52,11 +52,11 @@ function estimateincolumns{T <: Real, TP, UseGap}(aln::Matrix{Residue}, count::T
   scores
 end
 
-function estimateincolumns{T, TP, UseGap}(aln::Matrix{Residue}, use::Type{ResidueCount{T, 2, UseGap}}, measure::SymmetricMeasure{TP},
+function estimateincolumns{T, TP, UseGap}(aln::AbstractMatrix{Residue}, use::Type{ResidueCount{T, 2, UseGap}}, measure::SymmetricMeasure{TP},
                                           pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}), weight::SequenceWeights=NoClustering(), usediagonal::Bool=true, diagonalvalue::TP=zero(TP))
   Nab = ResidueCount{T, 2, UseGap}()
   ncol = ncolumns(aln)
-  scores = PairwiseListMatrix(TP, ncol, usediagonal, diagonalvalue) # Array(TP, ncol, ncol)
+  scores = columnpairsmatrix(aln, TP, usediagonal, diagonalvalue) # Array(TP, ncol, ncol)
   @inbounds for i in 1:ncol
     a = sub(aln,:,i)
     for j in i:ncol
@@ -72,13 +72,13 @@ function estimateincolumns{T, TP, UseGap}(aln::Matrix{Residue}, use::Type{Residu
   scores
 end
 
-function estimateincolumns{T <: Real, TP, UseGap}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{TP, 2, UseGap}},
+function estimateincolumns{T <: Real, TP, UseGap}(aln::AbstractMatrix{Residue}, count::Type{T}, use::Type{ResidueProbability{TP, 2, UseGap}},
                                                   measure::SymmetricMeasure{TP}, pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}),
                                                   weight::SequenceWeights=NoClustering(), usediagonal::Bool=true, diagonalvalue::TP=zero(TP))
   Nab = ResidueCount{T, 2, UseGap}()
   Pab = ResidueProbability{TP, 2, UseGap}()
   ncol = ncolumns(aln)
-  scores = PairwiseListMatrix(TP, ncol, usediagonal, diagonalvalue) # zeros(TP, ncol, ncol)
+  scores = columnpairsmatrix(aln, TP, usediagonal, diagonalvalue) # zeros(TP, ncol, ncol)
   @inbounds for i in 1:ncol
     a = sub(aln,:,i)
     for j in i:ncol
@@ -95,14 +95,14 @@ function estimateincolumns{T <: Real, TP, UseGap}(aln::Matrix{Residue}, count::T
   scores
 end
 
-function estimateincolumns{T <: Real, TP}(aln::Matrix{Residue}, count::Type{T}, use::Type{ResidueProbability{TP, 2, false}}, α, β,
+function estimateincolumns{T <: Real, TP}(aln::AbstractMatrix{Residue}, count::Type{T}, use::Type{ResidueProbability{TP, 2, false}}, α, β,
                                           measure::SymmetricMeasure{TP}, pseudocount::Pseudocount{T}=zero(AdditiveSmoothing{T}),
                                           weight::SequenceWeights=NoClustering(), usediagonal::Bool=true, diagonalvalue::TP=zero(TP))
   Nab = ResidueCount{T, 2, false}()
   Pab = ResidueProbability{TP, 2, false}()
   Gab = ResidueProbability{TP, 2, false}()
   ncol = ncolumns(aln)
-  scores = PairwiseListMatrix(TP, ncol, usediagonal, diagonalvalue) # zeros(TP, ncol, ncol)
+  scores = columnpairsmatrix(aln, TP, usediagonal, diagonalvalue) # zeros(TP, ncol, ncol)
   @inbounds for i in 1:ncol
     a = sub(aln,:,i)
     for j in i:ncol
@@ -121,15 +121,11 @@ function estimateincolumns{T <: Real, TP}(aln::Matrix{Residue}, count::Type{T}, 
   scores
 end
 
-estimateincolumns(aln::AbstractMultipleSequenceAlignment, args...) = estimateincolumns(aln.msa, args...)
-
-
 """
 This function `estimate` a `measure` over sequences or sequence pairs.
 It has the same arguments than `estimateincolumns`, look the documentation of the last.
 """
-estimateinsequences(aln::Matrix{Residue}, args...) = estimateincolumns(transpose(aln), args...)
-estimateinsequences(aln::AbstractMultipleSequenceAlignment, args...) = estimateincolumns(transpose(aln.msa), args...)
+estimateinsequences(aln::AbstractMatrix{Residue}, args...) = estimateincolumns(transpose(aln), args...)
 
 # cMI
 # ===
