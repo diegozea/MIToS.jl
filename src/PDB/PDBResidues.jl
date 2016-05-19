@@ -27,7 +27,7 @@ end
     B::ASCIIString
 end
 
-type PDBResidue
+@auto_hash_equals type PDBResidue
     id::PDBResidueIdentifier
     atoms::Vector{PDBAtom}
 end
@@ -38,19 +38,6 @@ length(res::PDBResidue) = length(res.atoms)
 # ===========
 
 vec(a::Coordinates) = Float64[a.x, a.y, a.z]
-
-# # Functions defined in FixedSizeArray:
-# norm(a::Coordinates) = sqrt(a.x^2 + a.y^2 + a.z^2)
-# dot(a::Coordinates, b::Coordinates) = (a.x * b.x) + (a.y * b.y) + (a.z * b.z)
-# size(a::Coordinates) = (3,)
-# length(a::Coordinates) = 3
-# -(a::Coordinates, b::Coordinates) = Coordinates(a.x - b.x, a.y - b.y, a.z - b.z)
-# +(a::Coordinates, b::Coordinates) = Coordinates(a.x + b.x, a.y + b.y, a.z + b.z)
-# ./(a::Coordinates, b::Int) = Coordinates(a.x / b, a.y / b, a.z / b )
-# function cross(a::Coordinates, b::Coordinates)
-#    normal = cross(vec(a), vec(b))
-#    Coordinates(normal[1], normal[2], normal[3])
-# end
 
 # Distances and geometry
 # ----------------------

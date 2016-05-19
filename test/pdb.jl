@@ -307,3 +307,50 @@ let code = "2VQC", io = IOBuffer()
     @test printed[1]   == "ATOM      1  N   THR A   4       2.431  19.617   6.520  1.00 24.37           N  "
     @test printed[607] == "HETATM  607  O   HOH A2025      13.807  38.993   2.453  1.00 33.00           O  "
 end
+
+
+let code = "1AS5", # NMR
+    io = IOBuffer()
+
+    pdb = read(txt(code), PDBFile)
+    print(io, pdb, PDBFile)
+    printed = split(takebuf_string(io), '\n')
+
+    @test sum(map(x -> startswith(x, "MODEL "), printed)) == 14 # 14 models
+    @test sum(map(x -> x == "ENDMDL", printed)) == 14 # 14 models
+end
+
+let code = "1IAO", # 2 Chains
+    io = IOBuffer()
+
+    pdb = read(txt(code), PDBFile)
+    print(io, pdb, PDBFile)
+    printed = split(takebuf_string(io), '\n')
+
+    # MIToS only prints TER for the ATOM group if the chain changes.
+    # Some modified residues are annotated as HETATM in the middle of the ATOM chain:
+    # TER can not be printed from ATOM to HETATM if the chain doesn’t change.
+
+    # Only prints TER between chain A and B
+    @test sum(map(x -> startswith(x, "TER "), printed)) == 1
+
+    @test filter(r"TER ", printed)[1] == "TER    1418      TRP A 178 "
+end
+
+print("""
+
+read/write consistency
+----------------------
+""")
+
+let io = IOBuffer()
+    for code in ["2VQC", "1IAO", "1NSA", "1HAG", "1IGY", "1DPO", "1AS5", "1CBN", "1SSX"]
+        println(code)
+
+        readed = read(txt(code), PDBFile)
+        print(io, readed, PDBFile)
+        readed_writed_readed = parse(takebuf_string(io), PDBFile)
+
+        @test readed_writed_readed == readed
+    end
+end

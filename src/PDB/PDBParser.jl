@@ -97,6 +97,63 @@ const _Format_PDB_ATOM = FormatExpr(
     "{:<6}{:>5d} {:<4}{:>1}{:>3} {:>1}{:>4}{:>1}   {:>8.3f}{:>8.3f}{:>8.3f}{:>6.2f}{:>6.2f}      {:<4}{:>2}{:>2}\n"
     )
 
+# Models are numbered sequentially beginning with 1.
+# Each MODEL must have a corresponding ENDMDL record.
+# COLUMNS        DATA TYPE       CONTENTS
+# --------------------------------------------------------------------------------
+# 1 -  6       Record name    "MODEL "
+# 11 - 14       Integer        Model serial number
+# Example:
+#          1         2         3         4         5         6         7         8
+# 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+# MODEL        1
+# ATOM      1  N   ALA     1      11.104   6.134  -6.504  1.00  0.00           N
+# ATOM    294 2HG  GLU    18     -13.630  -3.769   0.160  1.00  0.00           H
+# TER     295      GLU    18
+# ENDMDL
+
+const _Format_PDB_MODEL = FormatExpr(
+    #          1
+    # 12345678901234
+    # MODEL        1
+     "MODEL     {:>4}\n"
+    )
+
+# TER
+# Indicates the end of a list of ATOM/HETATM records for a chain
+# The TER records occur in the coordinate section of the entry, and indicate
+# the last residue presented for each polypeptide and/or nucleic acid chain for
+# which there are coordinates.
+# The TER record has the same residue name, chain identifier, sequence number
+# and insertion code as the terminal residue. The serial number of the TER
+# record is one number greater than the serial number of the ATOM/HETATM
+# preceding the TER.
+# The residue name appearing on the TER record must be the same as the residue name
+# of the immediately preceding ATOM or non-water HETATM record.
+# COLUMNS         DATA TYPE         CONTENTS
+# --------------------------------------------------------------------------------
+#  1 -  6         Record name       "TER   "
+#  7 - 11         Integer           Serial number
+# 18 - 20         Residue name      Residue name
+# 22              Character         Chain identifier
+# 23 - 26         Integer           Residue sequence number
+# 27              AChar             Insertion code
+# Example:
+#          1         2         3         4         5         6         7         8
+# 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+# ATOM   4150  H   ALA A 431       8.674  16.036  12.858  1.00  0.00           H
+# TER    4151      ALA A 431
+
+# HETATM 1415  O2  BLE P   1      13.775  30.147  14.862  1.09 20.95           O
+# TER    1416      BLE P   1
+
+const _Format_PDB_TER = FormatExpr(
+    # TER    4151      ALA A 431
+    #          1         2         3         4         5         6         7         8
+    # 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+    "TER   {:>5d}      {:>3} {:>1}{:>4}{:>1}\n"
+    )
+
 function print(io::IO, res::PDBResidue, format::Type{PDBFile}, atom_index::Int, serial_number::Int)
     number = match(r"(\d+)(\D?)", res.id.number)
     atomname = res.atoms[atom_index].atom
@@ -130,13 +187,60 @@ end
 
 function print(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PDBFile}, start::Int=1)
     next = start
-    for res in reslist
+
+    use_model = length(unique(map(res->res.id.model, reslist))) > 1
+    if use_model
+        model = "START"
+    end
+
+    for resindex in 1:length(reslist)
+        res = reslist[resindex]
+
+        # MODEL
+        if use_model
+            if model != res.id.model
+                if model != "START"
+                   println(io, "ENDMDL")
+                end
+                printfmt(io, _Format_PDB_MODEL, res.id.model)
+            end
+            model = res.id.model
+        end
+
+        # TER
+
+        # MIToS only prints TER for the ATOM group if the chain changes.
+        # Some modified residues are annotated as HETATM in the middle of the ATOM chain:
+        # TER can not be printed from ATOM to HETATM if the chain doesn’t change.
+        if resindex > 1
+            previous_res = reslist[ resindex - 1 ]
+            if (previous_res.id.group == "ATOM") && (previous_res.id.chain != res.id.chain)
+                number = match(r"(\d+)(\D?)", previous_res.id.number)
+                printfmt(io, _Format_PDB_TER,
+                    next,
+                    previous_res.id.name,
+                    previous_res.id.chain,
+                    number[1],
+                    number[2]
+                    )
+                next += 1
+            end
+        end
+
+        # ATOM/HETATM
         for i in 1:length(res.atoms)
             next = print(io, res, format, i, next)
         end
+
     end
+
+    if use_model
+        println(io, "ENDMDL")
+    end
+
     nothing
 end
 
 print(reslist::AbstractVector{PDBResidue}, format::Type{PDBFile}) = print(STDOUT, reslist, format)
 print(res::PDBResidue, format::Type{PDBFile}) = print(STDOUT, res, format)
+
