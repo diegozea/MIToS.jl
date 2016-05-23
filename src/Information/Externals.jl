@@ -19,11 +19,11 @@ Baldassi, Carlo, Marco Zamparo, Christoph Feinauer, Andrea Procaccini, Riccardo 
 "Fast and accurate multivariate Gaussian modeling of protein families: predicting residue contacts and protein-interaction partners."
 PloS one 9, no. 3 (2014): e92721.
 """
-function gaussdca(msa, args...)
+function gaussdca(msa, args...; kargs...)
     filename = tempname()
     write(filename, msa, FASTA)
     try
-        pairedvalues = Main.GaussDCA.gDCA(filename, args...)
+        pairedvalues = Main.GaussDCA.gDCA(filename, args...; kargs...)
         plm = fill!(columnpairsmatrix(msa), NaN)
         for (i,j,value) in pairedvalues
            plm[i,j] = value
