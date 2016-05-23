@@ -79,6 +79,32 @@ end
 
 print("""
 
+RMSF
+----
+""")
+
+let A = [ -1. -1. -1.
+          -1.  0.  1. ],
+    B = [  1.  1.  1.
+          -1.  0.  1. ]
+
+    @test_throws DimensionMismatch mean_coordinates(Matrix{Float64}[A[1,:], B])
+    @test_throws DimensionMismatch mean_coordinates(Matrix{Float64}[A[:,1:2], B])
+
+    @test mean_coordinates(Matrix{Float64}[A, B]) == [ 0. 0. 0.
+                                                      -1. 0. 1. ]
+
+    @test mean_coordinates(Matrix{Float64}[A, B]) == mean_coordinates(A,B)
+    @test mean_coordinates(A,B) == mean_coordinates(A,B,A,B)
+
+    @test rmsf(Matrix{Float64}[A, B]) == [sqrt(3), 0.]
+    @test rmsf(A, B) == [sqrt(3), 0.]
+    @test rmsf(A, B, A, B) == [sqrt(3), 0.]
+
+end
+
+print("""
+
 Superimpose PDBs and RMSD
 -------------------------
 """)
@@ -151,4 +177,15 @@ let hemoglobin = read(joinpath(pwd(), "data", "2hhb.pdb.gz"), PDBFile, group="AT
 
     b12, b22, rβ2 = superimpose(b1, b2)
     @test_approx_eq rβ2 rβ
+
+    print("""
+    RMSF
+    """)
+
+    @test rmsf(α1, α2) == rmsf(Vector{PDBResidue}[α1, α2])
+
+    @test_throws ErrorException rmsf(α1, β1)
+    @test_throws ErrorException rmsf(α1)
+
 end
+

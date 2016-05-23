@@ -112,7 +112,6 @@ function change_coordinates(atom::PDBAtom, coordinates::Coordinates)
             copy(atom.B))
 end
 
-
 """
 Returns a new `PDBResidues` with (x,y,z) from a coordinates `Matrix{Float64}`
 You can give an `offset` indicating in wich matrix row starts the (x,y,z) coordinates of the residue.
@@ -198,3 +197,55 @@ function superimpose(A::Vector{PDBResidue}, B::Vector{PDBResidue})
             )
     end
 end
+
+# RMSF: Root Mean-Square-average distance (Fluctuation)
+# -----------------------------------------------------
+
+"""
+Calculates the average/mean position of each atom in a set of structures.
+When a Vector{PDBResidue} is used, if the keyword argument `calpha` is `false` the RMSF is calculated for all the atoms.
+By default only alpha carbons are used (default: `calpha=true`).
+"""
+function mean_coordinates(vec::AbstractVector{Matrix{Float64}})
+    n = length(vec)
+    reduce(+, vec) ./ n
+end
+
+function mean_coordinates(vec::AbstractVector{Vector{PDBResidue}}; calpha::Bool=true)
+    mean_coordinates(map(calpha ? CAmatrix : coordinatesmatrix, vec))
+end
+
+mean_coordinates(coords::Matrix{Float64}...) = mean_coordinates(Matrix{Float64}[ c for c in coords ])
+mean_coordinates(pdbs::AbstractVector{PDBResidue}...; kargs...) = mean_coordinates(Vector{PDBResidue}[ pdb for pdb in pdbs ]; kargs...)
+
+"""
+Calculates the RMSF (Root Mean-Square-Fluctuation) between an atom and its average position in a set of structures.
+When a Vector{PDBResidue} is used, if the keyword argument `calpha` is `false` the RMSF is calculated for all the atoms.
+By default only alpha carbons are used (default: `calpha=true`).
+"""
+function rmsf(vector::AbstractVector{Matrix{Float64}})
+    n = length(vector)
+    if n < 2
+        throw(ErrorException("You need at least two matrices/structures"))
+    end
+    sizes = unique(Tuple{Int,Int}[ size(s) for s in vector ])
+    if length(sizes) > 1
+        throw(ErrorException("Matrices/Structures must have the same number of rows/atoms"))
+    end
+    if sizes[1][2] != 3
+        throw(ErrorException("Matrices should have 3 columns (x, y, z)"))
+    end
+    m = mean_coordinates(vector)
+    # RMSF calculated as in Eq. 6 from:
+    # Kuzmanic, Antonija, and Bojan Zagrovic.
+    # "Determination of ensemble-average pairwise root mean-square deviation from experimental B-factors."
+    # Biophysical journal 98.5 (2010): 861-871.
+    vec(sqrt(mean(map( mat -> mapslices(sumabs2, mat .- m, 2), vector ))))
+end
+
+function rmsf(vec::AbstractVector{Vector{PDBResidue}}; calpha::Bool=true)
+        rmsf(map(calpha ? CAmatrix : coordinatesmatrix, vec))
+end
+
+rmsf(coords::Matrix{Float64}...) = rmsf(Matrix{Float64}[ c for c in coords ])
+rmsf(pdbs::AbstractVector{PDBResidue}...; kargs...) = rmsf(Vector{PDBResidue}[ pdb for pdb in pdbs ]; kargs...)

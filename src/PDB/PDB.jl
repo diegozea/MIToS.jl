@@ -45,6 +45,7 @@ kabsch, center!, rmsd,
 getCA, CAmatrix, coordinatesmatrix, change_coordinates,
 centeredcoordinates, centeredresidues,
 superimpose,
+mean_coordinates, rmsf,
 
 # Mitos.Utils
 isobject, findobjects, Is, Not, In, collectobjects, collectcaptures,
