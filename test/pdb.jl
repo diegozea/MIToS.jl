@@ -303,7 +303,7 @@ let code = "2VQC", io = IOBuffer()
     print(io, pdb, PDBFile)
     printed = split(takebuf_string(io), '\n')
 
-    @test length(printed) == 608 # Only ATOM & HETATM + 1 because the trailing \n
+    @test length(printed) == 609 # Only ATOM, HETATM & END + 1 because the trailing \n
     @test printed[1]   == "ATOM      1  N   THR A   4       2.431  19.617   6.520  1.00 24.37           N  "
     @test printed[607] == "HETATM  607  O   HOH A2025      13.807  38.993   2.453  1.00 33.00           O  "
 end

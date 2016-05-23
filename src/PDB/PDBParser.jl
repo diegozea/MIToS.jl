@@ -15,7 +15,7 @@ function parse(io::Union{IO, ASCIIString}, ::Type{PDBFile}; chain::ASCIIString =
     residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
     atom_model = 0
     for line in eachline(io)
-        line_id = replace(line[1:6], ' ', "")
+        line_id = length(line) < 6 ? replace(line, ' ', "") : replace(line[1:6], ' ', "") # i.e. "END\n"
         if line_id == "MODEL"
             atom_model += 1
         end
@@ -238,6 +238,7 @@ function print(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PDBFile
         println(io, "ENDMDL")
     end
 
+    println(io, "END")
     nothing
 end
 
