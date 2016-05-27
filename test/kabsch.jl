@@ -135,6 +135,16 @@ let hemoglobin = read(joinpath(pwd(), "data", "2hhb.pdb.gz"), PDBFile, group="AT
     @test b1 != β1
     @test b2 != β2
 
+    print("""
+    rmsd with Vector{PDBResidue}
+    """)
+
+    @test_approx_eq_eps rmsd(α1, α2) 0.230 0.001
+    @test_approx_eq_eps rmsd(β1, β2) 0.251 0.001
+
+    @test_approx_eq_eps rmsd(a1, a2, superimposed=true) 0.230 0.001
+    @test_approx_eq_eps rmsd(b1, b2, superimposed=true) 0.251 0.001
+
     ca_a1 = CAmatrix(a1)
     ca_a2 = CAmatrix(a2)
     ca_b1 = CAmatrix(b1)

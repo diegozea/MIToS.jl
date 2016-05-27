@@ -45,6 +45,21 @@ function rmsd(A::Matrix{Float64}, B::Matrix{Float64})
     return sqrt(s / N)
 end
 
+"""
+`rmsd(A::AbstractVector{PDBResidue}, B::AbstractVector{PDBResidue}; superimposed::Bool=false)`
+
+Returns the Cα RMSD value between two PDB structures: `A` and `B`.
+If the structures are already superimposed between them,
+use `superimposed=true` to avoid a new superimposition (`superimposed` is `false` by default).
+"""
+function rmsd(A::AbstractVector{PDBResidue}, B::AbstractVector{PDBResidue}; superimposed::Bool=false)
+    if superimposed
+        rmsd(CAmatrix(A),CAmatrix(B))
+    else
+        superimpose(A, B)[end]::Float64
+    end
+end
+
 # Kabsch for Vector{PDBResidues}
 # ==============================
 
