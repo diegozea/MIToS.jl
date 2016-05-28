@@ -216,51 +216,68 @@ end
 # RMSF: Root Mean-Square-average distance (Fluctuation)
 # -----------------------------------------------------
 
+"This looks for errors in the input to rmsf methods"
+function _rmsf_test(vector)
+    n = length(vector)
+    if n < 2
+        throw(ArgumentError("You need at least two matrices/structures"))
+    end
+    sizes = unique(Tuple{Int,Int}[ size(s) for s in vector ])
+    if length(sizes) > 1
+        throw(ArgumentError("Matrices/Structures must have the same number of rows/atoms"))
+    end
+    if sizes[1][2] != 3
+        throw(ArgumentError("Matrices should have 3 columns (x, y, z)"))
+    end
+end
+
 """
-Calculates the average/mean position of each atom in a set of structures.
+Calculates the average/mean position of each atom in a set of structure.
+The function takes a vector (`AbstractVector`) of vectors (`Vector{PDBResidue}`) or matrices (`Matrix{Float64}`) as first argument.
+As second (optional) argument this function can take an `AbstractVector{Float64}` of matrix/structure weights to return a weighted mean.
 When a Vector{PDBResidue} is used, if the keyword argument `calpha` is `false` the RMSF is calculated for all the atoms.
 By default only alpha carbons are used (default: `calpha=true`).
 """
 function mean_coordinates(vec::AbstractVector{Matrix{Float64}})
+    _rmsf_test(vec)
     n = length(vec)
     reduce(+, vec) ./ n
 end
 
-function mean_coordinates(vec::AbstractVector{Vector{PDBResidue}}; calpha::Bool=true)
-    mean_coordinates(map(calpha ? CAmatrix : coordinatesmatrix, vec))
+function mean_coordinates(vec::AbstractVector{Matrix{Float64}}, matrixweights::AbstractVector{Float64})
+    _rmsf_test(vec)
+    @assert length(vec) == length(matrixweights) "The number of matrix weights must be equal to the number of matrices."
+    n = sum(matrixweights)
+    reduce(+, (vec .* matrixweights)) ./ n
 end
 
-mean_coordinates(coords::Matrix{Float64}...) = mean_coordinates(Matrix{Float64}[ c for c in coords ])
-mean_coordinates(pdbs::AbstractVector{PDBResidue}...; kargs...) = mean_coordinates(Vector{PDBResidue}[ pdb for pdb in pdbs ]; kargs...)
+function mean_coordinates(vec::AbstractVector{Vector{PDBResidue}}, args...; calpha::Bool=true)
+    mean_coordinates(map(calpha ? CAmatrix : coordinatesmatrix, vec), args...)
+end
 
 """
 Calculates the RMSF (Root Mean-Square-Fluctuation) between an atom and its average position in a set of structures.
+The function takes a vector (`AbstractVector`) of vectors (`Vector{PDBResidue}`) or matrices (`Matrix{Float64}`) as first argument.
+As second (optional) argument this function can take an `AbstractVector{Float64}` of matrix/structure weights
+to return the root weighted mean-square-fluctuation around the weighted mean structure.
 When a Vector{PDBResidue} is used, if the keyword argument `calpha` is `false` the RMSF is calculated for all the atoms.
 By default only alpha carbons are used (default: `calpha=true`).
 """
 function rmsf(vector::AbstractVector{Matrix{Float64}})
-    n = length(vector)
-    if n < 2
-        throw(ErrorException("You need at least two matrices/structures"))
-    end
-    sizes = unique(Tuple{Int,Int}[ size(s) for s in vector ])
-    if length(sizes) > 1
-        throw(ErrorException("Matrices/Structures must have the same number of rows/atoms"))
-    end
-    if sizes[1][2] != 3
-        throw(ErrorException("Matrices should have 3 columns (x, y, z)"))
-    end
     m = mean_coordinates(vector)
-    # RMSF calculated as in Eq. 6 from:
+    # MIToS RMSF is calculated as in Eq. 6 from:
     # Kuzmanic, Antonija, and Bojan Zagrovic.
     # "Determination of ensemble-average pairwise root mean-square deviation from experimental B-factors."
     # Biophysical journal 98.5 (2010): 861-871.
     vec(sqrt(mean(map( mat -> mapslices(sumabs2, mat .- m, 2), vector ))))
 end
 
-function rmsf(vec::AbstractVector{Vector{PDBResidue}}; calpha::Bool=true)
-        rmsf(map(calpha ? CAmatrix : coordinatesmatrix, vec))
+function rmsf(vector::AbstractVector{Matrix{Float64}}, matrixweights::AbstractVector{Float64})
+    m = mean_coordinates(vector, matrixweights)
+    d = map( mat -> mapslices(sumabs2, mat .- m, 2), vector )
+    vec(sqrt(sum(d .* matrixweights)/sum(matrixweights)))
 end
 
-rmsf(coords::Matrix{Float64}...) = rmsf(Matrix{Float64}[ c for c in coords ])
-rmsf(pdbs::AbstractVector{PDBResidue}...; kargs...) = rmsf(Vector{PDBResidue}[ pdb for pdb in pdbs ]; kargs...)
+function rmsf(vec::AbstractVector{Vector{PDBResidue}}, args...; calpha::Bool=true)
+    rmsf(map(calpha ? CAmatrix : coordinatesmatrix, vec))
+end
