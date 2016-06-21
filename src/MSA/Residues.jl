@@ -125,18 +125,18 @@ string(seq::AbstractVector{Residue}) = ascii(seq) # "AR..." instead of the stand
 function convert(::Type{Matrix{Residue}}, sequences::Array{ASCIIString,1})
     nseq = length(sequences)
     nres = length(sequences[1])
-    aln = Array(Residue,nres,nseq)
-    for col in 1:nseq
-        seq = sequences[col].data
+    aln = Array(Residue,nseq,nres)
+    @inbounds for i in 1:nseq
+        seq = sequences[i].data
         if length(seq) == nres
-            aln[:,col] = Residue( seq )
+            aln[i,:] = seq
         else
-            throw(ErrorException(
-            "There is an aligned sequence with different number of columns [ $(length(seq)) != $(nres) ]: $(ascii(seq))"
-            ))
+            throw(ErrorException(string(
+            "There is an aligned sequence with different number of columns [ ",
+            length(seq), " != ", nres," ]: ", ascii(seq) )))
         end
     end
-    aln'
+    aln
 end
 
 """
