@@ -12,7 +12,7 @@ function _pre_readfasta(io::AbstractString)
 
     for i in 1:N
         fields = split(seqs[i+1], '\n')
-        IDS[i] = replace(fields[1], r"\s+", "")
+        IDS[i] = fields[1]
         SEQS[i] = replace(fields[2], r"\s+", "")
     end
 

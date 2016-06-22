@@ -142,6 +142,14 @@ const gaores = [seq1'; seq2'; seq3'; seq4'; seq5'; seq6']
 @test small.id.items == ASCIIString[ "SEQ$i" for i in 1:6 ]
 
 print("""
+Sequence identifiers FASTA
+""")
+
+let file = joinpath(pwd(), "data", "ids.fasta")
+    @test names(parse(readall(file), FASTA)) == names(read(file, FASTA))
+end
+
+print("""
 Are the parsers (pfam/fasta) getting the same result?
 """)
 
