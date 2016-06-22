@@ -44,7 +44,7 @@ function percentidentity(seq1, seq2, threshold)
     limit_count = n * fraction
     diff = 0
     count = 0
-    for i in 1:len
+    @inbounds for i in 1:len
         if seq1[i] == seq2[i]
             if seq1[i] != GAP
                 count += 1
@@ -256,6 +256,6 @@ For a MSA with a lot of sequences, you can use `out=Float32` or `out=Flot16` in 
 function percentsimilarity(msa::AbstractMatrix{Residue}, args...; out::Type=Float64)
     aln = getresiduesequences(msa)
     scores = sequencepairsmatrix(msa, out, false, out(100.0))
-    @iterateupper scores false list[k] = :($percentsimilarity)(:($aln)[i], :($aln)[j], :($args)...)
+    @inbounds @iterateupper scores false list[k] = :($percentsimilarity)(:($aln)[i], :($aln)[j], :($args)...)
     scores
 end

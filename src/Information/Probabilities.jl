@@ -158,7 +158,7 @@ function update!{T,UseGap}(n::ResidueCount{T,2,UseGap})
 end
 
 function update!{T, N, UseGap}(n::ResidueCount{T, N, UseGap})
-	for i in 1:N
+	@inbounds for i in 1:N
 		n.marginals[:,i] = sum(n.table, _tuple_without_index(i,N))
 	end
 	n.total = sum(n.marginals[:,1])
@@ -234,27 +234,28 @@ end
 
 ### Counting
 
-for (usegap, testgap) in [ (:(true),:()), (:(false),:(aa == Int(GAP) && continue)) ]
-
-  @eval begin
-
-    function count!{T}(n::ResidueCount{T, 1, $(usegap)}, weights, res::AbstractVector{Residue})
-      for i in 1:length(res)
-        aa = Int(res[i])
-        $(testgap)
-        n.table[aa] += getweight(weights,i)
-      end
-      update!(n)
+function count!{T}(n::ResidueCount{T, 1, true}, weights, res::AbstractVector{Residue})
+    @simd for i in 1:length(res)
+        @inbounds n.table[Int(res[i])] += getweight(weights,i)
     end
-
-    count!{T}(n::ResidueCount{T, 1, $(usegap)}, res::AbstractVector{Residue}) = count!(n, NoClustering(), res)
-
-  end
+    update!(n)
 end
 
+function count!{T}(n::ResidueCount{T, 1, false}, weights, res::AbstractVector{Residue})
+    @inbounds for i in 1:length(res)
+        aa = Int(res[i])
+        aa == Int(GAP) && continue
+        n.table[aa] += getweight(weights,i)
+    end
+    update!(n)
+end
+
+count!{T, UseGap}(n::ResidueCount{T, 1, UseGap}, res::AbstractVector{Residue}) = count!(n, NoClustering(), res)
+
 function count!{T}(n::ResidueCount{T, 2, true}, weights, res1::AbstractVector{Residue}, res2::AbstractVector{Residue})
-  for i in 1:length(res1)
-    n.table[Int(res1[i]), Int(res2[i])] += getweight(weights,i)
+  @assert length(res1) == length(res2)
+  @simd for i in 1:length(res1)
+    @inbounds n.table[Int(res1[i]), Int(res2[i])] += getweight(weights,i)
   end
   update!(n)
 end
@@ -576,7 +577,7 @@ function _list_without_dimensions(len::Int, out_len::Int, dimensions::Int...)
   (len - ndim) != out_len && throw("$out_len should be $len minus the number of dimensions = $(len - ndim)")
   index_list = Array(Int, out_len)
   j = 1
-  for i in 1:len
+  @inbounds for i in 1:len
     if ! (i in dimensions)
       index_list[j] = i
       j += 1
@@ -612,5 +613,3 @@ i.e. This is useful for getting Pxy from Pxyz.
 """
 delete_dimensions{T,N,UseGap}(in::ResidueCount{T, N, UseGap}, dimensions::Int...) = delete_dimensions!(ResidueCount{T, N-length(dimensions), UseGap}(), in, dimensions...)
 delete_dimensions{T,N,UseGap}(in::ResidueProbability{T, N, UseGap}, dimensions::Int...) = delete_dimensions!(ResidueProbability{T, N-length(dimensions), UseGap}(), in, dimensions...)
-
-

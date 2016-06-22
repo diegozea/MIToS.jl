@@ -29,7 +29,7 @@ function estimateincolumns{T, TP, UseGap}(aln::AbstractMatrix{Residue}, use::Typ
   N = ResidueCount{T, 1, UseGap}()
   ncol = ncolumns(aln)
   scores = Array(TP, ncol)
-  for i in 1:ncol
+  @inbounds for i in 1:ncol
     fill!(N, pseudocount) # instead of fill! with 0
     count!(N, weight, sub(aln,:,i))
     scores[i] = estimate(measure, N)
@@ -43,7 +43,7 @@ function estimateincolumns{T <: Real, TP, UseGap}(aln::AbstractMatrix{Residue}, 
   P = ResidueProbability{TP, 1, UseGap}()
   ncol = ncolumns(aln)
   scores = Array(TP, ncol)
-  for i in 1:ncol
+  @inbounds for i in 1:ncol
     fill!(N, pseudocount) # instead of fill! with 0
     count!(N, weight, sub(aln,:,i))
     fill!(P, N) # count! calls update!
