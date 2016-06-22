@@ -20,6 +20,7 @@ using DataStructures        # OrderedDicts for Annotations
 using IndexedArrays         # IndexedArray for sequence names in MSAs
 using PairwiseListMatrices  # Percent Identity Matrices
 using Clustering            # Used for sequence clustering: ClusteringResult
+using FastaIO               # FastaReader (fast)
 using MIToS.Utils
 
 """

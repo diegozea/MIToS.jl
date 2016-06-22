@@ -10,3 +10,4 @@ ArgParse
 ROCAnalysis
 Clustering
 FixedSizeArrays
+FastaIO

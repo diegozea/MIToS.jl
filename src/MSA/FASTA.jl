@@ -22,24 +22,10 @@ end
 function _pre_readfasta(io::IO)
     IDS  = ASCIIString[]
     SEQS = ASCIIString[]
-
-    delim = UInt8('>')
-    newline = UInt8('\n')
-    deletechars = IntSet(Int[delim, newline, '\t', ' '])
-
-    seqinfo = readuntil(io, delim)
-    if seqinfo[1] == delim
-        seqinfo = readuntil(io, delim)
-        while length(seqinfo) != 0
-            firstnewline = findfirst(seqinfo, newline)
-            push!(IDS, ASCIIString( seqinfo[1:(firstnewline-1)] ) )
-            push!(SEQS, ASCIIString( deleteitems!(seqinfo[(firstnewline+1):end], deletechars) ) )
-            seqinfo = readuntil(io, delim)
-        end
-    else
-        throw(ErrorException("The file doesn't start with '>'"))
+    for (name, seq) in FastaReader{ASCIIString}(io) # FastaIO
+        push!(IDS,  name)
+        push!(SEQS, seq )
     end
-
     (IDS, SEQS)
 end
 
