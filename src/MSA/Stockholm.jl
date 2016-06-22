@@ -1,5 +1,13 @@
 immutable Stockholm <: Format end
 
+@inline function _fill_with_sequence_line!(line, IDS, SEQS)
+    if line[1:1] != "#" && line[1:2] != "//"
+        words = get_n_words(line,2)
+        push!(IDS, words[1])
+        push!(SEQS,words[2])
+    end
+end
+
 function _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
     if line[1:4] == "#=GF"
         words = get_n_words(line,3)
@@ -23,10 +31,8 @@ function _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
     elseif line[1:4] == "#=GR"
         words = get_n_words(line,4)
         GR[(words[2],words[3])] = words[4]
-    elseif line[1:1] != "#"
-        words = get_n_words(line,2)
-        push!(IDS, words[1])
-        push!(SEQS,words[2])
+    else
+        _fill_with_sequence_line!(line, IDS, SEQS)
     end
 end
 
@@ -38,18 +44,31 @@ function _pre_readstockholm(io::Union{IO, AbstractString})
     GS = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
     GR = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
 
-    for line in eachline(io)
+    @inbounds for line in eachline(io)
         if length(line) >= 4
             _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
+            if line[1:2] == "//"
+               break
+            end
         end
     end
 
-    #GF = sizehint!(GF, length(GF))
     GF = sizehint!(GF, length(GF))
     GC = sizehint!(GC, length(GC))
     GS = sizehint!(GS, length(GS))
     GR = sizehint!(GR, length(GR))
     (IDS, SEQS, GF, GS, GC, GR)
+end
+
+function _pre_readstockholm_sequences(io::Union{IO, AbstractString})
+    IDS  = ASCIIString[]
+    SEQS = ASCIIString[]
+    @inbounds for line in eachline(io)
+        if length(line) >= 4
+            _fill_with_sequence_line!(line, IDS, SEQS)
+        end
+    end
+    (IDS, SEQS)
 end
 
 function parse(io::Union{IO, AbstractString}, format::Type{Stockholm},
@@ -83,8 +102,7 @@ end
 
 function parse(io::Union{IO, AbstractString}, format::Type{Stockholm}, output::Type{MultipleSequenceAlignment};
                deletefullgaps::Bool=true, checkalphabet::Bool=false)
-    # Could be faster with a special _pre_readstockholm
-    IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
+    IDS, SEQS = _pre_readstockholm_sequences(io)
     msa = MultipleSequenceAlignment(IndexedArray(IDS), convert(Matrix{Residue}, SEQS))
     if checkalphabet
         deletenotalphabetsequences!(msa, SEQS)
@@ -97,8 +115,7 @@ end
 
 function parse(io::Union{IO,AbstractString}, format::Type{Stockholm}, output::Type{Matrix{Residue}};
                deletefullgaps::Bool=true, checkalphabet::Bool=false)
-    # Could be faster with a special _pre_readstockholm
-    IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
+    IDS, SEQS = _pre_readstockholm_sequences(io)
     _strings_to_msa(SEQS, deletefullgaps, checkalphabet)
 end
 
