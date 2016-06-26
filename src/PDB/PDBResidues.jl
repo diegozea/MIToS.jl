@@ -389,7 +389,7 @@ function contact(vec::Vector{PDBResidue}, limit::AbstractFloat; criteria::ASCIIS
     cmap = trues(N,N)
     for i in 1:(N-1)
         for j in (i+1):N
-            cmap[i, j] = cmap [j, i] = contact(vec[i], vec[j], limit, criteria=criteria)
+            cmap[i, j] = cmap[j, i] = contact(vec[i], vec[j], limit, criteria=criteria)
         end
     end
     cmap
