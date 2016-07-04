@@ -21,6 +21,7 @@ using IndexedArrays         # IndexedArray for sequence names in MSAs
 using PairwiseListMatrices  # Percent Identity Matrices
 using Clustering            # Used for sequence clustering: ClusteringResult
 using FastaIO               # FastaReader (fast)
+using RecipesBase           # Plots for MSAs
 using MIToS.Utils
 
 """
@@ -90,5 +91,6 @@ include("PLM.jl")
 include("Identity.jl")
 include("Clusters.jl")
 include("Hobohm.jl")
+include("Plots.jl")
 
 end

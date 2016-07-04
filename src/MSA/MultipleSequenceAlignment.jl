@@ -399,6 +399,8 @@ annotations(seq::AnnotatedAlignedSequence) = seq.annotations
 
 "Returns the names of the MSA sequences."
 names(msa::AbstractMultipleSequenceAlignment) = msa.id
+names(msa::Matrix{Residue}) = IndexedArrays.IndexedArray(ASCIIString[ string(i) for i in 1:nsequences(msa) ])
+
 
 # Get annotations
 # ---------------

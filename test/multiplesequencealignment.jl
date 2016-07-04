@@ -33,6 +33,7 @@ const F112_SSV1 = collect(".....QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAI
 
 let rawpfam = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm, Matrix{Residue})
   @test rawpfam == pfam.msa
+  @test names(rawpfam) == IndexedArrays.IndexedArray(["1","2","3","4"])
 end
 
 @test pfam_na == convert(MultipleSequenceAlignment, pfam)
