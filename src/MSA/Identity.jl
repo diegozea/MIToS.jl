@@ -16,8 +16,9 @@ function _percentidentity(seq1, seq2, len)
 end
 
 """
-Calculates the fraction of identities between two aligned sequences.
+`percentidentity(seq1, seq2)`
 
+Calculates the fraction of identities between two aligned sequences.
 The identity value is calculated as the number of identical characters in the i-th position of both
 sequences divided by the length of both sequences.
 Positions with gaps in both sequences are not counted in the length of the sequence.
@@ -31,6 +32,8 @@ function percentidentity(seq1, seq2)
 end
 
 """
+`percentidentity(seq1, seq2, threshold)`
+
 Computes quickly if two aligned sequences have a identity value greater than a given `threshold` value.
 Returns a boolean value.
 """
@@ -84,6 +87,8 @@ function _percentidentity_kernel!(scores, aln, nseq, len)
 end
 
 """
+`percentidentity(msa[, out::Type=Float64])`
+
 Calculates the identity between all the sequences on a MSA.
 You can indicate the output element type with the last optional parameter (`Float64` by default).
 For a MSA with a lot of sequences, you can use `Float32` or `Flot16` in order to avoid the `OutOfMemoryError()`.

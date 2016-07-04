@@ -94,7 +94,7 @@ nsequences(msa::AbstractMultipleSequenceAlignment) = size(msa.msa, 1)
 nsequences(msa::Matrix{Residue}) = size(msa, 1)
 
 """
-Gives you the number of columns/positions on the MSA or aligned sequence
+`ncolumns` returns the MSA columns or sequence positions number.
 """
 ncolumns(msa::AbstractMultipleSequenceAlignment) = size(msa.msa, 2)
 ncolumns(msa::Matrix{Residue}) = size(msa, 2)
@@ -118,9 +118,8 @@ getresiduesequences(msa::AbstractMultipleSequenceAlignment) = getresiduesequence
 
 # Select sequence
 # ---------------
-"""
-Gives you the annotations of the Sequence
-"""
+
+# Gives you the annotations of the Sequence
 function getsequence(data::Annotations, id::ASCIIString)
     GS = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
     GR = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
@@ -141,16 +140,17 @@ function getsequence(data::Annotations, id::ASCIIString)
     Annotations(data.file, GS, data.columns, GR)
 end
 
-"""
-Returns an `AnnotatedAlignedSequence` with all annotations of sequence from the `AnnotatedMultipleSequenceAlignment`
-"""
+@doc """
+`getsequence` takes an MSA and a sequence number or identifier to return a sequence.
+If the MSA is n `AnnotatedMultipleSequenceAlignment`, it returns an `AnnotatedAlignedSequence` with sequence annotations.
+From a `MultipleSequenceAlignment`, It returns an `AlignedSequence` object.
+If an `Annotations` object  and a sequence identifier are used, this function returns the annotations related to the sequence.
+""" getsequence
+
 getsequence(msa::AnnotatedMultipleSequenceAlignment,
             i::Int) = AnnotatedAlignedSequence(msa.id[i], i,  vec(msa.msa[i,:]),
                                                getsequence(msa.annotations, msa.id[i]))
 
-"""
-Returns an `AlignedSequence` from the `MultipleSequenceAlignment`
-"""
 getsequence(msa::MultipleSequenceAlignment,
             i::Int) = AlignedSequence(msa.id[i], i, vec(msa.msa[i,:]))
 
@@ -172,11 +172,14 @@ getindex(msa::AbstractMultipleSequenceAlignment, id::ASCIIString) = getsequence(
 # Filters
 # -------
 
+"It's similar to `filtersequences!` but for a `Matrix` of `Residue`s"
 filtersequences(msa::Matrix{Residue}, mask::AbstractVector{Bool}) = msa[mask, :]
 
 """
-Allows to filter sequences on a MSA using a `AbstractVector{Bool}` mask (removes `false`s).
-For `AnnotatedMultipleSequenceAlignment`s the annotations are updated.
+`filtersequences!(msa, mask[, annotate::Bool=true])`
+
+Allows to filter `msa` sequences using a `AbstractVector{Bool}` `mask` (removes `false`s).
+`AnnotatedMultipleSequenceAlignment` annotations are updated if `annotate` is `true` (default).
 """
 function filtersequences!(msa::AnnotatedMultipleSequenceAlignment,
                           mask::AbstractVector{Bool}, annotate::Bool=true)
@@ -195,12 +198,15 @@ function filtersequences!(msa::MultipleSequenceAlignment,
     msa
 end
 
+"It's similar to `filtercolumns!` but for a `Matrix` or `Vector` of `Residue`s"
 filtercolumns(msa::Matrix{Residue}, mask::AbstractVector{Bool}) = msa[ : , mask ]
 filtercolumns(seq::Vector{Residue}, mask::AbstractVector{Bool}) = seq[ mask ]
 
 """
-Allows to filter columns/positions on a MSA using a `AbstractVector{Bool}` mask.
-For `AnnotatedMultipleSequenceAlignment`s or `AnnotatedAlignedSequence`s the annotations are updated.
+`filtercolumns!(msa, mask[, annotate::Bool=true])`
+
+Allows to filter MSA columns/sequence positions using a `AbstractVector{Bool}` `mask`.
+`AnnotatedMultipleSequenceAlignment`s or `AnnotatedAlignedSequence`s annotations are updated.
 """
 function filtercolumns!(msa::AnnotatedMultipleSequenceAlignment,
                         mask::AbstractVector{Bool}, annotate::Bool=true)
@@ -397,10 +403,13 @@ end
 annotations(msa::AnnotatedMultipleSequenceAlignment) = msa.annotations
 annotations(seq::AnnotatedAlignedSequence) = seq.annotations
 
-"Returns the names of the MSA sequences."
+"""
+`names(msa)`
+
+Returns the `MSA` sequences names or identifiers as an `IndexedArray`.
+"""
 names(msa::AbstractMultipleSequenceAlignment) = msa.id
 names(msa::Matrix{Residue}) = IndexedArrays.IndexedArray(ASCIIString[ string(i) for i in 1:nsequences(msa) ])
-
 
 # Get annotations
 # ---------------
@@ -463,6 +472,10 @@ end
 
 getcolumnmapping(msa::AnnotatedMultipleSequenceAlignment) = _str2int_mapping(getannotfile(msa, "ColMap"))
 
+"""
+Returns the sequence coordinates as a `Vector{Int}` for an MSA sequence. That vector has one element for each MSA column.
+If the number if `0` in the mapping, there is a gap in that column for that sequence.
+"""
 getsequencemapping(msa::AnnotatedMultipleSequenceAlignment,
                    seq_id::ASCIIString) = _str2int_mapping(getannotsequence(msa, seq_id, "SeqMap"))
 

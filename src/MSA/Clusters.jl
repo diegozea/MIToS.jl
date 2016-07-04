@@ -19,7 +19,7 @@ nsequences(cl::SequenceClusters) = length(cl.sequencecluster)
 
 # Clustering.jl : nclusters, counts, assignments
 
-"Get the number of clusters in `SequenceClusters`."
+"Get the number of clusters in a `SequenceClusters` object."
 nclusters(cl::SequenceClusters) = length(cl.clustersize)
 
 "Get sample counts of clusters as a `Vector`. Each `k` value is the number of samples assigned to the k-th cluster."
@@ -44,15 +44,11 @@ convert(::Type{SequenceClusters}, cl::SequenceClusters) = cl # no-op
 # weights
 # -------
 
-"Get the weights of all clusters in the set."
-getweight(cl::SequenceClusters) = cl.sequenceweight
-
-getweight(cl::ClusteringResult) = getweight(convert(SequenceClusters, cl))
-
-"""```getweight(c, i::Int)```
+"""```getweight(c[, i::Int])```
 
 This function returns the weight of the sequence number `i`.
 getweight should be defined for any type used for `count!`/`count` in order to use his weigths.
+If `i` isn't used, this function returns a vector with the weight of each sequence.
 """
 getweight(c::SequenceClusters, seq::Int) = c.sequenceweight[seq]
 
@@ -60,3 +56,6 @@ getweight(c::SequenceClusters, seq::Int) = c.sequenceweight[seq]
 
 getweight(weights::AbstractVector, i::Int) = weights[i]
 
+getweight(cl::SequenceClusters) = cl.sequenceweight
+
+getweight(cl::ClusteringResult) = getweight(convert(SequenceClusters, cl))

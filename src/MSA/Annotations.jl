@@ -45,7 +45,7 @@ For filter column and sequence mapping of the format: ",,,,10,11,,12"
 _filter_mapping(str_map::ASCIIString, mask) = join(split(str_map, ',')[mask], ',')
 
 """
-`filtersequences!(data::Annotations, ids::IndexedArray, mask::AbstractArray{Bool,1})` is useful for deleting annotations for a group of sequences.
+`filtersequences!(data::Annotations, ids::IndexedArray, mask::AbstractArray{Bool,1})` is useful for deleting sequence annotations.
 `ids` should be an `IndexedArray` with the `seqname`s of the annotated sequences and `mask` should be a logical vector.
 """
 function filtersequences!(data::Annotations, ids::IndexedArray, mask::AbstractArray{Bool,1})
@@ -68,7 +68,7 @@ function filtersequences!(data::Annotations, ids::IndexedArray, mask::AbstractAr
 end
 
 """
-`filtercolumns!(data::Annotations, mask)` is useful for deleting annotations for a group of columns (creating a subset in place).
+`filtercolumns!(data::Annotations, mask)` is useful for deleting column annotations (creating a subset in place).
 """
 function filtercolumns!(data::Annotations, mask)
     if length(data.residues) > 0
