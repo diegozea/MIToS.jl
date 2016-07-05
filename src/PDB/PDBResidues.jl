@@ -110,8 +110,18 @@ function _residues_tests(model, chain, group, residue)
     args
 end
 
+"""
+`residues(residue_list, model, chain, group, residue)`
+
+These return a new vector with the selected subset of residues from a list of residues.
+"""
 residues(residue_list, model, chain, group, residue) = collectobjects(residue_list, _residues_tests(model, chain, group, residue)...)
 
+"""
+`@residues ... model ... chain ... group ... residue ...`
+
+These return a new vector with the selected subset of residues from a list of residues.
+"""
 macro residues(residue_list,
                model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
                chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
@@ -124,6 +134,11 @@ macro residues(residue_list,
     end
 end
 
+"""
+`residuesdict(residue_list, model, chain, group, residue)`
+
+These return a dictionary (using PDB residue numbers as keys) with the selected subset of residues.
+"""
 function residuesdict(residue_list, model, chain, group, residue)
     res_index = findobjects(residue_list, _residues_tests(model, chain, group, residue)...)
     dict = sizehint!( OrderedDict{ASCIIString, PDBResidue}() , length(res_index) )
@@ -133,6 +148,11 @@ function residuesdict(residue_list, model, chain, group, residue)
     dict
 end
 
+"""
+`@residuesdict ... model ... chain ... group ... residue ...`
+
+These return a dictionary (using PDB residue numbers as keys) with the selected subset of residues.
+"""
 macro residuesdict(residue_list,
                    model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
                    chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
@@ -148,12 +168,22 @@ end
 # @atoms
 # ======
 
+"""
+`atoms(residue_list, model, chain, group, residue, atom)`
+
+These return a vector of `PDBAtom`s with the selected subset of atoms.
+"""
 function atoms(residue_list, model, chain, group, residue, atom)
     _is_wildcard(atom) ?
         vcat(Vector{PDBAtom}[ res.atoms for res in residues(residue_list, model, chain, group, residue) ]...) :
         vcat(Vector{PDBAtom}[ collectobjects(res.atoms, _test_stringfield(:atom, atom)) for res in residues(residue_list, model, chain, group, residue) ]...)
 end
 
+"""
+`@atoms ... model ... chain ... group ... residue ... atom ...`
+
+These return a vector of `PDBAtom`s with the selected subset of atoms.
+"""
 macro atoms(residue_list,
             model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
             chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
@@ -170,6 +200,7 @@ end
 # Special find...
 # ===============
 
+"Returns a list with the index of the heavy atoms (all atoms except hydrogen) in the `PDBResidue`"
 function findheavy(res::PDBResidue)
     N = length(res)
     indices = Array(Int,N)
@@ -183,6 +214,11 @@ function findheavy(res::PDBResidue)
     resize!(indices, j)
 end
 
+"""
+`findatoms(res::PDBResidue, atom::ASCIIString)`
+
+Returns a index vector of the atoms with the given `atom` name.
+"""
 function findatoms(res::PDBResidue, atom::ASCIIString)
     N = length(res)
     indices = Array(Int,N)
@@ -196,7 +232,7 @@ function findatoms(res::PDBResidue, atom::ASCIIString)
     resize!(indices, j)
 end
 
-"Returns a vector of indices for CB (CA for GLY)"
+"Returns a vector of indices for `CB` (`CA` for `GLY`)"
 function findCB(res::PDBResidue)
     N = length(res)
     indices = Array(Int,N)
@@ -327,7 +363,11 @@ function distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")
     dist
 end
 
-"""Test if the function f is true for any pair of atoms between the residues a and b"""
+"""
+`any(f::Function, a::PDBResidue, b::PDBResidue)`
+
+Test if the function `f` is true for any pair of atoms between the residues `a` and `b`
+"""
 function any(f::Function, a::PDBResidue, b::PDBResidue)
     Na = length(a)
     Nb = length(b)

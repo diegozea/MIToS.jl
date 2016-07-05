@@ -1,3 +1,10 @@
+"""
+`PDBFile <: Format`
+
+Protein Data Bank (PDB) format.
+It provides a standard representation for macromolecular
+structure data derived from X-ray diffraction and NMR studies.
+"""
 immutable PDBFile <: Format end
 
 """
@@ -249,3 +256,11 @@ end
 print(reslist::AbstractVector{PDBResidue}, format::Type{PDBFile}) = print(STDOUT, reslist, format)
 print(res::PDBResidue, format::Type{PDBFile}) = print(STDOUT, res, format)
 
+@doc """
+```julia
+print(io, res, format::Type{PDBFile})
+print(res, format::Type{PDBFile})
+```
+
+Print a `PDBResidue` or a vector of `PDBResidue`s in PDB format.
+""" print

@@ -1,3 +1,8 @@
+"""
+`PDBML <: Format`
+
+Protein Data Bank Markup Language (PDBML), a representation of PDB data in XML format.
+"""
 immutable PDBML <: Format end
 
 function _get_text(elem, name)
