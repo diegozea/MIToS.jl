@@ -103,7 +103,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidueIdentifier</span>
@@ -117,21 +117,12 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>WARNING: both DataArrays and StatsBase export &quot;autocor&quot;; uses of it in module DataFrames must be qualified
-WARNING: both DataArrays and StatsBase export &quot;inverse_rle&quot;; uses of it in module DataFrames must be qualified
-WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in module DataFrames must be qualified
-</pre>
-</div>
-</div>
-
-<div class="output_area"><div class="prompt output_prompt">Out[3]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[5]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidueIdentifier</span> <span class="o">&lt;:</span> <span class="kt">Any</span>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidueIdentifier</span> <span class="o">&lt;:</span> <span class="kt">Any</span>
 </pre></div>
 <p><strong>Fields:</strong></p>
 <div class="highlight"><pre><span class="n">PDBe_number</span> <span class="p">::</span> <span class="n">ASCIIString</span>
@@ -152,7 +143,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">Coordinates</span>
@@ -166,12 +157,12 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[4]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[6]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">Coordinates</span> <span class="o">&lt;:</span> <span class="kt">Any</span>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">Coordinates</span> <span class="o">&lt;:</span> <span class="n">FixedSizeArrays</span><span class="o">.</span><span class="n">FixedVectorNoTuple</span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="kt">Float64</span><span class="p">}</span>
 </pre></div>
 <p><strong>Fields:</strong></p>
 <div class="highlight"><pre><span class="n">x</span> <span class="p">::</span> <span class="kt">Float64</span>
@@ -189,7 +180,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span>
@@ -203,12 +194,12 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[5]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span> <span class="o">&lt;:</span> <span class="kt">Any</span>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span> <span class="o">&lt;:</span> <span class="kt">Any</span>
 </pre></div>
 <p><strong>Fields:</strong></p>
 <div class="highlight"><pre><span class="n">coordinates</span> <span class="p">::</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">Coordinates</span>
@@ -228,7 +219,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span>
@@ -242,7 +233,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[6]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
@@ -274,7 +265,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBFile</span>
@@ -288,13 +279,11 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[9]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBFile</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
-</pre></div>
+<p><code>PDBFile &lt;: Format</code></p>
+<p>Protein Data Bank (PDB) format. It provides a standard representation for macromolecular structure data derived from X-ray diffraction and NMR studies.</p>
 
 </div>
 
@@ -306,7 +295,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBML</span>
@@ -320,13 +309,11 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBML</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
-</pre></div>
+<p><code>PDBML &lt;: Format</code></p>
+<p>Protein Data Bank Markup Language (PDBML), a representation of PDB data in XML format.</p>
 
 </div>
 
@@ -348,7 +335,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">Is</span>
@@ -362,12 +349,12 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[9]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[11]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Is</span><span class="p">{</span><span class="n">T</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Is</span><span class="p">{</span><span class="n">T</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span>
 </pre></div>
 <p><strong>Fields:</strong></p>
 <div class="highlight"><pre><span class="n">field</span> <span class="p">::</span> <span class="n">Symbol</span>
@@ -384,7 +371,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">Not</span>
@@ -398,12 +385,12 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[12]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Not</span><span class="p">{</span><span class="n">T</span><span class="o">&lt;:</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestOperation</span>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Not</span><span class="p">{</span><span class="n">T</span><span class="o">&lt;:</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestOperation</span>
 </pre></div>
 <p><strong>Fields:</strong></p>
 <div class="highlight"><pre><span class="n">test</span> <span class="p">::</span> <span class="n">T</span><span class="o">&lt;:</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span>
@@ -419,7 +406,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">In</span>
@@ -433,12 +420,12 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[11]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">In</span><span class="p">{</span><span class="n">T</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span>
+<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">In</span><span class="p">{</span><span class="n">T</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span>
 </pre></div>
 <p><strong>Fields:</strong></p>
 <div class="highlight"><pre><span class="n">field</span> <span class="p">::</span> <span class="n">Symbol</span>
@@ -465,7 +452,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">covalentradius</span>
@@ -479,7 +466,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[12]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[14]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Covalent radius in Å of each element from the Additional file 1 of PICCOLO [1]. Hydrogen was updated using the value on Table 2 from Cordero et. al. [2].</p>
@@ -498,7 +485,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">vanderwaalsradius</span>
@@ -512,7 +499,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>van der Waals radius in Å from the Additional file 1 of Bickerton et. al. 2011</p>
@@ -540,7 +527,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="p">@</span><span class="n">residues</span>
@@ -554,12 +541,11 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[14]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<div class="highlight"><pre><span class="p">@</span><span class="n">residues</span><span class="p">(</span><span class="n">residue_list</span><span class="p">,</span><span class="n">model</span><span class="p">::</span><span class="n">Symbol</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">chain</span><span class="p">::</span><span class="n">Symbol</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">group</span><span class="p">::</span><span class="n">Symbol</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">residue</span><span class="p">::</span><span class="n">Symbol</span><span class="p">,</span><span class="n">r</span><span class="p">)</span>
-</pre></div>
+<p><code>@residues ... model ... chain ... group ... residue ...</code></p>
+<p>These return a new vector with the selected subset of residues from a list of residues.</p>
 
 </div>
 
@@ -571,7 +557,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="p">@</span><span class="n">atoms</span>
@@ -585,12 +571,11 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<div class="highlight"><pre><span class="p">@</span><span class="n">atoms</span><span class="p">(</span><span class="n">residue_list</span><span class="p">,</span><span class="n">model</span><span class="p">::</span><span class="n">Symbol</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">chain</span><span class="p">::</span><span class="n">Symbol</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">group</span><span class="p">::</span><span class="n">Symbol</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">residue</span><span class="p">::</span><span class="n">Symbol</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">atom</span><span class="p">::</span><span class="n">Symbol</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
-</pre></div>
+<p><code>@atoms ... model ... chain ... group ... residue ... atom ...</code></p>
+<p>These return a vector of <code>PDBAtom</code>s with the selected subset of atoms.</p>
 
 </div>
 
@@ -602,7 +587,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="p">@</span><span class="n">residuesdict</span>
@@ -616,12 +601,11 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<div class="highlight"><pre><span class="p">@</span><span class="n">residuesdict</span><span class="p">(</span><span class="n">residue_list</span><span class="p">,</span><span class="n">model</span><span class="p">::</span><span class="n">Symbol</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">chain</span><span class="p">::</span><span class="n">Symbol</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">group</span><span class="p">::</span><span class="n">Symbol</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">residue</span><span class="p">::</span><span class="n">Symbol</span><span class="p">,</span><span class="n">r</span><span class="p">)</span>
-</pre></div>
+<p><code>@residuesdict ... model ... chain ... group ... residue ...</code></p>
+<p>These return a dictionary (using PDB residue numbers as keys) with the selected subset of residues.</p>
 
 </div>
 
@@ -643,7 +627,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[54]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">proximitymean</span>
@@ -657,10 +641,10 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[54]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p><code>proximitymean</code> calculates the proximity mean/average for each residue as the average score (from a <code>scores</code> list) of all the residues within a certain physical distance to a given amino acid (the score of that residue is not included in the mean). The default values are 6.05 for the distance threshold/<code>limit</code> and "Heavy" for the <code>criteria</code> keyword argument. This function allows to calculate pMI (proximity mutual information) and pC (proximity conservation) as in Buslje et. al. 2010.</p>
+<p><code>proximitymean</code> calculates the proximity mean/average for each residue as the average score (from a <code>scores</code> list) of all the residues within a certain physical distance to a given amino acid. The score of that residue is not included in the mean unless you set <code>include</code> to <code>true</code>. The default values are 6.05 for the distance threshold/<code>limit</code> and "Heavy" for the <code>criteria</code> keyword argument. This function allows to calculate pMI (proximity mutual information) and pC (proximity conservation) as in Buslje et. al. 2010.</p>
 <p>Buslje, Cristina Marino, Elin Teppa, Tomas Di Doménico, José María Delfino, and Morten Nielsen. <em>Networks of high mutual information define the structural proximity of catalytic sites: implications for catalytic residue identification.</em> PLoS Comput Biol 6, no. 11 (2010): e1000978.</p>
 
 </div>
@@ -683,7 +667,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">downloadpdb</span>
@@ -697,7 +681,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[20]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Download a gzipped PDB file from PDB database. Requires a four character <code>pdbcode</code>. By default the <code>format</code> is xml and uses the <code>baseurl</code> <a href="http://www.rcsb.org/pdb/files/">http://www.rcsb.org/pdb/files/</a>. <code>outfile</code> is the path/name of the output file.</p>
@@ -712,7 +696,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">getpdbdescription</span>
@@ -726,7 +710,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Access general information about a PDB entry (e.g., Header information) using the RESTful interface of the PDB database (describePDB). Returns a Dict for the four character <code>pdbcode</code>.</p>
@@ -751,7 +735,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">distance</span>
@@ -765,107 +749,13 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
-
-<div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>If <code>distance</code> takes a <code>Vector{PDBResidue}</code> returns a <code>PairwiseListMatrix{Float64, false}</code> with all the pairwise comparisons.</p>
-<p>Heavy, All, CA, CB (CA for GLY)</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">contact</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[20]:</div>
-
-<div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>If <code>contact</code> takes a <code>Vector{PDBResidue}</code> returns a <code>BitMatrix</code> with all the pairwise comparisons.</p>
-<p>Heavy, All, CA, CB (CA for GLY)</p>
-<p>distance(a,b) &lt;= limit</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">angle</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
-
-<div class="output_markdown rendered_html output_subarea output_execute_result">
-
-<pre><code>angle(z)</code></pre>
-<p>Compute the phase angle in radians of a complex number <code>z</code></p>
-<p>Angle (in degrees) at b between a-b and b-c</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">check_atoms_for_interactions</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
 <div class="output_area"><div class="prompt output_prompt">Out[22]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.check_atoms_for_interactions</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;check_atoms_for_interactions&quot;:</span>
-<span class="n">check_atoms_for_interactions</span><span class="p">(</span><span class="n">res</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">AtomsData</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">430</span>
-</pre></div>
+<p><code>distance(vec::Vector{PDBResidue}; criteria::ASCIIString="All")</code></p>
+<p>If <code>distance</code> takes a <code>Vector{PDBResidue}</code> returns a <code>PairwiseListMatrix{Float64, false}</code> with all the pairwise comparisons (distance matrix).</p>
+<p><code>distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")</code></p>
+<p>Returns the distance between the residues <code>a</code> and <code>b</code>. The available <code>criteria</code> are: <code>Heavy</code>, <code>All</code>, <code>CA</code>, <code>CB</code> (<code>CA</code> for <code>GLY</code>)</p>
 
 </div>
 
@@ -880,7 +770,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">ishydrophobic</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">contact</span>
 </pre></div>
 
 </div>
@@ -894,11 +784,12 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[23]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.ishydrophobic</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;ishydrophobic&quot;:</span>
-<span class="n">ishydrophobic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">5</span>
-</pre></div>
+<p><code>contact(vec::Vector{PDBResidue}, limit::AbstractFloat; criteria::ASCIIString="All")</code></p>
+<p>If <code>contact</code> takes a <code>Vector{PDBResidue}</code>, It returns a <code>BitMatrix</code> with all the pairwise comparisons (contact map).</p>
+<p><code>contact(a::PDBResidue, b::PDBResidue, limit::AbstractFloat; criteria::ASCIIString="All")</code></p>
+<p>Returns <code>true</code> if the residues <code>a</code> and <code>b</code> are at contact distance (<code>limit</code>). The available distance <code>criteria</code> are: <code>Heavy</code>, <code>All</code>, <code>CA</code>, <code>CB</code> (<code>CA</code> for <code>GLY</code>)</p>
+<p><code>contact(a::Coordinates, b::Coordinates, limit::AbstractFloat)</code></p>
+<p>This simply returns <code>distance(a,b) &lt;= limit</code>.</p>
 
 </div>
 
@@ -913,7 +804,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">isaromatic</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">angle</span>
 </pre></div>
 
 </div>
@@ -927,11 +818,11 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[24]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.isaromatic</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;isaromatic&quot;:</span>
-<span class="n">isaromatic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">7</span>
-</pre></div>
+
+<pre><code>angle(z)</code></pre>
+<p>Compute the phase angle in radians of a complex number <code>z</code></p>
+<p><code>angle(a::Coordinates, b::Coordinates, c::Coordinates)</code></p>
+<p>Angle (in degrees) at <code>b</code> between <code>a-b</code> and <code>b-c</code></p>
 
 </div>
 
@@ -946,7 +837,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">iscationic</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">check_atoms_for_interactions</span>
 </pre></div>
 
 </div>
@@ -960,11 +851,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[25]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.iscationic</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;iscationic&quot;:</span>
-<span class="n">iscationic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">9</span>
-</pre></div>
+<p>This function takes a <code>PDBResidue</code> and returns <code>true</code> only if all the atoms can be used for checking interactions.</p>
 
 </div>
 
@@ -979,7 +866,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[26]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">isanionic</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">ishydrophobic</span>
 </pre></div>
 
 </div>
@@ -994,9 +881,9 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
-<p><code>MIToS.PDB.isanionic</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;isanionic&quot;:</span>
-<span class="n">isanionic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">11</span>
+<p><code>MIToS.PDB.ishydrophobic</code> is a generic <code>Function</code>.</p>
+<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;ishydrophobic&quot;:</span>
+<span class="n">ishydrophobic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">5</span>
 </pre></div>
 
 </div>
@@ -1012,7 +899,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">ishbonddonor</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">isaromatic</span>
 </pre></div>
 
 </div>
@@ -1027,9 +914,9 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
-<p><code>MIToS.PDB.ishbonddonor</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;ishbonddonor&quot;:</span>
-<span class="n">ishbonddonor</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">13</span>
+<p><code>MIToS.PDB.isaromatic</code> is a generic <code>Function</code>.</p>
+<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;isaromatic&quot;:</span>
+<span class="n">isaromatic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">7</span>
 </pre></div>
 
 </div>
@@ -1045,7 +932,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[28]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">ishbondacceptor</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">iscationic</span>
 </pre></div>
 
 </div>
@@ -1060,9 +947,9 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
-<p><code>MIToS.PDB.ishbondacceptor</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;ishbondacceptor&quot;:</span>
-<span class="n">ishbondacceptor</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">15</span>
+<p><code>MIToS.PDB.iscationic</code> is a generic <code>Function</code>.</p>
+<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;iscationic&quot;:</span>
+<span class="n">iscationic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">9</span>
 </pre></div>
 
 </div>
@@ -1078,7 +965,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">hydrogenbond</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">isanionic</span>
 </pre></div>
 
 </div>
@@ -1093,9 +980,9 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
-<p><code>MIToS.PDB.hydrogenbond</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;hydrogenbond&quot;:</span>
-<span class="n">hydrogenbond</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">227</span>
+<p><code>MIToS.PDB.isanionic</code> is a generic <code>Function</code>.</p>
+<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;isanionic&quot;:</span>
+<span class="n">isanionic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">11</span>
 </pre></div>
 
 </div>
@@ -1111,7 +998,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">vanderwaals</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">ishbonddonor</span>
 </pre></div>
 
 </div>
@@ -1125,7 +1012,11 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[30]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>Returns dist &lt;= 0.5 if the atoms aren't in vanderwaalsradius</p>
+<p>No documentation found.</p>
+<p><code>MIToS.PDB.ishbonddonor</code> is a generic <code>Function</code>.</p>
+<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;ishbonddonor&quot;:</span>
+<span class="n">ishbonddonor</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">13</span>
+</pre></div>
 
 </div>
 
@@ -1140,7 +1031,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">vanderwaalsclash</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">ishbondacceptor</span>
 </pre></div>
 
 </div>
@@ -1154,7 +1045,11 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[31]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>Returns true if the distance between the atoms is less than the sum of the vanderwaalsradius of the atoms. If the atoms aren't on the list (i.e. OXT), the vanderwaalsradius of the element is used. If there is not data in the dict,  dist = 0.0 is used.</p>
+<p>No documentation found.</p>
+<p><code>MIToS.PDB.ishbondacceptor</code> is a generic <code>Function</code>.</p>
+<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;ishbondacceptor&quot;:</span>
+<span class="n">ishbondacceptor</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">15</span>
+</pre></div>
 
 </div>
 
@@ -1169,7 +1064,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">covalent</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">hydrogenbond</span>
 </pre></div>
 
 </div>
@@ -1183,13 +1078,15 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[32]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.covalent</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 3 methods for generic function &quot;covalent&quot;:</span>
-<span class="n">covalent</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">71</span>
-<span class="n">covalent</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">,</span> <span class="n">resname_b</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">67</span>
-<span class="n">covalent</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">73</span>
-</pre></div>
+<p>This function only works if there are hydrogens in the structure. The criteria for a hydrogen bond are:</p>
+<ul>
+<li>d(Ai, Aj) &lt; 3.9Å</li>
+<li>d(Ah, Aacc) &lt; 2.5Å</li>
+<li>θ(Adon, Ah, Aacc) &gt; 90°</li>
+<li>θ(Adon, Aacc, Aacc-antecedent) &gt; 90°</li>
+<li>θ(Ah, Aacc, Aacc-antecedent) &gt; 90°</li>
+</ul>
+<p>Where Ah is the donated hydrogen atom, Adon is the hydrogen bond donor atom, Aacc is the hydrogen bond acceptor atom and Aacc-antecednt is the atom antecedent to the hydrogen bond acceptor atom.</p>
 
 </div>
 
@@ -1204,7 +1101,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">disulphide</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">vanderwaals</span>
 </pre></div>
 
 </div>
@@ -1218,12 +1115,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[33]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.disulphide</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 2 methods for generic function &quot;disulphide&quot;:</span>
-<span class="n">disulphide</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">,</span> <span class="n">resname_b</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">81</span>
-<span class="n">disulphide</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">87</span>
-</pre></div>
+<p>Test if two atoms or residues are in van der Waals contact using: <code>distance(a,b) &lt;= 0.5 + vanderwaalsradius[a] + vanderwaalsradius[b]</code>. It returns distance <code>&lt;= 0.5</code> if the atoms aren't in <code>vanderwaalsradius</code>.</p>
 
 </div>
 
@@ -1238,7 +1130,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[34]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">aromaticsulphur</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">vanderwaalsclash</span>
 </pre></div>
 
 </div>
@@ -1252,12 +1144,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[34]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.aromaticsulphur</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 2 methods for generic function &quot;aromaticsulphur&quot;:</span>
-<span class="n">aromaticsulphur</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">,</span> <span class="n">resname_b</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">95</span>
-<span class="n">aromaticsulphur</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">103</span>
-</pre></div>
+<p>Returns <code>true</code> if the distance between the atoms is less than the sum of the <code>vanderwaalsradius</code> of the atoms. If the atoms aren't on the list (i.e. <code>OXT</code>), the <code>vanderwaalsradius</code> of the element is used. If there is not data in the dict,  distance <code>0.0</code> is used.</p>
 
 </div>
 
@@ -1272,7 +1159,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[35]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">pication</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">covalent</span>
 </pre></div>
 
 </div>
@@ -1286,12 +1173,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[35]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.pication</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 2 methods for generic function &quot;pication&quot;:</span>
-<span class="n">pication</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">,</span> <span class="n">resname_b</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">109</span>
-<span class="n">pication</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">117</span>
-</pre></div>
+<p>Returns <code>true</code> if the distance between atoms is less than the sum of the <code>covalentradius</code> of each atom.</p>
 
 </div>
 
@@ -1306,7 +1188,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[36]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">aromatic</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">disulphide</span>
 </pre></div>
 
 </div>
@@ -1320,11 +1202,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[36]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.aromatic</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;aromatic&quot;:</span>
-<span class="n">aromatic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">123</span>
-</pre></div>
+<p>Returns <code>true</code> if two <code>CYS</code>'s <code>S</code> are at 2.08 Å or less</p>
 
 </div>
 
@@ -1339,7 +1217,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[37]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">ionic</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">aromaticsulphur</span>
 </pre></div>
 
 </div>
@@ -1353,12 +1231,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[37]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.ionic</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 2 methods for generic function &quot;ionic&quot;:</span>
-<span class="n">ionic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">,</span> <span class="n">resname_b</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">135</span>
-<span class="n">ionic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">143</span>
-</pre></div>
+<p>Returns <code>true</code> if an sulphur and an aromatic atoms are 5.3 Å or less"</p>
 
 </div>
 
@@ -1373,7 +1246,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[38]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">hydrophobic</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">pication</span>
 </pre></div>
 
 </div>
@@ -1387,12 +1260,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[38]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.hydrophobic</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 2 methods for generic function &quot;hydrophobic&quot;:</span>
-<span class="n">hydrophobic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">,</span> <span class="n">resname_b</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">149</span>
-<span class="n">hydrophobic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">,</span> <span class="n">b</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">155</span>
-</pre></div>
+<p>There's a Π-Cation interaction if a cationic and an aromatic atoms are at 6.0 Å or less</p>
 
 </div>
 
@@ -1407,7 +1275,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[39]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">stridehydrogenbond</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">aromatic</span>
 </pre></div>
 
 </div>
@@ -1421,11 +1289,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[39]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.stridehydrogenbond</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;stridehydrogenbond&quot;:</span>
-<span class="n">stridehydrogenbond</span><span class="p">(</span><span class="n">filename</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">233</span>
-</pre></div>
+<p>There's an aromatic interaction if centriods are at 6.0 Å or less.</p>
 
 </div>
 
@@ -1440,7 +1304,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[40]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">chimerahydrogenbond</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">ionic</span>
 </pre></div>
 
 </div>
@@ -1454,10 +1318,101 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[40]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>There's an ionic interaction if a cationic and an anionic atoms are at 6.0 Å or less.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[41]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">hydrophobic</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[41]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>There's an hydrophobic interaction if two hydrophobic atoms are at 5.0 Å or less.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">stridehydrogenbond</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[42]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><code>MIToS.PDB.stridehydrogenbond</code> is a generic <code>Function</code>.</p>
+<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;stridehydrogenbond&quot;:</span>
+<span class="n">stridehydrogenbond</span><span class="p">(</span><span class="n">filename</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">274</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[43]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">chimerahydrogenbond</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[43]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><code>MIToS.PDB.chimerahydrogenbond</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 1 method for generic function &quot;chimerahydrogenbond&quot;:</span>
-<span class="n">chimerahydrogenbond</span><span class="p">(</span><span class="n">filename</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">248</span>
+<span class="n">chimerahydrogenbond</span><span class="p">(</span><span class="n">filename</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">289</span>
 </pre></div>
 
 </div>
@@ -1480,7 +1435,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[41]:</div>
+<div class="prompt input_prompt">In&nbsp;[44]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">residuesdict</span>
@@ -1494,113 +1449,11 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[41]:</div>
-
-<div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.residuesdict</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;residuesdict&quot;:</span>
-<span class="n">residuesdict</span><span class="p">(</span><span class="n">residue_list</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">chain</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">residue</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">PDBResidues</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">127</span>
-</pre></div>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[42]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">residues</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[42]:</div>
-
-<div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.residues</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;residues&quot;:</span>
-<span class="n">residues</span><span class="p">(</span><span class="n">residue_list</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">chain</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">residue</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">PDBResidues</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">112</span>
-</pre></div>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[43]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">atoms</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[43]:</div>
-
-<div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.atoms</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;atoms&quot;:</span>
-<span class="n">atoms</span><span class="p">(</span><span class="n">residue_list</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">chain</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">residue</span><span class="p">,</span> <span class="n">atom</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">PDBResidues</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">151</span>
-</pre></div>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[44]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">findheavy</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
 <div class="output_area"><div class="prompt output_prompt">Out[44]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.findheavy</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;findheavy&quot;:</span>
-<span class="n">findheavy</span><span class="p">(</span><span class="n">res</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">PDBResidues</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">173</span>
-</pre></div>
+<p><code>residuesdict(residue_list, model, chain, group, residue)</code></p>
+<p>These return a dictionary (using PDB residue numbers as keys) with the selected subset of residues.</p>
 
 </div>
 
@@ -1615,7 +1468,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[45]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">findatoms</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">residues</span>
 </pre></div>
 
 </div>
@@ -1629,11 +1482,8 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[45]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.findatoms</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;findatoms&quot;:</span>
-<span class="n">findatoms</span><span class="p">(</span><span class="n">res</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">,</span> <span class="n">atom</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">PDBResidues</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">186</span>
-</pre></div>
+<p><code>residues(residue_list, model, chain, group, residue)</code></p>
+<p>These return a new vector with the selected subset of residues from a list of residues.</p>
 
 </div>
 
@@ -1648,7 +1498,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[46]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">findCB</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">atoms</span>
 </pre></div>
 
 </div>
@@ -1662,7 +1512,8 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[46]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>Returns a vector of indices for CB (CA for GLY)</p>
+<p><code>atoms(residue_list, model, chain, group, residue, atom)</code></p>
+<p>These return a vector of <code>PDBAtom</code>s with the selected subset of atoms.</p>
 
 </div>
 
@@ -1677,7 +1528,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[47]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">bestoccupancy</span><span class="o">!</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">findheavy</span>
 </pre></div>
 
 </div>
@@ -1691,11 +1542,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[47]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.bestoccupancy!</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;bestoccupancy!&quot;:</span>
-<span class="n">bestoccupancy</span><span class="o">!</span><span class="p">(</span><span class="n">atoms</span><span class="p">::</span><span class="n">Array</span><span class="p">{</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span><span class="mi">1</span><span class="p">})</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">PDBResidues</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">445</span>
-</pre></div>
+<p>Returns a list with the index of the heavy atoms (all atoms except hydrogen) in the <code>PDBResidue</code></p>
 
 </div>
 
@@ -1710,7 +1557,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="prompt input_prompt">In&nbsp;[48]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">selectbestoccupancy</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">findatoms</span>
 </pre></div>
 
 </div>
@@ -1724,11 +1571,99 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output_area"><div class="prompt output_prompt">Out[48]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.selectbestoccupancy</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;selectbestoccupancy&quot;:</span>
-<span class="n">selectbestoccupancy</span><span class="p">(</span><span class="n">res</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidue</span><span class="p">,</span> <span class="n">indices</span><span class="p">::</span><span class="n">Array</span><span class="p">{</span><span class="kt">Int64</span><span class="p">,</span><span class="mi">1</span><span class="p">})</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">PDBResidues</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">214</span>
+<p><code>findatoms(res::PDBResidue, atom::ASCIIString)</code></p>
+<p>Returns a index vector of the atoms with the given <code>atom</code> name.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[49]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">findCB</span>
 </pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[49]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Returns a vector of indices for <code>CB</code> (<code>CA</code> for <code>GLY</code>)</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[50]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">bestoccupancy</span><span class="o">!</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[50]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><code>MIToS.PDB.bestoccupancy!</code> is a generic <code>Function</code>.</p>
+<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;bestoccupancy!&quot;:</span>
+<span class="n">bestoccupancy</span><span class="o">!</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="n">at</span> <span class="n">deprecated</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">29</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[51]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">selectbestoccupancy</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[51]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Takes a <code>PDBResidue</code> and a <code>Vector</code> of atom indices. Returns the index value of the <code>Vector</code> with maximum occupancy.</p>
 
 </div>
 
@@ -1750,7 +1685,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[49]:</div>
+<div class="prompt input_prompt">In&nbsp;[52]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">collectcaptures</span>
@@ -1764,7 +1699,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[49]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[52]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Returns a vector of Nullables with the captures of the <code>field</code>s. Null if any test fails or the object hasn't the <code>field</code>.</p>
@@ -1781,7 +1716,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[50]:</div>
+<div class="prompt input_prompt">In&nbsp;[53]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">isobject</span>
@@ -1795,10 +1730,11 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[50]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[53]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Returns <code>true</code> if all the tests are satisfied</p>
+<p><code>isobject{T &lt;: DataBase}(res::SIFTSResidue, ::Type{T}, tests...)</code></p>
 <p>Returns <code>true</code> if the tests are successfully passed for that <code>DataBase</code> sub-type on that <code>SIFTSResidue</code>.</p>
 
 </div>
@@ -1811,7 +1747,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[51]:</div>
+<div class="prompt input_prompt">In&nbsp;[54]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">findobjects</span>
@@ -1825,7 +1761,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[51]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[54]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Returns a vector of the indexes for which <code>isobject</code> is true.</p>
@@ -1840,7 +1776,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[52]:</div>
+<div class="prompt input_prompt">In&nbsp;[55]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">collectobjects</span>
@@ -1854,7 +1790,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[52]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[55]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Returns a vector with the objects for which <code>isobject</code> is true given the Tests.</p>
@@ -1879,7 +1815,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[53]:</div>
+<div class="prompt input_prompt">In&nbsp;[56]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">parse</span>
@@ -1893,7 +1829,7 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[53]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[56]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 
@@ -1914,8 +1850,14 @@ WARNING: both DataArrays and StatsBase export &quot;rle&quot;; uses of it in mod
 <p>Returns:   An <code>RGB{U8}</code> color, unless:     - "hsl(h,s,l)" was used, in which case an <code>HSL</code> color;     - "rgba(r,g,b,a)" was used, in which case an <code>RGBA</code> color;     - "hsla(h,s,l,a)" was used, in which case an <code>HSLA</code> color;     - a specific <code>Colorant</code> type was specified in the first argument</p>
 <p><code>parse(io::Union{IO, AbstractString}, format[, output; generatemapping::Bool=false, useidcoordinates::Bool=false, deletefullgaps::Bool=true ])</code></p>
 <p>The keyword argument <code>generatemapping</code> (<code>false</code> by default) indicates if the mapping of the sequences ("SeqMap") and columns ("ColMap") and the number of columns in the original MSA ("NCol") should be generated and saved in the annotations. If <code>useidcoordinates</code> is <code>true</code> (default: <code>false</code>) the sequence IDs of the form "ID/start-end" are parsed and used for determining the start and end positions when the mappings are generated. <code>deletefullgaps</code> (<code>true</code> by default) indicates if columns 100% gaps (generally inserts from a HMM) must be removed from the MSA. By default, the ambiguous or not standard residues are replaced by gaps (i.e. <code>J</code> for leucine or isoleucine). But, if the keyword argument <code>checkalphabet</code> is <code>true</code> (<code>false</code> by default), the sequences with residues that do not belong to the defined alphabet are deleted.</p>
-<p>Reads a text file of a PDB entry. Returns a list of PDBResidue (view MIToS.PDB.PDBResidues). Setting <code>chain</code>, <code>model</code>, <code>group</code>, <code>atomname</code> and <code>onlyheavy</code> values can be used to select of a subset of all residues. Group can be ATOM or HETATM. If not set, all residues are returned.</p>
-<p>Reads a LightXML.XMLDocument representing a pdb file. Returns a list of PDBResidue (view MIToS.PDB.PDBResidues). Setting <code>chain</code>, <code>model</code>, <code>group</code>, <code>atomname</code> and <code>onlyheavy</code> values can be used to select of a subset of all residues. If not set, all residues are returned.</p>
+<div class="highlight"><pre><span class="n">parse</span><span class="p">(</span><span class="n">io</span><span class="p">,</span> <span class="p">::</span><span class="n">Type</span><span class="p">{</span><span class="n">PDBFile</span><span class="p">};</span> <span class="n">chain</span><span class="o">=</span><span class="s">&quot;all&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s">&quot;all&quot;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s">&quot;all&quot;</span><span class="p">,</span> <span class="n">atomname</span><span class="o">=</span><span class="s">&quot;all&quot;</span><span class="p">,</span> <span class="n">onlyheavy</span><span class="o">=</span><span class="n">false</span><span class="p">,</span> <span class="n">occupancyfilter</span><span class="o">=</span><span class="n">false</span><span class="p">)</span>
+</pre></div>
+<p>Reads a text file of a PDB entry. Returns a list of <code>PDBResidue</code> (view <code>MIToS.PDB.PDBResidues</code>). Setting <code>chain</code>, <code>model</code>, <code>group</code>, <code>atomname</code> and <code>onlyheavy</code> values can be used to select of a subset of all residues. Group can be <code>ATOM</code> or <code>HETATM</code>. If not set, all residues are returned. If the keyword argument <code>occupancyfilter</code> (default: <code>false</code>) is <code>true</code>, only the atoms with the best occupancy are returned.</p>
+<div class="highlight"><pre><span class="n">parse</span><span class="p">(</span><span class="n">pdbml</span><span class="p">,</span> <span class="p">::</span><span class="n">Type</span><span class="p">{</span><span class="n">PDBML</span><span class="p">};</span> <span class="n">chain</span><span class="o">=</span><span class="s">&quot;all&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s">&quot;all&quot;</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s">&quot;all&quot;</span><span class="p">,</span> <span class="n">atomname</span><span class="o">=</span><span class="s">&quot;all&quot;</span><span class="p">,</span> <span class="n">onlyheavy</span><span class="o">=</span><span class="n">false</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">true</span><span class="p">,</span> <span class="n">occupancyfilter</span><span class="o">=</span><span class="n">false</span><span class="p">)</span>
+</pre></div>
+<p>Reads a <code>LightXML.XMLDocument</code> representing a pdb file. Returns a list of <code>PDBResidue</code>s (view <code>MIToS.PDB.PDBResidues</code>). Setting <code>chain</code>, <code>model</code>, <code>group</code>, <code>atomname</code> and <code>onlyheavy</code> values can be used to select of a subset of all residues. If not set, all residues are returned. If the keyword argument <code>label</code> (default: <code>true</code>) is <code>false</code>, the <strong>auth_</strong> attributes will be use instead of the <strong>label_</strong> attributes for <code>chain</code>, <code>atom</code> and residue <code>name</code> fields. The <strong>auth_</strong> attributes are alternatives provided by an author in order to match the identification/values used in the publication that describes the structure. If the keyword argument <code>occupancyfilter</code> (default: <code>false</code>) is <code>true</code>, only the atoms with the best occupancy are returned.</p>
+<p><code>parse(document::LightXML.XMLDocument, ::Type{SIFTSXML}; chain::ASCIIString="all", missings::Bool = true)</code></p>
+<p>Returns a <code>Vector{SIFTSResidue}</code> parsed from a <code>SIFTSXML</code> file. By default, parses all the <code>chain</code>s and includes <code>missings</code> residues.</p>
 
 </div>
 

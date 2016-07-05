@@ -575,11 +575,11 @@ Plotly.plot(thediv, data,  layout, {showLink: false});
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
-<h2 id="Low-count-corrections">Low count corrections<a class="anchor-link" href="#Low-count-corrections">&#182;</a></h2><p>Low number of observations can lead to sparse contingency tables, that lead to wrong probability estimations. It is shown in <a href="#http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2672635/"><em>Buslje et. al. 2009</em><span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a> that low-count corrections, can lead to improvements in the contact prediction capabilities of the Mutual Information.<br>
+<h2 id="Low-count-corrections">Low count corrections<a class="anchor-link" href="#Low-count-corrections">&#182;</a></h2><p>Low number of observations can lead to sparse contingency tables, that lead to wrong probability estimations. It is shown in <a href="#http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2672635/"><em>Buslje et. al. 2009</em><span class="fa fa-external-link" aria-hidden="true"></span></a> that low-count corrections, can lead to improvements in the contact prediction capabilities of the Mutual Information.<br>
 The Information module has available two low-count corrections:</p>
 <ol>
-<li><a href="https://en.wikipedia.org/wiki/Additive_smoothing">Additive Smoothing<span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a>; the constant value pseudocount described in <a href="#http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2672635/"><em>Buslje et. al. 2009</em><span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a>.  </li>
-<li>BLOSUM62 based pseudo frequencies of residues pairs, similar to <a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC146917/"><em>Altschul et. al. 1997</em><span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a>.  </li>
+<li><a href="https://en.wikipedia.org/wiki/Additive_smoothing">Additive Smoothing<span class="fa fa-external-link" aria-hidden="true"></span></a>; the constant value pseudocount described in <a href="#http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2672635/"><em>Buslje et. al. 2009</em><span class="fa fa-external-link" aria-hidden="true"></span></a>.  </li>
+<li>BLOSUM62 based pseudo frequencies of residues pairs, similar to <a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC146917/"><em>Altschul et. al. 1997</em><span class="fa fa-external-link" aria-hidden="true"></span></a>.  </li>
 </ol>
 
 </div>
@@ -1531,11 +1531,11 @@ Plotly.plot(thediv, data,  layout, {showLink: false});
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>MIToS ships with two methods to easily calculate corrected mutual information.<br>
-The first is the algorithm described in  <a href="#http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2672635/"><em>Buslje et. al. 2009</em><span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a>. This algorithm can be accessed through the <code>buslje09</code> function and includes:</p>
+The first is the algorithm described in  <a href="#http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2672635/"><em>Buslje et. al. 2009</em><span class="fa fa-external-link" aria-hidden="true"></span></a>. This algorithm can be accessed through the <code>buslje09</code> function and includes:</p>
 <ol>
 <li>Low count correction using <code>AdditiveSmoothing</code></li>
 <li>Sequence weighting after a <code>hobohmI</code> clustering</li>
-<li>Average Product Correction (APC) proposed by <a href="#http://bioinformatics.oxfordjournals.org/content/24/3/333">Dunn et. al. 2008<span class="fa fa-external-link" aria-hidden="true">&lt;/span&gt;</a>, through the <code>APC!</code> function that takes a MI matrix.  </li>
+<li>Average Product Correction (APC) proposed by <a href="#http://bioinformatics.oxfordjournals.org/content/24/3/333">Dunn et. al. 2008<span class="fa fa-external-link" aria-hidden="true"></span></a>, through the <code>APC!</code> function that takes a MI matrix.  </li>
 <li>Z score correction using the functions <code>shuffle_residues_sequencewise</code>from the MSA module and <code>zscore</code> from the <code>PairwiseListMatrices</code> package.</li>
 </ol>
 
