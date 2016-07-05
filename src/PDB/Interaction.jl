@@ -14,8 +14,12 @@ ishbonddonor(a::PDBAtom, resname_a::ASCIIString) = (resname_a, a.atom) in keys(_
 
 ishbondacceptor(a::PDBAtom, resname_a::ASCIIString) = (resname_a, a.atom) in keys(_hbond_acceptor)
 
-"""Test if the function f is true for any pair of atoms between the residues a and b,
-only test atoms that returns true for the fuction criteria"""
+"""
+`any(f::Function, a::PDBResidue, b::PDBResidue, criteria::Function)`
+
+Test if the function `f` is true for any pair of atoms between the residues `a` and `b`.
+This function only test atoms that returns `true` for the fuction `criteria`.
+"""
 function any(f::Function, a::PDBResidue, b::PDBResidue, criteria::Function)
     resname_a, resname_b = a.id.name, b.id.name
     indices_a = find(x -> criteria(x, resname_a), a.atoms)
@@ -38,7 +42,11 @@ end
 # van der Waals
 # -------------
 
-"""Returns dist <= 0.5 if the atoms aren't in vanderwaalsradius"""
+"""
+Test if two atoms or residues are in van der Waals contact using:
+`distance(a,b) <= 0.5 + vanderwaalsradius[a] + vanderwaalsradius[b]`.
+It returns distance `<= 0.5` if the atoms aren't in `vanderwaalsradius`.
+"""
 function vanderwaals(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
     return( distance(a,b) <= 0.5 +
                get(vanderwaalsradius, (resname_a, a.atom), 0.0) +
@@ -50,9 +58,11 @@ vanderwaals(a::PDBResidue, b::PDBResidue) = any(vanderwaals, a, b, _with_vdw)
 # van der Waals clash
 # -------------------
 
-"""Returns true if the distance between the atoms is less than the sum of the vanderwaalsradius of the atoms.
-If the atoms aren't on the list (i.e. OXT), the vanderwaalsradius of the element is used.
-If there is not data in the dict,  dist = 0.0 is used."""
+"""
+Returns `true` if the distance between the atoms is less than the sum of the `vanderwaalsradius` of the atoms.
+If the atoms aren't on the list (i.e. `OXT`), the `vanderwaalsradius` of the element is used.
+If there is not data in the dict,  distance `0.0` is used.
+"""
 function vanderwaalsclash(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
     return( distance(a,b) <= get(vanderwaalsradius, (resname_a, a.atom), get(vanderwaalsradius, (resname_a, a.element), 0.0)) +
                get(vanderwaalsradius, (resname_b, b.atom), get(vanderwaalsradius, (resname_b, b.element), 0.0)) )
@@ -63,6 +73,7 @@ vanderwaalsclash(a::PDBResidue, b::PDBResidue) = any(vanderwaalsclash, a, b, _wi
 # Covalent
 # --------
 
+"Returns `true` if the distance between atoms is less than the sum of the `covalentradius` of each atom."
 function covalent(a::PDBAtom, b::PDBAtom, resname_a, resname_b) # any(... calls it with the res names
     return( distance(a,b) <= get(covalentradius, a.element, 0.0) +
                get(covalentradius, b.element, 0.0) )
@@ -77,6 +88,7 @@ covalent(a::PDBResidue, b::PDBResidue) = any(covalent, a, b, _with_cov)
 
 _issulphurcys(a::PDBAtom, resname_a) = resname_a == "CYS" && a.element == "S"
 
+"Returns `true` if two `CYS`'s `S` are at 2.08 Å or less"
 function disulphide(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
     if _issulphurcys(a, resname_a) && _issulphurcys(b, resname_b)
         return(distance(a,b) <= 2.08)
@@ -91,6 +103,9 @@ disulphide(a::PDBResidue, b::PDBResidue) = any(disulphide, a, b, _issulphurcys)
 
 _issulphur(a::PDBAtom) = a.element == "S"
 
+"""
+Returns `true` if an sulphur and an aromatic atoms are 5.3 Å or less"
+"""
 function aromaticsulphur(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
     if ( _issulphur(a) && isaromatic(b, resname_b) ) || ( _issulphur(b) && isaromatic(a, resname_a) )
         return(distance(a,b) <= 5.3)
@@ -105,6 +120,9 @@ aromaticsulphur(a::PDBResidue, b::PDBResidue) = any(aromaticsulphur, a, b, _issu
 # Π-Cation
 # --------
 
+"""
+There's a Π-Cation interaction if a cationic and an aromatic atoms are at 6.0 Å or less
+"""
 function pication(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
     if ( iscationic(a, resname_a) && isaromatic(b, resname_b) ) || ( iscationic(b, resname_b) && isaromatic(a, resname_a) )
         return(distance(a,b) <= 6.0)
@@ -119,6 +137,9 @@ pication(a::PDBResidue, b::PDBResidue) = any(pication, a, b, _iscationicoraromat
 # Aromatic
 # --------
 
+"""
+There's an aromatic interaction if centriods are at 6.0 Å or less.
+"""
 function aromatic(a::PDBResidue, b::PDBResidue)
     if a.id.name in _aromatic_res && b.id.name in _aromatic_res && distance(a, b) <= 6.0
         centres_a = _centre(_get_plane(a))
@@ -131,6 +152,9 @@ end
 # Ionic
 # -----
 
+"""
+There's an ionic interaction if a cationic and an anionic atoms are at 6.0 Å or less.
+"""
 function ionic(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
     if ( iscationic(a, resname_a) && isanionic(b, resname_b) ) || ( iscationic(b, resname_b) && isanionic(a, resname_a) )
         return(distance(a,b) <= 6.0)
@@ -145,6 +169,9 @@ ionic(a::PDBResidue, b::PDBResidue) = any(ionic, a, b, _iscationicoranionic)
 # Hydrophobic contact
 # -------------------
 
+"""
+There's an hydrophobic interaction if two hydrophobic atoms are at 5.0 Å or less.
+"""
 function hydrophobic(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
     if ishydrophobic(a, resname_a) && ishydrophobic(b, resname_b)
         return(distance(a,b) <= 5.0)
@@ -224,6 +251,20 @@ function _hydrogenbond_don_acc(donor::PDBResidue, acceptor::PDBResidue)
     return(false)
 end
 
+
+"""
+This function only works if there are hydrogens in the structure.
+The criteria for a hydrogen bond are:
+
+- d(Ai, Aj) < 3.9Å
+- d(Ah, Aacc) < 2.5Å
+- θ(Adon, Ah, Aacc) > 90°
+- θ(Adon, Aacc, Aacc-antecedent) > 90°
+- θ(Ah, Aacc, Aacc-antecedent) > 90°
+
+Where Ah is the donated hydrogen atom, Adon is the hydrogen bond donor atom,
+Aacc is the hydrogen bond acceptor atom and Aacc-antecednt is the atom antecedent to the hydrogen bond acceptor atom.
+"""
 hydrogenbond(a::PDBResidue, b::PDBResidue) = _hydrogenbond_don_acc(a,b) || _hydrogenbond_don_acc(b,a)
 
 # STRIDE Hydrogen bonds

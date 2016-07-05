@@ -1,11 +1,15 @@
 immutable PDBFile <: Format end
 
 """
+```julia
+parse(io, ::Type{PDBFile}; chain="all", model="all", group="all", atomname="all", onlyheavy=false, occupancyfilter=false)
+```
+
 Reads a text file of a PDB entry.
-Returns a list of PDBResidue (view MIToS.PDB.PDBResidues).
+Returns a list of `PDBResidue` (view `MIToS.PDB.PDBResidues`).
 Setting `chain`, `model`, `group`, `atomname` and `onlyheavy` values
-can be used to select of a subset of all residues. Group can be ATOM
-or HETATM. If not set, all residues are returned.
+can be used to select of a subset of all residues. Group can be `ATOM`
+or `HETATM`. If not set, all residues are returned.
 If the keyword argument `occupancyfilter` (default: `false`) is `true`,
 only the atoms with the best occupancy are returned.
 """

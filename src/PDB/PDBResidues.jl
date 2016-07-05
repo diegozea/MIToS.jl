@@ -44,10 +44,18 @@ vec(a::Coordinates) = Float64[a.x, a.y, a.z]
 
 distance(a::Coordinates, b::Coordinates) = sqrt((a.x - b.x)^2 + (a.y - b.y)^2 + (a.z - b.z)^2)
 
-"distance(a,b) <= limit"
+"""
+`contact(a::Coordinates, b::Coordinates, limit::AbstractFloat)`
+
+This simply returns `distance(a,b) <= limit`.
+"""
 contact(a::Coordinates, b::Coordinates, limit::AbstractFloat) = distance(a,b) <= limit
 
-"""Angle (in degrees) at b between a-b and b-c"""
+"""
+`angle(a::Coordinates, b::Coordinates, c::Coordinates)`
+
+Angle (in degrees) at `b` between `a-b` and `b-c`
+"""
 function angle(a::Coordinates, b::Coordinates, c::Coordinates)
     A = b - a
     B = b - c
@@ -269,7 +277,12 @@ function _update_distance(a, b, i, j, dist)
     end
 end
 
-"""Heavy, All, CA, CB (CA for GLY)"""
+"""
+`distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")`
+
+Returns the distance between the residues `a` and `b`.
+The available `criteria` are: `Heavy`, `All`, `CA`, `CB` (`CA` for `GLY`)
+"""
 function distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")
     dist = Inf
     if criteria == "All"
@@ -328,7 +341,12 @@ function any(f::Function, a::PDBResidue, b::PDBResidue)
     return(false)
 end
 
-"""Heavy, All, CA, CB (CA for GLY)"""
+"""
+`contact(a::PDBResidue, b::PDBResidue, limit::AbstractFloat; criteria::ASCIIString="All")`
+
+Returns `true` if the residues `a` and `b` are at contact distance (`limit`).
+The available distance `criteria` are: `Heavy`, `All`, `CA`, `CB` (`CA` for `GLY`)
+"""
 function contact(a::PDBResidue, b::PDBResidue, limit::AbstractFloat; criteria::ASCIIString="All")
     if criteria == "All"
         Na = length(a)
@@ -383,7 +401,11 @@ end
 # Vectorize
 # ---------
 
-"If `contact` takes a `Vector{PDBResidue}` returns a `BitMatrix` with all the pairwise comparisons."
+"""
+`contact(vec::Vector{PDBResidue}, limit::AbstractFloat; criteria::ASCIIString="All")`
+
+If `contact` takes a `Vector{PDBResidue}`, It returns a `BitMatrix` with all the pairwise comparisons (contact map).
+"""
 function contact(vec::Vector{PDBResidue}, limit::AbstractFloat; criteria::ASCIIString="All")
     N = length(vec)
     cmap = trues(N,N)
@@ -395,7 +417,11 @@ function contact(vec::Vector{PDBResidue}, limit::AbstractFloat; criteria::ASCIIS
     cmap
 end
 
-"If `distance` takes a `Vector{PDBResidue}` returns a `PairwiseListMatrix{Float64, false}` with all the pairwise comparisons."
+"""
+`distance(vec::Vector{PDBResidue}; criteria::ASCIIString="All")`
+
+If `distance` takes a `Vector{PDBResidue}` returns a `PairwiseListMatrix{Float64, false}` with all the pairwise comparisons (distance matrix).
+"""
 function distance(vec::Vector{PDBResidue}; criteria::ASCIIString="All")
     PLM = PairwiseListMatrix(Float64, length(vec), false, 0.0)
     @iterateupper PLM false list[k] = :($distance)( :($vec)[i], :($vec)[j], criteria=:($criteria))
@@ -488,7 +514,7 @@ end
 # For Parsing...
 # ==============
 
-"Used for parsing a PDB file into Vector{PDBResidue}"
+"Used for parsing a PDB file into `Vector{PDBResidue}`"
 function _generate_residues(residue_dict::OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}, occupancyfilter::Bool=false)
     occupancyfilter ? PDBResidue[ PDBResidue(k, bestoccupancy(v)) for (k,v) in residue_dict ] : PDBResidue[ PDBResidue(k, v) for (k,v) in residue_dict ]
 end

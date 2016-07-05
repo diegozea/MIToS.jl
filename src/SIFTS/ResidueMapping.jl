@@ -233,6 +233,12 @@ function siftsmapping{F, T}(filename::AbstractString,
   sizehint!(mapping, length(mapping))
 end
 
+"""
+`parse(document::LightXML.XMLDocument, ::Type{SIFTSXML}; chain::ASCIIString="all", missings::Bool = true)`
+
+Returns a `Vector{SIFTSResidue}` parsed from a `SIFTSXML` file.
+By default, parses all the `chain`s and includes `missings` residues.
+"""
 function parse(document::LightXML.XMLDocument, ::Type{SIFTSXML}; chain::ASCIIString="all", missings::Bool = true)
   vector = SIFTSResidue[]
   for entity in _get_entities(document)
@@ -255,7 +261,11 @@ end
 # Find SIFTSResidue
 # -----------------
 
-"Returns `true` if the tests are successfully passed for that `DataBase` sub-type on that `SIFTSResidue`."
+"""
+`isobject{T <: DataBase}(res::SIFTSResidue, ::Type{T}, tests...)`
+
+Returns `true` if the tests are successfully passed for that `DataBase` sub-type on that `SIFTSResidue`.
+"""
 function isobject{T <: DataBase}(res::SIFTSResidue, ::Type{T}, tests::AbstractTest...)
   dbfield = getfield(res, symbol(name(T)))
   if !isnull(dbfield)

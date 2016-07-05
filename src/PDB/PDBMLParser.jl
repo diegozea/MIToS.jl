@@ -23,8 +23,12 @@ function _get_atom_iterator(document::LightXML.XMLDocument)
 end
 
 """
-Reads a LightXML.XMLDocument representing a pdb file.
-Returns a list of PDBResidue (view MIToS.PDB.PDBResidues).
+```julia
+parse(pdbml, ::Type{PDBML}; chain="all", model="all", group="all", atomname="all", onlyheavy=false, label=true, occupancyfilter=false)
+```
+
+Reads a `LightXML.XMLDocument` representing a pdb file.
+Returns a list of `PDBResidue`s (view `MIToS.PDB.PDBResidues`).
 Setting `chain`, `model`, `group`, `atomname` and `onlyheavy` values
 can be used to select of a subset of all residues. If not set, all residues are returned.
 If the keyword argument `label` (default: `true`) is `false`,
