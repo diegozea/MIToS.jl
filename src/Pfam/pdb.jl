@@ -36,6 +36,8 @@ end
 # ================
 
 """
+`msacolumn2pdbresidue(msa, seqid, pdbid, chain, pfamid, siftsfile; strict=false, checkpdbname=false, missings=true)`
+
 This function returns a `Dict{Int64,ASCIIString}` with **MSA column numbers on the input file** as keys and PDB residue numbers (`""` for missings) as values.
 The mapping is performed using SIFTS. This function needs correct *ColMap* and *SeqMap* annotations.
 This checks correspondence of the residues between the MSA sequence and SIFTS (It throws a warning if there are differences).
@@ -43,6 +45,8 @@ Missing residues are included if the keyword argument `missings` is `true` (defa
 If the keyword argument `strict` is `true` (default: `false`), throws an Error, instead of a Warning, when residues don't match.
 If the keyword argument `checkpdbname` is `true` (default: `false`), throws an Error if the three letter name of the PDB residue isn't the MSA residue.
 If you are working with a **downloaded Pfam MSA without modifications**, you should `read` it using `generatemapping=true` and `useidcoordinates=true`.
+If you don't indicate the path to the `siftsfile` used in the mapping, this function downloads the SIFTS file in the current folder.
+If you don't indicate the Pfam accession number (`pfamid`), this function tries to read the *AC* file annotation.
 """
 function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
                               seqid::ASCIIString,
@@ -94,12 +98,10 @@ function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
     m
 end
 
-"If you don't indicate the path to the `siftsfile` used in the mapping, this function downloads the SIFTS file in the current folder."
 msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
                      seqid::ASCIIString, pdbid::ASCIIString, chain::ASCIIString,
                      pfamid::ASCIIString; kargs...) = msacolumn2pdbresidue(msa, seqid, pdbid, chain, pfamid, downloadsifts(pdbid); kargs...)
 
-"If you don't indicate the Pfam accession number (`pfamid`), this function tries to read the *AC* file annotation."
 msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
                      seqid::ASCIIString, pdbid::ASCIIString, chain::ASCIIString; kargs...) = msacolumn2pdbresidue(msa, seqid, pdbid, chain,
                                                                                                                   ascii(split(getannotfile(msa, "AC"), '.')[1]); kargs...)
@@ -124,10 +126,9 @@ end
 This function takes an `AnnotatedMultipleSequenceAlignment` with correct *ColMap* annotations and two dicts:
 
 1. The first is an `OrderedDict{ASCIIString,PDBResidue}` from PDB residue number to `PDBResidue`.
-
 2. The second is a `Dict{Int,ASCIIString}` from MSA column number **on the input file** to PDB residue number.
 
-This returns an `OrderedDict{Int,PDBResidue}` from input column number (ColMap) to `PDBResidue`.
+`msaresidues` returns an `OrderedDict{Int,PDBResidue}` from input column number (ColMap) to `PDBResidue`.
 Residues on inserts are not included.
 """
 function msaresidues(msa::AnnotatedMultipleSequenceAlignment, residues::OrderedDict{ASCIIString,PDBResidue}, column2residues::Dict{Int,ASCIIString})
@@ -153,11 +154,10 @@ end
 This function takes an `AnnotatedMultipleSequenceAlignment` with correct *ColMap* annotations and two dicts:
 
 1. The first is an `OrderedDict{ASCIIString,PDBResidue}` from PDB residue number to `PDBResidue`.
-
 2. The second is a `Dict{Int,ASCIIString}` from **MSA column number on the input file** to PDB residue number.
 
-This returns a `PairwiseListMatrix{Float64,false}` of `0.0` and `1.0` where `1.0` indicates a residue contact
-(inter residue distance less or equal to 6.05 angstroms between any heavy atom). `NaN` indicates a missing value.
+`msacontacts` returns a `PairwiseListMatrix{Float64,false}` of `0.0` and `1.0` where `1.0` indicates a residue contact
+(inter residue distance less or equal to `6.05` angstroms between any heavy atom). `NaN` indicates a missing value.
 """
 function msacontacts(msa::AnnotatedMultipleSequenceAlignment, residues::OrderedDict{ASCIIString,PDBResidue}, column2residues::Dict{Int,ASCIIString}, distance_limit::Float64=6.05)
     colmap   = getcolumnmapping(msa)
@@ -202,6 +202,8 @@ end
 getcontactmasks{T <: AbstractFloat}(msacontacts::PairwiseListMatrix{T,false}) = getcontactmasks(getlist(msacontacts))
 
 """
+`AUC(scores_list::Vector, true_contacts::BitVector, false_contacts::BitVector)`
+
 Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the `scores_list` for `true_contacts` prediction.
 The three vectors should have the same length and `false_contacts` should be `true` where there are not contacts.
 """
@@ -209,12 +211,16 @@ AUC{T}(scores_list::Vector{T}, true_contacts::BitVector, false_contacts::BitVect
                                                                                                   scores_list[false_contacts & !isnan(scores_list)]))
 
 """
+`AUC(scores::PairwiseListMatrix, true_contacts::BitVector, false_contacts::BitVector)`
+
 Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the `scores` for `true_contacts` prediction.
 `scores`, `true_contacts` and `false_contacts` should have the same number of elements and `false_contacts` should be `true` where there are not contacts.
 """
 AUC{T}(scores::PairwiseListMatrix{T,false}, true_contacts::BitVector, false_contacts::BitVector) = AUC(getlist(scores), true_contacts, false_contacts)
 
 """
+`AUC(scores::PairwiseListMatrix, msacontacts::PairwiseListMatrix)`
+
 Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the `scores` for `msacontact` prediction.
 `score` and `msacontact` lists are vinculated (inner join) by their labels (i.e. column number in the file).
 `msacontact` should have 1.0 for true contacts and 0.0 for not contacts (NaN or other numbers for missing values).
