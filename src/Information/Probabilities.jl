@@ -71,6 +71,10 @@ size{T}(n::ResidueContingencyTables{T, 2,false}) = (20, 20)
 
 size{T,N,UseGap}(n::ResidueContingencyTables{T, N, UseGap}) = size(n.table)
 
+"""
+Number of residues used in the `ResidueContingencyTables`.
+A 20x20 table returns 20 (ungapped alphabet).
+"""
 @inline nresidues{T, N}(n::ResidueContingencyTables{T, N, true})  = 21
 @inline nresidues{T, N}(n::ResidueContingencyTables{T, N, false}) = 20
 
