@@ -2,9 +2,9 @@
 
 ### Changes from v1.0 to v1.1
 
-* **RecipesBase** is used to generate plot recipes for MIToS’ objects. MSA objects can be visualized `using Plots` (thanks to Thomas Breloff @tbreloff).
+* **RecipesBase** is used to generate plot recipes for MIToS’ objects. MSA objects can be visualized `using Plots` (thanks to Thomas Breloff @tbreloff ).
 
-* Functions to perform structural superimposition were added to the `PDB` module (thanks to Jorge Fernández de Cossío Díaz @cosio) : `center!`, `kabsch!`, `rmsd`.
+* Functions to perform structural superimposition were added to the `PDB` module (thanks to Jorge Fernández de Cossío Díaz @cosio ) : `center!`, `kabsch!`, `rmsd`.
 
 * The `PDB` module adds the following functions to make easier structural comparison: `getCA`, `CAmatrix`, `coordinatesmatrix`, `centeredcoordinates`, `centeredresidues`, `change_coordinates`, `superimpose`, `mean_coordinates` and `rmsf`.
 
