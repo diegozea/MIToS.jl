@@ -1,5 +1,41 @@
 ## MIToS.jl Release Notes
 
+### Changes from v1.0 to v1.1
+
+* **RecipesBase** is used to generate plot recipes for MIToS’ objects. MSA objects can be visualized `using Plots` (thanks to Thomas Breloff @tbreloff).
+
+* Functions to perform structural superimposition were added to the `PDB` module (thanks to Jorge Fernández de Cossío Díaz @cosio) : `center!`, `kabsch!`, `rmsd`.
+
+* The `PDB` module adds the following functions to make easier structural comparison: `getCA`, `CAmatrix`, `coordinatesmatrix`, `centeredcoordinates`, `centeredresidues`, `change_coordinates`, `superimpose`, `mean_coordinates` and `rmsf`.
+
+* When PDB or PDBML files are being parsed, It’s possible to indicate if only atoms with the best occupancy should be loaded (`occupancyfilter=true`, `false` by default).
+
+* When `PDBML` files are being parsed, is possible to used the new `label` keyword argument to indicate if "auth" (`false`) or "label" (`true`) attributes should be used.
+
+* `bestoccupancy!` was deprecated in favor of `bestoccupancy`.
+
+* The `MSA` module export the function `percentsimilarity` to calculate the similarity percent between aligned sequences.
+
+* `msacolumn2pdbresidue` has two new keyword arguments, `strict` and `checkpdbname`, to perform extra tests during the mapping between PDB and MSA residues.
+
+* `msacolumn2pdbresidue` has a new `missings` keyword argument to indicate if missing residues should be included in the mapping (default: `true`).
+
+* The `MSA` now exports the `residue2three` and `three2residue` function to convert `Residue`s to and from their three letter names.
+
+* The `MSA` module now exports `sequencepairsmatrix`, `columnpairsmatrix`, `columnlabels`, and `sequencelabels` to help in the construction of matrices for MSA sequences or columns pairwise comparisons.
+
+* The `Information` module, if `GaussDCA` is installed, allows to call its `gDCA` function from MIToS through the `gaussdca` function.
+
+* The `Information` module now exports the `KullbackLeibler` measure.
+
+* Now is possible to `print` and `write` `PDBResidue`s as `PDBFile`s.
+
+* The function `proximitymean` now has a keyword argument `include` to indicate if the residue score should be included in the mean.
+
+* The module `Scripts` inside the `Utils` module has a new function `readorparse` to help parsing `STDIN` in MIToS’ scripts.
+
+**MIToS v1.1** also includes several **bug fixes**, some **performance improvements** and a more complete **documentation**.
+
 ### Changes from v0.1 to v1.0
 
 * `Pfam` module for working with *Pfam* alignments and useful parameter optimization functions (i.e. `AUC`).
