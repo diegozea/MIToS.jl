@@ -257,10 +257,8 @@ print(reslist::AbstractVector{PDBResidue}, format::Type{PDBFile}) = print(STDOUT
 print(res::PDBResidue, format::Type{PDBFile}) = print(STDOUT, res, format)
 
 @doc """
-```julia
-print(io, res, format::Type{PDBFile})
-print(res, format::Type{PDBFile})
-```
+`print(io, res, format::Type{PDBFile})`
+`print(res, format::Type{PDBFile})`
 
 Print a `PDBResidue` or a vector of `PDBResidue`s in PDB format.
 """ print

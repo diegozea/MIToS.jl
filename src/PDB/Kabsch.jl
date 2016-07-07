@@ -118,7 +118,11 @@ function centeredresidues(residues::AbstractVector{PDBResidue}, CA::Bool=true)
     change_coordinates(residues, coordinates)
 end
 
-"Returns a new `PDBAtom` but with a new `coordinates`"
+"""
+`change_coordinates(atom::PDBAtom, coordinates::Coordinates)`
+
+Returns a new `PDBAtom` but with a new `coordinates`
+"""
 function change_coordinates(atom::PDBAtom, coordinates::Coordinates)
     PDBAtom(coordinates,
             copy(atom.atom),
@@ -128,6 +132,8 @@ function change_coordinates(atom::PDBAtom, coordinates::Coordinates)
 end
 
 """
+`change_coordinates(residue::PDBResidue, coordinates::Matrix{Float64}, offset::Int=1)`
+
 Returns a new `PDBResidues` with (x,y,z) from a coordinates `Matrix{Float64}`
 You can give an `offset` indicating in wich matrix row starts the (x,y,z) coordinates of the residue.
 """
@@ -140,7 +146,11 @@ function change_coordinates(residue::PDBResidue, coordinates::Matrix{Float64}, o
     PDBResidue(residue.id, centeredatoms)
 end
 
-"Returns a new `Vector{PDBResidues}` with (x,y,z) from a coordinates `Matrix{Float64}`"
+"""
+`change_coordinates(residues::AbstractVector{PDBResidue}, coordinates::Matrix{Float64})`
+
+Returns a new `Vector{PDBResidues}` with (x,y,z) from a coordinates `Matrix{Float64}`
+"""
 function change_coordinates(residues::AbstractVector{PDBResidue}, coordinates::Matrix{Float64})
     nres = length(residues)
     updated = Array(PDBResidue, nres)
