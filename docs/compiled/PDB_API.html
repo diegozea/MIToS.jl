@@ -16,6 +16,7 @@
 <li><a href="#Retrieve">Retrieve</a></li>
 <li><a href="#Interactions">Interactions</a></li>
 <li><a href="#Selections">Selections</a></li>
+<li><a href="#Structure-comparison">Structure comparison</a></li>
 <li><a href="#Imported-from-MIToS.Utils">Imported from MIToS.Utils</a></li>
 <li><a href="#Imported-from-Base">Imported from Base</a></li>
 </ul>
@@ -122,7 +123,7 @@
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidueIdentifier</span> <span class="o">&lt;:</span> <span class="kt">Any</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBResidueIdentifier</span> <span class="o">&lt;:</span> <span class="kt">Any</span>
 </pre></div>
 <p><strong>Fields:</strong></p>
 <div class="highlight"><pre><span class="n">PDBe_number</span> <span class="p">::</span> <span class="n">ASCIIString</span>
@@ -162,7 +163,7 @@
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">Coordinates</span> <span class="o">&lt;:</span> <span class="n">FixedSizeArrays</span><span class="o">.</span><span class="n">FixedVectorNoTuple</span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="kt">Float64</span><span class="p">}</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">Coordinates</span> <span class="o">&lt;:</span> <span class="n">FixedSizeArrays</span><span class="o">.</span><span class="n">FixedVectorNoTuple</span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="kt">Float64</span><span class="p">}</span>
 </pre></div>
 <p><strong>Fields:</strong></p>
 <div class="highlight"><pre><span class="n">x</span> <span class="p">::</span> <span class="kt">Float64</span>
@@ -199,7 +200,7 @@
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span> <span class="o">&lt;:</span> <span class="kt">Any</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span> <span class="o">&lt;:</span> <span class="kt">Any</span>
 </pre></div>
 <p><strong>Fields:</strong></p>
 <div class="highlight"><pre><span class="n">coordinates</span> <span class="p">::</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">Coordinates</span>
@@ -354,7 +355,7 @@
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Is</span><span class="p">{</span><span class="n">T</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Is</span><span class="p">{</span><span class="n">T</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span>
 </pre></div>
 <p><strong>Fields:</strong></p>
 <div class="highlight"><pre><span class="n">field</span> <span class="p">::</span> <span class="n">Symbol</span>
@@ -390,7 +391,7 @@
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Not</span><span class="p">{</span><span class="n">T</span><span class="o">&lt;:</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestOperation</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Not</span><span class="p">{</span><span class="n">T</span><span class="o">&lt;:</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestOperation</span>
 </pre></div>
 <p><strong>Fields:</strong></p>
 <div class="highlight"><pre><span class="n">test</span> <span class="p">::</span> <span class="n">T</span><span class="o">&lt;:</span><span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span>
@@ -425,7 +426,7 @@
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">In</span><span class="p">{</span><span class="n">T</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">In</span><span class="p">{</span><span class="n">T</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">TestType</span>
 </pre></div>
 <p><strong>Fields:</strong></p>
 <div class="highlight"><pre><span class="n">field</span> <span class="p">::</span> <span class="n">Symbol</span>
@@ -883,7 +884,7 @@
 <p>No documentation found.</p>
 <p><code>MIToS.PDB.ishydrophobic</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 1 method for generic function &quot;ishydrophobic&quot;:</span>
-<span class="n">ishydrophobic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">5</span>
+<span class="n">ishydrophobic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">5</span>
 </pre></div>
 
 </div>
@@ -916,7 +917,7 @@
 <p>No documentation found.</p>
 <p><code>MIToS.PDB.isaromatic</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 1 method for generic function &quot;isaromatic&quot;:</span>
-<span class="n">isaromatic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">7</span>
+<span class="n">isaromatic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">7</span>
 </pre></div>
 
 </div>
@@ -949,7 +950,7 @@
 <p>No documentation found.</p>
 <p><code>MIToS.PDB.iscationic</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 1 method for generic function &quot;iscationic&quot;:</span>
-<span class="n">iscationic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">9</span>
+<span class="n">iscationic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">9</span>
 </pre></div>
 
 </div>
@@ -982,7 +983,7 @@
 <p>No documentation found.</p>
 <p><code>MIToS.PDB.isanionic</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 1 method for generic function &quot;isanionic&quot;:</span>
-<span class="n">isanionic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">11</span>
+<span class="n">isanionic</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">11</span>
 </pre></div>
 
 </div>
@@ -1015,7 +1016,7 @@
 <p>No documentation found.</p>
 <p><code>MIToS.PDB.ishbonddonor</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 1 method for generic function &quot;ishbonddonor&quot;:</span>
-<span class="n">ishbonddonor</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">13</span>
+<span class="n">ishbonddonor</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">13</span>
 </pre></div>
 
 </div>
@@ -1048,7 +1049,7 @@
 <p>No documentation found.</p>
 <p><code>MIToS.PDB.ishbondacceptor</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 1 method for generic function &quot;ishbondacceptor&quot;:</span>
-<span class="n">ishbondacceptor</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">15</span>
+<span class="n">ishbondacceptor</span><span class="p">(</span><span class="n">a</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBAtom</span><span class="p">,</span> <span class="n">resname_a</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">15</span>
 </pre></div>
 
 </div>
@@ -1379,7 +1380,7 @@
 <p>No documentation found.</p>
 <p><code>MIToS.PDB.stridehydrogenbond</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 1 method for generic function &quot;stridehydrogenbond&quot;:</span>
-<span class="n">stridehydrogenbond</span><span class="p">(</span><span class="n">filename</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">274</span>
+<span class="n">stridehydrogenbond</span><span class="p">(</span><span class="n">filename</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">274</span>
 </pre></div>
 
 </div>
@@ -1412,7 +1413,7 @@
 <p>No documentation found.</p>
 <p><code>MIToS.PDB.chimerahydrogenbond</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 1 method for generic function &quot;chimerahydrogenbond&quot;:</span>
-<span class="n">chimerahydrogenbond</span><span class="p">(</span><span class="n">filename</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">289</span>
+<span class="n">chimerahydrogenbond</span><span class="p">(</span><span class="n">filename</span><span class="p">::</span><span class="n">ASCIIString</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">PDB</span><span class="o">/</span><span class="n">Interaction</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">289</span>
 </pre></div>
 
 </div>
@@ -1616,7 +1617,7 @@
 <div class="prompt input_prompt">In&nbsp;[50]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">bestoccupancy</span><span class="o">!</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">bestoccupancy</span>
 </pre></div>
 
 </div>
@@ -1630,11 +1631,7 @@
 <div class="output_area"><div class="prompt output_prompt">Out[50]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><code>MIToS.PDB.bestoccupancy!</code> is a generic <code>Function</code>.</p>
-<div class="highlight"><pre><span class="c"># 1 method for generic function &quot;bestoccupancy!&quot;:</span>
-<span class="n">bestoccupancy</span><span class="o">!</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="n">at</span> <span class="n">deprecated</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">29</span>
-</pre></div>
+<p>Takes a <code>Vector</code> of <code>PDBAtom</code>s and returns a <code>Vector</code> of the <code>PDBAtom</code>s with best occupancy.</p>
 
 </div>
 
@@ -1679,13 +1676,381 @@
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
-<h3 id="Imported-from-MIToS.Utils">Imported from MIToS.Utils<a class="anchor-link" href="#Imported-from-MIToS.Utils">&#182;</a></h3>
+<h3 id="Structure-comparison">Structure comparison<a class="anchor-link" href="#Structure-comparison">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[52]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">center</span><span class="o">!</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[52]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>center!(A::Matrix{Float64})</code></p>
+<p>Takes a set of points <code>A</code> as an NxD matrix (N: number of points, D: dimension). Translates <code>A</code> in place so that its centroid is at the origin of coordinates</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[53]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">kabsch</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[53]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>kabsch(A::Matrix{Float64}, B::Matrix{Float64})</code></p>
+<p>This function takes two sets of points, <code>A</code> (refrence) and <code>B</code> as NxD matrices, where D is the dimension and N is the number of points. Assumes that the centroids of <code>A</code> and <code>B</code> are at the origin of coordinates. You can call <code>center!</code> on each matrix before calling <code>kabsch</code> to center the matrices in the <code>(0.0, 0.0, 0.0)</code>. Rotates <code>B</code> so that <code>rmsd(A,B)</code> is minimized. Returns the rotation matrix. You should do <code>B * RotationMatrix</code> to get the rotated B.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[54]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">rmsd</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[54]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>rmsd(A::AbstractVector{PDBResidue}, B::AbstractVector{PDBResidue}; superimposed::Bool=false)</code></p>
+<p>Returns the Cα RMSD value between two PDB structures: <code>A</code> and <code>B</code>. If the structures are already superimposed between them, use <code>superimposed=true</code> to avoid a new superimposition (<code>superimposed</code> is <code>false</code> by default).</p>
+<p><code>rmsd(A::Matrix{Float64}, B::Matrix{Float64})</code></p>
+<p>Return RMSD between two sets of points <code>A</code> and <code>B</code>, given as NxD matrices (N: number of points, D: dimension).</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[55]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">getCA</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[55]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Returns the Cα with best occupancy in the <code>PDBResidue</code>.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[56]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">CAmatrix</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[56]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Returns a matrix with the x, y and z coordinates of the Cα with best occupancy for each <code>PDBResidue</code>.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[57]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">coordinatesmatrix</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[57]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Returns a matrix with the x, y, z coordinates of each atom in each <code>PDBResidue</code></p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[58]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">centeredcoordinates</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[58]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Returns a <code>Matrix{Float64}</code> with the centered coordinates of all the atoms in <code>residues</code>. An optional positional argument <code>CA</code> (default: <code>true</code>) defines if only Cα carbons should be used to center the matrix.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[59]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">centeredresidues</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[59]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Returns a new <code>Vector{PDBResidue}</code> with the <code>PDBResidue</code>s having centered coordinates. An optional positional argument <code>CA</code> (default: <code>true</code>) defines if only Cα carbons should be used to center the matrix.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[60]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">change_coordinates</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[60]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p><code>change_coordinates(residues::AbstractVector{PDBResidue}, coordinates::Matrix{Float64})</code></p>
+<p>Returns a new <code>Vector{PDBResidues}</code> with (x,y,z) from a coordinates <code>Matrix{Float64}</code></p>
+<p><code>change_coordinates(residue::PDBResidue, coordinates::Matrix{Float64}, offset::Int=1)</code></p>
+<p>Returns a new <code>PDBResidues</code> with (x,y,z) from a coordinates <code>Matrix{Float64}</code> You can give an <code>offset</code> indicating in wich matrix row starts the (x,y,z) coordinates of the residue.</p>
+<p><code>change_coordinates(atom::PDBAtom, coordinates::Coordinates)</code></p>
+<p>Returns a new <code>PDBAtom</code> but with a new <code>coordinates</code></p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[61]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">superimpose</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[61]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>This function takes <code>A::Vector{PDBResidue}</code> (reference) and <code>B::Vector{PDBResidue}</code>. Translates <code>A</code> and <code>B</code> to the origin of coordinates, and rotates <code>B</code> so that <code>rmsd(A,B)</code> is minimized with the Kabsch algorithm (using only their α carbons). Returns the rotated and translated versions of <code>A</code> and <code>B</code>, and the RMSD value.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[62]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">mean_coordinates</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[62]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Calculates the average/mean position of each atom in a set of structure. The function takes a vector (<code>AbstractVector</code>) of vectors (<code>Vector{PDBResidue}</code>) or matrices (<code>Matrix{Float64}</code>) as first argument. As second (optional) argument this function can take an <code>AbstractVector{Float64}</code> of matrix/structure weights to return a weighted mean. When a Vector{PDBResidue} is used, if the keyword argument <code>calpha</code> is <code>false</code> the RMSF is calculated for all the atoms. By default only alpha carbons are used (default: <code>calpha=true</code>).</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[63]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">rmsf</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[63]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Calculates the RMSF (Root Mean-Square-Fluctuation) between an atom and its average position in a set of structures. The function takes a vector (<code>AbstractVector</code>) of vectors (<code>Vector{PDBResidue}</code>) or matrices (<code>Matrix{Float64}</code>) as first argument. As second (optional) argument this function can take an <code>AbstractVector{Float64}</code> of matrix/structure weights to return the root weighted mean-square-fluctuation around the weighted mean structure. When a Vector{PDBResidue} is used, if the keyword argument <code>calpha</code> is <code>false</code> the RMSF is calculated for all the atoms. By default only alpha carbons are used (default: <code>calpha=true</code>).</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
+<h3 id="Imported-from-MIToS.Utils">Imported from MIToS.Utils<a class="anchor-link" href="#Imported-from-MIToS.Utils">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[64]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">collectcaptures</span>
@@ -1699,7 +2064,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[52]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[64]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Returns a vector of Nullables with the captures of the <code>field</code>s. Null if any test fails or the object hasn't the <code>field</code>.</p>
@@ -1716,7 +2081,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[53]:</div>
+<div class="prompt input_prompt">In&nbsp;[65]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">isobject</span>
@@ -1730,7 +2095,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[53]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[65]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Returns <code>true</code> if all the tests are satisfied</p>
@@ -1747,7 +2112,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[54]:</div>
+<div class="prompt input_prompt">In&nbsp;[66]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">findobjects</span>
@@ -1761,7 +2126,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[54]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[66]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Returns a vector of the indexes for which <code>isobject</code> is true.</p>
@@ -1776,7 +2141,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[55]:</div>
+<div class="prompt input_prompt">In&nbsp;[67]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">collectobjects</span>
@@ -1790,7 +2155,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[55]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[67]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Returns a vector with the objects for which <code>isobject</code> is true given the Tests.</p>
@@ -1815,7 +2180,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[56]:</div>
+<div class="prompt input_prompt">In&nbsp;[68]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">parse</span>
@@ -1829,7 +2194,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[56]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[68]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 
@@ -1858,6 +2223,76 @@
 <p>Reads a <code>LightXML.XMLDocument</code> representing a pdb file. Returns a list of <code>PDBResidue</code>s (view <code>MIToS.PDB.PDBResidues</code>). Setting <code>chain</code>, <code>model</code>, <code>group</code>, <code>atomname</code> and <code>onlyheavy</code> values can be used to select of a subset of all residues. If not set, all residues are returned. If the keyword argument <code>label</code> (default: <code>true</code>) is <code>false</code>, the <strong>auth_</strong> attributes will be use instead of the <strong>label_</strong> attributes for <code>chain</code>, <code>atom</code> and residue <code>name</code> fields. The <strong>auth_</strong> attributes are alternatives provided by an author in order to match the identification/values used in the publication that describes the structure. If the keyword argument <code>occupancyfilter</code> (default: <code>false</code>) is <code>true</code>, only the atoms with the best occupancy are returned.</p>
 <p><code>parse(document::LightXML.XMLDocument, ::Type{SIFTSXML}; chain::ASCIIString="all", missings::Bool = true)</code></p>
 <p>Returns a <code>Vector{SIFTSResidue}</code> parsed from a <code>SIFTSXML</code> file. By default, parses all the <code>chain</code>s and includes <code>missings</code> residues.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[69]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">print</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[69]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+
+<pre><code>print(x)</code></pre>
+<p>Write (to the default output stream) a canonical (un-decorated) text representation of a value if there is one, otherwise call <code>show</code>. The representation used by <code>print</code> includes minimal formatting and tries to avoid Julia-specific details.</p>
+<p><code>print(io, res, format::Type{PDBFile})</code> <code>print(res, format::Type{PDBFile})</code></p>
+<p>Print a <code>PDBResidue</code> or a vector of <code>PDBResidue</code>s in PDB format.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[70]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">PDB</span><span class="o">.</span><span class="n">write</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[70]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+
+<pre><code>write(stream, x)</code></pre>
+<p>Write the canonical binary representation of a value to the given stream. Returns the number of bytes written into the stream.</p>
+<p>You can write multiple values with the same :func:<code>write</code> call. i.e. the following are equivalent:</p>
+
+<pre><code>write(stream, x, y...)
+write(stream, x) + write(stream, y...)</code></pre>
+<p><code>write{T&lt;:Format}(filename::AbstractString, object, format::Type{T}, mode::ASCIIString="w")</code></p>
+<p>This function opens a file with <code>filename</code> and <code>mode</code> (default: "w") and writes (<code>print</code>) the <code>object</code> with the given <code>format</code>. Gzipped files should end on <code>.gz</code>.</p>
 
 </div>
 

@@ -28,7 +28,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span>
@@ -41,7 +41,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span>
@@ -55,7 +55,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[2]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[3]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>The MSA module of MIToS has utilities for working with Multiple Sequence Alignments of protein Sequences (MSA).</p>
@@ -115,7 +115,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Residue</span>
@@ -129,7 +129,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[3]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[4]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Most of the <strong>MIToS</strong> design is created around the <code>Residue</code> bitstype. It represents the 20 natural amino acids and a GAP value to represent insertion, deletion but also missing data: ambiguous residues and non natural amino acids. Each residue is encoded as an integer number, this allows fast indexing operation using Residues of probability or frequency matrices.</p>
@@ -193,7 +193,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Annotations</span>
@@ -207,7 +207,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[4]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[5]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>The <code>Annotations</code> type is basically a container for <code>Dict</code>s with the annotations of a multiple sequence alignment. <code>Annotations</code> was designed for storage of annotations of the <strong>Stockholm format</strong>.</p>
@@ -238,7 +238,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">AbstractMultipleSequenceAlignment</span>
@@ -252,7 +252,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[5]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[6]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>MIToS MSAs are subtypes of <code>AbstractMatrix{Residue}</code>, because the most basic implementation of a MIToS MSA is a <code>Matrix</code> of <code>Residue</code>s.</p>
@@ -267,7 +267,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">MultipleSequenceAlignment</span>
@@ -281,7 +281,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[6]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>This MSA type include the <code>Matrix</code> of <code>Residue</code>s and the sequence names. To allow fast indexing of MSAs using <strong>sequence identifiers</strong>, they are saved as an <code>IndexedArray</code>.</p>
@@ -296,7 +296,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">AnnotatedMultipleSequenceAlignment</span>
@@ -310,7 +310,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>...</p>
@@ -335,7 +335,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">AbstractAlignedSequence</span>
@@ -349,7 +349,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[9]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>MIToS sequences are subtypes of <code>AbstractVector{Residue}</code>.</p>
@@ -364,7 +364,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">AlignedSequence</span>
@@ -378,7 +378,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[12]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
@@ -401,7 +401,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">AnnotatedAlignedSequence</span>
@@ -415,7 +415,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[11]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
@@ -449,74 +449,10 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Stockholm</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[12]:</div>
-
-<div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Stockholm</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
-</pre></div>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">FASTA</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
-
-<div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>No documentation found.</p>
-<p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">FASTA</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
-</pre></div>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
 <div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Raw</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Stockholm</span>
 </pre></div>
 
 </div>
@@ -532,7 +468,71 @@
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Raw</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Stockholm</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">FASTA</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">FASTA</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Raw</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>No documentation found.</p>
+<p><strong>Summary:</strong></p>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">Raw</span> <span class="o">&lt;:</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">Format</span>
 </pre></div>
 
 </div>
@@ -555,7 +555,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="n">Docs</span><span class="o">.</span><span class="n">typesummary</span><span class="p">(</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">ClusteringResult</span> <span class="p">)</span> <span class="c"># imported from Clustering.jl</span>
@@ -569,7 +569,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><strong>Summary:</strong></p>
@@ -594,7 +594,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">NoClustering</span>
@@ -608,12 +608,12 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><strong>Summary:</strong></p>
-<div class="highlight"><pre><span class="k">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">NoClustering</span> <span class="o">&lt;:</span> <span class="n">Clustering</span><span class="o">.</span><span class="n">ClusteringResult</span>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">NoClustering</span> <span class="o">&lt;:</span> <span class="n">Clustering</span><span class="o">.</span><span class="n">ClusteringResult</span>
 </pre></div>
 
 </div>
@@ -626,7 +626,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">SequenceClusters</span>
@@ -640,7 +640,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Data structure to represent sequence clusters. The sequence data itself is not included.</p>
@@ -665,7 +665,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">GAP</span>
@@ -679,7 +679,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[20]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>GAP</code> is the character/number representation on <strong>MIToS</strong> for gaps (also for non standard residues). Lowercase characters and dots are also encoded as <code>GAP</code> in conversion from <code>String</code>s and <code>Char</code>s. This <code>Residue</code> constant is encoded as <code>Residue(21)</code>.</p>
@@ -704,7 +704,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="p">@</span><span class="n">res_str</span>
@@ -718,7 +718,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>The MIToS macro <code>@res_str</code> takes a string and returns a <code>Vector</code> of <code>Residues</code> (sequence).</p>
@@ -751,7 +751,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">swap</span><span class="o">!</span>
@@ -765,7 +765,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[20]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[22]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>swap!(ia::IndexedArray, to::Int, from::Int)</code> interchange/swap the values on the indices <code>to</code> and <code>from</code> in the <code>IndexedArray</code></p>
@@ -780,7 +780,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">annotations</span>
@@ -794,7 +794,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[23]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Returns the annotations of a MSA or a sequence.</p>
@@ -809,7 +809,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">filtersequences</span><span class="o">!</span>
@@ -823,7 +823,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[22]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[24]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>filtersequences!(msa, mask[, annotate::Bool=true])</code></p>
@@ -840,7 +840,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">filtercolumns</span><span class="o">!</span>
@@ -854,7 +854,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[23]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[25]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>filtercolumns!(msa, mask[, annotate::Bool=true])</code></p>
@@ -871,7 +871,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">empty</span>
@@ -885,7 +885,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[24]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[26]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Creates empty MSA <code>Annotations</code> of length 0 using <code>sizehint!</code></p>
@@ -900,7 +900,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">getannotfile</span>
@@ -914,7 +914,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[25]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[27]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>getannotfile(ann[, feature[,default]])</code> returns per file annotation for <code>feature</code></p>
@@ -929,7 +929,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="prompt input_prompt">In&nbsp;[28]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">getannotcolumn</span>
@@ -943,7 +943,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[26]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[28]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>getannotcolumn(ann[, feature[,default]])</code> returns per column annotation for <code>feature</code></p>
@@ -958,7 +958,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">getannotsequence</span>
@@ -972,7 +972,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[27]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[29]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>getannotsequence(ann[, seqname, feature[,default]])</code> returns per sequence annotation for <code>(seqname, feature)</code></p>
@@ -987,7 +987,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">getannotresidue</span>
@@ -1001,7 +1001,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[28]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[30]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>getannotresidue(ann[, seqname, feature[,default]])</code> returns per residue annotation for <code>(seqname, feature)</code></p>
@@ -1016,7 +1016,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[29]:</div>
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">setannotfile</span><span class="o">!</span>
@@ -1030,7 +1030,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[29]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[31]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>setannotfile!(ann, feature, annotation)</code> stores per file <code>annotation</code> for <code>feature</code></p>
@@ -1045,7 +1045,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[30]:</div>
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">setannotcolumn</span><span class="o">!</span>
@@ -1059,7 +1059,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[30]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[32]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>setannotcolumn!(ann, feature, annotation)</code> stores per column <code>annotation</code> (1 char per column) for <code>feature</code></p>
@@ -1074,7 +1074,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">setannotsequence</span><span class="o">!</span>
@@ -1088,7 +1088,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[31]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[33]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>setannotsequence!(ann, seqname, feature, annotation)</code> stores per sequence <code>annotation</code> for <code>(seqname, feature)</code></p>
@@ -1103,7 +1103,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">setannotresidue</span><span class="o">!</span>
@@ -1117,7 +1117,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[32]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[34]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>setannotresidue!(ann, seqname, feature, annotation)</code> stores per residue <code>annotation</code> (1 char per residue) for <code>(seqname, feature)</code></p>
@@ -1132,7 +1132,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">annotate_modification</span><span class="o">!</span>
@@ -1146,7 +1146,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[33]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[35]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Annotates on file annotations the modifications realized by MIToS on the MSA</p>
@@ -1161,7 +1161,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="prompt input_prompt">In&nbsp;[36]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">delete_annotated_modifications</span><span class="o">!</span>
@@ -1175,7 +1175,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[34]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[36]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Deletes all the MIToS annotated modifications</p>
@@ -1190,7 +1190,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[35]:</div>
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">printmodifications</span>
@@ -1204,7 +1204,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[35]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[37]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Prints MIToS annotated modifications</p>
@@ -1219,7 +1219,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[36]:</div>
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">getresidues</span>
@@ -1233,7 +1233,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[36]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[38]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Allows you to access the residues in a <code>Matrix{Residues}</code>/<code>Vector{Residues}</code> without annotations.</p>
@@ -1248,7 +1248,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[37]:</div>
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">getsequence</span>
@@ -1262,7 +1262,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[37]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[39]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>getsequence</code> takes an MSA and a sequence number or identifier to return a sequence. If the MSA is n <code>AnnotatedMultipleSequenceAlignment</code>, it returns an <code>AnnotatedAlignedSequence</code> with sequence annotations. From a <code>MultipleSequenceAlignment</code>, It returns an <code>AlignedSequence</code> object. If an <code>Annotations</code> object  and a sequence identifier are used, this function returns the annotations related to the sequence.</p>
@@ -1277,7 +1277,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="prompt input_prompt">In&nbsp;[40]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">getresiduesequences</span>
@@ -1291,7 +1291,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[38]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[40]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Gives you a <code>Vector{Vector{Residue}}</code> with all the sequences of the MSA without Annotations</p>
@@ -1306,7 +1306,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[39]:</div>
+<div class="prompt input_prompt">In&nbsp;[41]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">nsequences</span>
@@ -1320,7 +1320,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[39]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[41]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Gives you the number of sequences on the <code>MultipleSequenceAlignment</code></p>
@@ -1335,7 +1335,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[40]:</div>
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">ncolumns</span>
@@ -1349,7 +1349,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[40]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[42]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>ncolumns</code> returns the MSA columns or sequence positions number.</p>
@@ -1365,7 +1365,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[41]:</div>
+<div class="prompt input_prompt">In&nbsp;[43]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">gapfraction</span>
@@ -1379,7 +1379,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[41]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[43]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Calculates the fraction of gaps on the <code>Array</code> (alignment, sequence, column, etc.). This function can take an extra <code>dim</code> argument for calculation of the gap fraction over the given dimension</p>
@@ -1394,7 +1394,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[42]:</div>
+<div class="prompt input_prompt">In&nbsp;[44]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">residuefraction</span>
@@ -1408,7 +1408,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[42]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[44]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Calculates the fraction of residues (no gaps) on the <code>Array</code> (alignment, sequence, column, etc.) This function can take an extra <code>dim</code> argument for calculation of the residue fraction over the given dimension</p>
@@ -1423,7 +1423,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[43]:</div>
+<div class="prompt input_prompt">In&nbsp;[45]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">coverage</span>
@@ -1437,7 +1437,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[43]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[45]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Coverage of the sequences with respect of the number of positions on the MSA</p>
@@ -1452,7 +1452,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[44]:</div>
+<div class="prompt input_prompt">In&nbsp;[46]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">columngapfraction</span>
@@ -1466,7 +1466,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[44]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[46]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Fraction of gaps per column/position on the MSA</p>
@@ -1481,7 +1481,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[45]:</div>
+<div class="prompt input_prompt">In&nbsp;[47]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">setreference</span><span class="o">!</span>
@@ -1495,7 +1495,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[45]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[47]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Puts the sequence <code>i</code> as reference (as the first sequence) of the MSA. This function swaps the sequences 1 and <code>i</code>, also an <code>id</code> can be used to select the sequence.</p>
@@ -1510,7 +1510,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[46]:</div>
+<div class="prompt input_prompt">In&nbsp;[48]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">gapstrip</span><span class="o">!</span>
@@ -1524,7 +1524,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[46]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[48]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>This functions deletes/filters sequences and columns/positions on the MSA on the following order:</p>
@@ -1544,7 +1544,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[47]:</div>
+<div class="prompt input_prompt">In&nbsp;[49]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">adjustreference</span><span class="o">!</span>
@@ -1558,7 +1558,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[47]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[49]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Removes positions/columns of the MSA with gaps in the reference (first) sequence</p>
@@ -1573,7 +1573,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[48]:</div>
+<div class="prompt input_prompt">In&nbsp;[50]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">asciisequence</span>
@@ -1587,7 +1587,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[48]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[50]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Gives an ASCIIString with the sequence number <code>seq</code> of the MSA</p>
@@ -1602,7 +1602,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[49]:</div>
+<div class="prompt input_prompt">In&nbsp;[51]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">gapstrip</span>
@@ -1616,7 +1616,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[49]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[51]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Creates a new <code>Matrix{Residue}</code> with deleted sequences and columns/positions on the MSA:</p>
@@ -1636,7 +1636,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[50]:</div>
+<div class="prompt input_prompt">In&nbsp;[52]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">adjustreference</span>
@@ -1650,7 +1650,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[50]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[52]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Creates a new Matrix{Residue}. This function deletes positions/columns of the MSA with gaps in the reference (first) sequence</p>
@@ -1665,7 +1665,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[51]:</div>
+<div class="prompt input_prompt">In&nbsp;[53]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">filtersequences</span>
@@ -1679,7 +1679,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[51]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[53]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>It's similar to <code>filtersequences!</code> but for a <code>Matrix</code> of <code>Residue</code>s</p>
@@ -1694,7 +1694,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[52]:</div>
+<div class="prompt input_prompt">In&nbsp;[54]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">filtercolumns</span>
@@ -1708,7 +1708,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[52]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[54]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>It's similar to <code>filtercolumns!</code> but for a <code>Matrix</code> or <code>Vector</code> of <code>Residue</code>s</p>
@@ -1723,7 +1723,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[53]:</div>
+<div class="prompt input_prompt">In&nbsp;[55]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">getcolumnmapping</span>
@@ -1737,72 +1737,14 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[53]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[55]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>No documentation found.</p>
 <p><code>MIToS.MSA.getcolumnmapping</code> is a generic <code>Function</code>.</p>
 <div class="highlight"><pre><span class="c"># 1 method for generic function &quot;getcolumnmapping&quot;:</span>
-<span class="n">getcolumnmapping</span><span class="p">(</span><span class="n">msa</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">AnnotatedMultipleSequenceAlignment</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">diego</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">MSA</span><span class="o">/</span><span class="n">MultipleSequenceAlignment</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">473</span>
+<span class="n">getcolumnmapping</span><span class="p">(</span><span class="n">msa</span><span class="p">::</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">AnnotatedMultipleSequenceAlignment</span><span class="p">)</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">dzea</span><span class="o">/.</span><span class="n">julia</span><span class="o">/</span><span class="n">v0</span><span class="o">.</span><span class="mi">4</span><span class="o">/</span><span class="n">MIToS</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">MSA</span><span class="o">/</span><span class="n">MultipleSequenceAlignment</span><span class="o">.</span><span class="n">jl</span><span class="p">:</span><span class="mi">473</span>
 </pre></div>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[54]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">getsequencemapping</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[54]:</div>
-
-<div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>Returns the sequence coordinates as a <code>Vector{Int}</code> for an MSA sequence. That vector has one element for each MSA column. If the number if <code>0</code> in the mapping, there is a gap in that column for that sequence.</p>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[55]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">shuffle_columnwise</span><span class="o">!</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[55]:</div>
-
-<div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>Shuffles the residues in each column</p>
 
 </div>
 
@@ -1817,7 +1759,7 @@
 <div class="prompt input_prompt">In&nbsp;[56]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">shuffle_sequencewise</span><span class="o">!</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">getsequencemapping</span>
 </pre></div>
 
 </div>
@@ -1831,7 +1773,7 @@
 <div class="output_area"><div class="prompt output_prompt">Out[56]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>Shuffles the residues in each sequence</p>
+<p>Returns the sequence coordinates as a <code>Vector{Int}</code> for an MSA sequence. That vector has one element for each MSA column. If the number if <code>0</code> in the mapping, there is a gap in that column for that sequence.</p>
 
 </div>
 
@@ -1846,7 +1788,7 @@
 <div class="prompt input_prompt">In&nbsp;[57]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">shuffle_residues_sequencewise</span><span class="o">!</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">shuffle_columnwise</span><span class="o">!</span>
 </pre></div>
 
 </div>
@@ -1860,7 +1802,7 @@
 <div class="output_area"><div class="prompt output_prompt">Out[57]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>Shuffles the residues in each sequence, keeping fixed the gap positions</p>
+<p>Shuffles the residues in each column</p>
 
 </div>
 
@@ -1875,7 +1817,7 @@
 <div class="prompt input_prompt">In&nbsp;[58]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">shuffle_residues_columnwise</span><span class="o">!</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">shuffle_sequencewise</span><span class="o">!</span>
 </pre></div>
 
 </div>
@@ -1889,7 +1831,7 @@
 <div class="output_area"><div class="prompt output_prompt">Out[58]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
-<p>Shuffles the residues in each column, keeping fixed the gap positions</p>
+<p>Shuffles the residues in each sequence</p>
 
 </div>
 
@@ -1904,7 +1846,7 @@
 <div class="prompt input_prompt">In&nbsp;[59]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">percentidentity</span>
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">shuffle_residues_sequencewise</span><span class="o">!</span>
 </pre></div>
 
 </div>
@@ -1916,6 +1858,64 @@
 
 
 <div class="output_area"><div class="prompt output_prompt">Out[59]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Shuffles the residues in each sequence, keeping fixed the gap positions</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[60]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">shuffle_residues_columnwise</span><span class="o">!</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[60]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Shuffles the residues in each column, keeping fixed the gap positions</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[61]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">percentidentity</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[61]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>percentidentity(seq1, seq2, threshold)</code></p>
@@ -1935,7 +1935,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[60]:</div>
+<div class="prompt input_prompt">In&nbsp;[62]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">meanpercentidentity</span>
@@ -1949,7 +1949,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[60]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[62]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Returns the mean of the percent identity between the sequences of a MSA. If the MSA has 300 sequences or less, the mean is exact. If the MSA has more sequences and the <code>exact</code> keyword is <code>false</code> (defualt), 44850 random pairs of sequences are used for the estimation. The number of samples can be changed using the second argument. Use <code>exact=true</code> to perform all the pairwise comparison (the calculation could be slow).</p>
@@ -1964,7 +1964,70 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[61]:</div>
+<div class="prompt input_prompt">In&nbsp;[63]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">percentsimilarity</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[63]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Calculates the similarity percent between all the sequences on a MSA. You can indicate the output element type with the <code>out</code> keyword argument (<code>Float64</code> by default). For a MSA with a lot of sequences, you can use <code>out=Float32</code> or <code>out=Flot16</code> in order to avoid the <code>OutOfMemoryError()</code>.</p>
+<p>Calculates the similarity percent between two aligned sequences. The 100% is the length of the aligned sequences minus the number of columns with gaps in both sequences. Two residues are considered similar if they below to the same group. The <code>groups</code> (third positional argument) can be indicated with a vector of length 20, having the group labels of each <code>Residue</code> in the following order (mandatory): A, R, N, D, C, Q, E, G, H, I, L, K, M, F, P, S, T, W, Y, V</p>
+<p><strong>MIToS default groups</strong> are:</p>
+<div class="highlight"><pre><span class="p">[</span>
+<span class="p">:</span><span class="n">nonpolar</span><span class="p">,</span> <span class="c"># A</span>
+<span class="p">:</span><span class="n">positive</span><span class="p">,</span> <span class="c"># R</span>
+<span class="p">:</span><span class="n">polar</span><span class="p">,</span>    <span class="c"># N</span>
+<span class="p">:</span><span class="n">negative</span><span class="p">,</span> <span class="c"># D</span>
+<span class="p">:</span><span class="n">cysteine</span><span class="p">,</span> <span class="c"># C</span>
+<span class="p">:</span><span class="n">polar</span><span class="p">,</span>    <span class="c"># Q</span>
+<span class="p">:</span><span class="n">negative</span><span class="p">,</span> <span class="c"># E</span>
+<span class="p">:</span><span class="n">glycine</span><span class="p">,</span>  <span class="c"># G</span>
+<span class="p">:</span><span class="n">positive</span><span class="p">,</span> <span class="c"># H</span>
+<span class="p">:</span><span class="n">nonpolar</span><span class="p">,</span> <span class="c"># I</span>
+<span class="p">:</span><span class="n">nonpolar</span><span class="p">,</span> <span class="c"># L</span>
+<span class="p">:</span><span class="n">positive</span><span class="p">,</span> <span class="c"># K</span>
+<span class="p">:</span><span class="n">nonpolar</span><span class="p">,</span> <span class="c"># M</span>
+<span class="p">:</span><span class="n">aromatic</span><span class="p">,</span> <span class="c"># F</span>
+<span class="p">:</span><span class="n">proline</span><span class="p">,</span>  <span class="c"># P</span>
+<span class="p">:</span><span class="n">polar</span><span class="p">,</span>    <span class="c"># S</span>
+<span class="p">:</span><span class="n">polar</span><span class="p">,</span>    <span class="c"># T</span>
+<span class="p">:</span><span class="n">aromatic</span><span class="p">,</span> <span class="c"># W</span>
+<span class="p">:</span><span class="n">aromatic</span><span class="p">,</span> <span class="c"># Y</span>
+<span class="p">:</span><span class="n">nonpolar</span>  <span class="c"># V</span>
+<span class="p">]</span>
+</pre></div>
+<p>Other residue groups:</p>
+<p><strong>SMS (Sequence Manipulation Suite)</strong> Ident and Sim: GAVLI, FYW, ST, KRH, DENQ, P, CM</p>
+<p><em>Stothard P (2000) The Sequence Manipulation Suite: JavaScript programs for analyzing and formatting protein and DNA sequences. Biotechniques 28:1102-1104.</em></p>
+<div class="highlight"><pre><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+<p><strong>Bio3D 2.2</strong> seqidentity: GA, MVLI, FYW, ST, KRH, DE, NQ, P, C</p>
+<p><em>Grant, B.J. et al. (2006) Bioinformatics 22, 2695–2696.</em></p>
+<div class="highlight"><pre><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[64]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">getweight</span>
@@ -1978,7 +2041,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[61]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[64]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p><code>getweight(c[, i::Int])</code></p>
@@ -1994,7 +2057,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[62]:</div>
+<div class="prompt input_prompt">In&nbsp;[65]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">hobohmI</span>
@@ -2008,11 +2071,191 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[62]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[65]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Sequence clustering using the Hobohm I method from Hobohm et. al. 1992.</p>
 <p><em>Hobohm, Uwe, et al. "Selection of representative protein data sets." Protein Science 1.3 (1992): 409-417.</em></p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[66]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">sequencepairsmatrix</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[66]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Initialize an empty <code>PairwiseListMatrix</code> for a pairwise measure in column pairs. This function uses the column mapping (column number in the input MSA file) if it’s available, otherwise it uses the actual column numbers. You can use the positional argument to indicate the number <code>Type</code> (default: <code>Float64</code>), if the <code>PairwiseListMatrix</code> should store the diagonal values on the list (default: <code>false</code>) and a default value for the diagonal (default: <code>NaN</code>).</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[67]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">columnpairsmatrix</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[67]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Initialize an empty <code>PairwiseListMatrix</code> for a pairwise measure in sequence pairs. This function uses the sequence names if they are available, otherwise it uses the actual sequence numbers. You can use the positional argument to indicate the number <code>Type</code> (default: <code>Float64</code>), if the <code>PairwiseListMatrix</code> should store the diagonal values on the list (default: <code>false</code>) and a default value for the diagonal (default: <code>NaN</code>).</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[68]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">columnlabels</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[68]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Returns the column labels: use the column mapping (column number in the input MSA file) if it’s available, otherwise it uses the actual column numbers.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[69]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">sequencelabels</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[69]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>Returns the sequence labels: use the sequence names if they are available, otherwise it uses the actual sequence numbers.</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[70]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">three2residue</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[70]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>It takes a three letter residue name and returns the <code>Residue</code>.</p>
+<div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">three2residue</span><span class="p">(</span><span class="s">&quot;ALA&quot;</span><span class="p">)</span>
+<span class="n">A</span>
+</pre></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[71]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">residue2three</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[71]:</div>
+
+<div class="output_markdown rendered_html output_subarea output_execute_result">
+<p>This function returns the three letter name of the <code>Residue</code>.</p>
+<div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">residue2three</span><span class="p">(</span><span class="n">Residue</span><span class="p">(</span><span class="sc">&#39;G&#39;</span><span class="p">))</span>
+<span class="s">&quot;GLY&quot;</span>
+</pre></div>
 
 </div>
 
@@ -2034,7 +2277,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[63]:</div>
+<div class="prompt input_prompt">In&nbsp;[72]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">names</span>
@@ -2048,7 +2291,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[63]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[72]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 
@@ -2077,7 +2320,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[64]:</div>
+<div class="prompt input_prompt">In&nbsp;[73]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">nclusters</span>
@@ -2091,7 +2334,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[64]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[73]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Get the number of clusters in a <code>SequenceClusters</code> object.</p>
@@ -2106,7 +2349,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[65]:</div>
+<div class="prompt input_prompt">In&nbsp;[74]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">counts</span>
@@ -2120,7 +2363,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[65]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[74]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Get sample counts of clusters as a <code>Vector</code>. Each <code>k</code> value is the number of samples assigned to the k-th cluster.</p>
@@ -2135,7 +2378,7 @@
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[66]:</div>
+<div class="prompt input_prompt">In&nbsp;[75]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="o">?</span><span class="n">MIToS</span><span class="o">.</span><span class="n">MSA</span><span class="o">.</span><span class="n">assignments</span>
@@ -2149,7 +2392,7 @@
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[66]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[75]:</div>
 
 <div class="output_markdown rendered_html output_subarea output_execute_result">
 <p>Get a vector of assignments, where the <code>i</code> value is the index/number of the cluster to which the i-th sequence is assigned.</p>
