@@ -17,27 +17,13 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="k">using</span> <span class="n">MIToS</span><span class="o">.</span><span class="n">SIFTS</span>
 </pre></div>
 
 </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>INFO: Recompiling stale cache file /home/diego/.julia/lib/v0.4/MIToS.ji for module MIToS.
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -66,7 +52,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="c"># Truncate IJulia outputs at:</span>
@@ -188,7 +174,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-100 53644  100 53644    0     0   8324      0  0:00:06  0:00:06 --:--:-- 12663
+100 53962  100 53962    0     0   7749      0  0:00:06  0:00:06 --:--:-- 11338
 </pre>
 </div>
 </div>
@@ -282,7 +268,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="n">siftsresidues</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">siftsfile</span><span class="p">,</span> <span class="n">SIFTSXML</span><span class="p">,</span> <span class="n">chain</span><span class="o">=</span><span class="s">&quot;A&quot;</span><span class="p">,</span> <span class="n">missings</span><span class="o">=</span><span class="n">false</span><span class="p">)</span> <span class="c"># Array{SIFTSResidue,1}</span>
@@ -298,7 +284,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[5]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -306,29 +292,29 @@ Given the fact that pairwise alignments can lead to misleading association betwe
   PDBe:
     number: 301
     name: LYS
-  UniProt(Nullable) :
+  UniProt (Nullable) :
     id: P00533
     number: 325
     name: K
-  Pfam(Nullable) :
+  Pfam (Nullable) :
     id: PF00757
     number: 325
     name: K
-  NCBI(Nullable) :
+  NCBI (Nullable) :
     id: 9606
     number: 325
     name: K
-  PDB(Nullable) :
+  PDB (Nullable) :
     id: 1ivo
     number: 301
     name: LYS
     chain: A
-  SCOP(Nullable) :
+  SCOP (Nullable) :
     id: 76847
     number: 301
     name: LYS
     chain: A
-  CATH(Nullable) :
+  CATH (Nullable) :
     id: 2.10.220.10
     number: 301
     name: LYS
@@ -355,7 +341,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="n">get</span><span class="p">(</span><span class="n">residue_data</span><span class="o">.</span><span class="n">UniProt</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
@@ -369,7 +355,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[6]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -394,7 +380,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="n">residue_data</span><span class="o">.</span><span class="n">PDBe</span><span class="o">.</span><span class="n">name</span>
@@ -408,7 +394,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -433,7 +419,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="n">residue_data</span><span class="o">.</span><span class="n">missing</span>
@@ -447,7 +433,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -501,7 +487,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="c"># Captures the residue name in UniProt if the residue number in PDB is &quot;301&quot;</span>
@@ -516,7 +502,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[32]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[9]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -550,7 +536,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[37]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="c"># Captures PDB residue numbers if the Pfam id is &quot;PF00757&quot;</span>
@@ -565,7 +551,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[37]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -591,7 +577,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="n">captures</span><span class="p">[</span> <span class="p">[</span><span class="o">!</span><span class="n">isnull</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="k">for</span> <span class="n">res</span> <span class="k">in</span> <span class="n">captures</span><span class="p">]</span> <span class="p">]</span> <span class="c"># Selects not null elements</span>
@@ -605,7 +591,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[38]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[11]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -650,7 +636,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[42]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="c"># Is it a basic amino acid?</span>
@@ -666,7 +652,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[42]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[12]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -700,7 +686,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[49]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="c"># Which of the residues are basic?</span>
@@ -716,7 +702,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[49]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -742,7 +728,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[52]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="p">[</span> <span class="n">get</span><span class="p">(</span><span class="n">siftsresidues</span><span class="p">[</span> <span class="n">idx</span> <span class="p">]</span><span class="o">.</span><span class="n">UniProt</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="k">in</span> <span class="n">indexes</span> <span class="p">]</span> <span class="c"># UniProt data of the basic residues</span>
@@ -756,7 +742,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[52]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[14]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -801,7 +787,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[58]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="c"># Collect SIFTSResidues with UniProt names in [&quot;H&quot;, &quot;K&quot;, &quot;R&quot;]</span>
@@ -818,7 +804,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[58]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -844,7 +830,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[80]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="n">sifts_1ivo</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">siftsfile</span><span class="p">,</span> <span class="n">SIFTSXML</span><span class="p">,</span> <span class="n">chain</span><span class="o">=</span><span class="s">&quot;A&quot;</span><span class="p">)</span> <span class="c"># Array{SIFTSResidue,1} of the 1IVO chain A</span>
@@ -860,7 +846,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[80]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -896,7 +882,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[95]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="n">file_1jqz</span> <span class="o">=</span> <span class="n">downloadsifts</span><span class="p">(</span><span class="s">&quot;1JQZ&quot;</span><span class="p">)</span>
@@ -914,12 +900,12 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-100 20705  100 20705    0     0   4116      0  0:00:05  0:00:05 --:--:--  5413
+100 21058  100 21058    0     0   2611      0  0:00:08  0:00:08 --:--:--  5709
 </pre>
 </div>
 </div>
 
-<div class="output_area"><div class="prompt output_prompt">Out[95]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -934,7 +920,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[96]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="n">sifts_1jqz</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">file_1jqz</span><span class="p">,</span> <span class="n">SIFTSXML</span><span class="p">)</span> <span class="c"># It has an amino terminal his tag</span>
@@ -967,7 +953,7 @@ Given the fact that pairwise alignments can lead to misleading association betwe
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[97]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span class="n">println</span><span class="p">(</span><span class="s">&quot;But there are &quot;</span><span class="p">,</span> <span class="n">sum</span><span class="p">([</span> <span class="n">res</span><span class="o">.</span><span class="n">missing</span> <span class="k">for</span> <span class="n">res</span> <span class="k">in</span> <span class="n">sifts_1jqz</span> <span class="p">]),</span> <span class="s">&quot; missing residues in the PDB file.&quot;</span><span class="p">)</span>
