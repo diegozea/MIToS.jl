@@ -9,10 +9,10 @@ Windows: [![Build status](https://ci.appveyor.com/api/projects/status/h6o72b5dtd
 
 Code Coverage: [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/diegozea/MIToS.jl?branch=master) [![codecov.io](http://codecov.io/github/diegozea/MIToS.jl/coverage.svg?branch=master)](http://codecov.io/github/diegozea/MIToS.jl?branch=master)
 
-**MIToS v1.1.0** is out, check out the [NEWS!](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md).
+**MIToS v1.1.0** is out, check out the [NEWS!]https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
 You need to do `Pkg.add(“MIToS”)` to install it or `Pkg.update()` to update your installed version.
 
-[**Documentation**](http://mitos.leloir.org.ar) : [http://mitos.leloir.org.ar](http://mitos.leloir.org.ar)
+[**DOCUMENTATION**](http://mitos.leloir.org.ar) : [http://mitos.leloir.org.ar](http://mitos.leloir.org.ar)
 
 MIToS is an environment for Mutual Information (MI) analysis and implements several useful tools for Multiple Sequence Alignments (MSAs) and PDB structures management in the Julia language. MI allows determining covariation between positions in a MSA. MI derived scores are good predictors of residue contacts and functional sites in proteins [1,2].
 
