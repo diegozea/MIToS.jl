@@ -9,6 +9,9 @@ Windows: [![Build status](https://ci.appveyor.com/api/projects/status/h6o72b5dtd
 
 Code Coverage: [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/diegozea/MIToS.jl?branch=master) [![codecov.io](http://codecov.io/github/diegozea/MIToS.jl/coverage.svg?branch=master)](http://codecov.io/github/diegozea/MIToS.jl?branch=master)
 
+**MIToS v1.1.0** is out, check out the [NEWS!](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md).
+You need to do `Pkg.add(“MIToS”)` to install it or `Pkg.update()` to update your installed version.
+
 [**Documentation**](http://mitos.leloir.org.ar) : [http://mitos.leloir.org.ar](http://mitos.leloir.org.ar)
 
 MIToS is an environment for Mutual Information (MI) analysis and implements several useful tools for Multiple Sequence Alignments (MSAs) and PDB structures management in the Julia language. MI allows determining covariation between positions in a MSA. MI derived scores are good predictors of residue contacts and functional sites in proteins [1,2].
@@ -21,7 +24,7 @@ MIToS tools are separated on different modules, related to different tasks.
 - **PDB** This module defines types and methods to work with protein structures from PDB.
 - **SIFTS** This module allows access to SIFTS residue-level mapping of UniProt, Pfam and other databases with PDB entries.
 - **Information** This module defines residue contingency tables and methods on them to estimate information measure from MSAs. It includes functions to estimate corrected mutual information (ZMIp, ZBLMIp) between MSA columns.
-- **Pfam** 
+- **Pfam**
 This module use the previous modules to work with Pfam MSAs. It also has useful parameter optimization functions to be used with Pfam alignments.
 - **Utils** MIToS has also an Utils module with common utils functions and types used in this package.
 
@@ -37,6 +40,10 @@ This module use the previous modules to work with Pfam MSAs. It also has useful 
 * **AlignedColumns.jl** : Creates a Stockholm file with the aligned columns from a Pfam Stockholm file (insertions are deleted) saving the mapping (residue number in UniProt) and the columns in the original MSA.
 * **PercentIdentity.jl** : Calculates the percentage identity between all the sequences of an MSA and saves mean, median, minimum, etc.
 * **MSADescription.jl** : Calculates the number of columns, sequences and clusters after Hobohm I clustering at 62% identity given a stockholm file as imput. It also gives the percent indentity mean and mean, standard deviation and quantiles of: sequence coverage of the MSA and gap percentage.
+
+#### Benchmarks
+
+The [mitos-benchmarks](https://github.com/diegozea/mitos-benchmarks) repository contains MIToS’ benchmarks and a little comparison against other packages. An extensive benchmark of PDB features is located in the [jgreener64/pdb-benchmarks](https://github.com/jgreener64/pdb-benchmarks) repository.
 
 #### References
 
