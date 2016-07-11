@@ -8,9 +8,7 @@ structure data derived from X-ray diffraction and NMR studies.
 immutable PDBFile <: Format end
 
 """
-```julia
-parse(io, ::Type{PDBFile}; chain="all", model="all", group="all", atomname="all", onlyheavy=false, occupancyfilter=false)
-```
+`parse(io, ::Type{PDBFile}; chain="all", model="all", group="all", atomname="all", onlyheavy=false, occupancyfilter=false)`
 
 Reads a text file of a PDB entry.
 Returns a list of `PDBResidue` (view `MIToS.PDB.PDBResidues`).
