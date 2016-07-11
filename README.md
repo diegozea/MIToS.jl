@@ -10,7 +10,7 @@ Windows: [![Build status](https://ci.appveyor.com/api/projects/status/h6o72b5dtd
 Code Coverage: [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/diegozea/MIToS.jl?branch=master) [![codecov.io](http://codecov.io/github/diegozea/MIToS.jl/coverage.svg?branch=master)](http://codecov.io/github/diegozea/MIToS.jl?branch=master)
 
 **MIToS v1.1.0** is out, check out the [NEWS!](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
-You need to do `Pkg.add(“MIToS”)` to install it or `Pkg.update()` to update your installed version.
+You need to do `Pkg.add("MIToS")` to install it or `Pkg.update()` to update your installed version.
 
 [**DOCUMENTATION**](http://mitos.leloir.org.ar) : [http://mitos.leloir.org.ar](http://mitos.leloir.org.ar)
 
