@@ -127,7 +127,7 @@ optional arguments:
   -h, --help            show this help message and exit
 
 
-MIToS 0.1.1+
+MIToS 1.1.0+
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -218,7 +218,7 @@ optional arguments:
   -h, --help            show this help message and exit
 
 
-MIToS 0.1.1+
+MIToS 1.1.0+
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -270,20 +270,20 @@ Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>usage: DownloadPDB.jl [-c CODE] [-l LIST] [-t FORMAT] [--version] [-h]
+<pre>usage: DownloadPDB.jl [-c CODE] [-l LIST] [-f FORMAT] [--version] [-h]
 
 Download gzipped files from PDB.
 
 optional arguments:
   -c, --code CODE      PDB code
   -l, --list LIST      File with a list of PDB codes (one per line)
-  -t, --format FORMAT  Format. It should be pdb or xml (default:
-                       &quot;xml&quot;)
+  -f, --format FORMAT  Format. It should be PDBFile (pdb) or PDBML
+                       (xml) (default: &quot;PDBML&quot;)
   --version            show version information and exit
   -h, --help           show this help message and exit
 
 
-MIToS 0.1.1+
+MIToS 1.1.0+
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -364,12 +364,12 @@ optional arguments:
   -c, --chain CHAIN     The chain to be used, * for all (default: &quot;*&quot;)
   -g, --group GROUP     Group of atoms to be used, should be ATOM,
                         HETATM or * for all (default: &quot;*&quot;)
-  -i, --intra           Only intra chain distances
+  -i, --inter           Calculate inter chain distances
   --version             show version information and exit
   -h, --help            show this help message and exit
 
 
-MIToS 0.1.1+
+MIToS 1.1.0+
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -422,7 +422,7 @@ Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>usage: MSADescription.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT]
-                        [--version] [-h] [FILE]
+                        [-e] [--version] [-h] [FILE]
 
 Creates an *.description.csv from a Stockholm file with: the number of
 columns, sequences, clusters after Hobohm clustering at 62% identity
@@ -453,11 +453,13 @@ optional arguments:
                         default: 1)
   -f, --format FORMAT   Format of the MSA: Stockholm, Raw or FASTA
                         (default: &quot;Stockholm&quot;)
+  -e, --exact           If it&apos;s true, the mean percent identity is
+                        exact (using all the pairwise comparisons).
   --version             show version information and exit
   -h, --help            show this help message and exit
 
 
-MIToS 0.1.1+
+MIToS 1.1.0+
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -540,7 +542,7 @@ optional arguments:
   -h, --help            show this help message and exit
 
 
-MIToS 0.1.1+
+MIToS 1.1.0+
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -616,7 +618,7 @@ optional arguments:
   -h, --help            show this help message and exit
 
 
-MIToS 0.1.1+
+MIToS 1.1.0+
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -674,7 +676,7 @@ optional arguments:
   -h, --help       show this help message and exit
 
 
-MIToS 0.1.1+
+MIToS 1.1.0+
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -688,16 +690,13 @@ Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina
 </div>
 
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-julia"><pre><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;#&quot;</span><span class="o">&gt;&lt;</span><span class="n">i</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;fa fa-arrow-up&quot;</span><span class="o">&gt;&lt;/</span><span class="n">i</span><span class="o">&gt;&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
-</pre></div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><a href="#"><i class="fa fa-arrow-up"></i></a></p>
 
 </div>
 </div>
-</div>
-
 </div>
