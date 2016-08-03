@@ -23,6 +23,7 @@ using Formatting
 using MIToS.Utils
 using PairwiseListMatrices
 using FixedSizeArrays
+using RecipesBase           # Plots for PDBResidue
 
 import Base: ==, hash, length, size, -, +, ./, norm, dot, angle, cross, vec, any, print, show, parse
 import MIToS.Utils: findobjects, isobject
@@ -58,6 +59,7 @@ include("Interaction.jl")
 include("PDBMLParser.jl")
 include("PDBParser.jl")
 include("Kabsch.jl")
+include("Plots.jl")
 
 @deprecate bestoccupancy! bestoccupancy
 

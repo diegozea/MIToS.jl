@@ -155,3 +155,24 @@ end
     end
 
 end
+
+print("""
+
+Distances.jl
+============
+""")
+
+let path_script = joinpath(Pkg.dir("MIToS"), "scripts", "Distances.jl"),
+    path_file   = joinpath(Pkg.dir("MIToS"), "test", "data", "small.pdb"),
+    out_intra  = readall(`julia $path_script $path_file -o STDOUT`),
+    out_inter  = readall(`julia $path_script $path_file --inter -o STDOUT`)
+
+    @test sum(diff(Float64[ parse(Float64,num) for num in  matchall(r"(\d\.\d+)\n",out_intra) ])) == 0.0
+    @test length(matchall(r"\n1,A,", out_intra)) == 1
+    @test length(matchall(r"\n1,B,", out_intra)) == 1
+
+    @test sum(Float64[ parse(Float64,num) for num in  matchall(r"(\d\.\d+)\n",out_inter) ]) == 4.0*3.7836265671971385
+    @test length(matchall(r"\n1,A,", out_inter)) == 5
+    @test length(matchall(r"\n1,B,", out_inter)) == 1
+
+end

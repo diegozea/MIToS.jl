@@ -34,10 +34,10 @@ Args = parse_commandline(
         :arg_type => ASCIIString,
         :default => "*"
     ),
-    ["--intra", "-i"],
+    ["--inter", "-i"],
     Dict(
-        :help => "Only intra chain distances",
-        :action => :store_false
+        :help => "Calculate inter chain distances",
+        :action => :store_true
     ),
     # Keywords...
     description="""
@@ -71,7 +71,6 @@ set_parallel(Args["parallel"])
         println(fh_out, "model_i,chain_i,group_i,pdbe_i,number_i,name_i,model_j,chain_j,group_j,pdbe_j,number_j,name_j,distance")
         dtyp = ascii(args["distance"])
         form = ascii(args["format"])
-        dump(input)
         if form == "PDBFile"
             res = readorparse(input, PDBFile)
         elseif form == "PDBML"
@@ -81,12 +80,12 @@ set_parallel(Args["parallel"])
         end
         res = residues(res, ascii(args["model"]), ascii(args["chain"]), ascii(args["group"]), "*")
         N = length(res)
-        intra = Bool(args["intra"])
+        inter = !Bool(args["inter"])
         for i in 1:(N-1)
             for j in (i+1):N
                 @inbounds res1 = res[i]
                 @inbounds res2 = res[j]
-                if intra && res1.id.chain != res2.id.chain
+                if inter && res1.id.chain != res2.id.chain
                     continue
                 end
                 dist = distance(res1, res2, criteria=dtyp)

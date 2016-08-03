@@ -1,5 +1,11 @@
 ## MIToS.jl Release Notes
 
+### Changes from v1.1 to v1.2
+
+* `using Plots` to use `plot` with `AbstractVector{PDBResidue}` to visualize coordinates of the C alpha of each residue
+
+* *[breaking change]* **Distances.jl** now uses `--inter` instead of `--intra`
+
 ### Changes from v1.0 to v1.1
 
 * **RecipesBase** is used to generate plot recipes for MIToS’ objects. MSA objects can be visualized `using Plots` (thanks to Thomas Breloff @tbreloff ).
