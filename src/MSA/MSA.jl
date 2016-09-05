@@ -24,28 +24,11 @@ using FastaIO               # FastaReader (fast)
 using RecipesBase           # Plots for MSAs
 using MIToS.Utils
 
-"""
-`swap!(ia::IndexedArray, to::Int, from::Int)` interchange/swap the values on the indices `to` and `from` in the `IndexedArray`
-"""
-function swap!(ia::IndexedArray, to::Int, from::Int)
-    previous_id  = ia[to]
-    future_id    = ia[from]
-
-    ia.items[to]   = future_id
-    ia.items[from] = previous_id
-
-    ia.lookup[previous_id] = from
-    ia.lookup[future_id]   = to
-
-    ia
-end
-
 import Base: parse, print, write, convert
 
 import Clustering: ClusteringResult, nclusters, counts, assignments
 
 export Residue, GAP, @res_str, residue2three, three2residue,
-swap!,
 
 Annotations, filtersequences!, filtercolumns!, empty,
 getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
@@ -77,7 +60,9 @@ nclusters, counts, assignments, # from Clustering.jl
 NoClustering, SequenceClusters,
 getweight, nsequences,
 
-hobohmI
+hobohmI,
+
+swap!
 
 include("Residues.jl")
 include("Annotations.jl")

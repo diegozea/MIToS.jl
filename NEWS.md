@@ -4,9 +4,11 @@
 
 You can use `Pkg.checkout("MIToS")` to use the **master** branch and `Pkg.free("MIToS")` to return to the stable version.
 
-* `using Plots` to use `plot` with `AbstractVector{PDBResidue}` to visualize coordinates of the C alpha of each residue
+* `using Plots` to use `plot` with `AbstractVector{PDBResidue}` to visualize coordinates of the C alpha of each residue.
 
-* *[breaking change]* **Distances.jl** now uses `--inter` instead of `--intra`
+* Re-exports `swap!` from **IndexedArrays.jl**.
+
+* *[breaking change]* **Distances.jl** now uses `--inter` instead of `--intra`.
 
 ### Changes from v1.0 to v1.1
 
