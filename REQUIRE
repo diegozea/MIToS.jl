@@ -9,6 +9,6 @@ PairwiseListMatrices
 ArgParse
 ROCAnalysis
 Clustering
-FixedSizeArrays
-FastaIO
+FixedSizeArrays 0.2.3
+FastaIO 0.2
 RecipesBase
