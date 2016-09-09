@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
   // http://stackoverflow.com/questions/17341122/link-and-execute-external-javascript-file-hosted-on-github
-  var raw = "https://cdn.rawgit.com/diegozea/MIToS.jl/master/docs/";
+  var raw = "https://cdn.rawgit.com/diegozea/MIToSDocumentation.jl/master/docs/";
 
   var navheader_source   = $("#header-template").html();
   var navheader_template = Handlebars.compile(navheader_source);
