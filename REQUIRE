@@ -10,5 +10,5 @@ ArgParse
 ROCAnalysis
 Clustering
 FixedSizeArrays 0.2.3
-FastaIO 0.2
+FastaIO
 RecipesBase
