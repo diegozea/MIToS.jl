@@ -12,6 +12,8 @@ You can use `Pkg.checkout("MIToS")` to use the **master** branch and `Pkg.free("
 
 * *[breaking change]* **Distances.jl** now uses `--inter` instead of `--intra`.
 
+* *docs* and *cookbook* are now in [MIToSDocumentation](https://github.com/diegozea/MIToSDocumentation)
+
 ### Changes from v1.0 to v1.1
 
 * **RecipesBase** is used to generate plot recipes for MIToS’ objects. MSA objects can be visualized `using Plots` (thanks to Thomas Breloff @tbreloff ).
