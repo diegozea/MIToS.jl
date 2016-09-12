@@ -1,8 +1,8 @@
-const templ = joinpath(Pkg.dir("MIToS"), "scripts", "_template.jl")
+const templ = joinpath(splitdir(dirname(@__FILE__))[1], "scripts", "_template.jl")
 
-const list_file = joinpath(Pkg.dir("MIToS"), "test", "data", "list.txt")
-const file_one  = joinpath(Pkg.dir("MIToS"), "test", "data", "one.txt")
-const file_two  = joinpath(Pkg.dir("MIToS"), "test", "data", "two.txt")
+const list_file = joinpath(dirname(@__FILE__), "data", "list.txt")
+const file_one  = joinpath(dirname(@__FILE__), "data", "one.txt")
+const file_two  = joinpath(dirname(@__FILE__), "data", "two.txt")
 
 print("""
 
@@ -162,8 +162,8 @@ Distances.jl
 ============
 """)
 
-let path_script = joinpath(Pkg.dir("MIToS"), "scripts", "Distances.jl"),
-    path_file   = joinpath(Pkg.dir("MIToS"), "test", "data", "small.pdb"),
+let path_script = joinpath(splitdir(dirname(@__FILE__))[1], "scripts", "Distances.jl"),
+    path_file   = joinpath(dirname(@__FILE__), "data", "small.pdb"),
     out_intra  = readall(`julia $path_script $path_file -o STDOUT`),
     out_inter  = readall(`julia $path_script $path_file --inter -o STDOUT`)
 
