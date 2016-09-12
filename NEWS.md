@@ -1,10 +1,10 @@
 ## MIToS.jl Release Notes
 
-### Changes from v1.2 to master
+### Changes from v1.2.2 to master
 
 You can use `Pkg.checkout("MIToS")` to use the **master** branch and `Pkg.free("MIToS")` to return to the stable version.
 
-### Changes from v1.1 to v1.2
+### Changes from v1.1 to v1.2.2
 
 * `using Plots` to use `plot` with `AbstractVector{PDBResidue}` to visualize coordinates of the C alpha of each residue.
 
