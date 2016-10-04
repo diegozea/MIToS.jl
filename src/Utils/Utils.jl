@@ -3,10 +3,11 @@ module Utils
 export deleteitems!, get_n_words, hascoordinates, select_element, matrix2list, list2matrix, check_file, isnotemptyfile,
 
 # eachline,
+lineiterator,
 
 Format,
 
-AbstractTest, TestType, TestOperation, Is, In, Not, capture, isobject, findobjects, collectobjects, collectcaptures, guess_type,
+# AbstractTest, TestType, TestOperation, Is, In, Not, capture, isobject, findobjects, collectobjects, collectcaptures, guess_type,
 
 Commandline
 
@@ -14,7 +15,7 @@ include("generalutils.jl")
 include("EachLineString.jl")
 include("Read.jl")
 include("Write.jl")
-include("FindObjects.jl")
+# include("FindObjects.jl")
 
 
 # COMMAND LINE: Scripts Module

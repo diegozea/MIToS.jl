@@ -1,29 +1,19 @@
-import Base: eachline, start, done, next, eltype
+"Create an iterable object that will yield each line from a stream **or string**."
+lineiterator(string::String) = eachline(IOBuffer(string))
+lineiterator(stream::IO)     = eachline(stream)
 
-type EachLineString
-    string::ASCIIString
-    α::Int
-    len::Int
+using Requests
+
+# allow_redirects = false
+# headers = Dict("User-Agent" => "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)")
+function download_file(url::AbstractString, filename::AbstractString; kargs...)
+    stream = Requests.get_streaming(url; kargs...)
+    open(filename, "w") do fh
+        while !eof(stream)
+            write(fh, readavailable(stream))
+        end
+    end
+    filename
 end
 
-function eachline(string::ASCIIString)
-  len = length(string)
-  if len > 0
-    EachLineString(string, 0, len)
-  else
-    throw(ErrorException("Empty String"))
-  end
-end
-
-start(itr::EachLineString) = 0
-
-done(itr::EachLineString, state) = itr.α >= itr.len || state >= itr.len
-
-function next(itr::EachLineString, state)
-  itr.α = state + 1
-  index = searchindex(itr.string, '\n', state + 1)
-  state = index == 0 ? itr.len : index
-  itr.string[itr.α:state], state
-end
-
-eltype(::Type{EachLineString}) = ASCIIString
+download_file(url::AbstractString; kargs...) = download_file(url, tempname(); kargs...)
