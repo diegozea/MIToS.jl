@@ -8,9 +8,12 @@ using MIToS.Utils
 # using MIToS.Pfam
 # using PairwiseListMatrices
 
+const DATA = joinpath(pwd(), "data")
+
 # Utils
-include("utils.jl")
-include("eachlinestring.jl")
+@testset "Utils module" begin
+    include(joinpath("Utils", "GeneralUtils.jl"))
+end
 # # MSA
 # include("residues.jl")
 # include("indexedarrays.jl")

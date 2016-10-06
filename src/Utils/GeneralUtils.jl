@@ -1,24 +1,4 @@
 """
-`deleteitems!(vector, items)`
-It deletes a group of `items` `in` the `vector`.
-"""
-function deleteitems!(vector::Vector, items)
-    i = 1
-    j = 0
-    @inbounds while j < length(vector)
-        j += 1
-        value = vector[j]
-        if !(value in items)
-            if i != j
-                vector[i] = value
-            end
-            i += 1
-        end
-    end
-    resize!(vector, i-1)
-end
-
-"""
 `get_n_words{T <: Union{ASCIIString, UTF8String}}(line::T, n::Int)`
 It returns a `Vector{T}` with the first `n` (possibles) words/fields (delimited
 by space, tab or newline). If there is more than `n` words, the last word

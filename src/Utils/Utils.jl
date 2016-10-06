@@ -1,36 +1,41 @@
 module Utils
 
-export deleteitems!, get_n_words, hascoordinates, select_element, matrix2list, list2matrix, check_file, isnotemptyfile,
+using Requests
+using GZip
+using LightXML
 
-# eachline,
-lineiterator,
+export  # GeneralUtils.jl
+        get_n_words,
+        hascoordinates,
+        select_element,
+        matrix2list, list2matrix,
+        # Read.jl
+        Format,
+        lineiterator,
+        check_file, isnotemptyfile,
+        download_file,
+        # Write.jl
+        Commandline
 
-Format,
-
-# AbstractTest, TestType, TestOperation, Is, In, Not, capture, isobject, findobjects, collectobjects, collectcaptures, guess_type,
-
-Commandline
-
-include("generalutils.jl")
-include("EachLineString.jl")
+include("GeneralUtils.jl")
 include("Read.jl")
 include("Write.jl")
-# include("FindObjects.jl")
-
 
 # COMMAND LINE: Scripts Module
 # ============================
 
 module Scripts
 
-export parse_commandline,
-runscript, run_single_script, script,
-set_parallel, open_output, close_output,
-readorparse
+export  parse_commandline,
+        runscript, run_single_script,
+        script,
+        set_parallel,
+        open_output, close_output,
+        readorparse
 
 using ArgParse, GZip
 
-include("scripts.jl")
+include("Scripts.jl")
 
 end # Scripts
 

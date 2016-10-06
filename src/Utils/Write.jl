@@ -1,16 +1,19 @@
 import Base: write
 
-using GZip
-
 """
 `write{T<:Format}(filename::AbstractString, object, format::Type{T}, mode::ASCIIString="w")`
 
-This function opens a file with `filename` and `mode` (default: "w") and writes (`print`) the `object` with the given `format`.
+This function opens a file with `filename` and `mode` (default: "w")
+and writes (`print`) the `object` with the given `format`.
 Gzipped files should end on `.gz`.
 """
-function write{T<:Format}(filename::AbstractString, object, format::Type{T}, mode::ASCIIString="w")
+function write{T<:Format}(filename::AbstractString, object, format::Type{T},
+                          mode::String="w")
     fh = endswith(filename, ".gz") ? GZip.open(filename, mode) : open(filename, mode)
-    print(fh, object, format)
-    close(fh)
+    try
+        print(fh, object, format)
+    finally
+        close(fh)
+    end
     nothing
 end
