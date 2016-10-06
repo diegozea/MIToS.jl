@@ -21,6 +21,8 @@ include("GeneralUtils.jl")
 include("Read.jl")
 include("Write.jl")
 
+@deprecate deleteitems!(vector::Vector, items) filter!(x -> x ∉ items, vector)
+
 # COMMAND LINE: Scripts Module
 # ============================
 
