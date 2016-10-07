@@ -1,21 +1,26 @@
-using Base.Intrinsics
-
-import Base: convert, ==, !=, .==, zero, show, length,
-             getindex, setindex!, rand, string
-
 # Residues
 # ========
 
-"""
-Most of the **MIToS** design is created around the `Residue` bitstype. It represents the 20 natural amino acids and a GAP value to represent insertion, deletion but also missing data: ambiguous residues and non natural amino acids.
-Each residue is encoded as an integer number, this allows fast indexing operation using Residues of probability or frequency matrices.
+if Int === Int64
+    bitstype 64 Residue
+else
+    bitstype 32 Residue
+end
+
+@doc """
+Most of the **MIToS** design is created around the `Residue` bitstype. It represents the 20
+natural amino acids and a GAP value to represent insertion, deletion but also missing data:
+ambiguous residues and non natural amino acids.
+Each residue is encoded as an integer number, this allows fast indexing operation using
+Residues of probability or frequency matrices.
 
 **Residue creation and conversion**
 
 Creation and `convert`ion of `Residue`s should be treated carefully.
-`Residue` is encoded as an 8 bits type similar to `Int8`, to get faster indexing using `Int(x::Residue)`.
-In this way, `Int`, `Int8` and other signed integers returns the integer value encoded by the residue.
-Conversions to and from `Char`s and `Uint8` are different, to use the `Char`acter representation in IO operations.
+`Residue` is encoded as an 8 bits type similar to `Int8`, to get faster indexing
+using `Int(x::Residue)`. In this way, `Int`, `Int8` and other signed integers returns the
+integer value encoded by the residue. Conversions to and from `Char`s and `Uint8` are
+different, to use the `Char`acter representation in IO operations.
 
 ```julia
 
@@ -57,23 +62,15 @@ V 20
 - 21
 
 ```
-"""
-bitstype 8 Residue
+""" Residue
 
 # Conversion from/to integers
 # ---------------------------
 #
 # This conversions are used for indexing, comparison and operations
 
-convert(::Type{Residue}, x::Int8) = box(Residue,unbox(Int8,x))
-convert(::Type{Int8}, x::Residue) = box(Int8,unbox(Residue,x))
-
-for typ in (Int16, Int32, Int64)
-    @eval convert(::Type{$typ}, x::Residue) = convert($typ,Int8(x))
-    @eval convert(::Type{Residue},  x::$typ)= convert(Residue,Int8(x))
-end
-
-Residue(x) = convert(Residue, x)
+Base.convert(::Type{Residue}, x::Int) = reinterpret(Residue,x)
+Base.convert(::Type{Int}, x::Residue) = reinterpret(Int,x)
 
 # Gaps
 # ----
@@ -83,7 +80,15 @@ Residue(x) = convert(Residue, x)
 Lowercase characters and dots are also encoded as `GAP` in conversion from `String`s and `Char`s.
 This `Residue` constant is encoded as `Residue(21)`.
 """
-const GAP = Residue(21)
+const GAP = Residue(21) # - .
+
+const XAA = Residue(22) # X x
+
+# Type boundaries
+# ---------------
+
+Base.typemin(::Type{Residue}) = Residue(1)
+Base.typemax(::Type{Residue}) = XAA
 
 # Conversion from/to Char/Uint8
 # -----------------------------
@@ -92,49 +97,87 @@ const GAP = Residue(21)
 # Inserts (lowercase and dots) and invalid characters will be converted into gaps ('-').
 
 const _to_char  = Char['A','R','N','D','C','Q','E','G','H','I','L',
-                       'K','M','F','P','S','T','W','Y','V','-']
+                       'K','M','F','P','S','T','W','Y','V','-','X' ]
 
-convert(::Type{Char}, x::Residue) = _to_char[ Int( x ) ]
-
-const _to_uint8 = UInt8[ UInt8(ch) for ch in  _to_char ]
-
-convert(::Type{UInt8}, x::Residue) = _to_uint8[ Int( x ) ]
-
-const _to_residue = fill(GAP,256)
-
-for i in 1:length( _to_char )
-    _to_residue[ Int(_to_char[i]) ] = Residue(i)
+function Base.convert(::Type{Char}, res::Residue)
+    @inbounds char = _to_char[ Int( res ) ]
+    char
 end
 
-convert(::Type{Residue}, x::UInt8) = _to_residue[ Int(x) ];
-convert(::Type{Residue}, x::Char)  = _to_residue[ Int(x) ];
+const _max_char = 256
 
-# Conversion from/to ASCIIString
+const _to_residue = fill(GAP, _max_char)
+
+for index in 1:length(_to_char)
+    _to_residue[ Int(_to_char[index]) ] = Residue(index)
+end
+
+for ambiguous in [  'U',   # Selenocysteine                 Sec
+                    'O',   # Pyrrolysine                    Pyl
+                    'B',   # Asparagine or aspartic acid    Asx     D N
+                    'Z',   # Glutamine or glutamic acid     Glx     E Q
+                    'J'  ] # Leucine or Isoleucine          Xle     I L
+
+    _to_residue[ Int(ambiguous) ] = XAA
+end
+
+function Base.convert(::Type{Residue}, char::Char)
+    i = Int(char)
+    if i <= _max_char
+        @inbounds res = _to_residue[ i ]
+    else
+        return GAP
+    end
+    res
+end
+
+# Show
+# ----
+
+function Base.show(io::IO, res::Residue)
+    write(io, Char(res))
+    nothing
+end
+
+function Base.print(io::IO, res::Residue)
+    write(io, Char(res))
+    nothing
+end
+
+# Conversion from/to String
 # ------------------------------
 #
 # They are useful for IO and creation of Vector{Residue}
 
-convert(::Type{Residue}, str::ASCIIString) = Residue[ Residue(char) for char in str.data ]
-convert(::Type{Residue}, str::Vector{UInt8}) = convert(Vector{Residue}, str)
-convert(::Type{ASCIIString}, seq::AbstractVector{Residue}) = ASCIIString(
-    UInt8[ UInt8(res) for res in seq ] )
+Base.convert(::Type{Vector{Residue}}, str::AbstractString) = Residue[ char for char in str ]
 
-string(seq::AbstractVector{Residue}) = ascii(seq) # "AR..." instead of the standar "[A,R,..."
+function Base.convert(::Type{String}, seq::Vector{Residue})
+    buffer = IOBuffer()
+    for res in seq
+        print(buffer, res)
+    end
+    takebuf_string(buffer)
+end
 
-# For convert a MSA stored as Vector{ASCIIString} to Matrix{Residue}
-function convert(::Type{Matrix{Residue}}, sequences::Array{ASCIIString,1})
+# For convert a MSA stored as Vector{String} to Matrix{Residue}
+function Base.convert(::Type{Matrix{Residue}}, sequences::Array{String,1})
     nseq = length(sequences)
+    if nseq == 1
+        throw(ErrorException("There are not sequences."))
+    end
     nres = length(sequences[1])
-    aln = Array(Residue,nseq,nres)
-    @inbounds for i in 1:nseq
-        seq = sequences[i].data
-        if length(seq) == nres
-            aln[i,:] = seq
-        else
-            throw(ErrorException(string(
-            "There is an aligned sequence with different number of columns [ ",
-            length(seq), " != ", nres," ]: ", ascii(seq) )))
+    # throw() can be used with @threads : https://github.com/JuliaLang/julia/issues/17532
+    for seq in sequences
+        if length(seq) != nres
+            throw(ErrorException(String(
+                "There is an aligned sequence with different number of columns",
+                "[ ", length(seq), " != ", nres, " ]: ", String(seq) )))
         end
+    end
+    aln = Array(Residue, nseq, nres)
+    # @inbounds @threads for i in 1:nseq
+    @inbounds for i in 1:nseq
+        aln[i,:] = collect(sequences[i])
     end
     aln
 end
@@ -155,22 +198,16 @@ julia> res"MIToS"
 ```
 """
 macro res_str(str)
-    Residue(str)
+    convert(Vector{Residue}, str)
 end
-
-# Show
-# ----
-
-show(io::IO, x::Residue) = write(io, convert(Char, x))
 
 # Comparisons
 # -----------
 
-for fun in [:(==), :(!=), :(.==)] # , :(<), :(<=)
-    @eval $(fun)(x::Residue,y::Residue) = $(fun)(Int8(x), Int8(y))
-end
+Base.:(==)(x::Residue, y::Residue) = Int(x) == Int(y)
+Base.:(!=)(x::Residue, y::Residue) = Int(x) != Int(y)
 
-length(x::Residue) = length(UInt8(x))
+Base.length(res::Residue) = length(Int(res))
 
 # Random
 # ------
@@ -192,15 +229,17 @@ julia> rand(Residue, 4, 4)
 
 ```
 """
-rand(r, ::Type{Residue}) = Residue( rand(r, Int8(1):Int8(20)) )
+Base.rand(r, ::Type{Residue}) = Residue(rand(r, 1:20))
 
 # Three letters (for PDB)
 # =======================
 
-const _res2three = ASCIIString[ "ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE", "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL" ]
+const _res2three = [ "ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE",
+                     "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL",
+                     "   ", "XAA" ]
 
 # Thanks to Elin- for this list
-const _three2res = Dict{ASCIIString, Residue}(
+const _three2res = Dict{String, Residue}(
 			                 "GLY"=>'G',
                              "ALA"=>'A',
                              "LEU"=>'L',
@@ -363,7 +402,8 @@ const _three2res = Dict{ASCIIString, Residue}(
                              "CGU"=>'E',
                              "CSX"=>'C',
                              "GLX"=>'Z',
-                             "UNK"=>'X'
+                             "UNK"=>'X',
+                             "XAA"=>'X'
                             )
 
 """
@@ -375,7 +415,14 @@ julia> residue2three(Residue('G'))
 
 ```
 """
-residue2three(res::Residue) = _res2three[Int(res)]
+function residue2three(res::Residue)
+    if res != GAP
+        @inbounds name = _res2three[Int(res)]
+    else
+        throw(ErrorException("Gap has not three letter name."))
+    end
+    name
+end
 
 """
 It takes a three letter residue name and returns the `Residue`.
@@ -386,9 +433,9 @@ A
 
 ```
 """
-function three2residue(res::ASCIIString)
+function three2residue(res::String)
     if length(res) == 3
-        get(_three2res, uppercase(res), GAP)
+        get(_three2res, uppercase(res), XAA)
     else
         throw(ErrorException("The residue name should have 3 letters."))
     end

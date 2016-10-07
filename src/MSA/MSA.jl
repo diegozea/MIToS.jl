@@ -16,6 +16,8 @@ using MIToS.MSA
 """
 module MSA
 
+# using Base.Threads
+
 using DataStructures        # OrderedDicts for Annotations
 using IndexedArrays         # IndexedArray for sequence names in MSAs
 using PairwiseListMatrices  # Percent Identity Matrices
@@ -24,58 +26,58 @@ using FastaIO               # FastaReader (fast)
 using RecipesBase           # Plots for MSAs
 using MIToS.Utils
 
-import Base: parse, print, write, convert
+# import Base: parse, print, write, convert
 
 import Clustering: ClusteringResult, nclusters, counts, assignments
 
-export Residue, GAP, @res_str, residue2three, three2residue,
-
-Annotations, filtersequences!, filtercolumns!, empty,
-getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
-setannotfile!, setannotcolumn!, setannotsequence!, setannotresidue!,
-annotate_modification!, delete_annotated_modifications!, printmodifications,
-annotations,
-
-MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment,
-AbstractMultipleSequenceAlignment,
-AlignedSequence, AnnotatedAlignedSequence, AbstractAlignedSequence,
-getresidues, getsequence, getresiduesequences,
-nsequences, ncolumns, gapfraction, residuefraction, coverage,
-columngapfraction, setreference!, gapstrip!, adjustreference!, asciisequence,
-gapstrip, adjustreference, filtersequences, filtercolumns,
-getcolumnmapping, getsequencemapping,
-
-Raw, Stockholm, FASTA,
-
-shuffle_columnwise!, shuffle_sequencewise!, shuffle_residues_sequencewise!,
-shuffle_residues_columnwise!,
-
-sequencepairsmatrix, columnpairsmatrix,
-columnlabels, sequencelabels,
-
-percentidentity, meanpercentidentity, percentsimilarity,
-
-ClusteringResult, # from Clustering.jl
-nclusters, counts, assignments, # from Clustering.jl
-NoClustering, SequenceClusters,
-getweight, nsequences,
-
-hobohmI,
-
-swap!
+export Residue, GAP, XAA, @res_str, residue2three, three2residue
+#
+# Annotations, filtersequences!, filtercolumns!, empty,
+# getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
+# setannotfile!, setannotcolumn!, setannotsequence!, setannotresidue!,
+# annotate_modification!, delete_annotated_modifications!, printmodifications,
+# annotations,
+#
+# MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment,
+# AbstractMultipleSequenceAlignment,
+# AlignedSequence, AnnotatedAlignedSequence, AbstractAlignedSequence,
+# getresidues, getsequence, getresiduesequences,
+# nsequences, ncolumns, gapfraction, residuefraction, coverage,
+# columngapfraction, setreference!, gapstrip!, adjustreference!, asciisequence,
+# gapstrip, adjustreference, filtersequences, filtercolumns,
+# getcolumnmapping, getsequencemapping,
+#
+# Raw, Stockholm, FASTA,
+#
+# shuffle_columnwise!, shuffle_sequencewise!, shuffle_residues_sequencewise!,
+# shuffle_residues_columnwise!,
+#
+# sequencepairsmatrix, columnpairsmatrix,
+# columnlabels, sequencelabels,
+#
+# percentidentity, meanpercentidentity, percentsimilarity,
+#
+# ClusteringResult, # from Clustering.jl
+# nclusters, counts, assignments, # from Clustering.jl
+# NoClustering, SequenceClusters,
+# getweight, nsequences,
+#
+# hobohmI,
+#
+# swap!
 
 include("Residues.jl")
-include("Annotations.jl")
-include("MultipleSequenceAlignment.jl")
-include("GeneralParserMethods.jl")
-include("Raw.jl")
-include("Stockholm.jl")
-include("FASTA.jl")
-include("Shuffle.jl")
-include("PLM.jl")
-include("Identity.jl")
-include("Clusters.jl")
-include("Hobohm.jl")
-include("Plots.jl")
+# include("Annotations.jl")
+# include("MultipleSequenceAlignment.jl")
+# include("GeneralParserMethods.jl")
+# include("Raw.jl")
+# include("Stockholm.jl")
+# include("FASTA.jl")
+# include("Shuffle.jl")
+# include("PLM.jl")
+# include("Identity.jl")
+# include("Clusters.jl")
+# include("Hobohm.jl")
+# include("Plots.jl")
 
 end
