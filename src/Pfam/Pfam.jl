@@ -24,6 +24,8 @@ module Pfam
   using DataStructures
   using ROCAnalysis
 
+  import ROCAnalysis: AUC
+
   export  Stockholm, downloadpfam, getseq2pdb,
           msacolumn2pdbresidue, hasresidues,
           msacontacts, msaresidues,

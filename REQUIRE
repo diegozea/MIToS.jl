@@ -7,7 +7,7 @@ Formatting
 IndexedArrays
 PairwiseListMatrices
 ArgParse
-ROCAnalysis
+ROCAnalysis 0.1.0
 Clustering
 FixedSizeArrays 0.2.3
 FastaIO

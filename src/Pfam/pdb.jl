@@ -207,8 +207,8 @@ getcontactmasks{T <: AbstractFloat}(msacontacts::PairwiseListMatrix{T,false}) = 
 Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the `scores_list` for `true_contacts` prediction.
 The three vectors should have the same length and `false_contacts` should be `true` where there are not contacts.
 """
-AUC{T}(scores_list::Vector{T}, true_contacts::BitVector, false_contacts::BitVector) = 1 - auc(roc(scores_list[true_contacts  & !isnan(scores_list)],
-                                                                                                  scores_list[false_contacts & !isnan(scores_list)]))
+AUC{T}(scores_list::Vector{T}, true_contacts::BitVector, false_contacts::BitVector) = AUC(roc(scores_list[true_contacts  & !isnan(scores_list)],
+                                                                                          scores_list[false_contacts & !isnan(scores_list)]))
 
 """
 `AUC(scores::PairwiseListMatrix, true_contacts::BitVector, false_contacts::BitVector)`
