@@ -1,7 +1,7 @@
 using Base.Test
 using MIToS
 using MIToS.Utils
-# using MIToS.MSA
+using MIToS.MSA
 # using MIToS.Information
 # using MIToS.PDB
 # using MIToS.SIFTS
@@ -11,9 +11,16 @@ using MIToS.Utils
 const DATA = joinpath(pwd(), "data")
 
 # Utils
-@testset "Utils module" begin
+@testset "Utils" begin
     include(joinpath("Utils", "GeneralUtils.jl"))
 end
+
+# MSA
+@testset "MSA" begin
+    include(joinpath("MSA", "Residues.jl"))
+    include(joinpath("MSA", "ThreeLetters.jl"))
+end
+
 # # MSA
 # include("residues.jl")
 # include("indexedarrays.jl")

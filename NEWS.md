@@ -2,19 +2,50 @@
 
 ### Changes from v2.0 to master
 
-You can use `Pkg.checkout("MIToS")` to use the **master** branch and `Pkg.free("MIToS")` to return to the stable version.
+You can use `Pkg.checkout("MIToS")` to use the **master** branch and `Pkg.free("MIToS")` to
+return to the stable version.
 
 ### Changes from v1.2.2 to v2.0
 
-**MIToS 2.0** is the first MIToS version with **Julia 0.5** support (It drops Julia 0.4 support). The last Julia version introduces new awesome features like native multi-threading support, fast anonymous functions, generator expressions and more. Also, the Julia package ecosystem has grown. So, MIToS was slightly redesigned to take advantage of the new Julia capabilities. As a consequence, this version introduces several breaking changes.
+**MIToS 2.0** is the first MIToS version with **Julia 0.5** support
+(It drops Julia 0.4 support). The last Julia version introduces new awesome features like
+native multi-threading support, fast anonymous functions, generator expressions and more.
+Also, the Julia package ecosystem has grown. So, MIToS was slightly redesigned to take
+advantage of the new Julia capabilities. As a consequence, this version introduces several
+breaking changes.
 
 ##### Utils module    
 
-* `deleteitems!(vector::Vector, items)` is deprecated in favor of `filter!(x -> x ∉ items, vector)`  
+* `deleteitems!(vector::Vector, items)` is deprecated in favor of
+`filter!(x -> x ∉ items, vector)`  
 
 ###### Vectorized queries are deprecated   
 
-Previous version of Utils included methods and types in order to overcome the performance cost of functional programing in previous Julia versions. In particular, vectorized queries were performed using subtypes of `AbstractTest`, in particular the `TestType`s `Is` and `In` and the `TestOperation` `Not`. This types were used as argument to the query methods `capture` and `isobject`. This operation were fused and vectorized with the methods: `findobjects`, `collectobjects` and `collectcaptures`. All these functions and types are deprecated in MIToS 2.0. Functional programming in Julia 0.5 is fast, so these methods can be easily replace by Julia high order functions like `find` and `filter` and lambda expressions (anonymous functions).  
+Previous version of Utils included methods and types in order to overcome the performance
+cost of functional programing in previous Julia versions. In particular, vectorized queries
+were performed using subtypes of `AbstractTest`, in particular the `TestType`s `Is` and
+`In` and the `TestOperation` `Not`. This types were used as argument to the query methods
+`capture` and `isobject`. This operation were fused and vectorized with the methods:
+`findobjects`, `collectobjects` and `collectcaptures`. All these functions and types are
+deprecated in MIToS 2.0. Functional programming in Julia 0.5 is fast, so these methods
+can be easily replace by Julia high order functions like `find` and `filter` and lambda
+expressions (anonymous functions).  
+
+##### MSA module    
+
+* `Residue` is now encoded as `Int` instead of being encoded as `UInt8`, allowing faster
+indexation using `Int(res::Residue)`. More memory is used, since the residues are encoded
+using 32 or 64 bits instead of 8 bits.  
+
+* `XAA` is now used to indicate ambiguous and non standard residues instead of `GAP`.  
+
+* The `Residue` `INV` is now used to indicate invalid residues instead of `GAP`.  
+
+* Conversions to and from `UInt8` aren’t supported now.  
+
+* More `Base` methods are extended to work with `Residue`: `bits`, `zero`, `one`
+and `isvalid`.  
+
 
 ### Changes from v1.1 to v1.2.2
 

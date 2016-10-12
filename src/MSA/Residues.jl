@@ -8,22 +8,32 @@ else
 end
 
 @doc """
-Most of the **MIToS** design is created around the `Residue` bitstype. It represents the 20
-natural amino acids and a GAP value to represent insertion, deletion but also missing data:
-ambiguous residues and non natural amino acids.
-Each residue is encoded as an integer number, this allows fast indexing operation using
-Residues of probability or frequency matrices.
+Most of the **MIToS** design is created around the `Residue` bitstype. It has
+representations for the 20 natural amino acids, a value to represent insertions and
+deletions (`GAP`, `'-'`), one for representing ambiguous and non standard residues
+(`XAA`, `'X'`) and a particular value to represent invalid residues (`INV`,`'�'`).
+Each `Residue` is encoded as an integer number, with the same bit representation and size
+than a `Int`. This allows fast indexing operation of probability or frequency matrices.
 
 **Residue creation and conversion**
 
-Creation and `convert`ion of `Residue`s should be treated carefully.
-`Residue` is encoded as an 8 bits type similar to `Int8`, to get faster indexing
-using `Int(x::Residue)`. In this way, `Int`, `Int8` and other signed integers returns the
-integer value encoded by the residue. Conversions to and from `Char`s and `Uint8` are
-different, to use the `Char`acter representation in IO operations.
+Creation and conversion of `Residue`s should be treated carefully. `Residue` is encoded
+as a 32 or 64 bits type similar to `Int`, to get fast indexing using `Int(x::Residue)`.
+`Int` simply calls `reinterpret` without checking if the residue is valid. Valid residues
+have integer values in the closed interval [1,22]. The integer 23 represent a special
+invalid residue, however any other number (i.e. 42) is also shown as an invalid residue.
+The last could be an issue if uninitialized `Residue` arrays were created using `Array` and
+their residues used to index other matrices without filling the array with valid residues
+before. You can use `zeros`, `ones` or `rand` to get initialized `Residue` arrays.
+Conversions to and from `Char`s changes the bit representation and allows the use of the
+usual character representation of residue and amino acid. This conversions are used in IO
+operations. In conversions from `Char`, lowercase letters representing residues, `'*'`,
+`'.'`, `'-'` and `'.'` are translated to `GAP` and characters in `"UOBZJX"` are translated
+to `XAA`, any other character different from the 20 natural amino acids
+(`res"ARNDCQEGHILKMFPSTWYV"`) are translated to `INV`. In this way, Pfam MSA insert columns
+are converted to only gap columns.
 
 ```julia
-
 julia> alanine = Residue('A')
 A
 
@@ -33,10 +43,7 @@ julia> Int(alanine)
 julia> Char(alanine)
 'A'
 
-julia> UInt8(alanine) # 0x41 == 65 == 'A'
-0x41
-
-julia> for residue in res"ARNDCQEGHILKMFPSTWYV-"
+julia> for residue in res"ARNDCQEGHILKMFPSTWYV-X�"
            println(residue, " ", Int(residue))
        end
 A 1
@@ -60,6 +67,8 @@ W 18
 Y 19
 V 20
 - 21
+X 22
+� 23
 
 ```
 """ Residue
@@ -69,49 +78,108 @@ V 20
 #
 # This conversions are used for indexing, comparison and operations
 
-Base.convert(::Type{Residue}, x::Int) = reinterpret(Residue,x)
+"""
+It takes an `Int` and returns the `Int` value used to represent a valid `Residue`.
+Invalid residues are encoded as the integer 23.
+"""
+@inline _valid_residue_integer(x::Int) = ifelse(1 <= x <= 22, x, 23)
+#                                                         XAA    �
+
+Base.convert(::Type{Residue}, x::Int) = reinterpret(Residue, _valid_residue_integer(x))
+
+# Conversion to `Int` doesn’t check if the residue is valid
 Base.convert(::Type{Int}, x::Residue) = reinterpret(Int,x)
 
 # Gaps
 # ----
 
 """
-`GAP` is the character/number representation on **MIToS** for gaps (also for non standard residues).
-Lowercase characters and dots are also encoded as `GAP` in conversion from `String`s and `Char`s.
-This `Residue` constant is encoded as `Residue(21)`.
+`GAP` is the `Residue` representation on MIToS for gaps (`'-'`, insertions and
+deletions). Lowercase residue characters, dots and `'*'` are encoded as `GAP` in conversion
+from `String`s and `Char`s. This `Residue` constant is encoded as `Residue(21)`.
 """
 const GAP = Residue(21) # - .
 
-const XAA = Residue(22) # X x
+"""
+`XAA` is the `Residue` representation for ambiguous and non standard residues.
+In particular, the following `Char`s are represented in MIToS with `XAA`:
+
+- 'U': Selenocysteine
+- 'O': Pyrrolysine
+- 'B': Asparagine or aspartic acid
+- 'Z': Glutamine or glutamic acid
+- 'J': Leucine or Isoleucine
+
+This `Residue` constant is encoded as `Residue(22)`.
+"""
+const XAA = Residue(22) # X
+
+"""
+`INV` is the `Residue` representation for an invalid residue. It's particullar encoded as
+`Residue(23)` in this constant, but any residue with an integer representation outside the
+closed interval [1,22] should be considered an invalid residue. Please use `isvalid(res)`
+instead of `res != INV` to check if a `Residue` instace is a valid residue. MITos uses the
+Unicode *replacement character* `'�'` (`'\Ufffd'`) of the *Specials* table to represent an
+invalid residue.
+
+```julia
+julia> INV
+�
+
+```
+"""
+const INV = Residue(23) # �
+
+# Check for valid residues
+# ------------------------
+
+Base.isvalid(::Type{Residue}, res::Residue) = 1 <= reinterpret(Int,res) <= 22
+Base.isvalid(res::Residue) = isvalid(Residue, res)
 
 # Type boundaries
 # ---------------
 
 Base.typemin(::Type{Residue}) = Residue(1)
-Base.typemax(::Type{Residue}) = XAA
+Base.typemax(::Type{Residue}) = INV
+
+# zeros and ones
+# --------------
+
+Base.zero(::Type{Residue}) = GAP
+Base.one( ::Type{Residue}) = XAA
 
 # Conversion from/to Char/Uint8
 # -----------------------------
 #
 # Conversions for input and output.
-# Inserts (lowercase and dots) and invalid characters will be converted into gaps ('-').
 
 const _to_char  = Char['A','R','N','D','C','Q','E','G','H','I','L',
-                       'K','M','F','P','S','T','W','Y','V','-','X' ]
+                       'K','M','F','P','S','T','W','Y','V','-','X','�']
 
 function Base.convert(::Type{Char}, res::Residue)
-    @inbounds char = _to_char[ Int( res ) ]
+    @inbounds char = _to_char[ _valid_residue_integer(Int(res)) ]
     char
 end
 
-const _max_char = 256
+const _max_char = Int('z') # 'z' is the maximum between 'A':'Z', 'a':'z', '.', '-' and '*'
 
-const _to_residue = fill(GAP, _max_char)
+const _to_residue = fill(INV, _max_char)
 
-for index in 1:length(_to_char)
+# Residues
+for index in 1:Int(XAA)
     _to_residue[ Int(_to_char[index]) ] = Residue(index)
 end
 
+# A lowercase Char representing a residue is translated to GAP
+for index in 1:Int(XAA)
+    _to_residue[ Int(lowercase(_to_char[index])) ] = GAP
+end
+
+_to_residue[ Int('.') ] = GAP # Gap in insert columns
+_to_residue[ Int('-') ] = GAP # Usual GAP character
+_to_residue[ Int('*') ] = GAP # Usual representation of a translated stop codon
+
+# Ambiguous and non standard residues
 for ambiguous in [  'U',   # Selenocysteine                 Sec
                     'O',   # Pyrrolysine                    Pyl
                     'B',   # Asparagine or aspartic acid    Asx     D N
@@ -119,17 +187,24 @@ for ambiguous in [  'U',   # Selenocysteine                 Sec
                     'J'  ] # Leucine or Isoleucine          Xle     I L
 
     _to_residue[ Int(ambiguous) ] = XAA
+    # A lowercase Char representing a residue is translated to GAP
+    _to_residue[ Int(lowercase(ambiguous)) ] = GAP
 end
 
 function Base.convert(::Type{Residue}, char::Char)
     i = Int(char)
-    if i <= _max_char
+    if 1 <= i <= _max_char
         @inbounds res = _to_residue[ i ]
     else
-        return GAP
+        res = INV
     end
     res
 end
+
+# Bits
+# ----
+
+Base.bits(res::Residue) = bits(reinterpret(Int, res))
 
 # Show
 # ----
@@ -162,14 +237,14 @@ end
 # For convert a MSA stored as Vector{String} to Matrix{Residue}
 function Base.convert(::Type{Matrix{Residue}}, sequences::Array{String,1})
     nseq = length(sequences)
-    if nseq == 1
+    if nseq == 0
         throw(ErrorException("There are not sequences."))
     end
     nres = length(sequences[1])
     # throw() can be used with @threads : https://github.com/JuliaLang/julia/issues/17532
     for seq in sequences
         if length(seq) != nres
-            throw(ErrorException(String(
+            throw(ErrorException(string(
                 "There is an aligned sequence with different number of columns",
                 "[ ", length(seq), " != ", nres, " ]: ", String(seq) )))
         end
@@ -182,11 +257,13 @@ function Base.convert(::Type{Matrix{Residue}}, sequences::Array{String,1})
     aln
 end
 
+# Non-Standard String Literal
+# ---------------------------
+
 """
 The MIToS macro `@res_str` takes a string and returns a `Vector` of `Residues` (sequence).
 
 ```julia
-
 julia> res"MIToS"
 5-element Array{MIToS.MSA.Residue,1}:
  M
@@ -216,227 +293,18 @@ Base.length(res::Residue) = length(Int(res))
 It chooses from the 20 natural residues (it doesn't generate gaps).
 
 ```julia
+julia> srand(1); # Reseed the random number generator.
 
 julia> rand(Residue)
-T
+Y
 
 julia> rand(Residue, 4, 4)
-4x4 Array{MIToS.MSA.Residue,2}:
- L  E  F  L
- R  Y  L  K
- K  V  S  G
- Q  V  M  T
+4×4 Array{MIToS.MSA.Residue,2}:
+ E  L  K  P
+ V  N  A  M
+ I  D  A  F
+ F  Y  C  P
 
 ```
 """
 Base.rand(r, ::Type{Residue}) = Residue(rand(r, 1:20))
-
-# Three letters (for PDB)
-# =======================
-
-const _res2three = [ "ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE",
-                     "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL",
-                     "   ", "XAA" ]
-
-# Thanks to Elin- for this list
-const _three2res = Dict{String, Residue}(
-			                 "GLY"=>'G',
-                             "ALA"=>'A',
-                             "LEU"=>'L',
-                             "MET"=>'M',
-                             "PHE"=>'F',
-                             "TRP"=>'W',
-                             "LYS"=>'K',
-                             "GLN"=>'Q',
-                             "GLU"=>'E',
-                             "SER"=>'S',
-                             "PRO"=>'P',
-                             "VAL"=>'V',
-                             "ILE"=>'I',
-                             "CYS"=>'C',
-                             "TYR"=>'Y',
-                             "HIS"=>'H',
-                             "ARG"=>'R',
-                             "ASN"=>'N',
-                             "ASP"=>'D',
-                             "THR"=>'T',
-                             "MSE"=>'M',
-                             "CSS"=>'C',
-                             "2AS"=>'D',
-                             "3AH"=>'H',
-                             "5HP"=>'E',
-                             "ACL"=>'R',
-                             "AIB"=>'A',
-                             "ALM"=>'A',
-                             "ALO"=>'T',
-                             "ALY"=>'K',
-                             "ARM"=>'R',
-                             "ASA"=>'D',
-                             "ASB"=>'D',
-                             "ASK"=>'D',
-                             "ASL"=>'D',
-                             "ASQ"=>'D',
-                             "AYA"=>'A',
-                             "BCS"=>'C',
-                             "BHD"=>'D',
-                             "BMT"=>'T',
-                             "BNN"=>'A',
-                             "BUC"=>'C',
-                             "BUG"=>'L',
-                             "C5C"=>'C',
-                             "C6C"=>'C',
-                             "CCS"=>'C',
-                             "CEA"=>'C',
-                             "CHG"=>'A',
-                             "CLE"=>'L',
-                             "CME"=>'C',
-                             "CSD"=>'A',
-                             "CSO"=>'C',
-                             "CSP"=>'C',
-                             "CSS"=>'C',
-                             "CSW"=>'C',
-                             "CXM"=>'M',
-                             "CY1"=>'C',
-                             "CY3"=>'C',
-                             "CYG"=>'C',
-                             "CYM"=>'C',
-                             "CYQ"=>'C',
-                             "DAH"=>'F',
-                             "DAL"=>'A',
-                             "DAR"=>'R',
-                             "DAS"=>'D',
-                             "DCY"=>'C',
-                             "DGL"=>'E',
-                             "DGN"=>'Q',
-                             "DHA"=>'A',
-                             "DHI"=>'H',
-                             "DIL"=>'I',
-                             "DIV"=>'V',
-                             "DLE"=>'L',
-                             "DLY"=>'K',
-                             "DNP"=>'A',
-                             "DPN"=>'F',
-                             "DPR"=>'P',
-                             "DSN"=>'S',
-                             "DSP"=>'D',
-                             "DTH"=>'T',
-                             "DTR"=>'W',
-                             "DTY"=>'Y',
-                             "DVA"=>'V',
-                             "EFC"=>'C',
-                             "FLA"=>'A',
-                             "FME"=>'M',
-                             "GGL"=>'E',
-                             "GLZ"=>'G',
-                             "GMA"=>'E',
-                             "GSC"=>'G',
-                             "HAC"=>'A',
-                             "HAR"=>'R',
-                             "HIC"=>'H',
-                             "HIP"=>'H',
-                             "HMR"=>'R',
-                             "HPQ"=>'F',
-                             "HTR"=>'W',
-                             "HYP"=>'P',
-                             "IIL"=>'I',
-                             "IYR"=>'Y',
-                             "KCX"=>'K',
-                             "LLP"=>'K',
-                             "LLY"=>'K',
-                             "LTR"=>'W',
-                             "LYM"=>'K',
-                             "LYZ"=>'K',
-                             "MAA"=>'A',
-                             "MEN"=>'N',
-                             "MHS"=>'H',
-                             "MIS"=>'S',
-                             "MLE"=>'L',
-                             "MPQ"=>'G',
-                             "MSA"=>'G',
-                             "MSE"=>'M',
-                             "MVA"=>'V',
-                             "NEM"=>'H',
-                             "NEP"=>'H',
-                             "NLE"=>'L',
-                             "NLN"=>'L',
-                             "NLP"=>'L',
-                             "NMC"=>'G',
-                             "OAS"=>'S',
-                             "OCS"=>'C',
-                             "OMT"=>'M',
-                             "PAQ"=>'Y',
-                             "PCA"=>'E',
-                             "PEC"=>'C',
-                             "PHI"=>'F',
-                             "PHL"=>'F',
-                             "PR3"=>'C',
-                             "PRR"=>'A',
-                             "PTR"=>'Y',
-                             "SAC"=>'S',
-                             "SAR"=>'G',
-                             "SCH"=>'C',
-                             "SCS"=>'C',
-                             "SCY"=>'C',
-                             "SEL"=>'S',
-                             "SEP"=>'S',
-                             "SET"=>'S',
-                             "SHC"=>'C',
-                             "SHR"=>'K',
-                             "SOC"=>'C',
-                             "STY"=>'Y',
-                             "SVA"=>'S',
-                             "TIH"=>'A',
-                             "TPL"=>'W',
-                             "TPO"=>'T',
-                             "TPQ"=>'A',
-                             "TRG"=>'K',
-                             "TRO"=>'W',
-                             "TYB"=>'Y',
-                             "TYQ"=>'Y',
-                             "TYS"=>'Y',
-                             "TYY"=>'Y',
-                             "AGM"=>'R',
-                             "GL3"=>'G',
-                             "SMC"=>'C',
-                             "ASX"=>'B',
-                             "CGU"=>'E',
-                             "CSX"=>'C',
-                             "GLX"=>'Z',
-                             "UNK"=>'X',
-                             "XAA"=>'X'
-                            )
-
-"""
-This function returns the three letter name of the `Residue`.
-
-```julia
-julia> residue2three(Residue('G'))
-"GLY"
-
-```
-"""
-function residue2three(res::Residue)
-    if res != GAP
-        @inbounds name = _res2three[Int(res)]
-    else
-        throw(ErrorException("Gap has not three letter name."))
-    end
-    name
-end
-
-"""
-It takes a three letter residue name and returns the `Residue`.
-
-```julia
-julia> three2residue("ALA")
-A
-
-```
-"""
-function three2residue(res::String)
-    if length(res) == 3
-        get(_three2res, uppercase(res), XAA)
-    else
-        throw(ErrorException("The residue name should have 3 letters."))
-    end
-end

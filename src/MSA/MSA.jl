@@ -30,7 +30,13 @@ using MIToS.Utils
 
 import Clustering: ClusteringResult, nclusters, counts, assignments
 
-export Residue, GAP, XAA, @res_str, residue2three, three2residue
+export  # Residue
+        Residue,
+        GAP, XAA, INV,
+        @res_str,
+        # ThreeLetters
+        residue2three, three2residue
+
 #
 # Annotations, filtersequences!, filtercolumns!, empty,
 # getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
@@ -67,6 +73,7 @@ export Residue, GAP, XAA, @res_str, residue2three, three2residue
 # swap!
 
 include("Residues.jl")
+include("ThreeLetters.jl")
 # include("Annotations.jl")
 # include("MultipleSequenceAlignment.jl")
 # include("GeneralParserMethods.jl")
