@@ -19,6 +19,7 @@ end
 @testset "MSA" begin
     include(joinpath("MSA", "Residues.jl"))
     include(joinpath("MSA", "ThreeLetters.jl"))
+    include(joinpath("MSA", "Annotations.jl"))
 end
 
 # # MSA

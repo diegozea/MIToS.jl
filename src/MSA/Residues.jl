@@ -204,9 +204,13 @@ end
 Base.convert(::Type{Vector{Residue}}, str::AbstractString) = Residue[ char for char in str ]
 
 function Base.convert(::Type{String}, seq::Vector{Residue})
-    buffer = IOBuffer()
+    # Buffer length can be length(seq) since Char(res) is always ASCII
+    #                 data                         readable    writable
+    buffer = IOBuffer(Array(UInt8, length(seq)),    true,       true)
+    # To start at the beginning of the buffer:
+    truncate(buffer,0)
     for res in seq
-        print(buffer, res)
+        write(buffer, Char(res))
     end
     takebuf_string(buffer)
 end

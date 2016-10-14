@@ -1,11 +1,10 @@
-import Base: print, show, copy, deepcopy, empty!, isempty, print, show
-
 # Annotations
 # ===========
 
 """
-The `Annotations` type is basically a container for `Dict`s with the annotations of a multiple sequence alignment.
-`Annotations` was designed for storage of annotations of the **Stockholm format**.
+The `Annotations` type is basically a container for `Dict`s with the annotations of a
+multiple sequence alignment. `Annotations` was designed for storage of annotations of
+the **Stockholm format**.
 
 MIToS also uses MSA annotations to keep track of:
 
@@ -13,62 +12,74 @@ MIToS also uses MSA annotations to keep track of:
 - Positions numbers in the original MSA file (**column mapping:** `ColMap`)
 - Position of the residues in the sequence (**sequence mapping:** `SeqMap`)
 """
-type Annotations
-    file::OrderedDict{ASCIIString, ByteString}
-    sequences::Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}
-    columns::Dict{ASCIIString,ASCIIString}
-    residues::Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}
+@auto_hash_equals type Annotations
+    file::OrderedDict{String, String}
+    sequences::Dict{Tuple{String,String},String}
+    columns::Dict{String,String}
+    residues::Dict{Tuple{String,String},String}
 end
 
-call(::Type{Annotations}) = Annotations(OrderedDict{ASCIIString, ByteString}(),
-                                        Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(),
-                                        Dict{ASCIIString, ASCIIString}(),
-                                        Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}())
-
-"""
-Creates empty MSA `Annotations` of length 0 using `sizehint!`
-"""
-empty(::Type{Annotations}) = Annotations( sizehint!(OrderedDict{ASCIIString, ByteString}(), 0), # There is not sizehint! for OrderedDict right now
-                                         sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0),
-                                         sizehint!(Dict{ASCIIString, ASCIIString}(), 0),
-                                         sizehint!(Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}(), 0))
+(::Type{Annotations})() = Annotations(  OrderedDict{String, String}(),
+                                        Dict{Tuple{String,String},String}(),
+                                        Dict{String, String}(),
+                                        Dict{Tuple{String,String},String}() )
 
 # Filters
 # -------
 
-# This function is useful because of the Julia issue 12495
-_filter(str::ASCIIString, mask) = ASCIIString( str.data[mask] )
+# This function is useful because of the Julia issue #12495
+function _filter(str::String, mask::AbstractArray{Bool})
+    @assert length(str) == length(mask) "The string and the mask must have the same length"
+    #                 data                         readable    writable
+    buffer = IOBuffer(Array(UInt8, endof(str)),    true,       true)
+    # To start at the beginning of the buffer:
+    truncate(buffer,0)
+    i = 1
+    for char in str
+        @inbounds if mask[i]
+            write(buffer, char)
+        end
+        i += 1
+    end
+    takebuf_string(buffer)
+end
+
+_filter(str::String, indexes::AbstractArray{Int}) = String(collect(str)[indexes])
 
 """
 For filter column and sequence mapping of the format: ",,,,10,11,,12"
 """
-_filter_mapping(str_map::ASCIIString, mask) = join(split(str_map, ',')[mask], ',')
+_filter_mapping(str_map::String, mask) = join(split(str_map, ',')[mask], ',')
+
+# """
+# `filtersequences!(data::Annotations, ids::IndexedArray, mask::AbstractArray{Bool,1})`
+#
+# It is useful for deleting sequence annotations. `ids` should be an `IndexedArray` with the
+# `seqname`s of the annotated sequences and `mask` should be a logical vector.
+# """
+# function filtersequences!(data::Annotations, ids::IndexedArray, mask::AbstractArray{Bool,1})
+#     if length(data.sequences) > 0 || length(data.residues) > 0
+#         del = ids[ !mask ]
+#         for key in keys(data.residues)
+#             if key[1] in del
+#                 delete!(data.residues, key)
+#             end
+#         end
+#         for key in keys(data.sequences)
+#             if key[1] in del
+#                 delete!(data.sequences, key)
+#             end
+#         end
+#         data.sequences = sizehint!(data.sequences, length(data.sequences))
+#         data.residues = sizehint!(data.residues, length(data.residues))
+#     end
+#     data
+# end
 
 """
-`filtersequences!(data::Annotations, ids::IndexedArray, mask::AbstractArray{Bool,1})` is useful for deleting sequence annotations.
-`ids` should be an `IndexedArray` with the `seqname`s of the annotated sequences and `mask` should be a logical vector.
-"""
-function filtersequences!(data::Annotations, ids::IndexedArray, mask::AbstractArray{Bool,1})
-    if length(data.sequences) > 0 || length(data.residues) > 0
-        del = ids[ !mask ]
-        for key in keys(data.residues)
-            if key[1] in del
-                delete!(data.residues, key)
-            end
-        end
-        for key in keys(data.sequences)
-            if key[1] in del
-                delete!(data.sequences, key)
-            end
-        end
-        data.sequences = sizehint!(data.sequences, length(data.sequences))
-        data.residues = sizehint!(data.residues, length(data.residues))
-    end
-    data
-end
+`filtercolumns!(data::Annotations, mask)`
 
-"""
-`filtercolumns!(data::Annotations, mask)` is useful for deleting column annotations (creating a subset in place).
+It is useful for deleting column annotations (creating a subset in place).
 """
 function filtercolumns!(data::Annotations, mask)
     if length(data.residues) > 0
@@ -99,10 +110,15 @@ end
 # -------------------------
 
 for fun in [:copy, :deepcopy]
-    @eval $(fun)(ann::Annotations) = Annotations( $(fun)( ann.file ), $(fun)( ann.sequences ), $(fun)( ann.columns ), $(fun)( ann.residues ))
+    @eval begin
+        Base.$(fun)(ann::Annotations) = Annotations( $(fun)( ann.file ),
+                                                     $(fun)( ann.sequences ),
+                                                     $(fun)( ann.columns ),
+                                                     $(fun)( ann.residues ) )
+    end
 end
 
-function empty!(ann::Annotations)
+function Base.empty!(ann::Annotations)
     empty!(ann.file)
     empty!(ann.sequences)
     empty!(ann.columns)
@@ -110,7 +126,8 @@ function empty!(ann::Annotations)
     ann
 end
 
-isempty(ann::Annotations) = isempty(ann.file) && isempty(ann.sequences) && isempty(ann.columns) && isempty(ann.residues)
+Base.isempty(ann::Annotations) = isempty(ann.file) && isempty(ann.sequences) &&
+                                 isempty(ann.columns) && isempty(ann.residues)
 
 # ncolumns
 # --------
@@ -129,87 +146,128 @@ function ncolumns(ann::Annotations)
     -1
 end
 
-# Getters & Setters
-# -----------------
+# Getters
+# -------
 
 for (fun, field) in [ (:getannotfile,   :(ann.file)),
-                     (:getannotcolumn, :(ann.columns))]
+                      (:getannotcolumn, :(ann.columns))]
     @eval begin
         $(fun)(ann::Annotations) = $(field)
-        $(fun)(ann::Annotations, feature::ASCIIString) = getindex($(field), feature)
-        $(fun)(ann::Annotations, feature::ASCIIString, default::ASCIIString) = get($(field), feature, default)
+        $(fun)(ann::Annotations, feature::String) = getindex($(field), feature)
+        $(fun)(ann::Annotations, feature::String,
+               default::String) = get($(field), feature, default)
     end
 end
 
 for (fun, field) in [ (:getannotsequence, :(ann.sequences)),
-                     (:getannotresidue,  :(ann.residues))]
+                      (:getannotresidue,  :(ann.residues))]
     @eval begin
         $(fun)(ann::Annotations) = $(field)
-        $(fun)(ann::Annotations, seqname::ASCIIString, feature::ASCIIString) = getindex($(field), (seqname, feature))
-        $(fun)(ann::Annotations, seqname::ASCIIString, feature::ASCIIString, default::ASCIIString) = get($(field), (seqname, feature), default)
+        $(fun)(ann::Annotations, seqname::String,
+               feature::String) = getindex($(field), (seqname,feature))
+        $(fun)(ann::Annotations, seqname::String,
+               feature::String, default::String) = get($(field), (seqname,feature), default)
     end
 end
 
-function _test_feature_name(feature::ASCIIString)
-    length(feature) <= 50 || throw(ErrorException("Feature name has a limit of 50 characters."))
-    ismatch(r"\s", feature) && throw(ErrorException("Feature name must not have spaces."))
+@doc """`getannotfile(ann[, feature[,default]])`
+
+It returns per file annotation for `feature`
+""" getannotfile
+
+@doc """`getannotcolumn(ann[, feature[,default]])`
+
+It returns per column annotation for `feature`
+""" getannotcolumn
+
+@doc """`getannotsequence(ann[, seqname, feature[,default]])`
+
+It returns per sequence annotation for `(seqname, feature)`
+""" getannotsequence
+
+@doc """`getannotresidue(ann[, seqname, feature[,default]])`
+
+It returns per residue annotation for `(seqname, feature)`
+""" getannotresidue
+
+# Setters
+# -------
+
+function _test_feature_name(feature::String)
+    @assert length(feature) <= 50 "Feature name has a limit of 50 characters."
+    @assert !ismatch(r"\s", feature) "Feature name must not have spaces."
 end
 
-function setannotfile!(ann::Annotations, feature::ASCIIString, annotation::ByteString)
+function setannotfile!(ann::Annotations, feature::String, annotation::String)
     _test_feature_name(feature)
     previous = get(ann.file, feature, "")
     ann.file[feature] = previous != "" ? string(previous, '\n', annotation) : annotation
 end
 
-function setannotsequence!(ann::Annotations, seqname::ASCIIString, feature::ASCIIString, annotation::ASCIIString)
+function setannotsequence!(ann::Annotations, seqname::String, feature::String,
+                           annotation::String)
     _test_feature_name(feature)
     previous = get(ann.sequences, (seqname, feature), "")
-    ann.sequences[(seqname, feature)] = previous != "" ? string(previous, '\n', annotation) : annotation
+    ann.sequences[(seqname, feature)] = previous != "" ?
+                                        string(previous, '\n', annotation) : annotation
 end
 
-function setannotcolumn!(ann::Annotations, feature::ASCIIString, annotation::ASCIIString)
+function setannotcolumn!(ann::Annotations, feature::String, annotation::String)
     _test_feature_name(feature)
     len = ncolumns(ann)
     if (len == -1) || (len == length(annotation))
         setindex!(ann.columns, annotation, feature)
     else
-        throw(DimensionMismatch("You should have exactly 1 char per column ($len columns/residues)"))
+        throw(DimensionMismatch(string("You should have exactly 1 char per column (",
+        len, " columns/residues)")))
     end
 end
 
-function setannotresidue!(ann::Annotations, seqname::ASCIIString, feature::ASCIIString, annotation::ASCIIString)
+function setannotresidue!(ann::Annotations, seqname::String, feature::String,
+                          annotation::String)
     _test_feature_name(feature)
     len = ncolumns(ann)
     if (len == -1) || (len == length(annotation))
         setindex!(ann.residues, annotation, (seqname, feature))
     else
-        throw(DimensionMismatch("You should have exactly 1 char per residue ($len columns/residues)"))
+        throw(DimensionMismatch(string("You should have exactly 1 char per residue (",
+        len, " columns/residues)")))
     end
 end
 
-@doc "`getannotfile(ann[, feature[,default]])` returns per file annotation for `feature`" getannotfile
-@doc "`getannotcolumn(ann[, feature[,default]])` returns per column annotation for `feature`" getannotcolumn
-@doc "`getannotsequence(ann[, seqname, feature[,default]])` returns per sequence annotation for `(seqname, feature)`" getannotsequence
-@doc "`getannotresidue(ann[, seqname, feature[,default]])` returns per residue annotation for `(seqname, feature)`" getannotresidue
-@doc "`setannotfile!(ann, feature, annotation)` stores per file `annotation` for `feature`" setannotfile!
-@doc "`setannotcolumn!(ann, feature, annotation)` stores per column `annotation` (1 char per column) for `feature`" setannotcolumn!
-@doc "`setannotsequence!(ann, seqname, feature, annotation)` stores per sequence `annotation` for `(seqname, feature)`" setannotsequence!
-@doc "`setannotresidue!(ann, seqname, feature, annotation)` stores per residue `annotation` (1 char per residue) for `(seqname, feature)`" setannotresidue!
+@doc """`setannotfile!(ann, feature, annotation)`
+
+It stores per file `annotation` for `feature`
+""" setannotfile!
+
+@doc """`setannotcolumn!(ann, feature, annotation)`
+
+It stores per column `annotation` (1 char per column) for `feature`
+""" setannotcolumn!
+
+@doc """`setannotsequence!(ann, seqname, feature, annotation)`
+
+It stores per sequence `annotation` for `(seqname, feature)`
+""" setannotsequence!
+
+@doc """`setannotresidue!(ann, seqname, feature, annotation)`
+
+It stores per residue `annotation` (1 char per residue) for `(seqname, feature)`
+""" setannotresidue!
 
 # MIToS modification annotations
 # ===============================
 
 """
-Annotates on file annotations the modifications realized by MIToS on the MSA
+Annotates on file annotations the modifications realized by MIToS on the MSA. It always
+returns `true`, so It can be used in a boolean context.
 """
-function annotate_modification!(ann::Annotations, modification::ASCIIString)
+function annotate_modification!(ann::Annotations, modification::String)
     setannotfile!(ann, string("MIToS_", Dates.now()), modification)
-    true # generally used on bool context: annotate && annotate_modification!(...
+    true # generally used in a boolean context: annotate && annotate_modification!(...
 end
 
-"""
-Deletes all the MIToS annotated modifications
-"""
+"Deletes all the MIToS annotated modifications"
 function delete_annotated_modifications!(ann::Annotations)
     for key in keys(ann.file)
         if length(key) > 6 && key[1:6] == "MIToS_"
@@ -218,11 +276,7 @@ function delete_annotated_modifications!(ann::Annotations)
     end
 end
 
-using Base.Markdown
-
-"""
-Prints MIToS annotated modifications
-"""
+"Prints MIToS annotated modifications"
 function printmodifications(ann::Annotations)
     for (key,value) in ann.file
         if length(key) > 6 && key[1:6] == "MIToS_"
@@ -241,7 +295,7 @@ function _printfileannotations(io::IO, ann::Annotations)
     if !isempty(ann.file)
         for (key, value) in ann.file
             for val in split(value, '\n')
-                println(io, string("#=GF ", key, "   ", val))
+                println(io, string("#=GF ", key, '\t', val))
             end
         end
     end
@@ -259,7 +313,7 @@ function _printsequencesannotations(io::IO, ann::Annotations)
     if !isempty(ann.sequences)
         for (key, value) in ann.sequences
             for val in split(value, '\n')
-                println(io, string("#=GS ", key[1], '\t', key[2], ' ', val))
+                println(io, string("#=GS ", key[1], '\t', key[2], '\t', val))
             end
         end
     end
@@ -273,11 +327,11 @@ function _printresiduesannotations(io::IO, ann::Annotations)
     end
 end
 
-function print(io::IO, ann::Annotations)
+function Base.print(io::IO, ann::Annotations)
     _printfileannotations(io, ann)
     _printsequencesannotations(io, ann)
     _printresiduesannotations(io, ann)
     _printcolumnsannotations(io, ann)
 end
 
-show(io::IO, ann::Annotations) = print(io, ann)
+Base.show(io::IO, ann::Annotations) = print(io, ann)

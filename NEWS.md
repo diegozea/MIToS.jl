@@ -44,6 +44,8 @@ using 32 or 64 bits instead of 8 bits.
 * More `Base` methods are extended to work with `Residue`: `bits`, `zero`, `one`
 and `isvalid`.  
 
+* `empty(Annotations)` was deprecated, use `Annotations()` instead.
+
 ### Changes from v1.1 to v1.2.2
 
 * `using Plots` to use `plot` with `AbstractVector{PDBResidue}` to visualize coordinates of the C alpha of each residue.

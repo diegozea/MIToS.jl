@@ -19,14 +19,15 @@ module MSA
 # using Base.Threads
 
 using DataStructures        # OrderedDicts for Annotations
+using AutoHashEquals        # Annotations
+
+
 using IndexedArrays         # IndexedArray for sequence names in MSAs
 using PairwiseListMatrices  # Percent Identity Matrices
 using Clustering            # Used for sequence clustering: ClusteringResult
 using FastaIO               # FastaReader (fast)
 using RecipesBase           # Plots for MSAs
 using MIToS.Utils
-
-# import Base: parse, print, write, convert
 
 import Clustering: ClusteringResult, nclusters, counts, assignments
 
@@ -35,14 +36,17 @@ export  # Residue
         GAP, XAA,
         @res_str,
         # ThreeLetters
-        residue2three, three2residue
+        residue2three, three2residue,
+        # Annotations
+        Annotations,
+        # filtersequences!,
+        ncolumns,
+        filtercolumns!,
+        getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
+        setannotfile!, setannotcolumn!, setannotsequence!, setannotresidue!,
+        annotate_modification!, delete_annotated_modifications!, printmodifications
 
-#
-# Annotations, filtersequences!, filtercolumns!, empty,
-# getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
-# setannotfile!, setannotcolumn!, setannotsequence!, setannotresidue!,
-# annotate_modification!, delete_annotated_modifications!, printmodifications,
-# annotations,
+        # annotations,
 #
 # MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment,
 # AbstractMultipleSequenceAlignment,
@@ -74,7 +78,7 @@ export  # Residue
 
 include("Residues.jl")
 include("ThreeLetters.jl")
-# include("Annotations.jl")
+include("Annotations.jl")
 # include("MultipleSequenceAlignment.jl")
 # include("GeneralParserMethods.jl")
 # include("Raw.jl")
