@@ -17,3 +17,6 @@
 
 # Temporal file (tests)
 /test/.tmp
+
+# Benchmark files
+/benchmark/.tune.jld
