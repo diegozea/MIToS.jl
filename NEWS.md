@@ -5,7 +5,7 @@
 You can use `Pkg.checkout("MIToS")` to use the **master** branch and `Pkg.free("MIToS")` to
 return to the stable version.
 
-### Changes from v1.2.2 to v2.0
+### Changes from v1.2 to v2.0
 
 **MIToS 2.0** is the first MIToS version with **Julia 0.5** support
 (It drops Julia 0.4 support). The last Julia version introduces new awesome features like
@@ -37,15 +37,12 @@ expressions (anonymous functions).
 indexation using `Int(res::Residue)`. More memory is used, since the residues are encoded
 using 32 or 64 bits instead of 8 bits.  
 
-* `XAA` is now used to indicate ambiguous and non standard residues instead of `GAP`.  
+* `XAA` is now used to indicate unknown, ambiguous and non standard residues instead of `GAP`.  
 
-* The `Residue` `INV` is now used to indicate invalid residues instead of `GAP`.  
-
-* Conversions to and from `UInt8` aren’t supported now.  
+* Conversions to and from `UInt8` aren't supported now.  
 
 * More `Base` methods are extended to work with `Residue`: `bits`, `zero`, `one`
 and `isvalid`.  
-
 
 ### Changes from v1.1 to v1.2.2
 

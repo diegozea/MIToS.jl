@@ -32,7 +32,7 @@ import Clustering: ClusteringResult, nclusters, counts, assignments
 
 export  # Residue
         Residue,
-        GAP, XAA, INV,
+        GAP, XAA,
         @res_str,
         # ThreeLetters
         residue2three, three2residue

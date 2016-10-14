@@ -3,7 +3,7 @@
 
 const _res2three = [ "ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE",
                      "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL",
-                     "   ", "XAA", "   " ]
+                     "   ", "XAA" ]
 
 # Thanks to Elin- for this list
 const _three2res = Dict{String, Residue}(
@@ -187,11 +187,12 @@ julia> residue2three(Residue('G'))
 ```
 """
 function residue2three(res::Residue)
-    name = _res2three[Int(res)]
-    if name == "   "
-        throw(ErrorException("$res has not three letter name."))
+    int_res = Int(res)
+    if int_res == 21  || !isvalid(res)
+        #         GAP
+        throw(ErrorException("Residue($(int_res)) has not three letter name."))
     end
-    name
+    _res2three[int_res]
 end
 
 """

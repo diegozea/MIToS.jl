@@ -9,9 +9,9 @@ end
 
 @doc """
 Most of the **MIToS** design is created around the `Residue` bitstype. It has
-representations for the 20 natural amino acids, a value to represent insertions and
-deletions (`GAP`, `'-'`), one for representing ambiguous and non standard residues
-(`XAA`, `'X'`) and a particular value to represent invalid residues (`INV`,`'�'`).
+representations for the 20 natural amino acids, a value representing insertions and
+deletions (`GAP`, `'-'`) and one representing unknown, ambiguous and non standard residues
+(`XAA`, `'X'`).
 Each `Residue` is encoded as an integer number, with the same bit representation and size
 than a `Int`. This allows fast indexing operation of probability or frequency matrices.
 
@@ -19,31 +19,28 @@ than a `Int`. This allows fast indexing operation of probability or frequency ma
 
 Creation and conversion of `Residue`s should be treated carefully. `Residue` is encoded
 as a 32 or 64 bits type similar to `Int`, to get fast indexing using `Int(x::Residue)`.
-`Int` simply calls `reinterpret` without checking if the residue is valid. Valid residues
-have integer values in the closed interval [1,22]. The integer 23 represent a special
-invalid residue, however any other number (i.e. 42) is also shown as an invalid residue.
-The last could be an issue if uninitialized `Residue` arrays were created using `Array` and
-their residues used to index other matrices without filling the array with valid residues
-before. You can use `zeros`, `ones` or `rand` to get initialized `Residue` arrays.
+`Int` simply calls `reinterpret` without checking if the residue is valid.
+Valid residues have integer values in the closed interval [1,22]. `convert` from `Int`  and
+`Char` always returns valid residues, however it's possible to find invalid residues
+(they are shown using the character `'�'`) after the creation of uninitialized `Residue`
+arrays (i.e. using `Array`). You can use `zeros`, `ones` or `rand` to get initialized
+`Residue` arrays with valid residues.
 Conversions to and from `Char`s changes the bit representation and allows the use of the
-usual character representation of residue and amino acid. This conversions are used in IO
-operations. In conversions from `Char`, lowercase letters representing residues, `'*'`,
-`'.'`, `'-'` and `'.'` are translated to `GAP` and characters in `"UOBZJX"` are translated
-to `XAA`, any other character different from the 20 natural amino acids
-(`res"ARNDCQEGHILKMFPSTWYV"`) are translated to `INV`. In this way, Pfam MSA insert columns
-are converted to only gap columns.
+usual character representation of residues and amino acids. This conversions are used in IO
+operations and always return valid residues. In conversions from `Char`, lowercase letters,
+`'*'`, `'-'` and `'.'` are translated to `GAP`, letters representing the 20 natural amino
+(ARNDCQEGHILKMFPSTWYV) acids are translated to their corresponding `Residue` and any other
+character is translated to `XAA`. Since lowercase letters and dots are translated to gaps,
+Pfam MSA insert columns are converted to columns full of gaps.
 
 ```julia
 julia> alanine = Residue('A')
 A
 
-julia> Int(alanine)
-1
-
 julia> Char(alanine)
 'A'
 
-julia> for residue in res"ARNDCQEGHILKMFPSTWYV-X�"
+julia> for residue in res"ARNDCQEGHILKMFPSTWYV-X"
            println(residue, " ", Int(residue))
        end
 A 1
@@ -68,7 +65,6 @@ Y 19
 V 20
 - 21
 X 22
-� 23
 
 ```
 """ Residue
@@ -82,8 +78,8 @@ X 22
 It takes an `Int` and returns the `Int` value used to represent a valid `Residue`.
 Invalid residues are encoded as the integer 23.
 """
-@inline _valid_residue_integer(x::Int) = ifelse(1 <= x <= 22, x, 23)
-#                                                         XAA    �
+@inline _valid_residue_integer(x::Int) = ifelse(1 <= x <= 22, x, 22)
+#                                                                XAA
 
 Base.convert(::Type{Residue}, x::Int) = reinterpret(Residue, _valid_residue_integer(x))
 
@@ -101,38 +97,19 @@ from `String`s and `Char`s. This `Residue` constant is encoded as `Residue(21)`.
 const GAP = Residue(21) # - .
 
 """
-`XAA` is the `Residue` representation for ambiguous and non standard residues.
-In particular, the following `Char`s are represented in MIToS with `XAA`:
-
-- 'U': Selenocysteine
-- 'O': Pyrrolysine
-- 'B': Asparagine or aspartic acid
-- 'Z': Glutamine or glutamic acid
-- 'J': Leucine or Isoleucine
-
+`XAA` is the `Residue` representation for unknown, ambiguous and non standard residues.
 This `Residue` constant is encoded as `Residue(22)`.
 """
 const XAA = Residue(22) # X
 
-"""
-`INV` is the `Residue` representation for an invalid residue. It's particullar encoded as
-`Residue(23)` in this constant, but any residue with an integer representation outside the
-closed interval [1,22] should be considered an invalid residue. Please use `isvalid(res)`
-instead of `res != INV` to check if a `Residue` instace is a valid residue. MITos uses the
-Unicode *replacement character* `'�'` (`'\Ufffd'`) of the *Specials* table to represent an
-invalid residue.
-
-```julia
-julia> INV
-�
-
-```
-"""
-const INV = Residue(23) # �
-
 # Check for valid residues
 # ------------------------
 
+"""
+`isvalid(res::Residue)`
+
+It returns `true` if the encoded integer is in the closed interval [1,22].
+"""
 Base.isvalid(::Type{Residue}, res::Residue) = 1 <= reinterpret(Int,res) <= 22
 Base.isvalid(res::Residue) = isvalid(Residue, res)
 
@@ -140,7 +117,7 @@ Base.isvalid(res::Residue) = isvalid(Residue, res)
 # ---------------
 
 Base.typemin(::Type{Residue}) = Residue(1)
-Base.typemax(::Type{Residue}) = INV
+Base.typemax(::Type{Residue}) = Residue(22)
 
 # zeros and ones
 # --------------
@@ -154,7 +131,7 @@ Base.one( ::Type{Residue}) = XAA
 # Conversions for input and output.
 
 const _to_char  = Char['A','R','N','D','C','Q','E','G','H','I','L',
-                       'K','M','F','P','S','T','W','Y','V','-','X','�']
+                       'K','M','F','P','S','T','W','Y','V','-','X']
 
 function Base.convert(::Type{Char}, res::Residue)
     @inbounds char = _to_char[ _valid_residue_integer(Int(res)) ]
@@ -163,40 +140,28 @@ end
 
 const _max_char = Int('z') # 'z' is the maximum between 'A':'Z', 'a':'z', '.', '-' and '*'
 
-const _to_residue = fill(INV, _max_char)
+const _to_residue = fill(XAA, _max_char)
 
 # Residues
-for index in 1:Int(XAA)
+for index in 1:22
     _to_residue[ Int(_to_char[index]) ] = Residue(index)
 end
 
-# A lowercase Char representing a residue is translated to GAP
-for index in 1:Int(XAA)
-    _to_residue[ Int(lowercase(_to_char[index])) ] = GAP
+# A lowercase Char is translated to GAP
+for char in 'a':'z'
+    _to_residue[ Int(char) ] = GAP
 end
 
 _to_residue[ Int('.') ] = GAP # Gap in insert columns
 _to_residue[ Int('-') ] = GAP # Usual GAP character
 _to_residue[ Int('*') ] = GAP # Usual representation of a translated stop codon
 
-# Ambiguous and non standard residues
-for ambiguous in [  'U',   # Selenocysteine                 Sec
-                    'O',   # Pyrrolysine                    Pyl
-                    'B',   # Asparagine or aspartic acid    Asx     D N
-                    'Z',   # Glutamine or glutamic acid     Glx     E Q
-                    'J'  ] # Leucine or Isoleucine          Xle     I L
-
-    _to_residue[ Int(ambiguous) ] = XAA
-    # A lowercase Char representing a residue is translated to GAP
-    _to_residue[ Int(lowercase(ambiguous)) ] = GAP
-end
-
 function Base.convert(::Type{Residue}, char::Char)
     i = Int(char)
     if 1 <= i <= _max_char
         @inbounds res = _to_residue[ i ]
     else
-        res = INV
+        res = XAA
     end
     res
 end
@@ -209,11 +174,23 @@ Base.bits(res::Residue) = bits(reinterpret(Int, res))
 # Show
 # ----
 
-function Base.show(io::IO, res::Residue)
-    write(io, Char(res))
+# Invalid residues are shown with the '�' character
+function _write(io::IO, res::Residue)
+    if isvalid(res)
+        @inbounds char = _to_char[Int(res)]
+        write(io, char)
+    else
+        write(io, '�')
+    end
     nothing
 end
 
+Base.show(io::IO, res::Residue)  = _write(io, res)
+
+# Print
+# -----
+
+# Invalid residues are printed with the 'X' character
 function Base.print(io::IO, res::Residue)
     write(io, Char(res))
     nothing

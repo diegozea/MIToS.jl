@@ -2,16 +2,11 @@
 
     @testset "Comparisons" begin
 
-        @test Residue(1) == Residue(1)
-
         @test GAP == GAP
         @test XAA == XAA
-        @test INV == INV
-
-        @test GAP != INV
         @test GAP != XAA
 
-        for i in 1:23, j in 1:23
+        for i in 1:22, j in 1:22
             if j != i
                 @test Residue(i) != Residue(j)
             else
@@ -56,23 +51,9 @@
                 @test XAA == Residue(X)
                 @test XAA != Residue(lowercase(X))
             end
-        end
 
-        @testset "INV" begin
-
-            @test Int(INV) == 23
-
-            @test Char(INV) == '\Ufffd'
-
-            @test INV == Residue('\Ufffd')
-            @test INV == Residue('ñ')
-            @test INV == Residue(42)
-            @test INV == Residue(-1)
-
-            for X in "UOBZJX"
-                @test INV != Residue(X)
-                @test INV != Residue(lowercase(X))
-            end
+            @test XAA == Residue(42)
+            @test XAA == Residue(-1)
         end
     end
 
@@ -82,17 +63,17 @@
             @test isvalid(res)
         end
 
-        @test !isvalid(INV)
-        @test !isvalid(Residue('ñ'))
+        @test isvalid(Residue('ñ'))
+        @test isvalid(Residue(42))
         @test !isvalid(reinterpret(Residue, 42))
     end
 
     @testset "Strings" begin
 
-        alphabet = "ARNDCQEGHILKMFPSTWYV-X�"
+        alphabet = "ARNDCQEGHILKMFPSTWYV-X"
 
-        @test res"ARNDCQEGHILKMFPSTWYV-X�" == Residue[ char for char in alphabet ]
-        @test String(res"ARNDCQEGHILKMFPSTWYV-X�") == alphabet
+        @test res"ARNDCQEGHILKMFPSTWYV-X" == Residue[ char for char in alphabet ]
+        @test String(res"ARNDCQEGHILKMFPSTWYV-X") == alphabet
     end
 
     @testset "String vector" begin
@@ -119,7 +100,6 @@
             res = rand(Residue)
             @test res != GAP
             @test res != XAA
-            @test res != INV
             @test isvalid(res)
             @test typeof(res) == Residue
         end
@@ -147,11 +127,37 @@
 
     @testset "Other base methods" begin
 
-        for i in 1:23
+        for i in 1:22
             @test bits(i) == bits(Residue(i))
         end
 
         @test typemin(Residue) == Residue(1)
-        @test typemax(Residue) == INV
+        @test typemax(Residue) == XAA
+    end
+
+    @testset "Show" begin
+
+        io = IOBuffer()
+        alphabet = "ARNDCQEGHILKMFPSTWYV-X"
+        for char in alphabet
+            show(io, Residue(char))
+            @test takebuf_string(io) == String([char])
+        end
+
+        show(io, reinterpret(Residue, -30))
+        @test takebuf_string(io) == "�"
+    end
+
+    @testset "Print" begin
+
+        io = IOBuffer()
+        alphabet = "ARNDCQEGHILKMFPSTWYV-X"
+        for char in alphabet
+            print(io, Residue(char))
+            @test takebuf_string(io) == String([char])
+        end
+
+        print(io, reinterpret(Residue, -30))
+        @test takebuf_string(io) == "X"
     end
 end
