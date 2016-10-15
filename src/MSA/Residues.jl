@@ -84,7 +84,7 @@ Invalid residues are encoded as the integer 23.
 Base.convert(::Type{Residue}, x::Int) = reinterpret(Residue, _valid_residue_integer(x))
 
 # Conversion to `Int` doesn’t check if the residue is valid
-Base.convert(::Type{Int}, x::Residue) = reinterpret(Int,x)
+@inline Base.convert(::Type{Int}, x::Residue) = reinterpret(Int,x)
 
 # Gaps
 # ----

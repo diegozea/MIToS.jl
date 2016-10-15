@@ -20,3 +20,4 @@
 
 # Benchmark files
 /benchmark/.tune.jld
+/benchmark/.results/*
