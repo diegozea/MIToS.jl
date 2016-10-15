@@ -20,7 +20,7 @@ module MSA
 
 using DataStructures        # OrderedDicts for Annotations
 using AutoHashEquals        # Annotations
-
+using NamedArrays
 
 using IndexedArrays         # IndexedArray for sequence names in MSAs
 using PairwiseListMatrices  # Percent Identity Matrices
@@ -80,6 +80,7 @@ include("Residues.jl")
 include("ThreeLetters.jl")
 include("Annotations.jl")
 # include("MultipleSequenceAlignment.jl")
+
 # include("GeneralParserMethods.jl")
 # include("Raw.jl")
 # include("Stockholm.jl")

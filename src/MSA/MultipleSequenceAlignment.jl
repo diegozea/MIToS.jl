@@ -1,5 +1,5 @@
-import Base: length, getindex, setindex!, size, copy, deepcopy, empty!,
-             convert, transpose, ctranspose, names
+# import Base: length, getindex, setindex!, size, copy, deepcopy, empty!,
+#              convert, transpose, ctranspose, names
 
 """
 MIToS MSAs are subtypes of `AbstractMatrix{Residue}`,
@@ -16,37 +16,99 @@ abstract AbstractAlignedSequence <: AbstractVector{Residue}
 # ===========================
 
 """
-This MSA type include the `Matrix` of `Residue`s and the sequence names.
-To allow fast indexing of MSAs using **sequence identifiers**,
-they are saved as an `IndexedArray`.
+This MSA type include a `NamedArray` wrapping a `Matrix` of `Residue`s. In order to store
+the `Residues`, the sequence names and the column number. The use of `NamedArray` allows
+fast indexing of MSAs using **sequence identifiers**.
 """
 type MultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
-    id::IndexedArray{ASCIIString}
-    msa::Matrix{Residue}
+    msa::NamedArray{Residue, 2, Array{Residue, 2},
+                    Tuple{OrderedDict{String, Int64},
+                          OrderedDict{String, Int64}}}
 end
 
 """
-...
+This type represent an MSA, similar to `MultipleSequenceAlignment`, but It also store
+`Annotations`. This annotations are used to store residue coordinates (i.e. mapping
+to UniProt residue numbers).
 """
 type AnnotatedMultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
-    id::IndexedArray{ASCIIString}
-    msa::Matrix{Residue}
+    msa::NamedArray{Residue, 2, Array{Residue, 2},
+                    Tuple{OrderedDict{String, Int64},
+                          OrderedDict{String, Int64}}}
     annotations::Annotations
 end
 
-convert(::Type{MultipleSequenceAlignment}, msa::AnnotatedMultipleSequenceAlignment) = MultipleSequenceAlignment(msa.id, msa.msa)
+function Base.convert(::Type{MultipleSequenceAlignment},
+                      msa::AnnotatedMultipleSequenceAlignment)
+    MultipleSequenceAlignment(msa.msa)
+end
+
+# AbstractArray Interface
+# -----------------------
+
+for meth in (:size, :length)
+    @eval Base.$(meth)(msa::AbstractMultipleSequenceAlignment) = $(meth)(msa.msa)
+    @eval Base.$(meth)(seq::AbstractAlignedSequence) = $(meth)(seq.sequence)
+end
+
+for T in (# :(AlignedSequence), :(AnnotatedAlignedSequence),
+          :(MultipleSequenceAlignment), :(AnnotatedMultipleSequenceAlignment))
+    @eval Base.linearindexing(::Type{$(T)}) = Base.LinearFast()
+end
+
+@inline Base.getindex(msa::AbstractMultipleSequenceAlignment,
+                      args...) = getindex(msa.msa, args...)
+# getindex(seq::AbstractAlignedSequence, i::Int) = getindex(seq.sequence, i)
+@inline Base.setindex!(msa::AbstractMultipleSequenceAlignment,
+                       args...) = setindex!(msa.msa, args...)
+# setindex!(seq::AbstractAlignedSequence, value::Residue, i::Int) = setindex!(seq.sequence, value, i)
+
+# Show
+# ----
+
+function Base.show(io::IO, msa::AbstractMultipleSequenceAlignment)
+    print(io, string(typeof(msa)," : "))
+    show(io, msa.msa)
+end
+
+# TODO: Definir secuencia para que sea un wrap de una matrix con nombre o getseq funcionar así
+# secuencia 1:  msa[1:1,:]
+# msa.msa[["1"],:]
+
+# i.e.
+msa = MultipleSequenceAlignment(NamedArray(rand(Residue,4,4)))
+
+
+# # by JMW
+# macro delegate(source, targets)
+#     typename = esc(source.args[1])
+#     fieldname = source.args[2].args[1]
+#     funcnames = targets.args
+#     n = length(funcnames)
+#     fdefs = Array(Any, n)
+#     for i in 1:n
+#         funcname = esc(funcnames[i])
+#         fdefs[i] = quote
+#                      ($funcname)(a::($typename), args...) =
+#                        ($funcname)(a.$fieldname, args...)
+#                    end
+#     end
+#     return Expr(:block, fdefs...)
+# end
+
+######################################################################## TO DO:
 
 # Aligned Sequence
 # ================
 
 type AlignedSequence <: AbstractAlignedSequence
-    id::ASCIIString
+    id::String
     index::Int
     sequence::Vector{Residue}
 end
 
 type AnnotatedAlignedSequence <: AbstractAlignedSequence
-    id::ASCIIString
+    id::String
     index::Int
     sequence::Vector{Residue}
     annotations::Annotations
@@ -54,23 +116,6 @@ end
 
 convert(::Type{AlignedSequence}, seq::AnnotatedAlignedSequence) = AlignedSequence(seq.id, seq.index, seq.sequence)
 
-# AbstractArray Interface
-# -----------------------
-
-for meth in (:size, :length)
-    @eval $(meth)(msa::AbstractMultipleSequenceAlignment) = $(meth)(msa.msa)
-    @eval $(meth)(seq::AbstractAlignedSequence) = $(meth)(seq.sequence)
-end
-
-for T in (:(AlignedSequence), :(AnnotatedAlignedSequence),
-          :(MultipleSequenceAlignment), :(AnnotatedMultipleSequenceAlignment))
-    @eval Base.linearindexing(::Type{$(T)}) = Base.LinearFast()
-end
-
-getindex(msa::AbstractMultipleSequenceAlignment, i::Int) = getindex(msa.msa, i)
-getindex(seq::AbstractAlignedSequence, i::Int) = getindex(seq.sequence, i)
-setindex!(msa::AbstractMultipleSequenceAlignment, value::Residue, i::Int) =  setindex!(msa.msa, value, i)
-setindex!(seq::AbstractAlignedSequence, value::Residue, i::Int) = setindex!(seq.sequence, value, i)
 
 # Transpose
 # ---------
@@ -120,9 +165,9 @@ getresiduesequences(msa::AbstractMultipleSequenceAlignment) = getresiduesequence
 # ---------------
 
 # Gives you the annotations of the Sequence
-function getsequence(data::Annotations, id::ASCIIString)
-    GS = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
-    GR = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
+function getsequence(data::Annotations, id::String)
+    GS = Dict{Tuple{String,String},String}()
+    GR = Dict{Tuple{String,String},String}()
     if length(data.sequences) > 0 || length(data.residues) > 0
         for (key, value) in data.sequences
             if key[1] == id
@@ -156,18 +201,18 @@ getsequence(msa::MultipleSequenceAlignment,
 
 getsequence(msa::Matrix{Residue}, i::Int) = vec(msa[i,:])
 
-function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::ASCIIString)
+function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::String)
     i = findfirst(msa.id, id)
     AnnotatedAlignedSequence(id, i, vec(msa.msa[i,:]),
                              getsequence(msa.annotations, id))
 end
 
-function getsequence(msa::MultipleSequenceAlignment, id::ASCIIString)
+function getsequence(msa::MultipleSequenceAlignment, id::String)
     i = findfirst(msa.id, id)
     AlignedSequence(id, i, vec(msa.msa[i,:]))
 end
 
-getindex(msa::AbstractMultipleSequenceAlignment, id::ASCIIString) = getsequence(msa, id)
+getindex(msa::AbstractMultipleSequenceAlignment, id::String) = getsequence(msa, id)
 
 # Filters
 # -------
@@ -322,7 +367,7 @@ function setreference!(msa::MultipleSequenceAlignment, i::Int, annotate::Bool=fa
     msa
 end
 
-setreference!(msa::AbstractMultipleSequenceAlignment, id::ASCIIString,
+setreference!(msa::AbstractMultipleSequenceAlignment, id::String,
               annotate::Bool=true) = setreference!(msa, findfirst(msa.id ,id), annotate)
 
 function setreference!(msa::Matrix{Residue}, i::Int, annotate::Bool=false)
@@ -409,7 +454,7 @@ annotations(seq::AnnotatedAlignedSequence) = seq.annotations
 Returns the `MSA` sequences names or identifiers as an `IndexedArray`.
 """
 names(msa::AbstractMultipleSequenceAlignment) = msa.id
-names(msa::Matrix{Residue}) = IndexedArrays.IndexedArray(ASCIIString[ string(i) for i in 1:nsequences(msa) ])
+names(msa::Matrix{Residue}) = IndexedArrays.IndexedArray(String[ string(i) for i in 1:nsequences(msa) ])
 
 # Get annotations
 # ---------------
@@ -429,17 +474,17 @@ end
 
 # Used on AbstractMultipleSequenceAlignment methods
 @inline annotate_modification!(msa::MultipleSequenceAlignment,
-                               str::ASCIIString) = false # annotate_modification! is used on bool context: annotate && ...
+                               str::String) = false # annotate_modification! is used on bool context: annotate && ...
 
 # Show & Print
 # ------------
 
 """
-Gives an ASCIIString with the sequence number `seq` of the MSA
+Gives an String with the sequence number `seq` of the MSA
 """
 asciisequence(msa::Matrix{Residue}, seq::Int) = ascii(convert(Vector{UInt8}, vec(msa[seq,:])))
 asciisequence(msa::AbstractMultipleSequenceAlignment, seq::Int) = asciisequence(msa.msa, seq)
-asciisequence(msa::AbstractMultipleSequenceAlignment, id::ASCIIString) = asciisequence(msa.msa, findfirst(msa.id, id))
+asciisequence(msa::AbstractMultipleSequenceAlignment, id::String) = asciisequence(msa.msa, findfirst(msa.id, id))
 
 # Mapping annotations
 # ===================
@@ -459,7 +504,7 @@ julia> _str2int_mapping(",,2,,4,5")
 
 ```
 """
-function _str2int_mapping(mapping::ASCIIString)
+function _str2int_mapping(mapping::String)
     values = split(mapping, ',')
     len = length(values)
     intmap = Array(Int, len)
@@ -477,7 +522,8 @@ Returns the sequence coordinates as a `Vector{Int}` for an MSA sequence. That ve
 If the number if `0` in the mapping, there is a gap in that column for that sequence.
 """
 getsequencemapping(msa::AnnotatedMultipleSequenceAlignment,
-                   seq_id::ASCIIString) = _str2int_mapping(getannotsequence(msa, seq_id, "SeqMap"))
+                   seq_id::String) = _str2int_mapping(getannotsequence(msa, seq_id, "SeqMap"))
 
 getsequencemapping(msa::AnnotatedMultipleSequenceAlignment,
                    seq_num::Int) = getsequencemapping(msa, msa.id[seq_num])
+
