@@ -53,8 +53,8 @@ export  # Residue
         AlignedSequence, AnnotatedAlignedSequence,
         annotations,
         namedmatrix,
-        getresidues, getsequence, getresiduesequences,
-        
+        getresidues, getsequence, getresiduesequences
+
 # nsequences, ncolumns, gapfraction, residuefraction, coverage,
 # columngapfraction, setreference!, gapstrip!, adjustreference!, asciisequence,
 # gapstrip, adjustreference, filtersequences, filtercolumns,
@@ -82,8 +82,8 @@ export  # Residue
 include("Residues.jl")
 include("ThreeLetters.jl")
 include("Annotations.jl")
-# include("MultipleSequenceAlignment.jl")
-
+include("MultipleSequenceAlignment.jl")
+# include("Stats.jl")
 # include("GeneralParserMethods.jl")
 # include("Raw.jl")
 # include("Stockholm.jl")

@@ -185,7 +185,7 @@ function _write(io::IO, res::Residue)
     nothing
 end
 
-Base.show(io::IO, res::Residue)  = _write(io, res)
+Base.show(io::IO, res::Residue) = _write(io, res)
 
 # Print
 # -----

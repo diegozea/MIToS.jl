@@ -46,7 +46,10 @@ and `isvalid`.
 
 * `empty(Annotations)` was deprecated, use `Annotations()` instead.
 
-* `msa["seq_name",:]` now returns a `NamedArray{Residue,2}` instead of an aligned sequence.
+* `msa["seq_name",:]` now returns a `NamedArray{Residue,2}` instead of an aligned sequence,
+use `getsequence(msa,"seqname")` to get an aligned sequence with annotations.    
+
+* `empty!` doesn't take MSA objects anymore.
 
 ### Changes from v1.1 to v1.2.2
 

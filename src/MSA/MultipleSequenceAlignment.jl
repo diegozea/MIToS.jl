@@ -111,9 +111,20 @@ end
 # Show
 # ----
 
-function Base.show(io::IO, x::AbstractAlignedObject)
-    print(io, string(typeof(x)," : "))
-    show(io, namedmatrix(x))
+for T in (  :(AlignedSequence),
+            :(AnnotatedAlignedSequence),
+            :(MultipleSequenceAlignment),
+            :(AnnotatedMultipleSequenceAlignment)  )
+    @eval begin
+
+        Base.show(io::IO, ::MIME"text/plain", x::$(T)) = show(io, x)
+
+        function Base.show(io::IO, x::$(T))
+            print(io, string($(T)," : "))
+            show(io, namedmatrix(x))
+        end
+
+    end
 end
 
 # Transpose
@@ -200,7 +211,7 @@ function getsequence(msa::AnnotatedMultipleSequenceAlignment, i::Int)
 end
 
 function getsequence(msa::MultipleSequenceAlignment, i::Int)
-    AnnotatedAlignedSequence(namedmatrix(msa)[i:i,:])
+    AlignedSequence(namedmatrix(msa)[i:i,:])
 end
 
 function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::String)
@@ -210,7 +221,7 @@ function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::String)
 end
 
 function getsequence(msa::MultipleSequenceAlignment, id::String)
-    AnnotatedAlignedSequence(namedmatrix(msa)[String[id],:])
+    AlignedSequence(namedmatrix(msa)[String[id],:])
 end
 
 # Names
@@ -277,8 +288,8 @@ end
 
 filtercolumns(x::AbstractAlignedObject, args...) = filtercolumns!(deepcopy(x), args...)
 
-# Copy, deepcopy, empty!
-# ----------------------
+# Copy, deepcopy
+# --------------
 
 for f in (:copy, :deepcopy)
     @eval begin
@@ -294,15 +305,4 @@ for f in (:copy, :deepcopy)
         end
         Base.$(f)(seq::AlignedSequence) = AlignedSequence($(f)(seq.matrix))
     end
-end
-
-function Base.empty!(x::Union{AnnotatedMultipleSequenceAlignment,AnnotatedAlignedSequence})
-    empty!(namedmatrix(x))
-    empty!(annotations(x))
-    x
-end
-
-function Base.empty!(x::Union{MultipleSequenceAlignment,AlignedSequence})
-    empty!(namedmatrix(x))
-    x
 end
