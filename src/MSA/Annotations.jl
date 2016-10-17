@@ -51,30 +51,39 @@ For filter column and sequence mapping of the format: ",,,,10,11,,12"
 """
 _filter_mapping(str_map::String, mask) = join(split(str_map, ',')[mask], ',')
 
-# """
-# `filtersequences!(data::Annotations, ids::IndexedArray, mask::AbstractArray{Bool,1})`
-#
-# It is useful for deleting sequence annotations. `ids` should be an `IndexedArray` with the
-# `seqname`s of the annotated sequences and `mask` should be a logical vector.
-# """
-# function filtersequences!(data::Annotations, ids::IndexedArray, mask::AbstractArray{Bool,1})
-#     if length(data.sequences) > 0 || length(data.residues) > 0
-#         del = ids[ !mask ]
-#         for key in keys(data.residues)
-#             if key[1] in del
-#                 delete!(data.residues, key)
-#             end
-#         end
-#         for key in keys(data.sequences)
-#             if key[1] in del
-#                 delete!(data.sequences, key)
-#             end
-#         end
-#         data.sequences = sizehint!(data.sequences, length(data.sequences))
-#         data.residues = sizehint!(data.residues, length(data.residues))
-#     end
-#     data
-# end
+"""
+`filtersequences!(data::Annotations, ids::Vector{String}, mask::AbstractArray{Bool,1})`
+
+It is useful for deleting sequence annotations. `ids` should be a list of the sequence
+names and `mask` should be a logical vector.
+"""
+function filtersequences!(data::Annotations, ids::Vector{String},
+                          mask::AbstractVector{Bool})
+    @assert ( length(ids) ==
+              length(mask)   ) "It's needed one sequence name per element in the mask."
+    nresannot = length(data.residues)
+    nseqannot = length(data.residues)
+    if nresannot > 0 || nseqannot > 0
+        del = ids[ !mask ]
+    end
+    if nresannot > 0
+        for key in keys(data.residues)
+            if key[1] in del
+                delete!(data.residues, key)
+            end
+        end
+        data.residues = sizehint!(data.residues, length(data.residues))
+    end
+    if nseqannot > 0
+        for key in keys(data.sequences)
+            if key[1] in del
+                delete!(data.sequences, key)
+            end
+        end
+        data.sequences = sizehint!(data.sequences, length(data.sequences))
+    end
+    data
+end
 
 """
 `filtercolumns!(data::Annotations, mask)`

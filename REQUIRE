@@ -14,3 +14,4 @@ FastaIO
 RecipesBase
 Requests
 PkgBenchmark
+NamedArrays

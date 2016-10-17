@@ -44,14 +44,17 @@ export  # Residue
         filtercolumns!,
         getannotfile,  getannotcolumn,  getannotsequence,  getannotresidue,
         setannotfile!, setannotcolumn!, setannotsequence!, setannotresidue!,
-        annotate_modification!, delete_annotated_modifications!, printmodifications
-
-        # annotations,
-#
-# MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment,
-# AbstractMultipleSequenceAlignment,
-# AlignedSequence, AnnotatedAlignedSequence, AbstractAlignedSequence,
-# getresidues, getsequence, getresiduesequences,
+        annotate_modification!, delete_annotated_modifications!, printmodifications,
+        # MultipleSequenceAlignment
+        AbstractAlignedObject,
+        AbstractMultipleSequenceAlignment,
+        AbstractAlignedSequence,
+        MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment,
+        AlignedSequence, AnnotatedAlignedSequence,
+        annotations,
+        namedmatrix,
+        getresidues, getsequence, getresiduesequences,
+        
 # nsequences, ncolumns, gapfraction, residuefraction, coverage,
 # columngapfraction, setreference!, gapstrip!, adjustreference!, asciisequence,
 # gapstrip, adjustreference, filtersequences, filtercolumns,

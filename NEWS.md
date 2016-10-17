@@ -46,6 +46,8 @@ and `isvalid`.
 
 * `empty(Annotations)` was deprecated, use `Annotations()` instead.
 
+* `msa["seq_name",:]` now returns a `NamedArray{Residue,2}` instead of an aligned sequence.
+
 ### Changes from v1.1 to v1.2.2
 
 * `using Plots` to use `plot` with `AbstractVector{PDBResidue}` to visualize coordinates of the C alpha of each residue.
