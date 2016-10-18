@@ -2,8 +2,8 @@
 #              convert, transpose, ctranspose, names
 
 """
-MIToS MSA and aligned sequences are subtypes of `AbstractMatrix{Residue}`, because MSAs and
-sequences are stored as `Matrix` of `Residue`s.
+MIToS MSA and aligned sequences (aligned objects) are subtypes of `AbstractMatrix{Residue}`,
+because MSAs and sequences are stored as `Matrix` of `Residue`s.
 """
 abstract AbstractAlignedObject <: AbstractMatrix{Residue}
 
@@ -65,6 +65,15 @@ type AnnotatedAlignedSequence <: AbstractAlignedSequence
                         OrderedDict{String, Int64}} }
     annotations::Annotations
 end
+
+# AnnotatedAlignedObject
+# ----------------------
+
+typealias AnnotatedAlignedObject Union{ AnnotatedMultipleSequenceAlignment,
+                                        AnnotatedAlignedSequence    }
+
+typealias UnannotatedAlignedObject Union{   AnnotatedMultipleSequenceAlignment,
+                                            AnnotatedAlignedSequence    }
 
 # Getters
 # -------
@@ -227,66 +236,13 @@ end
 # Names
 # -----
 
-Base.names(x::AbstractAlignedObject) = names(namedmatrix(x),1)
-
-# Filters
-# -------
-
-"It's similar to `filtersequences!` but for an `AbstractMatrix{Residue}`"
-filtersequences(msa::AbstractMatrix{Residue}, mask::AbstractVector{Bool}) = msa[mask, :]
-
 """
-`filtersequences!(msa, mask[, annotate::Bool=true])`
+`names(msa)`
 
-It allows to filter `msa` sequences using a `AbstractVector{Bool}` `mask`
-(It removes sequnces with `false` values). `AnnotatedMultipleSequenceAlignment` annotations
-are updated if `annotate` is `true` (default).
+It returns a `Vector{String}` with the sequence names/identifiers.
 """
-function filtersequences!(msa::AnnotatedMultipleSequenceAlignment,
-                          mask::AbstractVector{Bool}, annotate::Bool=true)
-    msa.matrix = filtersequences(namedmatrix(msa), mask)
-    filtersequences!(annotations(msa), names(msa), mask)
-    annotate && annotate_modification!(msa, string("filtersequences! : ",
-                                       sum(~mask), " sequences have been deleted."))
-    msa
-end
-
-function filtersequences!(msa::MultipleSequenceAlignment,
-                          mask::AbstractVector{Bool},
-                          annotate::Bool=false) # annotate is useful for calling this
-                                                # inside other functions
-    msa.matrix = filtersequences(namedmatrix(msa), mask)
-    msa
-end
-
-"It's similar to `filtercolumns!` but for an `AbstractMatrix{Residue}`"
-filtercolumns(msa::AbstractMatrix{Residue}, mask::AbstractVector{Bool}) = msa[:, mask]
-
-"""
-`filtercolumns!(msa, mask[, annotate::Bool=true])`
-
-It allows to filter MSA or aligned sequence columns/positions using a
-`AbstractVector{Bool}` `mask`. Annotations are updated if `annotate` is `true` (default).
-"""
-function filtercolumns!(x::Union{AnnotatedMultipleSequenceAlignment,
-                                 AnnotatedAlignedSequence},
-                        mask::AbstractVector{Bool}, annotate::Bool=true)
-    x.matrix = filtercolumns(namedmatrix(x), mask)
-    filtercolumns!(annotations(x), mask)
-    annotate && annotate_modification!(x,string("filtercolumns! : ", sum(~mask),
-                                                " columns have been deleted."))
-    x
-end
-
-function filtercolumns!(x::Union{MultipleSequenceAlignment,AlignedSequence},
-                        mask::AbstractVector{Bool},
-                        annotate::Bool=false)   # annotate is useful for calling this
-                                                # inside other functions
-    x.matrix = filtercolumns(namedmatrix(x), mask)
-    x
-end
-
-filtercolumns(x::AbstractAlignedObject, args...) = filtercolumns!(deepcopy(x), args...)
+Base.names(x::AbstractAlignedObject)::Vector{String} = names(namedmatrix(x),1)
+Base.names(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(msa,1))
 
 # Copy, deepcopy
 # --------------
@@ -305,4 +261,27 @@ for f in (:copy, :deepcopy)
         end
         Base.$(f)(seq::AlignedSequence) = AlignedSequence($(f)(seq.matrix))
     end
+end
+
+# Get annotations
+# ---------------
+
+for getter in ( :getannotcolumn, :getannotfile, :getannotresidue, :getannotsequence )
+    @eval $(getter)(x::AnnotatedAlignedObject, args...) = $(getter)(annotations(x), args...)
+end
+
+# Set annotations
+# ---------------
+
+for setter in ( :setannotcolumn!, :setannotfile!, :setannotresidue!, :setannotsequence!,
+                :annotate_modification!,
+                :delete_annotated_modifications!,
+                :printmodifications )
+    @eval $(setter)(x::AnnotatedAlignedObject, args...) = $(setter)(annotations(x), args...)
+end
+
+# To be used on AbstractMultipleSequenceAlignment methods
+@inline function annotate_modification!(msa::MultipleSequenceAlignment, str::String)
+    # It's generally used in a boolean context: annotate && annotate_modification!(...
+    false
 end
