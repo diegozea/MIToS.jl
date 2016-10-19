@@ -72,8 +72,8 @@ end
 typealias AnnotatedAlignedObject Union{ AnnotatedMultipleSequenceAlignment,
                                         AnnotatedAlignedSequence    }
 
-typealias UnannotatedAlignedObject Union{   AnnotatedMultipleSequenceAlignment,
-                                            AnnotatedAlignedSequence    }
+typealias UnannotatedAlignedObject Union{   MultipleSequenceAlignment,
+                                            AlignedSequence    }
 
 # Getters
 # -------
@@ -286,3 +286,86 @@ end
     # It's generally used in a boolean context: annotate && annotate_modification!(...
     false
 end
+
+# Mapping annotations
+# ===================
+
+"""
+Converts a string of mappings into a vector of `Int`s
+
+```
+julia> _str2int_mapping(",,2,,4,5")
+6-element Array{Int64,1}:
+ 0
+ 0
+ 2
+ 0
+ 4
+ 5
+
+```
+"""
+function _str2int_mapping(mapping::String)
+    values = split(mapping, ',')
+    len = length(values)
+    intmap = Array(Int, len)
+    @inbounds for i in 1:len
+        value = values[i]
+        intmap[i] = value == "" ? 0 : parse(Int, value)
+    end
+    intmap
+end
+
+"""
+It returns a `Vector{Int}` with the original column number of each column on the actual MSA.
+The mapping is annotated in the "ColMap" file annotation of an
+`AnnotatedMultipleSequenceAlignment` or in the column names of an `NamedArray` or
+`MultipleSequenceAlignment`.
+"""
+function getcolumnmapping(msa::AnnotatedMultipleSequenceAlignment)
+    _str2int_mapping(getannotfile(msa, "ColMap"))
+end
+
+function getcolumnmapping(msa::NamedArray{Residue,2})
+    Int[ parse(Int,pos) for pos in names(msa,2) ]
+end
+
+getcolumnmapping(msa::MultipleSequenceAlignment) = getcolumnmapping(namedmatrix(msa))
+
+"""
+It returns the sequence coordinates as a `Vector{Int}` for an MSA sequence. That vector has
+one element for each MSA column. If the number if `0` in the mapping, there is a gap in
+that column for that sequence.
+"""
+function getsequencemapping(msa::AnnotatedMultipleSequenceAlignment, seq_id::String)
+    _str2int_mapping(getannotsequence(msa, seq_id, "SeqMap"))
+end
+
+function getsequencemapping(msa::AnnotatedMultipleSequenceAlignment, seq_num::Int)
+    getsequencemapping(msa, msa.id[seq_num])
+end
+
+# Sequences as strings
+# --------------------
+
+"""
+```
+stringsequence(seq)
+stringsequence(msa, i::Int)
+stringsequence(msa, id::String)
+```
+
+It returns the selected sequence as a `String`.
+"""
+stringsequence(msa::AbstractMatrix{Residue}, i) = String(vec(msa[i,:]))
+
+function stringsequence(msa::AbstractMultipleSequenceAlignment, i)
+    stringsequence(namedmatrix(msa), i)
+end
+
+function stringsequence(seq::AbstractMatrix{Residue})
+    @assert size(seq,1) == 1 "There are more than one sequence/row."
+    String(vec(seq))
+end
+
+stringsequence(seq::AbstractAlignedSequence) = stringsequence(namedmatrix(seq))

@@ -91,8 +91,8 @@ eltype{T,N,UseGap}(::Type{ResidueContingencyTables{T, N, UseGap}}) = T
 ## Counts
 
 """
-`ResidueCount{T, N, UseGap}` is used for counting residues in columns (or sequences) of an MSA.
-`N` is the dimensionality and should be an `Int`, i.e. 2 if 2 columns are used for counting pairs.
+`ResidueCount{T, N, UseGap}` is used to count residues in columns (or sequences) of an MSA.
+`N` is the dimensionality and should be an `Int`, i.e. 2 if 2 columns are used to count pairs.
 `UseGap` is a `Bool`, `true` means that **ResidueCount** counts gaps in the position 21.
 
 - The field marginal is used for pre allocation of marginal sums.

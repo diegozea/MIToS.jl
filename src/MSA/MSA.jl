@@ -54,9 +54,9 @@ export  # Residue
         annotations,
         namedmatrix,
         getresidues, getsequence, getresiduesequences
-        # Edit
+        # MSAStats
 
-        # Stats
+        # MSAEditing
 
 # nsequences, ncolumns, gapfraction, residuefraction, coverage,
 # columngapfraction, setreference!, gapstrip!, adjustreference!, asciisequence,
@@ -86,8 +86,8 @@ include("Residues.jl")
 include("ThreeLetters.jl")
 include("Annotations.jl")
 include("MultipleSequenceAlignment.jl")
-include("Edit.jl")
-# include("Stats.jl")
+include("MSAStats.jl")
+include("MSAEditing.jl")
 
 # include("GeneralParserMethods.jl")
 # include("Raw.jl")

@@ -51,6 +51,8 @@ use `getsequence(msa,"seqname")` to get an aligned sequence with annotations.
 
 * `empty!` doesn't take MSA objects anymore.
 
+* `asciisequence` was replaced by `stringsequence`
+
 ### Changes from v1.1 to v1.2.2
 
 * `using Plots` to use `plot` with `AbstractVector{PDBResidue}` to visualize coordinates of the C alpha of each residue.
