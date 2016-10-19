@@ -59,8 +59,31 @@ filtercolumns(x::AbstractAlignedObject, args...) = filtercolumns!(deepcopy(x), a
 # Reference
 # ---------
 
-# TODO: swap la namedmatrix,
-# necesita generar un nuevo dict para los nombres porq está ordenado :/
+function _swap!(names::Vector{String}, i::Int, j::Int)
+    name = names[i,:]
+    names[i,:] = names[j,:]
+    names[j,:] = name
+    names
+end
+
+"""
+...
+"""
+function swapsequences!(matrix::NamedArray, i::Int, j::Int)
+    # swap sequences
+    mat = array(matrix)
+    seq = mat[i,:]
+    mat[i,:] = mat[j,:]
+    mat[j,:] = seq
+    # swap names
+    setnames!(matrix, _swap!(sequencenames(matrix), i, j), 1)
+    return matrix
+end
+
+function swapsequences!(matrix::NamedArray, i::String, j::String)
+    seqnames = sequencenames(matrix)
+    swapsequences!(matrix, findfirst(seqnames,i), findfirst(seqnames,j))
+end
 
 """
 Puts the sequence `i` as reference (as the first sequence) of the MSA.

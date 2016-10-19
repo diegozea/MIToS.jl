@@ -237,12 +237,13 @@ end
 # -----
 
 """
-`names(msa)`
+`sequencenames(msa)`
 
 It returns a `Vector{String}` with the sequence names/identifiers.
 """
-Base.names(x::AbstractAlignedObject)::Vector{String} = names(namedmatrix(x),1)
-Base.names(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(msa,1))
+sequencenames(x::NamedArray{Residue,2})::Vector{String} = names(x,1)
+sequencenames(x::AbstractAlignedObject)::Vector{String} = sequencenames(namedmatrix(x))
+sequencenames(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(msa,1))
 
 # Copy, deepcopy
 # --------------
