@@ -32,29 +32,56 @@ function residuefraction(x::AbstractArray{Residue}, dimension::Int)
     mapslices(residuefraction, x, dimension)
 end
 
-# The next functions keeps column or sequence names:
-for f in (:gapfraction, :residuefraction)
-    @eval begin
-        function ($f)(msa::NamedArray{Residue}, dimension::Int)
-            result = ($f)(array(msa), dimension)
-            if dimension == 1
-                NamedArray( result,
-                            (OrderedDict([string($f)]), OrderedDict(names(msa,2))),
-                            ("Function","Col"))
-            elseif dimension == 2
-                NamedArray( result,
-                            (OrderedDict([string($f)]), OrderedDict(names(msa,1))),
-                            ("Seq","Function"))
-            else
-                throw(ArgumentError("Dimension must be 1 or 2."))
+_get_function_name(str::String)::String = split(str,'.')[end]
+
+macro keep_names_dimension(functions)
+    function_names = functions.args
+    n = length(function_names)
+    definitions = Array(Any, n)
+
+    for i in 1:n
+        f = esc(function_names[i])
+        definitions[i] = quote
+
+            function ($f)(msa::NamedArray{Residue,2}, dimension::Int)
+                result = ($f)(array(msa), dimension)
+                if dimension == 1
+                    name_list = names(msa,2)
+                    N = length(name_list)
+                    NamedArray(result,
+                        (OrderedDict(_get_function_name(string($f))=>1),
+                        OrderedDict(name_list[i]=>i for i in 1:N)),
+                        ("Function","Col"))
+                elseif dimension == 2
+                    name_list = names(msa,1)
+                    N = length(name_list)
+                    NamedArray(result,
+                        (OrderedDict(name_list[i]=>i for i in 1:N),
+                        OrderedDict(_get_function_name(string($f))=>1)),
+                        ("Seq","Function"))
+                else
+                    throw(ArgumentError("Dimension must be 1 or 2."))
+                end
             end
+
+            ($f)(a::AbstractAlignedObject, dimension::Int) = ($f)(namedmatrix(a), dimension)
         end
-        @eval ($f)(a::AbstractAlignedObject, dimension::Int) = ($f)(namedmatrix(a), d)
     end
+
+    return Expr(:block, definitions...)
 end
 
+@keep_names_dimension([gapfraction, residuefraction])
+
 "Coverage of the sequences with respect of the number of positions on the MSA"
-coverage(msa::AbstractMatrix{Residue}) = residuefraction(msa, 2)
+function coverage(msa::AbstractMatrix{Residue})
+    result = residuefraction(msa, 2)
+    if isa(result, NamedArray) && ndims(result) == 2
+        setnames!(result,["coverage"],2)
+    end
+    result
+end
+
 coverage(msa::AbstractAlignedObject) = coverage(namedmatrix(msa))
 
 "Fraction of gaps per column/position on the MSA"

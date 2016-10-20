@@ -51,17 +51,26 @@ export  # Residue
         AbstractAlignedSequence,
         MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment,
         AlignedSequence, AnnotatedAlignedSequence,
+        AnnotatedAlignedObject, UnannotatedAlignedObject,
         annotations,
         namedmatrix,
-        getresidues, getsequence, getresiduesequences
+        getresidues, getsequence, getresiduesequences,
+        stringsequence,
+        getcolumnmapping, getsequencemapping,
+        sequencenames,
         # MSAStats
-
+        gapfraction,
+        residuefraction,
+        coverage,
+        columngapfraction,
         # MSAEditing
+        filtersequences, filtersequences!,
+        filtercolumns, filtercolumns!,
+        swapsequences!,
+        setreference!,
+        adjustreference, adjustreference!,
+        gapstrip, gapstrip!
 
-# nsequences, ncolumns, gapfraction, residuefraction, coverage,
-# columngapfraction, setreference!, gapstrip!, adjustreference!, asciisequence,
-# gapstrip, adjustreference, filtersequences, filtercolumns,
-# getcolumnmapping, getsequencemapping,
 #
 # Raw, Stockholm, FASTA,
 #

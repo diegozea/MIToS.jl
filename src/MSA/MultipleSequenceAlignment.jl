@@ -28,6 +28,11 @@ type MultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
     matrix::NamedArray{ Residue, 2, Array{Residue, 2},
                         Tuple{OrderedDict{String, Int64},
                         OrderedDict{String, Int64}} }
+
+    function (::Type{MultipleSequenceAlignment})(matrix::NamedArray{Residue,2})
+        setdimnames!(matrix,("Seq","Col"))
+        new(matrix)
+    end
 end
 
 """
@@ -40,6 +45,12 @@ type AnnotatedMultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
                         Tuple{OrderedDict{String, Int64},
                         OrderedDict{String, Int64}} }
     annotations::Annotations
+
+    function (::Type{AnnotatedMultipleSequenceAlignment})(matrix::NamedArray{Residue,2},
+                                                          annotations::Annotations)
+        setdimnames!(matrix,("Seq","Col"))
+        new(matrix, annotations)
+    end
 end
 
 # Aligned Sequences
@@ -53,6 +64,12 @@ type AlignedSequence <: AbstractAlignedSequence
     matrix::NamedArray{ Residue, 2, Array{Residue, 2},
                         Tuple{OrderedDict{String, Int64},
                         OrderedDict{String, Int64}} }
+
+    function (::Type{AlignedSequence})(matrix::NamedArray{Residue,2})
+        @assert size(matrix,1) == 1 "There are more than one sequence."
+        setdimnames!(matrix,("Seq","Col"))
+        new(matrix)
+    end
 end
 
 """
@@ -64,6 +81,40 @@ type AnnotatedAlignedSequence <: AbstractAlignedSequence
                         Tuple{OrderedDict{String, Int64},
                         OrderedDict{String, Int64}} }
     annotations::Annotations
+
+    function (::Type{AnnotatedAlignedSequence})(matrix::NamedArray{Residue,2},
+                                                annotations::Annotations)
+        @assert size(matrix,1) == 1 "There are more than one sequence."
+        setdimnames!(matrix,("Seq","Col"))
+        new(matrix)
+    end
+end
+
+# Constructors
+# ------------
+
+function (::Type{AnnotatedMultipleSequenceAlignment})(msa::NamedArray{Residue,2})
+    AnnotatedMultipleSequenceAlignment(msa, Annotations())
+end
+
+function (::Type{AnnotatedMultipleSequenceAlignment})(msa::Matrix{Residue})
+    AnnotatedMultipleSequenceAlignment(NamedArray(msa))
+end
+
+function (::Type{MultipleSequenceAlignment})(msa::Matrix{Residue})
+    MultipleSequenceAlignment(NamedArray(msa))
+end
+
+function (::Type{AnnotatedAlignedSequence})(seq::NamedArray{Residue,2})
+    AnnotatedAlignedSequence(seq, Annotations())
+end
+
+function (::Type{AnnotatedAlignedSequence})(seq::Matrix{Residue})
+    AnnotatedAlignedSequence(NamedArray(seq))
+end
+
+function (::Type{AlignedSequence})(seq::Matrix{Residue})
+    AlignedSequence(NamedArray(seq))
 end
 
 # AnnotatedAlignedObject
@@ -95,6 +146,15 @@ end
 
 function Base.convert(::Type{AlignedSequence}, seq::AnnotatedAlignedSequence)
     AlignedSequence(namedmatrix(seq))
+end
+
+function Base.convert(::Type{MultipleSequenceAlignment},
+                      msa::AnnotatedMultipleSequenceAlignment)
+    AnnotatedMultipleSequenceAlignment(namedmatrix(msa), Annotations())
+end
+
+function Base.convert(::Type{AnnotatedAlignedSequence}, seq::AlignedSequence)
+    AnnotatedAlignedSequence(namedmatrix(seq), Annotations())
 end
 
 # AbstractArray Interface

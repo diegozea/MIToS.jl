@@ -1,7 +1,9 @@
 using Base.Test
-using MIToS
-using MIToS.Utils
-using MIToS.MSA
+
+using MIToS: Utils, MSA
+
+using NamedArrays
+
 # using MIToS.Information
 # using MIToS.PDB
 # using MIToS.SIFTS
@@ -20,6 +22,7 @@ end
     include(joinpath("MSA", "Residues.jl"))
     include(joinpath("MSA", "ThreeLetters.jl"))
     include(joinpath("MSA", "Annotations.jl"))
+    include(joinpath("MSA", "MultipleSequenceAlignment.jl"))
 end
 
 # # MSA
