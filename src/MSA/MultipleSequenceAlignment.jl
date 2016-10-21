@@ -126,6 +126,11 @@ typealias AnnotatedAlignedObject Union{ AnnotatedMultipleSequenceAlignment,
 typealias UnannotatedAlignedObject Union{   MultipleSequenceAlignment,
                                             AlignedSequence    }
 
+# Matrices
+# --------
+
+typealias MSAMatrix Union{ Matrix{Residue}, NamedArray{Residue,2} }
+
 # Getters
 # -------
 

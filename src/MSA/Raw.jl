@@ -4,21 +4,27 @@ immutable Raw <: Format end
 # ==========
 
 function _get_seqs(io::Union{IO, AbstractString})
-    SEQS = ASCIIString[]
+    SEQS = String[]
     for line in eachline(io)
         push!(SEQS, chomp(line))
     end
     SEQS
 end
 
-function parse(io::Union{IO, AbstractString}, format::Type{Raw}, output::Type{Matrix{Residue}};
-               deletefullgaps::Bool=true, checkalphabet::Bool=false)
+function Base.parse{T <: MSAMatrix}(io::Union{IO, AbstractString},
+                                    format::Type{Raw},
+                                    output::Type{T};
+                                    deletefullgaps::Bool=true)::T
     SEQS = _get_seqs(io)
-    _strings_to_msa(SEQS, deletefullgaps, checkalphabet)
+    _strings_to_msa(T, SEQS, deletefullgaps)
 end
 
-function parse(io::Union{IO,AbstractString}, format::Type{Raw}, output::Type{AnnotatedMultipleSequenceAlignment};
-               generatemapping::Bool=false, deletefullgaps::Bool=true, checkalphabet::Bool=false, keepinserts::Bool=false)
+function Base.parse(io::Union{IO, AbstractString},
+                    format::Type{Raw},
+                    output::Type{AnnotatedMultipleSequenceAlignment};
+                    generatemapping::Bool=false,
+                    deletefullgaps::Bool=true,
+                    keepinserts::Bool=false)
     SEQS = _get_seqs(io)
     annot = Annotations()
     if keepinserts
@@ -32,33 +38,35 @@ function parse(io::Union{IO,AbstractString}, format::Type{Raw}, output::Type{Ann
             setannotsequence!(annot, string(i), "SeqMap", MAP[i])
         end
     else
-        MSA = convert(Matrix{Residue}, SEQS)
+        MSA = NamedArray(convert(Matrix{Residue}, SEQS))
     end
-    msa = AnnotatedMultipleSequenceAlignment(IndexedArray(ASCIIString[ string(i) for i in 1:length(SEQS)]), MSA, annot)
-    if checkalphabet
-        deletenotalphabetsequences!(msa, SEQS)
-    end
+    msa = AnnotatedMultipleSequenceAlignment(MSA, annot)
     if deletefullgaps
         deletefullgapcolumns!(msa)
     end
     msa
 end
 
-parse(io::Union{IO, AbstractString}, format::Type{Raw};
-      deletefullgaps::Bool=true, checkalphabet::Bool=false) = parse(io, Raw, Matrix{Residue};
-                                       deletefullgaps=deletefullgaps, checkalphabet=checkalphabet)
+function Base.parse(io::Union{IO, AbstractString},
+                    format::Type{Raw},
+                    output::Type{MultipleSequenceAlignment};
+                    deletefullgaps::Bool=true)
+    msa = parse(io, Raw, NamedArray{Residue,2}; deletefullgaps=deletefullgaps)
+    MultipleSequenceAlignment(msa)
+end
+
+function Base.parse(io::Union{IO, AbstractString}, format::Type{Raw};
+                    deletefullgaps::Bool=true)
+    parse(io, Raw, MultipleSequenceAlignment; deletefullgaps=deletefullgaps)
+end
 
 # Print Raw
 # =========
 
-function print(io::IO, msa::Matrix{Residue}, format::Type{Raw})
+function Base.print(io::IO, msa::AbstractAlignedObject, format::Type{Raw})
     for i in 1:nsequences(msa)
-        seq = asciisequence(msa, i)
-        println(io, seq)
+        println(io, stringsequence(msa, i))
     end
 end
 
-print(io::IO, msa::AbstractMultipleSequenceAlignment, format::Type{Raw}) = print(io, msa.msa, Raw)
-
-print(msa::Matrix{Residue}, format::Type{Raw}) = print(STDOUT, msa, Raw)
-print(msa::AbstractMultipleSequenceAlignment, format::Type{Raw}) = print(STDOUT, msa.msa, Raw)
+Base.print(msa::AbstractAlignedObject, format::Type{Raw}) = print(STDOUT, msa, Raw)

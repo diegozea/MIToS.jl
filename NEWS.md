@@ -53,6 +53,11 @@ use `getsequence(msa,"seqname")` to get an aligned sequence with annotations.
 
 * `asciisequence` was replaced by `stringsequence`
 
+* `deletenotalphabetsequences` and the parse/read keyword argument `checkalphabet` are
+deprecated since MIToS 2.0 uses Residue('X') to represent residues outside the alphabet. You
+can use `filtersequences!(msa, vec(mapslices(seq -> !in(XAA, seq), msa, 2)))` to delete
+sequences with unknown, ambiguous or non standard residues.
+
 ### Changes from v1.1 to v1.2.2
 
 * `using Plots` to use `plot` with `AbstractVector{PDBResidue}` to visualize coordinates of the C alpha of each residue.
