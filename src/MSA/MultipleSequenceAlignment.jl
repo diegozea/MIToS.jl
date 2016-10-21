@@ -86,7 +86,7 @@ type AnnotatedAlignedSequence <: AbstractAlignedSequence
                                                 annotations::Annotations)
         @assert size(matrix,1) == 1 "There are more than one sequence."
         setdimnames!(matrix,("Seq","Col"))
-        new(matrix)
+        new(matrix, annotations)
     end
 end
 
@@ -148,8 +148,8 @@ function Base.convert(::Type{AlignedSequence}, seq::AnnotatedAlignedSequence)
     AlignedSequence(namedmatrix(seq))
 end
 
-function Base.convert(::Type{MultipleSequenceAlignment},
-                      msa::AnnotatedMultipleSequenceAlignment)
+function Base.convert(::Type{AnnotatedMultipleSequenceAlignment},
+                      msa::MultipleSequenceAlignment)
     AnnotatedMultipleSequenceAlignment(namedmatrix(msa), Annotations())
 end
 
