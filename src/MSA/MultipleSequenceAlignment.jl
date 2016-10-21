@@ -388,7 +388,12 @@ The mapping is annotated in the "ColMap" file annotation of an
 `MultipleSequenceAlignment`.
 """
 function getcolumnmapping(msa::AnnotatedMultipleSequenceAlignment)
-    _str2int_mapping(getannotfile(msa, "ColMap"))
+    annot = getannotfile(msa)
+    if haskey(annot, "ColMap")
+        return _str2int_mapping(annot["ColMap"])
+    else
+        return getcolumnmapping(namedmatrix(msa))
+    end
 end
 
 function getcolumnmapping(msa::NamedArray{Residue,2})

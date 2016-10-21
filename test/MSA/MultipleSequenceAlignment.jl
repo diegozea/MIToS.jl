@@ -209,5 +209,74 @@
                 @test sequencenames(object) == ["1","2","3"]
             end
         end
+
+        @testset "Column mapping" begin
+
+            for object in (NamedArray(M), msa, annotated_msa)
+                @test getcolumnmapping(object) == [1,2,3,4,5,6,7]
+            end
+        end
+
+        @testset "Sequence as string" begin
+
+            for object in (M, NamedArray(M), msa, annotated_msa)
+                @test stringsequence(object, 1) == "ADEIMSY"
+                @test stringsequence(getsequence(object,1)) == "ADEIMSY"
+            end
+
+            for object in (NamedArray(M), msa, annotated_msa)
+                @test stringsequence(msa, "1") == "ADEIMSY"
+            end
+        end
+
+        @testset "Copy and setindex!" begin
+
+            copy_msa = copy(msa)
+            deepcopy_msa = deepcopy(msa)
+
+            copy_annotated_msa = copy(annotated_msa)
+            deepcopy_annotated_msa = deepcopy(annotated_msa)
+
+            for x in [copy_msa, deepcopy_msa, copy_annotated_msa, deepcopy_annotated_msa]
+                x[1,:]     = res"YSMIEDA"
+                x["2",:]   = res"YSMIEDA"
+                x[:,1]     = res"YYY"
+                x[:,"2"]   = res"YYY"
+                x[end,end] = 'X'
+            end
+
+            for  x in [copy_msa, deepcopy_msa, copy_annotated_msa, deepcopy_annotated_msa]
+                x[1,:]     == res"YSMIEDA"
+                x["2",:]   == res"YSMIEDA"
+                x[:,1]     == res"YYY"
+                x[:,"2"]   == res"YYY"
+                x[end,end] == XAA
+                @test length(unique(x)) != 21
+            end
+
+            copy_seq = copy(sequence)
+            deepcopy_seq = deepcopy(sequence)
+
+            copy_annotated_seq = copy(annotated_sequence)
+            deepcopy_annotated_seq = deepcopy(annotated_sequence)
+
+            for x in [copy_seq, deepcopy_seq, copy_annotated_seq, deepcopy_annotated_seq]
+                x[1] = XAA
+                x["1","2"] = XAA
+                x[end] = 'X'
+            end
+
+            for  x in [copy_seq, deepcopy_seq, copy_annotated_seq, deepcopy_annotated_seq]
+                x[1] == XAA
+                x["1","2"] == XAA
+                x[end] == XAA
+                @test length(unique(x)) == 19
+            end
+
+            @test length(unique(msa)) == 21
+            @test length(unique(annotated_msa)) == 21
+            @test length(unique(sequence)) == 21
+            @test length(unique(annotated_sequence)) == 21
+        end
     end
 end
