@@ -54,6 +54,7 @@ export  # Residue
         AnnotatedAlignedObject, UnannotatedAlignedObject,
         annotations,
         namedmatrix,
+        nsequences,
         getresidues, getsequence, getresiduesequences,
         stringsequence,
         getcolumnmapping, getsequencemapping,

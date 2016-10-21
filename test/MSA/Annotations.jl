@@ -9,6 +9,8 @@
         @test length(annot.columns) == 0
         @test length(annot.residues) == 0
 
+        @test length(annot) == 0
+
         @test ncolumns(annot) == -1
 
         @test isempty(annot)

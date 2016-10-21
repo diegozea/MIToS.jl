@@ -24,6 +24,13 @@ end
                                         Dict{String, String}(),
                                         Dict{Tuple{String,String},String}() )
 
+# Length
+# ------
+
+function Base.length(a::Annotations)
+    length(a.file) + length(a.sequences) + length(a.columns) + length(a.residues)
+end
+
 # Filters
 # -------
 

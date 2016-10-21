@@ -189,7 +189,12 @@ for T in (  :(AlignedSequence),
         Base.show(io::IO, ::MIME"text/plain", x::$(T)) = show(io, x)
 
         function Base.show(io::IO, x::$(T))
-            print(io, string($(T)," : "))
+            type_name = split(string($T),'.')[end]
+            if isa(x, AnnotatedAlignedObject)
+                print(io, type_name, " with ", length(annotations(x)), " annotations : ")
+            else
+                print(io, type_name, " : ")
+            end
             show(io, namedmatrix(x))
         end
 
@@ -202,8 +207,8 @@ end
 # transpose is ~ 0.00022 seconds faster than ctranspose for PF00085
 #
 
-Base.transpose(msa::AbstractMultipleSequenceAlignment)  = transpose(namedmatrix(x))
-Base.ctranspose(msa::AbstractMultipleSequenceAlignment) = transpose(namedmatrix(x))
+Base.transpose(x::AbstractAlignedObject)  = transpose(namedmatrix(x))
+Base.ctranspose(x::AbstractAlignedObject) = transpose(namedmatrix(x))
 
 # Selection without Mappings
 # --------------------------
@@ -226,7 +231,7 @@ annotations nor column/sequence names.
 """
 function getresiduesequences(msa::Matrix{Residue})
     nseq = nsequences(msa)
-    tmsa = msa'
+    tmsa = permutedims(msa, [2,1])
     sequences = Array(Vector{Residue}, nseq)
     for i in 1:nseq
         @inbounds sequences[i] = tmsa[:,i]
