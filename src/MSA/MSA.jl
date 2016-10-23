@@ -59,7 +59,7 @@ export  # Residue
         getresidues, getsequence, getresiduesequences,
         stringsequence,
         getcolumnmapping, getsequencemapping,
-        sequencenames,
+        sequencenames, # TO DO: sequencenames!(...)
         # MSAStats
         gapfraction,
         residuefraction,
