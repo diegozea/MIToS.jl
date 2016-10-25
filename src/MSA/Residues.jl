@@ -215,13 +215,29 @@ function Base.convert(::Type{String}, seq::Vector{Residue})
     takebuf_string(buffer)
 end
 
-# For convert a MSA stored as Vector{String} to Matrix{Residue}
-function Base.convert(::Type{Matrix{Residue}}, sequences::Array{String,1})
+function _get_msa_size(sequences::Array{String,1})
     nseq = length(sequences)
     if nseq == 0
         throw(ErrorException("There are not sequences."))
     end
     nres = length(sequences[1])
+    nseq, nres
+end
+
+function _convert_to_matrix_residues(sequences::Array{String,1}, size::Tuple{Int64,Int64})
+    nseq, nres = size
+    aln = Array(Residue, nseq, nres)
+    # @inbounds @threads for i in 1:nseq
+    @inbounds for i in 1:nseq
+        aln[i,:] = collect(sequences[i])
+    end
+    aln
+end
+
+# For convert a MSA stored as Vector{String} to Matrix{Residue}
+# This checks that all the sequences have the same length
+function Base.convert(::Type{Matrix{Residue}}, sequences::Array{String,1})
+    nseq, nres = _get_msa_size(sequences)
     # throw() can be used with @threads : https://github.com/JuliaLang/julia/issues/17532
     for seq in sequences
         if length(seq) != nres
@@ -230,12 +246,7 @@ function Base.convert(::Type{Matrix{Residue}}, sequences::Array{String,1})
                 "[ ", length(seq), " != ", nres, " ]: ", String(seq) )))
         end
     end
-    aln = Array(Residue, nseq, nres)
-    # @inbounds @threads for i in 1:nseq
-    @inbounds for i in 1:nseq
-        aln[i,:] = collect(sequences[i])
-    end
-    aln
+    _convert_to_matrix_residues(sequences, (nseq, nres))
 end
 
 # Non-Standard String Literal

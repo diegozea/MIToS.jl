@@ -44,31 +44,6 @@ function _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
     end
 end
 
-function _check_seq_len(IDS,SEQS)
-    N = length(SEQS)
-    if N != 0 & N > 1
-        first_length = length(SEQS[1])
-        for i in 1:N
-            len = length(SEQS[i])
-            if len != first_length
-                if rem(len,first_length) != 0
-                    throw(ErrorException("""
-                        The sequence $(IDS[i]) has $len residues.
-                        $first_length residues are expected.
-                        """))
-                else
-                    n = div(len,first_length)
-                    throw(ErrorException("""
-                        The sequence $(IDS[i]) has $len residues.
-                        $first_length residues are expected.
-                        Please check if there are $n sequences with the same name.
-                        """))
-                end
-            end
-        end
-    end
-end
-
 function _pre_readstockholm(io::Union{IO, AbstractString})
     IDS  = String[]
     SEQS = String[]
@@ -77,7 +52,7 @@ function _pre_readstockholm(io::Union{IO, AbstractString})
     GS = Dict{Tuple{String,String},String}()
     GR = Dict{Tuple{String,String},String}()
 
-    @inbounds for line in eachline(io)
+    @inbounds for line in lineiterator(io)
         if length(line) >= 4
             _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
             if startswith(line,"//")
@@ -98,7 +73,7 @@ end
 function _pre_readstockholm_sequences(io::Union{IO, AbstractString})
     IDS  = String[]
     SEQS = String[]
-    @inbounds for line in eachline(io)
+    @inbounds for line in lineiterator(io)
         if length(line) >= 4
             _fill_with_sequence_line!(line, IDS, SEQS)
             if startswith(line,"//")
@@ -119,28 +94,18 @@ function Base.parse(io::Union{IO, AbstractString},
                    keepinserts::Bool=false)
     IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
     annot = Annotations(GF, GS, GC, GR)
-    if keepinserts
-        _keepinserts!(SEQS, annot)
-    end
-    if generatemapping
-        if useidcoordinates && hascoordinates(IDS[1])
-            MSA, MAP = _to_msa_mapping(SEQS, IDS)
-        else
-            MSA, MAP = _to_msa_mapping(SEQS)
-            setnames!(MSA, IDS, 1)
-        end
-        setannotfile!(annot, "NCol", string(size(MSA,2)))
-        setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
-        for i in 1:length(IDS)
-            setannotsequence!(annot, IDS[i], "SeqMap", MAP[i])
-        end
-    else
-        MSA = NamedArray(convert(Matrix{Residue}, SEQS))
-        setnames!(MSA, IDS, 1)
-    end
-    msa = AnnotatedMultipleSequenceAlignment(MSA, annot)
+    _generate_annotated_msa(annot, IDS, SEQS, keepinserts, generatemapping,
+        useidcoordinates, deletefullgaps)
+end
+
+function Base.parse(io::Union{IO, AbstractString},
+                   format::Type{Stockholm},
+                   output::Type{NamedArray{Residue,2}};
+                   deletefullgaps::Bool=true)
+    IDS, SEQS = _pre_readstockholm_sequences(io)
+    msa = _generate_named_array(SEQS, IDS)
     if deletefullgaps
-        deletefullgapcolumns!(msa)
+        return deletefullgapcolumns(msa)
     end
     msa
 end
@@ -149,13 +114,8 @@ function Base.parse(io::Union{IO, AbstractString},
                    format::Type{Stockholm},
                    output::Type{MultipleSequenceAlignment};
                    deletefullgaps::Bool=true)
-    IDS, SEQS = _pre_readstockholm_sequences(io)
-    msa = MultipleSequenceAlignment(convert(Matrix{Residue}, SEQS))
-    setnames!(namedmatrix(msa), IDS, 1)
-    if deletefullgaps
-        deletefullgapcolumns!(msa)
-    end
-    msa
+    msa = parse(io, format, NamedArray{Residue,2}, deletefullgaps=deletefullgaps)
+    MultipleSequenceAlignment(msa)
 end
 
 function Base.parse(io::Union{IO,AbstractString},
@@ -163,7 +123,7 @@ function Base.parse(io::Union{IO,AbstractString},
                    output::Type{Matrix{Residue}};
                    deletefullgaps::Bool=true)
     IDS, SEQS = _pre_readstockholm_sequences(io)
-    _strings_to_msa(SEQS, deletefullgaps, checkalphabet)
+    _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
 end
 
 function Base.parse(io, format::Type{Stockholm};
@@ -185,26 +145,28 @@ function _to_sequence_dict(annotation::Dict{Tuple{String,String},String})
     seq_dict = Dict{String,Vector{String}}()
     for (key, value) in annotation
         seq_id = key[1]
-        if seq_id in keys(seq_dict)
-            push!(seq_dict[seq_id], string(key[2], '\t', value))
+        if haskey(seq_dict, seq_id)
+            push!(seq_dict[seq_id], string(seq_id, '\t', key[2], '\t', value))
         else
-            seq_dict[seq_id] = [ string(key[2], '\t', value) ]
+            seq_dict[seq_id] = [ string(seq_id, '\t', key[2], '\t', value) ]
         end
     end
     sizehint!(seq_dict, length(seq_dict))
 end
 
-function Base.print(io::IO, msa::AnnotatedMultipleSequenceAlignment, format::Type{Stockholm})
+function Base.print(io::IO, msa::AnnotatedMultipleSequenceAlignment,
+                    format::Type{Stockholm})
     _printfileannotations(io, msa.annotations)
     _printsequencesannotations(io, msa.annotations)
     res_annotations = _to_sequence_dict(msa.annotations.residues)
+    seqnames = sequencenames(msa)
     for i in 1:nsequences(msa)
-        id = msa.id[i]
+        id = seqnames[i]
         seq = stringsequence(msa, i)
-        println(io, string(id, "\t\t", seq))
+        println(io, string(id, "\t\t\t", seq))
         if id in keys(res_annotations)
             for line in res_annotations[id]
-                println(io, string("#=GR ", id, '\t', line))
+                println(io, string("#=GR ", line))
             end
         end
     end
@@ -213,10 +175,9 @@ function Base.print(io::IO, msa::AnnotatedMultipleSequenceAlignment, format::Typ
 end
 
 function Base.print(io::IO, msa::MultipleSequenceAlignment, format::Type{Stockholm})
+    seqnames = sequencenames(msa)
     for i in 1:nsequences(msa)
-        id = msa.id[i]
-        seq = stringsequence(msa, i)
-        println(io, string(id, "\t\t", seq))
+        println(io, string(seqnames[i], "\t\t\t", stringsequence(msa, i)))
     end
     println(io, "//")
 end

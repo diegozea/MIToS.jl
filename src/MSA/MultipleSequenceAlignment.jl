@@ -222,7 +222,9 @@ Base.ctranspose(x::AbstractAlignedObject) = transpose(namedmatrix(x))
 `getresidues` allows you to access the residues stored inside an MSA or aligned sequence
 as a `Matrix{Residue}` without annotations nor column/row names.
 """
-getresidues(x::AbstractAlignedObject) = array(namedmatrix(x))
+getresidues(x::Matrix{Residue}) = x
+getresidues(x::NamedArray{Residue,2}) = array(x)
+getresidues(x::AbstractAlignedObject) = getresidues(namedmatrix(x))
 
 "`nsequences` returns the number of sequences on the MSA."
 nsequences(x::AbstractMatrix{Residue}) = size(x, 1)
@@ -244,6 +246,7 @@ function getresiduesequences(msa::Matrix{Residue})
     sequences
 end
 
+getresiduesequences(x::NamedArray{Residue,2}) = getresiduesequences(getresidues(x))
 getresiduesequences(x::AbstractAlignedObject) = getresiduesequences(getresidues(x))
 
 # Select sequence
@@ -281,16 +284,15 @@ object and a sequence identifier are used, this function returns the annotations
 to the sequence.
 """ getsequence
 
-getsequence(msa::AbstractMatrix{Residue}, i::Int) = msa[i:i,:]
+getsequence(msa::Matrix{Residue}, i::Int) = msa[i:i,:]
+
+getsequence(msa::NamedArray{Residue,2}, i::Int) = msa[i:i,:]
+getsequence(msa::NamedArray{Residue,2}, id::String) = msa[String[id],:]
 
 function getsequence(msa::AnnotatedMultipleSequenceAlignment, i::Int)
     seq   = namedmatrix(msa)[i:i,:]
     annot = getsequence(annotations(msa), names(seq, 1)[1])
     AnnotatedAlignedSequence(seq, annot)
-end
-
-function getsequence(msa::MultipleSequenceAlignment, i::Int)
-    AlignedSequence(namedmatrix(msa)[i:i,:])
 end
 
 function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::String)
@@ -299,8 +301,8 @@ function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::String)
     AnnotatedAlignedSequence(seq, annot)
 end
 
-function getsequence(msa::MultipleSequenceAlignment, id::String)
-    AlignedSequence(namedmatrix(msa)[String[id],:])
+function getsequence(msa::MultipleSequenceAlignment, seq::Union{Int,String})
+    AlignedSequence(getsequence(namedmatrix(msa), seq))
 end
 
 # Names
@@ -417,7 +419,7 @@ function getsequencemapping(msa::AnnotatedMultipleSequenceAlignment, seq_id::Str
 end
 
 function getsequencemapping(msa::AnnotatedMultipleSequenceAlignment, seq_num::Int)
-    getsequencemapping(msa, msa.id[seq_num])
+    getsequencemapping(msa, sequencenames(msa)[seq_num])
 end
 
 # Sequences as strings

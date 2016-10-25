@@ -46,17 +46,25 @@ and `isvalid`.
 
 * `empty(Annotations)` was deprecated, use `Annotations()` instead.
 
-* `msa["seq_name",:]` now returns a `NamedArray{Residue,2}` instead of an aligned sequence,
-use `getsequence(msa,"seqname")` to get an aligned sequence with annotations.    
+* `msa["seq_name",:]` now returns a `NamedArray{Residue,1}` instead of an aligned sequence,
+use `getsequence(msa,"seqname")` to get an aligned sequence with annotations.  
 
-* `empty!` doesn't take MSA objects anymore.
+* Aligned sequences don't drop dimensions, so there are matrices instead of vectors. You can
+use `vec(...)` or `squeeze(...,1)` to get a vector instead of the matrix.
 
-* `asciisequence` was replaced by `stringsequence`
+* Indexing MSA objects with only one string is deprecated, use `msa["seqname",:]` instead
+of `msa["seqname"]`.  
+
+* `empty!` doesn't take MSA objects anymore.  
+
+* `asciisequence` was replaced by `stringsequence`.  
 
 * `deletenotalphabetsequences` and the parse/read keyword argument `checkalphabet` are
 deprecated since MIToS 2.0 uses Residue('X') to represent residues outside the alphabet. You
 can use `filtersequences!(msa, vec(mapslices(seq -> !in(XAA, seq), msa, 2)))` to delete
-sequences with unknown, ambiguous or non standard residues.
+sequences with unknown, ambiguous or non standard residues.  
+
+* `parse`/`read` and MSA file returns an `AnnotatedMultipleSequenceAlignment` by default.  
 
 ### Changes from v1.1 to v1.2.2
 

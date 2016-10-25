@@ -20,13 +20,14 @@ module MSA
 
 using DataStructures        # OrderedDicts for Annotations
 using AutoHashEquals        # Annotations
-using NamedArrays
+using NamedArrays           # Col and Seq names, basic sequence/MSA object
+using FastaIO               # FastaReader (fast)
 using MIToS.Utils
 
 using IndexedArrays         # IndexedArray for sequence names in MSAs
 using PairwiseListMatrices  # Percent Identity Matrices
 using Clustering            # Used for sequence clustering: ClusteringResult
-using FastaIO               # FastaReader (fast)
+
 using RecipesBase           # Plots for MSAs
 
 
@@ -75,11 +76,11 @@ export  # Residue
         # GeneralParserMethods
         deletefullgapcolumns, deletefullgapcolumns!,
         # Raw
-        Raw
-
-#
-# Raw, Stockholm, FASTA,
-#
+        Raw,
+        # Stockholm
+        Stockholm,
+        # FASTA
+        FASTA
 # shuffle_columnwise!, shuffle_sequencewise!, shuffle_residues_sequencewise!,
 # shuffle_residues_columnwise!,
 #
@@ -105,8 +106,8 @@ include("MSAStats.jl")
 include("MSAEditing.jl")
 include("GeneralParserMethods.jl")
 include("Raw.jl")
-# include("Stockholm.jl")
-# include("FASTA.jl")
+include("Stockholm.jl")
+include("FASTA.jl")
 # include("Shuffle.jl")
 # include("PLM.jl")
 # include("Identity.jl")

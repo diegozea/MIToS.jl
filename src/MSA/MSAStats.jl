@@ -49,15 +49,15 @@ macro keep_names_dimension(functions)
                     name_list = names(msa,2)
                     N = length(name_list)
                     NamedArray(result,
-                        (OrderedDict(_get_function_name(string($f))=>1),
-                        OrderedDict(name_list[i]=>i for i in 1:N)),
+                        (OrderedDict{String,Int}(_get_function_name(string($f))=>1),
+                         OrderedDict{String,Int}(name_list[i]=>i for i in 1:N)),
                         ("Function","Col"))
                 elseif dimension == 2
                     name_list = names(msa,1)
                     N = length(name_list)
                     NamedArray(result,
-                        (OrderedDict(name_list[i]=>i for i in 1:N),
-                        OrderedDict(_get_function_name(string($f))=>1)),
+                        (OrderedDict{String,Int}(name_list[i]=>i for i in 1:N),
+                         OrderedDict{String,Int}(_get_function_name(string($f))=>1)),
                         ("Seq","Function"))
                 else
                     throw(ArgumentError("Dimension must be 1 or 2."))

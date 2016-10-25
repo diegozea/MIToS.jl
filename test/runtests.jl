@@ -24,6 +24,10 @@ end
     include(joinpath("MSA", "Annotations.jl"))
     include(joinpath("MSA", "MultipleSequenceAlignment.jl"))
     include(joinpath("MSA", "GeneralParserMethods.jl"))
+    include(joinpath("MSA", "IO.jl"))
+    include(joinpath("MSA", "General.jl"))
+    include(joinpath("MSA", "MSAEditing.jl"))
+    include(joinpath("MSA", "MSAStats.jl"))
 end
 
 # # MSA

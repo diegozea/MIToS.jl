@@ -14,7 +14,7 @@ are updated if `annotate` is `true` (default).
 function filtersequences!(msa::AnnotatedMultipleSequenceAlignment,
                           mask::AbstractVector{Bool}, annotate::Bool=true)
     msa.matrix = filtersequences(namedmatrix(msa), mask)
-    filtersequences!(annotations(msa), names(msa), mask)
+    filtersequences!(annotations(msa), sequencenames(msa), mask)
     annotate && annotate_modification!(msa, string("filtersequences! : ",
                                        sum(~mask), " sequences have been deleted."))
     msa
@@ -26,6 +26,22 @@ function filtersequences!(msa::MultipleSequenceAlignment,
                                                 # inside other functions
     msa.matrix = filtersequences(namedmatrix(msa), mask)
     msa
+end
+
+function filtersequences(x::AbstractAlignedObject, mask::AbstractVector{Bool},
+                        annotate::Bool=true)
+    filtersequences!(deepcopy(x), mask, annotate)
+end
+
+# It's useful since sequences are matrices
+function filtersequences(msa::AbstractMatrix{Residue}, mask::AbstractMatrix{Bool}, args...)
+    @assert size(mask, 1) == 1 "The mask should be a vector or a matrix of size (1,ncol)"
+    filtersequences(msa, squeeze(mask, 1), args...)
+end
+
+function filtersequences!(msa::AbstractAlignedObject, mask::AbstractMatrix{Bool}, args...)
+    @assert size(mask, 1) == 1 "The mask should be a vector or a matrix of size (1,ncol)"
+    filtersequences!(msa, squeeze(mask, 1), args...)
 end
 
 "It's similar to `filtercolumns!` but for an `AbstractMatrix{Residue}`"
@@ -54,7 +70,21 @@ function filtercolumns!(x::UnannotatedAlignedObject,
     x
 end
 
-filtercolumns(x::AbstractAlignedObject, args...) = filtercolumns!(deepcopy(x), args...)
+function filtercolumns(x::AbstractAlignedObject, mask::AbstractVector{Bool},
+                        annotate::Bool=true)
+    filtercolumns!(deepcopy(x), mask, annotate)
+end
+
+# It's useful since sequences are matrices
+function filtercolumns(msa::AbstractMatrix{Residue}, mask::AbstractMatrix{Bool}, args...)
+    @assert size(mask, 2) == 1 "The mask should be a vector or a matrix of size (1,ncol)"
+    filtercolumns(msa, squeeze(mask, 2), args...)
+end
+
+function filtercolumns!(msa::AbstractAlignedObject, mask::AbstractMatrix{Bool}, args...)
+    @assert size(mask, 2) == 1 "The mask should be a vector or a matrix of size (nseq,1)"
+    filtercolumns!(msa, squeeze(mask, 2), args...)
+end
 
 # Reference
 # ---------
@@ -78,7 +108,7 @@ function swapsequences!(matrix::Matrix{Residue}, i::Int, j::Int)
 end
 
 function swapsequences!(matrix::NamedArray, i::Int, j::Int)
-    swapsequences!(array(matrix))
+    swapsequences!(array(matrix), i, j)
     setnames!(matrix, _swap!(sequencenames(matrix), i, j), 1)
     return matrix
 end
@@ -94,9 +124,12 @@ function swaps the sequences 1 and `i`.
 """
 function setreference!(msa::AnnotatedMultipleSequenceAlignment, i::Int, annotate::Bool=true)
     swapsequences!(namedmatrix(msa), 1, i)
-    annotate && annotate_modification!(msa, string("setreference! : Using ",
-                                                   msa.id[1], " instead of ",
-                                                   msa.id[i], " as reference."))
+    if annotate
+        seqnames = sequencenames(msa)
+        annotate_modification!(msa, string("setreference! : Using ",
+                                            seqnames[1], " instead of ",
+                                            seqnames[i], " as reference."))
+    end
     msa
 end
 
@@ -106,6 +139,12 @@ function setreference!(msa::MultipleSequenceAlignment, i::Int, annotate::Bool=fa
     msa
 end
 
+setreference!(msa::NamedArray{Residue,2}, i::Int, annotate::Bool=false) =
+    swapsequences!(msa, 1, i)
+
+setreference!(msa::NamedArray{Residue,2}, id::String, annotate::Bool=false) =
+    swapsequences!(msa, sequencenames(msa,1)[1], id)
+
 function setreference!(msa::AbstractMultipleSequenceAlignment, id::String,
                        annotate::Bool=true)
     setreference!(msa, findfirst(sequencenames(msa), id), annotate)
@@ -113,8 +152,7 @@ end
 
 function setreference!(msa::Matrix{Residue}, i::Int, annotate::Bool=false)
     # The annotate argument is useful for calling this inside other functions
-    msa[1, :], msa[i, :] = msa[i, :], msa[1, :]
-    msa
+    swapsequences!(msa, 1, i)
 end
 
 """
@@ -130,7 +168,7 @@ end
 It removes positions/columns of the MSA with gaps in the reference (first) sequence.
 """
 function adjustreference!(msa::AbstractMultipleSequenceAlignment, annotate::Bool=true)
-    filtercolumns!(msa, getresidues(msa)[1,:] .!= GAP, annotate)
+    filtercolumns!(msa, vec(getresidues(getsequence(msa,1))) .!= GAP, annotate)
 end
 
 """
@@ -149,12 +187,12 @@ function gapstrip(msa::AbstractMatrix{Residue}; coveragelimit::Float64=0.75,
     msa = adjustreference(msa)
     # Remove sequences with pour coverage of the reference sequence
     if ncolumns(msa) != 0
-        msa = filtersequences(msa, coverage(msa) .>= coveragelimit)
+        msa = filtersequences(msa, vec(coverage(msa) .>= coveragelimit))
     else
         throw("There are not columns in the MSA after the gap trimming")
     end
     if nsequences(msa) != 0
-        msa = filtercolumns(msa, columngapfraction(msa) .<= gaplimit)
+        msa = filtercolumns(msa, vec(columngapfraction(msa) .<= gaplimit))
     else
         throw("There are not sequences in the MSA after coverage filter")
     end
@@ -170,7 +208,7 @@ order:
 columns/positions on the MSA **less** than a `coveragelimit`
 (default to `0.75`: sequences with 25% of gaps).
 3. Removes all the columns/position on the MSA with **more** than a `gaplimit`
-(default to `0.5`: 50% of gaps).  
+(default to `0.5`: 50% of gaps).
 """
 function gapstrip!(msa::AbstractMultipleSequenceAlignment,
                    annotate::Bool=isa(msa,AnnotatedAlignedObject);
@@ -187,7 +225,7 @@ function gapstrip!(msa::AbstractMultipleSequenceAlignment,
                 string("gapstrip! : Deletes sequences with a coverage less than ",
                 coveragelimit))
         end
-        filtersequences!(msa, coverage(msa) .>= coveragelimit, annotate)
+        filtersequences!(msa, vec(coverage(msa) .>= coveragelimit), annotate)
     else
         throw("There are not columns in the MSA after the gap trimming")
     end
@@ -197,7 +235,7 @@ function gapstrip!(msa::AbstractMultipleSequenceAlignment,
             annotate_modification!(msa,
                 string("gapstrip! : Deletes columns with more than ", gaplimit, " gaps."))
         end
-        filtercolumns!(msa, columngapfraction(msa) .<= gaplimit, annotate)
+        filtercolumns!(msa, vec(columngapfraction(msa) .<= gaplimit), annotate)
     else
         throw("There are not sequences in the MSA after coverage filter")
     end

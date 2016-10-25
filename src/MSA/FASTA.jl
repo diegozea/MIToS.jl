@@ -6,95 +6,88 @@ immutable FASTA <: Format end
 function _pre_readfasta(io::AbstractString)
     seqs = split(io, '>')
     N = length(seqs) - 1
-
-    IDS  = Array(ASCIIString, N)
-    SEQS = Array(ASCIIString, N)
-
+    IDS  = Array(String, N)
+    SEQS = Array(String, N)
     for i in 1:N
         fields = split(seqs[i+1], '\n')
         IDS[i] = fields[1]
         SEQS[i] = replace(fields[2], r"\s+", "")
     end
-
+    _check_seq_len(IDS, SEQS)
     (IDS, SEQS)
 end
 
 function _pre_readfasta(io::IO)
-    IDS  = ASCIIString[]
-    SEQS = ASCIIString[]
-    for (name, seq) in FastaReader{ASCIIString}(io) # FastaIO
+    IDS  = String[]
+    SEQS = String[]
+    for (name, seq) in FastaReader{String}(io) # FastaIO
         push!(IDS,  name)
         push!(SEQS, seq )
     end
+    _check_seq_len(IDS, SEQS)
     (IDS, SEQS)
 end
 
-function parse(io::Union{IO,AbstractString}, format::Type{FASTA}, output::Type{AnnotatedMultipleSequenceAlignment};
-               generatemapping::Bool=false, useidcoordinates::Bool=false,
-               deletefullgaps::Bool=true, checkalphabet::Bool=false, keepinserts::Bool=false)
+function Base.parse(io::Union{IO, AbstractString},
+                    format::Type{FASTA},
+                    output::Type{AnnotatedMultipleSequenceAlignment};
+                    generatemapping::Bool=false,
+                    useidcoordinates::Bool=false,
+                    deletefullgaps::Bool=true,
+                    keepinserts::Bool=false)
     IDS, SEQS = _pre_readfasta(io)
     annot = Annotations()
-    if keepinserts
-        _keepinserts!(SEQS, annot)
-    end
-    if generatemapping
-        MSA, MAP = useidcoordinates  && hascoordinates(IDS[1]) ? _to_msa_mapping(SEQS, IDS) : _to_msa_mapping(SEQS)
-        setannotfile!(annot, "NCol", string(size(MSA,2)))
-        setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
-        for i in 1:length(IDS)
-            setannotsequence!(annot, IDS[i], "SeqMap", MAP[i])
-        end
-    else
-        MSA = convert(Matrix{Residue}, SEQS)
-    end
-    msa = AnnotatedMultipleSequenceAlignment(IndexedArray(IDS), MSA, annot)
-    if checkalphabet
-        deletenotalphabetsequences!(msa, SEQS)
-    end
+    _generate_annotated_msa(annot, IDS, SEQS, keepinserts, generatemapping,
+        useidcoordinates, deletefullgaps)
+end
+
+function Base.parse(io::Union{IO, AbstractString},
+                    format::Type{FASTA},
+                    output::Type{NamedArray{Residue,2}};
+                    deletefullgaps::Bool=true)
+    IDS, SEQS = _pre_readfasta(io)
+    msa = _generate_named_array(SEQS, IDS)
     if deletefullgaps
-        deletefullgapcolumns!(msa)
+        return deletefullgapcolumns(msa)
     end
     msa
 end
 
-function parse(io::Union{IO,AbstractString}, format::Type{FASTA}, output::Type{MultipleSequenceAlignment};
-               deletefullgaps::Bool=true, checkalphabet::Bool=false)
-    IDS, SEQS = _pre_readfasta(io)
-    msa = MultipleSequenceAlignment(IndexedArray(IDS), convert(Matrix{Residue}, SEQS))
-    if checkalphabet
-        deletenotalphabetsequences!(msa, SEQS)
-    end
-    if deletefullgaps
-        deletefullgapcolumns!(msa)
-    end
-    msa
+function Base.parse(io::Union{IO, AbstractString},
+                   format::Type{FASTA},
+                   output::Type{MultipleSequenceAlignment};
+                   deletefullgaps::Bool=true)
+    msa = parse(io, format, NamedArray{Residue,2}, deletefullgaps=deletefullgaps)
+    MultipleSequenceAlignment(msa)
 end
 
-function parse(io::Union{IO,AbstractString}, format::Type{FASTA}, output::Type{Matrix{Residue}};
-               deletefullgaps::Bool=true, checkalphabet::Bool=false)
+function Base.parse(io::Union{IO, AbstractString},
+                    format::Type{FASTA},
+                    output::Type{Matrix{Residue}};
+                    deletefullgaps::Bool=true)
     IDS, SEQS = _pre_readfasta(io)
-    _strings_to_msa(SEQS, deletefullgaps, checkalphabet)
+    _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
 end
 
-parse(io::Union{IO,AbstractString}, format::Type{FASTA}; generatemapping::Bool=false,
-      useidcoordinates::Bool=false, deletefullgaps::Bool=true,
-      checkalphabet::Bool=false, keepinserts::Bool=false) = parse(io, FASTA,
-                                                                  AnnotatedMultipleSequenceAlignment;
-                                                                  generatemapping=generatemapping,
-                                                                  useidcoordinates=useidcoordinates,
-                                                                  deletefullgaps=deletefullgaps,
-                                                                  checkalphabet=checkalphabet,
-                                                                  keepinserts=keepinserts)
+function Base.parse(io::Union{IO, AbstractString},
+                    format::Type{FASTA};
+                    generatemapping::Bool=false,
+                    useidcoordinates::Bool=false,
+                    deletefullgaps::Bool=true,
+                    keepinserts::Bool=false)
+    parse(io, FASTA, AnnotatedMultipleSequenceAlignment; generatemapping=generatemapping,
+        useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps,
+        keepinserts=keepinserts)
+end
 
 # Print FASTA
 # ===========
 
-function print(io::IO, msa::AbstractMultipleSequenceAlignment, format::Type{FASTA})
+function Base.print(io::IO, msa::AbstractMultipleSequenceAlignment, format::Type{FASTA})
+    seqnames = sequencenames(msa)
     for i in 1:nsequences(msa)
-        id = msa.id[i]
-        seq = asciisequence(msa, i)
-        println(io, string(">", id, "\n", seq))
+        println(io, string(">", seqnames[i], "\n", stringsequence(msa, i)))
     end
 end
 
-print(msa::MultipleSequenceAlignment, format::Type{FASTA}) = print(STDOUT, msa, FASTA)
+Base.print(msa::MultipleSequenceAlignment, format::Type{FASTA}) = print(STDOUT, msa, FASTA)

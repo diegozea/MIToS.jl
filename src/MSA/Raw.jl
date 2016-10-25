@@ -5,7 +5,7 @@ immutable Raw <: Format end
 
 function _get_seqs(io::Union{IO, AbstractString})
     SEQS = String[]
-    for line in eachline(io)
+    for line in lineiterator(io)
         push!(SEQS, chomp(line))
     end
     SEQS
@@ -31,14 +31,14 @@ function Base.parse(io::Union{IO, AbstractString},
         _keepinserts!(SEQS, annot)
     end
     if generatemapping
-        MSA, MAP = _to_msa_mapping(SEQS)
+        MSA, MAP = _to_msa_mapping(SEQS) # It checks sequence lengths
         setannotfile!(annot, "NCol", string(size(MSA,2)))
         setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
         for i in 1:length(SEQS)
             setannotsequence!(annot, string(i), "SeqMap", MAP[i])
         end
     else
-        MSA = NamedArray(convert(Matrix{Residue}, SEQS))
+        MSA = NamedArray(convert(Matrix{Residue}, SEQS)) # It checks sequence lengths
     end
     msa = AnnotatedMultipleSequenceAlignment(MSA, annot)
     if deletefullgaps
@@ -57,7 +57,7 @@ end
 
 function Base.parse(io::Union{IO, AbstractString}, format::Type{Raw};
                     deletefullgaps::Bool=true)
-    parse(io, Raw, MultipleSequenceAlignment; deletefullgaps=deletefullgaps)
+    parse(io, Raw, AnnotatedMultipleSequenceAlignment; deletefullgaps=deletefullgaps)
 end
 
 # Print Raw
