@@ -1,8 +1,58 @@
 # Filters
-# -------
+# =======
+
+# Creation of a boolean mask array
+# --------------------------------
+
+# If the input is a matrix, squeeze the singleton dimension
+
+function _column_mask(mask::AbstractMatrix{Bool}, msa)
+    @assert size(mask, 1) == 1 "The mask should be a vector or a matrix of size (1,ncol)"
+    @assert size(mask, 2) == ncolumns(msa) "One boolean value per column is needed."
+    squeeze(mask, 1)
+end
+
+function _sequence_mask(mask::AbstractMatrix{Bool}, msa)
+    @assert size(mask, 2) == 1 "The mask should be a vector or a matrix of size (nseq,1)"
+    @assert size(mask, 1) == nsequences(msa) "One boolean value per sequence is needed."
+    squeeze(mask, 2)
+end
+
+# If the input is a function, apply it to the respective slice
+
+function _column_mask(mask::Function, msa)
+    out = mapslices(mask, msa, 1)
+    if size(out) != (1, ncolumns(msa)) || eltype(out) != Bool
+        error("The function must return a Bool element per column.")
+    end
+    squeeze(out, 1)
+end
+
+function _sequence_mask(mask::Function, msa)
+    out = mapslices(mask, msa, 2)
+    if size(out) != (nsequences(msa), 1) || eltype(out) != Bool
+        error("The function must return a Bool element per column.")
+    end
+    squeeze(out, 2)
+end
+
+# If the mask is an AbstractVector{Bool}, return it without changes
+
+function _column_mask(mask::AbstractVector{Bool}, msa)
+    @assert length(mask) == ncolumns(msa) "One boolean value per column is needed."
+    mask
+end
+
+function _sequence_mask(mask::AbstractVector{Bool}, msa)
+    @assert length(mask) == nsequences(msa) "One boolean value per sequence is needed."
+    mask
+end
+
+# Filter sequences
+# ----------------
 
 "It's similar to `filtersequences!` but for an `AbstractMatrix{Residue}`"
-filtersequences(msa::AbstractMatrix{Residue}, mask::AbstractVector{Bool}) = msa[mask, :]
+filtersequences(msa::AbstractMatrix{Residue}, mask) = msa[_sequence_mask(mask, msa), :]
 
 """
 `filtersequences!(msa, mask[, annotate::Bool=true])`
@@ -12,40 +62,36 @@ It allows to filter `msa` sequences using a `AbstractVector{Bool}` `mask`
 are updated if `annotate` is `true` (default).
 """
 function filtersequences!(msa::AnnotatedMultipleSequenceAlignment,
-                          mask::AbstractVector{Bool}, annotate::Bool=true)
-    msa.matrix = filtersequences(namedmatrix(msa), mask)
-    filtersequences!(annotations(msa), sequencenames(msa), mask)
+                          mask, annotate::Bool=true)
+    boolean_vector = _sequence_mask(mask, msa)
+    filtersequences!(annotations(msa), sequencenames(msa), boolean_vector)
+    # Filter annotations first, names will be changed by filtersequences:
+    msa.matrix = filtersequences(namedmatrix(msa), boolean_vector)
     annotate && annotate_modification!(msa, string("filtersequences! : ",
-                                       sum(~mask), " sequences have been deleted."))
+                                                    sum(~boolean_vector),
+                                                    " sequences have been deleted."))
     msa
 end
 
 function filtersequences!(msa::MultipleSequenceAlignment,
-                          mask::AbstractVector{Bool},
-                          annotate::Bool=false) # annotate is useful for calling this
-                                                # inside other functions
-    msa.matrix = filtersequences(namedmatrix(msa), mask)
+                          mask, annotate::Bool=false) # annotate is useful for calling this
+                                                      # inside other functions
+    msa.matrix = filtersequences(namedmatrix(msa), _sequence_mask(mask, msa))
     msa
 end
 
-function filtersequences(x::AbstractAlignedObject, mask::AbstractVector{Bool},
-                        annotate::Bool=true)
-    filtersequences!(deepcopy(x), mask, annotate)
+function filtersequences(msa::Union{AnnotatedMultipleSequenceAlignment,
+                                    MultipleSequenceAlignment}, args...)
+    filtersequences!(deepcopy(msa), args...)
 end
 
-# It's useful since sequences are matrices
-function filtersequences(msa::AbstractMatrix{Residue}, mask::AbstractMatrix{Bool}, args...)
-    @assert size(mask, 1) == 1 "The mask should be a vector or a matrix of size (1,ncol)"
-    filtersequences(msa, squeeze(mask, 1), args...)
-end
-
-function filtersequences!(msa::AbstractAlignedObject, mask::AbstractMatrix{Bool}, args...)
-    @assert size(mask, 1) == 1 "The mask should be a vector or a matrix of size (1,ncol)"
-    filtersequences!(msa, squeeze(mask, 1), args...)
-end
+# Filter columns
+# --------------
 
 "It's similar to `filtercolumns!` but for an `AbstractMatrix{Residue}`"
-filtercolumns(msa::AbstractMatrix{Residue}, mask::AbstractVector{Bool}) = msa[:, mask]
+function filtercolumns(msa::AbstractMatrix{Residue}, mask)
+    msa[:, _column_mask(mask, msa)]
+end
 
 """
 `filtercolumns!(msa, mask[, annotate::Bool=true])`
@@ -54,37 +100,23 @@ It allows to filter MSA or aligned sequence columns/positions using a
 `AbstractVector{Bool}` `mask`. Annotations are updated if `annotate` is `true` (default).
 """
 function filtercolumns!(x::AnnotatedAlignedObject,
-                        mask::AbstractVector{Bool}, annotate::Bool=true)
-    x.matrix = filtercolumns(namedmatrix(x), mask)
-    filtercolumns!(annotations(x), mask)
-    annotate && annotate_modification!(x,string("filtercolumns! : ", sum(~mask),
+                        mask, annotate::Bool=true)
+    boolean_vector = _column_mask(mask, x)
+    filtercolumns!(annotations(x), boolean_vector)
+    x.matrix = filtercolumns(namedmatrix(x), boolean_vector)
+    annotate && annotate_modification!(x,string("filtercolumns! : ", sum(~boolean_vector),
                                                 " columns have been deleted."))
     x
 end
 
 function filtercolumns!(x::UnannotatedAlignedObject,
-                        mask::AbstractVector{Bool},
-                        annotate::Bool=false)   # annotate is useful for calling this
-                                                # inside other functions
-    x.matrix = filtercolumns(namedmatrix(x), mask)
+                        mask, annotate::Bool=false) # annotate is useful for calling this
+                                                    # inside other functions
+    x.matrix = filtercolumns(namedmatrix(x), _column_mask(mask, x))
     x
 end
 
-function filtercolumns(x::AbstractAlignedObject, mask::AbstractVector{Bool},
-                        annotate::Bool=true)
-    filtercolumns!(deepcopy(x), mask, annotate)
-end
-
-# It's useful since sequences are matrices
-function filtercolumns(msa::AbstractMatrix{Residue}, mask::AbstractMatrix{Bool}, args...)
-    @assert size(mask, 2) == 1 "The mask should be a vector or a matrix of size (1,ncol)"
-    filtercolumns(msa, squeeze(mask, 2), args...)
-end
-
-function filtercolumns!(msa::AbstractAlignedObject, mask::AbstractMatrix{Bool}, args...)
-    @assert size(mask, 2) == 1 "The mask should be a vector or a matrix of size (nseq,1)"
-    filtercolumns!(msa, squeeze(mask, 2), args...)
-end
+filtercolumns(x::AbstractAlignedObject, args...) = filtercolumns!(deepcopy(x), args...)
 
 # Reference
 # ---------
@@ -143,7 +175,7 @@ setreference!(msa::NamedArray{Residue,2}, i::Int, annotate::Bool=false) =
     swapsequences!(msa, 1, i)
 
 setreference!(msa::NamedArray{Residue,2}, id::String, annotate::Bool=false) =
-    swapsequences!(msa, sequencenames(msa,1)[1], id)
+    swapsequences!(msa, names(msa,1)[1], id)
 
 function setreference!(msa::AbstractMultipleSequenceAlignment, id::String,
                        annotate::Bool=true)

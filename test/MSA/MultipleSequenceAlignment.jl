@@ -112,6 +112,8 @@
                 for j in 1:7
                     @test object["1",string(j)] == object[1,j]
                     @test object[j] == object[1,j]
+                    # Special sequence indexing:
+                    @test object[string(j)] == object[1,j]
                 end
             end
         end
@@ -238,19 +240,21 @@
             deepcopy_annotated_msa = deepcopy(annotated_msa)
 
             for x in [copy_msa, deepcopy_msa, copy_annotated_msa, deepcopy_annotated_msa]
-                x[1,:]     = res"YSMIEDA"
-                x["2",:]   = res"YSMIEDA"
-                x[:,1]     = res"YYY"
-                x[:,"2"]   = res"YYY"
-                x[end,end] = 'X'
-            end
+                x[1,:] = res"YSMIEDA"
+                @test vec(x[1,:]) == res"YSMIEDA"
 
-            for  x in [copy_msa, deepcopy_msa, copy_annotated_msa, deepcopy_annotated_msa]
-                x[1,:]     == res"YSMIEDA"
-                x["2",:]   == res"YSMIEDA"
-                x[:,1]     == res"YYY"
-                x[:,"2"]   == res"YYY"
-                x[end,end] == XAA
+                x["2",:] = res"YSMIEDA"
+                @test vec(x["2",:]) == res"YSMIEDA"
+
+                x[:,1] = res"YYY"
+                @test vec(x[:,1]) == res"YYY"
+
+                x[:,"2"] = res"YYY"
+                @test vec(x[:,"2"]) == res"YYY"
+
+                x[end,end] = 'X'
+                @test x[end,end] == XAA
+
                 @test length(unique(x)) != 21
             end
 
@@ -262,14 +266,18 @@
 
             for x in [copy_seq, deepcopy_seq, copy_annotated_seq, deepcopy_annotated_seq]
                 x[1] = XAA
-                x["1","2"] = XAA
-                x[end] = 'X'
-            end
+                @test x[1] == XAA
 
-            for  x in [copy_seq, deepcopy_seq, copy_annotated_seq, deepcopy_annotated_seq]
-                x[1] == XAA
-                x["1","2"] == XAA
-                x[end] == XAA
+                x["1","2"] = XAA
+                @test x["1","2"] == XAA
+
+                x[end] = 'X'
+                @test x[end] == XAA
+
+                # Special setindex! for sequences:
+                x["3"] = GAP
+                @test x["3"] == GAP
+
                 @test length(unique(x)) == 19
             end
 

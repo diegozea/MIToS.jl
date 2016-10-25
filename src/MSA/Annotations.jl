@@ -66,8 +66,7 @@ names and `mask` should be a logical vector.
 """
 function filtersequences!(data::Annotations, ids::Vector{String},
                           mask::AbstractVector{Bool})
-    @assert ( length(ids) ==
-              length(mask)   ) "It's needed one sequence name per element in the mask."
+    @assert length(ids)==length(mask) "It's needed one sequence id per element in the mask."
     nresannot = length(data.residues)
     nseqannot = length(data.residues)
     if nresannot > 0 || nseqannot > 0

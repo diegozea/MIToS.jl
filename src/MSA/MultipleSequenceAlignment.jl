@@ -179,8 +179,17 @@ end
 @inline Base.getindex(x::AbstractAlignedObject,
                       args...) = getindex(namedmatrix(x), args...)
 
-@inline Base.setindex!(x::AbstractAlignedObject,
-                       args...) = setindex!(namedmatrix(x), args...)
+@inline function Base.setindex!(x::AbstractAlignedObject, value, args...)
+    setindex!(namedmatrix(x), value, args...)
+end
+
+# Special getindex/setindex! for sequences to avoid `seq["seqname","colname"]`
+
+@inline Base.getindex(x::AbstractAlignedSequence, i) = getindex(namedmatrix(x), 1, i)
+
+@inline function Base.setindex!(x::AbstractAlignedSequence, value, i)
+    setindex!(namedmatrix(x), value, 1, i)
+end
 
 # Show
 # ----

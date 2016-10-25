@@ -16,6 +16,25 @@
     pfam    = pfam_msas[end]
     pfam_na = pfam_msas[end-1] # na: not annotated
 
+    @testset "Boolean mask array" begin
+
+        matrix_mask = pfam[1:1,:] .== GAP
+        @test size(matrix_mask) == (1,110)
+
+        @test size(MSA._column_mask(matrix_mask, pfam)) == (110,)
+        @test MSA._column_mask(vec(matrix_mask), pfam) == vec(matrix_mask)
+        @test MSA._column_mask(col -> col[1] == GAP, pfam) ==
+              MSA._column_mask(matrix_mask, pfam)
+
+        matrix_mask = pfam[:,1:1] .== Residue('-')
+        @test size(matrix_mask) == (4,1)
+
+        @test size(MSA._sequence_mask(matrix_mask, pfam)) == (4,)
+        @test MSA._sequence_mask(vec(matrix_mask), pfam) == vec(matrix_mask)
+        @test MSA._sequence_mask(seq -> seq[1] == GAP, pfam) ==
+              MSA._sequence_mask(matrix_mask, pfam)
+    end
+
     @testset "filtersequences!" begin
 
         for msa in pfam_msas[3:4]
@@ -32,8 +51,8 @@
             @test getsequence(filtersequences(
                 msa, Bool[false,false,true,true] ), 2) == getsequence(msa, 4)
 
-            @test_throws BoundsError filtersequences(msa, [1,2,3,4,5,6,7,8,9,10] .> 2)
-            @test_throws BoundsError filtersequences(msa, [1,2,3] .> 2)
+            @test_throws AssertionError filtersequences(msa, [1,2,3,4,5,6,7,8,9,10] .> 2)
+            @test_throws AssertionError filtersequences(msa, [1,2,3] .> 2)
         end
     end
 
@@ -45,11 +64,11 @@
         end
 
         for msa in pfam_msas
-            @test getresidues(getsequence(filtercolumns(
-                msa, collect(1:110) .<= 10), 4)) == res"QTLNSYKMAE"
+            @test vec(getresidues(getsequence(filtercolumns(
+                msa, collect(1:110) .<= 10), 4))) == res"QTLNSYKMAE"
 
-            @test_throws BoundsError filtercolumns(msa, [1,2,3] .> 2)
-            @test_throws BoundsError filtercolumns(msa, collect(1:200) .<= 10)
+            @test_throws AssertionError filtercolumns(msa, [1,2,3] .> 2)
+            @test_throws AssertionError filtercolumns(msa, collect(1:200) .<= 10)
         end
 
         @testset "filtercolumns! for sequences" begin
@@ -61,14 +80,14 @@
             @test annseq[1, vec(annseq .== Residue('Q'))] == res"QQQQQQQQQQQQQQ"
             @test seq[1, vec(seq .== Residue('Q'))] == res"QQQQQQQQQQQQQQ"
 
-            filtered_annseq = filtercolumns!(copy(annseq), vec(annseq .== Residue('Q')))
-            filtered_seq = filtercolumns!(copy(seq), vec(seq .== Residue('Q')))
+            filtered_annseq = filtercolumns!(copy(annseq), annseq .== Residue('Q'))
+            filtered_seq = filtercolumns!(copy(seq), seq .== Residue('Q'))
 
-            @test filtercolumns(seq, vec(seq .== Residue('Q'))) ==
+            @test filtercolumns(seq, seq .== Residue('Q')) ==
                 filtercolumns(seq, seq .== Residue('Q'))
 
-            @test_throws BoundsError filtercolumns(annseq, collect(1:(length(seq)-10)) .> 2)
-            @test_throws BoundsError filtercolumns(seq, collect(1:(length(seq)+10)) .<= 10)
+            @test_throws AssertionError filtercolumns(annseq, 1:(length(seq)-10) .> 2)
+            @test_throws AssertionError filtercolumns(seq, 1:(length(seq)+10) .<= 10)
 
             # Sequences are matrices
             @test vec(getresidues(filtered_annseq)) == res"QQQQQQQQQQQQQQ"
@@ -112,7 +131,7 @@
             end
 
             for msa in pfam_msas[1:2]
-                @test size(gapstrip(msa, gaplimit=1.0, coveragelimit=0.0)) == (4, 110)
+                @test size(gapstrip(msa, gaplimit=1.0, coveragelimit=0.0)) == (4, 92)
                 @test residuefraction(gapstrip(msa)[1,:]) == 1.0
             end
         end
