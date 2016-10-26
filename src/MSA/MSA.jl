@@ -40,6 +40,10 @@ export  # Residue
         Residue,
         GAP, XAA,
         @res_str,
+        # Alphabet
+        ResidueAlphabet,
+        GappedAlphabet, UngappedAlphabet, ReducedAlphabet,
+        @reduced_str,
         # ThreeLetters
         residue2three, three2residue,
         # Annotations
@@ -99,6 +103,7 @@ export  # Residue
 # swap!
 
 include("Residues.jl")
+include("Alphabet.jl")
 include("ThreeLetters.jl")
 include("Annotations.jl")
 include("MultipleSequenceAlignment.jl")
@@ -110,7 +115,7 @@ include("Stockholm.jl")
 include("FASTA.jl")
 include("Shuffle.jl")
 include("PLM.jl")
-# include("Identity.jl")
+include("Identity.jl")
 # include("Clusters.jl")
 # include("Hobohm.jl")
 # include("Plots.jl")

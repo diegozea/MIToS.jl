@@ -1,15 +1,18 @@
 # Calculates percent identity of two aligned sequences
 # No account of the positions with gaps in both sequences in the length
-"""
-seq1 and seq2 should have the same len
-"""
+
+# XAA is considered as a GAP in percent identity calculations
+# GAP == 21 and XAA == 22
+@inline _is_gap_or_xaa(x::Residue) = Int(x) >= 21
+
+"seq1 and seq2 should have the same len"
 function _percentidentity(seq1, seq2, len)
     count = zero(Int)
     colgap = zero(Int)
     @inbounds for i in 1:len
         if seq1[i] == seq2[i]
             count += one(Int)
-            colgap += Int(seq1[i] == GAP)
+            colgap += Int(_is_gap_or_xaa(seq1[i]))
         end
     end
     100.0 * (count-colgap)/(len-colgap)
@@ -18,15 +21,17 @@ end
 """
 `percentidentity(seq1, seq2)`
 
-Calculates the fraction of identities between two aligned sequences.
-The identity value is calculated as the number of identical characters in the i-th position of both
-sequences divided by the length of both sequences.
-Positions with gaps in both sequences are not counted in the length of the sequence.
+Calculates the fraction of identities between two aligned sequences. The identity value is
+calculated as the number of identical characters in the i-th position of both sequences
+divided by the length of both sequences. Positions with gaps in both sequences are not
+counted in the length of the sequence.
 """
 function percentidentity(seq1, seq2)
     len = length(seq1)
     if len != length(seq2)
-        throw(ErrorException("Sequences of different length, they aren't aligned or don't come from the same alignment"))
+        throw(ErrorException("""
+        Sequences of different length, they aren't aligned or don't come from the same MSA.
+        """))
     end
     _percentidentity(seq1, seq2, len)
 end
@@ -34,14 +39,16 @@ end
 """
 `percentidentity(seq1, seq2, threshold)`
 
-Computes quickly if two aligned sequences have a identity value greater than a given `threshold` value.
-Returns a boolean value.
+Computes quickly if two aligned sequences have a identity value greater than a given
+`threshold` value. Returns a boolean value.
 """
 function percentidentity(seq1, seq2, threshold)
     fraction = threshold / 100.0
     len = length(seq1)
     if len != length(seq2)
-        throw(ErrorException("Sequences of different length, they aren't aligned or don't come from the same alignment"))
+        throw(ErrorException("""
+        Sequences of different length, they aren't aligned or don't come from the same MSA.
+        """))
     end
     n = len
     limit_count = n * fraction
@@ -49,7 +56,7 @@ function percentidentity(seq1, seq2, threshold)
     count = 0
     @inbounds for i in 1:len
         if seq1[i] == seq2[i]
-            if seq1[i] != GAP
+            if !_is_gap_or_xaa(seq1[i])
                 count += 1
                 if count >= limit_count
                     return(true)
@@ -71,12 +78,9 @@ end
 # percentidentity for a MSA
 # =========================
 
-"""
-aln should be transpose(msa)
-"""
-function _percentidentity_kernel!(scores, aln, nseq, len)
+function _percentidentity_kernel!(scores, aln::Vector{Vector{Residue}}, nseq, len)
     k = 0
-    list = scores.list
+    list = getlist(scores)
     @inbounds for i in 1:(nseq-1)
         a = aln[i]
         for j in (i+1):nseq
@@ -89,9 +93,9 @@ end
 """
 `percentidentity(msa[, out::Type=Float64])`
 
-Calculates the identity between all the sequences on a MSA.
-You can indicate the output element type with the last optional parameter (`Float64` by default).
-For a MSA with a lot of sequences, you can use `Float32` or `Flot16` in order to avoid the `OutOfMemoryError()`.
+Calculates the identity between all the sequences on a MSA. You can indicate the output
+element type with the last optional parameter (`Float64` by default). For a MSA with a lot
+of sequences, you can use `Float32` or `Flot16` in order to avoid the `OutOfMemoryError()`.
 """
 function percentidentity{T}(msa::AbstractMatrix{Residue}, out::Type{T}=Float64)
     aln = getresiduesequences(msa)
@@ -106,14 +110,14 @@ end
 # ===============================
 
 """
-Returns the mean of the percent identity between the sequences of a MSA.
-If the MSA has 300 sequences or less, the mean is exact.
-If the MSA has more sequences and the `exact` keyword is `false` (defualt),
-44850 random pairs of sequences are used for the estimation.
-The number of samples can be changed using the second argument.
-Use `exact=true` to perform all the pairwise comparison (the calculation could be slow).
+Returns the mean of the percent identity between the sequences of a MSA. If the MSA has 300
+sequences or less, the mean is exact. If the MSA has more sequences and the `exact` keyword
+is `false` (defualt), 44850 random pairs of sequences are used for the estimation. The
+number of samples can be changed using the second argument. Use `exact=true` to perform all
+the pairwise comparison (the calculation could be slow).
 """
-function meanpercentidentity(msa, nsamples::Int=44850; exact::Bool=false) # lengthlist(300, false) == 44850
+function meanpercentidentity(msa, nsamples::Int=44850; exact::Bool=false)
+    #                 lengthlist(300, false) == 44850
     nseq, ncol = size(msa)
     nvalues = lengthlist(nseq, Val{false})
     sum = 0.0
@@ -139,12 +143,16 @@ function meanpercentidentity(msa, nsamples::Int=44850; exact::Bool=false) # leng
     end
 end
 
+############################################################################################
+
+# TO DO: Reduced alphabet
+
 # Similarity percent
 # ==================
 
 """
-Calculates the similarity percent between two aligned sequences.
-The 100% is the length of the aligned sequences minus the number of columns with gaps in both sequences.
+Calculates the similarity percent between two aligned sequences. The 100% is the length of
+the aligned sequences minus the number of columns with gaps in both sequences.
 Two residues are considered similar if they below to the same group.
 The `groups` (third positional argument) can be indicated with a vector of length 20,
 having the group labels of each `Residue` in the following order (mandatory):
