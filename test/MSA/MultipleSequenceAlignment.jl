@@ -212,6 +212,13 @@
             end
         end
 
+        @testset "Column names" begin
+
+            for object in (M, NamedArray(M), msa, annotated_msa)
+                @test columnnames(object) == ["1","2","3","4","5","6","7"]
+            end
+        end
+
         @testset "Column mapping" begin
 
             for object in (NamedArray(M), msa, annotated_msa)

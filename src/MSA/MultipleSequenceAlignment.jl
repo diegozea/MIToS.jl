@@ -326,6 +326,17 @@ sequencenames(x::NamedArray{Residue,2})::Vector{String} = names(x,1)
 sequencenames(x::AbstractAlignedObject)::Vector{String} = sequencenames(namedmatrix(x))
 sequencenames(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(msa,1))
 
+"""
+`columnnames(msa)`
+
+It returns a `Vector{String}` with the sequence names/identifiers. If the `msa` is a
+`Matrix{Residue}` this function returns the actual column numbers as strings. Otherwise it
+returns the column number of the original MSA through the wrapped `NamedArray` column names.
+"""
+columnnames(x::NamedArray{Residue,2})::Vector{String} = names(x,2)
+columnnames(x::AbstractAlignedObject)::Vector{String} = columnnames(namedmatrix(x))
+columnnames(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(msa,2))
+
 # Copy, deepcopy
 # --------------
 

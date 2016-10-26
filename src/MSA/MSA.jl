@@ -23,11 +23,12 @@ using AutoHashEquals        # Annotations
 using NamedArrays           # Col and Seq names, basic sequence/MSA object
 using FastaIO               # FastaReader (fast)
 using Base.Random           # shuffle!
+using PairwiseListMatrices  # Percent Identity Matrices
 using MIToS.Utils
 
 
 using IndexedArrays         # IndexedArray for sequence names in MSAs
-using PairwiseListMatrices  # Percent Identity Matrices
+
 using Clustering            # Used for sequence clustering: ClusteringResult
 
 using RecipesBase           # Plots for MSAs
@@ -62,7 +63,7 @@ export  # Residue
         getresidues, getsequence, getresiduesequences,
         stringsequence,
         getcolumnmapping, getsequencemapping,
-        sequencenames, # TO DO: sequencenames!(...)
+        sequencenames, columnnames, # TO DO: sequencenames!(...)
         # MSAStats
         gapfraction,
         residuefraction,
@@ -82,10 +83,9 @@ export  # Residue
         # Stockholm
         Stockholm,
         # FASTA
-        FASTA
-#
-# sequencepairsmatrix, columnpairsmatrix,
-# columnlabels, sequencelabels,
+        FASTA,
+        # PLM
+        sequencepairsmatrix, columnpairsmatrix
 #
 # percentidentity, meanpercentidentity, percentsimilarity,
 #
@@ -109,7 +109,7 @@ include("Raw.jl")
 include("Stockholm.jl")
 include("FASTA.jl")
 include("Shuffle.jl")
-# include("PLM.jl")
+include("PLM.jl")
 # include("Identity.jl")
 # include("Clusters.jl")
 # include("Hobohm.jl")
