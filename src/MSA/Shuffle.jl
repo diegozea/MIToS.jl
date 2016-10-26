@@ -2,17 +2,8 @@
 When a `Matrix{Residue}` is used, you can indicate if the gaps should remain their
 positions using the last boolean argument.
 """
-function Base.shuffle!(r::AbstractRNG, msa::Matrix{Residue}, fixedgaps::Bool)
-    if fixedgaps
-        shuffle!(r, view(msa, msa .!= GAP))
-    else
-        shuffle!(r, msa)
-    end
-    msa
-end
-
 function Base.shuffle!(r::AbstractRNG, msa::Matrix{Residue},
-                       dim::Int, fixedgaps::Bool)
+                       dim::Int, fixedgaps::Bool=true)
     nseq, ncol = size(msa)
     @assert dim == 1 || dim == 2 "The dimension must be 1 (sequences) or 2 (columns)"
     if fixedgaps
@@ -56,10 +47,11 @@ function Base.shuffle(msa::Matrix{Residue}, args...)
     shuffle!(GLOBAL_RNG, copy(msa), args...)
 end
 
-function Base.shuffle(r::AbstractRNG, msa::AbstractAlignedObject, args...)
+function Base.shuffle(r::AbstractRNG,
+                      msa::Union{AbstractAlignedObject, NamedArray{Residue,2}}, args...)
     shuffle(r, copy(getresidues(msa)), args...)
 end
 
-function Base.shuffle(msa::AbstractAlignedObject, args...)
+function Base.shuffle(msa::Union{AbstractAlignedObject, NamedArray{Residue,2}}, args...)
     shuffle(GLOBAL_RNG, copy(getresidues(msa)), args...)
 end
