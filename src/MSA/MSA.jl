@@ -22,7 +22,9 @@ using DataStructures        # OrderedDicts for Annotations
 using AutoHashEquals        # Annotations
 using NamedArrays           # Col and Seq names, basic sequence/MSA object
 using FastaIO               # FastaReader (fast)
+using Base.Random           # shuffle!
 using MIToS.Utils
+
 
 using IndexedArrays         # IndexedArray for sequence names in MSAs
 using PairwiseListMatrices  # Percent Identity Matrices

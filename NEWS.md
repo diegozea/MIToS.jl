@@ -14,12 +14,12 @@ Also, the Julia package ecosystem has grown. So, MIToS was slightly redesigned t
 advantage of the new Julia capabilities. As a consequence, this version introduces several
 breaking changes.
 
-##### Utils module    
+##### Utils module
 
 * `deleteitems!(vector::Vector, items)` is deprecated in favor of
-`filter!(x -> x ∉ items, vector)`  
+`filter!(x -> x ∉ items, vector)`
 
-###### Vectorized queries are deprecated   
+###### Vectorized queries are deprecated
 
 Previous version of Utils included methods and types in order to overcome the performance
 cost of functional programing in previous Julia versions. In particular, vectorized queries
@@ -29,42 +29,44 @@ were performed using subtypes of `AbstractTest`, in particular the `TestType`s `
 `findobjects`, `collectobjects` and `collectcaptures`. All these functions and types are
 deprecated in MIToS 2.0. Functional programming in Julia 0.5 is fast, so these methods
 can be easily replace by Julia high order functions like `find` and `filter` and lambda
-expressions (anonymous functions).  
+expressions (anonymous functions).
 
-##### MSA module    
+##### MSA module
 
 * `Residue` is now encoded as `Int` instead of being encoded as `UInt8`, allowing faster
 indexation using `Int(res::Residue)`. More memory is used, since the residues are encoded
-using 32 or 64 bits instead of 8 bits.  
+using 32 or 64 bits instead of 8 bits.
 
-* `XAA` is now used to indicate unknown, ambiguous and non standard residues instead of `GAP`.  
+* `XAA` is now used to indicate unknown, ambiguous and non standard residues instead of `GAP`.
 
-* Conversions to and from `UInt8` aren't supported now.  
+* Conversions to and from `UInt8` aren't supported now.
 
 * More `Base` methods are extended to work with `Residue`: `bits`, `zero`, `one`
-and `isvalid`.  
+and `isvalid`.
 
 * `empty(Annotations)` was deprecated, use `Annotations()` instead.
 
 * `msa["seq_name",:]` now returns a `NamedArray{Residue,1}` instead of an aligned sequence,
-use `getsequence(msa,"seqname")` to get an aligned sequence with annotations.  
+use `getsequence(msa,"seqname")` to get an aligned sequence with annotations.
 
 * Aligned sequences don't drop dimensions, so there are matrices instead of vectors. You can
 use `vec(...)` or `squeeze(...,1)` to get a vector instead of the matrix.
 
 * Indexing MSA objects with only one string is deprecated, use `msa["seqname",:]` instead
-of `msa["seqname"]`.  
+of `msa["seqname"]`.
 
-* `empty!` doesn't take MSA objects anymore.  
+* `empty!` doesn't take MSA objects anymore.
 
-* `asciisequence` was replaced by `stringsequence`.  
+* `asciisequence` was replaced by `stringsequence`.
 
 * `deletenotalphabetsequences` and the parse/read keyword argument `checkalphabet` are
 deprecated since MIToS 2.0 uses Residue('X') to represent residues outside the alphabet. You
 can use `filtersequences!(msa, vec(mapslices(seq -> !in(XAA, seq), msa, 2)))` to delete
-sequences with unknown, ambiguous or non standard residues.  
+sequences with unknown, ambiguous or non standard residues.
 
-* `parse`/`read` and MSA file returns an `AnnotatedMultipleSequenceAlignment` by default.  
+* `parse`/`read` and MSA file returns an `AnnotatedMultipleSequenceAlignment` by default.
+
+* `shuffle_...columnwise!` and `shuffle_...sequencewise!` functions were deprecated in favor of `shuffle!` and `shuffle` functions.
 
 ### Changes from v1.1 to v1.2.2
 
