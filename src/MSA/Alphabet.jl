@@ -92,4 +92,5 @@ end
 # In Alphabet
 # -----------
 
-Base.in(res::Residue, alphabet::ResidueAlphabet) = alphabet[res] != 22
+Base.in(res::Residue, alphabet::ResidueAlphabet) = Int(res) <= length(ab)
+Base.in(res::Residue, alphabet::ReducedAlphabet) = alphabet[res] != 22
