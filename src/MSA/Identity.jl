@@ -156,72 +156,42 @@ function meanpercentidentity(msa, nsamples::Int=44850; exact::Bool=false)
     end
 end
 
-############################################################################################
-
-# TO DO: Reduced alphabet
-
 # Similarity percent
 # ==================
 
 """
 Calculates the similarity percent between two aligned sequences. The 100% is the length of
-the aligned sequences minus the number of columns with gaps in both sequences.
-Two residues are considered similar if they below to the same group.
-The `groups` (third positional argument) can be indicated with a vector of length 20,
-having the group labels of each `Residue` in the following order (mandatory):
-A, R, N, D, C, Q, E, G, H, I, L, K, M, F, P, S, T, W, Y, V
-
-**MIToS default groups** are:
+the aligned sequences minus the number of columns with gaps in both sequences or `XAA` in
+at least one of the sequences. Two residues are considered similar if they below to the
+same group in a `ReducedAlphabet`. The `alphabet` (third positional argument) by default is:
 
 ```julia
-[
-:nonpolar, # A
-:positive, # R
-:polar,    # N
-:negative, # D
-:cysteine, # C
-:polar,    # Q
-:negative, # E
-:glycine,  # G
-:positive, # H
-:nonpolar, # I
-:nonpolar, # L
-:positive, # K
-:nonpolar, # M
-:aromatic, # F
-:proline,  # P
-:polar,    # S
-:polar,    # T
-:aromatic, # W
-:aromatic, # Y
-:nonpolar  # V
-]
-
+reduced"(AILMV)(NQST)(RHK)(DE)(FWY)CGP"
 ```
 
-Other residue groups:
+The first group is composed of the non polar residues `(AILMV)`, the second group is composed
+of polar residues, the third group are positive residues, the fourth group are negative
+residues, the fifth group is composed by the aromatic residues `(FWY)`. `C`, `G` and `P`
+are considered unique residues.
 
-**SMS (Sequence Manipulation Suite)** Ident and Sim: GAVLI, FYW, ST, KRH, DENQ, P, CM
+**Other residue groups/alphabets:**
 
-*Stothard P (2000)
-The Sequence Manipulation Suite: JavaScript programs for analyzing and formatting protein and DNA sequences.
-Biotechniques 28:1102-1104.*
+**SMS (Sequence Manipulation Suite)** Ident and Sim:
 
 ```julia
-
-[1, 4, 5, 5, 7, 5, 5, 1, 4, 1, 1, 4, 7, 2, 6, 3, 3, 2, 2, 1]
-
+reduced"(GAVLI)(FYW)(ST)(KRH)(DENQ)P(CM)"
 ```
 
-**Bio3D 2.2** seqidentity: GA, MVLI, FYW, ST, KRH, DE, NQ, P, C
+*Stothard P (2000) The Sequence Manipulation Suite: JavaScript programs for analyzing and
+formatting protein and DNA sequences. Biotechniques 28:1102-1104.*
+
+**Bio3D 2.2** seqidentity:
+
+```julia
+reduced"(GA)(MVLI)(FYW)(ST)(KRH)(DE)(NQ)PC"
+```
 
 *Grant, B.J. et al. (2006) Bioinformatics 22, 2695--2696.*
-
-```julia
-
-[1, 5, 7, 6, 9, 7, 6, 1, 5, 2, 2, 5, 2, 3, 8, 4, 4, 3, 3, 2]
-
-```
 """
 function percentsimilarity(seq1::Vector{Residue}, seq2::Vector{Residue},
     alphabet::ResidueAlphabet = reduced"(AILMV)(RHK)(NQST)(DE)(FWY)CGP")

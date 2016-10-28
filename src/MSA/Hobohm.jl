@@ -2,15 +2,16 @@
 # ========
 
 """
-Fill `cluster` and `clustersize` matrices.
-These matrices are assumed to be empty (only zeroes) and their length is assumed to be equal to the number
-of sequences in the alignment (`aln`).
-`threshold` is the minimum identity value between two sequences to be in the same cluster.
+Fill `cluster` and `clustersize` matrices. These matrices are assumed to be empty
+(only zeroes) and their length is assumed to be equal to the number of sequences in the
+alignment (`aln`). `threshold` is the minimum identity value between two sequences
+to be in the same cluster.
 """
-function _fill_hobohmI!(cluster::Vector{Int}, clustersize::Vector{Int}, aln::Vector{Vector{Residue}}, threshold)
+function _fill_hobohmI!(cluster::Vector{Int}, clustersize::Vector{Int},
+                        aln::Vector{Vector{Residue}}, threshold)
     cluster_id = 0
     nseq = length(aln)
-    for i in 1:(nseq-1)
+    @inbounds for i in 1:(nseq-1)
         if cluster[i] == 0
             cluster_id += 1
             cluster[i] = cluster_id
@@ -24,7 +25,7 @@ function _fill_hobohmI!(cluster::Vector{Int}, clustersize::Vector{Int}, aln::Vec
             end
         end
     end
-    if cluster[nseq] == 0
+    @inbounds if cluster[nseq] == 0
         cluster_id += 1
         cluster[nseq] = cluster_id
         clustersize[cluster_id] += 1
@@ -33,8 +34,8 @@ function _fill_hobohmI!(cluster::Vector{Int}, clustersize::Vector{Int}, aln::Vec
 end
 
 """
-Calculates the weight of each sequence in a cluster.
-The weight is equal to one divided by the number of sequences in the cluster.
+Calculates the weight of each sequence in a cluster. The weight is equal to one divided
+by the number of sequences in the cluster.
 """
 function _get_sequence_weight(clustersize, cluster)
     nseq = length(cluster)
@@ -48,7 +49,8 @@ end
 """
 Sequence clustering using the Hobohm I method from Hobohm et. al. 1992.
 
-*Hobohm, Uwe, et al. "Selection of representative protein data sets." Protein Science 1.3 (1992): 409-417.*
+*Hobohm, Uwe, et al. "Selection of representative protein data sets."
+Protein Science 1.3 (1992): 409-417.*
 """
 function hobohmI(msa::AbstractMatrix{Residue}, threshold)
     aln = getresiduesequences(msa)
