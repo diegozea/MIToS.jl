@@ -59,8 +59,8 @@ function _to_msa_mapping(sequences::Array{String,1}, ids::Array{String,1})
         end
     end
     msa = NamedArray(permutedims(aln, [2,1]),
-        (   OrderedDict(zip(ids, 1:nseq)),
-            OrderedDict(string(i) => i for i in 1:nres) ),
+        (   OrderedDict{String,Int}(zip(ids, 1:nseq)),
+            OrderedDict{String,Int}(string(i) => i for i in 1:nres) ),
         ("Seq","Col"))
     msa, mapp
 end

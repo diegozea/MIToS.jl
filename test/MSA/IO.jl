@@ -238,4 +238,71 @@
             end
         end
     end
+
+    @testset "Raw" begin
+
+        # AnnotatedMultipleSequenceAlignment
+        raw = read(joinpath(pwd(), "data", "gaps.txt"), Raw)
+        mat = getresidues(raw)
+        raw_string = """THAYQAIHQV
+                        THAYQAIHQ-
+                        THAYQAIH--
+                        THAYQAI---
+                        THAYQA----
+                        THAYQ-----
+                        THAY------
+                        THA-------
+                        TH--------
+                        T---------
+                        """
+        @testset "Parse" begin
+
+            @test stringsequence(raw, "1") == "THAYQAIHQV"
+            @test stringsequence(raw, 10)  == "T---------"
+
+            for i in 1:10
+                @test stringsequence(mat, i)  == stringsequence(raw, i)
+            end
+
+            @test parse(raw_string, Raw) == raw
+        end
+
+        @testset "Print" begin
+
+            buffer = IOBuffer()
+            print(buffer, raw, Raw)
+            @test takebuf_string(buffer) == raw_string
+
+            print(buffer, mat, Raw)
+            @test takebuf_string(buffer) == raw_string
+        end
+
+        @testset "Stats" begin
+
+            @test gapfraction(mat) == 0.45
+            @test vec(gapfraction(mat, 1)) ≈ [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+            @test vec(gapfraction(mat, 2)) ≈ [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+
+            @test residuefraction(mat) == 0.55
+            @test vec(residuefraction(mat, 1)) ≈ [1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]
+            @test vec(residuefraction(mat, 2)) ≈ [1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]
+
+            @test vec(coverage(mat)) ≈ [1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]
+
+            @test vec(columngapfraction(mat)) ≈ [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+        end
+
+        @testset "Reference and gapstrip" begin
+
+            gs = gapstrip(mat, coveragelimit=0.5, gaplimit=0.5)
+            @test vec(getsequence(gs, 1)) == res"THAYQAIH"
+            @test ncolumns(gs) == 8
+            @test nsequences(gs) == 6
+
+            ref = setreference!(copy(mat), 2)
+            @test vec(getsequence(ref, 1)) == res"THAYQAIHQ-"
+            ref = adjustreference(ref)
+            @test vec(getsequence(ref, 1)) == res"THAYQAIHQ"
+        end
+    end
 end

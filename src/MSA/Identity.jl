@@ -19,7 +19,8 @@ function _percentidentity(seq1, seq2, len)
             colgap += Int(aa1 == GAP)
         end
     end
-    100.0 * (count-colgap)/(len-colgap-colxaa)
+    alnlen = len - colgap - colxaa
+    100.0 * (count-colgap) / alnlen
 end
 
 """
@@ -68,7 +69,7 @@ function percentidentity(seq1, seq2, threshold)
             n -= 1
             continue
         end
-        if aa1 == aa1
+        if aa1 == aa2
             if aa1 != GAP
                 count += 1
                 if count >= limit_count
@@ -132,6 +133,7 @@ the pairwise comparison (the calculation could be slow).
 function meanpercentidentity(msa, nsamples::Int=44850; exact::Bool=false)
     #                 lengthlist(300, false) == 44850
     nseq, ncol = size(msa)
+    @assert nsamples > 2 "At least 2 samples are needed."
     nvalues = lengthlist(nseq, Val{false})
     sum = 0.0
     if !exact && nvalues >= nsamples
@@ -161,12 +163,14 @@ end
 
 """
 Calculates the similarity percent between two aligned sequences. The 100% is the length of
-the aligned sequences minus the number of columns with gaps in both sequences or `XAA` in
-at least one of the sequences. Two residues are considered similar if they below to the
-same group in a `ReducedAlphabet`. The `alphabet` (third positional argument) by default is:
+the aligned sequences minus the number of columns with gaps in both sequences and the number
+of columns with at least one residue outside the alphabet. So, columns with residues outside
+the alphabet (other than the specially treated `GAP`) aren't counted to the protein length.
+Two residues are considered similar if they below to the same group in a `ReducedAlphabet`.
+The `alphabet` (third positional argument) by default is:
 
 ```julia
-reduced"(AILMV)(NQST)(RHK)(DE)(FWY)CGP"
+ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP")
 ```
 
 The first group is composed of the non polar residues `(AILMV)`, the second group is composed
@@ -179,7 +183,7 @@ are considered unique residues.
 **SMS (Sequence Manipulation Suite)** Ident and Sim:
 
 ```julia
-reduced"(GAVLI)(FYW)(ST)(KRH)(DENQ)P(CM)"
+ReducedAlphabet("(GAVLI)(FYW)(ST)(KRH)(DENQ)P(CM)")
 ```
 
 *Stothard P (2000) The Sequence Manipulation Suite: JavaScript programs for analyzing and
@@ -188,13 +192,13 @@ formatting protein and DNA sequences. Biotechniques 28:1102-1104.*
 **Bio3D 2.2** seqidentity:
 
 ```julia
-reduced"(GA)(MVLI)(FYW)(ST)(KRH)(DE)(NQ)PC"
+ReducedAlphabet("(GA)(MVLI)(FYW)(ST)(KRH)(DE)(NQ)PC")
 ```
 
 *Grant, B.J. et al. (2006) Bioinformatics 22, 2695--2696.*
 """
 function percentsimilarity(seq1::Vector{Residue}, seq2::Vector{Residue},
-    alphabet::ResidueAlphabet = reduced"(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
+    alphabet::ResidueAlphabet = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP"))
 
     len = length(seq1)
     if len != length(seq2)
@@ -205,25 +209,27 @@ function percentsimilarity(seq1::Vector{Residue}, seq2::Vector{Residue},
 
     count = 0
     colgap = 0
-    colxaa = 0 # Columns with XAA or residues outside the alphabet aren't used
+    colout = 0 # Columns with residues outside the alphabet aren't used
     @inbounds for i in 1:len
         res1 = seq1[i]
         res2 = seq2[i]
-        if !in(res1, alphabet) || !in(res2, alphabet)
-            colxaa += 1
-            continue
-        end
         isgap1 = res1 == GAP
         isgap2 = res2 == GAP
         if isgap1 && isgap2
             colgap += 1
+            continue
+        end
+        if  (!isgap1 && !in(res1, alphabet)) ||
+            (!isgap2 && !in(res2, alphabet))
+            colout += 1
+            continue
         end
         if !isgap1 && !isgap2
             count += Int(alphabet[res1] == alphabet[res2])
         end
     end
-
-    (100.0 * count)/(len-colgap-colxaa)
+    alnlen = len - colgap - colout
+    (100.0 * count) / alnlen
 end
 
 """

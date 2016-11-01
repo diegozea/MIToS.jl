@@ -34,20 +34,16 @@ function (::Type{ReducedAlphabet})(str::AbstractString)
     ReducedAlphabet(mapping, pos)
 end
 
-macro reduced_str(str)
-    ReducedAlphabet(str)
-end
-
 # Iteration Interface
 # -------------------
 
-Base.length(::UngappedAlphabet)  = 20
-Base.length(::GappedAlphabet)    = 21
+Base.length(ab::UngappedAlphabet)  = 20
+Base.length(ab::GappedAlphabet)    = 21
 Base.length(ab::ReducedAlphabet) = ab.len
 
-Base.start(::ResidueAlphabet) = 1
+Base.start(ab::ResidueAlphabet) = 1
 
-Base.next(::ResidueAlphabet, state) = (state, state + 1)
+Base.next(ab::ResidueAlphabet, state) = (state, state + 1)
 
 Base.done(ab::UngappedAlphabet, state) = state > length(ab)
 Base.done(ab::GappedAlphabet, state)   = state > length(ab)
@@ -65,7 +61,7 @@ end
 
 function Base.show(io::IO, ab::ReducedAlphabet)
     groups = ab.mapping
-    print(io, "ReducedAlphabet of length ", length(ab), " : reduced\"")
+    print(io, "MIToS.MSA.ReducedAlphabet of length ", length(ab), " : \"")
     for i in ab
         chars = _to_char[groups .== i]
         if length(chars) == 1
@@ -74,7 +70,7 @@ function Base.show(io::IO, ab::ReducedAlphabet)
             print(io, "(", join(chars),")")
         end
     end
-    println(io, "\"")
+    print(io, "\"")
 end
 
 # getindex
@@ -92,5 +88,5 @@ end
 # In Alphabet
 # -----------
 
-Base.in(res::Residue, alphabet::ResidueAlphabet) = Int(res) <= length(ab)
+Base.in(res::Residue, alphabet::ResidueAlphabet) = Int(res) <= length(alphabet)
 Base.in(res::Residue, alphabet::ReducedAlphabet) = alphabet[res] != 22

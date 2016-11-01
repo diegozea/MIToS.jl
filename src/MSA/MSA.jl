@@ -44,7 +44,6 @@ export  # Residue
         # Alphabet
         ResidueAlphabet,
         GappedAlphabet, UngappedAlphabet, ReducedAlphabet,
-        @reduced_str,
         # ThreeLetters
         residue2three, three2residue,
         # Annotations

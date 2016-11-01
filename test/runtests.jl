@@ -3,12 +3,13 @@ using Base.Test
 using MIToS: Utils, MSA
 
 using NamedArrays
+using PairwiseListMatrices  # getlist
 
 # using MIToS.Information
 # using MIToS.PDB
 # using MIToS.SIFTS
 # using MIToS.Pfam
-# using PairwiseListMatrices
+#
 
 const DATA = joinpath(pwd(), "data")
 
@@ -20,6 +21,7 @@ end
 # MSA
 @testset "MSA" begin
     include(joinpath("MSA", "Residues.jl"))
+    include(joinpath("MSA", "Alphabet.jl"))
     include(joinpath("MSA", "ThreeLetters.jl"))
     include(joinpath("MSA", "Annotations.jl"))
     include(joinpath("MSA", "MultipleSequenceAlignment.jl"))
@@ -29,16 +31,13 @@ end
     include(joinpath("MSA", "MSAEditing.jl"))
     include(joinpath("MSA", "MSAStats.jl"))
     include(joinpath("MSA", "Shuffle.jl"))
+    include(joinpath("MSA", "Identity.jl"))
+    include(joinpath("MSA", "Hobohm.jl"))
+    include(joinpath("MSA", "MSAAnnotations.jl"))
 end
 
 # # MSA
-# include("residues.jl")
-# include("indexedarrays.jl")
-# include("annotations.jl")
-# include("rawalnandgaps.jl")
-# include("msaannotations.jl")
-# # Clustering
-# include("clustering.jl")
+# include("indexedarrays.jl") # TO DO: Agregar si es utilizado luego
 # # PDB
 # include("pdb.jl")
 # include("contacts.jl")
