@@ -32,8 +32,10 @@ function (::Type{ReducedAlphabet})(str::AbstractString)
         if !ingroup
             pos += 1
         end
+        int_residue = Int(Residue(char))
+        @assert int_residue != 22 "$char isn't valid for a residue alphabet."
         group_names[pos] = string(group_names[pos], char)
-        mapping[Int(Residue(char))] = pos
+        mapping[int_residue] = pos
     end
     named = NamedArray(collect(1:pos), (
         OrderedDict{String,Int}(group_names[i] => i for i in 1:pos),), ("Groups",))
@@ -82,13 +84,17 @@ end
 # getindex
 # --------
 
-@inline function Base.getindex(ab::ResidueAlphabet, res::Residue)::Int
-    ifelse(Int(res) <= length(ab), Int(res), 22)
+@inline function Base.getindex(ab::ResidueAlphabet, res::Int)::Int
+    ifelse(res <= length(ab), res, 22)
 end
 
-@inline function Base.getindex(ab::ReducedAlphabet, res::Residue)::Int
-    @inbounds value = ab.mapping[Int(res)]
+@inline function Base.getindex(ab::ReducedAlphabet, res::Int)::Int
+    @inbounds value = ab.mapping[res]
     value
+end
+
+@inline function Base.getindex(ab::ResidueAlphabet, res::Residue)::Int
+    ab[Int(res)]
 end
 
 @inline function Base.getindex(ab::ResidueAlphabet, res::String)::Int
