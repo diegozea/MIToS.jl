@@ -34,6 +34,7 @@ end
     include(joinpath("MSA", "Identity.jl"))
     include(joinpath("MSA", "Hobohm.jl"))
     include(joinpath("MSA", "MSAAnnotations.jl"))
+    include(joinpath("MSA", "ContingencyTables.jl"))
 end
 
 # # MSA

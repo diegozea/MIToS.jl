@@ -105,7 +105,9 @@ export  # Residue
         get_alphabet,
         get_table,
         get_marginals,
-        get_total
+        get_total,
+        update_marginals!,
+        apply_pseudocount!
 
 
 include("Residues.jl")

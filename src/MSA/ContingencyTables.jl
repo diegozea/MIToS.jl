@@ -14,6 +14,33 @@ end
 @inline get_marginals(table::ContingencyTable) = table.marginals
 @inline get_total(table::ContingencyTable) = table.total
 
+# Cartesian (helper functions)
+# ----------------------------
+
+"""
+`_marginal(1,:A,:i,:value)` generates the expression: `A[1,i_1] += value`
+"""
+function _marginal(N::Int, marginal::Symbol, index::Symbol, value::Symbol)
+    aexprs = [Expr(:escape, Expr(:(+=), Expr(:ref, marginal, i, Symbol(index,'_',i)), :($value))) for i = 1:N]
+    Expr(:block, aexprs...)
+end
+
+macro _marginal(N, marginal, index, value)
+    _marginal(N, marginal, index, value)
+end
+
+"""
+`_test_index(1, i, continue)` generates the expression: `i_1 >= 22 && continue`
+"""
+function _test_index(N::Int, index::Symbol, expr::Expr)
+    aexprs = [Expr(:escape, :($(Symbol(index,"_",i)) >= 22 && $expr)) for i = 1:N]
+    Expr(:block, aexprs...)
+end
+
+macro _test_index(N, index, expr)
+    _test_index(N, index, expr)
+end
+
 # AbstractArray Interface
 # -----------------------
 
@@ -21,29 +48,37 @@ Base.size(table::ContingencyTable) = size(table.table)
 
 Base.getindex(table::ContingencyTable, i...) = getindex(table.table, i...)
 
-function Base.getindex(table::ContingencyTable, i::Residue)
-    index = get_alphabet(table)[i]
-    @assert index != 22 "Residue $i isn't in the alphabet"
-    getindex(get_table(table), index)
-end
-
-function Base.getindex(table::ContingencyTable, i::Residue, j::Residue)
-    index_i = get_alphabet(table)[i]
-    index_j = get_alphabet(table)[j]
-    @assert index_i != 22 "Residue $i isn't in the alphabet"
-    @assert index_j != 22 "Residue $j isn't in the alphabet"
-    getindex(get_table(table), index_i, index_j)
-end
-
-function Base.getindex(table::ContingencyTable, I::Residue...)
+@generated function Base.getindex(table::ContingencyTable, I::Residue...)
     N = length(I)
-    indexes = Array(Int,N)
-    for i in 1:N
-        index = get_alphabet(table)[I[i]]
-        @assert index != 22 "Residue $i isn't in the alphabet"
-        indexes[i] = index
+    quote
+        alphabet = get_alphabet(table)
+        matrix = array(get_table(table))
+        # index_1 = alphabet[I[1]]
+        # index_2 ...
+        @nextract $N index d->alphabet[I[d]]
+        # index_1 >= 22 error("There is a Residue outside the alphabet")
+        # index_2 ...
+        @_test_index $N index error("There is a Residue outside the alphabet")
+        # getindex(matrix, index_1, index_2...
+        @nref $N matrix index
     end
-    getindex(get_table(table), indexes...)
+end
+
+function Base.setindex!(table::ContingencyTable, value, i...)
+    setindex!(table.table, value, i...)
+    update_marginals!(table)
+end
+
+@generated function Base.setindex!(table::ContingencyTable, value, I::Residue...)
+    N = length(I)
+    quote
+        alphabet = get_alphabet(table)
+        matrix = array(get_table(table))
+        @nextract $N index d->alphabet[I[d]]
+        @_test_index $N index error("There is a Residue outside the alphabet")
+        @nref($N, matrix, index) = value
+        update_marginals!(table)
+    end
 end
 
 # Show
@@ -90,8 +125,8 @@ end
 
 # Count into the temporal field, without updating table, marginals and total.
 
-function _unsafe_count!{T,N,A}(table::ContingencyTable{T,N,A}, weight::T, i::Int...)
-    table.temporal[i...] += weight
+@inline function _unsafe_count!{T,N,A}(table::ContingencyTable{T,N,A}, weight::T, i::Int...)
+    @inbounds table.temporal[i...] += weight
 end
 
 # Update!
@@ -103,67 +138,52 @@ for (αβ, n) in [(UngappedAlphabet,20), (GappedAlphabet,21)]
     @eval begin
 
         function _update_table!{T}(table::ContingencyTable{T,1,$αβ})
-            array(get_table(table))[:] = table.temporal[1:$n]
+            array(table.table)[:] = table.temporal[1:$n]
             table
         end
 
         function _update_table!{T}(table::ContingencyTable{T,2,$αβ})
-            array(get_table(table))[:] = table.temporal[1:$n, 1:$n]
+            array(table.table)[:] = table.temporal[1:$n, 1:$n]
             table
         end
 
         function _update_table!{T,N}(table::ContingencyTable{T,N,$αβ})
-            array(get_table(table))[:] = table.temporal[(1:$n for i in 1:N)...]
+            array(table.table)[:] = table.temporal[(1:$n for i in 1:N)...]
             table
         end
 
     end
 end
-
-_get_indexes(I...) = ((i for i in I)...)
 
 @generated function _update_table!{T,N,A<:ReducedAlphabet}(table::ContingencyTable{T,N,A})
     quote
         temporal = table.temporal
         alphabet = get_alphabet(table)
-        freqtable = get_table(table)
-        @nloops $N i temporal begin
-            indexes = @ncall $N _get_indexes i
-            if any(x -> x >= 22, indexes)
-                continue
-            end
-            alphabet_indexes = ((alphabet[x] for x in indexes))
-            if any(x -> x >= 22, alphabet_indexes)
-                continue
-            end
-            freqtable[alphabet_indexes...] += @nref $N temporal i
+        freqtable = array(table.table)
+        @inbounds @nloops $N i temporal begin
+            @_test_index $N i continue
+            @nextract $N a d->alphabet[i_d]
+            @_test_index $N a continue
+            @nref($N, freqtable, a) += @nref($N, temporal, i)
         end
         table
     end
 end
 
-function _update_marginals!{T,A}(table::ContingencyTable{T,1,A})
-    array(get_marginals(table))[:] = get_table(table)
-    table
-end
-
-function _update_marginals!{T,A}(table::ContingencyTable{T,2,A})
-    sum!(view(array(get_marginals(table)),1,:), array(get_table(table)))
-    sum!(reshape(view(array(get_marginals(table)),2,:)
-        ,1,length(get_alphabet(table))), array(get_table(table)))
-    table
-end
-
-function _update_marginals!{T,N,A}(table::ContingencyTable{T,N,A})
-    @inbounds for i in 1:N
-        array(get_marginals(table))[i,:] =
-            sum(get_table(table), ((j for j in 1:N if j != i)...))
+@generated function _update_marginals!{T,N,A}(table::ContingencyTable{T,N,A})
+    quote
+        freqtable = array(table.table)
+        marginal  = array(table.marginals)
+        @inbounds @nloops $N i freqtable begin
+            value = @nref $N freqtable i
+            @_marginal($N, marginal, i, value)
+        end
+        table
     end
-    table
 end
 
 function _update_total!(table::ContingencyTable)
-    @inbounds table.total = sum(view(get_marginals(table), 1, :))
+    @inbounds table.total = sum(view(table.marginals, 1, :))
     table
 end
 
@@ -171,4 +191,62 @@ function _update!{T,N,A}(table::ContingencyTable{T,N,A})
     _update_table!(table)
     _update_marginals!(table)
     _update_total!(table)
+    table
 end
+
+function update_marginals!{T,N,A}(table::ContingencyTable{T,N,A})
+    fill!(table.marginals, zero(T))
+    _update_marginals!(table)
+    _update_total!(table)
+    table
+end
+
+# Fill
+# ====
+
+function Base.fill!{T,N,A}(table::ContingencyTable{T,N,A}, value::T)
+    fill!(table.table, value)
+    update_marginals!(table)
+end
+
+# Apply pseudocount
+# =================
+
+# This is faster than array[:] += value
+function _sum!(matrix::NamedArray, value)
+    matrix_array = array(matrix)
+    @inbounds for i in eachindex(matrix_array)
+        matrix_array[i] += value
+    end
+    matrix
+end
+
+function apply_pseudocount!{T,N,A}(table::ContingencyTable{T,N,A}, pseudocount::T)
+    _sum!(table.table, pseudocount)
+    update_marginals!(table)
+end
+
+# Normalize
+# =========
+
+# This is faster than array[:] /= value
+function _div!(matrix::NamedArray, value)
+    matrix_array = array(matrix)
+    @inbounds for i in eachindex(matrix_array)
+        matrix_array[i] /= value
+    end
+    matrix
+end
+
+"""
+`normalize!(p::ResidueCount)`
+This function makes the sum of the frequencies to be one.
+The marginals are updated in the normalization.
+"""
+function Base.normalize!{T,N,A}(table::ContingencyTable{T,N,A})
+    if table.total != T(1.0)
+        _div!(table.table, table.total)
+    end
+    update_marginals!(table)
+end
+
