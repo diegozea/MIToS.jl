@@ -58,7 +58,7 @@
                 @test sum(get_marginals(table)) == 0.0
                 @test get_total(table) == 0.0
 
-                MSA._update!(table)
+                Information._update!(table)
                 @test sum(table.temporal) == 22.0^N
                 if isa(get_alphabet(table),ReducedAlphabet)
                     @test table[1] == 5.0^N
@@ -109,4 +109,3 @@
         end
     end
 end
-

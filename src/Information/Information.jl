@@ -21,42 +21,63 @@ using MIToS.Information
 """
 module Information
 
-using MIToS.Utils
-using MIToS.MSA
+using MIToS: Utils, MSA
+using Base.Cartesian        # nloops for ContingencyTables
+using NamedArrays           # ContingencyTables have NamedArrays
 using PairwiseListMatrices
 
-export BLOSUM62_Pi, BLOSUM62_Pij,
 
-SequenceWeights, Pseudocount, AdditiveSmoothing,
-ResidueContingencyTables, ResidueCount, ResidueProbability,
-nresidues, update!, apply_pseudocount!, count!, normalize!,
-blosum_pseudofrequencies!, apply_pseudofrequencies!, probabilities,
-delete_dimensions!, delete_dimensions,
+export  # MIToS.MSA
+        GappedAlphabet,
+        UngappedAlphabet,
+        ReducedAlphabet,
+        # Pseudocounts
+        Pseudocount,
+        AdditiveSmoothing,
+        # ContingencyTables
+        ContingencyTable,
+        get_alphabet,
+        get_table,
+        get_marginals,
+        get_total,
+        update_marginals!,
+        apply_pseudocount!
 
-AbstractMeasure, SymmetricMeasure,
-Entropy, KullbackLeibler,
-MutualInformation, MutualInformationOverEntropy,
-estimate, estimate_on_marginal,
-GapUnionPercentage, GapIntersectionPercentage,
+# BLOSUM62_Pi, BLOSUM62_Pij,
+#
+# SequenceWeights, Pseudocount, AdditiveSmoothing,
+# ResidueContingencyTables, ResidueCount, ResidueProbability,
+# nresidues, update!, apply_pseudocount!, count!, normalize!,
+# blosum_pseudofrequencies!, apply_pseudofrequencies!, probabilities,
+# delete_dimensions!, delete_dimensions,
+#
+# AbstractMeasure, SymmetricMeasure,
+# Entropy, KullbackLeibler,
+# MutualInformation, MutualInformationOverEntropy,
+# estimate, estimate_on_marginal,
+# GapUnionPercentage, GapIntersectionPercentage,
+#
+# estimateincolumns, estimateinsequences, cumulative,
+#
+# APC!,
+#
+# buslje09, BLMI, pairwisegapfraction,
+#
+# # Formats from MIToS.MSA:
+# Raw, Stockholm, FASTA,
+#
+# # Externals
+# gaussdca
 
-estimateincolumns, estimateinsequences, cumulative,
+include("Pseudocounts.jl")
+include("ContingencyTables.jl")
 
-APC!,
-
-buslje09, BLMI, pairwisegapfraction,
-
-# Formats from MIToS.MSA:
-Raw, Stockholm, FASTA,
-
-# Externals
-gaussdca
-
-include("BLOSUM62.jl")
-include("Probabilities.jl")
-include("InformationMeasures.jl")
-include("Iterations.jl")
-include("Corrections.jl")
-include("CorrectedMutualInformation.jl")
-include("Externals.jl")
+# include("BLOSUM62.jl")
+# include("Probabilities.jl")
+# include("InformationMeasures.jl")
+# include("Iterations.jl")
+# include("Corrections.jl")
+# include("CorrectedMutualInformation.jl")
+# include("Externals.jl")
 
 end

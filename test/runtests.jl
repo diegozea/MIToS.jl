@@ -1,6 +1,6 @@
 using Base.Test
 
-using MIToS: Utils, MSA
+using MIToS: Utils, MSA, Information
 
 using NamedArrays
 using PairwiseListMatrices  # getlist
@@ -34,7 +34,11 @@ end
     include(joinpath("MSA", "Identity.jl"))
     include(joinpath("MSA", "Hobohm.jl"))
     include(joinpath("MSA", "MSAAnnotations.jl"))
-    include(joinpath("MSA", "ContingencyTables.jl"))
+end
+
+# Information
+@testset "Information" begin
+    include(joinpath("Information", "ContingencyTables.jl"))
 end
 
 # # MSA

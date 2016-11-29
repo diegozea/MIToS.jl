@@ -25,16 +25,9 @@ using FastaIO               # FastaReader (fast)
 using Base.Random           # shuffle!
 using PairwiseListMatrices  # Percent Identity Matrices
 using Clustering            # Used for sequence clustering: ClusteringResult
-using Base.Cartesian        # nloops for ContingencyTables
 using MIToS.Utils
 
-
-using IndexedArrays         # IndexedArray for sequence names in MSAs
-
-
-
 using RecipesBase           # Plots for MSAs
-
 
 import Clustering: ClusteringResult, nclusters, counts, assignments
 
@@ -99,15 +92,7 @@ export  # Residue
         NoClustering, SequenceClusters,
         getweight, nsequences,
         # Hobohm
-        hobohmI,
-        # ContingencyTables
-        ContingencyTable,
-        get_alphabet,
-        get_table,
-        get_marginals,
-        get_total,
-        update_marginals!,
-        apply_pseudocount!
+        hobohmI
 
 
 include("Residues.jl")
@@ -126,7 +111,6 @@ include("PLM.jl")
 include("Identity.jl")
 include("Clusters.jl")
 include("Hobohm.jl")
-include("ContingencyTables.jl")
 # include("Plots.jl")
 
 end
