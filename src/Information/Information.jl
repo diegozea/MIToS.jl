@@ -41,7 +41,8 @@ export  # MIToS.MSA
         get_marginals,
         get_total,
         update_marginals!,
-        apply_pseudocount!
+        apply_pseudocount!,
+        count!
 
 # BLOSUM62_Pi, BLOSUM62_Pij,
 #

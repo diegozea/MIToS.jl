@@ -11,6 +11,9 @@
                 @test size(table) == (Int[length(alphabet) for i in 1:N]...)
                 @test length(table) == length(alphabet)^N
                 @test sum(table) == 0.0
+                @test sum(table.temporal) == 0.0
+                @test sum(get_marginals(table)) == 0.0
+                @test get_total(table) == 0.0
             end
         end
     end
@@ -86,7 +89,7 @@
         end
     end
 
-    @testset "Fill & pseudocount" begin
+    @testset "Fill" begin
 
         for alphabet in (UngappedAlphabet(),
                          GappedAlphabet(),
@@ -94,12 +97,45 @@
             for N in 1:3
 
                 table = ContingencyTable(Float64, N, alphabet)
+
+                fill!(table, AdditiveSmoothing(1.0))
+                @test table[1] == 1.0
+                @test get_marginals(table)[1] == length(alphabet)^(N-1)
+                @test sum(table) == length(alphabet)^N
+                @test sum(get_marginals(table)) == float(N)*(length(alphabet)^N)
+                @test get_total(table) == float(length(alphabet))^N
+            end
+        end
+    end
+
+    @testset "Pseudocount" begin
+
+        for alphabet in (UngappedAlphabet(),
+                         GappedAlphabet(),
+                         ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"))
+
+            for N in 1:3
+
+                table = ContingencyTable(Float64, N, alphabet)
+
+                apply_pseudocount!(table, zero(AdditiveSmoothing{Float64}))
+
                 @test sum(table.temporal) == 0.0
                 @test sum(table) == 0.0
                 @test sum(get_marginals(table)) == 0.0
                 @test get_total(table) == 0.0
 
-                fill!(table, 1.0)
+                apply_pseudocount!(table, AdditiveSmoothing(1.0))
+
+                @test table[1] == 1.0
+                @test get_marginals(table)[1] == length(alphabet)^(N-1)
+                @test sum(table) == length(alphabet)^N
+                @test sum(get_marginals(table)) == float(N)*(length(alphabet)^N)
+                @test get_total(table) == float(length(alphabet))^N
+
+                table = ContingencyTable(Float64, N, alphabet)
+                apply_pseudocount!(table, 1.0)
+
                 @test table[1] == 1.0
                 @test get_marginals(table)[1] == length(alphabet)^(N-1)
                 @test sum(table) == length(alphabet)^N

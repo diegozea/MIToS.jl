@@ -132,26 +132,16 @@ end
 # Update!
 # -------
 
-# Update the table, marginal and total (initialized in 0) using temporal
+# Update the table, marginal and total using temporal
 
-for (αβ, n) in [(UngappedAlphabet,20), (GappedAlphabet,21)]
-    @eval begin
-
-        function _update_table!{T}(table::ContingencyTable{T,1,$αβ})
-            array(table.table)[:] = table.temporal[1:$n]
-            table
+@generated function _update_table!{T,N,A<:Union{UngappedAlphabet,GappedAlphabet}}(table::ContingencyTable{T,N,A})
+    quote
+        temporal = table.temporal
+        freqtable = array(table.table)
+        @inbounds @nloops $N i freqtable begin
+            @nref($N, freqtable, i) += @nref($N, temporal, i)
         end
-
-        function _update_table!{T}(table::ContingencyTable{T,2,$αβ})
-            array(table.table)[:] = table.temporal[1:$n, 1:$n]
-            table
-        end
-
-        function _update_table!{T,N}(table::ContingencyTable{T,N,$αβ})
-            array(table.table)[:] = table.temporal[(1:$n for i in 1:N)...]
-            table
-        end
-
+        table
     end
 end
 
@@ -187,19 +177,19 @@ function _update_total!(table::ContingencyTable)
     table
 end
 
-function _update!{T,N,A}(table::ContingencyTable{T,N,A})
-    _update_table!(table)
-    _update_marginals!(table)
-    _update_total!(table)
-    table
-end
-
 function update_marginals!{T,N,A}(table::ContingencyTable{T,N,A})
     fill!(table.marginals, zero(T))
     _update_marginals!(table)
     _update_total!(table)
     table
 end
+
+function _update!{T,N,A}(table::ContingencyTable{T,N,A})
+    _update_table!(table)
+    update_marginals!(table)
+end
+
+_cleanup_temporal!{T,N,A}(table::ContingencyTable{T,N,A}) = fill!(table.temporal, zero(T))
 
 # Fill
 # ====
@@ -208,6 +198,8 @@ function Base.fill!{T,N,A}(table::ContingencyTable{T,N,A}, value::T)
     fill!(table.table, value)
     update_marginals!(table)
 end
+
+Base.fill!{T,N,A}(table::ContingencyTable{T,N,A}, p::AdditiveSmoothing{T}) = fill!(table, p.λ)
 
 # Apply pseudocount
 # =================
@@ -226,6 +218,10 @@ function apply_pseudocount!{T,N,A}(table::ContingencyTable{T,N,A}, pseudocount::
     update_marginals!(table)
 end
 
+function apply_pseudocount!{T,N,A}(table::ContingencyTable{T,N,A}, p::AdditiveSmoothing{T})
+    apply_pseudocount!(table, p.λ)
+end
+
 # Normalize
 # =========
 
@@ -241,12 +237,44 @@ end
 """
 `normalize!(p::ResidueCount)`
 This function makes the sum of the frequencies to be one.
-The marginals are updated in the normalization.
 """
 function Base.normalize!{T,N,A}(table::ContingencyTable{T,N,A})
-    if table.total != T(1.0)
+    if table.total != one(T)
         _div!(table.table, table.total)
+        _div!(table.marginals, table.total)
+        table.total = one(T)
     end
-    update_marginals!(table)
+    table
 end
 
+# Counting
+# ======
+
+@generated function _temporal_counts!{T,N,A}(counts::ContingencyTable{T,N,A}, weights,
+                                  seqs::AbstractVector{Residue}...)
+    quote
+        @assert N == length(seqs) "Number of residue arrays and table dimension doesn't match."
+        # seq_1 = seqs[1]
+        # seq_2 = ...
+        @nextract $N seq d -> seqs[d]
+        len = length(seq_1)
+        # @assert len == length(seq_1) "Residue arrays have different lengths"
+        # @assert len == length(seq_2) ...
+        @nexprs $N d -> @assert len == length(seq_d) "Residue arrays have different lengths."
+        if isa(weights, AbstractArray)
+            @assert len == length(weights) "Residue array and weights sizes doesn't match."
+        end
+        _cleanup_temporal!(counts)
+        temporal = counts.temporal
+        @inbounds @simd for index in 1:length(seq_1)
+            # temporal[Int(seq_1[index]), Int(seq_2... += getweight(weights, index)
+            @nref($N, temporal, d -> Int(seq_d[index])) += getweight(weights, index)
+        end
+        counts
+    end
+end
+
+function count!{T,N,A}(table::ContingencyTable{T,N,A}, weights, seqs::AbstractVector{Residue}...)
+    _temporal_counts!(table, weights, seqs...)
+    _update!(table)
+end
