@@ -120,13 +120,13 @@ function (::Type{ContingencyTable}){T,A}(::Type{T}, N::Int, alphabet::A)
                             zero(T))
 end
 
-# Unsafe count
-# ------------
-
-# Count into the temporal field, without updating table, marginals and total.
-
-@inline function _unsafe_count!{T,N,A}(table::ContingencyTable{T,N,A}, weight::T, i::Int...)
-    @inbounds table.temporal[i...] += weight
+function (::Type{ContingencyTable}){T,N,A}(matrix::AbstractArray{T,N}, alphabet::A)
+    n = length(alphabet)
+    @assert size(matrix) == ((n for i in 1:N)...) "Matrix size doesn't match alphabet length"
+    table = ContingencyTable(T, N, alphabet)
+    array(table.table)[:] = matrix
+    _update_marginals!(table)
+    _update_total!(table)
 end
 
 # Update!
@@ -235,7 +235,7 @@ function _div!(matrix::NamedArray, value)
 end
 
 """
-`normalize!(p::ResidueCount)`
+`normalize!(p::ContingencyTable)`
 This function makes the sum of the frequencies to be one.
 """
 function Base.normalize!{T,N,A}(table::ContingencyTable{T,N,A})
@@ -277,4 +277,46 @@ end
 function count!{T,N,A}(table::ContingencyTable{T,N,A}, weights, seqs::AbstractVector{Residue}...)
     _temporal_counts!(table, weights, seqs...)
     _update!(table)
+end
+
+# Delete Dimensions
+# =================
+
+function _list_without_dimensions(len::Int, output_len::Int, dimensions::Int...)
+  ndim = length(dimensions)
+  @assert (len-ndim) == output_len "$output_len should be = $(len-ndim)"
+  index_list = Array(Int, output_len)
+  j = 1
+  @inbounds for i in 1:len
+    if ! (i in dimensions)
+      index_list[j] = i
+      j += 1
+    end
+  end
+  index_list
+end
+
+"""
+`delete_dimensions!(out::ContingencyTable, in::ContingencyTable, dimensions::Int...)`
+
+This function fills a ContingencyTable with the counts/probabilities on `in` after the
+deletion of `dimensions`. i.e. This is useful for getting Pxy from Pxyz.
+"""
+function delete_dimensions!{T,N,S,A}(output::ContingencyTable{T,S,A},
+                                     input::ContingencyTable{T,N,A},
+                                     dimensions::Int...)
+  array(output.marginals)[:] = input.marginals[_list_without_dimensions(N, S, dimensions...),:]
+  array(output.table)[:] = sum(array(input.table), dimensions)
+  output.total = input.total
+  output
+end
+
+"""
+`delete_dimensions(in::ContingencyTable, dimensions::Int...)`
+
+This function creates a ContingencyTable with the counts/probabilities on `in` after the
+deletion of `dimensions`. i.e. This is useful for getting Pxy from Pxyz.
+"""
+function delete_dimensions{T,N,A}(input::ContingencyTable{T,N,A}, dims::Int...)
+    delete_dimensions!(ContingencyTable(T, N-length(dims), input.alphabet), input, dims...)
 end

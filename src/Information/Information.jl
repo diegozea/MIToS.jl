@@ -42,10 +42,14 @@ export  # MIToS.MSA
         get_total,
         update_marginals!,
         apply_pseudocount!,
-        count!
+        count!,
+        delete_dimensions!, delete_dimensions,
+        # BLOSUM62
+        BLOSUM62_Pi, BLOSUM62_Pij,
+        # Pseudofrequencies
+        blosum_pseudofrequencies!,
+        apply_pseudofrequencies!
 
-# BLOSUM62_Pi, BLOSUM62_Pij,
-#
 # SequenceWeights, Pseudocount, AdditiveSmoothing,
 # ResidueContingencyTables, ResidueCount, ResidueProbability,
 # nresidues, update!, apply_pseudocount!, count!, normalize!,
@@ -72,8 +76,9 @@ export  # MIToS.MSA
 
 include("Pseudocounts.jl")
 include("ContingencyTables.jl")
-
-# include("BLOSUM62.jl")
+include("BLOSUM62.jl")
+include("Pseudofrequencies.jl")
+#
 # include("Probabilities.jl")
 # include("InformationMeasures.jl")
 # include("Iterations.jl")

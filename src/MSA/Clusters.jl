@@ -9,7 +9,7 @@ immutable NoClustering <: ClusteringResult end
 immutable SequenceClusters <: ClusteringResult
     clustersize::Vector{Int}
     sequencecluster::Vector{Int}
-    sequenceweight::Vector{Float64}
+    sequenceweight::StatsBase.WeightVec{Float64,Array{Float64,1}}
 end
 
 nsequences(cl::SequenceClusters) = length(cl.sequencecluster)
@@ -38,7 +38,8 @@ Clustering.assignments(cl::SequenceClusters) = cl.sequencecluster
 function Base.convert(::Type{SequenceClusters}, cl::ClusteringResult)
     clustersize = counts(cl)
     sequencecluster = assignments(cl)
-    sequenceweight = Float64[ 1.0/clustersize[k] for k in sequencecluster ]
+    sequenceweight = WeightVec(Float64[1.0/clustersize[k] for k in sequencecluster],
+        Float64(length(clustersize)))
     SequenceClusters(clustersize, sequencecluster, sequenceweight)
 end
 
