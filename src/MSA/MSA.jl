@@ -16,8 +16,6 @@ using MIToS.MSA
 """
 module MSA
 
-# using Base.Threads
-
 using DataStructures        # OrderedDicts for Annotations
 using AutoHashEquals        # Annotations
 using NamedArrays           # Col and Seq names, basic sequence/MSA object
