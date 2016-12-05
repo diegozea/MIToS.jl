@@ -1,6 +1,3 @@
-import  Base: zero, one, zeros, start, next, done, length, eltype,
-        size, setindex!, getindex, similar, fill!, count #, print # , copy, deepcopy, fill!, getindex, setindex!
-
 """
 `SequenceWeights` is an alias for `Union{ClusteringResult, AbstractVector}`.
 
@@ -9,62 +6,12 @@ The type should define `getweight` to be useful in those functions.
 """
 typealias SequenceWeights Union{ClusteringResult, AbstractVector} # AbstractVector because getweight(cl) returns a Vector
 
-
-## ResidueContingencyTables
-
-abstract ResidueContingencyTables{T, N, UseGap} <: AbstractArray{T, N}
-
-### Abstract Array Interface
-
-Base.linearindexing(::ResidueContingencyTables)	= Base.LinearFast()
-
-"""
-`getindex(n::ResidueContingencyTables, i::Int)`
-
-Gives access to the table. Use `Int()` for indexing with `Residue`s.
-"""
-getindex(n::ResidueContingencyTables, i::Int)	= getindex(n.table, i)
-
-"""
-`setindex!(n::ResidueCount, v, i::Int)` set a value into the table, but doesn't update the marginals (and total).
-Use `Int()` for indexing with `Residues`. Use `update!` in order to calculate again the marginals (and total).
-"""
-setindex!(n::ResidueContingencyTables, v, i::Int) = setindex!(n.table, v, i)
-
-#### Length & Size
-
-length{T}(n::ResidueContingencyTables{T, 1, true}) = 21
-length{T}(n::ResidueContingencyTables{T, 1,false}) = 20
-
-length{T}(n::ResidueContingencyTables{T, 2, true}) = 441
-length{T}(n::ResidueContingencyTables{T, 2,false}) = 400
-
-length{T,N,UseGap}(n::ResidueContingencyTables{T, N, UseGap}) = length(n.table)
-
-size{T}(n::ResidueContingencyTables{T, 1, true}) = (21,)
-size{T}(n::ResidueContingencyTables{T, 1,false}) = (20,)
-
-size{T}(n::ResidueContingencyTables{T, 2, true}) = (21, 21)
-size{T}(n::ResidueContingencyTables{T, 2,false}) = (20, 20)
-
-size{T,N,UseGap}(n::ResidueContingencyTables{T, N, UseGap}) = size(n.table)
-
 """
 Number of residues used in the `ResidueContingencyTables`.
 A 20x20 table returns 20 (ungapped alphabet).
 """
 @inline nresidues{T, N}(n::ResidueContingencyTables{T, N, true})  = 21
 @inline nresidues{T, N}(n::ResidueContingencyTables{T, N, false}) = 20
-
-#### Iteration Interface
-
-start(n::ResidueContingencyTables) = 1
-
-@inbounds next(n::ResidueContingencyTables, state::Int) = (n.table[state], state + 1)
-
-done{T,N,UseGap}(n::ResidueContingencyTables{T, N, UseGap}, state) = state > length(n)
-
-eltype{T,N,UseGap}(::Type{ResidueContingencyTables{T, N, UseGap}}) = T
 
 ## Counts
 
@@ -113,18 +60,6 @@ similar{T,N,S,UseGap}(n::ResidueCount{T,N,UseGap}, ::Type{S}, D::Int) = ResidueC
 
 ### Update!
 
-function _tuple_without_index(index::Int, N::Int)
-	used = Array(Int, N - 1)
-	j = 1
-	for i in 1:N
-		if i != index
-			used[j] = i
-			j += 1
-		end
-	end
-	(used...)
-end
-
 "Updates the marginals values (and total value for `ResidueCount`) of a `ResidueContingencyTables`"
 function update!{T,UseGap}(n::ResidueCount{T,1,UseGap})
 	n.marginals[:] = n.table
@@ -150,40 +85,6 @@ end
 ### Apply Pseudocount
 
 # This is faster than array[:] += value
-function _sum!(array, value)
-  @inbounds for i in eachindex(array)
-    array[i] += value
-  end
-  array
-end
-
-for (dim, gap, margi_exp, total_exp) in [ (:1, :true,  :(pse.λ), :(pse.λ * 21)),
-																					(:1, :false, :(pse.λ), :(pse.λ * 20)),
-																					(:2, :true,  :(pse.λ * 21), :(pse.λ * 441)),
-																					(:2, :false, :(pse.λ * 20), :(pse.λ * 400)) ]
-	@eval begin
-
-		function apply_pseudocount!{T}(n::ResidueCount{T, $(dim), $(gap)}, pse::AdditiveSmoothing{T})
-			margi_sum = $(margi_exp)
-			total_sum = $(total_exp)
-			_sum!(n.table, pse.λ)
-			_sum!(n.marginals, margi_sum)
-			n.total += total_sum
-			n
-		end
-
-		function fill!{T}(n::ResidueCount{T, $(dim), $(gap)}, pse::AdditiveSmoothing{T})
-			margi_sum = $(margi_exp)
-			total_sum = $(total_exp)
-			fill!(n.table, pse.λ)
-			fill!(n.marginals, margi_sum)
-			n.total = total_sum
-			n
-		end
-
-	end
-
-end
 
 """
 `apply_pseudocount!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::AdditiveSmoothing{T})`
@@ -215,60 +116,6 @@ function fill!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, pse::AdditiveSmoothi
 end
 
 ### Counting
-
-function count!{T}(n::ResidueCount{T, 1, true}, weights, res::AbstractVector{Residue})
-    @simd for i in 1:length(res)
-        @inbounds n.table[Int(res[i])] += getweight(weights,i)
-    end
-    update!(n)
-end
-
-function count!{T}(n::ResidueCount{T, 1, false}, weights, res::AbstractVector{Residue})
-    @inbounds for i in 1:length(res)
-        aa = Int(res[i])
-        aa == Int(GAP) && continue
-        n.table[aa] += getweight(weights,i)
-    end
-    update!(n)
-end
-
-count!{T, UseGap}(n::ResidueCount{T, 1, UseGap}, res::AbstractVector{Residue}) = count!(n, NoClustering(), res)
-
-function count!{T}(n::ResidueCount{T, 2, true}, weights, res1::AbstractVector{Residue}, res2::AbstractVector{Residue})
-  @assert length(res1) == length(res2)
-  @simd for i in 1:length(res1)
-    @inbounds n.table[Int(res1[i]), Int(res2[i])] += getweight(weights,i)
-  end
-  update!(n)
-end
-
-function count!{T}(n::ResidueCount{T, 2, false}, weights, res1::AbstractVector{Residue}, res2::AbstractVector{Residue})
-  for i in 1:length(res1)
-    aa1 = res1[i]
-    aa2 = res2[i]
-    if (aa1 != GAP) && (aa2 != GAP)
-      n.table[Int(aa1), Int(aa2)] += getweight(weights,i)
-    end
-  end
-  update!(n)
-end
-
-count!{T}(n::ResidueCount{T, 2, true}, res1::AbstractVector{Residue}, res2::AbstractVector{Residue}) = count!(n, NoClustering(), res1, res2)
-count!{T}(n::ResidueCount{T, 2, false},res1::AbstractVector{Residue}, res2::AbstractVector{Residue}) = count!(n, NoClustering(), res1, res2)
-
-function count!{T, N, UseGap}(n::ResidueCount{T, N, UseGap}, weights, res::AbstractVector{Residue}...)
-  if length(res) == N
-    for i in 1:length(res[1])
-      aa_list = [ Int(aa[i]) for aa in res ]
-      if UseGap || (findfirst(aa_list, Int(GAP)) == 0)
-        n.table[aa_list...] += getweight(weights,i)
-      end
-    end
-    update!(n)
-  else
-    throw("Number of arrays ($(length(res))) != $N")
-  end
-end
 
 """
 `count!` adds counts from vector of residues to a `ResidueCount` object.
