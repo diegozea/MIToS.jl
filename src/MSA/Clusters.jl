@@ -43,7 +43,7 @@ function Base.convert(::Type{SequenceClusters}, cl::ClusteringResult)
     SequenceClusters(clustersize, sequencecluster, sequenceweight)
 end
 
-Base.convert(::Type{SequenceClusters}, cl::SequenceClusters) = cl # no-op
+@inline Base.convert(::Type{SequenceClusters}, cl::SequenceClusters) = cl # no-op
 
 # weights
 # -------
@@ -55,12 +55,12 @@ This function returns the weight of the sequence number `i`. getweight should be
 any type used for `count!`/`count` in order to use his weigths. If `i` isn't used, this
 function returns a vector with the weight of each sequence.
 """
-getweight(c::SequenceClusters, seq::Int) = c.sequenceweight[seq]
-
-@inline getweight(weight::NoClustering, i::Int) = 1
-
-getweight(weights::AbstractVector, i::Int) = weights[i]
+@inline getweight(weight::NoClustering, seq::Int) = 1
 
 getweight(cl::SequenceClusters) = cl.sequenceweight
 
+getweight(cl::SequenceClusters, seq::Int) = cl.sequenceweight[seq]
+
 getweight(cl::ClusteringResult) = getweight(convert(SequenceClusters, cl))
+
+getweight(cl::ClusteringResult, seq::Int) = getweight(convert(SequenceClusters, cl), seq)

@@ -3,6 +3,8 @@
 
 abstract Pseudocount{T<:Real}
 
+immutable NoPseudocount <: Pseudocount end
+
 """
 **Additive Smoothing** or fixed pseudocount  `λ`  for `ResidueCount`
 (in order to estimate probabilities when the number of samples is low).

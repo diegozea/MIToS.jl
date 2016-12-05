@@ -33,6 +33,7 @@ export  # MIToS.MSA
         ReducedAlphabet,
         # Pseudocounts
         Pseudocount,
+        NoPseudocount,
         AdditiveSmoothing,
         # ContingencyTables
         ContingencyTable,
@@ -46,10 +47,15 @@ export  # MIToS.MSA
         # BLOSUM62
         BLOSUM62_Pi, BLOSUM62_Pij,
         # Pseudofrequencies
-        blosum_pseudofrequencies!,
+        Pseudofrequencies,
+        NoPseudofrequencies,
+        BLOSUM_Pseudofrequencies,
         apply_pseudofrequencies!,
         # Counters
-        count!
+        count!,
+        count,
+        probabilities!,
+        probabilities
 
 # SequenceWeights,
 # nresidues, update!, apply_pseudocount!, count!, normalize!,

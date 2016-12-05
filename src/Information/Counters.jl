@@ -25,18 +25,46 @@
     end
 end
 
-function count!{T,N,A}(table::ContingencyTable{T,N,A}, weights, seqs::AbstractVector{Residue}...)
+function count!{T,N,A}(table::ContingencyTable{T,N,A},
+                       weights,
+                       pseudocounts::Pseudocount,
+                       seqs::AbstractVector{Residue}...)
     _temporal_counts!(table, weights, seqs...)
+    apply_pseudocount!(table, pseudocount)
     _update!(table)
+    table
 end
 
 # Default counters
 # ================
 
-function count!{T,N,A}(table::ContingencyTable{T,N,A}, seqs::AbstractVector{Residue}...)
-    count!(table, NoClustering(), seqs...)
+function count(seqs::AbstractVector{Residue}...;
+               alphabet::ResidueAlphabet = UngappedAlphabet(),
+               weights = NoClustering(),
+               pseudocounts::Pseudocount = NoPseudocount())
+    table = ContingencyTable(Float64, length(seqs), alphabet)
+    count!(table, weights, pseudocounts, seqs...)
 end
 
 # Probabilities
 # =============
 
+function probabilities!{T,N,A}(table::ContingencyTable{T,N,A},
+                               weights,
+                               pseudocounts::Pseudocount,
+                               pseudofrequencies::Pseudofrequencies,
+                               seqs::AbstractVector{Residue}...)
+    count!(table, weights, pseudocounts, seqs...)
+    normalize!(table)
+    apply_pseudofrequencies!(table, pseudofrequencies)
+    table
+end
+
+function probabilities(seqs::AbstractVector{Residue}...;
+                       alphabet::ResidueAlphabet = UngappedAlphabet(),
+                       weights = NoClustering(),
+                       pseudocounts::Pseudocount = NoPseudocount(),
+                       pseudofrequencies::Pseudofrequencies = NoPseudofrequencies())
+    table = ContingencyTable(Float64, length(seqs), alphabet)
+    probabilities!(table, weights, pseudocounts, pseudofrequencies, seqs...)
+end

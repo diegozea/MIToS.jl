@@ -81,8 +81,17 @@ end
     end
 end
 
+# Similar
+# -------
+
+Base.similar{T,N,A}(table::ContingencyTable{T,N,A}) = ContingencyTable(T, N, table.alphabet)
+
+function Base.similar{T,S,N,A}(table::ContingencyTable{T,N,A}, ::Type{S})
+    ContingencyTable(S, N, table.alphabet)
+end
+
 # Show
-# -----
+# ====
 
 Base.show(io::IO, ::MIME"text/plain", table::ContingencyTable) = show(io, table)
 
@@ -201,6 +210,8 @@ end
 
 Base.fill!{T,N,A}(table::ContingencyTable{T,N,A}, p::AdditiveSmoothing{T}) = fill!(table, p.λ)
 
+@inline Base.fill!(table::ContingencyTable, p::NoPseudocount) = table
+
 # Apply pseudocount
 # =================
 
@@ -221,6 +232,8 @@ end
 function apply_pseudocount!{T,N,A}(table::ContingencyTable{T,N,A}, p::AdditiveSmoothing{T})
     apply_pseudocount!(table, p.λ)
 end
+
+@inline apply_pseudocount!(table::ContingencyTable, p::NoPseudocount) = table
 
 # Normalize
 # =========
