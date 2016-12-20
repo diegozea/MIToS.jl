@@ -116,7 +116,7 @@ function percentidentity{T}(msa::AbstractMatrix{Residue}, out::Type{T}=Float64)
     nseq = length(aln)
     len = length(aln[1])
     scores = sequencepairsmatrix(msa, T, false, T(100.0))
-    _percentidentity_kernel!(scores, aln, nseq, len)
+    _percentidentity_kernel!(NamedArrays.array(scores), aln, nseq, len)
     scores
 end
 
@@ -241,6 +241,8 @@ avoid the `OutOfMemoryError()`.
 function percentsimilarity(msa::AbstractMatrix{Residue}, A...; out::Type=Float64)
     M = getresiduesequences(msa)
     P = sequencepairsmatrix(msa, out, false, out(100.0))
-    @inbounds @iterateupper P false list[k]=:($percentsimilarity)(:($M)[i],:($M)[j],:($A)...)
+    @inbounds @iterateupper NamedArrays.array(P) false begin
+        list[k]=:($percentsimilarity)(:($M)[i],:($M)[j],:($A)...)
+    end
     P
 end
