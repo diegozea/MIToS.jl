@@ -30,7 +30,7 @@ const BLOSUM62_Pi = ContingencyTable(Float64[ 0.0741,
 """
 Normalization is done row based. The firts row contains the *P(aa|A)* and so one...
 
-`     A      R      N      D      C      Q      E      G      H      I      L      K      M      F      P      S      T      W      Y      V`
+`    A      R      N      D      C      Q      E      G      H      I      L      K      M      F      P      S      T      W      Y      V`
 """
 const BLOSUM62_Pij = ContingencyTable(Float64[
 0.2901 0.0310 0.0256 0.0297 0.0216 0.0256 0.0405 0.0783 0.0148 0.0432 0.0594 0.0445 0.0175 0.0216 0.0297 0.0850 0.0499 0.0054 0.0175 0.0688 ;

@@ -25,7 +25,7 @@ using MIToS: Utils, MSA
 using Base.Cartesian        # nloops for ContingencyTables
 using NamedArrays           # ContingencyTables have NamedArrays
 using PairwiseListMatrices
-
+using Combinatorics         # combinations in map...freq with N > 2
 
 export  # MIToS.MSA
         GappedAlphabet,
@@ -58,8 +58,7 @@ export  # MIToS.MSA
         probabilities
 
 # SequenceWeights,
-# nresidues, update!, apply_pseudocount!, count!, normalize!,
-# probabilities,
+# nresidues, update!, normalize!,
 #
 # AbstractMeasure, SymmetricMeasure,
 # Entropy, KullbackLeibler,
@@ -84,8 +83,10 @@ include("ContingencyTables.jl")
 include("BLOSUM62.jl")
 include("Pseudofrequencies.jl")
 include("Counters.jl")
+include("Iterations.jl")
 
-# include("Probabilities.jl")
+# include("Probabilities.jl") # Docs and others, see at the end
+
 # include("InformationMeasures.jl")
 # include("Iterations.jl")
 # include("Corrections.jl")

@@ -38,6 +38,7 @@ function _test_index(N::Int, index::Symbol, expr::Expr)
 end
 
 macro _test_index(N, index, expr)
+    println("Runtime _test_index")
     _test_index(N, index, expr)
 end
 
@@ -198,7 +199,16 @@ function _update!{T,N,A}(table::ContingencyTable{T,N,A})
     update_marginals!(table)
 end
 
+_cleanup_table!{T,N,A}(table::ContingencyTable{T,N,A}) = fill!(table.table, zero(T))
 _cleanup_temporal!{T,N,A}(table::ContingencyTable{T,N,A}) = fill!(table.temporal, zero(T))
+
+function cleanup!{T,N,A}(table::ContingencyTable{T,N,A})
+    _cleanup_temporal!(table)
+    _cleanup_table!(table)
+    fill!(table.marginals, zero(T))
+    table.total = zero(T)
+    table
+end
 
 # Fill
 # ====

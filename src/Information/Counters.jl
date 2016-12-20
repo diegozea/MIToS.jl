@@ -30,7 +30,7 @@ function count!{T,N,A}(table::ContingencyTable{T,N,A},
                        pseudocounts::Pseudocount,
                        seqs::AbstractVector{Residue}...)
     _temporal_counts!(table, weights, seqs...)
-    apply_pseudocount!(table, pseudocount)
+    apply_pseudocount!(table, pseudocounts)
     _update!(table)
     table
 end
