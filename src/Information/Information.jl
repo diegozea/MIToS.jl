@@ -25,6 +25,7 @@ using MIToS: Utils, MSA
 using Base.Cartesian        # nloops for ContingencyTables
 using NamedArrays           # ContingencyTables have NamedArrays
 using PairwiseListMatrices
+using DataStructures        # OrderedDicts for NamedArrays
 using Combinatorics         # combinations in map...freq with N > 2
 
 export  # MIToS.MSA

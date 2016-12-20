@@ -38,7 +38,6 @@ function _test_index(N::Int, index::Symbol, expr::Expr)
 end
 
 macro _test_index(N, index, expr)
-    println("Runtime _test_index")
     _test_index(N, index, expr)
 end
 

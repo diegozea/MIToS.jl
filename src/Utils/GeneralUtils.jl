@@ -1,3 +1,5 @@
+_get_function_name(str::String)::String = split(str,'.')[end]
+
 """
 `get_n_words{T <: Union{ASCIIString, UTF8String}}(line::T, n::Int)`
 It returns a `Vector{T}` with the first `n` (possibles) words/fields (delimited

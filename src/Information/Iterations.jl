@@ -1,18 +1,45 @@
-function _mapcolfreq_kernel_for_N_2!(f, scores, table, probabilities
-                                     weights, pseudocounts, pseudofrequencies,
-                                     i, j, col_i, col_j)
+
+function _mapfreq_kernel!(f, table, probabilities,
+                          weights, pseudocounts, pseudofrequencies,
+                          res...)
     _cleanup_table!(table) # count! call _cleanup_temporal! and cleans marginals
-    count!(table, weights, pseudocounts, col_i, col_j)
+    count!(table, weights, pseudocounts, res...)
     apply_pseudocount!(table, pseudocounts)
     _update!(table)
     if probabilities
         normalize!(table)
         apply_pseudofrequencies!(table, pseudofrequencies)
     end
-    scores[i,j] = f(table)
+    f(table)
 end
 
-function mapcolfreq!{T,A}(f, msa::AbstractMatrix{Residue}, table::ContingencyTable{T,2,A};
+# One column: The output is a Named Vector
+
+function mapcolfreq!{T,A}(f::Function, msa::AbstractMatrix{Residue},
+                          table::ContingencyTable{T,1,A};
+                          probabilities::Bool = true,
+                          weights = NoClustering(),
+                          pseudocounts::Pseudocount = NoPseudocount(),
+                          pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
+                          usediagonal::Bool = true,
+                          diagonalvalue::T = zero(T))
+    N = ncolumns(msa)
+    scores = map(1:N) do i
+        _mapfreq_kernel!(f, table, probabilities,
+                         weights, pseudocounts, pseudofrequencies,
+                         view(msa,:,i))
+    end
+    name_list = columnnames(msa)
+    NamedArray(reshape(scores, (1,N)),
+               (OrderedDict{String,Int}(string(f) => 1),
+                OrderedDict{String,Int}(name_list[i] => i for i in 1:N)),
+               ("Function","Col"))
+end
+
+# Column pairs: The output is a Named PairwiseListMatrix
+
+function mapcolfreq!{T,A}(f::Function, msa::AbstractMatrix{Residue},
+                          table::ContingencyTable{T,2,A};
                           probabilities::Bool = true,
                           weights = NoClustering(),
                           pseudocounts::Pseudocount = NoPseudocount(),
@@ -20,26 +47,23 @@ function mapcolfreq!{T,A}(f, msa::AbstractMatrix{Residue}, table::ContingencyTab
                           usediagonal::Bool = true,
                           diagonalvalue::T = zero(T))
     ncol = ncolumns(msa)
-    scores = columnpairsmatrix(msa, T, usediagonal, diagonalvalue)
-    @inbounds for i in 1:ncol
-        col_i = view(msa, :, i)
-        for j in 1:ncol
-            if !usediagonal && i == j
-                continue
-            end
-            col_j = view(msa, :, j)
-            _mapcolfreq_kernel_for_N_2!(f, scores, table, probabilities,
-                                        weights, pseudocounts, pseudofrequencies,
-                                        i, j, col_i, col_j)
-        end
+    columns = map(i -> view(msa,:,i), 1:ncol) # 2x faster than calling view inside the loop
+    scores = columnpairsmatrix(msa, T, usediagonal, diagonalvalue) # Named PairwiseListMatrix
+    plm = NamedArrays.array(scores)
+    @inbounds @iterateupper plm usediagonal begin
+        list[k] = :($_mapfreq_kernel!)(:($f), :($table), :($probabilities),
+                                       :($weights),
+                                       :($pseudocounts), :($pseudofrequencies),
+                                       :($columns)[i], :($columns)[j])
     end
     scores
 end
 
 
+
 #
 # """
-# `estimateincolumns(aln, [count,] use, [α, β,] measure, [pseudocount,] [weight,] [usediagonal, diagonalvalue])`
+# `Information.mapcolfreq!(aln, [count,] use, [α, β,] measure, [pseudocount,] [weight,] [usediagonal, diagonalvalue])`
 #
 # This function `estimate` a `AbstractMeasure` in columns or pair of columns of a MSA.
 #

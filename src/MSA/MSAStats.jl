@@ -32,8 +32,6 @@ function residuefraction(x::AbstractArray{Residue}, dimension::Int)
     mapslices(residuefraction, x, dimension)
 end
 
-_get_function_name(str::String)::String = split(str,'.')[end]
-
 macro keep_names_dimension(functions)
     function_names = functions.args
     n = length(function_names)
@@ -44,12 +42,12 @@ macro keep_names_dimension(functions)
         definitions[i] = quote
 
             function ($f)(msa::NamedArray{Residue,2}, dimension::Int)
-                result = ($f)(array(msa), dimension)
+                result = ($f)(NamedArrays.array(msa), dimension)
                 if dimension == 1
                     name_list = names(msa,2)
                     N = length(name_list)
                     NamedArray(result,
-                        (OrderedDict{String,Int}(_get_function_name(string($f))=>1),
+                        (OrderedDict{String,Int}(Utils._get_function_name(string($f))=>1),
                          OrderedDict{String,Int}(name_list[i]=>i for i in 1:N)),
                         ("Function","Col"))
                 elseif dimension == 2
@@ -57,7 +55,7 @@ macro keep_names_dimension(functions)
                     N = length(name_list)
                     NamedArray(result,
                         (OrderedDict{String,Int}(name_list[i]=>i for i in 1:N),
-                         OrderedDict{String,Int}(_get_function_name(string($f))=>1)),
+                         OrderedDict{String,Int}(Utils._get_function_name(string($f))=>1)),
                         ("Seq","Function"))
                 else
                     throw(ArgumentError("Dimension must be 1 or 2."))
