@@ -10,7 +10,9 @@ on the list (default: `false`) and a default value for the diagonal (default: `N
 function sequencepairsmatrix{T}(msa::AbstractMatrix{Residue}, ::Type{T},
                                 diagonal::Bool, diagonalvalue::T)
     plm = PairwiseListMatrix(T, nsequences(msa), diagonal, diagonalvalue)
-    setlabels(plm, sequencenames(msa))
+    nplm = setlabels(plm, sequencenames(msa))
+    setdimnames!(nplm, ["Seq1", "Seq2"])
+    nplm
 end
 
 function sequencepairsmatrix(msa::AbstractMatrix{Residue})
@@ -27,7 +29,9 @@ and a default value for the diagonal (default: `NaN`).
 function columnpairsmatrix{T}(msa::AbstractMatrix{Residue}, ::Type{T},
                               diagonal::Bool, diagonalvalue::T)
     plm = PairwiseListMatrix(T, ncolumns(msa), diagonal, diagonalvalue)
-    setlabels(plm, columnnames(msa))
+    nplm = setlabels(plm, columnnames(msa))
+    setdimnames!(nplm, ["Col1", "Col2"])
+    nplm
 end
 
 function columnpairsmatrix(msa::AbstractMatrix{Residue})

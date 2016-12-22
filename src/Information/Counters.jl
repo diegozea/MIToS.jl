@@ -38,10 +38,10 @@ end
 # Default counters
 # ================
 
-function count(seqs::AbstractVector{Residue}...;
-               alphabet::ResidueAlphabet = UngappedAlphabet(),
-               weights = NoClustering(),
-               pseudocounts::Pseudocount = NoPseudocount())
+function Base.count(seqs::AbstractVector{Residue}...;
+                    alphabet::ResidueAlphabet = UngappedAlphabet(),
+                    weights = NoClustering(),
+                    pseudocounts::Pseudocount = NoPseudocount())
     table = ContingencyTable(Float64, length(seqs), alphabet)
     count!(table, weights, pseudocounts, seqs...)
 end
