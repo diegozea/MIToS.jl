@@ -23,10 +23,10 @@ frequencies/probabilities `Pab` because they are used to estimate the pseudofreq
 `Gab = Σcd  Pcd ⋅ BLOSUM62( a | c ) ⋅ BLOSUM62( b | d )`
 """
 function _calculate_blosum_pseudofrequencies!{T}(Pab::ContingencyTable{T,2,UngappedAlphabet})
-    @assert get_total(Pab) ≈ one(T) "The input should be a probability table (normalized)"
-    pab  = array(get_table(Pab))
+    @assert gettotal(Pab) ≈ one(T) "The input should be a probability table (normalized)"
+    pab  = array(gettable(Pab))
     gab  = Pab.temporal
-    bl62 = array(get_table(BLOSUM62_Pij))
+    bl62 = array(gettable(BLOSUM62_Pij))
     total = zero(T)
     @inbounds for b in 1:20, a in 1:20
         gab[a,b] = zero(T)
@@ -72,7 +72,7 @@ function apply_pseudofrequencies!{T}(Pab::ContingencyTable{T,2,UngappedAlphabet}
         return(Pab)
     end
     _calculate_blosum_pseudofrequencies!(Pab)
-    pab  = array(get_table(Pab))
+    pab  = array(gettable(Pab))
     gab  = Pab.temporal
     frac = one(T) / ( α + β )
     @inbounds for col in 1:20

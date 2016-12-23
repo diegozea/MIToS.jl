@@ -1,7 +1,13 @@
+_get_matrix_residue(msa::AbstractMultipleSequenceAlignment) = NamedArrays.array(namedmatrix(msa))
+_get_matrix_residue(msa::NamedArray) = NamedArrays.array(msa)
+_get_matrix_residue(msa) = msa
+
 # Kernel function to fill ContingencyTable based on residues
-function _mapfreq_kernel!(f, table, probabilities,
-                          weights, pseudocounts, pseudofrequencies,
-                          res...)
+function _mapfreq_kernel!{T,N,A}(f,
+                                table::ContingencyTable{T,N,A},
+                                probabilities,
+                                weights, pseudocounts, pseudofrequencies,
+                                res::NTuple{N,AbstractVector{Residue}})
     _cleanup_table!(table) # count! call _cleanup_temporal! and cleans marginals
     count!(table, weights, pseudocounts, res...)
     apply_pseudocount!(table, pseudocounts)
@@ -28,8 +34,8 @@ _mappairfreq_kargs_doc = """
 # Residues: The output is a Named Vector
 # --------------------------------------
 
-function _mapfreq!{T,A}(f::Function,
-                        res_list::AbstractVector, # sequences or columns
+function _mapfreq!{T,A,V<:AbstractArray{Residue}}(f::Function,
+                        res_list::Vector{V}, # sequences or columns
                         table::ContingencyTable{T,1,A};
                         probabilities::Bool = true,
                         weights = NoClustering(),
@@ -37,8 +43,9 @@ function _mapfreq!{T,A}(f::Function,
                         pseudofrequencies::Pseudofrequencies = NoPseudofrequencies())
     scores = map(res_list) do res
         _mapfreq_kernel!(f, table, probabilities,
-                         weights, pseudocounts, pseudofrequencies, res)
+                         weights, pseudocounts, pseudofrequencies, (res))
     end
+    scores
 end
 
 # Map to each column
@@ -49,7 +56,8 @@ $_mapfreq_kargs_doc
 function mapcolfreq!{T,A}(f::Function, msa::AbstractMatrix{Residue},
                           table::ContingencyTable{T,1,A}; kargs...)
     N = ncolumns(msa)
-    columns = map(i -> view(msa,:,i), 1:ncol) # 2x faster than calling view inside the loop
+    residues = _get_matrix_residue(msa)
+    columns = map(i -> view(residues,:,i), 1:ncol) # 2x faster than calling view inside the loop
     scores = _mapfreq!(f, columns, table; kargs...)
     name_list = columnnames(msa)
     NamedArray(reshape(scores, (1,N)),
@@ -78,24 +86,23 @@ end
 # Residue pairs: The output is a Named PairwiseListMatrix
 # -------------------------------------------------------
 
-function _mappairfreq!{T,A}(f::Function,
-                            res_list::AbstractVector, # sequences or columns
-                            scores::NamedArray, # Output NamedArray (PairwiseListMatrix)
-                            table::ContingencyTable{T,2,A};
-                            probabilities::Bool = true,
-                            weights = NoClustering(),
-                            pseudocounts::Pseudocount = NoPseudocount(),
-                            pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
-                            usediagonal::Bool = true,
-                            diagonalvalue::T = zero(T))
-    plm = NamedArrays.array(scores)
+function _mappairfreq!{T,D,TV,A,V<:AbstractArray{Residue}}(f::Function,
+                                res_list::Vector{V}, # sequences or columns
+                                plm::PairwiseListMatrix{T,D,TV}, # output
+                                table::ContingencyTable{T,2,A};
+                                probabilities::Bool = true,
+                                weights = NoClustering(),
+                                pseudocounts::Pseudocount = NoPseudocount(),
+                                pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
+                                usediagonal::Bool = true,
+                                diagonalvalue::T = zero(T))
     @inbounds @iterateupper plm usediagonal begin
         list[k] = :($_mapfreq_kernel!)(:($f), :($table), :($probabilities),
                                        :($weights),
                                        :($pseudocounts), :($pseudofrequencies),
-                                       :($res_list)[i], :($res_list)[j])
+                                       (:($res_list)[i], :($res_list)[j]))
     end
-    scores
+    plm
 end
 
 # Map to column pairs
@@ -110,9 +117,11 @@ function mapcolpairfreq!{T,A}(f::Function, msa::AbstractMatrix{Residue},
                               diagonalvalue::T = zero(T),
                               kargs...)
     ncol = ncolumns(msa)
-    columns = map(i -> view(msa,:,i), 1:ncol) # 2x faster than calling view inside the loop
+    residues = _get_matrix_residue(msa)
+    columns = map(i -> view(residues,:,i), 1:ncol) # 2x faster than calling view inside the loop
     scores = columnpairsmatrix(msa, T, usediagonal, diagonalvalue) # Named PairwiseListMatrix
-    _mappairfreq!(f, columns, scores, table;
+    plm = NamedArrays.array(scores) # PairwiseListMatrix
+    _mappairfreq!(f, columns, plm, table;
                   usediagonal=usediagonal, diagonalvalue=diagonalvalue, kargs...)
     scores
 end
@@ -128,10 +137,10 @@ function mapseqpairfreq!{T,A}(f::Function, msa::AbstractMatrix{Residue},
                               usediagonal::Bool = true,
                               diagonalvalue::T = zero(T),
                               kargs...)
-    ncol = ncolumns(msa)
     sequences = getresiduesequences(msa)
     scores = sequencepairsmatrix(msa, T, usediagonal, diagonalvalue) # Named PairwiseListMatrix
-    _mappairfreq!(f, sequences, scores, table;
+    plm = NamedArrays.array(scores) # PairwiseListMatrix
+    _mappairfreq!(f, sequences, plm, table;
                   usediagonal=usediagonal, diagonalvalue=diagonalvalue, kargs...)
     scores
 end

@@ -1,18 +1,18 @@
 type ContingencyTable{T,N,A} <: AbstractArray{T,N}
-    alphabet::ResidueAlphabet
+    alphabet::A
     temporal::Array{T,N}
-    table::NamedArray{T,N}
-    marginals::NamedArray{T,2}
+    table::NamedArray{T,N,Array{T,N},NTuple{N,OrderedDict{String,Int}}}
+    marginals::NamedArray{T,2,Array{T,2},NTuple{2,OrderedDict{String,Int}}}
     total::T
 end
 
 # Getters
 # -------
 
-@inline get_alphabet(table::ContingencyTable) = table.alphabet
-@inline get_table(table::ContingencyTable) = table.table
-@inline get_marginals(table::ContingencyTable) = table.marginals
-@inline get_total(table::ContingencyTable) = table.total
+@inline getalphabet(table::ContingencyTable) = table.alphabet
+@inline gettable(table::ContingencyTable) = table.table
+@inline getmarginals(table::ContingencyTable) = table.marginals
+@inline gettotal(table::ContingencyTable) = table.total
 
 # Cartesian (helper functions)
 # ----------------------------
@@ -51,8 +51,8 @@ Base.getindex(table::ContingencyTable, i...) = getindex(table.table, i...)
 @generated function Base.getindex(table::ContingencyTable, I::Residue...)
     N = length(I)
     quote
-        alphabet = get_alphabet(table)
-        matrix = array(get_table(table))
+        alphabet = getalphabet(table)
+        matrix = array(gettable(table))
         # index_1 = alphabet[I[1]]
         # index_2 ...
         @nextract $N index d->alphabet[I[d]]
@@ -72,8 +72,8 @@ end
 @generated function Base.setindex!(table::ContingencyTable, value, I::Residue...)
     N = length(I)
     quote
-        alphabet = get_alphabet(table)
-        matrix = array(get_table(table))
+        alphabet = getalphabet(table)
+        matrix = array(gettable(table))
         @nextract $N index d->alphabet[I[d]]
         @_test_index $N index error("There is a Residue outside the alphabet")
         @nref($N, matrix, index) = value
@@ -98,35 +98,43 @@ Base.show(io::IO, ::MIME"text/plain", table::ContingencyTable) = show(io, table)
 function Base.show(io::IO, table::ContingencyTable)
     println(io, typeof(table), " : ")
     print(io, "\ntable : ")
-    show(io, get_table(table))
+    show(io, gettable(table))
     if length(size(table)) != 1
         print(io, "\n\nmarginals : ")
-        show(io, get_marginals(table))
+        show(io, getmarginals(table))
     end
-    print(io, "\n\ntotal : $(get_total(table))")
+    print(io, "\n\ntotal : $(gettotal(table))")
 end
 
 # Creation
 # --------
 
-function (::Type{ContingencyTable}){T,A}(::Type{T}, N::Int, alphabet::A)
+@generated function (::Type{ContingencyTable{T,N,A}}){T,N,A}(alphabet::A)
     @assert N > 0 "The dimension should be a natural number"
-    n = length(alphabet)
-    residue_names = names(alphabet)
-    dim = ((n for i in 1:N)...)
-    table = NamedArray(zeros(T, dim))
-    for i in 1:N
-        setnames!(table, residue_names, i)
-    end
-    setdimnames!(table, (("Dim_$i" for i in 1:N)...))
-    marginals = NamedArray(zeros(T, N, n))
-    setnames!(marginals, residue_names, 2)
-    setdimnames!(marginals, ("Dim","Residue"))
-    ContingencyTable{T,N,A}(alphabet,
-                            zeros(T, (22 for i in 1:N)...),
-                            table,
-                            marginals,
-                            zero(T))
+    quote
+        n = length(alphabet)
+        # residue_names = names(alphabet)
+        # namedict = OrderedDict{String,Int}(residue_names[i] => i for i in 1:n)
+        namedict = getnamedict(alphabet)
+        dimtable = @ntuple $N k -> n # (n, n, ...)
+        dimtemporal = @ntuple $N k -> 22 # (22, 22, ...)
+        table = NamedArray(zeros($T, dimtable),
+                           @ntuple($N, k -> namedict), # (namedict, namedict, ...)
+                           @ntuple($N, k -> "Dim_k")) # ("Dim_1", "Dim_2", ...)
+        marginals = NamedArray(zeros($T, $N, n),
+                               # OrderedDict{String,Int}("Dim_$i" => i for i in 1:N)
+                               (OrderedDict{String,Int}(@ntuple $N k -> "Dim_k"=>k), namedict),
+                               ("Dim","Residue"))
+        ContingencyTable{T,N,A}(alphabet,
+                                zeros(T, dimtemporal),
+                                table,
+                                marginals,
+                                zero(T))
+        end
+end
+
+function (::Type{ContingencyTable}){T,A}(::Type{T}, N::Int, alphabet::A)
+    ContingencyTable{T,N,A}(alphabet)
 end
 
 function (::Type{ContingencyTable}){T,N,A}(matrix::AbstractArray{T,N}, alphabet::A)
@@ -143,36 +151,36 @@ end
 
 # Update the table, marginal and total using temporal
 
-@generated function _update_table!{T,N,A<:Union{UngappedAlphabet,GappedAlphabet}}(table::ContingencyTable{T,N,A})
-    quote
-        temporal = table.temporal
-        freqtable = array(table.table)
-        @inbounds @nloops $N i freqtable begin
-            @nref($N, freqtable, i) += @nref($N, temporal, i)
+@generated function _update_table!{T,N,A}(table::ContingencyTable{T,N,A})
+    if A <: ReducedAlphabet
+        quote
+            temporal = table.temporal::Matrix{T}
+            alphabet = getalphabet(table)::A
+            freqtable = NamedArrays.array(table.table)::Array{T,N}
+            @inbounds @nloops $N i temporal begin
+                @_test_index $N i continue
+                @nextract $N a d->alphabet[i_d]
+                @_test_index $N a continue
+                @nref($N, freqtable, a) += @nref($N, temporal, i)
+            end
+            table
         end
-        table
-    end
-end
-
-@generated function _update_table!{T,N,A<:ReducedAlphabet}(table::ContingencyTable{T,N,A})
-    quote
-        temporal = table.temporal
-        alphabet = get_alphabet(table)
-        freqtable = array(table.table)
-        @inbounds @nloops $N i temporal begin
-            @_test_index $N i continue
-            @nextract $N a d->alphabet[i_d]
-            @_test_index $N a continue
-            @nref($N, freqtable, a) += @nref($N, temporal, i)
+    elseif (A === UngappedAlphabet) || (A === GappedAlphabet)
+        quote
+            temporal = table.temporal::Matrix{T}
+            freqtable = NamedArrays.array(table.table)::Array{T,N}
+            @inbounds @nloops $N i freqtable begin
+                @nref($N, freqtable, i) += @nref($N, temporal, i)
+            end
+            table
         end
-        table
     end
 end
 
 @generated function _update_marginals!{T,N,A}(table::ContingencyTable{T,N,A})
     quote
-        freqtable = array(table.table)
-        marginal  = array(table.marginals)
+        freqtable = NamedArrays.array(table.table)::Array{T,N}
+        marginal  = NamedArrays.array(table.marginals)::Matrix{T}
         @inbounds @nloops $N i freqtable begin
             value = @nref $N freqtable i
             @_marginal($N, marginal, i, value)
@@ -181,13 +189,15 @@ end
     end
 end
 
-function _update_total!(table::ContingencyTable)
-    @inbounds table.total = sum(view(table.marginals, 1, :))
+function _update_total!{T,N,A}(table::ContingencyTable{T,N,A})
+    marginals = NamedArrays.array(table.marginals)::Matrix{T}
+    ncol = size(marginals,2)
+    @inbounds table.total = sum(marginals[1,i] for i in 1:ncol)
     table
 end
 
 function update_marginals!{T,N,A}(table::ContingencyTable{T,N,A})
-    fill!(table.marginals, zero(T))
+    fill!(NamedArrays.array(table.marginals)::Matrix{T}, zero(T))
     _update_marginals!(table)
     _update_total!(table)
     table
@@ -198,13 +208,18 @@ function _update!{T,N,A}(table::ContingencyTable{T,N,A})
     update_marginals!(table)
 end
 
-_cleanup_table!{T,N,A}(table::ContingencyTable{T,N,A}) = fill!(table.table, zero(T))
-_cleanup_temporal!{T,N,A}(table::ContingencyTable{T,N,A}) = fill!(table.temporal, zero(T))
+function _cleanup_table!{T,N,A}(table::ContingencyTable{T,N,A})
+    fill!(NamedArrays.array(table.table)::Array{T,N}, zero(T))
+end
+
+function _cleanup_temporal!{T,N,A}(table::ContingencyTable{T,N,A})
+    fill!(table.temporal, zero(T))
+end
 
 function cleanup!{T,N,A}(table::ContingencyTable{T,N,A})
     _cleanup_temporal!(table)
     _cleanup_table!(table)
-    fill!(table.marginals, zero(T))
+    fill!(NamedArrays.array(table.marginals)::Matrix{T}, zero(T))
     table.total = zero(T)
     table
 end
@@ -213,13 +228,13 @@ end
 # ====
 
 function Base.fill!{T,N,A}(table::ContingencyTable{T,N,A}, value::T)
-    fill!(table.table, value)
+    fill!(NamedArrays.array(table.table)::Array{T,N}, value)
     update_marginals!(table)
 end
 
 Base.fill!{T,N,A}(table::ContingencyTable{T,N,A}, p::AdditiveSmoothing{T}) = fill!(table, p.λ)
 
-@inline Base.fill!(table::ContingencyTable, p::NoPseudocount) = table
+@inline Base.fill!{T,N,A}(table::ContingencyTable{T,N,A}, p::NoPseudocount) = table
 
 # Apply pseudocount
 # =================

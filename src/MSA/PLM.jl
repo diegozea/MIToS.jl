@@ -12,7 +12,7 @@ function sequencepairsmatrix{T}(msa::AbstractMatrix{Residue}, ::Type{T},
     plm = PairwiseListMatrix(T, nsequences(msa), diagonal, diagonalvalue)
     nplm = setlabels(plm, sequencenames(msa))
     setdimnames!(nplm, ["Seq1", "Seq2"])
-    nplm
+    nplm::NamedArray{T,2,PairwiseListMatrix{T,diagonal,Vector{T}},NTuple{2,OrderedDict{String,Int}}}
 end
 
 function sequencepairsmatrix(msa::AbstractMatrix{Residue})
@@ -31,7 +31,7 @@ function columnpairsmatrix{T}(msa::AbstractMatrix{Residue}, ::Type{T},
     plm = PairwiseListMatrix(T, ncolumns(msa), diagonal, diagonalvalue)
     nplm = setlabels(plm, columnnames(msa))
     setdimnames!(nplm, ["Col1", "Col2"])
-    nplm
+    nplm::NamedArray{T,2,PairwiseListMatrix{T,diagonal,Vector{T}},NTuple{2,OrderedDict{String,Int}}}
 end
 
 function columnpairsmatrix(msa::AbstractMatrix{Residue})

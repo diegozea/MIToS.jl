@@ -37,6 +37,7 @@ export  # Residue
         # Alphabet
         ResidueAlphabet,
         GappedAlphabet, UngappedAlphabet, ReducedAlphabet,
+        getnamedict,
         # ThreeLetters
         residue2three, three2residue,
         # Annotations

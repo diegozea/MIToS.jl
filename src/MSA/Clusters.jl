@@ -49,13 +49,13 @@ end
 # -------
 
 """
-```getweight(c[, i::Int])```
+`getweight(c[, i::Int])`
 
 This function returns the weight of the sequence number `i`. getweight should be defined for
 any type used for `count!`/`count` in order to use his weigths. If `i` isn't used, this
 function returns a vector with the weight of each sequence.
 """
-@inline getweight(weight::NoClustering, seq::Int) = 1
+@inline getweight(weight::NoClustering, seq::Int) = 1.0
 
 getweight(cl::SequenceClusters) = cl.sequenceweight
 

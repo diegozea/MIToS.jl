@@ -6,7 +6,7 @@ immutable UngappedAlphabet <: ResidueAlphabet end
 
 immutable ReducedAlphabet <: ResidueAlphabet
     mapping::Array{Int,1} # Residue -> Int
-    named::NamedArray{Int,1}
+    named::NamedArray{Int,1,Array{Int,1},Tuple{OrderedDict{String,Int}}}
     len::Int
 end
 
@@ -120,3 +120,16 @@ Base.in(res::Residue, alphabet::ReducedAlphabet) = alphabet[res] != 22
 
 Base.names(alphabet::ResidueAlphabet) = String[ string(Residue(i)) for i in alphabet ]
 Base.names(alphabet::ReducedAlphabet) = names(alphabet.named, 1)
+
+# Dict of names to indexes
+# ------------------------
+
+@inline _getdict(n::NamedArray{Int,1,Array{Int,1},Tuple{OrderedDict{String,Int}}}) = n.dicts[1]
+
+const _UngappedAlphabet_Names = OrderedDict{String,Int}(string(Residue(i))=>i for i in 1:20)
+const _GappedAlphabet_Names = OrderedDict{String,Int}(string(Residue(i))=>i for i in 1:21)
+
+getnamedict(alphabet::UngappedAlphabet) = _UngappedAlphabet_Names
+getnamedict(alphabet::GappedAlphabet) = _GappedAlphabet_Names
+
+@inline getnamedict(alphabet::ReducedAlphabet) = _get_dict(alphabet)
