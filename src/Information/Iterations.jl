@@ -89,14 +89,14 @@ end
 function _mappairfreq!{T,D,TV,A,V<:AbstractArray{Residue}}(f::Function,
                                 res_list::Vector{V}, # sequences or columns
                                 plm::PairwiseListMatrix{T,D,TV}, # output
-                                table::ContingencyTable{T,2,A};
+                                table::ContingencyTable{T,2,A},
+                                usediagonal::Type{Val{D}} = Val{true};
                                 probabilities::Bool = true,
                                 weights = NoClustering(),
                                 pseudocounts::Pseudocount = NoPseudocount(),
                                 pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
-                                usediagonal::Bool = true,
                                 diagonalvalue::T = zero(T))
-    @inbounds @iterateupper plm usediagonal begin
+    @inbounds @iterateupper plm D begin
         list[k] = :($_mapfreq_kernel!)(:($f), :($table), :($probabilities),
                                        :($weights),
                                        :($pseudocounts), :($pseudofrequencies),
@@ -111,18 +111,18 @@ end
 $_mapfreq_kargs_doc
 $_mappairfreq_kargs_doc
 """
-function mapcolpairfreq!{T,A}(f::Function, msa::AbstractMatrix{Residue},
-                              table::ContingencyTable{T,2,A};
-                              usediagonal::Bool = true,
-                              diagonalvalue::T = zero(T),
-                              kargs...)
+function mapcolpairfreq!{T,A,D}(f::Function, msa::AbstractMatrix{Residue},
+                                table::ContingencyTable{T,2,A},
+                                ::Type{Val{D}} = Val{true};
+                                diagonalvalue::T = zero(T),
+                                kargs...)
     ncol = ncolumns(msa)
     residues = _get_matrix_residue(msa)
     columns = map(i -> view(residues,:,i), 1:ncol) # 2x faster than calling view inside the loop
-    scores = columnpairsmatrix(msa, T, usediagonal, diagonalvalue) # Named PairwiseListMatrix
+    scores = columnpairsmatrix(msa, T, Val{D}, diagonalvalue) # Named PairwiseListMatrix
     plm = NamedArrays.array(scores) # PairwiseListMatrix
-    _mappairfreq!(f, columns, plm, table;
-                  usediagonal=usediagonal, diagonalvalue=diagonalvalue, kargs...)
+    _mappairfreq!(f, columns, plm, table, Val{D};
+                  diagonalvalue=diagonalvalue, kargs...)
     scores
 end
 
@@ -132,16 +132,16 @@ end
 $_mapfreq_kargs_doc
 $_mappairfreq_kargs_doc
 """
-function mapseqpairfreq!{T,A}(f::Function, msa::AbstractMatrix{Residue},
-                              table::ContingencyTable{T,2,A};
-                              usediagonal::Bool = true,
-                              diagonalvalue::T = zero(T),
-                              kargs...)
+function mapseqpairfreq!{T,A,D}(f::Function, msa::AbstractMatrix{Residue},
+                                table::ContingencyTable{T,2,A},
+                                ::Type{Val{D}} = Val{true};
+                                diagonalvalue::T = zero(T),
+                                kargs...)
     sequences = getresiduesequences(msa)
-    scores = sequencepairsmatrix(msa, T, usediagonal, diagonalvalue) # Named PairwiseListMatrix
+    scores = sequencepairsmatrix(msa, T, Val{D}, diagonalvalue) # Named PairwiseListMatrix
     plm = NamedArrays.array(scores) # PairwiseListMatrix
-    _mappairfreq!(f, sequences, plm, table;
-                  usediagonal=usediagonal, diagonalvalue=diagonalvalue, kargs...)
+    _mappairfreq!(f, sequences, plm, table, Val{D};
+                  diagonalvalue=diagonalvalue, kargs...)
     scores
 end
 

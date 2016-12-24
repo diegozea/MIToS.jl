@@ -192,7 +192,11 @@ end
 function _update_total!{T,N,A}(table::ContingencyTable{T,N,A})
     marginals = NamedArrays.array(table.marginals)::Matrix{T}
     ncol = size(marginals,2)
-    @inbounds table.total = sum(marginals[1,i] for i in 1:ncol)
+    total = zero(T)
+    @inbounds @simd for i in 1:ncol
+        total += marginals[1,i]
+    end
+    table.total = total
     table
 end
 
