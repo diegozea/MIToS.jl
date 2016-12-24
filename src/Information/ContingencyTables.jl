@@ -154,7 +154,7 @@ end
 @generated function _update_table!{T,N,A}(table::ContingencyTable{T,N,A})
     if A <: ReducedAlphabet
         quote
-            temporal = table.temporal::Matrix{T}
+            temporal = table.temporal::Array{T,N}
             alphabet = getalphabet(table)::A
             freqtable = NamedArrays.array(table.table)::Array{T,N}
             @inbounds @nloops $N i temporal begin
@@ -167,7 +167,7 @@ end
         end
     elseif (A === UngappedAlphabet) || (A === GappedAlphabet)
         quote
-            temporal = table.temporal::Matrix{T}
+            temporal = table.temporal::Array{T,N}
             freqtable = NamedArrays.array(table.table)::Array{T,N}
             @inbounds @nloops $N i freqtable begin
                 @nref($N, freqtable, i) += @nref($N, temporal, i)
@@ -178,15 +178,15 @@ end
 end
 
 @generated function _update_marginals!{T,N,A}(table::ContingencyTable{T,N,A})
-    quote
-        freqtable = NamedArrays.array(table.table)::Array{T,N}
-        marginal  = NamedArrays.array(table.marginals)::Matrix{T}
-        @inbounds @nloops $N i freqtable begin
-            value = @nref $N freqtable i
-            @_marginal($N, marginal, i, value)
+        quote
+            freqtable = NamedArrays.array(table.table)::Array{T,N}
+            marginal  = NamedArrays.array(table.marginals)::Matrix{T}
+            @inbounds @nloops $N i freqtable begin
+                value = @nref $N freqtable i
+                @_marginal($N, marginal, i, value)
+            end
+            table
         end
-        table
-    end
 end
 
 function _update_total!{T,N,A}(table::ContingencyTable{T,N,A})

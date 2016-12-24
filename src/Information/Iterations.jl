@@ -43,7 +43,7 @@ function _mapfreq!{T,A,V<:AbstractArray{Residue}}(f::Function,
                         pseudofrequencies::Pseudofrequencies = NoPseudofrequencies())
     scores = map(res_list) do res
         _mapfreq_kernel!(f, table, probabilities,
-                         weights, pseudocounts, pseudofrequencies, (res))
+                         weights, pseudocounts, pseudofrequencies, (res,))
     end
     scores
 end
@@ -57,6 +57,7 @@ function mapcolfreq!{T,A}(f::Function, msa::AbstractMatrix{Residue},
                           table::ContingencyTable{T,1,A}; kargs...)
     N = ncolumns(msa)
     residues = _get_matrix_residue(msa)
+    ncol = size(residues,2)
     columns = map(i -> view(residues,:,i), 1:ncol) # 2x faster than calling view inside the loop
     scores = _mapfreq!(f, columns, table; kargs...)
     name_list = columnnames(msa)

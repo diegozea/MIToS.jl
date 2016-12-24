@@ -90,7 +90,7 @@ include("Iterations.jl") # TO DO: Docs
 
 # include("Probabilities.jl") # Docs and others, see at the end
 
-# include("InformationMeasures.jl")
+ include("InformationMeasures.jl") # TO DO
 # include("Iterations.jl")
 # include("Corrections.jl")
 # include("CorrectedMutualInformation.jl")

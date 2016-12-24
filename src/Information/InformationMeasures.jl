@@ -13,6 +13,26 @@ function entropy{T,N,A}(probabilities::ContingencyTable{T,N,A}, base::T)
     entropy(probabilities) / log(base)
 end
 
+
+@inline _mi{T}(::Type{T}, pij, pi, pj) = ifelse(pij > zero(T) && pi > zero(T), T(pij * log(pij/(pi*pj))), zero(T))
+
+function mi{T,A}(probabilities::ContingencyTable{T,2,A})
+  MI = zero(T)
+  marginals = NamedArrays.array(getmarginals(probabilities))
+  table = NamedArrays.array(gettable(probabilities))
+  N = size(marginals,2)
+  @inbounds for j in 1:N
+    pj = marginals[2,j]
+    if pj > 0.0
+      @inbounds @simd for i in 1:N
+        MI +=  _mi(T, table[i,j], marginals[1,i], pj)
+      end
+    end
+  end
+  MI#/log(measure.base)
+end
+
+
 # abstract AbstractMeasure{T}
 #
 # abstract SymmetricMeasure{T} <: AbstractMeasure{T}
