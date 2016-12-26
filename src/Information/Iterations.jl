@@ -1,13 +1,15 @@
-_get_matrix_residue(msa::AbstractMultipleSequenceAlignment) = NamedArrays.array(namedmatrix(msa))
-_get_matrix_residue(msa::NamedArray) = NamedArrays.array(msa)
-_get_matrix_residue(msa) = msa
+function _get_matrix_residue(msa::AbstractMultipleSequenceAlignment)::Matrix{Residue}
+    NamedArrays.array(namedmatrix(msa))
+end
+_get_matrix_residue(msa::NamedArray)::Matrix{Residue} = NamedArrays.array(msa)
+_get_matrix_residue(msa::Matrix{Residue})::Matrix{Residue} = msa
 
 # Kernel function to fill ContingencyTable based on residues
 function _mapfreq_kernel!{T,N,A}(f,
-                                table::ContingencyTable{T,N,A},
-                                probabilities,
-                                weights, pseudocounts, pseudofrequencies,
-                                res::NTuple{N,AbstractVector{Residue}})
+                                 table::ContingencyTable{T,N,A},
+                                 probabilities,
+                                 weights, pseudocounts, pseudofrequencies,
+                                 res::Vararg{AbstractVector{Residue},N})
     _cleanup_table!(table) # count! call _cleanup_temporal! and cleans marginals
     count!(table, weights, pseudocounts, res...)
     apply_pseudocount!(table, pseudocounts)
@@ -43,7 +45,7 @@ function _mapfreq!{T,A,V<:AbstractArray{Residue}}(f::Function,
                         pseudofrequencies::Pseudofrequencies = NoPseudofrequencies())
     scores = map(res_list) do res
         _mapfreq_kernel!(f, table, probabilities,
-                         weights, pseudocounts, pseudofrequencies, (res,))
+                         weights, pseudocounts, pseudofrequencies, res)
     end
     scores
 end
@@ -101,7 +103,7 @@ function _mappairfreq!{T,D,TV,A,V<:AbstractArray{Residue}}(f::Function,
         list[k] = :($_mapfreq_kernel!)(:($f), :($table), :($probabilities),
                                        :($weights),
                                        :($pseudocounts), :($pseudofrequencies),
-                                       (:($res_list)[i], :($res_list)[j]))
+                                       :($res_list)[i], :($res_list)[j])
     end
     plm
 end
