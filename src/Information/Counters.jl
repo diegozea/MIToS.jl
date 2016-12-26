@@ -2,7 +2,7 @@
 # ========
 
 @generated function _temporal_counts!{T,N,A}(counts::ContingencyTable{T,N,A}, weights,
-                                  seqs::AbstractVector{Residue}...)
+                                  seqs::Vararg{AbstractVector{Residue},N})
     quote
         @assert N == length(seqs) "Number of residue arrays and table dimension doesn't match."
         # seq_1 = seqs[1]
@@ -28,7 +28,7 @@ end
 function count!{T,N,A}(table::ContingencyTable{T,N,A},
                        weights,
                        pseudocounts::Pseudocount,
-                       seqs::AbstractVector{Residue}...)
+                       seqs::Vararg{AbstractVector{Residue},N})
     _temporal_counts!(table, weights, seqs...)
     apply_pseudocount!(table, pseudocounts)
     _update!(table)
@@ -38,12 +38,20 @@ end
 # Default counters
 # ================
 
-function Base.count(seqs::AbstractVector{Residue}...;
-                    alphabet::ResidueAlphabet = UngappedAlphabet(),
-                    weights = NoClustering(),
-                    pseudocounts::Pseudocount = NoPseudocount())
-    table = ContingencyTable(Float64, length(seqs), alphabet)
+function _count{N,A <: ResidueAlphabet}(alphabet::A,
+                                        weights, pseudocounts,
+                                        seqs::Vararg{AbstractVector{Residue},N}
+                                        )::ContingencyTable{Float64,N,A}
+    table = ContingencyTable(Float64, N, alphabet)::ContingencyTable{Float64,N,A}
     count!(table, weights, pseudocounts, seqs...)
+    table
+end
+
+function Base.count{N}(seqs::Vararg{AbstractVector{Residue},N};
+                       alphabet::ResidueAlphabet = UngappedAlphabet(),
+                       weights = NoClustering(),
+                       pseudocounts::Pseudocount = NoPseudocount())
+    _count(alphabet, weights, pseudocounts, seqs...)
 end
 
 # Probabilities
@@ -53,18 +61,26 @@ function probabilities!{T,N,A}(table::ContingencyTable{T,N,A},
                                weights,
                                pseudocounts::Pseudocount,
                                pseudofrequencies::Pseudofrequencies,
-                               seqs::AbstractVector{Residue}...)
+                               seqs::Vararg{AbstractVector{Residue},N})
     count!(table, weights, pseudocounts, seqs...)
     normalize!(table)
     apply_pseudofrequencies!(table, pseudofrequencies)
     table
 end
 
-function probabilities(seqs::AbstractVector{Residue}...;
-                       alphabet::ResidueAlphabet = UngappedAlphabet(),
-                       weights = NoClustering(),
-                       pseudocounts::Pseudocount = NoPseudocount(),
-                       pseudofrequencies::Pseudofrequencies = NoPseudofrequencies())
-    table = ContingencyTable(Float64, length(seqs), alphabet)
+function _probabilities{N,A <: ResidueAlphabet}(alphabet::A,
+                                                weights, pseudocounts, pseudofrequencies,
+                                                seqs::Vararg{AbstractVector{Residue},N}
+                                                )::ContingencyTable{Float64,N,A}
+    table = ContingencyTable(Float64, N, alphabet)::ContingencyTable{Float64,N,A}
     probabilities!(table, weights, pseudocounts, pseudofrequencies, seqs...)
+    table
+end
+
+function probabilities{N}(seqs::Vararg{AbstractVector{Residue},N};
+                          alphabet::ResidueAlphabet = UngappedAlphabet(),
+                          weights = NoClustering(),
+                          pseudocounts::Pseudocount = NoPseudocount(),
+                          pseudofrequencies::Pseudofrequencies = NoPseudofrequencies())
+    _probabilities(alphabet, weights, pseudocounts, pseudofrequencies, seqs...)
 end

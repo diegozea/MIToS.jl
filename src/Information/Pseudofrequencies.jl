@@ -8,7 +8,7 @@ immutable NoPseudofrequencies <: Pseudofrequencies end
 # BLOSUM based pseudofrequencies
 # ==============================
 
-immutable BLOSUM_Pseudofrequencies
+immutable BLOSUM_Pseudofrequencies <: Pseudofrequencies
     α::Float64
     β::Float64
 end
@@ -40,7 +40,7 @@ function _calculate_blosum_pseudofrequencies!{T}(Pab::ContingencyTable{T,2,Ungap
                 end
             end
         end
-        total += g[a,b]
+        total += gab[a,b]
     end
     if total ≉ one(T)
         @inbounds for col in 1:20
