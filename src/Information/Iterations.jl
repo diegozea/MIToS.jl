@@ -5,20 +5,20 @@ _get_matrix_residue(msa::NamedArray)::Matrix{Residue} = NamedArrays.array(msa)
 _get_matrix_residue(msa::Matrix{Residue})::Matrix{Residue} = msa
 
 # Kernel function to fill ContingencyTable based on residues
-function _mapfreq_kernel!{T,N,A}(f,
-                                 table::ContingencyTable{T,N,A},
-                                 probabilities,
+function _mapfreq_kernel!{T,N,A}(f::Function,
+                                 freqtable::Union{Probabilities{T,N,A},Counts{T,N,A}},
                                  weights, pseudocounts, pseudofrequencies,
                                  res::Vararg{AbstractVector{Residue},N})
+    table = freqtable.table
     _cleanup_table!(table) # count! call _cleanup_temporal! and cleans marginals
     count!(table, weights, pseudocounts, res...)
     apply_pseudocount!(table, pseudocounts)
     _update!(table)
-    if probabilities
+    if isa(freqtable, Probabilities{T,N,A})
         normalize!(table)
         apply_pseudofrequencies!(table, pseudofrequencies)
     end
-    f(table)
+    f(freqtable)
 end
 
 _mapfreq_kargs_doc = """
@@ -38,14 +38,12 @@ _mappairfreq_kargs_doc = """
 
 function _mapfreq!{T,A,V<:AbstractArray{Residue}}(f::Function,
                         res_list::Vector{V}, # sequences or columns
-                        table::ContingencyTable{T,1,A};
-                        probabilities::Bool = true,
+                        table::Union{Probabilities{T,1,A},Counts{T,1,A}};
                         weights = NoClustering(),
                         pseudocounts::Pseudocount = NoPseudocount(),
                         pseudofrequencies::Pseudofrequencies = NoPseudofrequencies())
     scores = map(res_list) do res
-        _mapfreq_kernel!(f, table, probabilities,
-                         weights, pseudocounts, pseudofrequencies, res)
+        _mapfreq_kernel!(f, table, weights, pseudocounts, pseudofrequencies, res)
     end
     scores
 end
@@ -56,7 +54,7 @@ end
 $_mapfreq_kargs_doc
 """
 function mapcolfreq!{T,A}(f::Function, msa::AbstractMatrix{Residue},
-                          table::ContingencyTable{T,1,A}; kargs...)
+                          table::Union{Probabilities{T,1,A},Counts{T,1,A}}; kargs...)
     N = ncolumns(msa)
     residues = _get_matrix_residue(msa)
     ncol = size(residues,2)
@@ -75,7 +73,7 @@ end
 $_mapfreq_kargs_doc
 """
 function mapseqfreq!{T,A}(f::Function, msa::AbstractMatrix{Residue},
-                          table::ContingencyTable{T,1,A}; kargs...)
+                          table::Union{Probabilities{T,1,A},Counts{T,1,A}}; kargs...)
     N = nsequences(msa)
     sequences = getresiduesequences(msa)
     name_list = sequencenames(msa)
@@ -92,7 +90,7 @@ end
 function _mappairfreq!{T,D,TV,A,V<:AbstractArray{Residue}}(f::Function,
                                 res_list::Vector{V}, # sequences or columns
                                 plm::PairwiseListMatrix{T,D,TV}, # output
-                                table::ContingencyTable{T,2,A},
+                                table::Union{Probabilities{T,2,A},Counts{T,2,A}},
                                 usediagonal::Type{Val{D}} = Val{true};
                                 probabilities::Bool = true,
                                 weights = NoClustering(),
@@ -100,8 +98,7 @@ function _mappairfreq!{T,D,TV,A,V<:AbstractArray{Residue}}(f::Function,
                                 pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
                                 diagonalvalue::T = zero(T))
     @inbounds @iterateupper plm D begin
-        list[k] = :($_mapfreq_kernel!)(:($f), :($table), :($probabilities),
-                                       :($weights),
+        list[k] = :($_mapfreq_kernel!)(:($f), :($table), :($weights),
                                        :($pseudocounts), :($pseudofrequencies),
                                        :($res_list)[i], :($res_list)[j])
     end
@@ -115,7 +112,7 @@ $_mapfreq_kargs_doc
 $_mappairfreq_kargs_doc
 """
 function mapcolpairfreq!{T,A,D}(f::Function, msa::AbstractMatrix{Residue},
-                                table::ContingencyTable{T,2,A},
+                                table::Union{Probabilities{T,2,A},Counts{T,2,A}},
                                 ::Type{Val{D}} = Val{true};
                                 diagonalvalue::T = zero(T),
                                 kargs...)
@@ -136,7 +133,7 @@ $_mapfreq_kargs_doc
 $_mappairfreq_kargs_doc
 """
 function mapseqpairfreq!{T,A,D}(f::Function, msa::AbstractMatrix{Residue},
-                                table::ContingencyTable{T,2,A},
+                                table::Union{Probabilities{T,2,A},Counts{T,2,A}},
                                 ::Type{Val{D}} = Val{true};
                                 diagonalvalue::T = zero(T),
                                 kargs...)

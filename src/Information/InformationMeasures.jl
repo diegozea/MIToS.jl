@@ -1,22 +1,58 @@
-function entropy{T,N,A}(probabilities::ContingencyTable{T,N,A}) # Default base: e
+# Entropy
+# =======
+
+function entropy{T,N,A}(table::Probabilities{T,N,A})
     H = zero(T)
-    P = NamedArrays.array(gettable(probabilities))
+    P = gettablearray(table)
     @inbounds for pᵢ in P
         if pᵢ != zero(T)
             H -= pᵢ * log(pᵢ)
         end
     end
-    H
+    H # Default base: e
 end
 
-function entropy{T,N,A}(probabilities::ContingencyTable{T,N,A}, base::T)
-    entropy(probabilities) / log(base)
+function entropy{T,N,A}(table::Probabilities{T,N,A}, base::T)
+    entropy(table, probabilities) / log(base)
 end
 
+# Marginal Entropy
+# ----------------
+
+function marginal_entropy(table::Probabilities{T,N,A}, marginal::Int)
+    H = zero(T)
+    marginals = getmarginalsarray(table)
+    @inbounds for pi in view(marginals,i,:)
+        if pi != zero(T)
+            H -= pi * log(pi)
+        end
+    end
+    H # Default base: e
+end
+
+# """
+# `estimate_on_marginal(Entropy{T}(base), p, marginal)`
+#
+# This function estimate the entropy H(X) if marginal is 1, H(Y) for 2, etc.
+# The result type is determined by `base`.
+# """
+# function estimate_on_marginal{B, T, N, UseGap}(measure::Entropy{B}, p::ResidueProbability{T, N, UseGap}, marginal::Int)
+#   H = zero(B)
+#   for i in 1:nresidues(p)
+#     @inbounds pi = B(p.marginals[i, marginal])
+#     if pi != 0.0
+#       H += pi * log(pi)
+#     end
+#   end
+#   -H/log(measure.base)
+# end
+
+# Mutual Information
+# ==================
 
 @inline _mi{T}(::Type{T}, pij, pi, pj) = ifelse(pij > zero(T) && pi > zero(T), T(pij * log(pij/(pi*pj))), zero(T))
 
-function mi{T,A}(probabilities::ContingencyTable{T,2,A})
+function mutual_information{T,A}(probabilities::Probabilities{T,2,A})
   MI = zero(T)
   marginals = NamedArrays.array(getmarginals(probabilities))
   table = NamedArrays.array(gettable(probabilities))
@@ -30,6 +66,11 @@ function mi{T,A}(probabilities::ContingencyTable{T,2,A})
     end
   end
   MI#/log(measure.base)
+end
+
+
+function mutual_information{T,N,A}(probabilities::Probabilities{T,N,A}, base::T)
+    mutual_information(probabilities) / log(base)
 end
 
 

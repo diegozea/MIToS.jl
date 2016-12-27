@@ -37,6 +37,8 @@ export  # MIToS.MSA
         AdditiveSmoothing,
         # ContingencyTables
         ContingencyTable,
+        Probabilities,
+        Counts,
         getalphabet,
         gettable,
         getmarginals,
@@ -53,14 +55,17 @@ export  # MIToS.MSA
         apply_pseudofrequencies!,
         # Counters
         count!,
-        probabilities!,
         probabilities,
+        probabilities!,
         # Iterations
         mapcolfreq!,
         mapseqfreq!,
         mapcolpairfreq!,
         mapseqpairfreq!,
-        cumulative
+        cumulative,
+        # InformationMeasures
+        entropy,
+        mutual_information
 
 # SequenceWeights,
 # nresidues,
@@ -90,7 +95,7 @@ include("Iterations.jl") # TO DO: Docs
 
 # include("Probabilities.jl") # Docs and others, see at the end
 
- include("InformationMeasures.jl") # TO DO
+include("InformationMeasures.jl") # TO DO
 # include("Iterations.jl")
 # include("Corrections.jl")
 # include("CorrectedMutualInformation.jl")

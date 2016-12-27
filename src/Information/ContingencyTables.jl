@@ -1,9 +1,32 @@
+# Contingency Tables
+# ==================
+
 type ContingencyTable{T,N,A} <: AbstractArray{T,N}
     alphabet::A
     temporal::Array{T,N}
     table::NamedArray{T,N,Array{T,N},NTuple{N,OrderedDict{String,Int}}}
     marginals::NamedArray{T,2,Array{T,2},NTuple{2,OrderedDict{String,Int}}}
     total::T
+end
+
+# Probability and Counts
+# ----------------------
+
+type Probabilities{T,N,A}
+    table::ContingencyTable{T,N,A}
+end
+
+type Counts{T,N,A}
+    table::ContingencyTable{T,N,A}
+end
+
+@inline getcontingencytable(p::Probabilities{T,N,A}) = p.table
+@inline getcontingencytable(n::Counts{T,N,A}) = n.table
+
+for f in (:getalphabet, :gettable, :getmarginals, :gettotal,
+          :gettablearray, :getmarginalsarray)
+    @eval $(f){T,N,A}(p::Probabilities{T,N,A}) = $(f)(getcontingencytable(p))
+    @eval $(f){T,N,A}(n::Counts{T,N,A}) = $(f)(getcontingencytable(n))
 end
 
 # Getters
@@ -13,6 +36,9 @@ end
 @inline gettable(table::ContingencyTable) = table.table
 @inline getmarginals(table::ContingencyTable) = table.marginals
 @inline gettotal(table::ContingencyTable) = table.total
+
+@inline gettablearray(table::ContingencyTable) = NamedArrays.array(table.table)
+@inline getmarginalsarray(table::ContingencyTable) = NamedArrays.array(table.marginals)
 
 # Cartesian (helper functions)
 # ----------------------------
