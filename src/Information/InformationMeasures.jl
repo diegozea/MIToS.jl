@@ -13,22 +13,59 @@ function entropy{T,N,A}(table::Probabilities{T,N,A})
 end
 
 function entropy{T,N,A}(table::Probabilities{T,N,A}, base::T)
-    entropy(table, probabilities) / log(base)
+    entropy(table) / log(base)
 end
 
 # Marginal Entropy
 # ----------------
 
-function marginal_entropy(table::Probabilities{T,N,A}, marginal::Int)
+function marginal_entropy{T,N,A}(table::Probabilities{T,N,A}, margin::Int)
     H = zero(T)
     marginals = getmarginalsarray(table)
-    @inbounds for pi in view(marginals,i,:)
+    @inbounds for pi in view(marginals, margin, :)
         if pi != zero(T)
             H -= pi * log(pi)
         end
     end
     H # Default base: e
 end
+
+function marginal_entropy{T,N,A}(table::Probabilities{T,N,A}, margin::Int, base::T)
+    marginal_entropy(table, margin) / log(base)
+end
+
+# ## Estimate Entropy using ResidueCount
+#
+# """
+# `estimate(Entropy{T}(base), n::ResidueCount)`
+#
+# It's the fastest option (you don't spend time on probability calculations).
+# The result type is determined by the `base`.
+# """
+# function estimate{T}(measure::Entropy{T}, n::ResidueCount)
+#   H = zero(T)
+#   total = T(n.total)
+#   for i in 1:length(n)
+#     @inbounds ni = T(n[i])
+#     if ni != 0.0
+#       H += ni * log(ni/total)
+#     end
+#   end
+#   (-H/total)/log(measure.base)
+# end
+#
+# function estimate_on_marginal{T}(measure::Entropy{T}, n::ResidueCount, marginal::Int)
+#   H = zero(T)
+#   total = T(n.total)
+#   for i in 1:nresidues(n)
+#     @inbounds ni = T(n.marginals[i, marginal])
+#     if ni != 0.0
+#       H += ni * log(ni/total)
+#     end
+#   end
+#   (-H/total)/log(measure.base)
+# end
+#
 
 # """
 # `estimate_on_marginal(Entropy{T}(base), p, marginal)`
@@ -50,7 +87,9 @@ end
 # Mutual Information
 # ==================
 
-@inline _mi{T}(::Type{T}, pij, pi, pj) = ifelse(pij > zero(T) && pi > zero(T), T(pij * log(pij/(pi*pj))), zero(T))
+@inline function _mi{T}(::Type{T}, pij, pi, pj)
+    ifelse(pij > zero(T) && pi > zero(T), T(pij * log(pij/(pi*pj))), zero(T))
+end
 
 function mutual_information{T,A}(probabilities::Probabilities{T,2,A})
   MI = zero(T)
@@ -67,7 +106,6 @@ function mutual_information{T,A}(probabilities::Probabilities{T,2,A})
   end
   MI#/log(measure.base)
 end
-
 
 function mutual_information{T,N,A}(probabilities::Probabilities{T,N,A}, base::T)
     mutual_information(probabilities) / log(base)

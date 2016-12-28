@@ -20,8 +20,8 @@ type Counts{T,N,A}
     table::ContingencyTable{T,N,A}
 end
 
-@inline getcontingencytable(p::Probabilities{T,N,A}) = p.table
-@inline getcontingencytable(n::Counts{T,N,A}) = n.table
+@inline getcontingencytable{T,N,A}(p::Probabilities{T,N,A}) = p.table
+@inline getcontingencytable{T,N,A}(n::Counts{T,N,A}) = n.table
 
 for f in (:getalphabet, :gettable, :getmarginals, :gettotal,
           :gettablearray, :getmarginalsarray)
