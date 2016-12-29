@@ -44,10 +44,10 @@ end
 # ----------------------------
 
 """
-`_marginal(1,:A,:i,:value)` generates the expression: `A[1,i_1] += value`
+`_marginal(1,:A,:i,:value)` generates the expression: `A[i_1, 1] += value`
 """
 function _marginal(N::Int, marginal::Symbol, index::Symbol, value::Symbol)
-    aexprs = [Expr(:escape, Expr(:(+=), Expr(:ref, marginal, i, Symbol(index,'_',i)), :($value))) for i = 1:N]
+    aexprs = [Expr(:escape, Expr(:(+=), Expr(:ref, marginal, Symbol(index,'_',i), i), :($value))) for i = 1:N]
     Expr(:block, aexprs...)
 end
 
@@ -147,10 +147,10 @@ end
         table = NamedArray(zeros($T, dimtable),
                            @ntuple($N, k -> namedict), # (namedict, namedict, ...)
                            @ntuple($N, k -> "Dim_k")) # ("Dim_1", "Dim_2", ...)
-        marginals = NamedArray(zeros($T, $N, n),
+        marginals = NamedArray(zeros($T, n, $N),
                                # OrderedDict{String,Int}("Dim_$i" => i for i in 1:N)
-                               (OrderedDict{String,Int}(@ntuple $N k -> "Dim_k"=>k), namedict),
-                               ("Dim","Residue"))
+                               (namedict, OrderedDict{String,Int}(@ntuple $N k -> "Dim_k"=>k)),
+                               ("Residue","Dim"))
         ContingencyTable{T,N,A}(alphabet,
                                 zeros(T, dimtemporal),
                                 table,
@@ -217,10 +217,10 @@ end
 
 function _update_total!{T,N,A}(table::ContingencyTable{T,N,A})
     marginals = NamedArrays.array(table.marginals)::Matrix{T}
-    ncol = size(marginals,2)
+    n = size(marginals,1)
     total = zero(T)
-    @inbounds @simd for i in 1:ncol
-        total += marginals[1,i]
+    @inbounds @simd for i in 1:n
+        total += marginals[i] # marginals[i,1]
     end
     table.total = total
     table
@@ -340,7 +340,7 @@ deletion of `dimensions`. i.e. This is useful for getting Pxy from Pxyz.
 function delete_dimensions!{T,N,S,A}(output::ContingencyTable{T,S,A},
                                      input::ContingencyTable{T,N,A},
                                      dimensions::Int...)
-  array(output.marginals)[:] = input.marginals[_list_without_dimensions(N, S, dimensions...),:]
+  array(output.marginals)[:] = input.marginals[:,_list_without_dimensions(N, S, dimensions...)]
   array(output.table)[:] = sum(array(input.table), dimensions)
   output.total = input.total
   output

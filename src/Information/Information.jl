@@ -39,9 +39,10 @@ export  # MIToS.MSA
         ContingencyTable,
         Probabilities,
         Counts,
+        getcontingencytable,
         getalphabet,
-        gettable,
-        getmarginals,
+        gettable, gettablearray,
+        getmarginals, getmarginalsarray,
         gettotal,
         update_marginals!,
         apply_pseudocount!,
@@ -65,16 +66,17 @@ export  # MIToS.MSA
         cumulative,
         # InformationMeasures
         entropy,
-        mutual_information
+        marginal_entropy,
+        kullback_leibler,
+        mutual_information,
+        normalized_mutual_information,
+        gap_union_percentage,
+        gap_intersection_percentage,
+        # Corrections
+        APC!
 
 # SequenceWeights,
 # nresidues,
-#
-# AbstractMeasure, SymmetricMeasure,
-# Entropy, KullbackLeibler,
-# MutualInformation, MutualInformationOverEntropy,
-# estimate, estimate_on_marginal,
-# GapUnionPercentage, GapIntersectionPercentage,
 #
 # APC!,
 #
@@ -92,12 +94,13 @@ include("BLOSUM62.jl")
 include("Pseudofrequencies.jl")
 include("Counters.jl")
 include("Iterations.jl") # TO DO: Docs
+include("InformationMeasures.jl")
+include("Corrections.jl")
 
 # include("Probabilities.jl") # Docs and others, see at the end
 
-include("InformationMeasures.jl") # TO DO
-# include("Iterations.jl")
-# include("Corrections.jl")
+
+
 # include("CorrectedMutualInformation.jl")
 # include("Externals.jl")
 
