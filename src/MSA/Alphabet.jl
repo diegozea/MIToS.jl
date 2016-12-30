@@ -132,4 +132,4 @@ const _GappedAlphabet_Names = OrderedDict{String,Int}(string(Residue(i))=>i for 
 getnamedict(alphabet::UngappedAlphabet) = _UngappedAlphabet_Names
 getnamedict(alphabet::GappedAlphabet) = _GappedAlphabet_Names
 
-@inline getnamedict(alphabet::ReducedAlphabet) = _get_dict(alphabet)
+@inline getnamedict(alphabet::ReducedAlphabet) = _getdict(alphabet.named)
