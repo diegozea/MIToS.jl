@@ -25,6 +25,7 @@ using MIToS: Utils, MSA
 using Base.Cartesian        # nloops for ContingencyTables
 using NamedArrays           # ContingencyTables have NamedArrays
 using DataStructures        # OrderedDicts for NamedArrays
+using JLD                   # gaussdca
 using PairwiseListMatrices
 
 export  # MIToS.MSA
@@ -78,14 +79,13 @@ export  # MIToS.MSA
         buslje09,
         BLMI,
         pairwisegapfraction,
+        # Externals
+        gaussdca,
         # Formats from MIToS.MSA
         Raw, Stockholm, FASTA
 
 # SequenceWeights,
 # nresidues,
-
-# # Externals
-# gaussdca
 
 include("Pseudocounts.jl")
 include("ContingencyTables.jl")
@@ -96,9 +96,8 @@ include("Iterations.jl") # TO DO: Docs
 include("InformationMeasures.jl")
 include("Corrections.jl")
 include("CorrectedMutualInformation.jl")
+include("Externals.jl")
 
 # include("Probabilities.jl") # Docs and others, see at the end
-
-# include("Externals.jl")
 
 end
