@@ -42,7 +42,7 @@ function _count{N,A <: ResidueAlphabet}(alphabet::A,
                                         weights, pseudocounts,
                                         seqs::Vararg{AbstractVector{Residue},N}
                                         )::ContingencyTable{Float64,N,A}
-    table = ContingencyTable(Float64, N, alphabet)::ContingencyTable{Float64,N,A}
+    table = ContingencyTable(Float64, Val{N}, alphabet)::ContingencyTable{Float64,N,A}
     count!(table, weights, pseudocounts, seqs...)
     table
 end
@@ -72,7 +72,7 @@ function _probabilities{N,A <: ResidueAlphabet}(alphabet::A,
                                                 weights, pseudocounts, pseudofrequencies,
                                                 seqs::Vararg{AbstractVector{Residue},N}
                                                 )::ContingencyTable{Float64,N,A}
-    table = ContingencyTable(Float64, N, alphabet)::ContingencyTable{Float64,N,A}
+    table = ContingencyTable(Float64, Val{N}, alphabet)::ContingencyTable{Float64,N,A}
     probabilities!(table, weights, pseudocounts, pseudofrequencies, seqs...)
     table
 end

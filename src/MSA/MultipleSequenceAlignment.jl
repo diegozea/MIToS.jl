@@ -232,7 +232,7 @@ Base.ctranspose(x::AbstractAlignedObject) = transpose(namedmatrix(x))
 as a `Matrix{Residue}` without annotations nor column/row names.
 """
 getresidues(x::Matrix{Residue}) = x
-getresidues(x::NamedArray{Residue,2}) = array(x)
+getresidues(x::NamedArray{Residue,2}) = NamedArrays.array(x)
 getresidues(x::AbstractAlignedObject) = getresidues(namedmatrix(x))
 
 "`nsequences` returns the number of sequences on the MSA."

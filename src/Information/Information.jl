@@ -73,18 +73,17 @@ export  # MIToS.MSA
         gap_union_percentage,
         gap_intersection_percentage,
         # Corrections
-        APC!
+        APC!,
+        # CorrectedMutualInformation
+        buslje09,
+        BLMI,
+        pairwisegapfraction,
+        # Formats from MIToS.MSA
+        Raw, Stockholm, FASTA
 
 # SequenceWeights,
 # nresidues,
-#
-# APC!,
-#
-# buslje09, BLMI, pairwisegapfraction,
-#
-# # Formats from MIToS.MSA:
-# Raw, Stockholm, FASTA,
-#
+
 # # Externals
 # gaussdca
 
@@ -96,12 +95,10 @@ include("Counters.jl")
 include("Iterations.jl") # TO DO: Docs
 include("InformationMeasures.jl")
 include("Corrections.jl")
+include("CorrectedMutualInformation.jl")
 
 # include("Probabilities.jl") # Docs and others, see at the end
 
-
-
-# include("CorrectedMutualInformation.jl")
 # include("Externals.jl")
 
 end

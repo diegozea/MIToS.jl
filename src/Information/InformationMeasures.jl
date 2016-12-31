@@ -118,8 +118,9 @@ kullback_leibler{T,A}(p::Probabilities{T,1,A}, base::T) = kullback_leibler(p)/lo
 # Mutual Information
 # ==================
 
+# It avoids ifelse() because log is expensive (https://github.com/JuliaLang/julia/issues/8869)
 @inline function _mi{T}(::Type{T}, pij, pi, pj)
-    ifelse(pij > zero(T) && pi > zero(T), T(pij * log(pij/(pi*pj))), zero(T))
+    @fastmath (pij > zero(T)) && (pi > zero(T)) ? T(pij * log(pij/(pi*pj))) : zero(T)
 end
 
 # """
@@ -146,8 +147,9 @@ function mutual_information{T,A}(table::Probabilities{T,2,A})
     MI # Default base: e
 end
 
+# It avoids ifelse() because log is expensive (https://github.com/JuliaLang/julia/issues/8869)
 @inline function _mi{T}(total::T, nij, ni, nj)
-    ifelse(nij > zero(T) && ni > zero(T), T(nij * log((total * nij)/(ni * nj))), zero(T))
+    @fastmath (nij > zero(T)) && (ni > zero(T)) ? T(nij * log((total * nij)/(ni * nj))) : zero(T)
 end
 
 # """
