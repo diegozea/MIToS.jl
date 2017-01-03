@@ -1,19 +1,41 @@
 @testset "ContingencyTables" begin
 
-    @testset "Creation" begin
+    @testset "Creation and Getters" begin
 
         for alphabet in (UngappedAlphabet(),
                          GappedAlphabet(),
                          ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"))
             for N in 1:3
-                table = ContingencyTable(Float64, Val{N}, alphabet)
+                table = ContingencyTable(Float64, Val{N}, alphabet) # zeros in MIToS 1.0
 
                 @test size(table) == (Int[length(alphabet) for i in 1:N]...)
                 @test length(table) == length(alphabet)^N
-                @test sum(table) == 0.0
+                @test length(getmarginals(table)) == length(alphabet)* N
+                @test size(getmarginals(table)) == (length(alphabet), N)
+                @test sum(gettable(table)) == 0.0
+                @test sum(table) == 0.0 # == gettotal(table)
                 @test sum(table.temporal) == 0.0
                 @test sum(getmarginals(table)) == 0.0
                 @test gettotal(table) == 0.0
+                @test collect(table) == gettablearray(table) # Iteration interface in MIToS 1.0
+                @test isa(gettablearray(table), Array{Float64,N})
+                @test isa(getmarginalsarray(table), Array{Float64,2})
+            end
+        end
+
+        @testset "Similar" begin
+            for alphabet in (UngappedAlphabet(),
+                            GappedAlphabet(),
+                            ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"))
+                for N in 1:3
+                    table = ContingencyTable(Float64, Val{N}, alphabet) # zeros in MIToS 1.0
+
+                    @test table == similar(table)
+                    @test typeof(table) == typeof(similar(table))
+                    @test table == similar(table, BigFloat)
+                    @test typeof(table) != typeof(similar(table, BigFloat))
+                    @test BigFloat == eltype(similar(table, BigFloat))
+                end
             end
         end
     end
@@ -28,16 +50,22 @@
 
             if isa(getalphabet(table), ReducedAlphabet)
                 @test table[1,3] == 0.0
-                table[1,3] = 10.0
-                @test table[Residue('A'), Residue('R')] == 10.0
+                table[1,3] = 100.0
+                i = 2 * length(getalphabet(table)) + 1 # using one index
+                @test table[i] == 100.0
+                table[i] = 10.0
+                @test table[Residue('A'), Residue('R')] == 10.0 # using two indices
                 table[Residue('A'), Residue('R')] = 20.0
                 @test table["AILMV", "RHK"] == 20.0
                 table["AILMV", "RHK"] = 30.0
                 @test table[1,3] == 30.0
             else
                 @test table[1,2] == 0.0
-                table[1,2] = 10.0
-                @test table[Residue('A'), Residue('R')] == 10.0
+                table[1,2] = 100.0
+                i = length(getalphabet(table)) + 1 # using one index
+                @test table[i] == 100.0
+                table[i] = 10.0
+                @test table[Residue('A'), Residue('R')] == 10.0 # using two indices
                 table[Residue('A'), Residue('R')] = 20.0
                 @test table["A", "R"] == 20.0
                 table["A", "R"] = 30.0
@@ -144,4 +172,5 @@
             end
         end
     end
+
 end

@@ -26,6 +26,7 @@ using Base.Cartesian        # nloops for ContingencyTables
 using NamedArrays           # ContingencyTables have NamedArrays
 using DataStructures        # OrderedDicts for NamedArrays
 using JLD                   # gaussdca
+using StatsBase             # entropy
 using PairwiseListMatrices
 
 export  # MIToS.MSA
@@ -45,7 +46,7 @@ export  # MIToS.MSA
         gettable, gettablearray,
         getmarginals, getmarginalsarray,
         gettotal,
-        update_marginals!,
+        # update_marginals!,
         apply_pseudocount!,
         delete_dimensions!, delete_dimensions,
         # BLOSUM62

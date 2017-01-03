@@ -37,6 +37,8 @@ end
 @inline getmarginals(table::ContingencyTable) = table.marginals
 @inline gettotal(table::ContingencyTable) = table.total
 
+Base.sum(table::ContingencyTable) = gettotal(table)
+
 @inline gettablearray(table::ContingencyTable) = NamedArrays.array(table.table)
 @inline getmarginalsarray(table::ContingencyTable) = NamedArrays.array(table.marginals)
 

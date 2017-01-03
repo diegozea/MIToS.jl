@@ -9,7 +9,7 @@
 #
 # `p` should be a `ResidueProbability` table. The result type is determined by `base`.
 # """
-function entropy{T,N,A}(table::Probabilities{T,N,A})
+function StatsBase.entropy{T,N,A}(table::Probabilities{T,N,A})
     H = zero(T)
     p = gettablearray(table)
     @inbounds for pᵢ in p
@@ -26,7 +26,7 @@ end
 # It's the fastest option (you don't spend time on probability calculations).
 # The result type is determined by the `base`.
 # """
-function entropy{T,N,A}(table::Counts{T,N,A})
+function StatsBase.entropy{T,N,A}(table::Counts{T,N,A})
     H = zero(T)
     total = gettotal(table)
     n = gettablearray(table)
@@ -38,7 +38,7 @@ function entropy{T,N,A}(table::Counts{T,N,A})
     H/total # Default base: e
 end
 
-function entropy{T,N,A}(table::Union{Counts{T,N,A},Probabilities{T,N,A}}, base::T)
+function StatsBase.entropy{T,N,A}(table::Union{Counts{T,N,A},Probabilities{T,N,A}}, base::Real)
     entropy(table) / log(base)
 end
 
@@ -75,7 +75,7 @@ function marginal_entropy{T,N,A}(table::Counts{T,N,A}, margin::Int)
 end
 
 function marginal_entropy{T,N,A}(table::Union{Counts{T,N,A},Probabilities{T,N,A}},
-                                 margin::Int, base::T)
+                                 margin::Int, base::Real)
     marginal_entropy(table, margin) / log(base)
 end
 
@@ -112,8 +112,8 @@ function kullback_leibler{T,A}(probabilities::Probabilities{T,1,A},
     kullback_leibler(probabilities, gettablearray(background))
 end
 
-kullback_leibler{T,A}(p::Probabilities{T,1,A}, q, base::T) = kullback_leibler(p, q)/log(base)
-kullback_leibler{T,A}(p::Probabilities{T,1,A}, base::T) = kullback_leibler(p)/log(base)
+kullback_leibler{T,A}(p::Probabilities{T,1,A}, q, base::Real) = kullback_leibler(p, q)/log(base)
+kullback_leibler{T,A}(p::Probabilities{T,1,A}, base::Real) = kullback_leibler(p)/log(base)
 
 # Mutual Information
 # ==================
@@ -176,7 +176,7 @@ function mutual_information{T,A}(table::Counts{T,2,A})
 end
 
 function mutual_information{T,N,A}(table::Union{Counts{T,N,A}, Probabilities{T,N,A}},
-                                   base::T)
+                                   base::Real)
     mutual_information(table) / log(base)
 end
 

@@ -3,6 +3,7 @@ using Base.Test
 using MIToS: Utils, MSA, Information
 
 using NamedArrays
+using StatsBase             # WeightVec
 using PairwiseListMatrices  # getlist
 
 # using MIToS.Information
@@ -39,6 +40,9 @@ end
 # Information
 @testset "Information" begin
     include(joinpath("Information", "ContingencyTables.jl"))
+    include(joinpath("Information", "Counters.jl"))
+    include(joinpath("Information", "InformationMeasures.jl"))
+    include(joinpath("Information", "Iterations.jl"))
 end
 
 # # MSA
@@ -50,9 +54,6 @@ end
 # #  SIFTS
 # include("sifts.jl")
 # # Information
-# include("probabilities.jl")
-# include("informationmeasures.jl")
-# include("iterations.jl")
 # include("buslje09.jl")
 # # Pfam
 # include("pfam.jl")
