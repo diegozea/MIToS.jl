@@ -13,11 +13,11 @@ function StatsBase.entropy{T,N,A}(table::Probabilities{T,N,A})
     H = zero(T)
     p = gettablearray(table)
     @inbounds for pᵢ in p
-        if pᵢ != zero(T)
-            H -= pᵢ * log(pᵢ)
+        if pᵢ > zero(T)
+            H += pᵢ * log(pᵢ)
         end
     end
-    H # Default base: e
+    -H # Default base: e
 end
 
 # """
@@ -31,11 +31,11 @@ function StatsBase.entropy{T,N,A}(table::Counts{T,N,A})
     total = gettotal(table)
     n = gettablearray(table)
     @inbounds for nᵢ in n
-        if nᵢ != zero(T)
-            H -= nᵢ * log(nᵢ/total)
+        if nᵢ > zero(T)
+            H += nᵢ * log(nᵢ/total)
         end
     end
-    H/total # Default base: e
+    -H/total # Default base: e
 end
 
 function StatsBase.entropy{T,N,A}(table::Union{Counts{T,N,A},Probabilities{T,N,A}}, base::Real)
@@ -55,11 +55,11 @@ function marginal_entropy{T,N,A}(table::Probabilities{T,N,A}, margin::Int)
     H = zero(T)
     marginals = getmarginalsarray(table)
     @inbounds for pi in view(marginals, :, margin)
-        if pi != zero(T)
-            H -= pi * log(pi)
+        if pi > zero(T)
+            H += pi * log(pi)
         end
     end
-    H # Default base: e
+    -H # Default base: e
 end
 
 function marginal_entropy{T,N,A}(table::Counts{T,N,A}, margin::Int)
@@ -67,11 +67,11 @@ function marginal_entropy{T,N,A}(table::Counts{T,N,A}, margin::Int)
     total = gettotal(table)
     marginals = getmarginalsarray(table)
     @inbounds for ni in view(marginals, :, margin)
-        if ni != zero(T)
-            H -= ni * log(ni/total)
+        if ni > zero(T)
+            H += ni * log(ni/total)
         end
     end
-    H/total # Default base: e
+    -H/total # Default base: e
 end
 
 function marginal_entropy{T,N,A}(table::Union{Counts{T,N,A},Probabilities{T,N,A}},
@@ -93,22 +93,22 @@ end
 # `p` should be a `ResidueProbability` table, and `background` must have the size of `p`.
 # The result type is determined by `base` and `background`.
 # """
-function kullback_leibler{T,A}(probabilities::Probabilities{T,1,A},
-                               background::Vector{T})
+function kullback_leibler{T,N,A}(probabilities::Probabilities{T,N,A},
+                                 background::Array{T,N})
     p = getcontingencytable(probabilities)
-    @assert size(background)!=size(p) "probabilities and background must have the same size."
+    @assert size(background)==size(p) "probabilities and background must have the same size."
     KL = zero(T)
     @inbounds for i in 1:length(p)
         pi = p[i]
-        if pi != 0.0
+        if pi > zero(T)
             KL += pi * log(pi/background[i])
         end
     end
     KL # Default base: e
 end
 
-function kullback_leibler{T,A}(probabilities::Probabilities{T,1,A},
-                               background::ContingencyTable{T,1,A}=BLOSUM62_Pi)
+function kullback_leibler{T,N,A}(probabilities::Probabilities{T,N,A},
+                background::Union{Probabilities{T,N,A},ContingencyTable{T,N,A}}=BLOSUM62_Pi)
     kullback_leibler(probabilities, gettablearray(background))
 end
 
@@ -120,7 +120,7 @@ kullback_leibler{T,A}(p::Probabilities{T,1,A}, base::Real) = kullback_leibler(p)
 
 # It avoids ifelse() because log is expensive (https://github.com/JuliaLang/julia/issues/8869)
 @inline function _mi{T}(::Type{T}, pij, pi, pj)
-    @fastmath (pij > zero(T)) && (pi > zero(T)) ? T(pij * log(pij/(pi*pj))) : zero(T)
+    (pij > zero(T)) && (pi > zero(T)) ? T(pij * log(pij/(pi*pj))) : zero(T)
 end
 
 # """
@@ -138,7 +138,7 @@ function mutual_information{T,A}(table::Probabilities{T,2,A})
     N = size(marginals,1)
     @inbounds for j in 1:N
         pj = marginals[j,2]
-        if pj > 0.0
+        if pj > zero(T)
             @inbounds @simd for i in 1:N
                 MI += _mi(T, p[i,j], marginals[i,1], pj)
             end
@@ -149,7 +149,7 @@ end
 
 # It avoids ifelse() because log is expensive (https://github.com/JuliaLang/julia/issues/8869)
 @inline function _mi{T}(total::T, nij, ni, nj)
-    @fastmath (nij > zero(T)) && (ni > zero(T)) ? T(nij * log((total * nij)/(ni * nj))) : zero(T)
+    (nij > zero(T)) && (ni > zero(T)) ? T(nij * log((total * nij)/(ni * nj))) : zero(T)
 end
 
 # """
@@ -166,7 +166,7 @@ function mutual_information{T,A}(table::Counts{T,2,A})
     N = size(marginals,1)
     @inbounds for j in 1:N
         nj = marginals[j,2]
-        if nj > 0.0
+        if nj > zero(T)
             @inbounds @simd for i in 1:N
                 MI += _mi(total, n[i,j], marginals[i,1], nj)
             end
@@ -180,7 +180,7 @@ function mutual_information{T,N,A}(table::Union{Counts{T,N,A}, Probabilities{T,N
     mutual_information(table) / log(base)
 end
 
-function mutual_information{T,A}(pxyz::Probabilities{T,3,A})
+function mutual_information{T,A}(pxyz::Union{Counts{T,3,A}, Probabilities{T,3,A}})
     pxy = delete_dimensions(pxyz, 3)
     return(
         marginal_entropy(pxyz, 1) +                 # H(X) +

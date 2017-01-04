@@ -14,13 +14,8 @@
                       0     0     1     1     0     0.296
                       0     0     0.296 0.296 0.296 0 ]
 
-    @test isapprox( mapcolpairfreq!(normalized_mutual_information, aln,
-                                    Counts(ContingencyTable(Float64,Val{2},UngappedAlphabet())),
-                                    Val{false}),
-                    result, 0.0001)
-
-    @test isapprox( mapcolpairfreq!(normalized_mutual_information, aln,
-                                    Probabilities(ContingencyTable(Float64,Val{2},UngappedAlphabet())),
-                                    Val{false}),
-                    result, 0.0001)
+    nmi = mapcolpairfreq!(normalized_mutual_information, aln,
+                          Counts(ContingencyTable(Float64,Val{2},UngappedAlphabet())),
+                          Val{false})
+    @test isapprox(full(NamedArrays.array(nmi)), result, rtol=1e-4)
 end

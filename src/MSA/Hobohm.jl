@@ -58,5 +58,5 @@ function hobohmI(msa::AbstractMatrix{Residue}, threshold)
     cluster = zeros(Int,nseq)
     clustersize = zeros(Int,nseq)
     _fill_hobohmI!(cluster, clustersize, aln, threshold)
-    SequenceClusters(clustersize, cluster, _get_sequence_weight(clustersize, cluster))
+    Clusters(clustersize, cluster, _get_sequence_weight(clustersize, cluster))
 end

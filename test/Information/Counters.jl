@@ -39,7 +39,7 @@
 
         @testset "Using clustering" begin
 
-            clusters = SequenceClusters([21], ones(Int,21), WeightVec(ones(21)/21))
+            clusters = Clusters([21], ones(Int,21), WeightVec(ones(21)/21))
 
             for alphabet in (UngappedAlphabet(),
                             GappedAlphabet(),
@@ -135,7 +135,7 @@
 
         @testset "BigFloat" begin
             table = ContingencyTable(BigFloat, Val{2}, UngappedAlphabet())
-            clusters = SequenceClusters([21], ones(Int,21), WeightVec(ones(21)/21))
+            clusters = Clusters([21], ones(Int,21), WeightVec(ones(21)/21))
             probabilities!(table, clusters, AdditiveSmoothing(one(BigFloat)),
                            BLOSUM_Pseudofrequencies(1.0,1.0), seq, seq)
 

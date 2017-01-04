@@ -11,7 +11,7 @@
     clusters = hobohmI(fasta, 62)
 
     @test nclusters(clusters) == 2
-    @test nsequences(clusters) == 6
+    @test nelements(clusters) == 6
     @test getweight(clusters, 1) == 1/3
     @test getweight(clusters, 6) == 1/3
 end

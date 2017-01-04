@@ -35,6 +35,11 @@ function count!{T,N,A}(table::ContingencyTable{T,N,A},
     table
 end
 
+function count!{T,N,A}(table::Counts{T,N,A}, args...)
+    count!(getcontingencytable(table), args...)
+    table
+end
+
 # Default counters
 # ================
 
@@ -51,7 +56,7 @@ function Base.count{N}(seqs::Vararg{AbstractVector{Residue},N};
                        alphabet::ResidueAlphabet = UngappedAlphabet(),
                        weights = NoClustering(),
                        pseudocounts::Pseudocount = NoPseudocount())
-    _count(alphabet, weights, pseudocounts, seqs...)
+    Counts(_count(alphabet, weights, pseudocounts, seqs...))
 end
 
 # Probabilities
@@ -68,6 +73,15 @@ function probabilities!{T,N,A}(table::ContingencyTable{T,N,A},
     table
 end
 
+
+function probabilities!{T,N,A}(table::Probabilities{T,N,A}, args...)
+    probabilities!(getcontingencytable(table), args...)
+    table
+end
+
+# Default probabilities
+# =====================
+
 function _probabilities{N,A <: ResidueAlphabet}(alphabet::A,
                                                 weights, pseudocounts, pseudofrequencies,
                                                 seqs::Vararg{AbstractVector{Residue},N}
@@ -82,5 +96,5 @@ function probabilities{N}(seqs::Vararg{AbstractVector{Residue},N};
                           weights = NoClustering(),
                           pseudocounts::Pseudocount = NoPseudocount(),
                           pseudofrequencies::Pseudofrequencies = NoPseudofrequencies())
-    _probabilities(alphabet, weights, pseudocounts, pseudofrequencies, seqs...)
+    Probabilities(_probabilities(alphabet,weights,pseudocounts,pseudofrequencies,seqs...))
 end

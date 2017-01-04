@@ -12,13 +12,15 @@ end
 # Probability and Counts
 # ----------------------
 
-type Probabilities{T,N,A}
+type Probabilities{T,N,A} <: AbstractArray{T,N}
     table::ContingencyTable{T,N,A}
 end
 
-type Counts{T,N,A}
+type Counts{T,N,A} <: AbstractArray{T,N}
     table::ContingencyTable{T,N,A}
 end
+
+# Getters
 
 @inline getcontingencytable{T,N,A}(p::Probabilities{T,N,A}) = p.table
 @inline getcontingencytable{T,N,A}(n::Counts{T,N,A}) = n.table
@@ -27,6 +29,13 @@ for f in (:getalphabet, :gettable, :getmarginals, :gettotal,
           :gettablearray, :getmarginalsarray)
     @eval $(f){T,N,A}(p::Probabilities{T,N,A}) = $(f)(getcontingencytable(p))
     @eval $(f){T,N,A}(n::Counts{T,N,A}) = $(f)(getcontingencytable(n))
+end
+
+# AbstractArray
+
+for f in (:size, :getindex, :setindex!)
+    @eval Base.$(f){T,N,A}(p::Probabilities{T,N,A},args...) = $(f)(getcontingencytable(p),args...)
+    @eval Base.$(f){T,N,A}(n::Counts{T,N,A},args...) = $(f)(getcontingencytable(n),args...)
 end
 
 # Getters
@@ -121,9 +130,12 @@ end
 # Show
 # ====
 
-Base.show(io::IO, ::MIME"text/plain", table::ContingencyTable) = show(io, table)
+function Base.show{T,N,A}(io::IO, ::MIME"text/plain",
+                          table::Union{ContingencyTable{T,N,A},Probabilities{T,N,A},Counts{T,N,A}})
+    show(io, table)
+end
 
-function Base.show(io::IO, table::ContingencyTable)
+function Base.show{T,N,A}(io::IO, table::ContingencyTable{T,N,A})
     println(io, typeof(table), " : ")
     print(io, "\ntable : ")
     show(io, gettable(table))
@@ -132,6 +144,11 @@ function Base.show(io::IO, table::ContingencyTable)
         show(io, getmarginals(table))
     end
     print(io, "\n\ntotal : $(gettotal(table))")
+end
+
+function Base.show{T,N,A}(io::IO, table::Union{Probabilities{T,N,A},Counts{T,N,A}})
+    print(io, typeof(table), " wrapping a ")
+    show(io, getcontingencytable(table))
 end
 
 # Creation
@@ -310,8 +327,7 @@ This function makes the sum of the frequencies to be one.
 function Base.normalize!{T,N,A}(table::ContingencyTable{T,N,A})
     if table.total != one(T)
         _div!(table.table, table.total)
-        _div!(table.marginals, table.total)
-        table.total = one(T)
+        update_marginals!(table)
     end
     table
 end
@@ -360,4 +376,19 @@ deletion of `dimensions`. i.e. This is useful for getting Pxy from Pxyz.
 """
 function delete_dimensions{T,N,A,I}(input::ContingencyTable{T,N,A}, dims::Vararg{Int,I})
     delete_dimensions!(ContingencyTable(T, Val{N-I}, input.alphabet), input, dims...)
+end
+
+for tp in (:Probabilities, :Counts)
+    @eval begin
+        function delete_dimensions!{T,N,S,A}(output::$(tp){T,S,A}, input::$(tp){T,N,A},
+                                             dimensions::Int...)
+            delete_dimensions!(getcontingencytable(output), getcontingencytable(input), dimensions...)
+            output
+        end
+
+        function delete_dimensions{T,N,A,I}(input::$(tp){T,N,A}, dims::Vararg{Int,I})
+            output = delete_dimensions(getcontingencytable(input), dims...)
+            $(tp)(output)
+        end
+    end
 end

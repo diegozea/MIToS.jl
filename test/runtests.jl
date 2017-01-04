@@ -2,7 +2,7 @@ using Base.Test
 
 using MIToS: Utils, MSA, Information
 
-using NamedArrays
+using NamedArrays           # array
 using StatsBase             # WeightVec
 using PairwiseListMatrices  # getlist
 
@@ -10,7 +10,6 @@ using PairwiseListMatrices  # getlist
 # using MIToS.PDB
 # using MIToS.SIFTS
 # using MIToS.Pfam
-#
 
 const DATA = joinpath(pwd(), "data")
 

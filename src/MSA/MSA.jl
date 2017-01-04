@@ -89,8 +89,8 @@ export  # Residue
         # Clusters
         ClusteringResult, # from Clustering.jl
         nclusters, counts, assignments, # from Clustering.jl
-        NoClustering, SequenceClusters,
-        getweight, nsequences,
+        NoClustering, Clusters,
+        getweight, nelements,
         # Hobohm
         hobohmI
 

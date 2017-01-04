@@ -6,44 +6,44 @@
 immutable NoClustering <: ClusteringResult end
 
 "Data structure to represent sequence clusters. The sequence data itself is not included."
-immutable SequenceClusters <: ClusteringResult
+immutable Clusters <: ClusteringResult
     clustersize::Vector{Int}
-    sequencecluster::Vector{Int}
-    sequenceweight::StatsBase.WeightVec{Float64,Array{Float64,1}}
+    clusters::Vector{Int}
+    weights::StatsBase.WeightVec{Float64,Array{Float64,1}}
 end
 
-nsequences(cl::SequenceClusters) = length(cl.sequencecluster)
+nelements(cl::Clusters) = length(cl.clusters)
 
 # Clustering.jl : nclusters, counts, assignments
 
-"Get the number of clusters in a `SequenceClusters` object."
-Clustering.nclusters(cl::SequenceClusters) = length(cl.clustersize)
+"Get the number of clusters in a `Clusters` object."
+Clustering.nclusters(cl::Clusters) = length(cl.clustersize)
 
 """
 Get sample counts of clusters as a `Vector`. Each `k` value is the number of samples
 assigned to the k-th cluster.
 """
-Clustering.counts(cl::SequenceClusters) = cl.clustersize
+Clustering.counts(cl::Clusters) = cl.clustersize
 
 """
 Get a vector of assignments, where the `i` value is the index/number of the cluster to
 which the i-th sequence is assigned.
 """
-Clustering.assignments(cl::SequenceClusters) = cl.sequencecluster
+Clustering.assignments(cl::Clusters) = cl.clusters
 
-#  convert from ClusteringResult of Clustering.jl to SequenceClusters
+#  convert from ClusteringResult of Clustering.jl to Clusters
 # -------------------------------------------------------------------
 
 # needs tests
-function Base.convert(::Type{SequenceClusters}, cl::ClusteringResult)
+function Base.convert(::Type{Clusters}, cl::ClusteringResult)
     clustersize = counts(cl)
-    sequencecluster = assignments(cl)
-    sequenceweight = WeightVec(Float64[1.0/clustersize[k] for k in sequencecluster],
+    clusters = assignments(cl)
+    weights = WeightVec(Float64[1.0/clustersize[k] for k in clusters],
         Float64(length(clustersize)))
-    SequenceClusters(clustersize, sequencecluster, sequenceweight)
+    Clusters(clustersize, clusters, weights)
 end
 
-@inline Base.convert(::Type{SequenceClusters}, cl::SequenceClusters) = cl # no-op
+@inline Base.convert(::Type{Clusters}, cl::Clusters) = cl # no-op
 
 # weights
 # -------
@@ -57,10 +57,11 @@ function returns a vector with the weight of each sequence.
 """
 @inline getweight(weight::NoClustering, seq::Int) = 1.0
 
-getweight(cl::SequenceClusters) = cl.sequenceweight
+getweight(cl::Clusters) = cl.weights
 
-getweight(cl::SequenceClusters, seq::Int) = cl.sequenceweight[seq]
+getweight(cl::Clusters, seq::Int) = cl.weights[seq]
 
-getweight(cl::ClusteringResult) = getweight(convert(SequenceClusters, cl))
+@inline getweight(cl::WeightVec, i::Int) = cl[i]
 
-getweight(cl::ClusteringResult, seq::Int) = getweight(convert(SequenceClusters, cl), seq)
+# getweight(cl::ClusteringResult) = getweight(convert(Clusters, cl))
+# getweight(cl::ClusteringResult, seq::Int) = getweight(convert(Clusters, cl), seq)
