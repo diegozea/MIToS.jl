@@ -183,7 +183,7 @@ implications for catalytic residue identification.*
 PLoS Comput Biol 6, no. 11 (2010): e1000978.
 """
 function cumulative{T,D,VT}(plm::PairwiseListMatrix{T,D,VT}, threshold::T)
-    N = size(nplm, 1)
+    N = size(plm, 1)
     out = zeros(T, N)
     @iterateupper plm false begin
         elem = list[k]
