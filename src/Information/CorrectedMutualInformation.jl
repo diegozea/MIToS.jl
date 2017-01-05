@@ -63,7 +63,7 @@ function buslje09(aln::AbstractMatrix{Residue};
         zscore!(rand_mi, NamedArrays.array(zmi))
         return(zmi, mi)
     else
-        return(zeros(mi), mi)
+        return(fill!(copy(mi),0.0), mi)
     end
 end
 
@@ -137,41 +137,11 @@ function BLMI(aln::AbstractMatrix{Residue};
         zscore(rand_mi, NamedArrays.array(zmi))
         return(zmi, mi)
     else
-        return(zeros(mi), mi)
+        return(fill!(copy(mi),0.0), mi)
     end
 end
 
 function BLMI{T <: Format}(filename::String, format::Type{T}; kargs...)
     aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
     BLMI(aln; kargs...)
-end
-
-# MIToS Pairwise Gap Percentage
-# =============================
-
-# """
-# This function takes a MSA or a file and a `Format` as first arguments.
-# Calculates the percentage of gaps on columns pairs (union and intersection) using sequence clustering (Hobohm I).
-#
-# Argument, type, default value and descriptions:
-#
-#   - clustering  Bool      true    Sequence clustering (Hobohm I)
-#   - threshold             62      Percent identity threshold for sequence clustering (Hobohm I)
-#
-# This function returns:
-#
-#   - pairwise gap percentage (union)
-#   - pairwise gap percentage (intersection)
-# """
-function pairwisegapfraction(aln::AbstractMatrix{Residue}; clustering::Bool=true, threshold=62)
-    clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
-    freqtable = Counts(ContingencyTable(Float64,Val{2},GappedAlphabet()))
-    gu = estimateincolumns(gap_union_percentage, aln, freqtable, Val{true}, weights=clusters)
-    gi = estimateincolumns(gap_intersection_percentage, aln, freqtable, Val{true}, weights=clusters)
-    gu, gi
-end
-
-function pairwisegapfraction{T <: Format}(filename::String, format::Type{T}; kargs...)
-    aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
-    pairwisegapfraction(aln; kargs...)
 end

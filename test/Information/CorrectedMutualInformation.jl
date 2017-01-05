@@ -206,13 +206,13 @@
             r_std = 0.5 * ( sqrt((mi[1,2]-r_mean)^2) + sqrt((other_mi[1,2]-r_mean)^2) )
 
             results = buslje09(aln, lambda=0.05, clustering=false, apc=false, samples=100)
-            @test isapprox(results[MIToS_ZSCORE][1,2], ((mi[1,2]-r_mean)/r_std), atol=0.55)
+            @test isapprox(results[MIToS_ZSCORE][1,2], (mi[1,2]-r_mean)/r_std, atol=0.55)
 
             results = buslje09(aln, lambda=0.05, clustering=false, apc=false, samples=1000)
-            @test isapprox(results[MIToS_ZSCORE][1,2], ((mi[1,2]-r_mean)/r_std), atol=0.15)
+            @test isapprox(results[MIToS_ZSCORE][1,2], (mi[1,2]-r_mean)/r_std, atol=0.15)
 
             results = buslje09(aln, lambda=0.05, clustering=false, apc=false, samples=10000)
-            @test isapprox(results[MIToS_ZSCORE][1,2], ((mi[1,2]-r_mean)/r_std), atol=0.055)
+            @test isapprox(results[MIToS_ZSCORE][1,2], (mi[1,2]-r_mean)/r_std, atol=0.055)
 
             @test aln == Residue[ 'R' 'A'
                                   'A' 'R' ]
@@ -222,8 +222,10 @@
     @testset "Results from Buslje et. al. 2009" begin
 
         @testset "Simple" begin
-            data = readdlm(joinpath(pwd(), "data", "data_simple_soft_Busljeetal2009_measure_MI.txt"))
-            results = buslje09(joinpath(pwd(), "data", "simple.fasta"), FASTA, lambda=0.0, clustering=false, apc=false)
+            data = readdlm(joinpath(pwd(), "data",
+                           "data_simple_soft_Busljeetal2009_measure_MI.txt"))
+            results = buslje09(joinpath(pwd(), "data", "simple.fasta"), FASTA,
+                               lambda=0.0, clustering=false, apc=false)
 
             @test isapprox(Float64(data[1, SCORE]), results[MIToS_SCORE][1,2], atol=1e-6)
             @test isapprox(Float64(data[1, ZSCORE]), results[MIToS_ZSCORE][1,2], atol=1.5)
@@ -233,19 +235,24 @@
             data = readdlm(gao11_buslje09("MI"))
             results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=false)
 
-            @test isapprox(convert(Vector{Float64},data[:,SCORE]), matrix2list(results[MIToS_SCORE]), atol=1e-6)
-            @test isapprox(convert(Vector{Float64},data[:,ZSCORE]), matrix2list(results[MIToS_ZSCORE]), atol=1.5)
+            @test isapprox(convert(Vector{Float64},data[:,SCORE]),
+                           matrix2list(results[MIToS_SCORE]), atol=1e-6)
+            @test isapprox(convert(Vector{Float64},data[:,ZSCORE]),
+                           matrix2list(results[MIToS_ZSCORE]), atol=1.5)
 
-            # println("Pearson for Z-score: ", cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])))
+            # println(cor(convert(Vector{Float64},data[:,ZSCORE]),matrix2list(results[MIToS_ZSCORE])))
 
             @testset "cMI" begin
-                @test cumulative(results[1], -Inf) == Base.vec(sum(results[1], 1))
-                #                                                 1.38629 = 0.693147 + 0.693147
-                @test all((cumulative(results[2],0.5) .- [0.0,0.0,1.38629,1.38629,1.38629,0.0]) .< 0.00001)
+                result = copy(results[1])
+                result[diagind(result)] = 0.0
+                @test cumulative(results[1], -Inf) == sum(result, 1)
+                @test all((cumulative(results[2],0.5) .-
+                           [0.0,0.0,1.38629,1.38629,1.38629,0.0]') .< 0.00001)
+                           #        1.38629 = 0.693147 + 0.693147
             end
 
-            @test isapprox(buslje09(Gaoetal2011,FASTA,lambda=0.05,clustering=false,apc=false)[MIToS_SCORE][1,2],
-                           0.33051006116310444, atol=1e-14)
+            result_0_05 = buslje09(Gaoetal2011,FASTA,lambda=0.05,clustering=false,apc=false)
+            @test isapprox(result_0_05[MIToS_SCORE][1,2], 0.33051006116310444, atol=1e-14)
         end
     end
 
@@ -254,125 +261,70 @@
         data = readdlm(gao11_buslje09("MI_clustering"))
         results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=false)
 
-        @test_approx_eq_eps convert(Vector{Float64}, data[:, SCORE]) matrix2list(results[MIToS_SCORE]) 1e-6
-        @test_approx_eq_eps convert(Vector{Float64}, data[:, ZSCORE]) matrix2list(results[MIToS_ZSCORE]) 1.5
+        @test isapprox(convert(Vector{Float64}, data[:, SCORE]),
+                       matrix2list(results[MIToS_SCORE]), atol=1e-6)
+        @test isapprox(convert(Vector{Float64}, data[:, ZSCORE]),
+                       matrix2list(results[MIToS_ZSCORE]), atol=1.5)
+    end
+
+    @testset "MIp" begin
+
+        data = readdlm(gao11_buslje09("MI_APC"))
+        results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=true)
+
+        @test isapprox(convert(Vector{Float64}, data[:, SCORE]),
+                       matrix2list(results[MIToS_SCORE]), atol=1e-6)
+        @test isapprox(convert(Vector{Float64}, data[:, ZSCORE]),
+                       matrix2list(results[MIToS_ZSCORE]), atol=1.5)
+
+        @test isapprox(results[MIToS_SCORE][5,6], 0.018484, atol=0.000001)
+    end
+
+    @testset "MIp + clustering" begin
+
+        data = readdlm(gao11_buslje09("MI_APC_clustering"))
+        results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=true)
+
+        @test isapprox(convert(Vector{Float64}, data[:, SCORE]),
+                       matrix2list(results[MIToS_SCORE]), atol=1e-6)
+        @test isapprox(convert(Vector{Float64}, data[:, ZSCORE]),
+                       matrix2list(results[MIToS_ZSCORE]), atol=1.5)
+
+        @test isapprox(results[MIToS_SCORE][5,6], 0.018484, atol=0.000001)
+    end
+
+    @testset "BLMI" begin
+
+        @testset "Simple" begin
+            file = joinpath(pwd(), "data", "simple.fasta")
+            busl = buslje09(file, FASTA)
+            blmi = BLMI(file, FASTA)
+
+            @test PairwiseListMatrices.getlist(NamedArrays.array(busl[1])) ≈
+                  PairwiseListMatrices.getlist(NamedArrays.array(blmi[1]))
+            @test PairwiseListMatrices.getlist(NamedArrays.array(busl[2])) ≈
+                  PairwiseListMatrices.getlist(NamedArrays.array(blmi[2]))
+        end
+
+        @testset "Gaoetal2011" begin
+            msa  = read(Gaoetal2011, FASTA)
+            busl = buslje09(Gaoetal2011, FASTA, lambda=0.0, samples=0)
+            blmi = BLMI(msa, lambda=0.0, beta=0.0, samples=5)
+            # BLMI should be equal to Buslje09 if beta is zero
+
+            @test PairwiseListMatrices.getlist(NamedArrays.array(busl[2])) ≈
+                  PairwiseListMatrices.getlist(NamedArrays.array(blmi[2])) # MIapc
+            @test msa == read(Gaoetal2011, FASTA)
+        end
+
+        @testset "Gaoetal2011, lambda 0.05" begin
+
+            busl = buslje09(Gaoetal2011, FASTA, lambda=0.5, samples=0)
+            blmi = BLMI(Gaoetal2011, FASTA, lambda=0.5, beta=0.0, samples=5)
+            # BLMI should be equal to Buslje09 if beta is zero
+
+            @test PairwiseListMatrices.getlist(NamedArrays.array(busl[2])) ≈
+                  PairwiseListMatrices.getlist(NamedArrays.array(blmi[2])) # MIapc
+        end
     end
 end
-
-#
-#
-#
-# println("""
-#
-# MI + clustering
-# """)
-#
-# let data = readdlm(gao11_buslje09("MI_clustering")),
-#     results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=false)
-#
-#   @test_approx_eq_eps convert(Vector{Float64}, data[:, SCORE]) matrix2list(results[MIToS_SCORE]) 1e-6
-#   @test_approx_eq_eps convert(Vector{Float64}, data[:, ZSCORE]) matrix2list(results[MIToS_ZSCORE]) 1.5
-#
-#   println("Pearson for Z-score: ", cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])))
-# end
-#
-# println("""
-#
-# MIp
-# """)
-#
-# let data = readdlm(gao11_buslje09("MI_APC")); results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=true)
-#
-#   @test_approx_eq_eps convert(Vector{Float64}, data[:, SCORE]) matrix2list(results[MIToS_SCORE]) 1e-6
-#   @test_approx_eq_eps convert(Vector{Float64}, data[:, ZSCORE]) matrix2list(results[MIToS_ZSCORE]) 1.5
-#
-#   @test_approx_eq_eps results[MIToS_SCORE][5,6] 0.018484 0.000001
-#
-#   println("Pearson for MIp: ", cor(convert(Vector{Float64}, data[:, SCORE]), matrix2list(results[MIToS_SCORE])))
-#   println("Pearson for Z-score: ", cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])))
-# end
-#
-# println("""
-#
-# MIp + clustering
-# """)
-#
-# let data = readdlm(gao11_buslje09("MI_APC_clustering")); results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=true)
-#
-#   @test_approx_eq_eps convert(Vector{Float64}, data[:, SCORE]) matrix2list(results[MIToS_SCORE]) 1e-6
-#   @test_approx_eq_eps convert(Vector{Float64}, data[:, ZSCORE]) matrix2list(results[MIToS_ZSCORE]) 1.5
-#
-#   @test_approx_eq_eps results[MIToS_SCORE][5,6] 0.018484 0.000001
-#
-#   println("Pearson for MIp: ", cor(convert(Vector{Float64}, data[:, SCORE]), matrix2list(results[MIToS_SCORE])))
-#   println("Pearson for Z-score: ", cor(convert(Vector{Float64}, data[:, ZSCORE]), matrix2list(results[MIToS_ZSCORE])))
-# end
-#
-# # TO DO: Test labels!
-#
-# print("""
-#
-# Test for BLMI
-# =============
-# """)
-#
-# let file = joinpath(pwd(), "data", "simple.fasta"),
-#     busl = buslje09(file, FASTA),
-#     blmi = BLMI(file, FASTA)
-#
-#   @test_approx_eq busl[1] blmi[1]
-#   @test_approx_eq busl[2] blmi[2]
-#
-# end
-#
-#
-# let msa = read(Gaoetal2011, FASTA),
-#     busl = buslje09(Gaoetal2011, FASTA, lambda=0.0, samples=0),
-#     blmi = BLMI(msa, lambda=0.0, beta=0.0, samples=5) # BLMI should be equal to Buslje09 if beta is zero
-#
-#   @test_approx_eq busl[2] blmi[2] # MIapc
-#
-#   @test msa == read(Gaoetal2011, FASTA)
-#
-# end
-#
-# let busl = buslje09(Gaoetal2011, FASTA, lambda=0.5, samples=0),
-#     blmi = BLMI(Gaoetal2011, FASTA, lambda=0.5, beta=0.0, samples=0) # BLMI should be equal to Buslje09 if beta is zero
-#
-#   @test_approx_eq busl[2] blmi[2] # MIapc
-# end
-#
-# print("""
-#
-# Test for Pairwise Gap Percentage
-# ================================
-# """)
-#
-# let file = joinpath(pwd(), "data", "simple.fasta"),
-#     mat = [ 0. 0.
-#             0. 0. ]
-#
-#   (gu, gi) = pairwisegapfraction(file, FASTA)
-#
-#   @test gu == mat
-#   @test gi == mat
-# end
-#
-# let file = joinpath(pwd(), "data", "gaps.txt")
-#
-#   gu, gi = pairwisegapfraction(file, Raw)
-#   cl = hobohmI(read(file, Raw), 62)
-#   ncl = nclusters(cl)
-#
-#   @test_approx_eq gu[1, 1] 0.0
-#   @test_approx_eq gi[1, 1] 0.0
-#
-#   @test_approx_eq gu[1, 2] 100.0 * getweight(cl, 10)/ncl
-#   @test_approx_eq gi[1, 2] 0.0
-#
-#   @test_approx_eq gu[10, 9] 100.0 * (ncl - getweight(cl, 1))/ncl
-#   @test_approx_eq gi[10, 9] 100.0 * (ncl - getweight(cl, 1) - getweight(cl, 2))/ncl
-#
-#   @test_approx_eq gu[10, 10] 100.0 * (ncl - getweight(cl, 1))/ncl
-#   @test_approx_eq gu[10, 10] 100.0 * (ncl - getweight(cl, 1))/ncl
-# end

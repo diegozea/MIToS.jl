@@ -210,15 +210,3 @@ function normalized_mutual_information{T,N,A}(table::Union{Counts{T,N,A},Probabi
         return(zero(T))
     end
 end
-
-# Pairwise Gap Percentage
-# =======================
-
-function gap_intersection_percentage{T}(nxy::Counts{T,2,GappedAlphabet})
-    T(100.0) * nxy[21,21] / gettotal(nxy)
-end
-
-function gap_union_percentage{T}(nxy::Counts{T,2,GappedAlphabet})
-    marginals = getmarginalsarray(nxy)
-    T(100.0) * (marginals[21,1] + marginals[21,2] - nxy[21,21]) / gettotal(nxy)
-end

@@ -72,13 +72,14 @@ export  # MIToS.MSA
         kullback_leibler,
         mutual_information,
         normalized_mutual_information,
-        gap_union_percentage,
-        gap_intersection_percentage,
         # Corrections
         APC!,
         # CorrectedMutualInformation
         buslje09,
         BLMI,
+        # Gaps
+        gap_union_percentage,
+        gap_intersection_percentage,
         pairwisegapfraction,
         # Externals
         gaussdca,
@@ -97,6 +98,7 @@ include("Iterations.jl") # TO DO: Docs
 include("InformationMeasures.jl")
 include("Corrections.jl")
 include("CorrectedMutualInformation.jl")
+include("Gaps.jl")
 include("Externals.jl")
 
 # include("Probabilities.jl") # Docs and others, see at the end
