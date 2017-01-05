@@ -16,51 +16,66 @@ using MIToS.PDB
 """
 module PDB
 
-using LightXML
 using AutoHashEquals
+using FixedSizeArrays
 using DataStructures
 using Formatting
-using MIToS.Utils
-using PairwiseListMatrices
-using FixedSizeArrays
-using RecipesBase           # Plots for PDBResidue
 
-import Base: ==, hash, length, size, -, +, ./, norm, dot, angle, cross, vec, any, print, show, parse
-import MIToS.Utils: findobjects, isobject
+# using LightXML
+# using MIToS.Utils
+# using PairwiseListMatrices
+# using RecipesBase           # Plots for PDBResidue
 
-export covalentradius, vanderwaalsradius, check_atoms_for_interactions,
+# import Base: ==, hash, length, size, -, +, ./, norm, dot, angle, cross, vec, any, print, show, parse
+# import MIToS.Utils: findobjects, isobject
 
-PDBResidueIdentifier, Coordinates, PDBAtom, PDBResidue,
-distance, contact, findheavy, findatoms, findCB, selectbestoccupancy, bestoccupancy,
-angle, proximitymean,
+export  # PDBResidues
+        PDBResidueIdentifier,
+        Coordinates,
+        PDBAtom,
+        PDBResidue,
+        squared_distance,
+        distance,
+        contact,
+        isresidue,
+        isatom,
+        residues,
+        @residues,
+        residuesdict,
+        @residuesdict
+        #distance, contact, findheavy, findatoms, findCB, selectbestoccupancy, bestoccupancy,
+        #angle, proximitymean
 
-ishydrophobic, isaromatic, iscationic, isanionic,
-ishbonddonor, ishbondacceptor, hydrogenbond,
-vanderwaals, vanderwaalsclash, covalent, disulphide,
-aromaticsulphur, pication, aromatic, ionic, hydrophobic,
-stridehydrogenbond, chimerahydrogenbond,
-
-PDBFile, PDBML, downloadpdb, getpdbdescription,
-
-kabsch, center!, rmsd,
-getCA, CAmatrix, coordinatesmatrix, change_coordinates,
-centeredcoordinates, centeredresidues,
-superimpose,
-mean_coordinates, rmsf,
-
-# Mitos.Utils
-isobject, findobjects, Is, Not, In, collectobjects, collectcaptures,
-
-@residues, residues, @atoms, atoms, @residuesdict, residuesdict
-
+# covalentradius, vanderwaalsradius, check_atoms_for_interactions,
+#
+#
+# ishydrophobic, isaromatic, iscationic, isanionic,
+# ishbonddonor, ishbondacceptor, hydrogenbond,
+# vanderwaals, vanderwaalsclash, covalent, disulphide,
+# aromaticsulphur, pication, aromatic, ionic, hydrophobic,
+# stridehydrogenbond, chimerahydrogenbond,
+#
+# PDBFile, PDBML, downloadpdb, getpdbdescription,
+#
+# kabsch, center!, rmsd,
+# getCA, CAmatrix, coordinatesmatrix, change_coordinates,
+# centeredcoordinates, centeredresidues,
+# superimpose,
+# mean_coordinates, rmsf,
+#
+# # Mitos.Utils
+# isobject, findobjects, Is, Not, In, collectobjects, collectcaptures,
+#
+# @residues, residues, @atoms, atoms, @residuesdict, residuesdict
+#
 include("PDBResidues.jl")
-include("AtomsData.jl")
-include("Interaction.jl")
-include("PDBMLParser.jl")
-include("PDBParser.jl")
-include("Kabsch.jl")
-include("Plots.jl")
-
-@deprecate bestoccupancy! bestoccupancy
-
+# include("AtomsData.jl")
+# include("Interaction.jl")
+# include("PDBMLParser.jl")
+# include("PDBParser.jl")
+# include("Kabsch.jl")
+# include("Plots.jl")
+#
+# @deprecate bestoccupancy! bestoccupancy
+#
 end
