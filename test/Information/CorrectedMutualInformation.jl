@@ -300,10 +300,10 @@
             busl = buslje09(file, FASTA)
             blmi = BLMI(file, FASTA)
 
-            @test PairwiseListMatrices.getlist(NamedArrays.array(busl[1])) ≈
-                  PairwiseListMatrices.getlist(NamedArrays.array(blmi[1]))
-            @test PairwiseListMatrices.getlist(NamedArrays.array(busl[2])) ≈
-                  PairwiseListMatrices.getlist(NamedArrays.array(blmi[2]))
+            @test PairwiseListMatrices.getlist(busl[1]) ≈
+                  PairwiseListMatrices.getlist(blmi[1])
+            @test PairwiseListMatrices.getlist(busl[2]) ≈
+                  PairwiseListMatrices.getlist(blmi[2])
         end
 
         @testset "Gaoetal2011" begin
@@ -312,8 +312,8 @@
             blmi = BLMI(msa, lambda=0.0, beta=0.0, samples=5)
             # BLMI should be equal to Buslje09 if beta is zero
 
-            @test PairwiseListMatrices.getlist(NamedArrays.array(busl[2])) ≈
-                  PairwiseListMatrices.getlist(NamedArrays.array(blmi[2])) # MIapc
+            @test PairwiseListMatrices.getlist(busl[2]) ≈
+                  PairwiseListMatrices.getlist(blmi[2]) # MIapc
             @test msa == read(Gaoetal2011, FASTA)
         end
 
@@ -323,8 +323,8 @@
             blmi = BLMI(Gaoetal2011, FASTA, lambda=0.5, beta=0.0, samples=5)
             # BLMI should be equal to Buslje09 if beta is zero
 
-            @test PairwiseListMatrices.getlist(NamedArrays.array(busl[2])) ≈
-                  PairwiseListMatrices.getlist(NamedArrays.array(blmi[2])) # MIapc
+            @test PairwiseListMatrices.getlist(busl[2]) ≈
+                  PairwiseListMatrices.getlist(blmi[2]) # MIapc
         end
     end
 end

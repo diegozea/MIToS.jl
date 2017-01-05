@@ -86,9 +86,6 @@ export  # MIToS.MSA
         # Formats from MIToS.MSA
         Raw, Stockholm, FASTA
 
-# SequenceWeights,
-# nresidues,
-
 include("Pseudocounts.jl")
 include("ContingencyTables.jl")
 include("BLOSUM62.jl")
