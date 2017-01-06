@@ -140,7 +140,7 @@ end
 
 These return a dictionary (using PDB residue numbers as keys) with the selected subset of residues.
 """
-function residuesdict{N}(residue_list::AbstractArray{PDBResidue,N}, 
+function residuesdict{N}(residue_list::AbstractArray{PDBResidue,N},
                          model="*", chain="*", group="*", number="*")
     dict = sizehint!(OrderedDict{String, PDBResidue}(), length(residue_list))
     for res in residue_list
@@ -170,38 +170,42 @@ macro residuesdict(residue_list,
     end
 end
 
-# # @atoms
-# # ======
-#
-# """
-# `atoms(residue_list, model, chain, group, residue, atom)`
-#
-# These return a vector of `PDBAtom`s with the selected subset of atoms.
-# """
-# function atoms(residue_list, model, chain, group, residue, atom)
-#     _is_wildcard(atom) ?
-#         vcat(Vector{PDBAtom}[ res.atoms for res in residues(residue_list, model, chain, group, residue) ]...) :
-#         vcat(Vector{PDBAtom}[ collectobjects(res.atoms, _test_stringfield(:atom, atom)) for res in residues(residue_list, model, chain, group, residue) ]...)
-# end
-#
-# """
-# `@atoms ... model ... chain ... group ... residue ... atom ...`
-#
-# These return a vector of `PDBAtom`s with the selected subset of atoms.
-# """
-# macro atoms(residue_list,
-#             model::Symbol, m, #::Union(Int, Char, String, Symbol),
-#             chain::Symbol, c, #::Union(Char, String, Symbol),
-#             group::Symbol, g,
-#             residue::Symbol, r,
-#             atom::Symbol, a)
-#     if model == :model && chain == :chain && group == :group && residue == :residue && atom == :atom
-#         return :(atoms($(esc(residue_list)), $(esc(m)), $(esc(c)), $(esc(g)), $(esc(r)), $(esc(a))))
-#     else
-#         throw(ArgumentError("The signature is @atoms ___ model ___ chain ___ group ___ residue ___ atom ___"))
-#     end
-# end
-#
+# @atoms
+# ======
+
+# TO DO
+
+"""
+`atoms(residue_list, model, chain, group, number, atom)`
+
+These return a vector of `PDBAtom`s with the selected subset of atoms.
+"""
+function atoms(residue_list, model, chain, group, number, atom)
+    _is_wildcard(atom) ?
+        vcat(Vector{PDBAtom}[ res.atoms for res in residues(residue_list, model, chain, group, number) ]...) :
+        vcat(Vector{PDBAtom}[ collectobjects(res.atoms, _test_stringfield(:atom, atom)) for res in residues(residue_list, model, chain, group, number) ]...)
+end
+
+"""
+`@atoms ... model ... chain ... group ... number ... atom ...`
+
+These return a vector of `PDBAtom`s with the selected subset of atoms.
+"""
+macro atoms(residue_list,
+            model::Symbol, m, #::Union(Int, Char, String, Symbol),
+            chain::Symbol, c, #::Union(Char, String, Symbol),
+            group::Symbol, g,
+            number::Symbol,n,
+            atom::Symbol,  a)
+    if model == :model && chain == :chain && group == :group && number == :number && atom == :atom
+        return :(atoms($(esc(residue_list)),$(esc(m)),$(esc(c)),$(esc(g)),$(esc(n)),$(esc(a))))
+    else
+        throw(ArgumentError(
+            "The signature is @atoms ___ model ___ chain ___ group ___ number ___ atom ___"
+        ))
+    end
+end
+
 # # Special find...
 # # ===============
 #
