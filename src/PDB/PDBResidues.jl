@@ -93,12 +93,12 @@ end
 @inline _is(element::String, regex::Regex) = ismatch(element, regex)
 @inline _is(element::String, f::Function) = f(element)
 
-function isresidue(id::PDBResidueIdentifier, model, chain, group, number)
-    _is(id.model,model) && _is(id.chain,chain) && _is(id.group,group) && _is(id.number,number)
+function isresidue(id::PDBResidueIdentifier, model, chain, group, residue)
+    _is(id.model,model) && _is(id.chain,chain) && _is(id.group,group) && _is(id.number,residue)
 end
 
-function isresidue(res::PDBResidue, model, chain, group, number)
-    isresidue(res.id, model, chain, group, number)
+function isresidue(res::PDBResidue, model, chain, group, residue)
+    isresidue(res.id, model, chain, group, residue)
 end
 
 isatom(atom::PDBAtom, name) = _is(atom.atom, name)
@@ -107,30 +107,30 @@ isatom(atom::PDBAtom, name) = _is(atom.atom, name)
 # =========
 
 """
-`residues(residue_list, model, chain, group, number)`
+`residues(residue_list, model, chain, group, residue)`
 
 These return a new vector with the selected subset of residues from a list of residues.
 """
 function residues{N}(residue_list::AbstractArray{PDBResidue,N},
-                     model="*", chain="*", group="*", number="*")
-    filter(res -> isresidue(res, model, chain, group, number), residue_list)
+                     model="*", chain="*", group="*", residue="*")
+    filter(res -> isresidue(res, model, chain, group, residue), residue_list)
 end
 
 """
-`@residues ... model ... chain ... group ... number ...`
+`@residues ... model ... chain ... group ... residue ...`
 
 These return a new vector with the selected subset of residues from a list of residues.
 """
 macro residues(residue_list,
-               model::Symbol, m,
-               chain::Symbol, c,
-               group::Symbol, g,
-               number::Symbol,n)
-    if model == :model && chain == :chain && group == :group && number == :number
+               model::Symbol,  m,
+               chain::Symbol,  c,
+               group::Symbol,  g,
+               residue::Symbol,r)
+    if model == :model && chain == :chain && group == :group && residue == :residue
         return :(residues($(esc(residue_list)), $(esc(m)), $(esc(c)), $(esc(g)), $(esc(n))))
     else
         throw(ArgumentError(
-            "The signature is @residues ___ model ___ chain ___ group ___ number ___"
+            "The signature is @residues ___ model ___ chain ___ group ___ residue ___"
         ))
     end
 end
@@ -141,10 +141,10 @@ end
 These return a dictionary (using PDB residue numbers as keys) with the selected subset of residues.
 """
 function residuesdict{N}(residue_list::AbstractArray{PDBResidue,N},
-                         model="*", chain="*", group="*", number="*")
+                         model="*", chain="*", group="*", residue="*")
     dict = sizehint!(OrderedDict{String, PDBResidue}(), length(residue_list))
     for res in residue_list
-        if isresidue(res, model, chain, group, number)
+        if isresidue(res, model, chain, group, residue)
             dict[res.id.number] = res
         end
     end
@@ -152,20 +152,20 @@ function residuesdict{N}(residue_list::AbstractArray{PDBResidue,N},
 end
 
 """
-`@residuesdict ... model ... chain ... group ... number ...`
+`@residuesdict ... model ... chain ... group ... residue ...`
 
 These return a dictionary (using PDB residue numbers as keys) with the selected subset of residues.
 """
 macro residuesdict(residue_list,
-                   model::Symbol, m,
-                   chain::Symbol, c,
-                   group::Symbol, g,
-                   number::Symbol,n)
-    if model == :model && chain == :chain && group == :group && number == :number
-        return :(residuesdict($(esc(residue_list)),$(esc(m)),$(esc(c)),$(esc(g)),$(esc(n))))
+                   model::Symbol,  m,
+                   chain::Symbol,  c,
+                   group::Symbol,  g,
+                   residue::Symbol,r)
+    if model == :model && chain == :chain && group == :group && residue == :residue
+        return :(residuesdict($(esc(residue_list)),$(esc(m)),$(esc(c)),$(esc(g)),$(esc(r))))
     else
         throw(ArgumentError(
-            "The signature is @residues ___ model ___ chain ___ group ___ number ___"
+            "The signature is @residues ___ model ___ chain ___ group ___ residue ___"
         ))
     end
 end
@@ -176,53 +176,61 @@ end
 # TO DO
 
 """
-`atoms(residue_list, model, chain, group, number, atom)`
+`atoms(residue_list, model, chain, group, residue, atom)`
 
 These return a vector of `PDBAtom`s with the selected subset of atoms.
 """
-function atoms(residue_list, model, chain, group, number, atom)
-    _is_wildcard(atom) ?
-        vcat(Vector{PDBAtom}[ res.atoms for res in residues(residue_list, model, chain, group, number) ]...) :
-        vcat(Vector{PDBAtom}[ collectobjects(res.atoms, _test_stringfield(:atom, atom)) for res in residues(residue_list, model, chain, group, number) ]...)
+function atoms(residue_list, model="*", chain="*", group="*", residue="*", atom="*")
+    atom_list = PDBAtom[]
+    @inbounds for r in residue_list
+        if isresidue(r, model, chain, group, residue)
+            for a in r.atoms
+                if isatom(a, name)
+                    push!(atom_list, a)
+                end
+            end
+        end
+    end
+    atom_list
 end
 
 """
-`@atoms ... model ... chain ... group ... number ... atom ...`
+`@atoms ... model ... chain ... group ... residue ... atom ...`
 
 These return a vector of `PDBAtom`s with the selected subset of atoms.
 """
 macro atoms(residue_list,
-            model::Symbol, m, #::Union(Int, Char, String, Symbol),
-            chain::Symbol, c, #::Union(Char, String, Symbol),
-            group::Symbol, g,
-            number::Symbol,n,
-            atom::Symbol,  a)
-    if model == :model && chain == :chain && group == :group && number == :number && atom == :atom
-        return :(atoms($(esc(residue_list)),$(esc(m)),$(esc(c)),$(esc(g)),$(esc(n)),$(esc(a))))
+            model::Symbol,  m,
+            chain::Symbol,  c,
+            group::Symbol,  g,
+            residue::Symbol,r,
+            atom::Symbol,   a)
+    if model == :model && chain == :chain && group == :group && residue == :residue && atom == :atom
+        return :(atoms($(esc(residue_list)),$(esc(m)),$(esc(c)),$(esc(g)),$(esc(r)),$(esc(a))))
     else
         throw(ArgumentError(
-            "The signature is @atoms ___ model ___ chain ___ group ___ number ___ atom ___"
+            "The signature is @atoms ___ model ___ chain ___ group ___ residue ___ atom ___"
         ))
     end
 end
 
-# # Special find...
-# # ===============
-#
-# "Returns a list with the index of the heavy atoms (all atoms except hydrogen) in the `PDBResidue`"
-# function findheavy(res::PDBResidue)
-#     N = length(res)
-#     indices = Array(Int,N)
-#     j = 0
-#     @inbounds for i in 1:N
-#         if res.atoms[i].element != "H"
-#             j += 1
-#             indices[j] = i
-#         end
-#     end
-#     resize!(indices, j)
-# end
-#
+# Special find...
+# ===============
+
+"Returns a list with the index of the heavy atoms (all atoms except hydrogen) in the `PDBResidue`"
+function findheavy(res::PDBResidue)
+    N = length(res)
+    indices = Array(Int,N)
+    j = 0
+    @inbounds for i in 1:N
+        if res.atoms[i].element != "H"
+            j += 1
+            indices[j] = i
+        end
+    end
+    resize!(indices, j)
+end
+
 # """
 # `findatoms(res::PDBResidue, atom::String)`
 #

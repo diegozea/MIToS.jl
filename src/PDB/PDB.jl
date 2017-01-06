@@ -42,9 +42,11 @@ export  # PDBResidues
         residues,
         @residues,
         residuesdict,
-        @residuesdict
-        #distance, contact, findheavy, findatoms, findCB, selectbestoccupancy, bestoccupancy,
-        #angle, proximitymean
+        @residuesdict,
+        atoms,
+        @atoms
+        #findheavy, findatoms, findCB, selectbestoccupancy, bestoccupancy,
+        #proximitymean
 
 # covalentradius, vanderwaalsradius, check_atoms_for_interactions,
 #
