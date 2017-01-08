@@ -90,51 +90,73 @@ function Base.parse(pdbml::LightXML.XMLDocument, ::Type{PDBML};
     end
     _generate_residues(residue_dict, occupancyfilter)
 end
-#
-# # Download PDB
-# # ============
-#
-# function _inputnameforgzip(outfile)
-#     if endswith(outfile, ".gz")
-#         return(outfile)
-#     end
-#     string(outfile, ".gz")
-# end
-#
-# """
-# Download a gzipped PDB file from PDB database.
-# Requires a four character `pdbcode`.
-# By default the `format` is xml and uses the `baseurl` http://www.rcsb.org/pdb/files/.
-# `outfile` is the path/name of the output file.
-# """
-# function downloadpdb(pdbcode::AbstractString; format::String="xml", outfile::AbstractString="default", baseurl::String="http://www.rcsb.org/pdb/files/")
-#     if length(pdbcode)== 4
-#         filename = string(uppercase(pdbcode), ".", lowercase(format),".gz")
-#         outfile = outfile == "default" ? filename : _inputnameforgzip(outfile)
-#         sepchar = endswith(baseurl,"/") ? "" : "/";
-#         download(string(baseurl,sepchar,filename) , outfile)
-#     else
-#         throw(string(pdbcode, " is not a correct PDB code"))
-#     end
-# end
-#
-# # RESTful PDB interface
-# # =====================
-#
-# """
-# Access general information about a PDB entry (e.g., Header information) using the RESTful interface of the PDB database (describePDB).
-# Returns a Dict for the four character `pdbcode`.
-# """
-# function getpdbdescription(pdbcode::String)
-#     if length(pdbcode)== 4
-#         query = string("http://www.rcsb.org/pdb/rest/describePDB?structureId=",lowercase(pdbcode))
-#         xmlroot = root(parse_file(download(query)))
-#         # Use temporal?
-#         description = get_elements_by_tagname(xmlroot, "PDB")[1]
-#         result = attributes_dict(description)
-#         # Delete file?
-#         return(result)
-#     else
-#         throw(string(pdbcode, " is not a correct PDB code"))
-#     end
-# end
+
+# Download PDB
+# ============
+
+function _inputnameforgzip(outfile)
+    if endswith(outfile, ".gz")
+        return(outfile)
+    end
+    string(outfile, ".gz")
+end
+
+_file_extension(format::Type{PDBML}) = ".xml.gz"
+_file_extension(format::Type{PDBFile}) = ".pdb.gz"
+
+"""
+Download a gzipped PDB file from PDB database.
+Requires a four character `pdbcode`.
+By default the `format` is xml and uses the `baseurl` http://www.rcsb.org/pdb/files/.
+`outfile` is the path/name of the output file.
+"""
+function downloadpdb{T<:Format}(pdbcode::String;
+                                format::Type{T}=PDBML,
+                                outfile::String="default",
+                                baseurl::String="http://www.rcsb.org/pdb/files/",
+                                kargs...)
+    if ismatch(r"\w{4}", pdbcode)
+        filename = uppercase(pdbcode) * _file_extension(format)
+        outfile = outfile == "default" ? filename : _inputnameforgzip(outfile)
+        sepchar = endswith(baseurl,"/") ? "" : "/";
+        download_file(string(baseurl,sepchar,filename), outfile, kargs...)
+    else
+        throw(ErrorException("$pdbcode is not a correct PDB code"))
+    end
+end
+
+
+# RESTful PDB interface
+# =====================
+
+function downloadpdbheader(pdbcode::String, filename::String=tempname()*".xml"; kargs...)
+    pdbcode = lowercase(pdbcode)
+    @assert endswith(filename,".xml") "filename must end with the xml extension: .xml"
+    if ismatch(r"\w{4}", pdbcode)
+        query = "http://www.rcsb.org/pdb/rest/describePDB?structureId=" * pdbcode
+        download_file(query, filename, kargs...)
+    else
+        throw(ErrorException("$pdbcode is not a correct PDB code"))
+    end
+end
+
+immutable PDBMLHeader <: Format end
+
+function Base.parse(document::LightXML.XMLDocument, ::Type{PDBMLHeader})
+    xmlroot = root(document)
+    description = get_elements_by_tagname(xmlroot, "PDB")[1]
+    attributes_dict(description)
+end
+
+"""
+Access general information about a PDB entry (e.g., Header information) using the RESTful interface of the PDB database (describePDB).
+Returns a Dict for the four character `pdbcode`.
+"""
+function getpdbdescription(pdbcode::String; kargs...)
+    filename = downloadpdbheader(pdbcode)
+    try
+        read(filename, PDBMLHeader)
+    finally
+        rm(filename)
+    end
+end

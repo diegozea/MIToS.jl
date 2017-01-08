@@ -27,7 +27,7 @@ function Base.parse(io::Union{IO, String}, ::Type{PDBFile};
                     occupancyfilter::Bool=false)
     residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
     atom_model = 0
-    for line in eachline(io)
+    for line in lineiterator(io)
         line_id = length(line) < 6 ? replace(line, ' ', "") : replace(line[1:6], ' ', "") # i.e. "END\n"
         if line_id == "MODEL"
             atom_model += 1

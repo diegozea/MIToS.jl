@@ -18,12 +18,8 @@ julia> download_file("http://www.uniprot.org/uniprot/P69905.fasta","seq.fasta",
 ```
 """
 function download_file(url::AbstractString, filename::AbstractString; kargs...)
-    stream = Requests.get_streaming(url; kargs...)
-    open(filename, "w") do fh
-        while !eof(stream)
-            write(fh, readavailable(stream))
-        end
-    end
+    response = get(url; kargs...)
+    save(response, filename)
     filename
 end
 

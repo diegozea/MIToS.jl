@@ -21,6 +21,7 @@ using FixedSizeArrays
 using DataStructures
 using Formatting
 using PairwiseListMatrices
+using NamedArrays
 using LightXML
 using MIToS.Utils
 #
@@ -76,12 +77,14 @@ export  # PDBResidues
         hydrophobic,
         stridehydrogenbond,
         chimerahydrogenbond,
-        # PDBMLParser
-        PDBML,
-        #downloadpdb,
-        #getpdbdescription,
         # PDBParser
         PDBFile,
+        # PDBMLParser
+        PDBML,
+        downloadpdb,
+        PDBMLHeader,
+        downloadpdbheader,
+        getpdbdescription,
         # Kabsch
         kabsch,
         center!,
@@ -99,8 +102,8 @@ export  # PDBResidues
 include("PDBResidues.jl")
 include("AtomsData.jl")
 include("Interaction.jl")
-include("PDBMLParser.jl")
 include("PDBParser.jl")
+include("PDBMLParser.jl")
 include("Kabsch.jl")
 # include("Plots.jl")
 

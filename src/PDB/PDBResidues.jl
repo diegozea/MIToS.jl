@@ -46,6 +46,8 @@ Base.vec(a::Coordinates) = Float64[a.x, a.y, a.z]
     (a.x - b.x)^2 + (a.y - b.y)^2 + (a.z - b.z)^2
 end
 
+squared_distance(a::PDBAtom, b::PDBAtom) = squared_distance(a.coordinates, b.coordinates)
+
 distance(a::Coordinates, b::Coordinates) = sqrt(squared_distance(a,b))
 
 distance(a::PDBAtom, b::PDBAtom) = distance(a.coordinates, b.coordinates)
@@ -100,7 +102,7 @@ immutable All end
 
 @inline _is(element::String, all::Type{All}) = true
 @inline _is(element::String, value::String) = element == value
-@inline _is(element::String, regex::Regex) = ismatch(element, regex)
+@inline _is(element::String, regex::Regex) = ismatch(regex, element)
 @inline _is(element::String, f::Function) = f(element)
 
 function isresidue(id::PDBResidueIdentifier, model, chain, group, residue)
@@ -137,7 +139,7 @@ macro residues(residue_list,
                group::Symbol,  g,
                residue::Symbol,r)
     if model == :model && chain == :chain && group == :group && residue == :residue
-        return :(residues($(esc(residue_list)), $(esc(m)), $(esc(c)), $(esc(g)), $(esc(n))))
+        return :(residues($(esc(residue_list)), $(esc(m)), $(esc(c)), $(esc(g)), $(esc(r))))
     else
         throw(ArgumentError(
             "The signature is @residues ___ model ___ chain ___ group ___ residue ___"
@@ -193,7 +195,7 @@ function atoms(residue_list, model=All, chain=All, group=All, residue=All, atom=
     @inbounds for r in residue_list
         if isresidue(r, model, chain, group, residue)
             for a in r.atoms
-                if isatom(a, name)
+                if isatom(a, atom)
                     push!(atom_list, a)
                 end
             end
@@ -426,8 +428,9 @@ function contact(A::PDBResidue, B::PDBResidue, limit::AbstractFloat; criteria::S
         Na = length(a)
         Nb = length(b)
         @inbounds for i in 1:Na
+            ai = a[i]
             for j in 1:Nb
-                if _squared_limit_contact(a, b, squared_limit)
+                if _squared_limit_contact(ai, b[j], squared_limit)
                     return(true)
                 end
             end
@@ -436,9 +439,10 @@ function contact(A::PDBResidue, B::PDBResidue, limit::AbstractFloat; criteria::S
         indices_a = findheavy(a)
         indices_b = findheavy(b)
         if length(indices_a) != 0 && length(indices_b) != 0
-            for i in indices_a
+            @inbounds for i in indices_a
+                ai = a[i]
                 for j in indices_b
-                    if _squared_limit_contact(a, b, squared_limit)
+                    if _squared_limit_contact(ai, b[j], squared_limit)
                         return(true)
                     end
                 end
@@ -448,9 +452,10 @@ function contact(A::PDBResidue, B::PDBResidue, limit::AbstractFloat; criteria::S
         indices_a = findatoms(a, "CA")
         indices_b = findatoms(b, "CA")
         if length(indices_a) != 0 && length(indices_b) != 0
-            for i in indices_a
+            @inbounds for i in indices_a
+                ai = a[i]
                 for j in indices_b
-                    if _squared_limit_contact(a, b, squared_limit)
+                    if _squared_limit_contact(ai, b[j], squared_limit)
                         return(true)
                     end
                 end
@@ -460,9 +465,10 @@ function contact(A::PDBResidue, B::PDBResidue, limit::AbstractFloat; criteria::S
         indices_a = findCB(A) # findCB needs residues instead of atoms
         indices_b = findCB(B)
         if length(indices_a) != 0 && length(indices_b) != 0
-            for i in indices_a
+            @inbounds for i in indices_a
+                ai = a[i]
                 for j in indices_b
-                    if _squared_limit_contact(a, b, squared_limit)
+                    if _squared_limit_contact(ai, b[j], squared_limit)
                         return(true)
                     end
                 end
@@ -496,11 +502,12 @@ end
 # ----------------------
 
 function squared_distance(residues::Vector{PDBResidue}; criteria::String="All")
-    PLM = residuepairsmatrix(residues, Float64, Val{false}, 0.0)
-    @iterateupper PLM false begin
+    nplm = residuepairsmatrix(residues, Float64, Val{false}, 0.0)
+    plm = NamedArrays.array(nplm)
+    @iterateupper plm false begin
         list[k] = :($squared_distance)(:($residues)[i], :($residues)[j], criteria = :($criteria))
     end
-    PLM
+    nplm
 end
 
 """
@@ -509,11 +516,12 @@ end
 If `contact` takes a `Vector{PDBResidue}`, It returns a matrix with all the pairwise comparisons (contact map).
 """
 function contact(residues::Vector{PDBResidue}, limit::AbstractFloat; criteria::String="All")
-    PLM = residuepairsmatrix(residues, Bool, Val{false}, true)
-    @iterateupper PLM false begin
+    nplm = residuepairsmatrix(residues, Bool, Val{false}, true)
+    plm = NamedArrays.array(nplm)
+    @iterateupper plm false begin
         list[k]=:($contact)(:($residues)[i],:($residues)[j],:($limit),criteria=:($criteria))
     end
-    PLM
+    nplm
 end
 
 """
@@ -522,11 +530,12 @@ end
 If `distance` takes a `Vector{PDBResidue}` returns a `PairwiseListMatrix{Float64, false}` with all the pairwise comparisons (distance matrix).
 """
 function distance(residues::Vector{PDBResidue}; criteria::String="All")
-    PLM = residuepairsmatrix(residues, Float64, Val{false}, 0.0)
-    @iterateupper PLM false begin
+    nplm = residuepairsmatrix(residues, Float64, Val{false}, 0.0)
+    plm = NamedArrays.array(nplm)
+    @iterateupper plm false begin
         list[k] = :($distance)(:($residues)[i], :($residues)[j], criteria = :($criteria))
     end
-    PLM
+    nplm
 end
 
 # Proximity average
