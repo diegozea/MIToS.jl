@@ -164,7 +164,7 @@ function change_coordinates(residues::AbstractVector{PDBResidue}, coordinates::M
 end
 
 "Returns a new `PDBAtom` but with a `B` as B-factor"
-function _change_B(atom::PDBAtom, B::ASCIIString)
+function _change_B(atom::PDBAtom, B::String)
     PDBAtom(copy(atom.coordinates),
             copy(atom.atom),
             copy(atom.element),

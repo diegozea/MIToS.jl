@@ -21,9 +21,8 @@ using FixedSizeArrays
 using DataStructures
 using Formatting
 using PairwiseListMatrices
-
-# using LightXML
-# using MIToS.Utils
+using LightXML
+using MIToS.Utils
 #
 # using RecipesBase           # Plots for PDBResidue
 
@@ -53,38 +52,56 @@ export  # PDBResidues
         selectbestoccupancy,
         bestoccupancy,
         residuepairsmatrix,
-        proximitymean
+        proximitymean,
+        # AtomsData
+        covalentradius,
+        vanderwaalsradius,
+        check_atoms_for_interactions,
+        # Interaction
+        ishydrophobic,
+        isaromatic,
+        iscationic,
+        isanionic,
+        ishbonddonor,
+        ishbondacceptor,
+        hydrogenbond,
+        vanderwaals,
+        vanderwaalsclash,
+        covalent,
+        disulphide,
+        aromaticsulphur,
+        pication,
+        aromatic,
+        ionic,
+        hydrophobic,
+        stridehydrogenbond,
+        chimerahydrogenbond,
+        # PDBMLParser
+        PDBML,
+        #downloadpdb,
+        #getpdbdescription,
+        # PDBParser
+        PDBFile,
+        # Kabsch
+        kabsch,
+        center!,
+        rmsd,
+        getCA,
+        CAmatrix,
+        coordinatesmatrix,
+        change_coordinates,
+        centeredcoordinates,
+        centeredresidues,
+        superimpose,
+        mean_coordinates,
+        rmsf
 
-# covalentradius, vanderwaalsradius, check_atoms_for_interactions,
-#
-#
-# ishydrophobic, isaromatic, iscationic, isanionic,
-# ishbonddonor, ishbondacceptor, hydrogenbond,
-# vanderwaals, vanderwaalsclash, covalent, disulphide,
-# aromaticsulphur, pication, aromatic, ionic, hydrophobic,
-# stridehydrogenbond, chimerahydrogenbond,
-#
-# PDBFile, PDBML, downloadpdb, getpdbdescription,
-#
-# kabsch, center!, rmsd,
-# getCA, CAmatrix, coordinatesmatrix, change_coordinates,
-# centeredcoordinates, centeredresidues,
-# superimpose,
-# mean_coordinates, rmsf,
-#
-# # Mitos.Utils
-# isobject, findobjects, Is, Not, In, collectobjects, collectcaptures,
-#
-# @residues, residues, @atoms, atoms, @residuesdict, residuesdict
-#
 include("PDBResidues.jl")
-# include("AtomsData.jl")
-# include("Interaction.jl")
-# include("PDBMLParser.jl")
-# include("PDBParser.jl")
-# include("Kabsch.jl")
+include("AtomsData.jl")
+include("Interaction.jl")
+include("PDBMLParser.jl")
+include("PDBParser.jl")
+include("Kabsch.jl")
 # include("Plots.jl")
-#
-# @deprecate bestoccupancy! bestoccupancy
-#
+
 end

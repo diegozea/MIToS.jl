@@ -99,7 +99,7 @@ Base.cross(a::PDBAtom, b::PDBAtom) = cross(a.coordinates, b.coordinates)
 immutable All end
 
 @inline _is(element::String, all::Type{All}) = true
-@inline _is(element::String, value::String) = value == "*" || element == value
+@inline _is(element::String, value::String) = element == value
 @inline _is(element::String, regex::Regex) = ismatch(element, regex)
 @inline _is(element::String, f::Function) = f(element)
 
@@ -225,21 +225,25 @@ end
 # Special find...
 # ===============
 
-"Returns a list with the index of the heavy atoms (all atoms except hydrogen) in the `PDBResidue`"
-function findheavy(atoms::Vector{PDBAtom})
-    # This should be faster than find(atom -> atom.element != "H", res.atoms)
-    # because atom vector is generally small and allocations aren't a problem:
-    # https://discourse.julialang.org/t/avoid-calling-push-in-base-find/1336
-    N = length(atoms)
-    indices = Array(Int,N)
+# This _find implementation should be faster than Base.find. It is faster than Base.find
+# for small vectors (like atoms) because and allocations is't a problem:
+# https://discourse.julialang.org/t/avoid-calling-push-in-base-find/1336
+function _find{T}(f::Function, vector::Vector{T})
+    N = length(vector)
+    indices = Array(Int, N)
     j = 0
     @inbounds for i in 1:N
-        if atoms[i].element != "H"
+        if f(vector[i])
             j += 1
             indices[j] = i
         end
     end
     resize!(indices, j)
+end
+
+"Returns a list with the index of the heavy atoms (all atoms except hydrogen) in the `PDBResidue`"
+function findheavy(atoms::Vector{PDBAtom})
+    _find(atom -> atom.element != "H", atoms)
 end
 
 findheavy(res::PDBResidue) = findheavy(res.atoms)
@@ -250,34 +254,15 @@ findheavy(res::PDBResidue) = findheavy(res.atoms)
 Returns a index vector of the atoms with the given `atom` name.
 """
 function findatoms(atoms::Vector{PDBAtom}, atom::String)
-    N = length(atoms)
-    indices = Array(Int,N)
-    j = 0
-    @inbounds for i in 1:N
-        if atoms[i].atom == atom
-            j += 1
-            indices[j] = i
-        end
-    end
-    resize!(indices, j)
+    _find(a -> a.atom == atom, atoms)
 end
 
-findatoms(res::PDBResidue) = findatoms(res.atoms)
+findatoms(res::PDBResidue, atom::String) = findatoms(res.atoms, atom)
 
 "Returns a vector of indices for `CB` (`CA` for `GLY`)"
 function findCB(res::PDBResidue)
-    atoms = res.atoms
-    N = length(atoms)
-    indices = Array(Int,N)
     atom = res.id.name == "GLY" ? "CA" : "CB"
-    j = 0
-    @inbounds for i in 1:N
-        if atoms[i].atom == atom
-            j += 1
-            indices[j] = i
-        end
-    end
-    resize!(indices, j)
+    findatoms(res, atom)
 end
 
 # occupancy

@@ -8,7 +8,7 @@ structure data derived from X-ray diffraction and NMR studies.
 immutable PDBFile <: Format end
 
 """
-`parse(io, ::Type{PDBFile}; chain="all", model="all", group="all", atomname="all", onlyheavy=false, occupancyfilter=false)`
+`parse(io, ::Type{PDBFile}; chain=All, model=All, group=All, atomname=All, onlyheavy=false, occupancyfilter=false)`
 
 Reads a text file of a PDB entry.
 Returns a list of `PDBResidue` (view `MIToS.PDB.PDBResidues`).
@@ -18,9 +18,13 @@ or `HETATM`. If not set, all residues are returned.
 If the keyword argument `occupancyfilter` (default: `false`) is `true`,
 only the atoms with the best occupancy are returned.
 """
-function parse(io::Union{IO, ASCIIString}, ::Type{PDBFile}; chain::ASCIIString = "all",
-               model::ASCIIString = "all", group::ASCIIString = "all", atomname::ASCIIString="all",
-               onlyheavy::Bool=false, occupancyfilter::Bool=false)
+function Base.parse(io::Union{IO, String}, ::Type{PDBFile};
+                    chain::Union{String,Type{All}} = All,
+                    model::Union{String,Type{All}} = All,
+                    group::Union{String,Type{All}} = All,
+                    atomname::Union{String,Type{All}} = All,
+                    onlyheavy::Bool=false,
+                    occupancyfilter::Bool=false)
     residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
     atom_model = 0
     for line in eachline(io)
@@ -28,12 +32,12 @@ function parse(io::Union{IO, ASCIIString}, ::Type{PDBFile}; chain::ASCIIString =
         if line_id == "MODEL"
             atom_model += 1
         end
-        if (group=="all" && (line_id=="ATOM" || line_id=="HETATM")) || (line_id == group)
+        if (group === All && (line_id=="ATOM" || line_id=="HETATM")) || (line_id == group)
             atom_chain = string(line[22])
             atom_name = replace(line[13:16],' ',"")
             element = replace(line[77:78],' ',"")
-            if  (chain=="all" || chain==atom_chain) && ((model==0 || model=="all") || model==string(atom_model+1)) &&
-                    (atomname=="all" || atomname==atom_name) && (!onlyheavy || element!="H")
+            if  _is(atom_chain,chain) && _is(string(atom_model+1),model) &&
+                    _is(atom_name,atomname) && (!onlyheavy || element!="H")
 
                 # 23 - 26        Integer         Residue sequence number.
                 # 27             AChar           Code for insertion of residues.
@@ -48,7 +52,7 @@ function parse(io::Union{IO, ASCIIString}, ::Type{PDBFile}; chain::ASCIIString =
 
                 mdl = atom_model == 0 ? "1" : string(atom_model)
 
-                residue_id = PDBResidueIdentifier("", PDB_number, name, line_id, mdl, atom_chain)
+                residue_id = PDBResidueIdentifier("",PDB_number,name,line_id,mdl,atom_chain)
                 atom_data  = PDBAtom(Coordinates(x,y,z), atom_name, element, occupancy, B)
 
                 value = get!(residue_dict, residue_id, PDBAtom[])
@@ -163,7 +167,7 @@ const _Format_PDB_TER = FormatExpr(
     "TER   {:>5d}      {:>3} {:>1}{:>4}{:>1}\n"
     )
 
-function print(io::IO, res::PDBResidue, format::Type{PDBFile}, atom_index::Int, serial_number::Int)
+function Base.print(io::IO, res::PDBResidue, format::Type{PDBFile}, atom_index::Int, serial_number::Int)
     number = match(r"(\d+)(\D?)", res.id.number)
     atomname = res.atoms[atom_index].atom
     printfmt(io, _Format_PDB_ATOM,
@@ -186,7 +190,7 @@ function print(io::IO, res::PDBResidue, format::Type{PDBFile}, atom_index::Int, 
     serial_number + 1
 end
 
-function print(io::IO, res::PDBResidue, format::Type{PDBFile}, start::Int=1)
+function Base.print(io::IO, res::PDBResidue, format::Type{PDBFile}, start::Int=1)
     next = start
     for i in 1:length(res.atoms)
         next = print(io, res, format, i, next)
@@ -194,7 +198,7 @@ function print(io::IO, res::PDBResidue, format::Type{PDBFile}, start::Int=1)
     nothing
 end
 
-function print(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PDBFile}, start::Int=1)
+function Base.print(io::IO,reslist::AbstractVector{PDBResidue},format::Type{PDBFile},start::Int=1)
     next = start
 
     use_model = length(unique(map(res->res.id.model, reslist))) > 1
@@ -251,8 +255,8 @@ function print(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PDBFile
     nothing
 end
 
-print(reslist::AbstractVector{PDBResidue}, format::Type{PDBFile}) = print(STDOUT, reslist, format)
-print(res::PDBResidue, format::Type{PDBFile}) = print(STDOUT, res, format)
+Base.print(reslist::AbstractVector{PDBResidue},format::Type{PDBFile}) = print(STDOUT,reslist,format)
+Base.print(res::PDBResidue, format::Type{PDBFile}) = print(STDOUT, res, format)
 
 @doc """
 `print(io, res, format::Type{PDBFile})`
