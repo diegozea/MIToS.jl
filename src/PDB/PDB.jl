@@ -20,16 +20,18 @@ using AutoHashEquals
 using FixedSizeArrays
 using DataStructures
 using Formatting
+using PairwiseListMatrices
 
 # using LightXML
 # using MIToS.Utils
-# using PairwiseListMatrices
+#
 # using RecipesBase           # Plots for PDBResidue
 
 # import Base: ==, hash, length, size, -, +, ./, norm, dot, angle, cross, vec, any, print, show, parse
 # import MIToS.Utils: findobjects, isobject
 
 export  # PDBResidues
+        All,
         PDBResidueIdentifier,
         Coordinates,
         PDBAtom,
@@ -44,9 +46,14 @@ export  # PDBResidues
         residuesdict,
         @residuesdict,
         atoms,
-        @atoms
-        #findheavy, findatoms, findCB, selectbestoccupancy, bestoccupancy,
-        #proximitymean
+        @atoms,
+        findheavy,
+        findatoms,
+        findCB,
+        selectbestoccupancy,
+        bestoccupancy,
+        residuepairsmatrix,
+        proximitymean
 
 # covalentradius, vanderwaalsradius, check_atoms_for_interactions,
 #
