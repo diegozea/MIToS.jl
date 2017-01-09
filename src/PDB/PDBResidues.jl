@@ -332,7 +332,7 @@ end
 # ==============
 
 function _update_squared_distance(a_atoms, b_atoms, i, j, dist)
-    actual_dist = distance(a_atoms[i], b_atoms[j])
+    actual_dist = squared_distance(a_atoms[i], b_atoms[j])
     if actual_dist < dist
         return(actual_dist)
     else
