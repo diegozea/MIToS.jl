@@ -50,6 +50,7 @@ const DATA = joinpath(pwd(), "data")
 @testset "PDB" begin
     include(joinpath("PDB", "PDB.jl"))
     include(joinpath("PDB", "Contacts.jl"))
+    include(joinpath("PDB", "Kabsch.jl"))
 end
 
 # # MSA
