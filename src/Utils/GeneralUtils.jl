@@ -1,3 +1,8 @@
+"""
+All is used instead of MIToS 1.0 "all" or "*"", because it's possible to dispatch on it.
+"""
+immutable All end
+
 _get_function_name(str::String)::String = split(str,'.')[end]
 
 """

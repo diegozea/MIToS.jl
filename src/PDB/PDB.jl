@@ -24,14 +24,10 @@ using PairwiseListMatrices
 using NamedArrays
 using LightXML
 using MIToS.Utils
-#
+
 # using RecipesBase           # Plots for PDBResidue
 
-# import Base: ==, hash, length, size, -, +, ./, norm, dot, angle, cross, vec, any, print, show, parse
-# import MIToS.Utils: findobjects, isobject
-
 export  # PDBResidues
-        All,
         PDBResidueIdentifier,
         Coordinates,
         PDBAtom,
@@ -97,7 +93,9 @@ export  # PDBResidues
         centeredresidues,
         superimpose,
         mean_coordinates,
-        rmsf
+        rmsf,
+        # MIToS.Utils
+        All
 
 include("PDBResidues.jl")
 include("AtomsData.jl")

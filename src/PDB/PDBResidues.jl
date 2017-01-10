@@ -98,8 +98,6 @@ Base.cross(a::PDBAtom, b::PDBAtom) = cross(a.coordinates, b.coordinates)
 # Find Residues/Atoms
 # ===================
 
-immutable All end
-
 @inline _is(element::String, all::Type{All}) = true
 @inline _is(element::String, value::String) = element == value
 @inline _is(element::String, regex::Regex) = ismatch(regex, element)

@@ -5,6 +5,7 @@ using GZip
 using LightXML
 
 export  # GeneralUtils.jl
+        All,
         get_n_words,
         hascoordinates,
         select_element,

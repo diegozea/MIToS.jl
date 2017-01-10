@@ -6,7 +6,7 @@ immutable SIFTSXML <: Format end
 Download the gzipped SIFTS xml  for the `pdbcode`.
 The extension of the downloaded file is `.xml.gz` by default. The `filename` can be changed, but the `.gz` at the end is mandatory.
 """
-function downloadsifts(pdbcode::ASCIIString; filename::ASCIIString="$(lowercase(pdbcode)).xml.gz")
+function downloadsifts(pdbcode::String; filename::String="$(lowercase(pdbcode)).xml.gz")
   if ismatch(r"^\w{4}$"i, pdbcode)
     download(string("ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/", lowercase(pdbcode[2:3]), "/", lowercase(pdbcode), ".xml.gz"), filename)
   else
@@ -60,13 +60,34 @@ _get_residues(segment) = child_elements(select_element(get_elements_by_tagname(s
 Returns `true` if the residue was annotated as *Not_Observed*
 """
 function _is_missing(residue)
-  details = get_elements_by_tagname(residue, "residueDetail")
-  for det in details
-    # XML: <residueDetail dbSource="PDBe" property="Annotation">Not_Observed</residueDetail>
-    if attribute(det, "property") == "Annotation" && content(det) == "Not_Observed"
-      return(true)
+    details = get_elements_by_tagname(residue, "residueDetail")
+    for det in details
+        # XML: <residueDetail dbSource="PDBe" property="Annotation">Not_Observed</residueDetail>
+        if attribute(det, "property") == "Annotation" && content(det) == "Not_Observed"
+            return(true)
+        end
     end
-  end
-  false
+    false
 end
 
+function _get_details(residue)::Tuple{Bool,String,String}
+    details = get_elements_by_tagname(residue, "residueDetail")
+    missing = false
+    sscode  = " "
+    ssname  = " "
+    for det in details
+        detail_property = attribute(det, "property")
+        # XML: <residueDetail dbSource="PDBe" property="Annotation">Not_Observed</residueDetail>
+        if  detail_property == "Annotation" && content(det) == "Not_Observed"
+            missing = true
+            break
+        # XML: <residueDetail dbSource="PDBe" property="codeSecondaryStructure"...
+        elseif detail_property == "codeSecondaryStructure"
+            sscode = content(det)
+        # XML: <residueDetail dbSource="PDBe" property="nameSecondaryStructure"...
+        elseif detail_property == "nameSecondaryStructure"
+            ssname = content(det)
+        end
+    end
+    (missing, sscode, ssname)
+end
