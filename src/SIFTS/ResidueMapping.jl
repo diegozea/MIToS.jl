@@ -43,15 +43,6 @@ for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
     end
 end
 
-@inline name(::Type{dbPDBe})    = "PDBe"
-@inline name(::Type{dbUniProt}) = "UniProt"
-@inline name(::Type{dbPfam})    = "Pfam"
-@inline name(::Type{dbNCBI})    = "NCBI"
-@inline name(::Type{dbInterPro})= "InterPro"
-@inline name(::Type{dbPDB})     = "PDB"
-@inline name(::Type{dbSCOP})    = "SCOP"
-@inline name(::Type{dbCATH})    = "CATH"
-
 """Returns "" if the attributte is missing"""
 function _get_attribute(elem::LightXML.XMLElement, attr::String)
     text = attribute(elem, attr)
@@ -121,6 +112,31 @@ end
     ssname::String # XML: <residueDetail dbSource="PDBe" property="nameSecondaryStructure"...
 end
 
+
+# Getters
+# -------
+
+@inline _name(::Type{dbPDBe})    = "PDBe"
+@inline _name(::Type{dbUniProt}) = "UniProt"
+@inline _name(::Type{dbPfam})    = "Pfam"
+@inline _name(::Type{dbNCBI})    = "NCBI"
+@inline _name(::Type{dbInterPro})= "InterPro"
+@inline _name(::Type{dbPDB})     = "PDB"
+@inline _name(::Type{dbSCOP})    = "SCOP"
+@inline _name(::Type{dbCATH})    = "CATH"
+
+@inline Base.get(res::SIFTSResidue, db::Type{dbPDBe})    = res.PDBe
+@inline Base.get(res::SIFTSResidue, db::Type{dbUniProt}) = res.UniProt
+@inline Base.get(res::SIFTSResidue, db::Type{dbPfam})    = res.Pfam
+@inline Base.get(res::SIFTSResidue, db::Type{dbNCBI})    = res.NCBI
+@inline Base.get(res::SIFTSResidue, db::Type{dbInterPro})= res.InterPro
+@inline Base.get(res::SIFTSResidue, db::Type{dbPDB})     = res.PDB
+@inline Base.get(res::SIFTSResidue, db::Type{dbSCOP})    = res.SCOP
+@inline Base.get(res::SIFTSResidue, db::Type{dbCATH})    = res.CATH
+
+# Print
+# -----
+
 function Base.show(io::IO, res::SIFTSResidue)
     if res.missing
         println(io, "SIFTSResidue (missing)")
@@ -140,8 +156,11 @@ function Base.show(io::IO, res::SIFTSResidue)
             end
         end
     end
-    println(io, "    InterPro: ",  res.InterPro)
+    println(io, "  InterPro: ",  res.InterPro)
 end
+
+# Creation
+# --------
 
 function (::Type{SIFTSResidue})(residue::LightXML.XMLElement, missing::Bool,
                                 sscode::String, ssname::String)
@@ -221,16 +240,16 @@ function siftsmapping{F, T}(filename::String,
                 residues = _get_residues(segment)
                 for residue in residues
                     in_chain = _is_All(chain)
-                    key_data = name(db_from) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{_number_type(F)}()
-                    value_data = name(db_to) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{_number_type(T)}()
+                    key_data = _name(db_from) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{_number_type(F)}()
+                    value_data = _name(db_to) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{_number_type(T)}()
                     if missings || !_is_missing(residue)
                         crossref = get_elements_by_tagname(residue, "crossRefDb")
                         for ref in crossref
                             source = attribute(ref, "dbSource")
-                            if source == name(db_from) && attribute(ref, "dbAccessionId") == id_from
+                            if source == _name(db_from) && attribute(ref, "dbAccessionId") == id_from
                                 key_data = Nullable(_parse(_number_type(F), attribute(ref, "dbResNum")))
                             end
-                            if source == name(db_to) && attribute(ref, "dbAccessionId") == id_to
+                            if source == _name(db_to) && attribute(ref, "dbAccessionId") == id_to
                                 value_data = Nullable(_parse(_number_type(T), attribute(ref, "dbResNum")))
                             end
                             if !in_chain && source == "PDB" # XML: <crossRefDb dbSource="PDB" ... dbChainId="E"/>
@@ -278,94 +297,18 @@ function Base.parse(document::LightXML.XMLDocument, ::Type{SIFTSXML};
     vector
 end
 
-# # Find SIFTSResidue
-# # -----------------
-#
-# """
-# `isobject{T <: DataBase}(res::SIFTSResidue, ::Type{T}, tests...)`
-#
-# Returns `true` if the tests are successfully passed for that `DataBase` sub-type on that `SIFTSResidue`.
-# """
-# function isobject{T <: DataBase}(res::SIFTSResidue, ::Type{T}, tests::AbstractTest...)
-#     dbfield = getfield(res, symbol(name(T)))
-#     if !isnull(dbfield)
-#         return(isobject(get(dbfield), tests...))
-#     end
-#     false
-# end
-#
-# function findobjects{T <: DataBase}(vector::AbstractVector{SIFTSResidue}, ::Type{T}, tests::AbstractTest...)
-#     dbname = symbol(name(T))
-#     len = length(vector)
-#     indexes = Array(Int, len)
-#     n = 0
-#     for i in 1:len
-#         dbfield = getfield(vector[i], dbname)
-#         if !isnull(dbfield) && isobject(get(dbfield), tests...)
-#             n += 1
-#             indexes[n] = i
-#         end
-#     end
-#     resize!(indexes, n)
-# end
-#
-# function collectobjects{T <: DataBase}(vector::AbstractVector{SIFTSResidue}, ::Type{T}, tests::AbstractTest...)
-#     dbname = symbol(name(T))
-#     len = length(vector)
-#     elements = Array(SIFTSResidue, len)
-#     n = 0
-#     for i in 1:len
-#         dbfield = getfield(vector[i], dbname)
-#         if !isnull(dbfield) && isobject(get(dbfield), tests...)
-#             n += 1
-#             elements[n] = vector[i]
-#         end
-#     end
-#     resize!(elements, n)
-# end
-#
-# """
-# `capture(res::SIFTSResidue, db_capture, field, db_test, tests...)`
-#
-# Takes a `SIFTSResidue`, a `db...` type and a `Symbol` with the name of the `field` to capture from that database.
-# Returns a `Nullable` with the field content if the `tests` are passed over a determined database (`db_test`).
-# The function Returns `nothing` if the DataBase to test or capture is null in the `SIFTSResidue`.
-# """
-# function capture{C <: DataBase, T <: DataBase}(res::SIFTSResidue, db_capture::Type{C}, field::Symbol, db_test::Type{T}, tests::AbstractTest...)
-#     dbfield_capture = getfield(res, symbol(name(C)))
-#     dbfield_test = getfield(res, symbol(name(T)))
-#     if !isnull(dbfield_capture) && !isnull(dbfield_test)
-#         captured = getfield(get(dbfield_capture), field)
-#         for test in tests
-#             if !Utils._test(get(dbfield_test), test)
-#                 return(Nullable{typeof(captured)}())
-#             end
-#         end
-#         return(Nullable(captured))
-#     end
-#     nothing
-# end
-#
-# "Returns the **type** of the `field` in the first object of the collection"
-# function guess_type{T <: DataBase}(collection::AbstractVector{SIFTSResidue}, ::Type{T}, field::Symbol)
-#     for res in collection
-#         dbfield = getfield(res, symbol(name(T)))
-#         if !isnull(dbfield)
-#             data = get(dbfield)
-#             if field in fieldnames(data)
-#                 return(fieldtype(typeof(data), field))
-#             end
-#         end
-#     end
-#     Any
-# end
-#
-# """
-# `collectcaptures(vector::AbstractVector{SIFTSResidue}, db_capture, field, db_test, tests)`
-#
-# Calls the `capture` function and returns a vector of `Nullable`s with the captured `field`s.
-# The element is null if any test fails or the object hasn't the `field`.
-# """
-# function collectcaptures{C <: DataBase, T <: DataBase}(vector::AbstractVector{SIFTSResidue}, db_capture::Type{C}, field::Symbol, db_test::Type{T}, tests::AbstractTest...)
-#     Nullable{guess_type(vector, C, field)}[ capture(object, C, field, T, tests...) for object in vector ]
-# end
+# Find SIFTSResidue
+# -----------------
+
+for F in (:find, :filter!, :filter)
+    @eval begin
+        function Base.$(F){T<:DataBase}(f::Function,list::AbstractVector{SIFTSResidue},db::Type{T})
+            $(F)(list) do res
+                database = get(res, db)
+                if !isnull(database)
+                    f(get(database))
+                end
+            end
+        end
+    end
+end
