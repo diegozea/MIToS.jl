@@ -52,7 +52,8 @@ Returns the Cα RMSD value between two PDB structures: `A` and `B`.
 If the structures are already superimposed between them,
 use `superimposed=true` to avoid a new superimposition (`superimposed` is `false` by default).
 """
-function rmsd(A::AbstractVector{PDBResidue}, B::AbstractVector{PDBResidue}; superimposed::Bool=false)
+function rmsd(A::AbstractVector{PDBResidue}, B::AbstractVector{PDBResidue};
+                        superimposed::Bool=false)
     if superimposed
         rmsd(CAmatrix(A),CAmatrix(B))
     else
@@ -125,10 +126,10 @@ Returns a new `PDBAtom` but with a new `coordinates`
 """
 function change_coordinates(atom::PDBAtom, coordinates::Coordinates)
     PDBAtom(coordinates,
-            copy(atom.atom),
-            copy(atom.element),
+            identity(atom.atom),
+            identity(atom.element),
             copy(atom.occupancy),
-            copy(atom.B))
+            identity(atom.B))
 end
 
 """
