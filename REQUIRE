@@ -4,15 +4,14 @@ GZip
 AutoHashEquals
 DataStructures
 Formatting
-IndexedArrays
 PairwiseListMatrices
 ArgParse
 ROCAnalysis
 Clustering
 FixedSizeArrays 0.2.3
 FastaIO
-RecipesBase
 Requests
 PkgBenchmark
 NamedArrays
 JLD
+RecipesBase

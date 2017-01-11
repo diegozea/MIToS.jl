@@ -1,13 +1,11 @@
 using Base.Test
 
-using MIToS: Utils, MSA, Information, PDB, SIFTS
+using MIToS: Utils, MSA, Information, PDB, SIFTS, Pfam
 
 using NamedArrays           # array
 using StatsBase             # WeightVec
 using PairwiseListMatrices  # getlist
-
-# using MIToS.SIFTS
-# using MIToS.Pfam
+using ROCAnalysis           # AUC
 
 const DATA = joinpath(pwd(), "data")
 
@@ -56,10 +54,11 @@ end
     include(joinpath("SIFTS", "SIFTS.jl"))
 end
 
-# # MSA
-# include("indexedarrays.jl") # TO DO: Agregar si es utilizado luego
-# # Pfam
-# include("pfam.jl")
+# Pfam
+@testset "Pfam" begin
+    include(joinpath("Pfam", "Pfam.jl"))
+end
+
 # # Scripts
 # include("scripts.jl")
 

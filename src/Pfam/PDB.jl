@@ -1,0 +1,277 @@
+# PDB ids from Pfam sequence annotations
+# ======================================
+
+const _regex_PDB_from_GS = r"PDB;\s+(\w+)\s+(\w);\s+\w+-\w+;" # i.e.: "PDB; 2VQC A; 4-73;\n"
+
+"""
+Generates from a Pfam `msa` a `Dict{String, Vector{Tuple{String,String}}}`.
+Keys are sequence IDs and each value is a list of tuples containing PDB code and chain.
+
+```
+julia> getseq2pdb(msa)
+Dict{String,Array{Tuple{String,String},1}} with 1 entry:
+  "F112_SSV1/3-112" => [("2VQC","A")]
+
+```
+"""
+function getseq2pdb(msa::AnnotatedMultipleSequenceAlignment)
+    dict = Dict{String,Vector{Tuple{String,String}}}()
+    for (k, v) in getannotsequence(msa)
+        id, annot = k
+        # i.e.: "#=GS F112_SSV1/3-112 DR PDB; 2VQC A; 4-73;\n"
+        if annot == "DR" && ismatch(_regex_PDB_from_GS, v)
+            for m in eachmatch(_regex_PDB_from_GS, v)
+                if haskey(dict, id)
+                    push!(dict[id], (m.captures[1], m.captures[2]))
+                else
+                    dict[id] = Tuple{String,String}[ (m.captures[1], m.captures[2]) ]
+                end
+            end
+        end
+    end
+    sizehint!(dict, length(dict))
+end
+
+# Mapping PDB/Pfam
+# ================
+
+"""
+`msacolumn2pdbresidue(msa, seqid, pdbid, chain, pfamid, siftsfile; strict=false, checkpdbname=false, missings=true)`
+
+This function returns a `Dict{Int64,String}` with **MSA column numbers on the input file**
+as keys and PDB residue numbers (`""` for missings) as values. The mapping is performed
+using SIFTS. This function needs correct *ColMap* and *SeqMap* annotations. This checks
+correspondence of the residues between the MSA sequence and SIFTS
+(It throws a warning if there are differences). Missing residues are included if the
+keyword argument `missings` is `true` (default: `true`). If the keyword argument `strict`
+is `true` (default: `false`), throws an Error, instead of a Warning, when residues don't
+match. If the keyword argument `checkpdbname` is `true` (default: `false`), throws an Error
+if the three letter name of the PDB residue isn't the MSA residue. If you are working with
+a **downloaded Pfam MSA without modifications**, you should `read` it using
+`generatemapping=true` and `useidcoordinates=true`. If you don't indicate the path to the
+`siftsfile` used in the mapping, this function downloads the SIFTS file in the current
+folder. If you don't indicate the Pfam accession number (`pfamid`), this function tries to
+read the *AC* file annotation.
+"""
+function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
+                              seqid::String,
+                              pdbid::String,
+                              chain::String,
+                              pfamid::String,
+                              siftsfile::String;
+                              strict::Bool=false,
+                              checkpdbname::Bool=false,
+                              missings::Bool=true)
+
+    siftsres = read(siftsfile, SIFTSXML, chain=chain, missings=missings)
+
+    up2res = Dict{Int,Tuple{String,String,Char}}()
+    for res in siftsres
+        if !isnull(res.Pfam) && get(res.Pfam).id == uppercase(pfamid)
+            pfnum  = get(res.Pfam).number
+            pfname = get(res.Pfam).name
+            if !isnull(res.PDB) && (get(res.PDB).id == lowercase(pdbid)) && !res.missing
+                up2res[pfnum] = checkpdbname ?
+                    (pfname,get(res.PDB).number,three2residue(get(res.PDB).name)) :
+                    (pfname,get(res.PDB).number,'-')
+            else
+                up2res[pfnum] = checkpdbname ?
+                    (pfname,"",isnull(res.PDB) ? "" : three2residue(get(res.PDB).name)) :
+                    (pfname,"",'-')
+            end
+        end
+    end
+
+    seq      = Char[x for x in vec(getsequence(msa, seqid))]
+    seqmap   = getsequencemapping(msa, seqid)
+    colmap   = getcolumnmapping(msa)
+    N        = ncolumns(msa)
+
+    m = Dict{Int,String}()
+    sizehint!(m, N)
+    for i in 1:N
+        up_number = seqmap[i]
+        if up_number != 0
+            up_res, pdb_resnum, pdb_res = get(up2res, up_number, ("","",'-'))
+            if string(seq[i]) == up_res
+                m[colmap[i]] = pdb_resnum
+            else
+                msg = string(pfamid, " ", seqid, " ", pdbid, " ", chain,
+                             " : MSA sequence residue at ", i, " (", seq[i],
+                             ") != SIFTS residue (UniProt/Pfam: ", up_res, ", PDB: ",
+                             pdb_resnum, ")")
+                strict ? throw(ErrorException(msg)) : warn(msg)
+            end
+            if ( checkpdbname && (seq[i] != pdb_res) )
+                msg = string(pfamid, " ", seqid, " ", pdbid, " ", chain,
+                             " : MSA sequence residue at ", i, " (", seq[i],
+                             ") != PDB residue at ", pdb_resnum, " (", pdb_res, ")")
+                throw(ErrorException(msg))
+            end
+        end
+    end
+    m
+end
+
+function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
+                              seqid::String, pdbid::String, chain::String,
+                              pfamid::String; kargs...)
+    msacolumn2pdbresidue(msa, seqid, pdbid, chain, pfamid, downloadsifts(pdbid), kargs...)
+end
+
+function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
+                              seqid::String, pdbid::String, chain::String; kargs...)
+    msacolumn2pdbresidue(msa,seqid,pdbid,chain,
+                         string(split(getannotfile(msa,"AC"),'.')[1]),
+                         kargs...)
+end
+
+"Returns a `BitVector` where there is a `true` for each column with PDB residue."
+function hasresidues(msa::AnnotatedMultipleSequenceAlignment,
+                    column2residues::Dict{Int,String})
+    colmap = getcolumnmapping(msa)
+    ncol = length(colmap)
+    mask = falses(ncol)
+    for i in 1:ncol
+        if get(column2residues, colmap[i], "") != ""
+            mask[i] = true
+        end
+    end
+    mask
+end
+
+# PDB residues for each column
+# ============================
+
+"""
+This function takes an `AnnotatedMultipleSequenceAlignment` with correct *ColMap* annotations and two dicts:
+
+1. The first is an `OrderedDict{String,PDBResidue}` from PDB residue number to `PDBResidue`.
+2. The second is a `Dict{Int,String}` from MSA column number **on the input file** to PDB residue number.
+
+`msaresidues` returns an `OrderedDict{Int,PDBResidue}` from input column number (ColMap) to `PDBResidue`.
+Residues on inserts are not included.
+"""
+function msaresidues(msa::AnnotatedMultipleSequenceAlignment,
+                     residues::OrderedDict{String,PDBResidue},
+                     column2residues::Dict{Int,String})
+    colmap = getcolumnmapping(msa)
+    msares = sizehint!(OrderedDict{Int,PDBResidue}(), length(colmap))
+    for col in colmap
+        resnum = get(column2residues, col, "")
+        if resnum != ""
+            if haskey(residues, resnum)
+                msares[col] = residues[resnum]
+            else
+                warn("MSA column $col : The residue number $resnum isn't in the residues Dict.")
+            end
+        end
+    end
+    sizehint!(msares, length(msares))
+end
+
+# Contact Map
+# ===========
+
+"""
+This function takes an `AnnotatedMultipleSequenceAlignment` with correct *ColMap* annotations and two dicts:
+
+1. The first is an `OrderedDict{String,PDBResidue}` from PDB residue number to `PDBResidue`.
+2. The second is a `Dict{Int,String}` from **MSA column number on the input file** to PDB residue number.
+
+`msacontacts` returns a `PairwiseListMatrix{Float64,false}` of `0.0` and `1.0` where `1.0` indicates a residue contact
+(inter residue distance less or equal to `6.05` angstroms between any heavy atom). `NaN` indicates a missing value.
+"""
+function msacontacts(msa::AnnotatedMultipleSequenceAlignment,
+                     residues::OrderedDict{String,PDBResidue},
+                     column2residues::Dict{Int,String},
+                     distance_limit::Float64 = 6.05)
+    colmap   = getcolumnmapping(msa)
+    contacts = columnpairsmatrix(msa)
+    plm = NamedArrays.array(contacts)
+    @inbounds @iterateupper plm false begin
+
+        resi = get(:($column2residues), :($colmap)[i], "")
+        resj = get(:($column2residues), :($colmap)[j], "")
+        if resi != "" && resj != "" && haskey(:($residues),resi) && haskey(:($residues),resj)
+            list[k] = Float64(:($contact)(:($residues)[resi],:($residues)[resj],:($distance_limit)))
+        else
+            list[k] = NaN
+        end
+
+    end
+    contacts
+end
+
+# AUC (contact prediction)
+# ========================
+
+"""
+This function takes a `msacontacts` or its list of contacts `contact_list` with 1.0 for
+true contacts and 0.0 for not contacts (NaN or other numbers for missing values).
+Returns two `BitVector`s, the first with `true`s where `contact_list` is 1.0 and the second
+with `true`s where `contact_list` is 0.0. There are useful for AUC calculations.
+"""
+function getcontactmasks{T <: AbstractFloat}(contact_list::Vector{T})
+    N = length(contact_list)
+    true_contacts  = falses(N)
+    false_contacts = trues(N) # In general, there are few contacts
+    @inbounds for i in 1:N
+        value = contact_list[i]
+        if value == 1.0
+            true_contacts[i] = true
+        end
+        if value != 0.0
+            false_contacts[i] = false
+        end
+    end
+    true_contacts, false_contacts
+end
+
+function getcontactmasks{T <: AbstractFloat,VT}(plm::PairwiseListMatrix{T,false,VT})
+    getcontactmasks(getlist(plm))
+end
+
+function getcontactmasks{T,TV,DN}(nplm::NamedArray{T,2,PairwiseListMatrix{T,false,TV},DN})
+    getcontactmasks(NamedArrays.array(nplm))
+end
+
+"""
+`AUC(scores_list::Vector, true_contacts::BitVector, false_contacts::BitVector)`
+
+Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the `scores_list` for `true_contacts` prediction.
+The three vectors should have the same length and `false_contacts` should be `true` where there are not contacts.
+"""
+function ROCAnalysis.AUC{T}(scores_list::Vector{T},
+                            true_contacts::BitVector,
+                            false_contacts::BitVector)
+    1 - auc(roc(scores_list[true_contacts  & !isnan(scores_list)],
+                scores_list[false_contacts & !isnan(scores_list)]))
+end
+
+"""
+`AUC(scores::PairwiseListMatrix, true_contacts::BitVector, false_contacts::BitVector)`
+
+Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the `scores` for `true_contacts` prediction.
+`scores`, `true_contacts` and `false_contacts` should have the same number of elements and `false_contacts` should be `true` where there are not contacts.
+"""
+function ROCAnalysis.AUC{L,VL,NL}(scores::NamedArray{L,2,PairwiseListMatrix{L,false,VL},NL},
+                               true_contacts::BitVector,
+                               false_contacts::BitVector)
+    AUC(getlist(NamedArrays.array(scores)), true_contacts, false_contacts)
+end
+
+"""
+`AUC(scores::PairwiseListMatrix, msacontacts::PairwiseListMatrix)`
+
+Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the `scores` for `msacontact` prediction.
+`score` and `msacontact` lists are vinculated (inner join) by their labels (i.e. column number in the file).
+`msacontact` should have 1.0 for true contacts and 0.0 for not contacts (NaN or other numbers for missing values).
+"""
+function ROCAnalysis.AUC{L <: AbstractFloat, R <: AbstractFloat,VL,VR,NL,NR}(
+                                scores::NamedArray{L,2,PairwiseListMatrix{L,false,VL},NL},
+                                msacontacts::NamedArray{R,2,PairwiseListMatrix{L,false,VR},NR})
+    sco, con = join(scores, msacontacts, kind=:inner)
+    true_contacts, false_contacts = getcontactmasks(con)
+    AUC(sco, true_contacts, false_contacts)
+end
