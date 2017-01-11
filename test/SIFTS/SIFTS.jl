@@ -176,6 +176,17 @@ end
           get(res,dbPDB,:number,"") == "323P"
 end
 
+@testset "MIToS 1.0 error" begin
+
+    sf = downloadsifts("4gcr", filename=tempname()*".xml.gz")
+    try
+        mapping = siftsmapping(sf, dbPfam, "PF00030", dbPDB, "4gcr")
+        @test mapping[3] == "2"
+    finally
+        isfile(sf) && rm(sf)
+    end
+end
+
 @testset "download" begin
 
     pdb = "2vqc"

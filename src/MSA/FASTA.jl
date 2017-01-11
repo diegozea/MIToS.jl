@@ -83,11 +83,11 @@ end
 # Print FASTA
 # ===========
 
-function Base.print(io::IO, msa::AbstractMultipleSequenceAlignment, format::Type{FASTA})
+function Base.print(io::IO, msa::AbstractMatrix{Residue}, format::Type{FASTA})
     seqnames = sequencenames(msa)
     for i in 1:nsequences(msa)
         println(io, string(">", seqnames[i], "\n", stringsequence(msa, i)))
     end
 end
 
-Base.print(msa::MultipleSequenceAlignment, format::Type{FASTA}) = print(STDOUT, msa, FASTA)
+Base.print(msa::AbstractMatrix{Residue}, format::Type{FASTA}) = print(STDOUT, msa, FASTA)

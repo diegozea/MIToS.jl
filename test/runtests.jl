@@ -40,6 +40,7 @@ end
     include(joinpath("Information", "Iterations.jl"))
     include(joinpath("Information", "CorrectedMutualInformation.jl"))
     include(joinpath("Information", "Gaps.jl"))
+    include(joinpath("Information", "Externals.jl"))
 end
 
 # PDB

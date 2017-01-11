@@ -22,15 +22,15 @@ function gaussdca(msa; kargs...)
     jdl_file = tempname() * ".jld"
     try
         bin_julia = ENV["_"]
-        string_call = _create_string_call(msa_file, jdl_file, kargs...)
+        string_call = _create_string_call(msa_file, jdl_file; kargs...)
         run(`$bin_julia -e $string_call`)
         pairedvalues = JLD.load(jdl_file, "values")
         for (i,j,value) in pairedvalues
            plm[i,j] = value
         end
     finally
-        rm(msa_file)
-        rm(jdl_file)
+        isfile(msa_file) && rm(msa_file)
+        isfile(jdl_file) && rm(jdl_file)
     end
     plm
 end

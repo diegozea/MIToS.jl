@@ -256,8 +256,8 @@ Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of 
 `scores`, `true_contacts` and `false_contacts` should have the same number of elements and `false_contacts` should be `true` where there are not contacts.
 """
 function ROCAnalysis.AUC{L,VL,NL}(scores::NamedArray{L,2,PairwiseListMatrix{L,false,VL},NL},
-                               true_contacts::BitVector,
-                               false_contacts::BitVector)
+                                  true_contacts::BitVector,
+                                  false_contacts::BitVector)
     AUC(getlist(NamedArrays.array(scores)), true_contacts, false_contacts)
 end
 
@@ -269,8 +269,8 @@ Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of 
 `msacontact` should have 1.0 for true contacts and 0.0 for not contacts (NaN or other numbers for missing values).
 """
 function ROCAnalysis.AUC{L <: AbstractFloat, R <: AbstractFloat,VL,VR,NL,NR}(
-                                scores::NamedArray{L,2,PairwiseListMatrix{L,false,VL},NL},
-                                msacontacts::NamedArray{R,2,PairwiseListMatrix{L,false,VR},NR})
+                            scores::NamedArray{L,2,PairwiseListMatrix{L,false,VL},NL},
+                            msacontacts::NamedArray{R,2,PairwiseListMatrix{L,false,VR},NR})
     sco, con = join(scores, msacontacts, kind=:inner)
     true_contacts, false_contacts = getcontactmasks(con)
     AUC(sco, true_contacts, false_contacts)
