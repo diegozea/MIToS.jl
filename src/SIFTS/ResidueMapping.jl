@@ -140,6 +140,13 @@ function Base.get{T<:Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbCATH}}(res::SI
     isnull(database) ? default : getfield(get(database), field)
 end
 
+function Base.get{T<:Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbCATH}}(res::SIFTSResidue,
+                 db::Type{T}, field::Symbol)
+    database = get(res, db)
+    S = fieldtype(T, field)
+    isnull(database) ? Nullable{S}() : Nullable{S}(getfield(get(database),field))
+end
+
 # Print
 # -----
 
