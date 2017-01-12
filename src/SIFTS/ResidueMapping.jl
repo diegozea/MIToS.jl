@@ -134,6 +134,12 @@ end
 @inline Base.get(res::SIFTSResidue, db::Type{dbSCOP})    = res.SCOP
 @inline Base.get(res::SIFTSResidue, db::Type{dbCATH})    = res.CATH
 
+function Base.get{T<:Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbCATH}}(res::SIFTSResidue,
+                 db::Type{T}, field::Symbol, default::Union{String,Int})
+    database = get(res, db)
+    isnull(database) ? default : getfield(get(database), field)
+end
+
 # Print
 # -----
 
@@ -240,17 +246,17 @@ function siftsmapping{F, T}(filename::String,
                 residues = _get_residues(segment)
                 for residue in residues
                     in_chain = _is_All(chain)
-                    key_data = _name(db_from) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{_number_type(F)}()
-                    value_data = _name(db_to) == "PDBe" ? Nullable(parse(Int, attribute(residue, "dbResNum"))) : Nullable{_number_type(T)}()
+                    key_data = _name(db_from) == "PDBe" ? Nullable(parse(Int,attribute(residue,"dbResNum"))) : Nullable{_number_type(F)}()
+                    value_data = _name(db_to) == "PDBe" ? Nullable(parse(Int,attribute(residue,"dbResNum"))) : Nullable{_number_type(T)}()
                     if missings || !_is_missing(residue)
                         crossref = get_elements_by_tagname(residue, "crossRefDb")
                         for ref in crossref
                             source = attribute(ref, "dbSource")
                             if source == _name(db_from) && attribute(ref, "dbAccessionId") == id_from
-                                key_data = Nullable(_parse(_number_type(F), attribute(ref, "dbResNum")))
+                                key_data = Nullable(_parse(_number_type(F),attribute(ref,"dbResNum")))
                             end
                             if source == _name(db_to) && attribute(ref, "dbAccessionId") == id_to
-                                value_data = Nullable(_parse(_number_type(T), attribute(ref, "dbResNum")))
+                                value_data = Nullable(_parse(_number_type(T),attribute(ref,"dbResNum")))
                             end
                             if !in_chain && source == "PDB" # XML: <crossRefDb dbSource="PDB" ... dbChainId="E"/>
                                 in_chain = attribute(ref, "dbChainId") == chain
@@ -258,7 +264,11 @@ function siftsmapping{F, T}(filename::String,
                         end
                         if !isnull(key_data) && !isnull(value_data) && in_chain
                             key = get(key_data)
-                            haskey(mapping, key) && warn(string(key, " is already in the mapping with the value ", mapping[key], ". The value is replaced by ", get(value_data)))
+                            if haskey(mapping, key)
+                                warn(string("$key is already in the mapping with the value ",
+                                            mapping[key],". The value is replaced by ",
+                                            get(value_data)))
+                            end
                             mapping[key] = get(value_data)
                         end
                     end

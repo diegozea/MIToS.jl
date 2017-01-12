@@ -4,14 +4,21 @@ immutable SIFTSXML <: Format end
 # ==============
 """
 Download the gzipped SIFTS xml  for the `pdbcode`.
-The extension of the downloaded file is `.xml.gz` by default. The `filename` can be changed, but the `.gz` at the end is mandatory.
+The extension of the downloaded file is `.xml.gz` by default.
+The `filename` can be changed, but the `.xml.gz` at the end is mandatory.
 """
 function downloadsifts(pdbcode::String; filename::String="$(lowercase(pdbcode)).xml.gz")
-  if ismatch(r"^\w{4}$"i, pdbcode)
-    download(string("ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/", lowercase(pdbcode[2:3]), "/", lowercase(pdbcode), ".xml.gz"), filename)
-  else
-    throw(ErrorException(string(pdbcode, " is not a correct PDB")))
-  end
+    @assert endswith(filename,".xml.gz") "filename must end with .xml.gz"
+    if check_pdbcode(pdbcode)
+        # Using download instead of download_file because Requests.jl doesn't support ftp:
+        # https://github.com/JuliaWeb/Requests.jl/issues/89
+        download(string(
+            "ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/",
+            lowercase(pdbcode[2:3]), "/", lowercase(pdbcode), ".xml.gz"), filename)
+    else
+        throw(ErrorException("$pdbcode is not a correct PDB"))
+    end
+    filename
 end
 
 # Internal Parser Functions
@@ -54,7 +61,9 @@ Returns an Iterator of the residues on the listResidue
 </listResidue>
 ```
 """
-_get_residues(segment) = child_elements(select_element(get_elements_by_tagname(segment, "listResidue"), "listResidue"))
+function _get_residues(segment)
+    child_elements(select_element(get_elements_by_tagname(segment,"listResidue"),"listResidue"))
+end
 
 """
 Returns `true` if the residue was annotated as *Not_Observed*

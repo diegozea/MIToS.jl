@@ -1,6 +1,6 @@
 using Base.Test
 
-using MIToS: Utils, MSA, Information, PDB
+using MIToS: Utils, MSA, Information, PDB, SIFTS
 
 using NamedArrays           # array
 using StatsBase             # WeightVec
@@ -51,10 +51,13 @@ end
     include(joinpath("PDB", "Kabsch.jl"))
 end
 
+# SIFTS
+@testset "SIFTS" begin
+    include(joinpath("SIFTS", "SIFTS.jl"))
+end
+
 # # MSA
 # include("indexedarrays.jl") # TO DO: Agregar si es utilizado luego
-# #  SIFTS
-# include("sifts.jl")
 # # Pfam
 # include("pfam.jl")
 # # Scripts

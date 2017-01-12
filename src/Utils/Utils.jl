@@ -10,6 +10,7 @@ export  # GeneralUtils.jl
         hascoordinates,
         select_element,
         matrix2list, list2matrix,
+        check_pdbcode,
         # Read.jl
         Format,
         lineiterator,

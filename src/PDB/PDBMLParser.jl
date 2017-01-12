@@ -108,36 +108,38 @@ _file_extension(format::Type{PDBFile}) = ".pdb.gz"
 Download a gzipped PDB file from PDB database.
 Requires a four character `pdbcode`.
 By default the `format` is xml and uses the `baseurl` http://www.rcsb.org/pdb/files/.
-`outfile` is the path/name of the output file.
+`filename` is the path/name of the output file.
 """
 function downloadpdb{T<:Format}(pdbcode::String;
-                                format::Type{T}=PDBML,
-                                outfile::String="default",
-                                baseurl::String="http://www.rcsb.org/pdb/files/",
+                                format::Type{T} = PDBML,
+                                filename::String= uppercase(pdbcode)*_file_extension(format),
+                                baseurl::String = "http://www.rcsb.org/pdb/files/",
                                 kargs...)
-    if ismatch(r"\w{4}", pdbcode)
-        filename = uppercase(pdbcode) * _file_extension(format)
-        outfile = outfile == "default" ? filename : _inputnameforgzip(outfile)
+    if check_pdbcode(pdbcode)
+        pdbfilename = uppercase(pdbcode) * _file_extension(format)
+        filename = _inputnameforgzip(filename)
         sepchar = endswith(baseurl,"/") ? "" : "/";
-        download_file(string(baseurl,sepchar,filename), outfile, kargs...)
+        download_file(string(baseurl,sepchar,pdbfilename), filename, kargs...)
     else
         throw(ErrorException("$pdbcode is not a correct PDB code"))
     end
+    filename
 end
 
 
 # RESTful PDB interface
 # =====================
 
-function downloadpdbheader(pdbcode::String, filename::String=tempname()*".xml"; kargs...)
+function downloadpdbheader(pdbcode::String; filename::String=tempname()*".xml", kargs...)
     pdbcode = lowercase(pdbcode)
     @assert endswith(filename,".xml") "filename must end with the xml extension: .xml"
-    if ismatch(r"\w{4}", pdbcode)
+    if check_pdbcode(pdbcode)
         query = "http://www.rcsb.org/pdb/rest/describePDB?structureId=" * pdbcode
         download_file(query, filename, kargs...)
     else
         throw(ErrorException("$pdbcode is not a correct PDB code"))
     end
+    filename
 end
 
 immutable PDBMLHeader <: Format end

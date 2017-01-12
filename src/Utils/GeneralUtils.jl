@@ -132,3 +132,8 @@ function list2matrix{T}(vec::AbstractVector{T}, side::Int; diagonal::Bool=false)
     end
     mat
 end
+
+"""
+It checks if a PDB code has the correct format.
+"""
+check_pdbcode(pdbcode::String) = ismatch(r"^\w{4}$", pdbcode)
