@@ -17,21 +17,21 @@
     @testset "missings = false" begin
 
         map = siftsmapping(sifts_file,dbPDBe,"2vqc",dbPDB,"2vqc",chain="A",missings=false)
-        @test_throws KeyError map[9]  # Missing
-        @test_throws KeyError map[80] # Missing
-        @test_throws KeyError map[1]  # Missing
-        @test map[10] == "4"
-        @test map[79] == "73"
+        @test_throws KeyError map["9"]  # Missing
+        @test_throws KeyError map["80"] # Missing
+        @test_throws KeyError map["1"]  # Missing
+        @test map["10"] == "4"
+        @test map["79"] == "73"
     end
 
     @testset "missings = true" begin
 
         map = siftsmapping(sifts_file, dbPDBe, "2vqc", dbPDB, "2vqc", chain="A")
-        @test map[9]  == "3"   # Missing
-        @test map[80] == "74"  # Missing
-        @test map[1]  == "-5"  # Missing # Negative Resnum
-        @test map[10] == "4"
-        @test map[79] == "73"
+        @test map["9"]  == "3"   # Missing
+        @test map["80"] == "74"  # Missing
+        @test map["1"]  == "-5"  # Missing # Negative Resnum
+        @test map["10"] == "4"
+        @test map["79"] == "73"
     end
 
     @testset "Insert codes" begin
@@ -40,17 +40,17 @@
         _1ssx_file = joinpath(pwd(), "data", "1ssx.xml.gz")
 
         map = siftsmapping(_1ssx_file, dbPDBe, "1ssx", dbPDB, "1ssx", chain="A")
-        residue_A = map[1]
-        residue_B = map[2]
-        residue_C = map[3]
+        residue_A = map["1"]
+        residue_B = map["2"]
+        residue_C = map["3"]
         @test residue_A == "15A"
         @test residue_B == "15B"
         @test residue_C == "16"
 
         mapII = siftsmapping(_1ssx_file, dbPDB, "1ssx", dbUniProt, "P00778", chain="A")
-        @test mapII["15A"] == 200
-        @test mapII["15B"] == 201
-        @test mapII["16"]  == 202
+        @test mapII["15A"] == "200"
+        @test mapII["15B"] == "201"
+        @test mapII["16"]  == "202"
     end
 
     @testset "Multiple InterProt annotations" begin
@@ -69,8 +69,8 @@
         _1cbn_file = joinpath(pwd(), "data", "1cbn.xml.gz")
 
         map = siftsmapping(_1cbn_file, dbPDBe, "1cbn", dbInterPro, "IPR001010", chain="A")
-        @test_throws KeyError map[1] # Without InterPro
-        @test map[2] == "2" # Same ResNum for different InterPros
+        @test_throws KeyError map["1"] # Without InterPro
+        @test map["2"] == "2" # Same ResNum for different InterPros
 
         mapII = read(_1cbn_file, SIFTSXML, chain="A")
         @test length(mapII[1].InterPro) == 0 # Without InterPro
@@ -84,11 +84,11 @@
 
         map = siftsmapping(_1as5_file, dbPDBe,"1as5", dbUniProt, "P56529", chain="A")
                           # missings=true : NMR there are not missing residues
-        @test map[23] == 73
-        @test_throws KeyError map[24] # Without UniProt
+        @test map["23"] == "73"
+        @test_throws KeyError map["24"] # Without UniProt
 
         mapII = siftsmapping(_1as5_file, dbPDBe,"1as5", dbPDB, "1as5", chain="A")
-        @test mapII[24] == "24"
+        @test mapII["24"] == "24"
     end
 
     @testset "Inserted residues lack insertion code" begin
@@ -99,12 +99,12 @@
         _1dpo_file = joinpath(pwd(), "data", "1dpo.xml.gz")
         map = siftsmapping(_1dpo_file, dbPDBe, "1dpo", dbPDB, "1dpo", chain="A")
         # Unnamed chain is "A" in SIFTS
-        @test map[164] == "184"
-        @test map[165] == "184A" # Has insertion code in SIFTS
-        @test map[169] == "188"
-        @test map[170] == "188A" # Has insertion code in SIFTS
-        @test map[198] == "221"
-        @test map[199] == "221A" # Has insertion code in SIFTS
+        @test map["164"] == "184"
+        @test map["165"] == "184A" # Has insertion code in SIFTS
+        @test map["169"] == "188"
+        @test map["170"] == "188A" # Has insertion code in SIFTS
+        @test map["198"] == "221"
+        @test map["199"] == "221A" # Has insertion code in SIFTS
     end
 
     @testset "Insertion block" begin
@@ -114,10 +114,10 @@
 
         _1igy_file = joinpath(pwd(), "data", "1igy.xml.gz")
         map = siftsmapping(_1igy_file, dbPDBe, "1igy", dbCATH, "2.60.40.10", chain="B")
-        @test map[82] == "82"
-        @test map[83] == "82A"
-        @test map[84] == "82B"
-        @test map[85] == "82C"
+        @test map["82"] == "82"
+        @test map["83"] == "82A"
+        @test map["84"] == "82B"
+        @test map["85"] == "82C"
     end
 
     @testset "1HAG" begin
@@ -125,15 +125,15 @@
 
         _1hag_file = joinpath(pwd(), "data", "1hag.xml.gz")
         map = siftsmapping(_1hag_file, dbPDBe, "1hag", dbPDB, "1hag", chain="E")
-        @test map[1] == "1H"
-        @test map[2] == "1G"
-        @test map[3] == "1F"
-        @test map[4] == "1E"
-        @test map[5] == "1D"
-        @test map[6] == "1C"
-        @test map[7] == "1B"
-        @test map[8] == "1A"
-        @test map[9] == "1"
+        @test map["1"] == "1H"
+        @test map["2"] == "1G"
+        @test map["3"] == "1F"
+        @test map["4"] == "1E"
+        @test map["5"] == "1D"
+        @test map["6"] == "1C"
+        @test map["7"] == "1B"
+        @test map["8"] == "1A"
+        @test map["9"] == "1"
     end
 end
 
@@ -169,7 +169,7 @@ end
 
     mapp = read(joinpath(pwd(), "data", "1iao.xml.gz"), SIFTSXML)
 
-    @test filter(db -> db.id == "1iao" && db.number == "1S" && db.chain == "B", mapp, dbPDB)[1].PDBe.number == 1
+    @test filter(db -> db.id == "1iao" && db.number == "1S" && db.chain == "B", mapp, dbPDB)[1].PDBe.number == "1"
     i = find(db -> db.id == "1iao" && db.number == "1S" && db.chain == "B", mapp, dbPDB)[1]
     res = mapp[i+2]
     @test get(res,dbPDB,:id,"") == "1iao" &&  get(res,dbPDB,:chain,"") == "B" &&
@@ -181,7 +181,7 @@ end
     sf = downloadsifts("4gcr", filename=tempname()*".xml.gz")
     try
         mapping = siftsmapping(sf, dbPfam, "PF00030", dbPDB, "4gcr")
-        @test mapping[3] == "2"
+        @test mapping["3"] == "2"
     finally
         isfile(sf) && rm(sf)
     end

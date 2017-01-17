@@ -1,11 +1,9 @@
 abstract DataBase
 
 @auto_hash_equals immutable dbPDBe <: DataBase
-    number::Int # Cross referenced residue number
+    number::String # Cross referenced residue number
     name::String # Cross referenced residue name
 end
-
-@inline _number_type(::Type{dbPDBe}) = Int
 
 @auto_hash_equals immutable dbInterPro <: DataBase
     id::String
@@ -14,18 +12,15 @@ end
     evidence::String
 end
 
-@inline _number_type(::Type{dbInterPro}) = String
-
 for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
     @eval begin
 
         @auto_hash_equals immutable $(ref_type) <: DataBase
             id::String # The cross reference database identifier
-            number::Int # Cross referenced residue number
+            number::String # Cross referenced residue number
             name::String # Cross referenced residue name
         end
 
-        @inline _number_type(::Type{$(ref_type)}) = Int
     end
 end
 
@@ -39,17 +34,30 @@ for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
             chain::String
         end
 
-        @inline _number_type(::Type{$(ref_type)}) = String
     end
 end
 
-"""Returns "" if the attributte is missing"""
+"""
+Returns "" if the attributte is missing
+"""
 function _get_attribute(elem::LightXML.XMLElement, attr::String)
     text = attribute(elem, attr)
     if text === nothing || text == "None"
         return("")
     else
         return(text)
+    end
+end
+
+"""
+Returns NULL (`Nullable{String}`) if the attributte is missing
+"""
+function _get_nullable_attribute(elem::LightXML.XMLElement, attr::String)::Nullable{String}
+    text = attribute(elem, attr)
+    if text === nothing || text == "None"
+        return(Nullable{String}())
+    else
+        return(Nullable{String}(text))
     end
 end
 
@@ -73,7 +81,7 @@ for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
         function (::Type{$(ref_type)})(map::LightXML.XMLElement)
             $(ref_type)(
                 _get_attribute(map, "dbAccessionId"),
-                parse(Int, _get_attribute(map, "dbResNum")),
+                _get_attribute(map, "dbResNum"),
                 _get_attribute(map, "dbResName")
             )
         end
@@ -91,7 +99,7 @@ end
 
 function (::Type{dbPDBe})(map::LightXML.XMLElement)
       dbPDBe(
-        parse(Int, _get_attribute(map, "dbResNum")),
+        _get_attribute(map, "dbResNum"),
         _get_attribute(map, "dbResName")
       )
 end
@@ -135,7 +143,7 @@ end
 @inline Base.get(res::SIFTSResidue, db::Type{dbCATH})    = res.CATH
 
 function Base.get{T<:Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbCATH}}(res::SIFTSResidue,
-                 db::Type{T}, field::Symbol, default::Union{String,Int})
+                 db::Type{T}, field::Symbol, default::String)
     database = get(res, db)
     isnull(database) ? default : getfield(get(database), field)
 end
@@ -228,10 +236,6 @@ end
 _is_All(::Any) = false
 _is_All(::Type{All}) = true
 
-_parse(::Type{Int}, str) = parse(Int, str)
-_parse(::Type{String}, str) = ascii(str)
-@inline _parse(::Type{String}, str::String) = str
-
 """
 Parses a SIFTS XML file and returns a `Dict` between residue numbers of two `DataBase`s  with the given identifiers.
 A `chain` could be specified (`All` by default).
@@ -244,7 +248,7 @@ function siftsmapping{F, T}(filename::String,
                             id_to::String;
                             chain::Union{Type{All},String} = All,
                             missings::Bool = true)
-    mapping = Dict{_number_type(F), _number_type(T)}()
+    mapping = Dict{String,String}()
     xdoc = parse_file(filename)
     try
         for entity in _get_entities(xdoc)
@@ -253,17 +257,17 @@ function siftsmapping{F, T}(filename::String,
                 residues = _get_residues(segment)
                 for residue in residues
                     in_chain = _is_All(chain)
-                    key_data = _name(db_from) == "PDBe" ? Nullable(parse(Int,attribute(residue,"dbResNum"))) : Nullable{_number_type(F)}()
-                    value_data = _name(db_to) == "PDBe" ? Nullable(parse(Int,attribute(residue,"dbResNum"))) : Nullable{_number_type(T)}()
+                    key_data = _name(db_from) == "PDBe" ? Nullable(attribute(residue,"dbResNum")) : Nullable{String}()
+                    value_data = _name(db_to) == "PDBe" ? Nullable(attribute(residue,"dbResNum")) : Nullable{String}()
                     if missings || !_is_missing(residue)
                         crossref = get_elements_by_tagname(residue, "crossRefDb")
                         for ref in crossref
                             source = attribute(ref, "dbSource")
                             if source == _name(db_from) && attribute(ref, "dbAccessionId") == id_from
-                                key_data = Nullable(_parse(_number_type(F),attribute(ref,"dbResNum")))
+                                key_data = _get_nullable_attribute(ref,"dbResNum")
                             end
                             if source == _name(db_to) && attribute(ref, "dbAccessionId") == id_to
-                                value_data = Nullable(_parse(_number_type(T),attribute(ref,"dbResNum")))
+                                value_data = _get_nullable_attribute(ref,"dbResNum")
                             end
                             if !in_chain && source == "PDB" # XML: <crossRefDb dbSource="PDB" ... dbChainId="E"/>
                                 in_chain = attribute(ref, "dbChainId") == chain

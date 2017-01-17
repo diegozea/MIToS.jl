@@ -38,7 +38,7 @@ end
 """
 `msacolumn2pdbresidue(msa, seqid, pdbid, chain, pfamid, siftsfile; strict=false, checkpdbname=false, missings=true)`
 
-This function returns a `Dict{Int64,String}` with **MSA column numbers on the input file**
+This function returns a `Dict{Int,String}` with **MSA column numbers on the input file**
 as keys and PDB residue numbers (`""` for missings) as values. The mapping is performed
 using SIFTS. This function needs correct *ColMap* and *SeqMap* annotations. This checks
 correspondence of the residues between the MSA sequence and SIFTS
@@ -65,10 +65,13 @@ function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
 
     siftsres = read(siftsfile, SIFTSXML, chain=chain, missings=missings)
 
-    up2res = Dict{Int,Tuple{String,String,Char}}()
+    up2res = Dict{String,Tuple{String,String,Char}}()
     for res in siftsres
         if !isnull(res.Pfam) && get(res.Pfam).id == uppercase(pfamid)
             pfnum  = get(res.Pfam).number
+            if pfnum == ""
+                continue
+            end
             pfname = get(res.Pfam).name
             if !isnull(res.PDB) && (get(res.PDB).id == lowercase(pdbid)) && !res.missing
                 up2res[pfnum] = checkpdbname ?
@@ -90,8 +93,8 @@ function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
     m = Dict{Int,String}()
     sizehint!(m, N)
     for i in 1:N
-        up_number = seqmap[i]
-        if up_number != 0
+        up_number = string(seqmap[i])
+        if up_number != "0"
             up_res, pdb_resnum, pdb_res = get(up2res, up_number, ("","",'-'))
             if string(seq[i]) == up_res
                 m[colmap[i]] = pdb_resnum
