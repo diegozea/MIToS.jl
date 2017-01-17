@@ -130,13 +130,30 @@ function _generate_annotated_msa(annot::Annotations, IDS, SEQS, keepinserts,
             MSA, MAP = _to_msa_mapping(SEQS)
             setnames!(MSA, IDS, 1)
         end
+        if getannotfile(annot,"ColMap","") != ""
+            warn("""
+            The file already has column annotations. ColMap will be replaced.
+            You can use generatemapping=false to keep the file mapping annotations.
+            """)
+        end
         setannotfile!(annot, "NCol", string(size(MSA,2)))
         setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
-        for i in 1:length(IDS)
+        N = length(IDS)
+        if N > 0 && getannotsequence(annot,IDS[1],"SeqMap","") != ""
+            warn("""
+            The file already has sequence mappings for some sequences. SeqMap will be replaced.
+            You can use generatemapping=false to keep the file sequence mapping annotations.
+            """)
+        end
+        for i in 1:N
             setannotsequence!(annot, IDS[i], "SeqMap", MAP[i])
         end
     else
         MSA = _generate_named_array(SEQS, IDS)
+        colmap = getannotfile(annot,"ColMap","")
+        if colmap != ""
+            setnames!(MSA, map(String,split(colmap,',')), 2)
+        end
     end
     msa = AnnotatedMultipleSequenceAlignment(MSA, annot)
     if deletefullgaps

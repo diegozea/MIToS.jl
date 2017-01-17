@@ -95,7 +95,7 @@ function Base.parse(io::Union{IO, AbstractString},
     IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
     annot = Annotations(GF, GS, GC, GR)
     _generate_annotated_msa(annot, IDS, SEQS, keepinserts, generatemapping,
-        useidcoordinates, deletefullgaps)
+                            useidcoordinates, deletefullgaps)
 end
 
 function Base.parse(io::Union{IO, AbstractString},
