@@ -125,7 +125,7 @@ end
 function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
                               seqid::String, pdbid::String, chain::String; kargs...)
     msacolumn2pdbresidue(msa,seqid,pdbid,chain,
-                         string(split(getannotfile(msa,"AC"),'.')[1]),
+                         String(split(getannotfile(msa,"AC"),'.')[1]),
                          kargs...)
 end
 
