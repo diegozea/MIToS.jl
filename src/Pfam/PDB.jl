@@ -218,15 +218,15 @@ with `true`s where `contact_list` is 0.0. There are useful for AUC calculations.
 function getcontactmasks{T <: AbstractFloat}(contact_list::Vector{T})
     N = length(contact_list)
     true_contacts  = falses(N)
-    false_contacts = trues(N) # In general, there are few contacts
+    false_contacts = falses(N)
     @inbounds for i in 1:N
         value = contact_list[i]
         if value == 1.0
-            true_contacts[i] = true
+            true_contacts[i]  = true
+        elseif value == 0.0
+            false_contacts[i] = true
         end
-        if value != 0.0
-            false_contacts[i] = false
-        end
+        # If value is NaN, It keeps the false value
     end
     true_contacts, false_contacts
 end

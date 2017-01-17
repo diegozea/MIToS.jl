@@ -145,10 +145,14 @@ end
     score_tru = Float16[ 2 + 2x for x in randn(ntru)]
     score_fal = Float16[-2 + 2x for x in randn(nfal)]
     msacontacts = NamedArray(PairwiseListMatrix{Float16,false,Vector{Float16}}(
-        vcat(ones(Float16, ntru), zeros(Float16, nfal)), Float16[x for x in 1.:20.], 20))
+        vcat(ones(Float16, ntru), zeros(Float16, nfal)), Float16[1.0 for x in 1:20], 20))
     score = NamedArray(PairwiseListMatrix{Float16,false,Vector{Float16}}(
-        vcat(score_tru, score_fal), Float16[x for x in 1.:20.], 20))
+        vcat(score_tru, score_fal), Float16[NaN for x in 1:20], 20))
     correct = 1 - auc(roc(score_tru, score_fal))
 
     @test AUC(score, msacontacts) == correct
+
+    score[1:end,2] = NaN
+    msacontacts[1:end,3] = NaN
+    @test AUC(score, msacontacts) < correct
 end
