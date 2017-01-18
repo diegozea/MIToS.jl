@@ -15,7 +15,7 @@ Baldassi, Carlo, Marco Zamparo, Christoph Feinauer, Andrea Procaccini, Riccardo 
 "Fast and accurate multivariate Gaussian modeling of protein families: predicting residue contacts and protein-interaction partners."
 PloS one 9, no. 3 (2014): e92721.
 """
-function gaussdca(msa; juliapath::String=ENV["_"], kargs...)
+function gaussdca(msa; juliapath::String=joinpath(JULIA_HOME,Base.julia_exename()), kargs...)
     plm = fill!(columnpairsmatrix(msa), NaN)
     msa_file = tempname() * ".fasta"
     write(msa_file, msa, FASTA)
