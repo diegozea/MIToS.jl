@@ -16,7 +16,7 @@ STDIN -> STDOUT
 ---------------
 """)
 
-let out = readall( pipeline(`julia -e 'print(trues(2,2))'`, `julia $templ`) )
+let out = readall( pipeline(`$JULIA_HOME/julia -e 'print(trues(2,2))'`, `$JULIA_HOME/julia $templ`) )
 
     @test ismatch(r"RUN : 0", out)
     @test length(matchall(r"true", out)) == 4
@@ -28,7 +28,7 @@ end
     --arg
     """)
 
-    let out = readall( pipeline(`cat $list_file`, `julia $templ --arg 42`) )
+    let out = readall( pipeline(`cat $list_file`, `$JULIA_HOME/julia $templ --arg 42`) )
 
         @test ismatch(r"RUN : 42", out)
         @test length(matchall(r"\.txt", out)) == 2
@@ -38,7 +38,7 @@ end
     --list & -a
     """)
 
-    let out = readall( pipeline(`cat $list_file`, `julia $templ --a 42 --list`) )
+    let out = readall( pipeline(`cat $list_file`, `$JULIA_HOME/julia $templ --a 42 --list`) )
 
         @test ismatch(r"ONE", out) # Printed into STDOUT
         @test ismatch(r"TWO", out) # Printed into STDOUT
@@ -72,7 +72,7 @@ print("""
     --list & -a
     """)
 
-let out = readall( `julia $templ $list_file --a 42 --list` )
+let out = readall( `$JULIA_HOME/julia $templ $list_file --a 42 --list` )
 
     @test ismatch(r"ONE", out) # Printed into STDOUT
     @test ismatch(r"TWO", out) # Printed into STDOUT
@@ -104,7 +104,7 @@ print("""
 File -> File (--list)
 """)
 
-let out = readall( `julia $templ $list_file -p 2 --a 42 --list` )
+let out = readall( `$JULIA_HOME/julia $templ $list_file -p 2 --a 42 --list` )
 
     @test ismatch(r"ONE", out) # Printed into STDOUT
     @test ismatch(r"TWO", out) # Printed into STDOUT
@@ -132,7 +132,7 @@ end
     STDIN -> File (--list)
     """)
 
-    let out = readall( pipeline(`cat $list_file`, `julia $templ -p 2 --a 42 --list` ) )
+    let out = readall( pipeline(`cat $list_file`, `$JULIA_HOME/julia $templ -p 2 --a 42 --list` ) )
 
         @test ismatch(r"ONE", out) # Printed into STDOUT
         @test ismatch(r"TWO", out) # Printed into STDOUT
@@ -164,8 +164,8 @@ Distances.jl
 
 let path_script = joinpath(splitdir(dirname(@__FILE__))[1], "scripts", "Distances.jl"),
     path_file   = joinpath(dirname(@__FILE__), "data", "small.pdb"),
-    out_intra  = readall(`julia $path_script $path_file -o STDOUT`),
-    out_inter  = readall(`julia $path_script $path_file --inter -o STDOUT`)
+    out_intra  = readall(`$JULIA_HOME/julia $path_script $path_file -o STDOUT`),
+    out_inter  = readall(`$JULIA_HOME/julia $path_script $path_file --inter -o STDOUT`)
 
     @test sum(diff(Float64[ parse(Float64,num) for num in  matchall(r"(\d\.\d+)\n",out_intra) ])) == 0.0
     @test length(matchall(r"\n1,A,", out_intra)) == 1
