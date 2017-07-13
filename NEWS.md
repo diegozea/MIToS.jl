@@ -1,11 +1,6 @@
 ## MIToS.jl Release Notes
 
-### Changes from v2.0 to master
-
-You can use `Pkg.checkout("MIToS")` to use the **master** branch and `Pkg.free("MIToS")` to
-return to the stable version.
-
-### Changes from v1.2 to v2.0
+### Changes from v1.2.3 to v2.0
 
 **MIToS 2.0** is the first MIToS version with **Julia 0.5** support
 (It drops Julia 0.4 support). The last Julia version introduces new awesome features like
@@ -66,7 +61,8 @@ sequences with unknown, ambiguous or non standard residues.
 
 * `parse`/`read` and MSA file returns an `AnnotatedMultipleSequenceAlignment` by default.
 
-* `shuffle_...columnwise!` and `shuffle_...sequencewise!` functions were deprecated in favor of `shuffle!` and `shuffle` functions.
+* `shuffle_...columnwise!` and `shuffle_...sequencewise!` functions were deprecated in
+favor of `shuffle!` and `shuffle` functions.  
 
 ### Changes from v1.1 to v1.2.2
 

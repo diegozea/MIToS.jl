@@ -4,20 +4,16 @@
 # IJulia notebook:
 .ipynb_checkpoints
 
-/cookbook/*.*
-!/cookbook/*.ipynb
-
-/docs/*.*
-!/docs/*.ipynb
-!/docs/docs.js
-!/docs/compile.jl
-
 # vim temporary files
 *~
 
-# Temporal file (tests)
+# Temporary file (tests)
 /test/.tmp
 
 # Benchmark files
 /benchmark/.tune.jld
 /benchmark/.results/*
+
+# Documenter
+docs/build/
+docs/site/
