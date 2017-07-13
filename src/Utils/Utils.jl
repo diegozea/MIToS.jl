@@ -3,6 +3,7 @@ module Utils
 using Requests
 using GZip
 using LightXML
+using NamedArrays
 
 export  # GeneralUtils.jl
         All,
@@ -11,6 +12,7 @@ export  # GeneralUtils.jl
         select_element,
         matrix2list, list2matrix,
         check_pdbcode,
+        getarray,
         # Read.jl
         Format,
         lineiterator,

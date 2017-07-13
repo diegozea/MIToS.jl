@@ -6,7 +6,7 @@
         matrixres = reshape(reinterpret(Residue, collect(1:21)), (3,7))
         msa, map = MSA._to_msa_mapping(sequences)
 
-        @test array(msa) == matrixres
+        @test getarray(msa) == matrixres
         @test map == ["1,2,3,4,5,6,7", "1,2,3,4,5,6,7", "1,2,3,4,5,6,"]
         @test sequencenames(msa) == ["1", "2", "3"]
         # MSA constructors adds dimension names
@@ -14,7 +14,7 @@
 
         msa, map = MSA._to_msa_mapping(sequences,["a/11-17","b/11-17","c/11-16"])
 
-        @test array(msa) == matrixres
+        @test getarray(msa) == matrixres
         @test map == ["11,12,13,14,15,16,17", "11,12,13,14,15,16,17", "11,12,13,14,15,16,"]
         @test sequencenames(msa) == ["a/11-17", "b/11-17", "c/11-16"]
         # MSA constructors adds dimension names

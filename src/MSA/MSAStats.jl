@@ -42,7 +42,7 @@ macro keep_names_dimension(functions)
         definitions[i] = quote
 
             function ($f)(msa::NamedArray{Residue,2}, dimension::Int)
-                result = ($f)(NamedArrays.array(msa), dimension)
+                result = ($f)(getarray(msa), dimension)
                 if dimension == 1
                     name_list = names(msa,2)
                     N = length(name_list)

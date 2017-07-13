@@ -48,8 +48,8 @@ end
 
 Base.sum(table::ContingencyTable) = gettotal(table)
 
-@inline gettablearray(table::ContingencyTable) = NamedArrays.array(table.table)
-@inline getmarginalsarray(table::ContingencyTable) = NamedArrays.array(table.marginals)
+@inline gettablearray(table::ContingencyTable) = getarray(table.table)
+@inline getmarginalsarray(table::ContingencyTable) = getarray(table.marginals)
 
 # Cartesian (helper functions)
 # ----------------------------
@@ -89,7 +89,7 @@ Base.getindex(table::ContingencyTable, i...) = getindex(table.table, i...)
     N = length(I)
     quote
         alphabet = getalphabet(table)
-        matrix = array(gettable(table))
+        matrix = getarray(gettable(table))
         # index_1 = alphabet[I[1]]
         # index_2 ...
         @nextract $N index d->alphabet[I[d]]
@@ -110,7 +110,7 @@ end
     N = length(I)
     quote
         alphabet = getalphabet(table)
-        matrix = array(gettable(table))
+        matrix = getarray(gettable(table))
         @nextract $N index d->alphabet[I[d]]
         @_test_index $N index error("There is a Residue outside the alphabet")
         @nref($N, matrix, index) = value
@@ -186,7 +186,7 @@ function (::Type{ContingencyTable}){T,N,A}(matrix::AbstractArray{T,N}, alphabet:
     n = length(alphabet)
     @assert size(matrix) == ((n for i in 1:N)...) "Matrix size doesn't match alphabet length"
     table = ContingencyTable(T, Val{N}, alphabet)
-    array(table.table)[:] = matrix
+    getarray(table.table)[:] = matrix
     _update_marginals!(table)
     _update_total!(table)
 end
@@ -201,7 +201,7 @@ end
         quote
             temporal = table.temporal::Array{T,N}
             alphabet = getalphabet(table)::A
-            freqtable = NamedArrays.array(table.table)::Array{T,N}
+            freqtable = getarray(table.table)::Array{T,N}
             @inbounds @nloops $N i temporal begin
                 @_test_index $N i continue
                 @nextract $N a d->alphabet[i_d]
@@ -213,7 +213,7 @@ end
     elseif (A === UngappedAlphabet) || (A === GappedAlphabet)
         quote
             temporal = table.temporal::Array{T,N}
-            freqtable = NamedArrays.array(table.table)::Array{T,N}
+            freqtable = getarray(table.table)::Array{T,N}
             @inbounds @nloops $N i freqtable begin
                 @nref($N, freqtable, i) += @nref($N, temporal, i)
             end
@@ -224,8 +224,8 @@ end
 
 @generated function _update_marginals!{T,N,A}(table::ContingencyTable{T,N,A})
         quote
-            freqtable = NamedArrays.array(table.table)::Array{T,N}
-            marginal  = NamedArrays.array(table.marginals)::Matrix{T}
+            freqtable = getarray(table.table)::Array{T,N}
+            marginal  = getarray(table.marginals)::Matrix{T}
             @inbounds @nloops $N i freqtable begin
                 value = @nref $N freqtable i
                 @_marginal($N, marginal, i, value)
@@ -235,7 +235,7 @@ end
 end
 
 function _update_total!{T,N,A}(table::ContingencyTable{T,N,A})
-    marginals = NamedArrays.array(table.marginals)::Matrix{T}
+    marginals = getarray(table.marginals)::Matrix{T}
     n = size(marginals,1)
     total = zero(T)
     @inbounds @simd for i in 1:n
@@ -246,7 +246,7 @@ function _update_total!{T,N,A}(table::ContingencyTable{T,N,A})
 end
 
 function update_marginals!{T,N,A}(table::ContingencyTable{T,N,A})
-    fill!(NamedArrays.array(table.marginals)::Matrix{T}, zero(T))
+    fill!(getarray(table.marginals)::Matrix{T}, zero(T))
     _update_marginals!(table)
     _update_total!(table)
     table
@@ -258,7 +258,7 @@ function _update!{T,N,A}(table::ContingencyTable{T,N,A})
 end
 
 function _cleanup_table!{T,N,A}(table::ContingencyTable{T,N,A})
-    fill!(NamedArrays.array(table.table)::Array{T,N}, zero(T))
+    fill!(getarray(table.table)::Array{T,N}, zero(T))
 end
 
 function _cleanup_temporal!{T,N,A}(table::ContingencyTable{T,N,A})
@@ -268,7 +268,7 @@ end
 function cleanup!{T,N,A}(table::ContingencyTable{T,N,A})
     _cleanup_temporal!(table)
     _cleanup_table!(table)
-    fill!(NamedArrays.array(table.marginals)::Matrix{T}, zero(T))
+    fill!(getarray(table.marginals)::Matrix{T}, zero(T))
     table.total = zero(T)
     table
 end
@@ -277,7 +277,7 @@ end
 # ====
 
 function Base.fill!{T,N,A}(table::ContingencyTable{T,N,A}, value::T)
-    fill!(NamedArrays.array(table.table)::Array{T,N}, value)
+    fill!(getarray(table.table)::Array{T,N}, value)
     update_marginals!(table)
 end
 
@@ -290,7 +290,7 @@ Base.fill!{T,N,A}(table::ContingencyTable{T,N,A}, p::AdditiveSmoothing{T}) = fil
 
 # This is faster than array[:] += value
 function _sum!(matrix::NamedArray, value)
-    matrix_array = array(matrix)
+    matrix_array = getarray(matrix)
     @inbounds for i in eachindex(matrix_array)
         matrix_array[i] += value
     end
@@ -313,7 +313,7 @@ end
 
 # This is faster than array[:] /= value
 function _div!(matrix::NamedArray, value)
-    matrix_array = array(matrix)
+    matrix_array = getarray(matrix)
     @inbounds for i in eachindex(matrix_array)
         matrix_array[i] /= value
     end
@@ -358,10 +358,10 @@ deletion of `dimensions`. i.e. This is useful for getting Pxy from Pxyz.
 function delete_dimensions!{T,N,S,A}(output::ContingencyTable{T,S,A},
                                      input::ContingencyTable{T,N,A},
                                      dimensions::Int...)
-  output_marginals = NamedArrays.array(output.marginals)
-  output_table = NamedArrays.array(output.table)
-  input_marginals = NamedArrays.array(input.marginals)
-  input_table = NamedArrays.array(input.table)
+  output_marginals = getarray(output.marginals)
+  output_table = getarray(output.table)
+  input_marginals = getarray(input.marginals)
+  input_table = getarray(input.table)
   output_marginals[:] = input_marginals[:,_list_without_dimensions(N, S, dimensions...)]
   output_table[:] = sum(input_table, dimensions)
   output.total = input.total

@@ -97,8 +97,8 @@
                     @test sum(getmarginals(table)) == N*(20.0^N)
                     @test gettotal(table) == 20.0^N
                     if N == 1
-                        @test vec(array(getmarginals(table))) ==
-                            vec(array(gettable(table)))
+                        @test vec(getarray(getmarginals(table))) ==
+                            vec(getarray(gettable(table)))
                     elseif N == 2
                         @test getmarginals(table)[1] ==
                             sum(5.0*n for n in [5,4,3,2,3,1,1,1])

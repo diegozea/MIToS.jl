@@ -17,5 +17,5 @@
     nmi = mapcolpairfreq!(normalized_mutual_information, aln,
                           Counts(ContingencyTable(Float64,Val{2},UngappedAlphabet())),
                           Val{false})
-    @test isapprox(full(NamedArrays.array(nmi)), result, rtol=1e-4)
+    @test isapprox(full(getarray(nmi)), result, rtol=1e-4)
 end

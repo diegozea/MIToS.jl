@@ -137,3 +137,8 @@ end
 It checks if a PDB code has the correct format.
 """
 check_pdbcode(pdbcode::String) = ismatch(r"^\w{4}$", pdbcode)
+
+"""
+Getter for the `array` field of `NamedArray`s
+"""
+getarray(x::NamedArray) = x.array

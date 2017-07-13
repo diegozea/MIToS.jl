@@ -120,14 +120,14 @@
             @test gap_union_percentage(count(res"AA--", res"--AA", alphabet=GappedAlphabet())) ≈ 100.0
             @test gap_intersection_percentage(count(res"AA--", res"--AA", alphabet=GappedAlphabet())) ≈ 0.0
 
-            @test gap_union_percentage(count(res"AA--", res"--AA", alphabet=GappedAlphabet(), weights=WeightVec([.25, .25, .25, .25]))) ≈ 100.0
-            @test gap_intersection_percentage(count(res"AA--", res"--AA", alphabet=GappedAlphabet(), weights=WeightVec([.25, .25, .25, .25]))) ≈ 0.0
+            @test gap_union_percentage(count(res"AA--", res"--AA", alphabet=GappedAlphabet(), weights=Weights([.25, .25, .25, .25]))) ≈ 100.0
+            @test gap_intersection_percentage(count(res"AA--", res"--AA", alphabet=GappedAlphabet(), weights=Weights([.25, .25, .25, .25]))) ≈ 0.0
 
             @test gap_union_percentage(count(res"AAA-", res"AA--", alphabet=GappedAlphabet())) ≈ 50.0
             @test gap_intersection_percentage(count(res"AAA-", res"AA--", alphabet=GappedAlphabet())) ≈ 25.0
 
-            @test gap_union_percentage(count(res"AAA-", res"AA--", alphabet=GappedAlphabet(), weights=WeightVec([.2, .2, .2, .4]))) ≈ 60.0
-            @test gap_intersection_percentage(count(res"AAA-", res"AA--", alphabet=GappedAlphabet(), weights=WeightVec([.2, .2, .2, .4]))) ≈ 40.0
+            @test gap_union_percentage(count(res"AAA-", res"AA--", alphabet=GappedAlphabet(), weights=Weights([.2, .2, .2, .4]))) ≈ 60.0
+            @test gap_intersection_percentage(count(res"AAA-", res"AA--", alphabet=GappedAlphabet(), weights=Weights([.2, .2, .2, .4]))) ≈ 40.0
         end
     end
 end

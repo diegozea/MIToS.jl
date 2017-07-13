@@ -74,7 +74,7 @@ function APC!{T <: AbstractFloat}(MI::PairwiseListMatrix{T,false,Vector{T}})
 end
 
 function APC!{T,D}(MI::NamedArray{T,2,PairwiseListMatrix{T,D,Vector{T}},NTuple{2,OrderedDict{String,Int}}})
-    plm = NamedArrays.array(MI)::PairwiseListMatrix{T,D,Vector{T}}
+    plm = getarray(MI)::PairwiseListMatrix{T,D,Vector{T}}
     APC!(plm)
     MI
 end

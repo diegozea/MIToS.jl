@@ -58,9 +58,9 @@ function buslje09(aln::AbstractMatrix{Residue};
         residuematrix = getresidues(aln)
         for ns in 1:samples
             shuffle!(residuematrix,1,fixedgaps)
-            rand_mi[ns] = NamedArrays.array(_buslje09(aln, alphabet, clusters, lambda, apc))
+            rand_mi[ns] = getarray(_buslje09(aln, alphabet, clusters, lambda, apc))
         end
-        zscore!(rand_mi, NamedArrays.array(zmi))
+        PairwiseListMatrices.zscore!(rand_mi, getarray(zmi))
         return(zmi, mi)
     else
         return(fill!(copy(mi),0.0), mi)
@@ -132,9 +132,9 @@ function BLMI(aln::AbstractMatrix{Residue};
         residuematrix = getresidues(aln)
         for ns in 1:samples
             shuffle!(residuematrix,1,fixedgaps)
-            rand_mi[ns] = NamedArrays.array(_BLMI(aln, clusters, numbercl, beta, apc, lambda))
+            rand_mi[ns] = getarray(_BLMI(aln, clusters, numbercl, beta, apc, lambda))
         end
-        zscore(rand_mi, NamedArrays.array(zmi))
+        PairwiseListMatrices.zscore(rand_mi, getarray(zmi))
         return(zmi, mi)
     else
         return(fill!(copy(mi),0.0), mi)

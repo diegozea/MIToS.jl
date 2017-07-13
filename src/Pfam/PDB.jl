@@ -191,7 +191,7 @@ function msacontacts(msa::AnnotatedMultipleSequenceAlignment,
                      distance_limit::Float64 = 6.05)
     colmap   = getcolumnmapping(msa)
     contacts = columnpairsmatrix(msa)
-    plm = NamedArrays.array(contacts)
+    plm = getarray(contacts)
     @inbounds @iterateupper plm false begin
 
         resi = get(:($column2residues), :($colmap)[i], "")
@@ -236,7 +236,7 @@ function getcontactmasks{T <: AbstractFloat,VT}(plm::PairwiseListMatrix{T,false,
 end
 
 function getcontactmasks{T,TV,DN}(nplm::NamedArray{T,2,PairwiseListMatrix{T,false,TV},DN})
-    getcontactmasks(NamedArrays.array(nplm))
+    getcontactmasks(getarray(nplm))
 end
 
 """
@@ -261,7 +261,7 @@ Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of 
 function ROCAnalysis.AUC{L,VL,NL}(scores::NamedArray{L,2,PairwiseListMatrix{L,false,VL},NL},
                                   true_contacts::BitVector,
                                   false_contacts::BitVector)
-    AUC(getlist(NamedArrays.array(scores)), true_contacts, false_contacts)
+    AUC(getlist(getarray(scores)), true_contacts, false_contacts)
 end
 
 """

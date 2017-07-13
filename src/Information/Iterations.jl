@@ -1,7 +1,7 @@
 function _get_matrix_residue(msa::AbstractMultipleSequenceAlignment)::Matrix{Residue}
-    NamedArrays.array(namedmatrix(msa))
+    getarray(namedmatrix(msa))
 end
-_get_matrix_residue(msa::NamedArray)::Matrix{Residue} = NamedArrays.array(msa)
+_get_matrix_residue(msa::NamedArray)::Matrix{Residue} = getarray(msa)
 _get_matrix_residue(msa::Matrix{Residue})::Matrix{Residue} = msa
 
 # Kernel function to fill ContingencyTable based on residues
@@ -118,7 +118,7 @@ function mapcolpairfreq!{T,A,D}(f::Function, msa::AbstractMatrix{Residue},
     residues = _get_matrix_residue(msa)
     columns = map(i -> view(residues,:,i), 1:ncol) # 2x faster than calling view inside the loop
     scores = columnpairsmatrix(msa, T, Val{D}, diagonalvalue) # Named PairwiseListMatrix
-    plm = NamedArrays.array(scores)::PairwiseListMatrix{T,D,Vector{T}} # PairwiseListMatrix
+    plm = getarray(scores)::PairwiseListMatrix{T,D,Vector{T}} # PairwiseListMatrix
     _mappairfreq!(f, columns, plm, table, Val{D}; kargs...)
     scores
 end
@@ -136,7 +136,7 @@ function mapseqpairfreq!{T,A,D}(f::Function, msa::AbstractMatrix{Residue},
                                 kargs...)
     sequences = getresiduesequences(msa)
     scores = sequencepairsmatrix(msa, T, Val{D}, diagonalvalue) # Named PairwiseListMatrix
-    plm = NamedArrays.array(scores)::PairwiseListMatrix{T,D,Vector{T}} # PairwiseListMatrix
+    plm = getarray(scores)::PairwiseListMatrix{T,D,Vector{T}} # PairwiseListMatrix
     _mappairfreq!(f, sequences, plm, table, Val{D}; kargs...)
     scores
 end
@@ -199,7 +199,7 @@ function cumulative{T,D,TV,DN}(nplm::NamedArray{T,2,PairwiseListMatrix{T,D,TV},D
                                threshold::T)
     N = size(nplm, 2)
     name_list = names(nplm, 2)
-    NamedArray(cumulative(NamedArrays.array(nplm), threshold),
+    NamedArray(cumulative(getarray(nplm), threshold),
                (OrderedDict{String,Int}("cumulative" => 1),
                OrderedDict{String,Int}(name_list[i] => i for i in 1:N)),
                ("Function", dimnames(nplm,2)))

@@ -140,7 +140,7 @@ function swapsequences!(matrix::Matrix{Residue}, i::Int, j::Int)
 end
 
 function swapsequences!(matrix::NamedArray, i::Int, j::Int)
-    swapsequences!(array(matrix), i, j)
+    swapsequences!(getarray(matrix), i, j)
     setnames!(matrix, _swap!(sequencenames(matrix), i, j), 1)
     return matrix
 end
