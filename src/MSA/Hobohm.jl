@@ -43,7 +43,7 @@ function _get_sequence_weight(clustersize, cluster)
     for i in 1:nseq
         @inbounds sequence_weight[i] = 1.0 / clustersize[cluster[i]]
     end
-    WeightVec(sequence_weight, Float64(length(clustersize)))
+    Weights(sequence_weight, Float64(length(clustersize)))
 end
 
 """

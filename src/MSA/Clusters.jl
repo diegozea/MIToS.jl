@@ -9,7 +9,7 @@ immutable NoClustering <: ClusteringResult end
 immutable Clusters <: ClusteringResult
     clustersize::Vector{Int}
     clusters::Vector{Int}
-    weights::StatsBase.WeightVec{Float64,Array{Float64,1}}
+    weights::StatsBase.Weights{Float64, Float64, Array{Float64,1}}
 end
 
 nelements(cl::Clusters) = length(cl.clusters)
@@ -38,7 +38,7 @@ Clustering.assignments(cl::Clusters) = cl.clusters
 function Base.convert(::Type{Clusters}, cl::ClusteringResult)
     clustersize = counts(cl)
     clusters = assignments(cl)
-    weights = WeightVec(Float64[1.0/clustersize[k] for k in clusters],
+    weights = Weights(Float64[1.0/clustersize[k] for k in clusters],
         Float64(length(clustersize)))
     Clusters(clustersize, clusters, weights)
 end
@@ -61,7 +61,7 @@ getweight(cl::Clusters) = cl.weights
 
 getweight(cl::Clusters, seq::Int) = cl.weights[seq]
 
-@inline getweight(cl::WeightVec, i::Int) = cl[i]
+@inline getweight(cl::Weights, i::Int) = cl[i]
 
 # getweight(cl::ClusteringResult) = getweight(convert(Clusters, cl))
 # getweight(cl::ClusteringResult, seq::Int) = getweight(convert(Clusters, cl), seq)
