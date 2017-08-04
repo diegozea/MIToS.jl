@@ -60,8 +60,11 @@ end
     include(joinpath("Pfam", "Pfam.jl"))
 end
 
-# # Scripts
-# include("scripts.jl")
+# Scripts
+@testset "Scripts" begin
+    include(joinpath("Scripts", "Template.jl"))
+    include(joinpath("Scripts", "Scripts.jl"))
+end
 
 print("""
 

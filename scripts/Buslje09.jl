@@ -7,7 +7,7 @@ Args = parse_commandline(
     ["--format", "-f"],
     Dict(
         :help => "Format of the MSA: Stockholm, Raw or FASTA",
-        :arg_type => ASCIIString,
+        :arg_type => String,
         :default => "Stockholm"
     ),
     ["--lambda", "-L"],
@@ -70,7 +70,7 @@ set_parallel(Args["parallel"])
 
 @everywhere begin
 
-    const args = remotecall_fetch(1,()->Args)
+    const args = remotecall_fetch(()->Args,1)
 
     import MIToS.Utils.Scripts: script
 
@@ -92,7 +92,7 @@ set_parallel(Args["parallel"])
         for (key, value) in args
             println(fh_out, "# \t", key, "\t\t", value)
         end
-        form = ascii(args["format"])
+        form = string(args["format"])
         if form == "Stockholm"
             msa = readorparse(input, Stockholm)
         elseif form == "FASTA"
@@ -102,12 +102,13 @@ set_parallel(Args["parallel"])
         else
             throw(ErrorException("--format should be Stockholm, Raw or FASTA."))
         end
-        zscore, mip = buslje09(msa,lambda=Args["lambda"],
-                               clustering=Args["clustering"], threshold=Args["threshold"],
-                               maxgap=Args["maxgap"], apc=Args["apc"], samples=Args["samples"],
-                               usegap=Args["usegap"], fixedgaps=Args["fixedgaps"])
-        println(fh_out, "i,j,", Args["apc"] ? "ZMIp" : "ZMI", ",", Args["apc"] ? "MIp" : "MI")
-        table = hcat(to_table(zscore, false), to_table(mip, false)[:,3])
+        zscore, mip = buslje09(msa, lambda=args["lambda"],
+                               clustering=args["clustering"], threshold=args["threshold"],
+                               maxgap=args["maxgap"], apc=args["apc"], samples=args["samples"],
+                               alphabet = args["usegap"] ? GappedAlphabet() : UngappedAlphabet(),
+                               fixedgaps=args["fixedgaps"])
+        println(fh_out, "i,j,", args["apc"] ? "ZMIp" : "ZMI", ",", args["apc"] ? "MIp" : "MI")
+        table = hcat(to_table(zscore, diagonal=false), to_table(mip, diagonal=false)[:,3])
         writecsv(fh_out, table)
         # ------------------------------------------------------------------------
     end

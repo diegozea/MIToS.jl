@@ -15,7 +15,7 @@ function parse_commandline()
             required = true
         "--path", "-p"
         		help = "Path for the output files [default: execution directory]"
-		        arg_type = ASCIIString
+		        arg_type = String
     		    default = ""
     end
 

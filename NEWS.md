@@ -14,6 +14,8 @@ breaking changes.
 * `deleteitems!(vector::Vector, items)` is deprecated in favor of
 `filter!(x -> x ∉ items, vector)`
 
+* `All` is used instead of MIToS 1.0 `"all"` or `"*"`, because it's possible to dispatch on it.
+
 ###### Vectorized queries are deprecated
 
 Previous version of Utils included methods and types in order to overcome the performance

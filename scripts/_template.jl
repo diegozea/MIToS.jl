@@ -20,7 +20,7 @@ set_parallel(Args["parallel"])
 
 @everywhere begin
 
-    const args = remotecall_fetch(1,()->Args)
+    const args = remotecall_fetch(()->Args,1)
 
     import MIToS.Utils.Scripts: script
 
@@ -35,7 +35,7 @@ set_parallel(Args["parallel"])
         arg_one = args["arg"]
         println(fh_out, "RUN : $arg_one")
         println("$input : ")
-        println(readall(input))
+        println(readstring(input))
         # ------------------------------------------------------------------------
     end
 

@@ -7,7 +7,7 @@ Args = parse_commandline(
     ["--format", "-f"],
     Dict(
         :help => "Format of the MSA: Stockholm, Raw or FASTA",
-        :arg_type => ASCIIString,
+        :arg_type => String,
         :default => "Stockholm"
     ),
     ["--clustering", "-c"],
@@ -33,7 +33,7 @@ set_parallel(Args["parallel"])
 
 @everywhere begin
 
-    const args = remotecall_fetch(1,()->Args)
+    const args = remotecall_fetch(()->Args,1)
 
     import MIToS.Utils.Scripts: script
 
@@ -52,7 +52,7 @@ set_parallel(Args["parallel"])
         for (key, value) in args
             println(fh_out, "# \t", key, "\t\t", value)
         end
-        form = ascii(args["format"])
+        form = string(args["format"])
         if form == "Stockholm"
             msa = readorparse(input, Stockholm)
         elseif form == "FASTA"
@@ -64,7 +64,7 @@ set_parallel(Args["parallel"])
         end
         gapsunion, gapsinter = pairwisegapfraction(msa, clustering=args["clustering"], threshold=args["threshold"])
         println(fh_out, "i,j,gapunion,gapintersection")
-        table = hcat(to_table(gapsunion, true), to_table(gapsinter, true)[:,3])
+        table = hcat(to_table(gapsunion), to_table(gapsinter)[:,3])
         writecsv(fh_out, table)
         # ------------------------------------------------------------------------
     end
