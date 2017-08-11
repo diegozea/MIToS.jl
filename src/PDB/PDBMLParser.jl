@@ -107,7 +107,8 @@ _file_extension(format::Type{PDBFile}) = ".pdb.gz"
 """
 Download a gzipped PDB file from PDB database.
 Requires a four character `pdbcode`.
-By default the `format` is xml and uses the `baseurl` http://www.rcsb.org/pdb/files/.
+By default the `format` is `PDBML` (PDB XML) and uses the
+`baseurl` http://www.rcsb.org/pdb/files/.
 `filename` is the path/name of the output file.
 """
 function downloadpdb{T<:Format}(pdbcode::String;

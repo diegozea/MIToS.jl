@@ -16,6 +16,7 @@ using MIToS.PDB
 """
 module PDB
 
+using RecipesBase           # Plots for PDB Residues
 using AutoHashEquals
 using FixedSizeArrays
 using DataStructures
@@ -24,8 +25,6 @@ using PairwiseListMatrices
 using NamedArrays
 using LightXML
 using MIToS.Utils
-
-# using RecipesBase           # Plots for PDBResidue
 
 export  # PDBResidues
         PDBResidueIdentifier,
@@ -103,6 +102,6 @@ include("Interaction.jl")
 include("PDBParser.jl")
 include("PDBMLParser.jl")
 include("Kabsch.jl")
-# include("Plots.jl")
+include("Plots.jl")
 
 end

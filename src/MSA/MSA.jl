@@ -24,9 +24,8 @@ using Base.Random           # shuffle!
 using PairwiseListMatrices  # Percent Identity Matrices
 using Clustering            # Used for sequence clustering: ClusteringResult
 using StatsBase             # Weights for clustering
-using MIToS.Utils
-
 using RecipesBase           # Plots for MSAs
+using MIToS.Utils
 
 import Clustering: ClusteringResult, nclusters, counts, assignments
 
@@ -111,6 +110,6 @@ include("PLM.jl")
 include("Identity.jl")
 include("Clusters.jl")
 include("Hobohm.jl")
-# include("Plots.jl")
+include("Plots.jl")
 
 end

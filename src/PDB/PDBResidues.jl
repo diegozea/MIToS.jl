@@ -487,7 +487,11 @@ function residuepairsmatrix{T,diagonal}(residue_list::Vector{PDBResidue},
                                         ::Type{Val{diagonal}},
                                         diagonalvalue::T)
     plm = PairwiseListMatrix(T, length(residue_list), diagonal, diagonalvalue)
-    nplm = setlabels(plm, [ res.id.number for res in residue_list ])
+    resnames = [ string(res.id.model, '_',
+                        res.id.chain, '_',
+                        res.id.group, '_',
+                        res.id.number) for res in residue_list ]
+    nplm = setlabels(plm, resnames)
     setdimnames!(nplm, ["Res1", "Res2"])
     nplm::NamedArray{T,2,PairwiseListMatrix{T,diagonal,Vector{T}},NTuple{2,OrderedDict{String,Int}}}
 end

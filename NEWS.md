@@ -46,6 +46,9 @@ and `isvalid`.
 * `msa["seq_name",:]` now returns a `NamedArray{Residue,1}` instead of an aligned sequence,
 use `getsequence(msa,"seqname")` to get an aligned sequence with annotations.
 
+* The `names` function was replaced by the `sequencenames` function. A `columnnames`
+function was also added.  
+
 * Aligned sequences don't drop dimensions, so there are matrices instead of vectors. You can
 use `vec(...)` or `squeeze(...,1)` to get a vector instead of the matrix.
 
@@ -65,6 +68,20 @@ sequences with unknown, ambiguous or non standard residues.
 
 * `shuffle_...columnwise!` and `shuffle_...sequencewise!` functions were deprecated in
 favor of `shuffle!` and `shuffle` functions.  
+
+* `SequenceClusters` was renamed to `Clusters`
+
+##### PDB module
+
+* The keyword argument `format` of `downloadpdb` should be a type (`PDBFile` or `PDBML`)
+instead of a string (`pdb` or `xml`) as in MIToS 1.0  
+
+* `read` and `parse` now has the `occupancyfilter` keyword argument
+
+* `read` and `parse` now has the `label` keyword argument for `PDBML` files
+
+*  `residues`, `àtoms` and similiar functions don't take vectors or sets anymore. Use an
+anonymous function instead, e.g.: `x -> x in set_of_residue_numbers`
 
 ### Changes from v1.1 to v1.2.2
 
