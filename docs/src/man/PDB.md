@@ -10,9 +10,9 @@ using MIToS.PDB # to load the PDB module
 
 ## Features  
 
-- [**Read and parse**](@ref Read-and-parse-PDB-files) PDB and PDBML files  
-- Calculate distance and contacts between atoms or residues  
-- Determine interaction between residues  
+- [**Read and parse**](@ref Read-and-parse-PDB-files) PDB and PDBML files.
+- Calculate distance and contacts between atoms or residues.
+- Determine interaction between residues.
 
 ## Contents  
 

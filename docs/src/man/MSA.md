@@ -9,12 +9,12 @@ using MIToS.MSA # to load the MSA module
 
 ## Features
 
-- [**Read**](@ref Reading-MSA-files) and [**write**](@ref Writing-MSA-files) MSAs in `Stockholm`, `FASTA` or `Raw` format
-- Handle [**MSA annotations**](@ref MSA-Annotations)
+- [**Read**](@ref Reading-MSA-files) and [**write**](@ref Writing-MSA-files) MSAs in `Stockholm`, `FASTA` or `Raw` format.
+- Handle [**MSA annotations**](@ref MSA-Annotations).
 - [**Edit the MSA**](@ref Editing-your-MSA), e.g. delete columns or sequences, change sequence order, shuffling...
-- [**Keep track of positions**](@ref Column-and-sequence-mappings) and annotations after modifications on the MSA
+- [**Keep track of positions**](@ref Column-and-sequence-mappings) and annotations after modifications on the MSA.
 - [**Describe an MSA**](@ref Describing-your-MSA), e.g. mean percent identity, sequence coverage, gap percentage...
-- [**Sequence clustering**](@ref Sequence-clustering) with Hobohm I
+- [**Sequence clustering**](@ref Sequence-clustering) with Hobohm I.
 
 ## Contents
 

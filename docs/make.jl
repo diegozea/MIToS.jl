@@ -10,7 +10,8 @@ makedocs(
         "man/Installation.md",
         "man/Example.md",
         "Modules" => [  "man/MSA.md",
-                        "man/PDB.md"    ]
+                        "man/PDB.md",
+                        "man/Pfam.md"    ]
     ]
 )
 
