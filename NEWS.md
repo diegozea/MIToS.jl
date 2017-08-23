@@ -25,7 +25,7 @@ were performed using subtypes of `AbstractTest`, in particular the `TestType`s `
 `capture` and `isobject`. This operation were fused and vectorized with the methods:
 `findobjects`, `collectobjects` and `collectcaptures`. All these functions and types are
 deprecated in MIToS 2.0. Functional programming in Julia 0.5 is fast, so these methods
-can be easily replace by Julia high order functions like `find` and `filter` and lambda
+can be easily replace by Julia higher order functions like `find` and `filter` and lambda
 expressions (anonymous functions).
 
 ##### MSA module
@@ -62,19 +62,19 @@ of `msa["seqname"]`.
 * `deletenotalphabetsequences` and the parse/read keyword argument `checkalphabet` are
 deprecated since MIToS 2.0 uses Residue('X') to represent residues outside the alphabet. You
 can use `filtersequences!(msa, vec(mapslices(seq -> !in(XAA, seq), msa, 2)))` to delete
-sequences with unknown, ambiguous or non standard residues.
+sequences with unknown, ambiguous or non standard residues
 
 * `parse`/`read` and MSA file returns an `AnnotatedMultipleSequenceAlignment` by default.
 
 * `shuffle_...columnwise!` and `shuffle_...sequencewise!` functions were deprecated in
-favor of `shuffle!` and `shuffle` functions.  
+favor of `shuffle!` and `shuffle` functions.
 
 * `SequenceClusters` was renamed to `Clusters`
 
 ##### PDB module
 
 * The keyword argument `format` of `downloadpdb` should be a type (`PDBFile` or `PDBML`)
-instead of a string (`pdb` or `xml`) as in MIToS 1.0  
+instead of a string (`pdb` or `xml`) as in MIToS 1.0
 
 * `read` and `parse` now has the `occupancyfilter` keyword argument
 
@@ -82,6 +82,15 @@ instead of a string (`pdb` or `xml`) as in MIToS 1.0
 
 *  `residues`, `àtoms` and similiar functions don't take vectors or sets anymore. Use an
 anonymous function instead, e.g.: `x -> x in set_of_residue_numbers`
+
+##### SIFTS module
+
+* The `get` function has a more complex signature for `SIFTSResidue`s to make simpler
+the access of data
+
+* `SIFTSResidue`s now also store secondary structure data in the `sscode` and `ssname` fields
+
+---
 
 ### Changes from v1.1 to v1.2.2
 

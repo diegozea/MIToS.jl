@@ -11,7 +11,8 @@ makedocs(
         "man/Example.md",
         "Modules" => [  "man/MSA.md",
                         "man/PDB.md",
-                        "man/Pfam.md"    ]
+                        "man/Pfam.md",
+                        "man/SIFTS.md"    ]
     ]
 )
 
