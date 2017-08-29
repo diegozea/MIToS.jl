@@ -1,6 +1,16 @@
 # Contingency Tables
 # ==================
 
+"""
+A `ContingencyTable` is a multidimensional array. It stores the contingency matrix, its
+marginal values and total. The type also has an internal and private temporal array and an
+alphabet object. It's a parametric type, taking three ordered parameters:
+
+- `T` : The element type of the multidimensional array.
+- `N` : It's the dimension of the array and should be an `Int`.
+- `A` : This should be a type, subtype of `ResidueAlphabet`, i.e.: `UngappedAlphabet`,
+`GappedAlphabet` or `ReducedAlphabet`.
+"""
 type ContingencyTable{T,N,A} <: AbstractArray{T,N}
     alphabet::A
     temporal::Array{T,N}
@@ -12,16 +22,26 @@ end
 # Probability and Counts
 # ----------------------
 
+"""
+A `Probabilities` object wraps a `ContingencyTable` storing probabilities.
+"""
 type Probabilities{T,N,A} <: AbstractArray{T,N}
     table::ContingencyTable{T,N,A}
 end
 
+"""
+A `Counts` object wraps a `ContingencyTable` storing counts/frequencies.
+"""
 type Counts{T,N,A} <: AbstractArray{T,N}
     table::ContingencyTable{T,N,A}
 end
 
 # Getters
 
+"""
+`getcontingencytable` allows to access the wrapped `ContingencyTable` in a `Probabilities`
+or `Counts` object.
+"""
 @inline getcontingencytable{T,N,A}(p::Probabilities{T,N,A}) = p.table
 @inline getcontingencytable{T,N,A}(n::Counts{T,N,A}) = n.table
 
@@ -41,14 +61,27 @@ end
 # Getters
 # -------
 
+"`getalphabet` allows to access the stored alphabet object."
 @inline getalphabet(table::ContingencyTable) = table.alphabet
+
+"`gettable` allows to access the table (`NamedArray`)."
 @inline gettable(table::ContingencyTable) = table.table
+
+"`getmarginals` allows to access the array with the marginal values (`NamedArray`)."
 @inline getmarginals(table::ContingencyTable) = table.marginals
+
+"`gettotal` allows to access the stored total value."
 @inline gettotal(table::ContingencyTable) = table.total
 
 Base.sum(table::ContingencyTable) = gettotal(table)
 
+"`gettablearray` allows to access the table (`Array` without names)."
 @inline gettablearray(table::ContingencyTable) = getarray(table.table)
+
+"""
+`getmarginalsarray` allows to access the array with the marginal values
+(`Array` without names).
+"""
 @inline getmarginalsarray(table::ContingencyTable) = getarray(table.marginals)
 
 # Cartesian (helper functions)
@@ -245,6 +278,7 @@ function _update_total!{T,N,A}(table::ContingencyTable{T,N,A})
     table
 end
 
+"`update_marginals!` updates the marginal and total values using the table."
 function update_marginals!{T,N,A}(table::ContingencyTable{T,N,A})
     fill!(getarray(table.marginals)::Matrix{T}, zero(T))
     _update_marginals!(table)
@@ -265,6 +299,10 @@ function _cleanup_temporal!{T,N,A}(table::ContingencyTable{T,N,A})
     fill!(table.temporal, zero(T))
 end
 
+"""
+`cleanup!` fills the temporal, table and marginals arrays with zeros.
+It also sets total to zero.
+"""
 function cleanup!{T,N,A}(table::ContingencyTable{T,N,A})
     _cleanup_temporal!(table)
     _cleanup_table!(table)
@@ -320,10 +358,7 @@ function _div!(matrix::NamedArray, value)
     matrix
 end
 
-"""
-`normalize!(p::ContingencyTable)`
-This function makes the sum of the frequencies to be one.
-"""
+"`normalize!` makes the sum of the frequencies to be one, in place."
 function Base.normalize!{T,N,A}(table::ContingencyTable{T,N,A})
     if table.total != one(T)
         _div!(table.table, table.total)
@@ -331,6 +366,9 @@ function Base.normalize!{T,N,A}(table::ContingencyTable{T,N,A})
     end
     table
 end
+
+"`normalize` returns another table where the sum of the frequencies is one."
+Base.normalize{T,N,A}(table::ContingencyTable{T,N,A}) = normalize!(deepcopy(table))
 
 # Delete Dimensions
 # =================

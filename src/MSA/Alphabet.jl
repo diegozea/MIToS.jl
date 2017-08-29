@@ -33,7 +33,7 @@ function (::Type{ReducedAlphabet})(str::AbstractString)
             pos += 1
         end
         int_residue = Int(Residue(char))
-        @assert int_residue != 22 "$char isn't valid for a residue alphabet."
+        @assert int_residue != 22 "$char isn't valid for a residue alphabet." # N == 22
         group_names[pos] = string(group_names[pos], char)
         mapping[int_residue] = pos
     end

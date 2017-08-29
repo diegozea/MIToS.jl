@@ -80,7 +80,7 @@ instead of a string (`pdb` or `xml`) as in MIToS 1.0
 
 * `read` and `parse` now has the `label` keyword argument for `PDBML` files
 
-*  `residues`, `àtoms` and similiar functions don't take vectors or sets anymore. Use an
+* `residues`, `àtoms` and similiar functions don't take vectors or sets anymore. Use an
 anonymous function instead, e.g.: `x -> x in set_of_residue_numbers`
 
 ##### SIFTS module
@@ -89,6 +89,60 @@ anonymous function instead, e.g.: `x -> x in set_of_residue_numbers`
 the access of data
 
 * `SIFTSResidue`s now also store secondary structure data in the `sscode` and `ssname` fields
+
+##### Information module
+
+* `ResidueProbability` and `ResidueCount` were deprecated in favor of `ContingencyTable`.
+`Probabilities` and `Counts` were added as wrappers of `ContingencyTable` to allow dispach
+in a some functions, e.g. `entropy`.
+
+* The last parameter of contingency tables is now a subtype of `ResidueAlphabet` instead
+of a `Bool`, i.e.: `UngappedAlphabet`, `GappedAlphabet` or `ReducedAlphabet`.
+
+* Creation of empty contingecy tables chaged.
+e.g. `zeros(ResidueProbability{Float64, 2, false})` changed to
+`ContingencyTable(Float64, Val{2}, UngappedAlphabet())` and
+`ResidueProbability{Float64, 2, false}()` changed to
+`ContingencyTable{Float64, 2, UngappedAlphabet}(UngappedAlphabet())`.
+
+* `count!` and `probabilities!` signatures changed. The first argument is alway a
+`ContingencyTable`, the second positional argument a clustering weight object
+(use `NoClustering()` to skip it), the third positional argument is a pseudocount object
+(use `NoPseudocount()` to avoid the use of pseudocounts) and `probabilities!` takes also a
+`Pseudofrequencies` object (use `NoPseudofrequencies()` to avoid pseudofrequencies). The
+last positional arguments are the vector of residues used to fill the contingency table.
+
+* `count` and `probabilities` now takes the sequences as only positional arguments. The
+output is always a table of `Float64`. Both functions take the keyword arguments
+`alphabet`, `weights` and `pseudocounts`. `probabilities` also has a `pseudofrequencies`
+keyword argument.
+
+* `apply_pseudofrequencies!` changed its signature. Now it takes a `ContingencyTable` and
+a `Pseudofrequencies` object.
+
+* The function `blosum_pseudofrequencies!` was deprecated in favor of introducing a
+`BLOSUM_Pseudofrequencies` type as subtype of `Pseudofrequencies` to be used in
+`probabilities`, `probabilities!` and `apply_pseudofrequencies!`.
+
+* Because higher-order function are fast in Julia 0.5, measure types
+(i.e. subtypes of `AbstractMeasure`) were deprecated in favor of functions. In particular,
+`MutualInformation` was replaced with the `mutual_information` function,
+`MutualInformationOverEntropy` was replaced with `normalized_mutual_information`,
+`KullbackLeibler` was replaced with `kullback_leibler` and `Entropy` was replaced with
+`entropy`.
+
+* The functions `estimate`, `estimate_on_marginal` , `estimateincolumns` and
+`estimateinsequences` were deprecated because measure types are not longer used.
+
+* `estimate_on_marginal(Entropy...` was deprecated in favor of the `marginal_entropy`
+function.
+
+* `estimateincolumns` and `estimateinsequences` were deprecated in favor of `mapcolfreq!`,
+`mapseqfreq!`, `mapcolpairfreq!` and `mapseqpairfreq`.
+
+* Keyword argument `usegaps` is deprecated in `buslje09` and `BLMI` in favor of `alphabet`.
+
+* `cumulative` function was added to calculate cumulative MI (cMI).
 
 ---
 
@@ -101,6 +155,8 @@ the access of data
 * *[breaking change]* **Distances.jl** now uses `--inter` instead of `--intra`.
 
 * *docs* and *cookbook* are now in [MIToSDocumentation](https://github.com/diegozea/MIToSDocumentation)
+
+---
 
 ### Changes from v1.0 to v1.1
 
@@ -137,6 +193,8 @@ the access of data
 * The module `Scripts` inside the `Utils` module has a new function `readorparse` to help parsing `STDIN` in MIToS’ scripts.
 
 **MIToS v1.1** also includes several **bug fixes**, some **performance improvements** and a more complete **documentation**.
+
+---
 
 ### Changes from v0.1 to v1.0
 

@@ -1,14 +1,6 @@
 # Entropy
 # =======
 
-# """
-# Shannon entropy (H)
-# """
-# """
-# `estimate(Entropy(base), p)`
-#
-# `p` should be a `ResidueProbability` table. The result type is determined by `base`.
-# """
 function StatsBase.entropy{T,N,A}(table::Probabilities{T,N,A})
     H = zero(T)
     p = gettablearray(table)
@@ -20,12 +12,6 @@ function StatsBase.entropy{T,N,A}(table::Probabilities{T,N,A})
     -H # Default base: e
 end
 
-# """
-# `estimate(Entropy{T}(base), n::ResidueCount)`
-#
-# It's the fastest option (you don't spend time on probability calculations).
-# The result type is determined by the `base`.
-# """
 function StatsBase.entropy{T,N,A}(table::Counts{T,N,A})
     H = zero(T)
     total = gettotal(table)
@@ -38,6 +24,11 @@ function StatsBase.entropy{T,N,A}(table::Counts{T,N,A})
     -H/total # Default base: e
 end
 
+"""
+It calculates the Shannon entropy (H) from a table of `Counts` or `Probabilities`.
+Use last and optional positional argument to change the base of the log. The default base
+is e, so the result is in nats. You can use 2.0 as base to get the result in bits.
+"""
 function StatsBase.entropy{T,N,A}(table::Union{Counts{T,N,A},Probabilities{T,N,A}}, base::Real)
     entropy(table) / log(base)
 end
@@ -45,12 +36,6 @@ end
 # Marginal Entropy
 # ----------------
 
-# """
-# `estimate_on_marginal(Entropy{T}(base), p, marginal)`
-#
-# This function estimate the entropy H(X) if marginal is 1, H(Y) for 2, etc.
-# The result type is determined by `base`.
-# """
 function marginal_entropy{T,N,A}(table::Probabilities{T,N,A}, margin::Int)
     H = zero(T)
     marginals = getmarginalsarray(table)
@@ -74,6 +59,13 @@ function marginal_entropy{T,N,A}(table::Counts{T,N,A}, margin::Int)
     -H/total # Default base: e
 end
 
+"""
+It calculates marginal entropy (H) from a table of `Counts` or `Probabilities`. The second
+positional argument is used to indicate the magin used to calculate the entropy, e.g. it
+estimates the entropy H(X) if marginal is 1, H(Y) for 2, etc.
+Use last and optional positional argument to change the base of the log. The default base
+is e, so the result is in nats. You can use 2.0 as base to get the result in bits.
+"""
 function marginal_entropy{T,N,A}(table::Union{Counts{T,N,A},Probabilities{T,N,A}},
                                  margin::Int, base::Real)
     marginal_entropy(table, margin) / log(base)
@@ -83,16 +75,6 @@ end
 # ================
 
 
-# """
-# Kullback-Leibler (KL). This `SymmetricMeasure` has two fields.
-# The first is the base of the logarithm and the second is the backgroud frequency.
-# """
-# """
-# `estimate(KullbackLeibler(base, background), p)`
-#
-# `p` should be a `ResidueProbability` table, and `background` must have the size of `p`.
-# The result type is determined by `base` and `background`.
-# """
 function kullback_leibler{T,N,A}(probabilities::Probabilities{T,N,A},
                                  background::Array{T,N})
     p = getcontingencytable(probabilities)
@@ -112,6 +94,13 @@ function kullback_leibler{T,N,A}(probabilities::Probabilities{T,N,A},
     kullback_leibler(probabilities, gettablearray(background))
 end
 
+"""
+It calculates the Kullback-Leibler (KL) divergence from a table of `Probabilities`. The
+second positional argument is a `Probabilities` or `ContingencyTable` with the background
+distribution. It's optional, the default is the `BLOSUM62_Pi` table.
+Use last and optional positional argument to change the base of the log. The default base
+is e, so the result is in nats. You can use 2.0 as base to get the result in bits.
+"""
 kullback_leibler{T,A}(p::Probabilities{T,1,A}, q, base::Real) = kullback_leibler(p, q)/log(base)
 kullback_leibler{T,A}(p::Probabilities{T,1,A}, base::Real) = kullback_leibler(p)/log(base)
 
@@ -175,6 +164,11 @@ function mutual_information{T,A}(table::Counts{T,2,A})
     MI/total # Default base: e
 end
 
+"""
+It calculates Mutual Information (MI) from a table of `Counts` or `Probabilities`.
+Use last and optional positional argument to change the base of the log. The default base
+is e, so the result is in nats. You can use 2.0 as base to get the result in bits.
+"""
 function mutual_information{T,N,A}(table::Union{Counts{T,N,A}, Probabilities{T,N,A}},
                                    base::Real)
     mutual_information(table) / log(base)
@@ -196,11 +190,12 @@ end
 # Normalized Mutual Information by Entropy
 # ----------------------------------------
 
-# """
-# Normalized Mutual Information (nMI) by Entropy.
-#
-# `nMI(X, Y) = MI(X, Y) / H(X, Y)`
-# """
+"""
+It calculates a Normalized Mutual Information (nMI) by Entropy from a table of `Counts` or
+`Probabilities`.
+
+`nMI(X, Y) = MI(X, Y) / H(X, Y)`
+"""
 function normalized_mutual_information{T,N,A}(table::Union{Counts{T,N,A},Probabilities{T,N,A}})
     H = entropy(table)
     if H != zero(T)
