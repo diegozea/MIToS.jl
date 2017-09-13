@@ -1,3 +1,6 @@
+```@meta
+CurrentModule = MIToS.Information
+```
 
 # Information
 
@@ -188,10 +191,8 @@ probability estimations. It is shown in
 that low-count corrections, can lead to improvements in the contact prediction capabilities
 of the Mutual Information. The Information module has available two low-count corrections:  
 
-1. [Additive Smoothing![](../assets/external-link.png)](https://en.wikipedia.org/wiki/Additive_smoothing)
-; the constant value pseudocount described in [*Buslje et. al. 2009*![](../assets/external-link.png)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2672635/).  
-2. BLOSUM62 based pseudo frequencies of residues pairs, similar to
-[*Altschul et. al. 1997*![](../assets/external-link.png)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC146917/).  
+1. [Additive Smoothing![](../assets/external-link.png)](https://en.wikipedia.org/wiki/Additive_smoothing); the constant value pseudocount described in [*Buslje et. al. 2009*![](../assets/external-link.png)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2672635/).  
+2. BLOSUM62 based pseudo frequencies of residues pairs, similar to [*Altschul et. al. 1997*![](../assets/external-link.png)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC146917/).  
 
 ```@example inf_msa
 using MIToS.MSA
@@ -299,7 +300,7 @@ count(msa[:,1], msa[:,2], weights=clusters)
 The `Information` module has a number of functions defined to calculate information
 measures from `Counts` and `Probabilities`:
 
-- `entropy(table, base)` : Shannon entropy (H)
+- `entropy` : Shannon entropy (H)
 - `marginal_entropy` : Shannon entropy (H) of the marginals
 - `kullback_leibler` : Kullback-Leibler (KL) divergence
 - `mutual_information` : Mutual Information (MI)
@@ -311,6 +312,9 @@ Information measure functions take optionally the base as the last positional ar
 (default: `e`). You can use `2.0` to measure information in bits.
 
 ```@example inf_information
+using MIToS.Information
+using MIToS.MSA
+
 Ni = count(res"PPCDPPPPPKDKKKKDDGPP") # Ni has the count table of residues in this low complexity sequence
 
 H = entropy(Ni) # returns the Shannon entropy in nats (base e)
@@ -349,6 +353,12 @@ In this example, we are going to use `mapcolfreq!` and `mapcolpairfreq!` to esti
 Shannon `entropy` of MSA columns *H(X)* and the joint entropy *H(X, Y)* of columns pairs,
 respectively.  
 
+```@setup inf_entropy
+using Plots
+using PlotRecipes
+pyplot()
+```
+
 ```@example inf_entropy
 using MIToS.MSA
 
@@ -383,6 +393,9 @@ end
 Time_Nab = map(1:100) do x
     time = @elapsed mapcolpairfreq!(entropy, msa, Counts(ContingencyTable(Float64, Val{2}, UngappedAlphabet())))
 end
+
+using Plots
+pyplot()
 
 histogram( [Time_Pab Time_Nab],
     labels = ["Using ResidueProbability" "Using ResidueCount"],
@@ -433,6 +446,7 @@ pyplot()
 ```@example inf_buslje09
 using MIToS.MSA
 using MIToS.Information
+
 msa = read("http://pfam.xfam.org/family/PF16078/alignment/full", Stockholm)
 ZMIp, MIp  = buslje09(msa)
 ZMIp
@@ -466,7 +480,9 @@ ZMIp is a Z score of the corrected MIp against its distribution on a random MSA
 to co-evolve. Here, we are going to use the top 1% pairs of MSA columns.  
 
 ```@example inf_buslje09
-threshold = quantile(PairwiseListMatrices.getlist(ZMIp), 0.99)
+using PairwiseListMatrices # to use getlist
+
+threshold = quantile(getlist(ZMIp), 0.99)
 ```
 
 ```@example inf_buslje09
