@@ -10,10 +10,16 @@ makedocs(
         "man/Installation.md",
         "man/Example.md",
         "Modules" => [  "man/MSA.md",
-                        "man/PDB.md",
-                        "man/Pfam.md",
+                        "man/Information.md",
                         "man/SIFTS.md",
-                        "man/Information.md"    ]
+                        "man/PDB.md",
+                        "man/Pfam.md"    ],
+        "API" => [  "man/MSA_API.md",
+                    "man/Information_API.md",
+                    "man/SIFTS_API.md",
+                    "man/PDB_API.md",
+                    "man/Pfam_API.md",
+                    "man/Utils_API.md"          ]
     ]
 )
 
