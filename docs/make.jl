@@ -14,6 +14,7 @@ makedocs(
                         "man/SIFTS.md",
                         "man/PDB.md",
                         "man/Pfam.md"    ],
+        "man/Scripts.md",
         "API" => [  "man/MSA_API.md",
                     "man/Information_API.md",
                     "man/SIFTS_API.md",
