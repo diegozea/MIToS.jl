@@ -4,6 +4,10 @@
 "Parametric abstract type to define pseudocount types"
 abstract Pseudocount{T<:Real}
 
+"""
+You can use `NoPseudocount()` to avoid pseudocount corrections where a
+`Pseudocount` type is needed.
+"""
 immutable NoPseudocount <: Pseudocount end
 
 """

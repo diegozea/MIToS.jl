@@ -170,10 +170,10 @@ end
 MI values above a certain threshold for every amino acid pair where the particular residue
 appears. This value defines to what degree a given amino acid takes part in a mutual
 information network."*
-Buslje, Cristina Marino, Elin Teppa, Tomas Di Doménico, José María Delfino, and Morten Nielsen.
-*Networks of high mutual information define the structural proximity of catalytic sites:
-implications for catalytic residue identification.*
-PLoS Comput Biol 6, no. 11 (2010): e1000978.
+Buslje, Cristina Marino, Elin Teppa, Tomas Di Doménico, José María Delfino, and Morten
+Nielsen. *Networks of high mutual information define the structural proximity of catalytic
+sites: implications for catalytic residue identification.* PLoS Comput Biol 6, no. 11
+(2010): e1000978.
 """
 function cumulative{T,D,VT}(plm::PairwiseListMatrix{T,D,VT}, threshold::T)
     N = size(plm, 1)

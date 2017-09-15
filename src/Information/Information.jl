@@ -17,7 +17,6 @@ frequency based values.
 - Calculate corrected mutual information between residues
 
 ```julia
-
 using MIToS.Information
 ```
 """
@@ -99,7 +98,5 @@ include("Corrections.jl")
 include("CorrectedMutualInformation.jl")
 include("Gaps.jl")
 include("Externals.jl")
-
-# include("Probabilities.jl") # Docs and others, see at the end
 
 end

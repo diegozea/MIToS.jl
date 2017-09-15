@@ -10,6 +10,16 @@ alphabet object. It's a parametric type, taking three ordered parameters:
 - `N` : It's the dimension of the array and should be an `Int`.
 - `A` : This should be a type, subtype of `ResidueAlphabet`, i.e.: `UngappedAlphabet`,
 `GappedAlphabet` or `ReducedAlphabet`.
+
+A `ContingencyTable` can be created from an alphabet if all the parameters are given.
+Otherwise, you need to give a type, a number (`Val`) and an alphabet. You can also create a
+`ContingencyTable` using a matrix and a alphabet. For example:
+
+```julia
+ContingencyTable{Float64, 2, UngappedAlphabet}(UngappedAlphabet())
+ContingencyTable(Float64, Val{2}, UngappedAlphabet())
+ContingencyTable(zeros(Float64,20,20), UngappedAlphabet())
+```
 """
 type ContingencyTable{T,N,A} <: AbstractArray{T,N}
     alphabet::A
@@ -23,7 +33,9 @@ end
 # ----------------------
 
 """
-A `Probabilities` object wraps a `ContingencyTable` storing probabilities.
+A `Probabilities` object wraps a `ContingencyTable` storing probabilities. It doesn't
+perform any check. If the total isn't one, you must use `normalize` or `normalize!`on the
+`ContingencyTable` before wrapping it to make the sum of the probabilities equal to one.
 """
 type Probabilities{T,N,A} <: AbstractArray{T,N}
     table::ContingencyTable{T,N,A}
@@ -335,6 +347,7 @@ function _sum!(matrix::NamedArray, value)
     matrix
 end
 
+"It adds the `pseudocount` value to the table cells."
 function apply_pseudocount!{T,N,A}(table::ContingencyTable{T,N,A}, pseudocount::T)
     _sum!(table.table, pseudocount)
     update_marginals!(table)

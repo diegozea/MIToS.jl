@@ -10,7 +10,6 @@ The MSA module of MIToS has utilities for working with Multiple Sequence Alignme
 - Describe a MSA, e.g. mean percent identity, sequence coverage, gap percentage...
 
 ```julia
-
 using MIToS.MSA
 ```
 """

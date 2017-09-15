@@ -112,14 +112,6 @@ kullback_leibler{T,A}(p::Probabilities{T,1,A}, base::Real) = kullback_leibler(p)
     (pij > zero(T)) && (pi > zero(T)) ? T(pij * log(pij/(pi*pj))) : zero(T)
 end
 
-# """
-# Mutual Information (MI)
-# """
-# """
-# `estimate(MutualInformation(), pxy::ResidueProbability [, base])`
-#
-# Calculate Mutual Information from `ResidueProbability`. The result type is determined by `base`.
-# """
 function mutual_information{T,A}(table::Probabilities{T,2,A})
     MI = zero(T)
     marginals = getmarginalsarray(table)
@@ -141,12 +133,6 @@ end
     (nij > zero(T)) && (ni > zero(T)) ? T(nij * log((total * nij)/(ni * nj))) : zero(T)
 end
 
-# """
-# `estimate(MutualInformation(), pxy::ResidueCount [, base])`
-#
-# Calculate Mutual Information from `ResidueCount`. The result type is determined by the `base`.
-# It's the fastest option (you don't spend time on probability calculations).
-# """
 function mutual_information{T,A}(table::Counts{T,2,A})
     MI = zero(T)
     marginals = getmarginalsarray(table)
@@ -168,6 +154,7 @@ end
 It calculates Mutual Information (MI) from a table of `Counts` or `Probabilities`.
 Use last and optional positional argument to change the base of the log. The default base
 is e, so the result is in nats. You can use 2.0 as base to get the result in bits.
+Calculation of MI from `Counts` is faster than from `Probabilities`.
 """
 function mutual_information{T,N,A}(table::Union{Counts{T,N,A}, Probabilities{T,N,A}},
                                    base::Real)

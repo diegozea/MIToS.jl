@@ -13,7 +13,6 @@ SIFTS offers  more reliable association between sequence and structure residue n
 - Easy generation of `Dict`s between residues numbers
 
 ```julia
-
 using MIToS.SIFTS
 ```
 """

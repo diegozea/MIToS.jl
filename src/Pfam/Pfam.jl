@@ -9,7 +9,6 @@ The `Pfam` module, defines functions to measure the protein contact prediction p
 - Measure of AUC (ROC curve) for contact prediction of MI scores
 
 ```julia
-
 using MIToS.Pfam
 ```
 """

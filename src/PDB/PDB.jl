@@ -10,7 +10,6 @@ needed for measure the predictive performance at protein contact prediction of m
 - Determine interaction between residues
 
 ```julia
-
 using MIToS.PDB
 ```
 """

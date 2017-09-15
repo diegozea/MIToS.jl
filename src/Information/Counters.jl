@@ -25,6 +25,14 @@
     end
 end
 
+"""
+It populates a `ContingencyTable` (first argument) using the frequencies in the sequences
+(last positional arguments). The dimension of the table must match the number of sequences
+and all the sequences must have the same length. You must indicate the used weights and
+pseudocounts as second and third positional arguments respectively. You can use
+`NoPseudofrequencies()` and `NoClustering()` to avoid the use of sequence weighting and
+pseudocounts, respectively.
+"""
 function count!{T,N,A}(table::ContingencyTable{T,N,A},
                        weights,
                        pseudocounts::Pseudocount,
@@ -52,6 +60,14 @@ function _count{N,A <: ResidueAlphabet}(alphabet::A,
     table
 end
 
+"""
+It returns a `ContingencyTable` wrapped in a `Counts` type with the frequencies of residues
+in the sequences that takes as arguments. The dimension of the table is equal to the number
+of sequences. You can use the keyword arguments `alphabet`, `weights` and `pseudocounts`
+to indicate the alphabet of the table (default to `UngappedAlphabet()`), a clustering
+result (default to `NoClustering()`) and the pseudocounts (default to `NoPseudocount()`)
+to be used during the estimation of the frequencies.
+"""
 function Base.count{N}(seqs::Vararg{AbstractVector{Residue},N};
                        alphabet::ResidueAlphabet = UngappedAlphabet(),
                        weights = NoClustering(),
@@ -62,6 +78,14 @@ end
 # Probabilities
 # =============
 
+"""
+It populates a `ContingencyTable` (first argument) using the probabilities in the sequences
+(last positional arguments). The dimension of the table must match the number of sequences
+and all the sequences must have the same length. You must indicate the used weights,
+pseudocounts and pseudofrequencies as second, third and fourth positional arguments
+respectively. You can use `NoClustering()`, `NoPseudocount()` and `NoPseudofrequencies()`
+to avoid the use of sequence weighting, pseudocounts and pseudofrequencies, respectively.
+"""
 function probabilities!{T,N,A}(table::ContingencyTable{T,N,A},
                                weights,
                                pseudocounts::Pseudocount,
@@ -91,6 +115,15 @@ function _probabilities{N,A <: ResidueAlphabet}(alphabet::A,
     table
 end
 
+"""
+It returns a `ContingencyTable` wrapped in a `Probabilities` type with the frequencies of
+residues in the sequences that takes as arguments. The dimension of the table is equal to
+the number of sequences. You can use the keyword arguments `alphabet`, `weights`,
+`pseudocounts` and `pseudofrequencies` to indicate the alphabet of the table
+(default to `UngappedAlphabet()`), a clustering result (default to `NoClustering()`), 
+the pseudocounts (default to `NoPseudocount()`) and the pseudofrequencies
+(default to `NoPseudofrequencies()`) to be used during the estimation of the probabilities.
+"""
 function probabilities{N}(seqs::Vararg{AbstractVector{Residue},N};
                           alphabet::ResidueAlphabet = UngappedAlphabet(),
                           weights = NoClustering(),

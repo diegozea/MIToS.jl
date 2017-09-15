@@ -1,13 +1,24 @@
 # Pseudofrequencies
 # =================
 
+"Parametric abstract type to define pseudofrequencies types"
 abstract Pseudofrequencies
 
+"""
+You can use `NoPseudofrequencies()` to avoid pseudocount corrections where a
+`Pseudofrequencies` type is needed.
+"""
 immutable NoPseudofrequencies <: Pseudofrequencies end
 
 # BLOSUM based pseudofrequencies
 # ==============================
 
+"""
+`BLOSUM_Pseudofrequencies` type. It takes to arguments/fields:
+
+- `α` : Usually the number of sequences or sequence clusters in the MSA.
+- `β` : The weight of the pseudofrequencies, a value close to 8.512 when `α` is the number of sequence clusters.
+"""
 immutable BLOSUM_Pseudofrequencies <: Pseudofrequencies
     α::Float64
     β::Float64
