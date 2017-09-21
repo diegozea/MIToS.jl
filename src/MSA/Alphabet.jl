@@ -1,9 +1,41 @@
+"Abstract type to define residue alphabet types."
 abstract ResidueAlphabet
 
+"""
+This type defines the usual alphabet of the 20 natural residues and a gap character.
+
+```julia
+julia> GappedAlphabet()
+MIToS.MSA.GappedAlphabet of length 21. Residues : res"ARNDCQEGHILKMFPSTWYV-"
+
+```
+"""
 immutable GappedAlphabet <: ResidueAlphabet end
 
+"""
+This type defines the usual alphabet of the 20 natural residues, without the gap character.
+
+```julia
+julia> UngappedAlphabet()
+MIToS.MSA.UngappedAlphabet of length 20. Residues : res"ARNDCQEGHILKMFPSTWYV"
+
+```
+"""
 immutable UngappedAlphabet <: ResidueAlphabet end
 
+"""
+`ReducedAlphabet` allows the construction of reduced residue alphabets, where residues
+inside parenthesis belong to the same group.
+
+```julia
+julia> ab = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
+MIToS.MSA.ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
+
+julia> ab[Residue('K')]
+2
+
+```
+"""
 immutable ReducedAlphabet <: ResidueAlphabet
     mapping::Array{Int,1} # Residue -> Int
     named::NamedArray{Int,1,Array{Int,1},Tuple{OrderedDict{String,Int}}}
@@ -118,8 +150,29 @@ Base.in(res::Residue, alphabet::ReducedAlphabet) = alphabet[res] != 22
 # Names
 # -----
 
-Base.names(alphabet::ResidueAlphabet) = String[ string(Residue(i)) for i in alphabet ]
+"""
+It returns the name of each group. The name is a string with the one letter code of each
+residue that belong to the group.
+
+```julia
+julia> ab = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
+MIToS.MSA.ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
+
+julia> names(ab)
+8-element Array{String,1}:
+ "AILMV"
+ "RHK"
+ "NQST"
+ "DE"
+ "FWY"
+ "C"    
+ "G"
+ "P"
+
+```
+"""
 Base.names(alphabet::ReducedAlphabet) = names(alphabet.named, 1)
+Base.names(alphabet::ResidueAlphabet) = String[ string(Residue(i)) for i in alphabet ]
 
 # Dict of names to indexes
 # ------------------------
@@ -129,7 +182,27 @@ Base.names(alphabet::ReducedAlphabet) = names(alphabet.named, 1)
 const _UngappedAlphabet_Names = OrderedDict{String,Int}(string(Residue(i))=>i for i in 1:20)
 const _GappedAlphabet_Names = OrderedDict{String,Int}(string(Residue(i))=>i for i in 1:21)
 
-getnamedict(alphabet::UngappedAlphabet) = _UngappedAlphabet_Names
-getnamedict(alphabet::GappedAlphabet) = _GappedAlphabet_Names
+@inline getnamedict(alphabet::UngappedAlphabet) = _UngappedAlphabet_Names
+@inline getnamedict(alphabet::GappedAlphabet) = _GappedAlphabet_Names
 
-@inline getnamedict(alphabet::ReducedAlphabet) = _getdict(alphabet.named)
+"""
+It takes a `ResidueAlphabet` and returns a dictionary from group name to group position.
+
+```julia
+julia> ab = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
+MIToS.MSA.ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
+
+julia> getnamedict(ab)
+DataStructures.OrderedDict{String,Int64} with 8 entries:
+  "AILMV" => 1
+  "RHK"   => 2
+  "NQST"  => 3
+  "DE"    => 4
+  "FWY"   => 5
+  "C"     => 6
+  "G"     => 7
+  "P"     => 8
+
+```
+"""
+@inline getnamedict(alphabet::ReducedAlphabet) = _getdict(copy(alphabet.named))

@@ -69,7 +69,14 @@ sequences with unknown, ambiguous or non standard residues
 * `shuffle_...columnwise!` and `shuffle_...sequencewise!` functions were deprecated in
 favor of `shuffle!` and `shuffle` functions.
 
-* `SequenceClusters` was renamed to `Clusters`
+* `SequenceClusters` was renamed to `Clusters`.
+
+* Residue alphabet types were added. All alphabet types are subtypes of `ResidueAlphabet`.
+In particular, three types are exported: `GappedAlphabet`, `UngappedAlphabet` and
+`ReducedAlphabet`. The last type allows the creation of custom reduced alphabets.
+
+* In order to keep the sequence name, `AlignedSequence` and `AnnotatedAlignedSequence` are
+now matrices instead of vectors.
 
 ##### PDB module
 

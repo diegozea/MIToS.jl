@@ -3,6 +3,7 @@
 
 # Clustering.jl : ClusteringResult
 
+"Use `NoClustering()` to avoid the use of clustering where a `Clusters` type is needed."
 immutable NoClustering <: ClusteringResult end
 
 "Data structure to represent sequence clusters. The sequence data itself is not included."
