@@ -95,9 +95,13 @@ anonymous function instead, e.g.: `x -> x in set_of_residue_numbers`.
 ##### SIFTS module
 
 * The `get` function has a more complex signature for `SIFTSResidue`s to make simpler
-the access of data
+the access of data.
 
-* `SIFTSResidue`s now also store secondary structure data in the `sscode` and `ssname` fields
+* `find`, `filter` and `filter` now takes a database type as a third parameter when a vector
+of `SIFTSResidue`s is the second parameter. It allows to use a function that directly
+operates over the database type if it's available.
+
+* `SIFTSResidue`s now also store secondary structure data in the `sscode` and `ssname` fields.
 
 ##### Information module
 

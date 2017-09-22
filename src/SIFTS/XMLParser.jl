@@ -2,6 +2,7 @@ immutable SIFTSXML <: Format end
 
 # Download SIFTS
 # ==============
+
 """
 Download the gzipped SIFTS xml  for the `pdbcode`.
 The extension of the downloaded file is `.xml.gz` by default.
@@ -27,6 +28,7 @@ end
 """
 Gets the entities of a SIFTS XML. In some cases, each entity is a PDB chain.
 WARNING: Sometimes there are more chains than entities!
+
 ```
 <entry dbSource="PDBe" ...
   ...
@@ -52,6 +54,7 @@ _get_segments(entity) = get_elements_by_tagname(entity, "segment")
 
 """
 Returns an Iterator of the residues on the listResidue
+
 ```
 <listResidue>
   <residue>
@@ -66,7 +69,7 @@ function _get_residues(segment)
 end
 
 """
-Returns `true` if the residue was annotated as *Not_Observed*
+Returns `true` if the residue was annotated as *Not_Observed*.
 """
 function _is_missing(residue)
     details = get_elements_by_tagname(residue, "residueDetail")

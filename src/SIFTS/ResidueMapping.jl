@@ -1,10 +1,16 @@
 abstract DataBase
 
+"""
+`dbPDBe` stores the residue `number` and `name` in PDBe as strings.
+"""
 @auto_hash_equals immutable dbPDBe <: DataBase
     number::String # Cross referenced residue number
     name::String # Cross referenced residue name
 end
 
+"""
+`dbInterPro` stores the residue `id`, `number`, `name` and `evidence` in InterPro as strings.
+"""
 @auto_hash_equals immutable dbInterPro <: DataBase
     id::String
     number::String # Cross referenced residue number
@@ -24,6 +30,18 @@ for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
     end
 end
 
+@doc """
+`dbUniProt` stores the residue `id`, `number` and `name` in UniProt as strings.
+""" dbUniProt
+
+@doc """
+`dbPfam` stores the residue `id`, `number` and `name` in Pfam as strings.
+""" dbPfam
+
+@doc """
+`dbNCBI` stores the residue `id`, `number` and `name` in NCBI as strings.
+""" dbNCBI
+
 for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
     @eval begin
 
@@ -36,6 +54,18 @@ for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
 
     end
 end
+
+@doc """
+`dbPDB` stores the residue `id`, `number`, `name` and `chain` in PDB as strings.
+""" dbPDB
+
+@doc """
+`dbCATH` stores the residue `id`, `number`, `name` and `chain` in CATH as strings.
+""" dbCATH
+
+@doc """
+`dbSCOP` stores the residue `id`, `number`, `name` and `chain` in SCOP as strings.
+""" dbSCOP
 
 """
 Returns "" if the attributte is missing
@@ -104,6 +134,22 @@ function (::Type{dbPDBe})(map::LightXML.XMLElement)
       )
 end
 
+"""
+A `SIFTSResidue` object stores the SIFTS residue level mapping for a residue. It has the
+following fields that you can access at any moment for query purposes:
+
+    - `PDBe` : A `dbPDBe` object, it's present in all the `SIFTSResidue`s.
+    - `UniProt` : A `Nullable` wrapping a `dbUniProt` object.
+    - `Pfam` : A `Nullable` wrapping a `dbPfam` object.
+    - `NCBI` : A `Nullable` wrapping a `dbNCBI` object.
+    - `InterPro` : A `Nullable` wrapping a `dbInterPro` object.
+    - `PDB` : A `Nullable` wrapping a `dbPDB` object.
+    - `SCOP` : A `Nullable` wrapping a `dbSCOP` object.
+    - `CATH` : A `Nullable` wrapping a `dbCATH` object.
+    - `missing` : It's `true` if the residue is missing, i.e. not observed, in the structure.
+    - `sscode` : A string with the secondary structure code of the residue.
+    - `ssname` : A string with the secondary structure name of the residue.
+"""
 @auto_hash_equals immutable SIFTSResidue
     PDBe::dbPDBe
     # crossRefDb
@@ -237,9 +283,10 @@ _is_All(::Any) = false
 _is_All(::Type{All}) = true
 
 """
-Parses a SIFTS XML file and returns a `Dict` between residue numbers of two `DataBase`s  with the given identifiers.
-A `chain` could be specified (`All` by default).
-If `missings` is `true` (default) all the residues are used, even if they haven’t coordinates in the PDB file.
+Parses a SIFTS XML file and returns a `Dict` between residue numbers of two `DataBase`s
+with the given identifiers. A `chain` could be specified (`All` by default). If `missings`
+is `true` (default) all the residues are used, even if they haven’t coordinates in the
+PDB file.
 """
 function siftsmapping{F, T}(filename::String,
                             db_from::Type{F},
