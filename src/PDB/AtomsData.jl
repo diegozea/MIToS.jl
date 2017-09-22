@@ -428,7 +428,8 @@ const _interaction_keys = _generate_interaction_keys(vanderwaalsradius, _hydroph
 _generate_atoms_set(res::PDBResidue) = String[ atom.atom for atom in res.atoms[findheavy(res)] ]
 
 """
-This function takes a `PDBResidue` and returns `true` only if all the atoms can be used for checking interactions.
+This function takes a `PDBResidue` and returns `true` only if all the atoms can be used
+for checking interactions.
 """
 function check_atoms_for_interactions(res::PDBResidue)
     atoms = _generate_atoms_set(res)

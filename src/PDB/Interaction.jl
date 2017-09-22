@@ -4,14 +4,29 @@ _with_cov(a::PDBAtom, resname_a::String) = a.element in keys(covalentradius)
 
 ishydrophobic(a::PDBAtom, resname_a::String) = (resname_a, a.atom) in _hydrophobic
 
+"""
+Returns true if the atom, e.g. `("HIS","CG")`, is an aromatic atom in the residue.
+"""
 isaromatic(a::PDBAtom, resname_a::String) = (resname_a, a.atom) in _aromatic
 
+"""
+Returns true if the atom, e.g. `("ARG","NE")`, is a cationic atom in the residue.
+"""
 iscationic(a::PDBAtom, resname_a::String) = (resname_a, a.atom) in _cationic
 
+"""
+Returns true if the atom, e.g. `("GLU","CD")`, is an anionic atom in the residue.
+"""
 isanionic(a::PDBAtom, resname_a::String) = (resname_a, a.atom) in _anionic
 
+"""
+Returns true if the atom, e.g. `("ARG","N")`, is a donor in H bonds.
+"""
 ishbonddonor(a::PDBAtom, resname_a::String) = (resname_a, a.atom) in keys(_hbond_donor)
 
+"""
+Returns true if the atom, e.g. `("ARG","O")`, is an acceptor in H bonds.
+"""
 ishbondacceptor(a::PDBAtom, resname_a::String) = (resname_a, a.atom) in keys(_hbond_acceptor)
 
 """
@@ -61,9 +76,10 @@ vanderwaals(a::PDBResidue, b::PDBResidue) = any(vanderwaals, a, b, _with_vdw)
 # -------------------
 
 """
-Returns `true` if the distance between the atoms is less than the sum of the `vanderwaalsradius` of the atoms.
-If the atoms aren't on the list (i.e. `OXT`), the `vanderwaalsradius` of the element is used.
-If there is not data in the dict,  distance `0.0` is used.
+Returns `true` if the distance between the atoms is less than the sum of the
+`vanderwaalsradius` of the atoms. If the atoms aren't on the list (i.e. `OXT`), the
+`vanderwaalsradius` of the element is used. If there is not data in the dict,
+distance `0.0` is used.
 """
 function vanderwaalsclash(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
     return( distance(a,b) <= get(vanderwaalsradius, (resname_a, a.atom),
@@ -77,7 +93,10 @@ vanderwaalsclash(a::PDBResidue, b::PDBResidue) = any(vanderwaalsclash, a, b, _wi
 # Covalent
 # --------
 
-"Returns `true` if the distance between atoms is less than the sum of the `covalentradius` of each atom."
+"""
+Returns `true` if the distance between atoms is less than the sum of the `covalentradius`
+of each atom.
+"""
 function covalent(a::PDBAtom, b::PDBAtom, resname_a, resname_b) # any(... calls it with the res names
     return( distance(a,b) <= get(covalentradius, a.element, 0.0) +
                get(covalentradius, b.element, 0.0) )
@@ -254,7 +273,8 @@ The criteria for a hydrogen bond are:
 - θ(Ah, Aacc, Aacc-antecedent) > 90°
 
 Where Ah is the donated hydrogen atom, Adon is the hydrogen bond donor atom,
-Aacc is the hydrogen bond acceptor atom and Aacc-antecednt is the atom antecedent to the hydrogen bond acceptor atom.
+Aacc is the hydrogen bond acceptor atom and Aacc-antecednt is the atom antecedent to the
+hydrogen bond acceptor atom.
 """
 hydrogenbond(a::PDBResidue, b::PDBResidue) = _hydrogenbond_don_acc(a,b) || _hydrogenbond_don_acc(b,a)
 

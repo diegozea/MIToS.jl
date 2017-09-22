@@ -1,6 +1,17 @@
 # PDB Types
 # =========
 
+"""
+A `PDBResidueIdentifier` object contains the information needed to identity PDB residues.
+It has the following fields that you can access at any moment for query purposes:
+
+    - `PDBe_number` : It's only used when a PDBML is readed (PDBe number as a string).
+    - `number` : PDB residue number, it includes insertion codes, e.g. `"34A"`.
+    - `name` : Three letter residue name in PDB, e.g. `"LYS"`.
+    - `group` : It can be `"ATOM"` or `"HETATM"`.
+    - `model` : The model number as a string, e.g. `"1"`.
+    - `chain` : The chain as a string, e.g. `"A"`.
+"""
 @auto_hash_equals immutable PDBResidueIdentifier
     PDBe_number::String # PDBe
     number::String # PDB
@@ -10,6 +21,8 @@
     chain::String
 end
 
+
+"A `Coordinates` object is a fixed size vector with the coordinates x,y,z."
 @auto_hash_equals immutable Coordinates <: FixedVectorNoTuple{3, Float64}
     x::Float64
     y::Float64
@@ -19,6 +32,16 @@ end
     end
 end
 
+"""
+A `PDBAtom` object contains the information from a PDB atom, without information of the
+residue. It has the following fields that you can access at any moment for query purposes:
+
+    - `coordinates` : x,y,z coordinates, e.g. `Coordinates(109.641,73.162,42.7)`.
+    - `atom` : Atom name, e.g. `"CA"`.
+    - `element` : Element type of the atom, e.g. `"C"`.
+    - `occupancy` : A float number with the occupancy, e.g. `1.0`.
+    - `B` : B factor as a string, e.g. `"23.60"`.
+"""
 @auto_hash_equals immutable PDBAtom
     coordinates::Coordinates
     atom::String
@@ -27,6 +50,13 @@ end
     B::String
 end
 
+"""
+A `PDBResidue` object contains all the information about a PDB residue. It has the
+following fields that you can access at any moment for query purposes:
+
+    - `id` : A `PDBResidueIdentifier` object.
+    - `atoms` : A vector of `PDBAtom`s.
+"""
 @auto_hash_equals type PDBResidue
     id::PDBResidueIdentifier
     atoms::Vector{PDBAtom}
@@ -46,8 +76,10 @@ Base.vec(a::Coordinates) = Float64[a.x, a.y, a.z]
     (a.x - b.x)^2 + (a.y - b.y)^2 + (a.z - b.z)^2
 end
 
+"It calculates the squared euclidean distance, i.e. it doesn't spend time in `sqrt`"
 squared_distance(a::PDBAtom, b::PDBAtom) = squared_distance(a.coordinates, b.coordinates)
 
+"It calculates the squared euclidean distance."
 distance(a::Coordinates, b::Coordinates) = sqrt(squared_distance(a,b))
 
 distance(a::PDBAtom, b::PDBAtom) = distance(a.coordinates, b.coordinates)
@@ -63,7 +95,8 @@ end
 """
 `contact(a::Coordinates, b::Coordinates, limit::AbstractFloat)`
 
-This simply returns `distance(a,b) <= limit`.
+It returns true if the distance is less or equal to the limit.
+It doesn't call `sqrt` because it does `squared_distance(a,b) <= limit^2`.
 """
 function contact(a::Coordinates, b::Coordinates, limit::AbstractFloat)
     _squared_limit_contact(a, b, limit^2)
@@ -103,6 +136,9 @@ Base.cross(a::PDBAtom, b::PDBAtom) = cross(a.coordinates, b.coordinates)
 @inline _is(element::String, regex::Regex) = ismatch(regex, element)
 @inline _is(element::String, f::Function) = f(element)
 
+"""
+It tests if the PDB residue has the indicated model, chain, group and residue number.
+"""
 function isresidue(id::PDBResidueIdentifier, model, chain, group, residue)
     _is(id.model,model) && _is(id.chain,chain) && _is(id.group,group) && _is(id.number,residue)
 end
@@ -111,6 +147,9 @@ function isresidue(res::PDBResidue, model, chain, group, residue)
     isresidue(res.id, model, chain, group, residue)
 end
 
+"""
+It tests if the atom has the indicated atom name.
+"""
 isatom(atom::PDBAtom, name) = _is(atom.atom, name)
 
 # @residues
@@ -119,7 +158,8 @@ isatom(atom::PDBAtom, name) = _is(atom.atom, name)
 """
 `residues(residue_list, model, chain, group, residue)`
 
-These return a new vector with the selected subset of residues from a list of residues.
+These return a new vector with the selected subset of residues from a list of residues. You
+can use the type `All` (default value) to avoid filtering a that level.
 """
 function residues{N}(residue_list::AbstractArray{PDBResidue,N},
                      model=All, chain=All, group=All, residue=All)
@@ -129,7 +169,8 @@ end
 """
 `@residues ... model ... chain ... group ... residue ...`
 
-These return a new vector with the selected subset of residues from a list of residues.
+These return a new vector with the selected subset of residues from a list of residues. You
+can use the type `All` to avoid filtering that option.
 """
 macro residues(residue_list,
                model::Symbol,  m,
@@ -148,7 +189,8 @@ end
 """
 `residuesdict(residue_list, model, chain, group, residue)`
 
-These return a dictionary (using PDB residue numbers as keys) with the selected subset of residues.
+These return a dictionary (using PDB residue numbers as keys) with the selected subset of
+residues. You can use the type `All` (default value) to avoid filtering a that level.
 """
 function residuesdict{N}(residue_list::AbstractArray{PDBResidue,N},
                          model=All, chain=All, group=All, residue=All)
@@ -164,7 +206,8 @@ end
 """
 `@residuesdict ... model ... chain ... group ... residue ...`
 
-These return a dictionary (using PDB residue numbers as keys) with the selected subset of residues.
+These return a dictionary (using PDB residue numbers as keys) with the selected subset of
+residues. You can use the type `All` to avoid filtering that option.
 """
 macro residuesdict(residue_list,
                    model::Symbol,  m,
@@ -186,7 +229,8 @@ end
 """
 `atoms(residue_list, model, chain, group, residue, atom)`
 
-These return a vector of `PDBAtom`s with the selected subset of atoms.
+These return a vector of `PDBAtom`s with the selected subset of atoms. You can use the
+type `All` (default value of the positional arguments) to avoid filtering a that level.
 """
 function atoms(residue_list, model=All, chain=All, group=All, residue=All, atom=All)
     atom_list = PDBAtom[]
@@ -205,7 +249,8 @@ end
 """
 `@atoms ... model ... chain ... group ... residue ... atom ...`
 
-These return a vector of `PDBAtom`s with the selected subset of atoms.
+These return a vector of `PDBAtom`s with the selected subset of atoms. You can use the
+type `All` to avoid filtering that option.
 """
 macro atoms(residue_list,
             model::Symbol,  m,
@@ -241,7 +286,10 @@ function _find{T}(f::Function, vector::Vector{T})
     resize!(indices, j)
 end
 
-"Returns a list with the index of the heavy atoms (all atoms except hydrogen) in the `PDBResidue`"
+"""
+Returns a list with the index of the heavy atoms (all atoms except hydrogen) in
+the `PDBResidue`
+"""
 function findheavy(atoms::Vector{PDBAtom})
     _find(atom -> atom.element != "H", atoms)
 end
@@ -482,6 +530,12 @@ end
 # PLM
 # ---
 
+"""
+It creates a `NamedArray` containing a `PairwiseListMatrix` where each element
+(column, row) is identified with a `PDBResidue` from the input vector. You can indicate
+the value type of the matrix (default to `Float64`), if the list should have the
+diagonal values (default to `Val{false}`) and the diagonal values (default to `NaN`).
+"""
 function residuepairsmatrix{T,diagonal}(residue_list::Vector{PDBResidue},
                                         ::Type{T},
                                         ::Type{Val{diagonal}},
@@ -515,7 +569,8 @@ end
 """
 `contact(residues::Vector{PDBResidue}, limit::AbstractFloat; criteria::String="All")`
 
-If `contact` takes a `Vector{PDBResidue}`, It returns a matrix with all the pairwise comparisons (contact map).
+If `contact` takes a `Vector{PDBResidue}`, It returns a matrix with all the pairwise
+comparisons (contact map).
 """
 function contact(residues::Vector{PDBResidue}, limit::AbstractFloat; criteria::String="All")
     nplm = residuepairsmatrix(residues, Bool, Val{false}, true)
@@ -529,7 +584,8 @@ end
 """
 `distance(residues::Vector{PDBResidue}; criteria::String="All")`
 
-If `distance` takes a `Vector{PDBResidue}` returns a `PairwiseListMatrix{Float64, false}` with all the pairwise comparisons (distance matrix).
+If `distance` takes a `Vector{PDBResidue}` returns a `PairwiseListMatrix{Float64, false}`
+with all the pairwise comparisons (distance matrix).
 """
 function distance(residues::Vector{PDBResidue}; criteria::String="All")
     nplm = residuepairsmatrix(residues, Float64, Val{false}, 0.0)
@@ -544,11 +600,12 @@ end
 # -----------------
 
 """
-`proximitymean` calculates the proximity mean/average for each residue as the average score (from a `scores` list)
-of all the residues within a certain physical distance to a given amino acid.
-The score of that residue is not included in the mean unless you set `include` to `true`.
-The default values are 6.05 for the distance threshold/`limit` and "Heavy" for the `criteria` keyword argument.
-This function allows to calculate pMI (proximity mutual information) and pC (proximity conservation) as in Buslje et. al. 2010.
+`proximitymean` calculates the proximity mean/average for each residue as the average
+score (from a `scores` list) of all the residues within a certain physical distance to a
+given amino acid. The score of that residue is not included in the mean unless you set
+`include` to `true`. The default values are 6.05 for the distance threshold/`limit` and
+`"Heavy"` for the `criteria` keyword argument. This function allows to calculate pMI
+(proximity mutual information) and pC (proximity conservation) as in Buslje et. al. 2010.
 
 Buslje, Cristina Marino, Elin Teppa, Tomas Di Doménico, José María Delfino, and Morten Nielsen.
 *Networks of high mutual information define the structural proximity of catalytic sites: implications for catalytic residue identification.*

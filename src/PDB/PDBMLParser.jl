@@ -32,13 +32,14 @@ end
 
 Reads a `LightXML.XMLDocument` representing a pdb file.
 Returns a list of `PDBResidue`s (view `MIToS.PDB.PDBResidues`).
-Setting `chain`, `model`, `group`, `atomname` and `onlyheavy` values
-can be used to select of a subset of all residues. If not set, all residues are returned.
-If the keyword argument `label` (default: `true`) is `false`,
-the **auth_** attributes will be use instead of the **label_** attributes for `chain`, `atom` and residue `name` fields.
-The **auth_** attributes are alternatives provided by an author in order to match the identification/values
-used in the publication that describes the structure.
-If the keyword argument `occupancyfilter` (default: `false`) is `true`, only the atoms with the best occupancy are returned.
+Setting `chain`, `model`, `group`, `atomname` and `onlyheavy` values can be used to select
+of a subset of all residues. If not set, all residues are returned. If the keyword
+argument `label` (default: `true`) is `false`,the **auth_** attributes will be use instead
+of the **label_** attributes for `chain`, `atom` and residue `name` fields. The **auth_**
+attributes are alternatives provided by an author in order to match the
+identification/values used in the publication that describes the structure. If the
+keyword argument `occupancyfilter` (default: `false`) is `true`, only the atoms with the
+best occupancy are returned.
 """
 function Base.parse(pdbml::LightXML.XMLDocument, ::Type{PDBML};
                     chain::Union{String,Type{All}} = All,
@@ -152,8 +153,9 @@ function Base.parse(document::LightXML.XMLDocument, ::Type{PDBMLHeader})
 end
 
 """
-Access general information about a PDB entry (e.g., Header information) using the RESTful interface of the PDB database (describePDB).
-Returns a Dict for the four character `pdbcode`.
+Access general information about a PDB entry (e.g., Header information) using the
+RESTful interface of the PDB database (describePDB). Returns a Dict for the four
+character `pdbcode`.
 """
 function getpdbdescription(pdbcode::String; kargs...)
     filename = downloadpdbheader(pdbcode)

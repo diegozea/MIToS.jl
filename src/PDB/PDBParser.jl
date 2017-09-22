@@ -13,8 +13,8 @@ immutable PDBFile <: Format end
 Reads a text file of a PDB entry.
 Returns a list of `PDBResidue` (view `MIToS.PDB.PDBResidues`).
 Setting `chain`, `model`, `group`, `atomname` and `onlyheavy` values
-can be used to select of a subset of all residues. Group can be `ATOM`
-or `HETATM`. If not set, all residues are returned.
+can be used to select of a subset of all residues. Group can be `"ATOM"`
+or `"HETATM"`. If not set, all residues are returned.
 If the keyword argument `occupancyfilter` (default: `false`) is `true`,
 only the atoms with the best occupancy are returned.
 """
