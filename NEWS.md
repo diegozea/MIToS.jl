@@ -12,7 +12,7 @@ breaking changes.
 ##### Utils module
 
 * `deleteitems!(vector::Vector, items)` is deprecated in favor of
-`filter!(x -> x ∉ items, vector)`
+`filter!(x -> x ∉ items, vector)`.
 
 * `All` is used instead of MIToS 1.0 `"all"` or `"*"`, because it's possible to dispatch on it.
 
@@ -62,7 +62,7 @@ of `msa["seqname"]`.
 * `deletenotalphabetsequences` and the parse/read keyword argument `checkalphabet` are
 deprecated since MIToS 2.0 uses Residue('X') to represent residues outside the alphabet. You
 can use `filtersequences!(msa, vec(mapslices(seq -> !in(XAA, seq), msa, 2)))` to delete
-sequences with unknown, ambiguous or non standard residues
+sequences with unknown, ambiguous or non standard residues.
 
 * `parse`/`read` and MSA file returns an `AnnotatedMultipleSequenceAlignment` by default.
 
@@ -81,14 +81,16 @@ now matrices instead of vectors.
 ##### PDB module
 
 * The keyword argument `format` of `downloadpdb` should be a type (`PDBFile` or `PDBML`)
-instead of a string (`pdb` or `xml`) as in MIToS 1.0
+instead of a string (`pdb` or `xml`) as in MIToS 1.0.
 
-* `read` and `parse` now has the `occupancyfilter` keyword argument
+* `read` and `parse` now has the `occupancyfilter` keyword argument.
 
-* `read` and `parse` now has the `label` keyword argument for `PDBML` files
+* `read` and `parse` now has the `label` keyword argument for `PDBML` files.
 
 * `residues`, `àtoms` and similiar functions don't take vectors or sets anymore. Use an
-anonymous function instead, e.g.: `x -> x in set_of_residue_numbers`
+anonymous function instead, e.g.: `x -> x in set_of_residue_numbers`.
+
+* The functions `isresidue`, `isatom` and `residuepairsmatrix` were added.
 
 ##### SIFTS module
 
