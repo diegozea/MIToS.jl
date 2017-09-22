@@ -1,3 +1,10 @@
+"""
+The `Utils` has common utils functions and types used in other modules.
+
+```julia
+using MIToS.Utils
+```
+"""
 module Utils
 
 using Requests
