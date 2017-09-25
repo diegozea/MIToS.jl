@@ -7,7 +7,7 @@ const _regex_PDB_from_GS = r"PDB;\s+(\w+)\s+(\w);\s+\w+-\w+;" # i.e.: "PDB; 2VQC
 Generates from a Pfam `msa` a `Dict{String, Vector{Tuple{String,String}}}`.
 Keys are sequence IDs and each value is a list of tuples containing PDB code and chain.
 
-```
+```julia
 julia> getseq2pdb(msa)
 Dict{String,Array{Tuple{String,String},1}} with 1 entry:
   "F112_SSV1/3-112" => [("2VQC","A")]

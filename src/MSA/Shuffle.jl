@@ -1,6 +1,33 @@
 """
-When a `Matrix{Residue}` is used, you can indicate if the gaps should remain their
-positions using the last boolean argument.
+It's like `Base.shuffle`. When a `Matrix{Residue}` is used, you can indicate if the gaps
+should remain their positions using the last boolean argument. The previous argument should
+be the dimension to shuffle, 1 for shuffling residues in a sequence (row) or 2 for shuffling
+residues in a column.
+
+```julia
+julia> msa = hcat(res"RRE",res"DDK", res"G--")
+3×3 Array{MIToS.MSA.Residue,2}:
+ R  D  G
+ R  D  -
+ E  K  -
+
+julia> srand(42);
+
+julia> shuffle(msa, 1, true)
+3×3 Array{MIToS.MSA.Residue,2}:
+ G  D  R
+ D  R  -
+ E  K  -
+
+julia> srand(42);
+
+julia> shuffle(msa, 1, false)
+3×3 Array{MIToS.MSA.Residue,2}:
+ G  D  R
+ D  -  R
+ -  E  K
+
+```
 """
 function Base.shuffle!(r::AbstractRNG, msa::Matrix{Residue},
                        dim::Int, fixedgaps::Bool=true)
@@ -36,8 +63,9 @@ function Base.shuffle!(msa::Matrix{Residue}, args...)
 end
 
 """
-When a `Matrix{Residue}` or a `AbstractAlignedObject` (sequence or MSA) is used, you can
-indicate if the gaps should remain their positions using the last boolean argument.
+It's like `shuffle` but in-place. When a `Matrix{Residue}` or a `AbstractAlignedObject`
+(sequence or MSA) is used, you can indicate if the gaps should remain their positions
+using the last boolean argument.
 """
 function Base.shuffle(r::AbstractRNG, msa::Matrix{Residue}, args...)
     shuffle!(r, copy(msa), args...)

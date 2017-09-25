@@ -90,8 +90,14 @@ export  # Residue
         NoClustering, Clusters,
         getweight, nelements,
         # Hobohm
-        hobohmI
-
+        hobohmI,
+        # Imported from Base (and exported for docs)
+        names,
+        parse,
+        isvalid,
+        rand,
+        shuffle,
+        shuffle!
 
 include("Residues.jl")
 include("Alphabet.jl")

@@ -14,7 +14,7 @@ returned vector is `n` or less (if the number of words is less than `n`).
 The last newline character is always removed.
 This is used for parsing the Stockholm format.
 
-```
+```julia
 julia> get_n_words("#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH\n", 3)
 3-element Array{String,1}:
  "#=GR"

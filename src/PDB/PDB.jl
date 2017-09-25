@@ -93,7 +93,13 @@ export  # PDBResidues
         mean_coordinates,
         rmsf,
         # MIToS.Utils
-        All
+        All,
+        # Imported from Base (and exported for docs)
+        any,
+        parse,
+        print,
+        angle
+
 
 include("PDBResidues.jl")
 include("AtomsData.jl")

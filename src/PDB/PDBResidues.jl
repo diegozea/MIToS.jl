@@ -21,7 +21,6 @@ It has the following fields that you can access at any moment for query purposes
     chain::String
 end
 
-
 "A `Coordinates` object is a fixed size vector with the coordinates x,y,z."
 @auto_hash_equals immutable Coordinates <: FixedVectorNoTuple{3, Float64}
     x::Float64

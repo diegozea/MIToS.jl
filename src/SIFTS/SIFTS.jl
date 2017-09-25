@@ -36,7 +36,9 @@ export  DataBase,
         siftsmapping,
         SIFTSXML,
         # Mitos.Utils
-        All
+        All,
+        # Imported from Base (and exported for docs)
+        parse
 
 include("XMLParser.jl")
 include("ResidueMapping.jl")

@@ -85,7 +85,11 @@ export  # MIToS.MSA
         # Externals
         gaussdca,
         # Formats from MIToS.MSA
-        Raw, Stockholm, FASTA
+        Raw, Stockholm, FASTA,
+        # Imported from Base (and exported for docs)
+        normalize,
+        normalize!,
+        count
 
 include("Pseudocounts.jl")
 include("ContingencyTables.jl")

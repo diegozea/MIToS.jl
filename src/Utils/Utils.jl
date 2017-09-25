@@ -26,7 +26,10 @@ export  # GeneralUtils.jl
         check_file, isnotemptyfile,
         download_file,
         # Write.jl
-        Commandline
+        Commandline,
+        # Imported from Base (and exported for docs)
+        read,
+        write
 
 include("GeneralUtils.jl")
 include("Read.jl")
