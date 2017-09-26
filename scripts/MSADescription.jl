@@ -6,7 +6,7 @@ Args = parse_commandline(
     ["--format", "-f"],
     Dict(
         :help => "Format of the MSA: Stockholm, Raw or FASTA",
-        :arg_type => ASCIIString,
+        :arg_type => String,
         :default => "Stockholm"
     ),
     ["--exact", "-e"],
@@ -26,7 +26,7 @@ set_parallel(Args["parallel"])
 
 @everywhere begin
 
-    const args = remotecall_fetch(1,()->Args)
+    const args = remotecall_fetch(()->Args,1)
 
     import MIToS.Utils.Scripts: script
 
@@ -49,7 +49,7 @@ set_parallel(Args["parallel"])
             println(fh_out, "# \t", key, "\t\t", value)
         end
 
-        form = ascii(args["format"])
+        form = string(args["format"])
 
         if form == "Stockholm"
             aln = readorparse(input, Stockholm)
@@ -64,7 +64,7 @@ set_parallel(Args["parallel"])
         println(fh_out, input, ",", "sequences", ",", "number", ",", "", ",", size(aln, 1))
         println(fh_out, input, ",", "columns",   ",", "number", ",", "", ",", size(aln, 2))
 
-        cov = coverage(aln);
+        cov = vec(coverage(aln));
         qcv = quantile(cov, [0., .25, .5, .75, 1.])
 
         println(fh_out, input, ",", "coverage", ",", "quantile", ",", "0.00", ",", qcv[1])
@@ -77,7 +77,7 @@ set_parallel(Args["parallel"])
 
         println(fh_out, input, ",", "percentidentity",   ",", "mean", ",", "", ",", meanpercentidentity(aln, exact=args["exact"]))
 
-        gap = gapfraction(aln, 1);
+        gap = vec(gapfraction(aln, 1));
         qgp = quantile(gap, [0., .25, .5, .75, 1.])
 
         println(fh_out, input, ",", "gapfraction", ",", "quantile", ",", "0.00", ",", qgp[1])

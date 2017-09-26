@@ -3,9 +3,11 @@
 """
 `kabsch(A::Matrix{Float64}, B::Matrix{Float64})`
 
-This function takes two sets of points, `A` (refrence) and `B` as NxD matrices, where D is the dimension and N is the number of points.
+This function takes two sets of points, `A` (refrence) and `B` as NxD matrices, where D
+is the dimension and N is the number of points.
 Assumes that the centroids of `A` and `B` are at the origin of coordinates.
-You can call `center!` on each matrix before calling `kabsch` to center the matrices in the `(0.0, 0.0, 0.0)`.
+You can call `center!` on each matrix before calling `kabsch` to center the matrices
+in the `(0.0, 0.0, 0.0)`.
 Rotates `B` so that `rmsd(A,B)` is minimized.
 Returns the rotation matrix. You should do `B * RotationMatrix` to get the rotated B.
 """
@@ -33,7 +35,8 @@ end
 """
 `rmsd(A::Matrix{Float64}, B::Matrix{Float64})`
 
-Return RMSD between two sets of points `A` and `B`, given as NxD matrices (N: number of points, D: dimension).
+Return RMSD between two sets of points `A` and `B`, given as NxD matrices
+(N: number of points, D: dimension).
 """
 function rmsd(A::Matrix{Float64}, B::Matrix{Float64})
     @assert size(A) == size(B)
@@ -52,7 +55,8 @@ Returns the Cα RMSD value between two PDB structures: `A` and `B`.
 If the structures are already superimposed between them,
 use `superimposed=true` to avoid a new superimposition (`superimposed` is `false` by default).
 """
-function rmsd(A::AbstractVector{PDBResidue}, B::AbstractVector{PDBResidue}; superimposed::Bool=false)
+function rmsd(A::AbstractVector{PDBResidue}, B::AbstractVector{PDBResidue};
+                        superimposed::Bool=false)
     if superimposed
         rmsd(CAmatrix(A),CAmatrix(B))
     else
@@ -70,7 +74,10 @@ function getCA(res::PDBResidue)
     res.atoms[caindex]
 end
 
-"Returns a matrix with the x, y and z coordinates of the Cα with best occupancy for each `PDBResidue`."
+"""
+Returns a matrix with the x, y and z coordinates of the Cα with best occupancy for each
+`PDBResidue`.
+"""
 function CAmatrix(residues::AbstractVector{PDBResidue})
     len = length(residues)
     CAmat = Array(Float64, 3, len)
@@ -101,7 +108,8 @@ coordinatesmatrix(residues::AbstractVector{PDBResidue}) = vcat(map(coordinatesma
 
 """
 Returns a `Matrix{Float64}` with the centered coordinates of all the atoms in `residues`.
-An optional positional argument `CA` (default: `true`) defines if only Cα carbons should be used to center the matrix.
+An optional positional argument `CA` (default: `true`) defines if only Cα carbons should
+be used to center the matrix.
 """
 function centeredcoordinates(residues::AbstractVector{PDBResidue}, CA::Bool=true)
     coordinates = PDB.coordinatesmatrix(residues)
@@ -111,7 +119,8 @@ end
 
 """
 Returns a new `Vector{PDBResidue}` with the `PDBResidue`s having centered coordinates.
-An optional positional argument `CA` (default: `true`) defines if only Cα carbons should be used to center the matrix.
+An optional positional argument `CA` (default: `true`) defines if only Cα carbons should
+be used to center the matrix.
 """
 function centeredresidues(residues::AbstractVector{PDBResidue}, CA::Bool=true)
     coordinates = centeredcoordinates(residues, CA)
@@ -125,17 +134,18 @@ Returns a new `PDBAtom` but with a new `coordinates`
 """
 function change_coordinates(atom::PDBAtom, coordinates::Coordinates)
     PDBAtom(coordinates,
-            copy(atom.atom),
-            copy(atom.element),
+            identity(atom.atom),
+            identity(atom.element),
             copy(atom.occupancy),
-            copy(atom.B))
+            identity(atom.B))
 end
 
 """
 `change_coordinates(residue::PDBResidue, coordinates::Matrix{Float64}, offset::Int=1)`
 
 Returns a new `PDBResidues` with (x,y,z) from a coordinates `Matrix{Float64}`
-You can give an `offset` indicating in wich matrix row starts the (x,y,z) coordinates of the residue.
+You can give an `offset` indicating in wich matrix row starts the (x,y,z) coordinates
+of the residue.
 """
 function change_coordinates(residue::PDBResidue, coordinates::Matrix{Float64}, offset::Int=1)
     centeredatoms = map(residue.atoms) do atom
@@ -164,7 +174,7 @@ function change_coordinates(residues::AbstractVector{PDBResidue}, coordinates::M
 end
 
 "Returns a new `PDBAtom` but with a `B` as B-factor"
-function _change_B(atom::PDBAtom, B::ASCIIString)
+function _change_B(atom::PDBAtom, B::String)
     PDBAtom(copy(atom.coordinates),
             copy(atom.atom),
             copy(atom.element),
@@ -181,7 +191,8 @@ _iscentered(CA::Matrix{Float64}) = _iscentered(vec(mean(CA,1)))
 """
 This function takes `A::Vector{PDBResidue}` (reference) and `B::Vector{PDBResidue}`.
 Translates `A` and `B` to the origin of coordinates,
-and rotates `B` so that `rmsd(A,B)` is minimized with the Kabsch algorithm (using only their α carbons).
+and rotates `B` so that `rmsd(A,B)` is minimized with the Kabsch algorithm
+(using only their α carbons).
 Returns the rotated and translated versions of `A` and `B`, and the RMSD value.
 """
 function superimpose(A::Vector{PDBResidue}, B::Vector{PDBResidue})
@@ -243,10 +254,12 @@ end
 
 """
 Calculates the average/mean position of each atom in a set of structure.
-The function takes a vector (`AbstractVector`) of vectors (`Vector{PDBResidue}`) or matrices (`Matrix{Float64}`) as first argument.
-As second (optional) argument this function can take an `AbstractVector{Float64}` of matrix/structure weights to return a weighted mean.
-When a Vector{PDBResidue} is used, if the keyword argument `calpha` is `false` the RMSF is calculated for all the atoms.
-By default only alpha carbons are used (default: `calpha=true`).
+The function takes a vector (`AbstractVector`) of vectors (`Vector{PDBResidue}`)
+or matrices (`Matrix{Float64}`) as first argument. As second (optional) argument this
+function can take an `AbstractVector{Float64}` of matrix/structure weights to return a
+weighted mean. When a Vector{PDBResidue} is used, if the keyword argument `calpha` is
+`false` the RMSF is calculated for all the atoms. By default only alpha carbons are used
+(default: `calpha=true`).
 """
 function mean_coordinates(vec::AbstractVector{Matrix{Float64}})
     _rmsf_test(vec)
@@ -266,12 +279,14 @@ function mean_coordinates(vec::AbstractVector{Vector{PDBResidue}}, args...; calp
 end
 
 """
-Calculates the RMSF (Root Mean-Square-Fluctuation) between an atom and its average position in a set of structures.
-The function takes a vector (`AbstractVector`) of vectors (`Vector{PDBResidue}`) or matrices (`Matrix{Float64}`) as first argument.
-As second (optional) argument this function can take an `AbstractVector{Float64}` of matrix/structure weights
-to return the root weighted mean-square-fluctuation around the weighted mean structure.
-When a Vector{PDBResidue} is used, if the keyword argument `calpha` is `false` the RMSF is calculated for all the atoms.
-By default only alpha carbons are used (default: `calpha=true`).
+Calculates the RMSF (Root Mean-Square-Fluctuation) between an atom and its average
+position in a set of structures. The function takes a vector (`AbstractVector`) of
+vectors (`Vector{PDBResidue}`) or matrices (`Matrix{Float64}`) as first argument.
+As second (optional) argument this function can take an `AbstractVector{Float64}`
+of matrix/structure weights to return the root weighted mean-square-fluctuation around
+the weighted mean structure. When a Vector{PDBResidue} is used, if the keyword argument
+`calpha` is `false` the RMSF is calculated for all the atoms. By default only alpha
+carbons are used (default: `calpha=true`).
 """
 function rmsf(vector::AbstractVector{Matrix{Float64}})
     m = mean_coordinates(vector)

@@ -28,21 +28,27 @@ function _get_atom_iterator(document::LightXML.XMLDocument)
 end
 
 """
-`parse(pdbml, ::Type{PDBML}; chain="all", model="all", group="all", atomname="all", onlyheavy=false, label=true, occupancyfilter=false)`
+`parse(pdbml, ::Type{PDBML}; chain=All, model=All, group=All, atomname=All, onlyheavy=false, label=true, occupancyfilter=false)`
 
 Reads a `LightXML.XMLDocument` representing a pdb file.
 Returns a list of `PDBResidue`s (view `MIToS.PDB.PDBResidues`).
-Setting `chain`, `model`, `group`, `atomname` and `onlyheavy` values
-can be used to select of a subset of all residues. If not set, all residues are returned.
-If the keyword argument `label` (default: `true`) is `false`,
-the **auth_** attributes will be use instead of the **label_** attributes for `chain`, `atom` and residue `name` fields.
-The **auth_** attributes are alternatives provided by an author in order to match the identification/values
-used in the publication that describes the structure.
-If the keyword argument `occupancyfilter` (default: `false`) is `true`, only the atoms with the best occupancy are returned.
+Setting `chain`, `model`, `group`, `atomname` and `onlyheavy` values can be used to select
+of a subset of all residues. If not set, all residues are returned. If the keyword
+argument `label` (default: `true`) is `false`,the **auth_** attributes will be use instead
+of the **label_** attributes for `chain`, `atom` and residue `name` fields. The **auth_**
+attributes are alternatives provided by an author in order to match the
+identification/values used in the publication that describes the structure. If the
+keyword argument `occupancyfilter` (default: `false`) is `true`, only the atoms with the
+best occupancy are returned.
 """
-function parse(pdbml::LightXML.XMLDocument, ::Type{PDBML}; chain::ASCIIString = "all",
-               model::ASCIIString = "all", group::ASCIIString = "all", atomname::ASCIIString="all",
-               onlyheavy::Bool=false, label::Bool=true, occupancyfilter::Bool=false)
+function Base.parse(pdbml::LightXML.XMLDocument, ::Type{PDBML};
+                    chain::Union{String,Type{All}} = All,
+                    model::Union{String,Type{All}} = All,
+                    group::Union{String,Type{All}} = All,
+                    atomname::Union{String,Type{All}} = All,
+                    onlyheavy::Bool=false,
+                    label::Bool=true,
+                    occupancyfilter::Bool=false)
 
     residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
 
@@ -60,8 +66,9 @@ function parse(pdbml::LightXML.XMLDocument, ::Type{PDBML}; chain::ASCIIString = 
         atom_name = _get_text(atom, atom_attribute)
         element = _get_text(atom, "type_symbol")
 
-        if  (group=="all" || group==atom_group) && (chain=="all" || chain==atom_chain) &&
-                (model=="all" || model==atom_model) && (atomname=="all" || atomname==atom_name) && (!onlyheavy || element!="H")
+        if  _is(atom_group, group) && _is(atom_chain,chain) &&
+                _is(atom_model, model) && _is(atom_name,atomname) &&
+                (!onlyheavy || element!="H")
 
             PDBe_number = _get_text(atom, "label_seq_id")
 
@@ -95,37 +102,66 @@ function _inputnameforgzip(outfile)
     string(outfile, ".gz")
 end
 
+_file_extension(format::Type{PDBML}) = ".xml.gz"
+_file_extension(format::Type{PDBFile}) = ".pdb.gz"
+
 """
 Download a gzipped PDB file from PDB database.
 Requires a four character `pdbcode`.
-By default the `format` is xml and uses the `baseurl` http://www.rcsb.org/pdb/files/.
-`outfile` is the path/name of the output file.
+By default the `format` is `PDBML` (PDB XML) and uses the
+`baseurl` http://www.rcsb.org/pdb/files/.
+`filename` is the path/name of the output file.
 """
-function downloadpdb(pdbcode::AbstractString; format::ASCIIString="xml", outfile::AbstractString="default", baseurl::ASCIIString="http://www.rcsb.org/pdb/files/")
-    if length(pdbcode)== 4
-        filename = string(uppercase(pdbcode), ".", lowercase(format),".gz")
-        outfile = outfile == "default" ? filename : _inputnameforgzip(outfile)
+function downloadpdb{T<:Format}(pdbcode::String;
+                                format::Type{T} = PDBML,
+                                filename::String= uppercase(pdbcode)*_file_extension(format),
+                                baseurl::String = "http://www.rcsb.org/pdb/files/",
+                                kargs...)
+    if check_pdbcode(pdbcode)
+        pdbfilename = uppercase(pdbcode) * _file_extension(format)
+        filename = _inputnameforgzip(filename)
         sepchar = endswith(baseurl,"/") ? "" : "/";
-        download(string(baseurl,sepchar,filename) , outfile)
+        download_file(string(baseurl,sepchar,pdbfilename), filename, kargs...)
     else
-        throw(string(pdbcode, " is not a correct PDB code"))
+        throw(ErrorException("$pdbcode is not a correct PDB code"))
     end
+    filename
 end
+
 
 # RESTful PDB interface
 # =====================
 
-"""
-Access general information about a PDB entry (e.g., Header information) using the RESTful interface of the PDB database (describePDB).
-Returns a Dict for the four character `pdbcode`.
-"""
-function getpdbdescription(pdbcode::ASCIIString)
-    if length(pdbcode)== 4
-        query = string("http://www.rcsb.org/pdb/rest/describePDB?structureId=", lowercase(pdbcode))
-        xmlroot = root(parse_file(download(query)))
-        description = get_elements_by_tagname(xmlroot, "PDB")[1]
-        return( attributes_dict(description) )
+function downloadpdbheader(pdbcode::String; filename::String=tempname()*".xml", kargs...)
+    pdbcode = lowercase(pdbcode)
+    @assert endswith(filename,".xml") "filename must end with the xml extension: .xml"
+    if check_pdbcode(pdbcode)
+        query = "http://www.rcsb.org/pdb/rest/describePDB?structureId=" * pdbcode
+        download_file(query, filename, kargs...)
     else
-        throw(string(pdbcode, " is not a correct PDB code"))
+        throw(ErrorException("$pdbcode is not a correct PDB code"))
+    end
+    filename
+end
+
+immutable PDBMLHeader <: Format end
+
+function Base.parse(document::LightXML.XMLDocument, ::Type{PDBMLHeader})
+    xmlroot = root(document)
+    description = get_elements_by_tagname(xmlroot, "PDB")[1]
+    attributes_dict(description)
+end
+
+"""
+Access general information about a PDB entry (e.g., Header information) using the
+RESTful interface of the PDB database (describePDB). Returns a Dict for the four
+character `pdbcode`.
+"""
+function getpdbdescription(pdbcode::String; kargs...)
+    filename = downloadpdbheader(pdbcode)
+    try
+        read(filename, PDBMLHeader)
+    finally
+        rm(filename)
     end
 end

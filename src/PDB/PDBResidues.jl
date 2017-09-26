@@ -1,15 +1,27 @@
 # PDB Types
 # =========
 
+"""
+A `PDBResidueIdentifier` object contains the information needed to identity PDB residues.
+It has the following fields that you can access at any moment for query purposes:
+
+    - `PDBe_number` : It's only used when a PDBML is readed (PDBe number as a string).
+    - `number` : PDB residue number, it includes insertion codes, e.g. `"34A"`.
+    - `name` : Three letter residue name in PDB, e.g. `"LYS"`.
+    - `group` : It can be `"ATOM"` or `"HETATM"`.
+    - `model` : The model number as a string, e.g. `"1"`.
+    - `chain` : The chain as a string, e.g. `"A"`.
+"""
 @auto_hash_equals immutable PDBResidueIdentifier
-    PDBe_number::ASCIIString # PDBe
-    number::ASCIIString # PDB
-    name::ASCIIString
-    group::ASCIIString
-    model::ASCIIString
-    chain::ASCIIString
+    PDBe_number::String # PDBe
+    number::String # PDB
+    name::String
+    group::String
+    model::String
+    chain::String
 end
 
+"A `Coordinates` object is a fixed size vector with the coordinates x,y,z."
 @auto_hash_equals immutable Coordinates <: FixedVectorNoTuple{3, Float64}
     x::Float64
     y::Float64
@@ -19,44 +31,86 @@ end
     end
 end
 
+"""
+A `PDBAtom` object contains the information from a PDB atom, without information of the
+residue. It has the following fields that you can access at any moment for query purposes:
+
+    - `coordinates` : x,y,z coordinates, e.g. `Coordinates(109.641,73.162,42.7)`.
+    - `atom` : Atom name, e.g. `"CA"`.
+    - `element` : Element type of the atom, e.g. `"C"`.
+    - `occupancy` : A float number with the occupancy, e.g. `1.0`.
+    - `B` : B factor as a string, e.g. `"23.60"`.
+"""
 @auto_hash_equals immutable PDBAtom
     coordinates::Coordinates
-    atom::ASCIIString
-    element::ASCIIString
+    atom::String
+    element::String
     occupancy::Float64
-    B::ASCIIString
+    B::String
 end
 
+"""
+A `PDBResidue` object contains all the information about a PDB residue. It has the
+following fields that you can access at any moment for query purposes:
+
+    - `id` : A `PDBResidueIdentifier` object.
+    - `atoms` : A vector of `PDBAtom`s.
+"""
 @auto_hash_equals type PDBResidue
     id::PDBResidueIdentifier
     atoms::Vector{PDBAtom}
 end
 
-length(res::PDBResidue) = length(res.atoms)
+Base.length(res::PDBResidue) = length(res.atoms)
 
 # Coordinates
 # ===========
 
-vec(a::Coordinates) = Float64[a.x, a.y, a.z]
+Base.vec(a::Coordinates) = Float64[a.x, a.y, a.z]
 
 # Distances and geometry
 # ----------------------
 
-distance(a::Coordinates, b::Coordinates) = sqrt((a.x - b.x)^2 + (a.y - b.y)^2 + (a.z - b.z)^2)
+@inline function squared_distance(a::Coordinates, b::Coordinates)
+    (a.x - b.x)^2 + (a.y - b.y)^2 + (a.z - b.z)^2
+end
+
+"It calculates the squared euclidean distance, i.e. it doesn't spend time in `sqrt`"
+squared_distance(a::PDBAtom, b::PDBAtom) = squared_distance(a.coordinates, b.coordinates)
+
+"It calculates the squared euclidean distance."
+distance(a::Coordinates, b::Coordinates) = sqrt(squared_distance(a,b))
+
+distance(a::PDBAtom, b::PDBAtom) = distance(a.coordinates, b.coordinates)
+
+function _squared_limit_contact(a::Coordinates, b::Coordinates, limit::AbstractFloat)
+    squared_distance(a,b) <= limit
+end
+
+function _squared_limit_contact(a::PDBAtom, b::PDBAtom, limit::AbstractFloat)
+    _squared_limit_contact(a.coordinates, b.coordinates, limit)
+end
 
 """
 `contact(a::Coordinates, b::Coordinates, limit::AbstractFloat)`
 
-This simply returns `distance(a,b) <= limit`.
+It returns true if the distance is less or equal to the limit.
+It doesn't call `sqrt` because it does `squared_distance(a,b) <= limit^2`.
 """
-contact(a::Coordinates, b::Coordinates, limit::AbstractFloat) = distance(a,b) <= limit
+function contact(a::Coordinates, b::Coordinates, limit::AbstractFloat)
+    _squared_limit_contact(a, b, limit^2)
+end
+
+function contact(a::PDBAtom, b::PDBAtom, limit::Float64)
+    contact(a.coordinates, b.coordinates, limit)
+end
 
 """
 `angle(a::Coordinates, b::Coordinates, c::Coordinates)`
 
 Angle (in degrees) at `b` between `a-b` and `b-c`
 """
-function angle(a::Coordinates, b::Coordinates, c::Coordinates)
+function Base.angle(a::Coordinates, b::Coordinates, c::Coordinates)
     A = b - a
     B = b - c
     norms = (norm(A)*norm(B))
@@ -67,83 +121,83 @@ function angle(a::Coordinates, b::Coordinates, c::Coordinates)
     end
 end
 
-distance(a::PDBAtom, b::PDBAtom) = distance(a.coordinates, b.coordinates)
+function Base.angle(a::PDBAtom, b::PDBAtom, c::PDBAtom)
+    angle(a.coordinates, b.coordinates, c.coordinates)
+end
 
-contact(a::PDBAtom, b::PDBAtom, limit::Float64) = contact(a.coordinates, b.coordinates, limit)
-
-angle(a::PDBAtom, b::PDBAtom, c::PDBAtom) = angle(a.coordinates, b.coordinates, c.coordinates)
-
-cross(a::PDBAtom, b::PDBAtom) = cross(a.coordinates, b.coordinates)
+Base.cross(a::PDBAtom, b::PDBAtom) = cross(a.coordinates, b.coordinates)
 
 # Find Residues/Atoms
 # ===================
 
-isobject(res::PDBResidue, tests::AbstractTest...) = isobject(res.id, tests...)
+@inline _is(element::String, all::Type{All}) = true
+@inline _is(element::String, value::String) = element == value
+@inline _is(element::String, regex::Regex) = ismatch(regex, element)
+@inline _is(element::String, f::Function) = f(element)
 
-findobjects(res::PDBResidue, tests::AbstractTest...) = findobjects(res.atoms, tests...)
+"""
+It tests if the PDB residue has the indicated model, chain, group and residue number.
+"""
+function isresidue(id::PDBResidueIdentifier, model, chain, group, residue)
+    _is(id.model,model) && _is(id.chain,chain) && _is(id.group,group) && _is(id.number,residue)
+end
+
+function isresidue(res::PDBResidue, model, chain, group, residue)
+    isresidue(res.id, model, chain, group, residue)
+end
+
+"""
+It tests if the atom has the indicated atom name.
+"""
+isatom(atom::PDBAtom, name) = _is(atom.atom, name)
 
 # @residues
 # =========
 
-_test_stringfield(field::Symbol, test::Real) = Is(field, string(test))
-_test_stringfield(field::Symbol, test::Union{Char, Symbol}) = Is(field, string(test))
-_test_stringfield(field::Symbol, test::Union{ASCIIString, Regex, Function}) = Is(field, test)
-_test_stringfield(field::Symbol, test::Union{UnitRange, IntSet, Set, Array, Base.KeyIterator}) = In(field, test)
-
-_is_wildcard(test::ASCIIString) = test == "*"
-_is_wildcard(test::Char) = test == '*'
-_is_wildcard(test) = false
-
-function _add_test_stringfield!(tests::Vector{TestType}, field::Symbol, test)
-    if !_is_wildcard(test)
-        push!(tests, _test_stringfield(field, test))
-    end
-    tests
-end
-
-function _residues_tests(model, chain, group, residue)
-    args = TestType[]
-    _add_test_stringfield!(args, :model, model)
-    _add_test_stringfield!(args, :chain, chain)
-    _add_test_stringfield!(args, :group, group)
-    _add_test_stringfield!(args, :number, residue)
-    args
-end
-
 """
 `residues(residue_list, model, chain, group, residue)`
 
-These return a new vector with the selected subset of residues from a list of residues.
+These return a new vector with the selected subset of residues from a list of residues. You
+can use the type `All` (default value) to avoid filtering a that level.
 """
-residues(residue_list, model, chain, group, residue) = collectobjects(residue_list, _residues_tests(model, chain, group, residue)...)
+function residues{N}(residue_list::AbstractArray{PDBResidue,N},
+                     model=All, chain=All, group=All, residue=All)
+    filter(res -> isresidue(res, model, chain, group, residue), residue_list)
+end
 
 """
 `@residues ... model ... chain ... group ... residue ...`
 
-These return a new vector with the selected subset of residues from a list of residues.
+These return a new vector with the selected subset of residues from a list of residues. You
+can use the type `All` to avoid filtering that option.
 """
 macro residues(residue_list,
-               model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
-               chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
-               group::Symbol, g,
-               residue::Symbol, r)
+               model::Symbol,  m,
+               chain::Symbol,  c,
+               group::Symbol,  g,
+               residue::Symbol,r)
     if model == :model && chain == :chain && group == :group && residue == :residue
         return :(residues($(esc(residue_list)), $(esc(m)), $(esc(c)), $(esc(g)), $(esc(r))))
     else
-        throw(ArgumentError("The signature is @residues ___ model ___ chain ___ group ___ residue ___"))
+        throw(ArgumentError(
+            "The signature is @residues ___ model ___ chain ___ group ___ residue ___"
+        ))
     end
 end
 
 """
 `residuesdict(residue_list, model, chain, group, residue)`
 
-These return a dictionary (using PDB residue numbers as keys) with the selected subset of residues.
+These return a dictionary (using PDB residue numbers as keys) with the selected subset of
+residues. You can use the type `All` (default value) to avoid filtering a that level.
 """
-function residuesdict(residue_list, model, chain, group, residue)
-    res_index = findobjects(residue_list, _residues_tests(model, chain, group, residue)...)
-    dict = sizehint!( OrderedDict{ASCIIString, PDBResidue}() , length(res_index) )
-    for i in res_index
-        dict[ residue_list[i].id.number ] = residue_list[i]
+function residuesdict{N}(residue_list::AbstractArray{PDBResidue,N},
+                         model=All, chain=All, group=All, residue=All)
+    dict = sizehint!(OrderedDict{String, PDBResidue}(), length(residue_list))
+    for res in residue_list
+        if isresidue(res, model, chain, group, residue)
+            dict[res.id.number] = res
+        end
     end
     dict
 end
@@ -151,17 +205,20 @@ end
 """
 `@residuesdict ... model ... chain ... group ... residue ...`
 
-These return a dictionary (using PDB residue numbers as keys) with the selected subset of residues.
+These return a dictionary (using PDB residue numbers as keys) with the selected subset of
+residues. You can use the type `All` to avoid filtering that option.
 """
 macro residuesdict(residue_list,
-                   model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
-                   chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
-                   group::Symbol, g,
-                   residue::Symbol, r)
+                   model::Symbol,  m,
+                   chain::Symbol,  c,
+                   group::Symbol,  g,
+                   residue::Symbol,r)
     if model == :model && chain == :chain && group == :group && residue == :residue
-        return :(residuesdict($(esc(residue_list)), $(esc(m)), $(esc(c)), $(esc(g)), $(esc(r))))
+        return :(residuesdict($(esc(residue_list)),$(esc(m)),$(esc(c)),$(esc(g)),$(esc(r))))
     else
-        throw(ArgumentError("The signature is @residues ___ model ___ chain ___ group ___ residue ___"))
+        throw(ArgumentError(
+            "The signature is @residues ___ model ___ chain ___ group ___ residue ___"
+        ))
     end
 end
 
@@ -171,42 +228,56 @@ end
 """
 `atoms(residue_list, model, chain, group, residue, atom)`
 
-These return a vector of `PDBAtom`s with the selected subset of atoms.
+These return a vector of `PDBAtom`s with the selected subset of atoms. You can use the
+type `All` (default value of the positional arguments) to avoid filtering a that level.
 """
-function atoms(residue_list, model, chain, group, residue, atom)
-    _is_wildcard(atom) ?
-        vcat(Vector{PDBAtom}[ res.atoms for res in residues(residue_list, model, chain, group, residue) ]...) :
-        vcat(Vector{PDBAtom}[ collectobjects(res.atoms, _test_stringfield(:atom, atom)) for res in residues(residue_list, model, chain, group, residue) ]...)
+function atoms(residue_list, model=All, chain=All, group=All, residue=All, atom=All)
+    atom_list = PDBAtom[]
+    @inbounds for r in residue_list
+        if isresidue(r, model, chain, group, residue)
+            for a in r.atoms
+                if isatom(a, atom)
+                    push!(atom_list, a)
+                end
+            end
+        end
+    end
+    atom_list
 end
 
 """
 `@atoms ... model ... chain ... group ... residue ... atom ...`
 
-These return a vector of `PDBAtom`s with the selected subset of atoms.
+These return a vector of `PDBAtom`s with the selected subset of atoms. You can use the
+type `All` to avoid filtering that option.
 """
 macro atoms(residue_list,
-            model::Symbol, m, #::Union(Int, Char, ASCIIString, Symbol),
-            chain::Symbol, c, #::Union(Char, ASCIIString, Symbol),
-            group::Symbol, g,
-            residue::Symbol, r,
-            atom::Symbol, a)
+            model::Symbol,  m,
+            chain::Symbol,  c,
+            group::Symbol,  g,
+            residue::Symbol,r,
+            atom::Symbol,   a)
     if model == :model && chain == :chain && group == :group && residue == :residue && atom == :atom
-        return :(atoms($(esc(residue_list)), $(esc(m)), $(esc(c)), $(esc(g)), $(esc(r)), $(esc(a))))
+        return :(atoms($(esc(residue_list)),$(esc(m)),$(esc(c)),$(esc(g)),$(esc(r)),$(esc(a))))
     else
-        throw(ArgumentError("The signature is @atoms ___ model ___ chain ___ group ___ residue ___ atom ___"))
+        throw(ArgumentError(
+            "The signature is @atoms ___ model ___ chain ___ group ___ residue ___ atom ___"
+        ))
     end
 end
 
 # Special find...
 # ===============
 
-"Returns a list with the index of the heavy atoms (all atoms except hydrogen) in the `PDBResidue`"
-function findheavy(res::PDBResidue)
-    N = length(res)
-    indices = Array(Int,N)
+# This _find implementation should be faster than Base.find. It is faster than Base.find
+# for small vectors (like atoms) because and allocations is't a problem:
+# https://discourse.julialang.org/t/avoid-calling-push-in-base-find/1336
+function _find{T}(f::Function, vector::Vector{T})
+    N = length(vector)
+    indices = Array(Int, N)
     j = 0
     @inbounds for i in 1:N
-        if res.atoms[i].element != "H"
+        if f(vector[i])
             j += 1
             indices[j] = i
         end
@@ -215,36 +286,30 @@ function findheavy(res::PDBResidue)
 end
 
 """
-`findatoms(res::PDBResidue, atom::ASCIIString)`
+Returns a list with the index of the heavy atoms (all atoms except hydrogen) in
+the `PDBResidue`
+"""
+function findheavy(atoms::Vector{PDBAtom})
+    _find(atom -> atom.element != "H", atoms)
+end
+
+findheavy(res::PDBResidue) = findheavy(res.atoms)
+
+"""
+`findatoms(res::PDBResidue, atom::String)`
 
 Returns a index vector of the atoms with the given `atom` name.
 """
-function findatoms(res::PDBResidue, atom::ASCIIString)
-    N = length(res)
-    indices = Array(Int,N)
-    j = 0
-    @inbounds for i in 1:N
-        if res.atoms[i].atom == atom
-            j += 1
-            indices[j] = i
-        end
-    end
-    resize!(indices, j)
+function findatoms(atoms::Vector{PDBAtom}, atom::String)
+    _find(a -> a.atom == atom, atoms)
 end
+
+findatoms(res::PDBResidue, atom::String) = findatoms(res.atoms, atom)
 
 "Returns a vector of indices for `CB` (`CA` for `GLY`)"
 function findCB(res::PDBResidue)
-    N = length(res)
-    indices = Array(Int,N)
     atom = res.id.name == "GLY" ? "CA" : "CB"
-    j = 0
-    @inbounds for i in 1:N
-        if res.atoms[i].atom == atom
-            j += 1
-            indices[j] = i
-        end
-    end
-    resize!(indices, j)
+    findatoms(res, atom)
 end
 
 # occupancy
@@ -254,19 +319,18 @@ end
 Takes a `PDBResidue` and a `Vector` of atom indices.
 Returns the index value of the `Vector` with maximum occupancy.
 """
-function selectbestoccupancy(res::PDBResidue, indices::Vector{Int})
+function selectbestoccupancy(atoms::Vector{PDBAtom}, indices::Vector{Int})
     Ni = length(indices)
+    @assert Ni != 0 "There are no atom indices"
     if Ni == 1
         return(indices[1])
     end
-    Na = length(res)
-    if Ni == 0 || Ni > Na
-        throw(ErrorException("There are no atom indices or they are more atom indices ($Ni) than atoms in the Residue ($Na)"))
-    end
-    indice = indices[1]
-    occupancy = 0.0
+    Na = length(atoms)
+    @assert Ni ≤ Na "There are more atom indices ($Ni) than atoms in the Residue ($Na)"
+    indice = 0
+    occupancy = -Inf
     for i in indices
-        actual_occupancy = res.atoms[i].occupancy
+        actual_occupancy = atoms[i].occupancy
         if actual_occupancy > occupancy
             occupancy = actual_occupancy
             indice = i
@@ -275,10 +339,12 @@ function selectbestoccupancy(res::PDBResidue, indices::Vector{Int})
     return(indice)
 end
 
+selectbestoccupancy(res::PDBResidue, indices) = selectbestoccupancy(res.atoms, indices)
+
 """
 Takes a `Vector` of `PDBAtom`s and returns a `Vector` of the `PDBAtom`s with best occupancy.
 """
-function bestoccupancy(atoms::Vector{PDBAtom})
+function bestoccupancy(atoms::Vector{PDBAtom})::Vector{PDBAtom}
     N = length(atoms)
     if N == 0
         warn("There are no atoms.")
@@ -286,7 +352,7 @@ function bestoccupancy(atoms::Vector{PDBAtom})
     elseif N == 1
         return(atoms)
     else
-        atomdict = sizehint!(OrderedDict{ASCIIString,PDBAtom}(), N)
+        atomdict = sizehint!(OrderedDict{String,PDBAtom}(), N)
         for atom in atoms
             name = atom.atom
             if haskey(atomdict, name)
@@ -301,11 +367,17 @@ function bestoccupancy(atoms::Vector{PDBAtom})
     end
 end
 
+function bestoccupancy(res::PDBResidue) # TO DO: Test it!
+    new_res = copy(res)
+    new_res.atoms = bestoccupancy(res.atoms)
+    new_res
+end
+
 # More Distances
 # ==============
 
-function _update_distance(a, b, i, j, dist)
-    actual_dist = distance(a.atoms[i], b.atoms[j])
+function _update_squared_distance(a_atoms, b_atoms, i, j, dist)
+    actual_dist = squared_distance(a_atoms[i], b_atoms[j])
     if actual_dist < dist
         return(actual_dist)
     else
@@ -314,19 +386,21 @@ function _update_distance(a, b, i, j, dist)
 end
 
 """
-`distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")`
+`squared_distance(A::PDBResidue, B::PDBResidue; criteria::String="All")`
 
-Returns the distance between the residues `a` and `b`.
+Returns the squared distance between the residues `A` and `B`.
 The available `criteria` are: `Heavy`, `All`, `CA`, `CB` (`CA` for `GLY`)
 """
-function distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")
+function squared_distance(A::PDBResidue, B::PDBResidue; criteria::String="All")
+    a = A.atoms
+    b = B.atoms
     dist = Inf
     if criteria == "All"
         Na = length(a)
         Nb = length(b)
         @inbounds for i in 1:Na
             for j in 1:Nb
-                dist = _update_distance(a, b, i, j, dist)
+                dist = _update_squared_distance(a, b, i, j, dist)
             end
         end
     elseif criteria == "Heavy"
@@ -335,7 +409,7 @@ function distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")
         if length(indices_a) != 0 && length(indices_b) != 0
             for i in indices_a
                 for j in indices_b
-                    dist = _update_distance(a, b, i, j, dist)
+                    dist = _update_squared_distance(a, b, i, j, dist)
                 end
             end
         end
@@ -345,17 +419,17 @@ function distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")
         if length(indices_a) != 0 && length(indices_b) != 0
             for i in indices_a
                 for j in indices_b
-                    dist = _update_distance(a, b, i, j, dist)
+                    dist = _update_squared_distance(a, b, i, j, dist)
                 end
             end
         end
     elseif criteria == "CB"
-        indices_a = findCB(a)
-        indices_b = findCB(b)
+        indices_a = findCB(A) # findCB needs residues instead of atoms
+        indices_b = findCB(B)
         if length(indices_a) != 0 && length(indices_b) != 0
             for i in indices_a
                 for j in indices_b
-                    dist = _update_distance(a, b, i, j, dist)
+                    dist = _update_squared_distance(a, b, i, j, dist)
                 end
             end
         end
@@ -363,17 +437,21 @@ function distance(a::PDBResidue, b::PDBResidue; criteria::ASCIIString="All")
     dist
 end
 
+function distance(A::PDBResidue, B::PDBResidue; criteria::String="All")
+    sqrt(squared_distance(A, B, criteria=criteria))
+end
+
 """
 `any(f::Function, a::PDBResidue, b::PDBResidue)`
 
 Test if the function `f` is true for any pair of atoms between the residues `a` and `b`
 """
-function any(f::Function, a::PDBResidue, b::PDBResidue)
-    Na = length(a)
-    Nb = length(b)
-    @inbounds for i in 1:Na
-        for j in 1:Nb
-            if f(a.atoms[i], b.atoms[j])
+Base.any(f::Function, a::PDBResidue, b::PDBResidue) = any(f, a.atoms, b.atoms)
+
+function Base.any(f::Function, a_atoms::Vector{PDBAtom}, b_atoms::Vector{PDBAtom})
+    @inbounds for a in a_atoms
+        for b in b_atoms
+            if f(a, b)
                 return(true)
             end
         end
@@ -382,18 +460,22 @@ function any(f::Function, a::PDBResidue, b::PDBResidue)
 end
 
 """
-`contact(a::PDBResidue, b::PDBResidue, limit::AbstractFloat; criteria::ASCIIString="All")`
+`contact(A::PDBResidue, B::PDBResidue, limit::AbstractFloat; criteria::String="All")`
 
-Returns `true` if the residues `a` and `b` are at contact distance (`limit`).
+Returns `true` if the residues `A` and `B` are at contact distance (`limit`).
 The available distance `criteria` are: `Heavy`, `All`, `CA`, `CB` (`CA` for `GLY`)
 """
-function contact(a::PDBResidue, b::PDBResidue, limit::AbstractFloat; criteria::ASCIIString="All")
+function contact(A::PDBResidue, B::PDBResidue, limit::AbstractFloat; criteria::String="All")
+    squared_limit = limit^2
+    a = A.atoms
+    b = B.atoms
     if criteria == "All"
         Na = length(a)
         Nb = length(b)
         @inbounds for i in 1:Na
+            ai = a[i]
             for j in 1:Nb
-                if contact(a.atoms[i], b.atoms[j], limit)
+                if _squared_limit_contact(ai, b[j], squared_limit)
                     return(true)
                 end
             end
@@ -402,9 +484,10 @@ function contact(a::PDBResidue, b::PDBResidue, limit::AbstractFloat; criteria::A
         indices_a = findheavy(a)
         indices_b = findheavy(b)
         if length(indices_a) != 0 && length(indices_b) != 0
-            for i in indices_a
+            @inbounds for i in indices_a
+                ai = a[i]
                 for j in indices_b
-                    if contact(a.atoms[i], b.atoms[j], limit)
+                    if _squared_limit_contact(ai, b[j], squared_limit)
                         return(true)
                     end
                 end
@@ -414,21 +497,23 @@ function contact(a::PDBResidue, b::PDBResidue, limit::AbstractFloat; criteria::A
         indices_a = findatoms(a, "CA")
         indices_b = findatoms(b, "CA")
         if length(indices_a) != 0 && length(indices_b) != 0
-            for i in indices_a
+            @inbounds for i in indices_a
+                ai = a[i]
                 for j in indices_b
-                    if contact(a.atoms[i], b.atoms[j], limit)
+                    if _squared_limit_contact(ai, b[j], squared_limit)
                         return(true)
                     end
                 end
             end
         end
     elseif criteria == "CB"
-        indices_a = findCB(a)
-        indices_b = findCB(b)
+        indices_a = findCB(A) # findCB needs residues instead of atoms
+        indices_b = findCB(B)
         if length(indices_a) != 0 && length(indices_b) != 0
-            for i in indices_a
+            @inbounds for i in indices_a
+                ai = a[i]
                 for j in indices_b
-                    if contact(a.atoms[i], b.atoms[j], limit)
+                    if _squared_limit_contact(ai, b[j], squared_limit)
                         return(true)
                     end
                 end
@@ -439,55 +524,99 @@ function contact(a::PDBResidue, b::PDBResidue, limit::AbstractFloat; criteria::A
 end
 
 # Vectorize
-# ---------
+# =========
+
+# PLM
+# ---
 
 """
-`contact(vec::Vector{PDBResidue}, limit::AbstractFloat; criteria::ASCIIString="All")`
-
-If `contact` takes a `Vector{PDBResidue}`, It returns a `BitMatrix` with all the pairwise comparisons (contact map).
+It creates a `NamedArray` containing a `PairwiseListMatrix` where each element
+(column, row) is identified with a `PDBResidue` from the input vector. You can indicate
+the value type of the matrix (default to `Float64`), if the list should have the
+diagonal values (default to `Val{false}`) and the diagonal values (default to `NaN`).
 """
-function contact(vec::Vector{PDBResidue}, limit::AbstractFloat; criteria::ASCIIString="All")
-    N = length(vec)
-    cmap = trues(N,N)
-    for i in 1:(N-1)
-        for j in (i+1):N
-            cmap[i, j] = cmap[j, i] = contact(vec[i], vec[j], limit, criteria=criteria)
-        end
+function residuepairsmatrix{T,diagonal}(residue_list::Vector{PDBResidue},
+                                        ::Type{T},
+                                        ::Type{Val{diagonal}},
+                                        diagonalvalue::T)
+    plm = PairwiseListMatrix(T, length(residue_list), diagonal, diagonalvalue)
+    resnames = [ string(res.id.model, '_',
+                        res.id.chain, '_',
+                        res.id.group, '_',
+                        res.id.number) for res in residue_list ]
+    nplm = setlabels(plm, resnames)
+    setdimnames!(nplm, ["Res1", "Res2"])
+    nplm::NamedArray{T,2,PairwiseListMatrix{T,diagonal,Vector{T}},NTuple{2,OrderedDict{String,Int}}}
+end
+
+function residuepairsmatrix(residue_list::Vector{PDBResidue})
+    sequencepairsmatrix(residue_list, Float64, Val{false}, NaN)
+end
+
+# Contacts and distances
+# ----------------------
+
+function squared_distance(residues::Vector{PDBResidue}; criteria::String="All")
+    nplm = residuepairsmatrix(residues, Float64, Val{false}, 0.0)
+    plm = getarray(nplm)
+    @iterateupper plm false begin
+        list[k] = :($squared_distance)(:($residues)[i], :($residues)[j], criteria = :($criteria))
     end
-    cmap
+    nplm
 end
 
 """
-`distance(vec::Vector{PDBResidue}; criteria::ASCIIString="All")`
+`contact(residues::Vector{PDBResidue}, limit::AbstractFloat; criteria::String="All")`
 
-If `distance` takes a `Vector{PDBResidue}` returns a `PairwiseListMatrix{Float64, false}` with all the pairwise comparisons (distance matrix).
+If `contact` takes a `Vector{PDBResidue}`, It returns a matrix with all the pairwise
+comparisons (contact map).
 """
-function distance(vec::Vector{PDBResidue}; criteria::ASCIIString="All")
-    PLM = PairwiseListMatrix(Float64, length(vec), false, 0.0)
-    @iterateupper PLM false list[k] = :($distance)( :($vec)[i], :($vec)[j], criteria=:($criteria))
-    PLM
+function contact(residues::Vector{PDBResidue}, limit::AbstractFloat; criteria::String="All")
+    nplm = residuepairsmatrix(residues, Bool, Val{false}, true)
+    plm = getarray(nplm)
+    @iterateupper plm false begin
+        list[k]=:($contact)(:($residues)[i],:($residues)[j],:($limit),criteria=:($criteria))
+    end
+    nplm
+end
+
+"""
+`distance(residues::Vector{PDBResidue}; criteria::String="All")`
+
+If `distance` takes a `Vector{PDBResidue}` returns a `PairwiseListMatrix{Float64, false}`
+with all the pairwise comparisons (distance matrix).
+"""
+function distance(residues::Vector{PDBResidue}; criteria::String="All")
+    nplm = residuepairsmatrix(residues, Float64, Val{false}, 0.0)
+    plm = getarray(nplm)
+    @iterateupper plm false begin
+        list[k] = :($distance)(:($residues)[i], :($residues)[j], criteria = :($criteria))
+    end
+    nplm
 end
 
 # Proximity average
 # -----------------
 
 """
-`proximitymean` calculates the proximity mean/average for each residue as the average score (from a `scores` list)
-of all the residues within a certain physical distance to a given amino acid.
-The score of that residue is not included in the mean unless you set `include` to `true`.
-The default values are 6.05 for the distance threshold/`limit` and "Heavy" for the `criteria` keyword argument.
-This function allows to calculate pMI (proximity mutual information) and pC (proximity conservation) as in Buslje et. al. 2010.
+`proximitymean` calculates the proximity mean/average for each residue as the average
+score (from a `scores` list) of all the residues within a certain physical distance to a
+given amino acid. The score of that residue is not included in the mean unless you set
+`include` to `true`. The default values are 6.05 for the distance threshold/`limit` and
+`"Heavy"` for the `criteria` keyword argument. This function allows to calculate pMI
+(proximity mutual information) and pC (proximity conservation) as in Buslje et. al. 2010.
 
 Buslje, Cristina Marino, Elin Teppa, Tomas Di Doménico, José María Delfino, and Morten Nielsen.
 *Networks of high mutual information define the structural proximity of catalytic sites: implications for catalytic residue identification.*
 PLoS Comput Biol 6, no. 11 (2010): e1000978.
 """
-function proximitymean{T}(residues::Vector{PDBResidue}, scores::AbstractVector{T}, limit::AbstractFloat=6.05;
-                          criteria::ASCIIString="Heavy", include::Bool=false)
+function proximitymean{T <: AbstractFloat}(residues::Vector{PDBResidue},
+                                           scores::AbstractVector{T},
+                                           limit::T = 6.05;
+                                           criteria::String="Heavy",
+                                           include::Bool=false)
     N = length(residues)
-    if N != length(scores)
-        throw(ErrorException("Vectors must have the same length."))
-    end
+    @assert N == length(scores) "Vectors must have the same length."
     count = zeros(Int, N)
     sum   = zeros(T, N)
     offset = include ? 0 : 1
@@ -526,10 +655,10 @@ function _get_plane(residue::PDBResidue)
         plane1 = PDBAtom[]
         plane2 = PDBAtom[]
         for atom in residue.atoms
-            if atom.atom in Set{ASCIIString}(["CE2", "CD2", "CZ2", "CZ3", "CH2", "CE3"])
+            if atom.atom in Set{String}(["CE2", "CD2", "CZ2", "CZ3", "CH2", "CE3"])
                 push!(plane1, atom)
             end
-            if atom.atom in Set{ASCIIString}(["CG", "CD1", "NE1", "CE2", "CD2"])
+            if atom.atom in Set{String}(["CG", "CD1", "NE1", "CE2", "CD2"])
                 push!(plane2, atom)
             end
         end
@@ -540,9 +669,9 @@ function _get_plane(residue::PDBResidue)
 end
 
 function _centre(planes::Vector{Vector{PDBAtom}})
-    subset = Vector{PDBAtom}[ bestoccupancy(atoms) for atoms in planes ]
-    polyg = Vector{Coordinates}[ Coordinates[ a.coordinates for a in atoms ] for atoms in subset ]
-    Coordinates[ sum(points)./Float64(length(points)) for points in polyg ]
+    subset = Vector{PDBAtom}[bestoccupancy(atoms) for atoms in planes]
+    polyg = Vector{Coordinates}[Coordinates[a.coordinates for a in atoms] for atoms in subset]
+    Coordinates[sum(points)./Float64(length(points)) for points in polyg]
 end
 
 # function _simple_normal_and_centre(atoms::Vector{PDBAtom})
@@ -555,8 +684,13 @@ end
 # ==============
 
 "Used for parsing a PDB file into `Vector{PDBResidue}`"
-function _generate_residues(residue_dict::OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}, occupancyfilter::Bool=false)
-    occupancyfilter ? PDBResidue[ PDBResidue(k, bestoccupancy(v)) for (k,v) in residue_dict ] : PDBResidue[ PDBResidue(k, v) for (k,v) in residue_dict ]
+function _generate_residues(residue_dict::OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}},
+                            occupancyfilter::Bool=false)
+    if occupancyfilter
+        return( PDBResidue[ PDBResidue(k, bestoccupancy(v)) for (k,v) in residue_dict ] )
+    else
+        return( PDBResidue[ PDBResidue(k, v) for (k,v) in residue_dict ] )
+    end
 end
 
 # Show PDB* objects (using Formatting)
@@ -568,19 +702,19 @@ const _Format_ATOM = FormatExpr("{:>50} {:>15} {:>15} {:>15} {:>15}\n")
 const _Format_ResidueID_Res = FormatExpr("\t\t{:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
 const _Format_ATOM_Res = FormatExpr("\t\t{:<10} {:>50} {:>15} {:>15} {:>15} {:>15}\n")
 
-function show(io::IO, id::PDBResidueIdentifier)
+function Base.show(io::IO, id::PDBResidueIdentifier)
     printfmt(io, _Format_ResidueID, "PDBe_number", "number", "name", "group", "model", "chain")
     printfmt(io, _Format_ResidueID, string('"',id.PDBe_number,'"'), string('"',id.number,'"'), string('"',id.name,'"'),
              string('"',id.group,'"'), string('"',id.model,'"'), string('"',id.chain,'"'))
 end
 
-function show(io::IO, atom::PDBAtom)
+function Base.show(io::IO, atom::PDBAtom)
     printfmt(io, _Format_ATOM, "coordinates", "atom", "element", "occupancy", "B")
     printfmt(io, _Format_ATOM, atom.coordinates, string('"',atom.atom,'"'), string('"',atom.element,'"'),
              atom.occupancy, string('"',atom.B,'"'))
 end
 
-function show(io::IO, res::PDBResidue)
+function Base.show(io::IO, res::PDBResidue)
     println(io, "PDBResidue:\n\tid::PDBResidueIdentifier")
     printfmt(io, _Format_ResidueID_Res, "PDBe_number", "number", "name", "group", "model", "chain")
     printfmt(io, _Format_ResidueID_Res, string('"',res.id.PDBe_number,'"'), string('"',res.id.number,'"'),

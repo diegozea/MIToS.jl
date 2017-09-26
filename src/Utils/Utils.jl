@@ -1,35 +1,57 @@
+"""
+The `Utils` has common utils functions and types used in other modules.
+
+```julia
+using MIToS.Utils
+```
+"""
 module Utils
 
-export deleteitems!, get_n_words, hascoordinates, select_element, matrix2list, list2matrix, check_file, isnotemptyfile,
+using Requests
+using GZip
+using LightXML
+using NamedArrays
 
-# eachline,
+export  # GeneralUtils.jl
+        All,
+        get_n_words,
+        hascoordinates,
+        select_element,
+        matrix2list, list2matrix,
+        check_pdbcode,
+        getarray,
+        # Read.jl
+        Format,
+        lineiterator,
+        check_file, isnotemptyfile,
+        download_file,
+        # Write.jl
+        Commandline,
+        # Imported from Base (and exported for docs)
+        read,
+        write
 
-Format,
-
-AbstractTest, TestType, TestOperation, Is, In, Not, capture, isobject, findobjects, collectobjects, collectcaptures, guess_type,
-
-Commandline
-
-include("generalutils.jl")
-include("EachLineString.jl")
+include("GeneralUtils.jl")
 include("Read.jl")
 include("Write.jl")
-include("FindObjects.jl")
 
+@deprecate deleteitems!(vector::Vector, items) filter!(x -> x ∉ items, vector)
 
 # COMMAND LINE: Scripts Module
 # ============================
 
 module Scripts
 
-export parse_commandline,
-runscript, run_single_script, script,
-set_parallel, open_output, close_output,
-readorparse
+export  parse_commandline,
+        runscript, run_single_script,
+        script,
+        set_parallel,
+        open_output, close_output,
+        readorparse
 
 using ArgParse, GZip
 
-include("scripts.jl")
+include("Scripts.jl")
 
 end # Scripts
 

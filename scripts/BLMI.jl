@@ -7,7 +7,7 @@ Args = parse_commandline(
     ["--format", "-f"],
     Dict(
         :help => "Format of the MSA: Stockholm, Raw or FASTA",
-        :arg_type => ASCIIString,
+        :arg_type => String,
         :default => "Stockholm"
     ),
     ["--beta", "-b"],
@@ -58,7 +58,7 @@ set_parallel(Args["parallel"])
 
 @everywhere begin
 
-    const args = remotecall_fetch(1,()->Args)
+    const args = remotecall_fetch(()->Args,1)
 
     import MIToS.Utils.Scripts: script
 
@@ -77,7 +77,7 @@ set_parallel(Args["parallel"])
         for (key, value) in args
             println(fh_out, "# \t", key, "\t\t", value)
         end
-        form = ascii(args["format"])
+        form = string(args["format"])
         if form == "Stockholm"
             msa = readorparse(input, Stockholm)
         elseif form == "FASTA"
@@ -90,7 +90,7 @@ set_parallel(Args["parallel"])
         zscore, mip = BLMI(msa, beta=args["beta"], threshold=args["threshold"],
                            maxgap=args["maxgap"], apc=args["apc"], samples=args["samples"], fixedgaps=args["fixedgaps"])
         println(fh_out, "i,j,", args["apc"] ? "ZBLMIp" : "ZBLMI", ",", args["apc"] ? "BLMIp" : "BLMI")
-        table = hcat(to_table(zscore, false), to_table(mip, false)[:,3])
+        table = hcat(to_table(zscore, diagonal=false), to_table(mip, diagonal=false)[:,3])
         writecsv(fh_out, table)
         # ------------------------------------------------------------------------
     end

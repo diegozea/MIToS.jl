@@ -1,112 +1,253 @@
-import Base: length, getindex, setindex!, size, copy, deepcopy, empty!,
-             convert, transpose, ctranspose, names
+# import Base: length, getindex, setindex!, size, copy, deepcopy, empty!,
+#              convert, transpose, ctranspose, names
 
 """
-MIToS MSAs are subtypes of `AbstractMatrix{Residue}`,
-because the most basic implementation of a MIToS MSA is a `Matrix` of `Residue`s.
+MIToS MSA and aligned sequences (aligned objects) are subtypes of `AbstractMatrix{Residue}`,
+because MSAs and sequences are stored as `Matrix` of `Residue`s.
 """
-abstract AbstractMultipleSequenceAlignment <: AbstractMatrix{Residue}
+abstract AbstractAlignedObject <: AbstractMatrix{Residue}
 
 """
-MIToS sequences are subtypes of `AbstractVector{Residue}`.
+MSAs are stored as `Matrix{Residue}`. It's possible to use a `NamedArray{Residue,2}` as the
+most simple MSA with sequence identifiers and column names.
 """
-abstract AbstractAlignedSequence <: AbstractVector{Residue}
+abstract AbstractMultipleSequenceAlignment <: AbstractAlignedObject
+
+"A MIToS aligned sequence is an `AbstractMatrix{Residue}` with only 1 row/sequence."
+abstract AbstractAlignedSequence <: AbstractAlignedObject
 
 # Multiple Sequence Alignment
 # ===========================
 
 """
-This MSA type include the `Matrix` of `Residue`s and the sequence names.
-To allow fast indexing of MSAs using **sequence identifiers**,
-they are saved as an `IndexedArray`.
+This MSA type include a `NamedArray` wrapping a `Matrix` of `Residue`s. The use of
+`NamedArray` allows to store sequence names and original column numbers as `String`s, and
+fast indexing using them.
 """
 type MultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
-    id::IndexedArray{ASCIIString}
-    msa::Matrix{Residue}
+    matrix::NamedArray{ Residue, 2, Array{Residue, 2},
+                        Tuple{OrderedDict{String, Int64},
+                        OrderedDict{String, Int64}} }
+
+    function (::Type{MultipleSequenceAlignment})(matrix::NamedArray{Residue,2})
+        setdimnames!(matrix,("Seq","Col"))
+        new(matrix)
+    end
 end
 
 """
-...
+This type represent an MSA, similar to `MultipleSequenceAlignment`, but It also stores
+`Annotations`. This annotations are used to store residue coordinates (i.e. mapping
+to UniProt residue numbers).
 """
 type AnnotatedMultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
-    id::IndexedArray{ASCIIString}
-    msa::Matrix{Residue}
+    matrix::NamedArray{ Residue, 2, Array{Residue, 2},
+                        Tuple{OrderedDict{String, Int64},
+                        OrderedDict{String, Int64}} }
     annotations::Annotations
+
+    function (::Type{AnnotatedMultipleSequenceAlignment})(matrix::NamedArray{Residue,2},
+                                                          annotations::Annotations)
+        setdimnames!(matrix,("Seq","Col"))
+        new(matrix, annotations)
+    end
 end
 
-convert(::Type{MultipleSequenceAlignment}, msa::AnnotatedMultipleSequenceAlignment) = MultipleSequenceAlignment(msa.id, msa.msa)
+# Aligned Sequences
+# -----------------
 
-# Aligned Sequence
-# ================
-
+"""
+An `AlignedSequence` wraps a `NamedArray{Residue,2}` with only 1 row/sequence. The
+`NamedArray` stores the sequence name and original column numbers as `String`s.
+"""
 type AlignedSequence <: AbstractAlignedSequence
-    id::ASCIIString
-    index::Int
-    sequence::Vector{Residue}
+    matrix::NamedArray{ Residue, 2, Array{Residue, 2},
+                        Tuple{OrderedDict{String, Int64},
+                        OrderedDict{String, Int64}} }
+
+    function (::Type{AlignedSequence})(matrix::NamedArray{Residue,2})
+        @assert size(matrix,1) == 1 "There are more than one sequence."
+        setdimnames!(matrix,("Seq","Col"))
+        new(matrix)
+    end
 end
 
+"""
+This type represent an aligned sequence, similar to `AlignedSequence`, but It also stores
+its `Annotations`.
+"""
 type AnnotatedAlignedSequence <: AbstractAlignedSequence
-    id::ASCIIString
-    index::Int
-    sequence::Vector{Residue}
+    matrix::NamedArray{ Residue, 2, Array{Residue, 2},
+                        Tuple{OrderedDict{String, Int64},
+                        OrderedDict{String, Int64}} }
     annotations::Annotations
+
+    function (::Type{AnnotatedAlignedSequence})(matrix::NamedArray{Residue,2},
+                                                annotations::Annotations)
+        @assert size(matrix,1) == 1 "There are more than one sequence."
+        setdimnames!(matrix,("Seq","Col"))
+        new(matrix, annotations)
+    end
 end
 
-convert(::Type{AlignedSequence}, seq::AnnotatedAlignedSequence) = AlignedSequence(seq.id, seq.index, seq.sequence)
+# Constructors
+# ------------
+
+function (::Type{AnnotatedMultipleSequenceAlignment})(msa::NamedArray{Residue,2})
+    AnnotatedMultipleSequenceAlignment(msa, Annotations())
+end
+
+function (::Type{AnnotatedMultipleSequenceAlignment})(msa::Matrix{Residue})
+    AnnotatedMultipleSequenceAlignment(NamedArray(msa))
+end
+
+function (::Type{MultipleSequenceAlignment})(msa::Matrix{Residue})
+    MultipleSequenceAlignment(NamedArray(msa))
+end
+
+function (::Type{AnnotatedAlignedSequence})(seq::NamedArray{Residue,2})
+    AnnotatedAlignedSequence(seq, Annotations())
+end
+
+function (::Type{AnnotatedAlignedSequence})(seq::Matrix{Residue})
+    AnnotatedAlignedSequence(NamedArray(seq))
+end
+
+function (::Type{AlignedSequence})(seq::Matrix{Residue})
+    AlignedSequence(NamedArray(seq))
+end
+
+# AnnotatedAlignedObject
+# ----------------------
+
+typealias AnnotatedAlignedObject Union{ AnnotatedMultipleSequenceAlignment,
+                                        AnnotatedAlignedSequence    }
+
+typealias UnannotatedAlignedObject Union{   MultipleSequenceAlignment,
+                                            AlignedSequence    }
+
+# Matrices
+# --------
+
+typealias MSAMatrix Union{ Matrix{Residue}, NamedArray{Residue,2} }
+
+# Getters
+# -------
+
+"`annotations` returns the `Annotations` of an MSA or aligned sequence."
+@inline annotations(msa::AnnotatedMultipleSequenceAlignment) = msa.annotations
+@inline annotations(seq::AnnotatedAlignedSequence) = seq.annotations
+
+"`namedmatrix` returns the `NamedArray{Residue,2}` stored in an MSA or aligned sequence."
+@inline namedmatrix(x::AbstractAlignedObject) = x.matrix
+
+# Convert
+# -------
+
+function Base.convert(::Type{MultipleSequenceAlignment},
+                      msa::AnnotatedMultipleSequenceAlignment)
+    MultipleSequenceAlignment(namedmatrix(msa))
+end
+
+function Base.convert(::Type{AlignedSequence}, seq::AnnotatedAlignedSequence)
+    AlignedSequence(namedmatrix(seq))
+end
+
+function Base.convert(::Type{AnnotatedMultipleSequenceAlignment},
+                      msa::MultipleSequenceAlignment)
+    AnnotatedMultipleSequenceAlignment(namedmatrix(msa), Annotations())
+end
+
+function Base.convert(::Type{AnnotatedAlignedSequence}, seq::AlignedSequence)
+    AnnotatedAlignedSequence(namedmatrix(seq), Annotations())
+end
 
 # AbstractArray Interface
 # -----------------------
 
-for meth in (:size, :length)
-    @eval $(meth)(msa::AbstractMultipleSequenceAlignment) = $(meth)(msa.msa)
-    @eval $(meth)(seq::AbstractAlignedSequence) = $(meth)(seq.sequence)
+for f in (:size, :length)
+    @eval Base.$(f)(x::AbstractAlignedObject) = $(f)(namedmatrix(x))
 end
 
-for T in (:(AlignedSequence), :(AnnotatedAlignedSequence),
-          :(MultipleSequenceAlignment), :(AnnotatedMultipleSequenceAlignment))
+for T in (  :(AlignedSequence),
+            :(AnnotatedAlignedSequence),
+            :(MultipleSequenceAlignment),
+            :(AnnotatedMultipleSequenceAlignment)  )
     @eval Base.linearindexing(::Type{$(T)}) = Base.LinearFast()
 end
 
-getindex(msa::AbstractMultipleSequenceAlignment, i::Int) = getindex(msa.msa, i)
-getindex(seq::AbstractAlignedSequence, i::Int) = getindex(seq.sequence, i)
-setindex!(msa::AbstractMultipleSequenceAlignment, value::Residue, i::Int) =  setindex!(msa.msa, value, i)
-setindex!(seq::AbstractAlignedSequence, value::Residue, i::Int) = setindex!(seq.sequence, value, i)
+@inline Base.getindex(x::AbstractAlignedObject,
+                      args...) = getindex(namedmatrix(x), args...)
+
+@inline function Base.setindex!(x::AbstractAlignedObject, value, args...)
+    setindex!(namedmatrix(x), value, args...)
+end
+
+# Special getindex/setindex! for sequences to avoid `seq["seqname","colname"]`
+
+@inline Base.getindex(x::AbstractAlignedSequence, i) = getindex(namedmatrix(x), 1, i)
+
+@inline function Base.setindex!(x::AbstractAlignedSequence, value, i)
+    setindex!(namedmatrix(x), value, 1, i)
+end
+
+# Show
+# ----
+
+for T in (  :(AlignedSequence),
+            :(AnnotatedAlignedSequence),
+            :(MultipleSequenceAlignment),
+            :(AnnotatedMultipleSequenceAlignment)  )
+    @eval begin
+
+        Base.show(io::IO, ::MIME"text/plain", x::$(T)) = show(io, x)
+
+        function Base.show(io::IO, x::$(T))
+            type_name = split(string($T),'.')[end]
+            if isa(x, AnnotatedAlignedObject)
+                print(io, type_name, " with ", length(annotations(x)), " annotations : ")
+            else
+                print(io, type_name, " : ")
+            end
+            show(io, namedmatrix(x))
+        end
+
+    end
+end
 
 # Transpose
 # ---------
+#
+# transpose is ~ 0.00022 seconds faster than ctranspose for PF00085
+#
 
-transpose(msa::AbstractMultipleSequenceAlignment)  = transpose(msa.msa)
-ctranspose(msa::AbstractMultipleSequenceAlignment) = transpose(msa.msa) # transpose is ~ 0.00022 seconds faster than ctranspose for PF00085
+Base.transpose(x::AbstractAlignedObject)  = transpose(namedmatrix(x))
+Base.ctranspose(x::AbstractAlignedObject) = transpose(namedmatrix(x))
 
 # Selection without Mappings
 # --------------------------
 
 """
-Allows you to access the residues in a `Matrix{Residues}`/`Vector{Residues}` without annotations.
+`getresidues` allows you to access the residues stored inside an MSA or aligned sequence
+as a `Matrix{Residue}` without annotations nor column/row names.
 """
-getresidues(msa::AbstractMultipleSequenceAlignment) = msa.msa
-getresidues(seq::AbstractAlignedSequence) = seq.sequence
+getresidues(x::Matrix{Residue}) = x
+getresidues(x::NamedArray{Residue,2}) = getarray(x)
+getresidues(x::AbstractAlignedObject) = getresidues(namedmatrix(x))
+
+"`nsequences` returns the number of sequences on the MSA."
+nsequences(x::AbstractMatrix{Residue}) = size(x, 1)
+
+"`ncolumns` returns the number of MSA columns or positions."
+ncolumns(x::AbstractMatrix{Residue}) = size(x, 2)
 
 """
-Gives you the number of sequences on the `MultipleSequenceAlignment`
-"""
-nsequences(msa::AbstractMultipleSequenceAlignment) = size(msa.msa, 1)
-nsequences(msa::Matrix{Residue}) = size(msa, 1)
-
-"""
-`ncolumns` returns the MSA columns or sequence positions number.
-"""
-ncolumns(msa::AbstractMultipleSequenceAlignment) = size(msa.msa, 2)
-ncolumns(msa::Matrix{Residue}) = size(msa, 2)
-ncolumns(seq::AbstractAlignedSequence) = length(seq.sequence)
-ncolumns(seq::Vector{Residue}) = length(seq)
-
-"""
-Gives you a `Vector{Vector{Residue}}` with all the sequences of the MSA without Annotations
+`getresiduesequences` returns a `Vector{Vector{Residue}}` with all the MSA sequences without
+annotations nor column/sequence names.
 """
 function getresiduesequences(msa::Matrix{Residue})
     nseq = nsequences(msa)
-    tmsa = msa'
+    tmsa = permutedims(msa, [2,1])
     sequences = Array(Vector{Residue}, nseq)
     for i in 1:nseq
         @inbounds sequences[i] = tmsa[:,i]
@@ -114,332 +255,129 @@ function getresiduesequences(msa::Matrix{Residue})
     sequences
 end
 
-getresiduesequences(msa::AbstractMultipleSequenceAlignment) = getresiduesequences(msa.msa)
+getresiduesequences(x::NamedArray{Residue,2}) = getresiduesequences(getresidues(x))
+getresiduesequences(x::AbstractAlignedObject) = getresiduesequences(getresidues(x))
 
 # Select sequence
 # ---------------
 
 # Gives you the annotations of the Sequence
-function getsequence(data::Annotations, id::ASCIIString)
-    GS = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
-    GR = Dict{Tuple{ASCIIString,ASCIIString},ASCIIString}()
-    if length(data.sequences) > 0 || length(data.residues) > 0
+function getsequence(data::Annotations, id::String)
+    GS = Dict{Tuple{String,String},String}()
+    GR = Dict{Tuple{String,String},String}()
+    if length(data.sequences) > 0
         for (key, value) in data.sequences
             if key[1] == id
                 GS[key] = value
             end
         end
+        sizehint!(GS, length(GS))
+    end
+    if length(data.residues) > 0
         for (key, value) in data.residues
             if key[1] == id
                 GR[key] = value
             end
         end
-        GS = sizehint!(GS, length(GS))
-        GR = sizehint!(GR, length(GR))
+        sizehint!(GR, length(GR))
     end
     Annotations(data.file, GS, data.columns, GR)
 end
 
 @doc """
-`getsequence` takes an MSA and a sequence number or identifier to return a sequence.
-If the MSA is n `AnnotatedMultipleSequenceAlignment`, it returns an `AnnotatedAlignedSequence` with sequence annotations.
-From a `MultipleSequenceAlignment`, It returns an `AlignedSequence` object.
-If an `Annotations` object  and a sequence identifier are used, this function returns the annotations related to the sequence.
+`getsequence` takes an MSA and a sequence number or identifier and returns an aligned
+sequence object. If the MSA is an `AnnotatedMultipleSequenceAlignment`, it returns an
+`AnnotatedAlignedSequence` with the sequence annotations. From a
+`MultipleSequenceAlignment`, It returns an `AlignedSequence` object. If an `Annotations`
+object and a sequence identifier are used, this function returns the annotations related
+to the sequence.
 """ getsequence
 
-getsequence(msa::AnnotatedMultipleSequenceAlignment,
-            i::Int) = AnnotatedAlignedSequence(msa.id[i], i,  vec(msa.msa[i,:]),
-                                               getsequence(msa.annotations, msa.id[i]))
+getsequence(msa::Matrix{Residue}, i::Int) = msa[i:i,:]
 
-getsequence(msa::MultipleSequenceAlignment,
-            i::Int) = AlignedSequence(msa.id[i], i, vec(msa.msa[i,:]))
+getsequence(msa::NamedArray{Residue,2}, i::Int) = msa[i:i,:]
+getsequence(msa::NamedArray{Residue,2}, id::String) = msa[String[id],:]
 
-getsequence(msa::Matrix{Residue}, i::Int) = vec(msa[i,:])
-
-function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::ASCIIString)
-    i = findfirst(msa.id, id)
-    AnnotatedAlignedSequence(id, i, vec(msa.msa[i,:]),
-                             getsequence(msa.annotations, id))
+function getsequence(msa::AnnotatedMultipleSequenceAlignment, i::Int)
+    seq   = namedmatrix(msa)[i:i,:]
+    annot = getsequence(annotations(msa), names(seq, 1)[1])
+    AnnotatedAlignedSequence(seq, annot)
 end
 
-function getsequence(msa::MultipleSequenceAlignment, id::ASCIIString)
-    i = findfirst(msa.id, id)
-    AlignedSequence(id, i, vec(msa.msa[i,:]))
+function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::String)
+    seq   = namedmatrix(msa)[String[id],:]
+    annot = getsequence(annotations(msa), id)
+    AnnotatedAlignedSequence(seq, annot)
 end
 
-getindex(msa::AbstractMultipleSequenceAlignment, id::ASCIIString) = getsequence(msa, id)
+function getsequence(msa::MultipleSequenceAlignment, seq::Union{Int,String})
+    AlignedSequence(getsequence(namedmatrix(msa), seq))
+end
 
-# Filters
-# -------
-
-"It's similar to `filtersequences!` but for a `Matrix` of `Residue`s"
-filtersequences(msa::Matrix{Residue}, mask::AbstractVector{Bool}) = msa[mask, :]
+# Names
+# -----
 
 """
-`filtersequences!(msa, mask[, annotate::Bool=true])`
+`sequencenames(msa)`
 
-Allows to filter `msa` sequences using a `AbstractVector{Bool}` `mask` (removes `false`s).
-`AnnotatedMultipleSequenceAlignment` annotations are updated if `annotate` is `true` (default).
+It returns a `Vector{String}` with the sequence names/identifiers.
 """
-function filtersequences!(msa::AnnotatedMultipleSequenceAlignment,
-                          mask::AbstractVector{Bool}, annotate::Bool=true)
-    msa.msa = filtersequences(msa.msa, mask)
-    #msa.sequencemapping = msa.sequencemapping[ mask , : ]
-    filtersequences!(msa.annotations, msa.id, mask)
-    msa.id = IndexedArray(msa.id[ mask ])
-    annotate && annotate_modification!(msa, string("filtersequences! : ", sum(~mask), " sequences have been deleted."))
-    msa
-end
-
-function filtersequences!(msa::MultipleSequenceAlignment,
-                          mask::AbstractVector{Bool}, annotate::Bool=false) # annotate is useful for calling this inside other functions
-    msa.msa = filtersequences(msa.msa, mask)
-    msa.id = IndexedArray(msa.id[ mask ])
-    msa
-end
-
-"It's similar to `filtercolumns!` but for a `Matrix` or `Vector` of `Residue`s"
-filtercolumns(msa::Matrix{Residue}, mask::AbstractVector{Bool}) = msa[ : , mask ]
-filtercolumns(seq::Vector{Residue}, mask::AbstractVector{Bool}) = seq[ mask ]
+sequencenames(x::NamedArray{Residue,2})::Vector{String} = names(x,1)
+sequencenames(x::AbstractAlignedObject)::Vector{String} = sequencenames(namedmatrix(x))
+sequencenames(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(msa,1))
 
 """
-`filtercolumns!(msa, mask[, annotate::Bool=true])`
+`columnnames(msa)`
 
-Allows to filter MSA columns/sequence positions using a `AbstractVector{Bool}` `mask`.
-`AnnotatedMultipleSequenceAlignment`s or `AnnotatedAlignedSequence`s annotations are updated.
+It returns a `Vector{String}` with the sequence names/identifiers. If the `msa` is a
+`Matrix{Residue}` this function returns the actual column numbers as strings. Otherwise it
+returns the column number of the original MSA through the wrapped `NamedArray` column names.
 """
-function filtercolumns!(msa::AnnotatedMultipleSequenceAlignment,
-                        mask::AbstractVector{Bool}, annotate::Bool=true)
-    msa.msa = filtercolumns(msa.msa, mask)
-    filtercolumns!(msa.annotations, mask)
-    annotate && annotate_modification!(msa, string("filtercolumns! : ",
-                                                   sum(~mask), " columns have been deleted."))
-    msa
-end
+columnnames(x::NamedArray{Residue,2})::Vector{String} = names(x,2)
+columnnames(x::AbstractAlignedObject)::Vector{String} = columnnames(namedmatrix(x))
+columnnames(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(msa,2))
 
-function filtercolumns!(msa::MultipleSequenceAlignment, mask::AbstractVector{Bool}, annotate::Bool=false) # annotate is useful for calling this inside other functions
-    msa.msa = filtercolumns(msa.msa, mask)
-    msa
-end
+# Copy, deepcopy
+# --------------
 
-function filtercolumns!(seq::AnnotatedAlignedSequence, mask::AbstractVector{Bool}, annotate::Bool=true)
-    seq.sequence = filtercolumns(seq.sequence, mask)
-    filtercolumns!(seq.annotations, mask)
-    annotate && annotate_modification!(seq, string("filtercolumns! : ",
-                                                   sum(~mask), " columns have been deleted."))
-    seq
-end
-
-function filtercolumns!(seq::AlignedSequence, mask::AbstractVector{Bool}, annotate::Bool=false)
-    seq.sequence = filtercolumns(seq.sequence, mask)
-    seq
-end
-
-filtercolumns(seq::AbstractAlignedSequence, args...) = filtercolumns!(deepcopy(seq), args...)
-filtercolumns(msa::AbstractMultipleSequenceAlignment, args...) = filtercolumns!(deepcopy(msa), args...)
-
-# Copy, deepcopy, empty!
-# ----------------------
-
-for fun in (:copy, :deepcopy)
-    @eval $(fun)(msa::AnnotatedMultipleSequenceAlignment) = AnnotatedMultipleSequenceAlignment($(fun)(msa.id), $(fun)(msa.msa), $(fun)(msa.annotations))
-    @eval $(fun)(msa::MultipleSequenceAlignment) = MultipleSequenceAlignment($(fun)(msa.id), $(fun)(msa.msa))
-    @eval $(fun)(seq::AnnotatedAlignedSequence) = AnnotatedAlignedSequence($(fun)(seq.id), $(fun)(seq.index), $(fun)(seq.sequence), $(fun)(seq.annotations))
-    @eval $(fun)(seq::AlignedSequence) = AlignedSequence($(fun)(seq.id), $(fun)(seq.index), $(fun)(seq.sequence))
-end
-
-empty!(msa::AnnotatedMultipleSequenceAlignment) = (empty!(msa.id); empty!(msa.msa);
-                                                   empty!(msa.annotations); msa)
-empty!(msa::MultipleSequenceAlignment) = (empty!(msa.id); empty!(msa.msa); msa)
-empty!(seq::AnnotatedAlignedSequence) = (empty!(seq.id); empty!(seq.index);
-                                         v(seq.sequence); empty!(seq.annotations); seq)
-empty!(seq::AlignedSequence) = (empty!(seq.id); empty!(seq.index);
-                                empty!(seq.sequence); seq)
-
-# Counting Gaps and Coverage
-# --------------------------
-
-"""
-Calculates the fraction of gaps on the `Array` (alignment, sequence, column, etc.).
-This function can take an extra `dim` argument for calculation of the gap fraction over the given dimension
-"""
-function gapfraction(x::AbstractArray{Residue})
-    counter = 0
-    len = 0
-    for res in x
-        counter += res == GAP ? 1 : 0
-        len += 1
+for f in (:copy, :deepcopy)
+    @eval begin
+        function Base.$(f)(msa::AnnotatedMultipleSequenceAlignment)
+            AnnotatedMultipleSequenceAlignment( $(f)(namedmatrix(msa)),
+                                                $(f)(annotations(msa)) )
+        end
+        function Base.$(f)(msa::MultipleSequenceAlignment)
+            MultipleSequenceAlignment($(f)(namedmatrix(msa)))
+        end
+        function Base.$(f)(seq::AnnotatedAlignedSequence)
+            AnnotatedAlignedSequence($(f)(seq.matrix), $(f)(seq.annotations))
+        end
+        Base.$(f)(seq::AlignedSequence) = AlignedSequence($(f)(seq.matrix))
     end
-    float(counter) / float(len)
 end
-
-gapfraction(x::AbstractArray{Residue},
-              dim::Int) = vec( mapslices(gapfraction, x, dim) )
-
-"""
-Calculates the fraction of residues (no gaps) on the `Array` (alignment, sequence, column, etc.)
-This function can take an extra `dim` argument for calculation of the residue fraction over the given dimension
-"""
-function residuefraction(x::AbstractArray{Residue})
-    counter = 0
-    len = 0
-    for res in x
-        counter += res == GAP ? 0 : 1
-        len += 1
-    end
-    float(counter) / float(len)
-end
-
-residuefraction(x::AbstractArray{Residue},
-                  dim::Int) = vec( mapslices(residuefraction, x, dim) )
-
-"Coverage of the sequences with respect of the number of positions on the MSA"
-coverage(msa::Matrix{Residue}) = residuefraction(msa, 2)
-coverage(msa::AbstractMultipleSequenceAlignment) = coverage(msa.msa)
-
-"Fraction of gaps per column/position on the MSA"
-columngapfraction(msa::Matrix{Residue}) = gapfraction(msa, 1)
-columngapfraction(msa::AbstractMultipleSequenceAlignment) = columngapfraction(msa.msa)
-
-# Reference
-# ---------
-
-"""
-Puts the sequence `i` as reference (as the first sequence) of the MSA.
-This function swaps the sequences 1 and `i`, also an `id` can be used to select the sequence.
-"""
-function setreference!(msa::AnnotatedMultipleSequenceAlignment, i::Int, annotate::Bool=true)
-    swap!(msa.id, 1, i)
-    msa.msa[1, :], msa.msa[i, :] = msa.msa[i, :], msa.msa[1, :]
-    annotate && annotate_modification!(msa, string("setreference! : Using ",
-                                                   msa.id[1]," instead of ", msa.id[i]," as reference."))
-    msa
-end
-
-function setreference!(msa::MultipleSequenceAlignment, i::Int, annotate::Bool=false) # annotate is useful for calling this inside other functions
-    swap!(msa.id, 1, i)
-    msa.msa[1, :], msa.msa[i, :] = msa.msa[i, :], msa.msa[1, :]
-    msa
-end
-
-setreference!(msa::AbstractMultipleSequenceAlignment, id::ASCIIString,
-              annotate::Bool=true) = setreference!(msa, findfirst(msa.id ,id), annotate)
-
-function setreference!(msa::Matrix{Residue}, i::Int, annotate::Bool=false)
-    msa[1, :], msa[i, :] = msa[i, :], msa[1, :]
-    msa
-end
-
-"""
-Creates a new Matrix{Residue}. This function deletes positions/columns of the MSA with gaps in the reference (first) sequence
-"""
-adjustreference(msa::Matrix{Residue},
-                annotate::Bool=false) = msa[ : , vec(msa[1,:]) .!= GAP ] # annotate is useful for calling this inside other functions
-
-"""
-Removes positions/columns of the MSA with gaps in the reference (first) sequence
-"""
-adjustreference!(msa::AbstractMultipleSequenceAlignment,
-                 annotate::Bool=true) = filtercolumns!(msa, vec(msa.msa[1,:]) .!= GAP, annotate)
-
-"""
-This functions deletes/filters sequences and columns/positions on the MSA on the following order:
-
- - Removes all the columns/position on the MSA with gaps on the reference sequence (first sequence)
- - Removes all the sequences with a coverage (with respect to the number of columns/positions on the MSA) **less** than a `coveragelimit` (default to `0.75`)
- - Removes all the columns/position on the MSA with **more** than a `gaplimit` (default to `0.5`: 50% of gaps)
-"""
-function gapstrip!(msa::AbstractMultipleSequenceAlignment, annotate::Bool=true;
-                   coveragelimit::Float64=0.75, gaplimit::Float64=0.5)
-    annotate && annotate_modification!(msa, string("gapstrip! : Deletes columns with gaps in the first sequence."))
-    adjustreference!(msa, annotate)
-    # Remove sequences with pour coverage of the reference sequence
-    if ncolumns(msa) != 0
-        annotate && annotate_modification!(msa, string("gapstrip! : Deletes sequences with a coverage less than ",
-                                                       coveragelimit))
-        filtersequences!(msa, coverage(msa) .>= coveragelimit, annotate)
-    else
-        throw("There are not columns in the MSA after the gap trimming")
-    end
-    # Remove columns with a porcentage of gap greater than gaplimit
-    if nsequences(msa) != 0
-        annotate && annotate_modification!(msa, string("gapstrip! : Deletes columns with more than ",
-                                                       gaplimit, " gaps."))
-        filtercolumns!(msa, columngapfraction(msa) .<= gaplimit, annotate)
-    else
-        throw("There are not sequences in the MSA after coverage filter")
-    end
-    msa
-end
-
-"""
-Creates a new `Matrix{Residue}` with deleted sequences and columns/positions on the MSA:
-
- - Removes all the columns/position on the MSA with gaps on the reference sequence (first sequence)
- - Removes all the sequences with a coverage with respect to the number of columns/positions on the MSA **less** than a `coveragelimit` (default to `0.75`: sequences with 25% of gaps)
- - Removes all the columns/position on the MSA with **more** than a `gaplimit` (default to `0.5`: 50% of gaps)
-"""
-function gapstrip(msa::Matrix{Residue}; coveragelimit::Float64=0.75,
-                  gaplimit::Float64=0.5)
-    msa = adjustreference(msa)
-    # Remove sequences with pour coverage of the reference sequence
-    if ncolumns(msa) != 0
-        msa = filtersequences(msa, coverage(msa) .>= coveragelimit )
-    else
-        throw("There are not columns in the MSA after the gap trimming")
-    end
-    if nsequences(msa) != 0
-        msa = filtercolumns(msa, columngapfraction(msa) .<= gaplimit)
-    else
-        throw("There are not sequences in the MSA after coverage filter")
-    end
-    msa
-end
-
-# MSA getters
-# -----------
-
-"Returns the annotations of a MSA or a sequence."
-annotations(msa::AnnotatedMultipleSequenceAlignment) = msa.annotations
-annotations(seq::AnnotatedAlignedSequence) = seq.annotations
-
-"""
-`names(msa)`
-
-Returns the `MSA` sequences names or identifiers as an `IndexedArray`.
-"""
-names(msa::AbstractMultipleSequenceAlignment) = msa.id
-names(msa::Matrix{Residue}) = IndexedArrays.IndexedArray(ASCIIString[ string(i) for i in 1:nsequences(msa) ])
 
 # Get annotations
 # ---------------
 
-for getter in [ :getannotcolumn, :getannotfile, :getannotresidue, :getannotsequence ]
-    @eval $(getter)(msa::AnnotatedMultipleSequenceAlignment, args...) = $(getter)(msa.annotations, args...)
-    @eval $(getter)(seq::AnnotatedAlignedSequence, args...) = $(getter)(seq.annotations, args...)
+for getter in ( :getannotcolumn, :getannotfile, :getannotresidue, :getannotsequence )
+    @eval $(getter)(x::AnnotatedAlignedObject, args...) = $(getter)(annotations(x), args...)
 end
 
 # Set annotations
 # ---------------
 
-for setter in [ :setannotcolumn!, :setannotfile!, :setannotresidue!, :setannotsequence!, :annotate_modification!, :delete_annotated_modifications!, :printmodifications ]
-    @eval $(setter)(msa::AnnotatedMultipleSequenceAlignment, args...) = $(setter)(msa.annotations, args...)
-    @eval $(setter)(seq::AnnotatedAlignedSequence, args...) = $(setter)(seq.annotations, args...)
+for setter in ( :setannotcolumn!, :setannotfile!, :setannotresidue!, :setannotsequence!,
+                :annotate_modification!,
+                :delete_annotated_modifications!,
+                :printmodifications )
+    @eval $(setter)(x::AnnotatedAlignedObject, args...) = $(setter)(annotations(x), args...)
 end
 
-# Used on AbstractMultipleSequenceAlignment methods
-@inline annotate_modification!(msa::MultipleSequenceAlignment,
-                               str::ASCIIString) = false # annotate_modification! is used on bool context: annotate && ...
-
-# Show & Print
-# ------------
-
-"""
-Gives an ASCIIString with the sequence number `seq` of the MSA
-"""
-asciisequence(msa::Matrix{Residue}, seq::Int) = ascii(convert(Vector{UInt8}, vec(msa[seq,:])))
-asciisequence(msa::AbstractMultipleSequenceAlignment, seq::Int) = asciisequence(msa.msa, seq)
-asciisequence(msa::AbstractMultipleSequenceAlignment, id::ASCIIString) = asciisequence(msa.msa, findfirst(msa.id, id))
+# To be used on AbstractMultipleSequenceAlignment methods
+@inline function annotate_modification!(msa::MultipleSequenceAlignment, str::String)
+    # It's generally used in a boolean context: annotate && annotate_modification!(...
+    false
+end
 
 # Mapping annotations
 # ===================
@@ -459,7 +397,7 @@ julia> _str2int_mapping(",,2,,4,5")
 
 ```
 """
-function _str2int_mapping(mapping::ASCIIString)
+function _str2int_mapping(mapping::String)
     values = split(mapping, ',')
     len = length(values)
     intmap = Array(Int, len)
@@ -470,14 +408,61 @@ function _str2int_mapping(mapping::ASCIIString)
     intmap
 end
 
-getcolumnmapping(msa::AnnotatedMultipleSequenceAlignment) = _str2int_mapping(getannotfile(msa, "ColMap"))
+"""
+It returns a `Vector{Int}` with the original column number of each column on the actual MSA.
+The mapping is annotated in the "ColMap" file annotation of an
+`AnnotatedMultipleSequenceAlignment` or in the column names of an `NamedArray` or
+`MultipleSequenceAlignment`.
+"""
+function getcolumnmapping(msa::AnnotatedMultipleSequenceAlignment)
+    annot = getannotfile(msa)
+    if haskey(annot, "ColMap")
+        return _str2int_mapping(annot["ColMap"])
+    else
+        return getcolumnmapping(namedmatrix(msa))
+    end
+end
+
+function getcolumnmapping(msa::NamedArray{Residue,2})
+    Int[ parse(Int,pos) for pos in names(msa,2) ]
+end
+
+getcolumnmapping(msa::MultipleSequenceAlignment) = getcolumnmapping(namedmatrix(msa))
 
 """
-Returns the sequence coordinates as a `Vector{Int}` for an MSA sequence. That vector has one element for each MSA column.
-If the number if `0` in the mapping, there is a gap in that column for that sequence.
+It returns the sequence coordinates as a `Vector{Int}` for an MSA sequence. That vector has
+one element for each MSA column. If the number if `0` in the mapping, there is a gap in
+that column for that sequence.
 """
-getsequencemapping(msa::AnnotatedMultipleSequenceAlignment,
-                   seq_id::ASCIIString) = _str2int_mapping(getannotsequence(msa, seq_id, "SeqMap"))
+function getsequencemapping(msa::AnnotatedMultipleSequenceAlignment, seq_id::String)
+    _str2int_mapping(getannotsequence(msa, seq_id, "SeqMap"))
+end
 
-getsequencemapping(msa::AnnotatedMultipleSequenceAlignment,
-                   seq_num::Int) = getsequencemapping(msa, msa.id[seq_num])
+function getsequencemapping(msa::AnnotatedMultipleSequenceAlignment, seq_num::Int)
+    getsequencemapping(msa, sequencenames(msa)[seq_num])
+end
+
+# Sequences as strings
+# --------------------
+
+"""
+```
+stringsequence(seq)
+stringsequence(msa, i::Int)
+stringsequence(msa, id::String)
+```
+
+It returns the selected sequence as a `String`.
+"""
+stringsequence(msa::AbstractMatrix{Residue}, i) = String(vec(msa[i,:]))
+
+function stringsequence(msa::AbstractMultipleSequenceAlignment, i)
+    stringsequence(namedmatrix(msa), i)
+end
+
+function stringsequence(seq::AbstractMatrix{Residue})
+    @assert size(seq,1) == 1 "There are more than one sequence/row."
+    String(vec(seq))
+end
+
+stringsequence(seq::AbstractAlignedSequence) = stringsequence(namedmatrix(seq))

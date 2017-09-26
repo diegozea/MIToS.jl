@@ -16,7 +16,7 @@ function parse_commandline()
             help = "File with a list of PDB codes (one per line)"
         "--format", "-f"
             help = "Format. It should be PDBFile (pdb) or PDBML (xml)"
-            arg_type = ASCIIString
+            arg_type = String
             default = "PDBML"
     end
 
@@ -38,24 +38,24 @@ function _file_names(args)
   file = args["code"]
   list = args["list"]
   if file !== nothing && list === nothing
-    return ASCIIString[ file ]
+    return String[ file ]
   elseif list !== nothing && file === nothing
-    return ASCIIString[ chomp(line) for line in open(readlines, list, "r") ]
+    return String[ chomp(line) for line in open(readlines, list, "r") ]
   else
-    throw(ErrorException("You must use --file or --list and the filename; --help for more information."))
+    throw(ErrorException("You must use --code or --list and the filename; --help for more information."))
   end
 end
 
 const files = _file_names(parsed)
 
-@everywhere Args = remotecall_fetch(1,()->parsed) # Parsed ARGS for each worker
-@everywhere FileList = remotecall_fetch(1,()->files) # List of Files for each worker
+@everywhere Args = remotecall_fetch(()->parsed,1) # Parsed ARGS for each worker
+@everywhere FileList = remotecall_fetch(()->files,1) # List of Files for each worker
 
 @everywhere function main(input) # input must be a file
   try
     format = Args["format"]
     if format == "PDBML" || format == "PDBFile"
-      MIToS.PDB.downloadpdb(input, format=(format == "PDBML" ? "xml" : "pdb"))
+      MIToS.PDB.downloadpdb(input, format=(format == "PDBML" ? MIToS.PDB.PDBML : MIToS.PDB.PDBFile))
     else
       throw(ErrorException("--format should be PDBML or PDBFile"))
     end
