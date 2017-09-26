@@ -67,11 +67,11 @@ Hobohm I clustering at 62% identity given a stockholm file as input [5]. It also
 percent indentity mean and mean, standard deviation and quantiles of: sequence coverage of
 the MSA and gap percentage.
 
-## Citation  
+#### Citation  
 
-If you use MIToS, please cite:  
+**If you use MIToS, please cite:**  
 
-Diego J. Zea, Diego Anfossi, Morten Nielsen, Cristina Marino-Buslje; MIToS.jl: mutual information tools for protein sequence analysis in the Julia language, Bioinformatics, Volume 33, Issue 4, 15 February 2017, Pages 564–565, [https://doi.org/10.1093/bioinformatics/btw646](https://doi.org/10.1093/bioinformatics/btw646)
+> Diego J. Zea, Diego Anfossi, Morten Nielsen, Cristina Marino-Buslje; MIToS.jl: mutual information tools for protein sequence analysis in the Julia language, Bioinformatics, Volume 33, Issue 4, 15 February 2017, Pages 564–565, [https://doi.org/10.1093/bioinformatics/btw646](https://doi.org/10.1093/bioinformatics/btw646)
 
 #### References
 
