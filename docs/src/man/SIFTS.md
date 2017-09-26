@@ -1,5 +1,4 @@
-
-# SIFTS
+# [SIFTS](@id Module-SIFTS)
 
 The `SIFTS` module of MIToS allows to obtain the residue-level mapping between databases
 stored in the SIFTS XML files. It makes easy to assign PDB residues to UniProt/Pfam

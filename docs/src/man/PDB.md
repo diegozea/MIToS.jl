@@ -1,4 +1,4 @@
-# PDB
+# [PDB](@id Module-PDB)
 
 The module `PDB` defines types and methods to work with protein structures inside Julia. It
 is useful to link structural and sequential information, and needed for measure the

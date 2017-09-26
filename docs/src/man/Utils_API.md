@@ -1,4 +1,4 @@
-# Utils
+# [Utils](@id API-Utils)
 
 ```@docs
 MIToS.Utils

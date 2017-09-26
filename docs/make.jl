@@ -7,6 +7,7 @@ makedocs(
     sitename = "MIToS",
     modules = [MIToS],
     pages = [
+        "Home" => "man/Index.md",
         "man/Installation.md",
         "man/Example.md",
         "Modules" => [  "man/MSA.md",

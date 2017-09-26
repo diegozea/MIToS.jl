@@ -18,7 +18,11 @@ Code Coverage:
 You need to do `Pkg.add("MIToS")` to install it or `Pkg.update()` to update your installed
 version.
 
-[**DOCUMENTATION**](http://mitos.leloir.org.ar) : [http://mitos.leloir.org.ar](http://mitos.leloir.org.ar)
+**DOCUMENTATION**:  
+[MIToS 1.0 for Julia 0.4](https://diegozea.github.io/mitosghpage-legacy/)  
+MIToS 2.0 for Julia 0.5:  
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://diegozea.github.io/MIToS.jl/stable)  
+[![](https://img.shields.io/badge/docs-latest-blue.svg)](https://diegozea.github.io/MIToS.jl/latest)  
 
 MIToS is an environment for Mutual Information (MI) analysis and implements several useful
 tools for Multiple Sequence Alignments (MSAs) and PDB structures management in the Julia

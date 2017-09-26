@@ -1,8 +1,7 @@
 ```@meta
 CurrentModule = MIToS.Information
 ```
-
-# Information
+# [Information](@id Module-Information)
 
 The `Information` module of MIToS defines types and functions useful to calculate
 information measures (e.g. *Mutual Information* (MI) and *Entropy*) over a Multiple
@@ -355,7 +354,6 @@ respectively.
 
 ```@setup inf_entropy
 using Plots
-using PlotRecipes
 pyplot()
 ```
 
@@ -439,7 +437,6 @@ BLMI
 
 ```@setup inf_buslje09
 using Plots
-using PlotRecipes
 pyplot()
 ```
 
