@@ -7,7 +7,7 @@
 native multi-threading support, fast anonymous functions, generator expressions and more.
 Also, the Julia package ecosystem has grown. So, MIToS was slightly redesigned to take
 advantage of the new Julia capabilities. As a consequence, this version introduces several
-breaking changes.
+breaking changes and new features.
 
 ##### Utils module
 
