@@ -9,8 +9,6 @@ Windows: [![Build status](https://ci.appveyor.com/api/projects/status/h6o72b5dtd
 
 Code Coverage: [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/diegozea/MIToS.jl?branch=master) [![codecov.io](http://codecov.io/github/diegozea/MIToS.jl/coverage.svg?branch=master)](http://codecov.io/github/diegozea/MIToS.jl?branch=master)
 
-**Julia version:** MIToS only works with **Julia 0.4**, you can download this Julia version from [**here**](http://julialang.org/downloads/oldreleases.html). MIToS 2.0 with Julia 0.5 support is under development, we expect to release it soon.
-
 **MIToS v1.1.0** is out, check out the [NEWS!](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
 You need to do `Pkg.add("MIToS")` to install it or `Pkg.update()` to update your installed version.
 
