@@ -1,4 +1,4 @@
-![MIToS.jl](/assets/MIToS_logo.png)  
+![MIToS.jl](./assets/MIToS_logo.png)  
 
 *MIToS is an environment for Mutual Information (MI) analysis and implements several
 useful tools for Multiple Sequence Alignments (MSAs) and PDB structures management in
@@ -39,7 +39,7 @@ Diego J. Zea, Diego Anfossi, Morten Nielsen, Cristina Marino-Buslje; MIToS.jl: m
 
 
 
-![Leloir Institute Foundation](/assets/FIL_logo.png)  
+![Leloir Institute Foundation](./assets/FIL_logo.png)  
 
 Structural Bioinformatics Unit, Leloir Institute Foundation.
 Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina

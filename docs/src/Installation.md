@@ -1,7 +1,7 @@
 
 # Installation
 
-First you need [**Julia 0.5.2**![](/assets/external-link.png)](https://julialang.org/downloads/oldreleases.html)
+First you need [**Julia 0.5.2**![](./assets/external-link.png)](https://julialang.org/downloads/oldreleases.html)
 installed. A new version of MIToS with Julia 0.6 support is under development, we expect to
 release it soon. The MIToS' stable version can be installed by typing on the Julia REPL:  
 
@@ -26,10 +26,10 @@ Pkg.test("MIToS")
 
     *Option* | *Description*  
     ---:| ---  
-    [Julia REPL![](/assets/external-link.png)](http://docs.julialang.org/en/stable/manual/getting-started/) | Built-in Julia command line. Start an Julia interactive session (REPL) by double-clicking the Julia executable or running `julia` from the system command line.
-    [JuliaBox![](/assets/external-link.png)](https://www.juliabox.org/) | You can try Julia from your *web browser*. *No installation is required.*
-    [IJulia![](/assets/external-link.png)](https://github.com/JuliaLang/IJulia.jl) | *Jupyter/IPython notebook* for Julia. It was used for generating the *this* documentation.
-    [Juno![](/assets/external-link.png)](http://junolab.org/) | Integrated Development Environment (IDE).  
+    [Julia REPL![](./assets/external-link.png)](http://docs.julialang.org/en/stable/manual/getting-started/) | Built-in Julia command line. Start an Julia interactive session (REPL) by double-clicking the Julia executable or running `julia` from the system command line.
+    [JuliaBox![](./assets/external-link.png)](https://www.juliabox.org/) | You can try Julia from your *web browser*. *No installation is required.*
+    [IJulia![](./assets/external-link.png)](https://github.com/JuliaLang/IJulia.jl) | *Jupyter/IPython notebook* for Julia. It was used for generating the *this* documentation.
+    [Juno![](./assets/external-link.png)](http://junolab.org/) | Integrated Development Environment (IDE).  
 
 
 
@@ -37,8 +37,8 @@ Pkg.test("MIToS")
 
 Julia plotting capabilities are available through external packages. MIToS make use of
  *RecipesBase* to define plot recipes, which can be plotted using
- [Plots![](/assets/external-link.png)](https://juliaplots.github.io/) and different
- backends. You need to [install Plots![](/assets/external-link.png)](https://juliaplots.github.io/install/)
+ [Plots![](./assets/external-link.png)](https://juliaplots.github.io/) and different
+ backends. You need to [install Plots![](./assets/external-link.png)](https://juliaplots.github.io/install/)
  to plot MIToS objects:  
 
 ```julia
@@ -54,14 +54,14 @@ Pkg.add("PlotlyJS") # Interactive
 ```
 
 You need to load Plots in order to use the `plot` function. There is more information about
-it in the [Plots documentation![](/assets/external-link.png)](https://juliaplots.github.io/).  
+it in the [Plots documentation![](./assets/external-link.png)](https://juliaplots.github.io/).  
 
 ```julia
 using Plots
 ```
 
 To generate **graph** (network), **arc** and **chord** (circo) **plots**, you also need to
-install and load [PlotRecipes![](/assets/external-link.png)](https://github.com/JuliaPlots/PlotRecipes.jl).  
+install and load [PlotRecipes![](./assets/external-link.png)](https://github.com/JuliaPlots/PlotRecipes.jl).  
 
 ```julia  
 Pkg.add("PlotRecipes")

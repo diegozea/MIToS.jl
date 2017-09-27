@@ -2,7 +2,7 @@
 # Example
 
 In this simple demonstration, you will see how to calculate **ZBLMIp** (**Z** score of the
-corrected **MIp** using BLOSUM62 pseudo frequencies) for a [Pfam![](/assets/external-link.png)](http://pfam.xfam.org/)
+corrected **MIp** using BLOSUM62 pseudo frequencies) for a [Pfam![](./assets/external-link.png)](http://pfam.xfam.org/)
 MSA from the [Julia REPL](@ref juliarepl) or using a
 [MIToS script in the system command line](@ref commandline).  
 
@@ -10,7 +10,7 @@ MSA from the [Julia REPL](@ref juliarepl) or using a
 
 If you load the `Pfam` module from `MIToS`, you will get access to a set of functions that
 work with Pfam MSAs. In this case, we are going to use it for download a
-[Stockholm![](/assets/external-link.png)](https://en.wikipedia.org/wiki/Stockholm_format)
+[Stockholm![](./assets/external-link.png)](https://en.wikipedia.org/wiki/Stockholm_format)
 MSA from the Pfam website and read it into Julia.  
 
 ```@setup juliarepl
@@ -32,7 +32,7 @@ msa = read(pfam_file, Stockholm, generatemapping=true, useidcoordinates=true)
     end coordinates in the sequence ids for enumerate each residue in the sequence if
     `useidcoordinates` is `true`.  
 
-You can plot this MSA and other MIToS’ objects using the [Plots![](/assets/external-link.png)](https://juliaplots.github.io/) package. The installation of *Plots* is described in the *Installation* section of this site:
+You can plot this MSA and other MIToS’ objects using the [Plots![](./assets/external-link.png)](https://juliaplots.github.io/) package. The installation of *Plots* is described in the *Installation* section of this site:
 
 ```@example juliarepl
 using Plots
@@ -45,7 +45,7 @@ nothing # hide
 ![](msa.png)  
 
 The `Information` module of `MIToS` has functions to calculate measures from the
-[Information Theory![](/assets/external-link.png)](https://en.wikipedia.org/wiki/Information_theory),
+[Information Theory![](./assets/external-link.png)](https://en.wikipedia.org/wiki/Information_theory),
 such as Entropy and Mutual Information (MI), on a MSA. In this example, we will estimate
 covariation between columns of the MSA with a corrected **MI** that use the BLOSUM62 matrix
 for calculate pseudo frequencies (`BLMI`).  

@@ -24,7 +24,7 @@ Depth = 4
 ## Retrieve information from PDB database  
 
 This module exports the `downloadpdb` function, to retrieve a PDB file from  
-[PDB database![](/assets/external-link.png)](http://www.rcsb.org/pdb/home/home.do). This
+[PDB database![](./assets/external-link.png)](http://www.rcsb.org/pdb/home/home.do). This
 function downloads a gzipped `PDBML` file, which could be easily read it with MIToS
 by default, but you are able to determine the `format` as `PDBFile` if you want it.  
 
