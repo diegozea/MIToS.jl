@@ -130,7 +130,7 @@ name. The values are free text (strings). Lines starting with `#=GS` in Stockhol
 name. The values are strings with exactly 1 char per column/residues. `#=GR` lines in
 Stockholm format.  
 
-Julia REPL shows the `Annotations` type as they are represented in the [Stockholm format![](../assets/external-link.png)](https://en.wikipedia.org/wiki/Stockholm_format).
+Julia REPL shows the `Annotations` type as they are represented in the [Stockholm format![](/assets/external-link.png)](https://en.wikipedia.org/wiki/Stockholm_format).
 You can get the `Annotations` inside an annotated MSA or sequence using the `annotations`
 function.  
 
@@ -216,7 +216,7 @@ sequencenames(msa)
 
 #### [Example: Exporting a MSA for freecontact (part I)](@id Example:-Exporting-a-MSA-for-freecontact-(part-I))
 
-The most simple input for the command line tool [freecontact![](../assets/external-link.png)](https://rostlab.org/owiki/index.php/FreeContact)
+The most simple input for the command line tool [freecontact![](/assets/external-link.png)](https://rostlab.org/owiki/index.php/FreeContact)
 (if you don't want to set `--mincontsep`) is a `Raw` MSA file with a reference sequence
 without insertions or gaps. This is easy to get with MIToS using `read` (deletes the insert
 columns), `setreference!` (to choose a reference), `adjustreference!` (to delete columns
@@ -435,8 +435,8 @@ percentidentity(msa[1,:], msa[2,:], 62) # 50% >= 62%
 
 The `gapfraction` and `coverage` functions return a vector of number between `0.0` and
 `1.0` (fraction of...). Sometime it's useful to plot this data to quickly understand the
-MSA structure. In this example, we are going to use the [Plots![](../assets/external-link.png)](http://plots.readthedocs.org/en/latest/) package for
-plotting, with a [PyPlot![](../assets/external-link.png)](https://github.com/stevengj/PyPlot.jl)
+MSA structure. In this example, we are going to use the [Plots![](/assets/external-link.png)](http://plots.readthedocs.org/en/latest/) package for
+plotting, with a [PyPlot![](/assets/external-link.png)](https://github.com/stevengj/PyPlot.jl)
 backend, but you are free to use any of the Julia plotting libraries.  
 
 ```@setup msa_plots
@@ -537,7 +537,7 @@ nothing # hide
 ```
 
 MIToS stores the matrix of percentage of identity between the aligned sequences as a
-PairwiseListMatrix from the [PairwiseListMatrices![](../assets/external-link.png)](http://diegozea.github.io/PairwiseListMatrices.jl/)
+PairwiseListMatrix from the [PairwiseListMatrices![](/assets/external-link.png)](http://diegozea.github.io/PairwiseListMatrices.jl/)
 package. This matrix type saves RAM, allowing the storage of  big matrices. In this
 example, we use the `to_table` function of *PairwiseListMatrices* to convert the matrix
 into a table with indices.  
@@ -563,7 +563,7 @@ meanpercentidentity(msa)
 ```
 
 One can easily plot that matrix and its distribution using the `heatmap` and `histogram`
-functions of the [Plots![](../assets/external-link.png)](https://github.com/tbreloff/Plots.jl)
+functions of the [Plots![](/assets/external-link.png)](https://github.com/tbreloff/Plots.jl)
 package.  
 
 ```@setup msa_pid
@@ -593,10 +593,10 @@ nothing # hide
 
 The `MSA` module allows to clusterize sequences in a MSA. The `hobohmI` function takes as
 input a MSA followed by an identity threshold value, and returns a `Clusters` type
-with the result of a [Hobohm I![](../assets/external-link.png)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2142204/)
+with the result of a [Hobohm I![](/assets/external-link.png)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2142204/)
 sequence clustering. The Hobohm I algorithm will add a sequence to an existing cluster, if
 the percentage of identity is equal or greater than the threshold.  
-The `Clusters` is sub-type of `ClusteringResult` from the [Clustering.jl![](../assets/external-link.png)](http://clusteringjl.readthedocs.org/en/latest/index.html)
+The `Clusters` is sub-type of `ClusteringResult` from the [Clustering.jl![](/assets/external-link.png)](http://clusteringjl.readthedocs.org/en/latest/index.html)
 package. One advantage of use a sub-type of `ClusteringResult`is that you are able to use
 any method defined on `Clustering.jl` like `varinfo` (Variation of Information) for example.
 Also, you can use any clustering algorithm included in *Clustering.jl*, and convert its
@@ -645,7 +645,7 @@ nothing # hide
 
 ![](msa_clusters_i.png)  
 
-We are going to use the [DataFrames![](../assets/external-link.png)](http://dataframesjl.readthedocs.org/en/latest/)
+We are going to use the [DataFrames![](/assets/external-link.png)](http://dataframesjl.readthedocs.org/en/latest/)
 package to easily select the sequence with highest coverage of each cluster.  
 
 ```@example msa_clusters
