@@ -1,4 +1,4 @@
-[![MIToS](http://diegozea.github.io/MIToS.jl/assets/MIToS_logo.png)](http://diegozea.github.io/MIToS.jl/)
+[![MIToS](http://diegozea.github.io/MIToS.jl/latest/assets/MIToS_logo.png)](http://diegozea.github.io/MIToS.jl/)
 ### Mutual Information Tools for protein Sequence analysis
 
 Julia 0.4:
