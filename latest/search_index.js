@@ -1,7 +1,7 @@
 var documenterSearchIndex = {"docs": [
 
 {
-    "location": "man/Index.html#",
+    "location": "index.html#",
     "page": "Home",
     "title": "Home",
     "category": "page",
@@ -9,7 +9,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Index.html#Modules-1",
+    "location": "index.html#Modules-1",
     "page": "Home",
     "title": "Modules",
     "category": "section",
@@ -17,7 +17,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Index.html#Citation-1",
+    "location": "index.html#Citation-1",
     "page": "Home",
     "title": "Citation",
     "category": "section",
@@ -25,7 +25,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Installation.html#",
+    "location": "Installation.html#",
     "page": "Installation",
     "title": "Installation",
     "category": "page",
@@ -33,7 +33,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Installation.html#Installation-1",
+    "location": "Installation.html#Installation-1",
     "page": "Installation",
     "title": "Installation",
     "category": "section",
@@ -41,7 +41,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Installation.html#Plots-installation-1",
+    "location": "Installation.html#Plots-installation-1",
     "page": "Installation",
     "title": "Plots installation",
     "category": "section",
@@ -49,7 +49,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Installation.html#Scripts-location-1",
+    "location": "Installation.html#Scripts-location-1",
     "page": "Installation",
     "title": "Scripts location",
     "category": "section",
@@ -57,7 +57,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Installation.html#How-to-add-the-script-folder-to-PATH-in-Bash?-1",
+    "location": "Installation.html#How-to-add-the-script-folder-to-PATH-in-Bash?-1",
     "page": "Installation",
     "title": "How to add the script folder to PATH in Bash?",
     "category": "section",
@@ -65,7 +65,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Example.html#",
+    "location": "Example.html#",
     "page": "Example",
     "title": "Example",
     "category": "page",
@@ -73,7 +73,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Example.html#Example-1",
+    "location": "Example.html#Example-1",
     "page": "Example",
     "title": "Example",
     "category": "section",
@@ -81,7 +81,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Example.html#juliarepl-1",
+    "location": "Example.html#juliarepl-1",
     "page": "Example",
     "title": "MIToS in the Julia REPL",
     "category": "section",
@@ -89,7 +89,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Example.html#commandline-1",
+    "location": "Example.html#commandline-1",
     "page": "Example",
     "title": "MIToS in system command line",
     "category": "section",
@@ -97,7 +97,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#",
+    "location": "MSA.html#",
     "page": "MSA",
     "title": "MSA",
     "category": "page",
@@ -105,7 +105,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Module-MSA-1",
+    "location": "MSA.html#Module-MSA-1",
     "page": "MSA",
     "title": "MSA",
     "category": "section",
@@ -113,7 +113,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Features-1",
+    "location": "MSA.html#Features-1",
     "page": "MSA",
     "title": "Features",
     "category": "section",
@@ -121,7 +121,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Contents-1",
+    "location": "MSA.html#Contents-1",
     "page": "MSA",
     "title": "Contents",
     "category": "section",
@@ -129,7 +129,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#MSA-IO-1",
+    "location": "MSA.html#MSA-IO-1",
     "page": "MSA",
     "title": "MSA IO",
     "category": "section",
@@ -137,7 +137,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Reading-MSA-files-1",
+    "location": "MSA.html#Reading-MSA-files-1",
     "page": "MSA",
     "title": "Reading MSA files",
     "category": "section",
@@ -145,7 +145,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Writing-MSA-files-1",
+    "location": "MSA.html#Writing-MSA-files-1",
     "page": "MSA",
     "title": "Writing MSA files",
     "category": "section",
@@ -153,7 +153,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#MSA-Annotations-1",
+    "location": "MSA.html#MSA-Annotations-1",
     "page": "MSA",
     "title": "MSA Annotations",
     "category": "section",
@@ -161,7 +161,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Editing-your-MSA-1",
+    "location": "MSA.html#Editing-your-MSA-1",
     "page": "MSA",
     "title": "Editing your MSA",
     "category": "section",
@@ -169,7 +169,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Example:-Deleting-sequences-1",
+    "location": "MSA.html#Example:-Deleting-sequences-1",
     "page": "MSA",
     "title": "Example: Deleting sequences",
     "category": "section",
@@ -177,7 +177,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Example:-Exporting-a-MSA-for-freecontact-(part-I)-1",
+    "location": "MSA.html#Example:-Exporting-a-MSA-for-freecontact-(part-I)-1",
     "page": "MSA",
     "title": "Example: Exporting a MSA for freecontact (part I)",
     "category": "section",
@@ -185,7 +185,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Column-and-sequence-mappings-1",
+    "location": "MSA.html#Column-and-sequence-mappings-1",
     "page": "MSA",
     "title": "Column and sequence mappings",
     "category": "section",
@@ -193,7 +193,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Example:-Exporting-a-MSA-for-freecontact-(part-II)-1",
+    "location": "MSA.html#Example:-Exporting-a-MSA-for-freecontact-(part-II)-1",
     "page": "MSA",
     "title": "Example: Exporting a MSA for freecontact (part II)",
     "category": "section",
@@ -201,7 +201,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Get-sequences-from-a-MSA-1",
+    "location": "MSA.html#Get-sequences-from-a-MSA-1",
     "page": "MSA",
     "title": "Get sequences from a MSA",
     "category": "section",
@@ -209,7 +209,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Describing-your-MSA-1",
+    "location": "MSA.html#Describing-your-MSA-1",
     "page": "MSA",
     "title": "Describing your MSA",
     "category": "section",
@@ -217,7 +217,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Example:-Plotting-gap-percentage-per-column-and-coverage-per-sequence-1",
+    "location": "MSA.html#Example:-Plotting-gap-percentage-per-column-and-coverage-per-sequence-1",
     "page": "MSA",
     "title": "Example: Plotting gap percentage per column and coverage per sequence",
     "category": "section",
@@ -225,7 +225,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Example:-Filter-sequences-per-coverage-and-columns-per-gap-fraction-1",
+    "location": "MSA.html#Example:-Filter-sequences-per-coverage-and-columns-per-gap-fraction-1",
     "page": "MSA",
     "title": "Example: Filter sequences per coverage and columns per gap fraction",
     "category": "section",
@@ -233,7 +233,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Example:-Plotting-the-percentage-of-identity-between-sequences-1",
+    "location": "MSA.html#Example:-Plotting-the-percentage-of-identity-between-sequences-1",
     "page": "MSA",
     "title": "Example: Plotting the percentage of identity between sequences",
     "category": "section",
@@ -241,7 +241,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Sequence-clustering-1",
+    "location": "MSA.html#Sequence-clustering-1",
     "page": "MSA",
     "title": "Sequence clustering",
     "category": "section",
@@ -249,7 +249,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA.html#Example:-Reducing-redundancy-of-a-MSA-1",
+    "location": "MSA.html#Example:-Reducing-redundancy-of-a-MSA-1",
     "page": "MSA",
     "title": "Example: Reducing redundancy of a MSA",
     "category": "section",
@@ -257,7 +257,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#",
+    "location": "Information.html#",
     "page": "Information",
     "title": "Information",
     "category": "page",
@@ -265,7 +265,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#Module-Information-1",
+    "location": "Information.html#Module-Information-1",
     "page": "Information",
     "title": "Information",
     "category": "section",
@@ -273,7 +273,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#Features-1",
+    "location": "Information.html#Features-1",
     "page": "Information",
     "title": "Features",
     "category": "section",
@@ -281,7 +281,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#Contents-1",
+    "location": "Information.html#Contents-1",
     "page": "Information",
     "title": "Contents",
     "category": "section",
@@ -289,7 +289,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#Counting-residues-1",
+    "location": "Information.html#Counting-residues-1",
     "page": "Information",
     "title": "Counting residues",
     "category": "section",
@@ -297,7 +297,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#Example:-Plotting-the-probabilities-of-each-residue-in-a-sequence-1",
+    "location": "Information.html#Example:-Plotting-the-probabilities-of-each-residue-in-a-sequence-1",
     "page": "Information",
     "title": "Example: Plotting the probabilities of each residue in a sequence",
     "category": "section",
@@ -305,7 +305,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#Low-count-corrections-1",
+    "location": "Information.html#Low-count-corrections-1",
     "page": "Information",
     "title": "Low count corrections",
     "category": "section",
@@ -313,7 +313,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#Correction-for-data-redundancy-in-a-MSA-1",
+    "location": "Information.html#Correction-for-data-redundancy-in-a-MSA-1",
     "page": "Information",
     "title": "Correction for data redundancy in a MSA",
     "category": "section",
@@ -321,7 +321,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#Estimating-information-measures-on-an-MSA-1",
+    "location": "Information.html#Estimating-information-measures-on-an-MSA-1",
     "page": "Information",
     "title": "Estimating information measures on an MSA",
     "category": "section",
@@ -329,7 +329,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#Example:-Estimating-*H(X)*-and-*H(X,-Y)*-over-an-MSA-1",
+    "location": "Information.html#Example:-Estimating-*H(X)*-and-*H(X,-Y)*-over-an-MSA-1",
     "page": "Information",
     "title": "Example: Estimating H(X) and H(X, Y) over an MSA",
     "category": "section",
@@ -337,7 +337,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#MIToS.Information.buslje09",
+    "location": "Information.html#MIToS.Information.buslje09",
     "page": "Information",
     "title": "MIToS.Information.buslje09",
     "category": "Function",
@@ -345,7 +345,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#MIToS.Information.BLMI",
+    "location": "Information.html#MIToS.Information.BLMI",
     "page": "Information",
     "title": "MIToS.Information.BLMI",
     "category": "Function",
@@ -353,7 +353,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#Corrected-Mutual-Information-1",
+    "location": "Information.html#Corrected-Mutual-Information-1",
     "page": "Information",
     "title": "Corrected Mutual Information",
     "category": "section",
@@ -361,7 +361,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#Example:-Estimating-corrected-MI-from-an-MSA-1",
+    "location": "Information.html#Example:-Estimating-corrected-MI-from-an-MSA-1",
     "page": "Information",
     "title": "Example: Estimating corrected MI from an MSA",
     "category": "section",
@@ -369,7 +369,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information.html#Visualize-Mutual-Information-1",
+    "location": "Information.html#Visualize-Mutual-Information-1",
     "page": "Information",
     "title": "Visualize Mutual Information",
     "category": "section",
@@ -377,7 +377,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS.html#",
+    "location": "SIFTS.html#",
     "page": "SIFTS",
     "title": "SIFTS",
     "category": "page",
@@ -385,7 +385,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS.html#Module-SIFTS-1",
+    "location": "SIFTS.html#Module-SIFTS-1",
     "page": "SIFTS",
     "title": "SIFTS",
     "category": "section",
@@ -393,7 +393,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS.html#Features-1",
+    "location": "SIFTS.html#Features-1",
     "page": "SIFTS",
     "title": "Features",
     "category": "section",
@@ -401,7 +401,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS.html#Contents-1",
+    "location": "SIFTS.html#Contents-1",
     "page": "SIFTS",
     "title": "Contents",
     "category": "section",
@@ -409,7 +409,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS.html#Simplest-residue-level-mapping-1",
+    "location": "SIFTS.html#Simplest-residue-level-mapping-1",
     "page": "SIFTS",
     "title": "Simplest residue-level mapping",
     "category": "section",
@@ -417,7 +417,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS.html#Storing-residue-level-mapping-1",
+    "location": "SIFTS.html#Storing-residue-level-mapping-1",
     "page": "SIFTS",
     "title": "Storing residue-level mapping",
     "category": "section",
@@ -425,7 +425,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS.html#Accessing-residue-level-cross-references-1",
+    "location": "SIFTS.html#Accessing-residue-level-cross-references-1",
     "page": "SIFTS",
     "title": "Accessing residue-level cross references",
     "category": "section",
@@ -433,7 +433,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS.html#Example:-Which-residues-are-missing-in-the-PDB-structure-1",
+    "location": "SIFTS.html#Example:-Which-residues-are-missing-in-the-PDB-structure-1",
     "page": "SIFTS",
     "title": "Example: Which residues are missing in the PDB structure",
     "category": "section",
@@ -441,7 +441,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB.html#",
+    "location": "PDB.html#",
     "page": "PDB",
     "title": "PDB",
     "category": "page",
@@ -449,7 +449,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB.html#Module-PDB-1",
+    "location": "PDB.html#Module-PDB-1",
     "page": "PDB",
     "title": "PDB",
     "category": "section",
@@ -457,7 +457,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB.html#Features-1",
+    "location": "PDB.html#Features-1",
     "page": "PDB",
     "title": "Features",
     "category": "section",
@@ -465,7 +465,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB.html#Contents-1",
+    "location": "PDB.html#Contents-1",
     "page": "PDB",
     "title": "Contents",
     "category": "section",
@@ -473,7 +473,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB.html#Retrieve-information-from-PDB-database-1",
+    "location": "PDB.html#Retrieve-information-from-PDB-database-1",
     "page": "PDB",
     "title": "Retrieve information from PDB database",
     "category": "section",
@@ -481,7 +481,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB.html#Read-and-parse-PDB-files-1",
+    "location": "PDB.html#Read-and-parse-PDB-files-1",
     "page": "PDB",
     "title": "Read and parse PDB files",
     "category": "section",
@@ -489,7 +489,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB.html#Looking-for-particular-residues-1",
+    "location": "PDB.html#Looking-for-particular-residues-1",
     "page": "PDB",
     "title": "Looking for particular residues",
     "category": "section",
@@ -497,7 +497,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB.html#Getting-a-Dict-of-PDBResidues-1",
+    "location": "PDB.html#Getting-a-Dict-of-PDBResidues-1",
     "page": "PDB",
     "title": "Getting a Dict of PDBResidues",
     "category": "section",
@@ -505,7 +505,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB.html#Select-particular-residues-1",
+    "location": "PDB.html#Select-particular-residues-1",
     "page": "PDB",
     "title": "Select particular residues",
     "category": "section",
@@ -513,7 +513,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB.html#Select-particular-atoms-1",
+    "location": "PDB.html#Select-particular-atoms-1",
     "page": "PDB",
     "title": "Select particular atoms",
     "category": "section",
@@ -521,7 +521,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB.html#Protein-contact-map-1",
+    "location": "PDB.html#Protein-contact-map-1",
     "page": "PDB",
     "title": "Protein contact map",
     "category": "section",
@@ -529,7 +529,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB.html#Structural-superposition-1",
+    "location": "PDB.html#Structural-superposition-1",
     "page": "PDB",
     "title": "Structural superposition",
     "category": "section",
@@ -537,7 +537,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam.html#",
+    "location": "Pfam.html#",
     "page": "Pfam",
     "title": "Pfam",
     "category": "page",
@@ -545,7 +545,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam.html#Module-Pfam-1",
+    "location": "Pfam.html#Module-Pfam-1",
     "page": "Pfam",
     "title": "Pfam",
     "category": "section",
@@ -553,7 +553,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam.html#Features-1",
+    "location": "Pfam.html#Features-1",
     "page": "Pfam",
     "title": "Features",
     "category": "section",
@@ -561,7 +561,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam.html#Contents-1",
+    "location": "Pfam.html#Contents-1",
     "page": "Pfam",
     "title": "Contents",
     "category": "section",
@@ -569,7 +569,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam.html#Getting-a-Pfam-MSA-1",
+    "location": "Pfam.html#Getting-a-Pfam-MSA-1",
     "page": "Pfam",
     "title": "Getting a Pfam MSA",
     "category": "section",
@@ -577,7 +577,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam.html#Getting-PDB-information-from-an-MSA-1",
+    "location": "Pfam.html#Getting-PDB-information-from-an-MSA-1",
     "page": "Pfam",
     "title": "Getting PDB information from an MSA",
     "category": "section",
@@ -585,7 +585,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam.html#PDB-contacts-and-AUC-1",
+    "location": "Pfam.html#PDB-contacts-and-AUC-1",
     "page": "Pfam",
     "title": "PDB contacts and AUC",
     "category": "section",
@@ -593,7 +593,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Scripts.html#",
+    "location": "Scripts.html#",
     "page": "Scripts",
     "title": "Scripts",
     "category": "page",
@@ -601,7 +601,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Scripts.html#Scripts-1",
+    "location": "Scripts.html#Scripts-1",
     "page": "Scripts",
     "title": "Scripts",
     "category": "section",
@@ -609,7 +609,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Scripts.html#Buslje09.jl-1",
+    "location": "Scripts.html#Buslje09.jl-1",
     "page": "Scripts",
     "title": "Buslje09.jl",
     "category": "section",
@@ -617,7 +617,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Scripts.html#BLMI.jl-1",
+    "location": "Scripts.html#BLMI.jl-1",
     "page": "Scripts",
     "title": "BLMI.jl",
     "category": "section",
@@ -625,7 +625,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Scripts.html#DownloadPDB.jl-1",
+    "location": "Scripts.html#DownloadPDB.jl-1",
     "page": "Scripts",
     "title": "DownloadPDB.jl",
     "category": "section",
@@ -633,7 +633,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Scripts.html#Distances.jl-1",
+    "location": "Scripts.html#Distances.jl-1",
     "page": "Scripts",
     "title": "Distances.jl",
     "category": "section",
@@ -641,7 +641,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Scripts.html#MSADescription.jl-1",
+    "location": "Scripts.html#MSADescription.jl-1",
     "page": "Scripts",
     "title": "MSADescription.jl",
     "category": "section",
@@ -649,7 +649,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Scripts.html#PercentIdentity.jl-1",
+    "location": "Scripts.html#PercentIdentity.jl-1",
     "page": "Scripts",
     "title": "PercentIdentity.jl",
     "category": "section",
@@ -657,7 +657,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Scripts.html#AlignedColumns.jl-1",
+    "location": "Scripts.html#AlignedColumns.jl-1",
     "page": "Scripts",
     "title": "AlignedColumns.jl",
     "category": "section",
@@ -665,7 +665,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Scripts.html#SplitStockholm.jl-1",
+    "location": "Scripts.html#SplitStockholm.jl-1",
     "page": "Scripts",
     "title": "SplitStockholm.jl",
     "category": "section",
@@ -673,7 +673,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#",
+    "location": "MSA_API.html#",
     "page": "MSA",
     "title": "MSA",
     "category": "page",
@@ -681,7 +681,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA",
+    "location": "MSA_API.html#MIToS.MSA",
     "page": "MSA",
     "title": "MIToS.MSA",
     "category": "Module",
@@ -689,7 +689,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MSA-1",
+    "location": "MSA_API.html#MSA-1",
     "page": "MSA",
     "title": "MSA",
     "category": "section",
@@ -697,7 +697,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#Contents-1",
+    "location": "MSA_API.html#Contents-1",
     "page": "MSA",
     "title": "Contents",
     "category": "section",
@@ -705,7 +705,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.AbstractAlignedObject",
+    "location": "MSA_API.html#MIToS.MSA.AbstractAlignedObject",
     "page": "MSA",
     "title": "MIToS.MSA.AbstractAlignedObject",
     "category": "Type",
@@ -713,7 +713,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.AbstractAlignedSequence",
+    "location": "MSA_API.html#MIToS.MSA.AbstractAlignedSequence",
     "page": "MSA",
     "title": "MIToS.MSA.AbstractAlignedSequence",
     "category": "Type",
@@ -721,7 +721,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.AbstractMultipleSequenceAlignment",
+    "location": "MSA_API.html#MIToS.MSA.AbstractMultipleSequenceAlignment",
     "page": "MSA",
     "title": "MIToS.MSA.AbstractMultipleSequenceAlignment",
     "category": "Type",
@@ -729,7 +729,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.AlignedSequence",
+    "location": "MSA_API.html#MIToS.MSA.AlignedSequence",
     "page": "MSA",
     "title": "MIToS.MSA.AlignedSequence",
     "category": "Type",
@@ -737,7 +737,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.AnnotatedAlignedSequence",
+    "location": "MSA_API.html#MIToS.MSA.AnnotatedAlignedSequence",
     "page": "MSA",
     "title": "MIToS.MSA.AnnotatedAlignedSequence",
     "category": "Type",
@@ -745,7 +745,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.AnnotatedMultipleSequenceAlignment",
+    "location": "MSA_API.html#MIToS.MSA.AnnotatedMultipleSequenceAlignment",
     "page": "MSA",
     "title": "MIToS.MSA.AnnotatedMultipleSequenceAlignment",
     "category": "Type",
@@ -753,7 +753,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.Annotations",
+    "location": "MSA_API.html#MIToS.MSA.Annotations",
     "page": "MSA",
     "title": "MIToS.MSA.Annotations",
     "category": "Type",
@@ -761,7 +761,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.Clusters",
+    "location": "MSA_API.html#MIToS.MSA.Clusters",
     "page": "MSA",
     "title": "MIToS.MSA.Clusters",
     "category": "Type",
@@ -769,7 +769,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.GappedAlphabet",
+    "location": "MSA_API.html#MIToS.MSA.GappedAlphabet",
     "page": "MSA",
     "title": "MIToS.MSA.GappedAlphabet",
     "category": "Type",
@@ -777,7 +777,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.MultipleSequenceAlignment",
+    "location": "MSA_API.html#MIToS.MSA.MultipleSequenceAlignment",
     "page": "MSA",
     "title": "MIToS.MSA.MultipleSequenceAlignment",
     "category": "Type",
@@ -785,7 +785,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.NoClustering",
+    "location": "MSA_API.html#MIToS.MSA.NoClustering",
     "page": "MSA",
     "title": "MIToS.MSA.NoClustering",
     "category": "Type",
@@ -793,7 +793,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.ReducedAlphabet",
+    "location": "MSA_API.html#MIToS.MSA.ReducedAlphabet",
     "page": "MSA",
     "title": "MIToS.MSA.ReducedAlphabet",
     "category": "Type",
@@ -801,7 +801,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.Residue",
+    "location": "MSA_API.html#MIToS.MSA.Residue",
     "page": "MSA",
     "title": "MIToS.MSA.Residue",
     "category": "Type",
@@ -809,7 +809,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.ResidueAlphabet",
+    "location": "MSA_API.html#MIToS.MSA.ResidueAlphabet",
     "page": "MSA",
     "title": "MIToS.MSA.ResidueAlphabet",
     "category": "Type",
@@ -817,7 +817,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.UngappedAlphabet",
+    "location": "MSA_API.html#MIToS.MSA.UngappedAlphabet",
     "page": "MSA",
     "title": "MIToS.MSA.UngappedAlphabet",
     "category": "Type",
@@ -825,7 +825,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#Types-1",
+    "location": "MSA_API.html#Types-1",
     "page": "MSA",
     "title": "Types",
     "category": "section",
@@ -833,7 +833,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.GAP",
+    "location": "MSA_API.html#MIToS.MSA.GAP",
     "page": "MSA",
     "title": "MIToS.MSA.GAP",
     "category": "Constant",
@@ -841,7 +841,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.XAA",
+    "location": "MSA_API.html#MIToS.MSA.XAA",
     "page": "MSA",
     "title": "MIToS.MSA.XAA",
     "category": "Constant",
@@ -849,7 +849,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#Constants-1",
+    "location": "MSA_API.html#Constants-1",
     "page": "MSA",
     "title": "Constants",
     "category": "section",
@@ -857,7 +857,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.@res_str-Tuple{Any}",
+    "location": "MSA_API.html#MIToS.MSA.@res_str-Tuple{Any}",
     "page": "MSA",
     "title": "MIToS.MSA.@res_str",
     "category": "Macro",
@@ -865,7 +865,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#Macros-1",
+    "location": "MSA_API.html#Macros-1",
     "page": "MSA",
     "title": "Macros",
     "category": "section",
@@ -873,7 +873,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#Base.Random.rand-Tuple{Any,Type{MIToS.MSA.Residue}}",
+    "location": "MSA_API.html#Base.Random.rand-Tuple{Any,Type{MIToS.MSA.Residue}}",
     "page": "MSA",
     "title": "Base.Random.rand",
     "category": "Method",
@@ -881,7 +881,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#Base.Random.shuffle!",
+    "location": "MSA_API.html#Base.Random.shuffle!",
     "page": "MSA",
     "title": "Base.Random.shuffle!",
     "category": "Function",
@@ -889,7 +889,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#Base.Random.shuffle-Tuple{AbstractRNG,Array{MIToS.MSA.Residue,2},Vararg{Any,N}}",
+    "location": "MSA_API.html#Base.Random.shuffle-Tuple{AbstractRNG,Array{MIToS.MSA.Residue,2},Vararg{Any,N}}",
     "page": "MSA",
     "title": "Base.Random.shuffle",
     "category": "Method",
@@ -897,7 +897,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#Base.isvalid-Tuple{Type{MIToS.MSA.Residue},MIToS.MSA.Residue}",
+    "location": "MSA_API.html#Base.isvalid-Tuple{Type{MIToS.MSA.Residue},MIToS.MSA.Residue}",
     "page": "MSA",
     "title": "Base.isvalid",
     "category": "Method",
@@ -905,7 +905,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#Base.names-Tuple{MIToS.MSA.ReducedAlphabet}",
+    "location": "MSA_API.html#Base.names-Tuple{MIToS.MSA.ReducedAlphabet}",
     "page": "MSA",
     "title": "Base.names",
     "category": "Method",
@@ -913,7 +913,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#Base.parse",
+    "location": "MSA_API.html#Base.parse",
     "page": "MSA",
     "title": "Base.parse",
     "category": "Function",
@@ -921,7 +921,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#Clustering.assignments-Tuple{MIToS.MSA.Clusters}",
+    "location": "MSA_API.html#Clustering.assignments-Tuple{MIToS.MSA.Clusters}",
     "page": "MSA",
     "title": "Clustering.assignments",
     "category": "Method",
@@ -929,7 +929,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#Clustering.nclusters-Tuple{MIToS.MSA.Clusters}",
+    "location": "MSA_API.html#Clustering.nclusters-Tuple{MIToS.MSA.Clusters}",
     "page": "MSA",
     "title": "Clustering.nclusters",
     "category": "Method",
@@ -937,7 +937,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.adjustreference",
+    "location": "MSA_API.html#MIToS.MSA.adjustreference",
     "page": "MSA",
     "title": "MIToS.MSA.adjustreference",
     "category": "Function",
@@ -945,7 +945,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.adjustreference!",
+    "location": "MSA_API.html#MIToS.MSA.adjustreference!",
     "page": "MSA",
     "title": "MIToS.MSA.adjustreference!",
     "category": "Function",
@@ -953,7 +953,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.annotate_modification!-Tuple{MIToS.MSA.Annotations,String}",
+    "location": "MSA_API.html#MIToS.MSA.annotate_modification!-Tuple{MIToS.MSA.Annotations,String}",
     "page": "MSA",
     "title": "MIToS.MSA.annotate_modification!",
     "category": "Method",
@@ -961,7 +961,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.annotations-Tuple{MIToS.MSA.AnnotatedMultipleSequenceAlignment}",
+    "location": "MSA_API.html#MIToS.MSA.annotations-Tuple{MIToS.MSA.AnnotatedMultipleSequenceAlignment}",
     "page": "MSA",
     "title": "MIToS.MSA.annotations",
     "category": "Method",
@@ -969,7 +969,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.columngapfraction-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
+    "location": "MSA_API.html#MIToS.MSA.columngapfraction-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
     "page": "MSA",
     "title": "MIToS.MSA.columngapfraction",
     "category": "Method",
@@ -977,7 +977,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.columnnames-Tuple{NamedArrays.NamedArray{MIToS.MSA.Residue,2,AT,DT}}",
+    "location": "MSA_API.html#MIToS.MSA.columnnames-Tuple{NamedArrays.NamedArray{MIToS.MSA.Residue,2,AT,DT}}",
     "page": "MSA",
     "title": "MIToS.MSA.columnnames",
     "category": "Method",
@@ -985,7 +985,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.columnpairsmatrix-Tuple{AbstractArray{MIToS.MSA.Residue,2},Type{T},Type{Val{diagonal}},T}",
+    "location": "MSA_API.html#MIToS.MSA.columnpairsmatrix-Tuple{AbstractArray{MIToS.MSA.Residue,2},Type{T},Type{Val{diagonal}},T}",
     "page": "MSA",
     "title": "MIToS.MSA.columnpairsmatrix",
     "category": "Method",
@@ -993,7 +993,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.coverage-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
+    "location": "MSA_API.html#MIToS.MSA.coverage-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
     "page": "MSA",
     "title": "MIToS.MSA.coverage",
     "category": "Method",
@@ -1001,7 +1001,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.delete_annotated_modifications!-Tuple{MIToS.MSA.Annotations}",
+    "location": "MSA_API.html#MIToS.MSA.delete_annotated_modifications!-Tuple{MIToS.MSA.Annotations}",
     "page": "MSA",
     "title": "MIToS.MSA.delete_annotated_modifications!",
     "category": "Method",
@@ -1009,7 +1009,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.deletefullgapcolumns!",
+    "location": "MSA_API.html#MIToS.MSA.deletefullgapcolumns!",
     "page": "MSA",
     "title": "MIToS.MSA.deletefullgapcolumns!",
     "category": "Function",
@@ -1017,7 +1017,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.filtercolumns!",
+    "location": "MSA_API.html#MIToS.MSA.filtercolumns!",
     "page": "MSA",
     "title": "MIToS.MSA.filtercolumns!",
     "category": "Function",
@@ -1025,7 +1025,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.filtercolumns!-Tuple{MIToS.MSA.Annotations,Any}",
+    "location": "MSA_API.html#MIToS.MSA.filtercolumns!-Tuple{MIToS.MSA.Annotations,Any}",
     "page": "MSA",
     "title": "MIToS.MSA.filtercolumns!",
     "category": "Method",
@@ -1033,7 +1033,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.filtercolumns-Tuple{AbstractArray{MIToS.MSA.Residue,2},Any}",
+    "location": "MSA_API.html#MIToS.MSA.filtercolumns-Tuple{AbstractArray{MIToS.MSA.Residue,2},Any}",
     "page": "MSA",
     "title": "MIToS.MSA.filtercolumns",
     "category": "Method",
@@ -1041,7 +1041,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.filtersequences!",
+    "location": "MSA_API.html#MIToS.MSA.filtersequences!",
     "page": "MSA",
     "title": "MIToS.MSA.filtersequences!",
     "category": "Function",
@@ -1049,7 +1049,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.filtersequences!-Tuple{MIToS.MSA.Annotations,Array{String,1},AbstractArray{Bool,1}}",
+    "location": "MSA_API.html#MIToS.MSA.filtersequences!-Tuple{MIToS.MSA.Annotations,Array{String,1},AbstractArray{Bool,1}}",
     "page": "MSA",
     "title": "MIToS.MSA.filtersequences!",
     "category": "Method",
@@ -1057,7 +1057,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.filtersequences-Tuple{AbstractArray{MIToS.MSA.Residue,2},Any}",
+    "location": "MSA_API.html#MIToS.MSA.filtersequences-Tuple{AbstractArray{MIToS.MSA.Residue,2},Any}",
     "page": "MSA",
     "title": "MIToS.MSA.filtersequences",
     "category": "Method",
@@ -1065,7 +1065,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.gapfraction-Tuple{AbstractArray{MIToS.MSA.Residue,N}}",
+    "location": "MSA_API.html#MIToS.MSA.gapfraction-Tuple{AbstractArray{MIToS.MSA.Residue,N}}",
     "page": "MSA",
     "title": "MIToS.MSA.gapfraction",
     "category": "Method",
@@ -1073,7 +1073,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.gapstrip!",
+    "location": "MSA_API.html#MIToS.MSA.gapstrip!",
     "page": "MSA",
     "title": "MIToS.MSA.gapstrip!",
     "category": "Function",
@@ -1081,7 +1081,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.gapstrip-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
+    "location": "MSA_API.html#MIToS.MSA.gapstrip-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
     "page": "MSA",
     "title": "MIToS.MSA.gapstrip",
     "category": "Method",
@@ -1089,7 +1089,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.getannotcolumn",
+    "location": "MSA_API.html#MIToS.MSA.getannotcolumn",
     "page": "MSA",
     "title": "MIToS.MSA.getannotcolumn",
     "category": "Function",
@@ -1097,7 +1097,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.getannotfile",
+    "location": "MSA_API.html#MIToS.MSA.getannotfile",
     "page": "MSA",
     "title": "MIToS.MSA.getannotfile",
     "category": "Function",
@@ -1105,7 +1105,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.getannotresidue",
+    "location": "MSA_API.html#MIToS.MSA.getannotresidue",
     "page": "MSA",
     "title": "MIToS.MSA.getannotresidue",
     "category": "Function",
@@ -1113,7 +1113,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.getannotsequence",
+    "location": "MSA_API.html#MIToS.MSA.getannotsequence",
     "page": "MSA",
     "title": "MIToS.MSA.getannotsequence",
     "category": "Function",
@@ -1121,7 +1121,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.getcolumnmapping-Tuple{MIToS.MSA.AnnotatedMultipleSequenceAlignment}",
+    "location": "MSA_API.html#MIToS.MSA.getcolumnmapping-Tuple{MIToS.MSA.AnnotatedMultipleSequenceAlignment}",
     "page": "MSA",
     "title": "MIToS.MSA.getcolumnmapping",
     "category": "Method",
@@ -1129,7 +1129,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.getnamedict-Tuple{MIToS.MSA.ReducedAlphabet}",
+    "location": "MSA_API.html#MIToS.MSA.getnamedict-Tuple{MIToS.MSA.ReducedAlphabet}",
     "page": "MSA",
     "title": "MIToS.MSA.getnamedict",
     "category": "Method",
@@ -1137,7 +1137,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.getresidues-Tuple{Array{MIToS.MSA.Residue,2}}",
+    "location": "MSA_API.html#MIToS.MSA.getresidues-Tuple{Array{MIToS.MSA.Residue,2}}",
     "page": "MSA",
     "title": "MIToS.MSA.getresidues",
     "category": "Method",
@@ -1145,7 +1145,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.getresiduesequences-Tuple{Array{MIToS.MSA.Residue,2}}",
+    "location": "MSA_API.html#MIToS.MSA.getresiduesequences-Tuple{Array{MIToS.MSA.Residue,2}}",
     "page": "MSA",
     "title": "MIToS.MSA.getresiduesequences",
     "category": "Method",
@@ -1153,7 +1153,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.getsequence",
+    "location": "MSA_API.html#MIToS.MSA.getsequence",
     "page": "MSA",
     "title": "MIToS.MSA.getsequence",
     "category": "Function",
@@ -1161,7 +1161,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.getsequencemapping-Tuple{MIToS.MSA.AnnotatedMultipleSequenceAlignment,String}",
+    "location": "MSA_API.html#MIToS.MSA.getsequencemapping-Tuple{MIToS.MSA.AnnotatedMultipleSequenceAlignment,String}",
     "page": "MSA",
     "title": "MIToS.MSA.getsequencemapping",
     "category": "Method",
@@ -1169,7 +1169,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.getweight-Tuple{MIToS.MSA.NoClustering,Int64}",
+    "location": "MSA_API.html#MIToS.MSA.getweight-Tuple{MIToS.MSA.NoClustering,Int64}",
     "page": "MSA",
     "title": "MIToS.MSA.getweight",
     "category": "Method",
@@ -1177,7 +1177,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.hobohmI-Tuple{AbstractArray{MIToS.MSA.Residue,2},Any}",
+    "location": "MSA_API.html#MIToS.MSA.hobohmI-Tuple{AbstractArray{MIToS.MSA.Residue,2},Any}",
     "page": "MSA",
     "title": "MIToS.MSA.hobohmI",
     "category": "Method",
@@ -1185,7 +1185,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.meanpercentidentity",
+    "location": "MSA_API.html#MIToS.MSA.meanpercentidentity",
     "page": "MSA",
     "title": "MIToS.MSA.meanpercentidentity",
     "category": "Function",
@@ -1193,7 +1193,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.namedmatrix-Tuple{MIToS.MSA.AbstractAlignedObject}",
+    "location": "MSA_API.html#MIToS.MSA.namedmatrix-Tuple{MIToS.MSA.AbstractAlignedObject}",
     "page": "MSA",
     "title": "MIToS.MSA.namedmatrix",
     "category": "Method",
@@ -1201,7 +1201,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.ncolumns-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
+    "location": "MSA_API.html#MIToS.MSA.ncolumns-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
     "page": "MSA",
     "title": "MIToS.MSA.ncolumns",
     "category": "Method",
@@ -1209,7 +1209,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.ncolumns-Tuple{MIToS.MSA.Annotations}",
+    "location": "MSA_API.html#MIToS.MSA.ncolumns-Tuple{MIToS.MSA.Annotations}",
     "page": "MSA",
     "title": "MIToS.MSA.ncolumns",
     "category": "Method",
@@ -1217,7 +1217,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.nsequences-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
+    "location": "MSA_API.html#MIToS.MSA.nsequences-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
     "page": "MSA",
     "title": "MIToS.MSA.nsequences",
     "category": "Method",
@@ -1225,7 +1225,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.percentidentity",
+    "location": "MSA_API.html#MIToS.MSA.percentidentity",
     "page": "MSA",
     "title": "MIToS.MSA.percentidentity",
     "category": "Function",
@@ -1233,7 +1233,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.percentidentity-Tuple{Any,Any,Any}",
+    "location": "MSA_API.html#MIToS.MSA.percentidentity-Tuple{Any,Any,Any}",
     "page": "MSA",
     "title": "MIToS.MSA.percentidentity",
     "category": "Method",
@@ -1241,7 +1241,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.percentidentity-Tuple{Any,Any}",
+    "location": "MSA_API.html#MIToS.MSA.percentidentity-Tuple{Any,Any}",
     "page": "MSA",
     "title": "MIToS.MSA.percentidentity",
     "category": "Method",
@@ -1249,7 +1249,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.percentsimilarity",
+    "location": "MSA_API.html#MIToS.MSA.percentsimilarity",
     "page": "MSA",
     "title": "MIToS.MSA.percentsimilarity",
     "category": "Function",
@@ -1257,7 +1257,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.percentsimilarity-Tuple{AbstractArray{MIToS.MSA.Residue,2},Vararg{Any,N}}",
+    "location": "MSA_API.html#MIToS.MSA.percentsimilarity-Tuple{AbstractArray{MIToS.MSA.Residue,2},Vararg{Any,N}}",
     "page": "MSA",
     "title": "MIToS.MSA.percentsimilarity",
     "category": "Method",
@@ -1265,7 +1265,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.printmodifications-Tuple{MIToS.MSA.Annotations}",
+    "location": "MSA_API.html#MIToS.MSA.printmodifications-Tuple{MIToS.MSA.Annotations}",
     "page": "MSA",
     "title": "MIToS.MSA.printmodifications",
     "category": "Method",
@@ -1273,7 +1273,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.residue2three-Tuple{MIToS.MSA.Residue}",
+    "location": "MSA_API.html#MIToS.MSA.residue2three-Tuple{MIToS.MSA.Residue}",
     "page": "MSA",
     "title": "MIToS.MSA.residue2three",
     "category": "Method",
@@ -1281,7 +1281,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.residuefraction-Tuple{AbstractArray{MIToS.MSA.Residue,N}}",
+    "location": "MSA_API.html#MIToS.MSA.residuefraction-Tuple{AbstractArray{MIToS.MSA.Residue,N}}",
     "page": "MSA",
     "title": "MIToS.MSA.residuefraction",
     "category": "Method",
@@ -1289,7 +1289,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.sequencenames-Tuple{NamedArrays.NamedArray{MIToS.MSA.Residue,2,AT,DT}}",
+    "location": "MSA_API.html#MIToS.MSA.sequencenames-Tuple{NamedArrays.NamedArray{MIToS.MSA.Residue,2,AT,DT}}",
     "page": "MSA",
     "title": "MIToS.MSA.sequencenames",
     "category": "Method",
@@ -1297,7 +1297,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.sequencepairsmatrix-Tuple{AbstractArray{MIToS.MSA.Residue,2},Type{T},Type{Val{diagonal}},T}",
+    "location": "MSA_API.html#MIToS.MSA.sequencepairsmatrix-Tuple{AbstractArray{MIToS.MSA.Residue,2},Type{T},Type{Val{diagonal}},T}",
     "page": "MSA",
     "title": "MIToS.MSA.sequencepairsmatrix",
     "category": "Method",
@@ -1305,7 +1305,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.setannotcolumn!",
+    "location": "MSA_API.html#MIToS.MSA.setannotcolumn!",
     "page": "MSA",
     "title": "MIToS.MSA.setannotcolumn!",
     "category": "Function",
@@ -1313,7 +1313,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.setannotfile!",
+    "location": "MSA_API.html#MIToS.MSA.setannotfile!",
     "page": "MSA",
     "title": "MIToS.MSA.setannotfile!",
     "category": "Function",
@@ -1321,7 +1321,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.setannotresidue!",
+    "location": "MSA_API.html#MIToS.MSA.setannotresidue!",
     "page": "MSA",
     "title": "MIToS.MSA.setannotresidue!",
     "category": "Function",
@@ -1329,7 +1329,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.setannotsequence!",
+    "location": "MSA_API.html#MIToS.MSA.setannotsequence!",
     "page": "MSA",
     "title": "MIToS.MSA.setannotsequence!",
     "category": "Function",
@@ -1337,7 +1337,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.setreference!",
+    "location": "MSA_API.html#MIToS.MSA.setreference!",
     "page": "MSA",
     "title": "MIToS.MSA.setreference!",
     "category": "Function",
@@ -1345,7 +1345,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.stringsequence-Tuple{AbstractArray{MIToS.MSA.Residue,2},Any}",
+    "location": "MSA_API.html#MIToS.MSA.stringsequence-Tuple{AbstractArray{MIToS.MSA.Residue,2},Any}",
     "page": "MSA",
     "title": "MIToS.MSA.stringsequence",
     "category": "Method",
@@ -1353,7 +1353,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.swapsequences!-Tuple{Array{MIToS.MSA.Residue,2},Int64,Int64}",
+    "location": "MSA_API.html#MIToS.MSA.swapsequences!-Tuple{Array{MIToS.MSA.Residue,2},Int64,Int64}",
     "page": "MSA",
     "title": "MIToS.MSA.swapsequences!",
     "category": "Method",
@@ -1361,7 +1361,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#MIToS.MSA.three2residue-Tuple{String}",
+    "location": "MSA_API.html#MIToS.MSA.three2residue-Tuple{String}",
     "page": "MSA",
     "title": "MIToS.MSA.three2residue",
     "category": "Method",
@@ -1369,7 +1369,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#StatsBase.counts-Tuple{MIToS.MSA.Clusters}",
+    "location": "MSA_API.html#StatsBase.counts-Tuple{MIToS.MSA.Clusters}",
     "page": "MSA",
     "title": "StatsBase.counts",
     "category": "Method",
@@ -1377,7 +1377,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/MSA_API.html#Methods-and-functions-1",
+    "location": "MSA_API.html#Methods-and-functions-1",
     "page": "MSA",
     "title": "Methods and functions",
     "category": "section",
@@ -1385,7 +1385,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#",
+    "location": "Information_API.html#",
     "page": "Information",
     "title": "Information",
     "category": "page",
@@ -1393,7 +1393,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information",
+    "location": "Information_API.html#MIToS.Information",
     "page": "Information",
     "title": "MIToS.Information",
     "category": "Module",
@@ -1401,7 +1401,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#Information-1",
+    "location": "Information_API.html#Information-1",
     "page": "Information",
     "title": "Information",
     "category": "section",
@@ -1409,7 +1409,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#Contents-1",
+    "location": "Information_API.html#Contents-1",
     "page": "Information",
     "title": "Contents",
     "category": "section",
@@ -1417,7 +1417,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.AdditiveSmoothing",
+    "location": "Information_API.html#MIToS.Information.AdditiveSmoothing",
     "page": "Information",
     "title": "MIToS.Information.AdditiveSmoothing",
     "category": "Type",
@@ -1425,7 +1425,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.BLOSUM_Pseudofrequencies",
+    "location": "Information_API.html#MIToS.Information.BLOSUM_Pseudofrequencies",
     "page": "Information",
     "title": "MIToS.Information.BLOSUM_Pseudofrequencies",
     "category": "Type",
@@ -1433,7 +1433,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.ContingencyTable",
+    "location": "Information_API.html#MIToS.Information.ContingencyTable",
     "page": "Information",
     "title": "MIToS.Information.ContingencyTable",
     "category": "Type",
@@ -1441,7 +1441,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.Counts",
+    "location": "Information_API.html#MIToS.Information.Counts",
     "page": "Information",
     "title": "MIToS.Information.Counts",
     "category": "Type",
@@ -1449,7 +1449,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.NoPseudocount",
+    "location": "Information_API.html#MIToS.Information.NoPseudocount",
     "page": "Information",
     "title": "MIToS.Information.NoPseudocount",
     "category": "Type",
@@ -1457,7 +1457,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.NoPseudofrequencies",
+    "location": "Information_API.html#MIToS.Information.NoPseudofrequencies",
     "page": "Information",
     "title": "MIToS.Information.NoPseudofrequencies",
     "category": "Type",
@@ -1465,7 +1465,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.Probabilities",
+    "location": "Information_API.html#MIToS.Information.Probabilities",
     "page": "Information",
     "title": "MIToS.Information.Probabilities",
     "category": "Type",
@@ -1473,7 +1473,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.Pseudocount",
+    "location": "Information_API.html#MIToS.Information.Pseudocount",
     "page": "Information",
     "title": "MIToS.Information.Pseudocount",
     "category": "Type",
@@ -1481,7 +1481,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.Pseudofrequencies",
+    "location": "Information_API.html#MIToS.Information.Pseudofrequencies",
     "page": "Information",
     "title": "MIToS.Information.Pseudofrequencies",
     "category": "Type",
@@ -1489,7 +1489,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#Types-1",
+    "location": "Information_API.html#Types-1",
     "page": "Information",
     "title": "Types",
     "category": "section",
@@ -1497,7 +1497,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.BLOSUM62_Pi",
+    "location": "Information_API.html#MIToS.Information.BLOSUM62_Pi",
     "page": "Information",
     "title": "MIToS.Information.BLOSUM62_Pi",
     "category": "Constant",
@@ -1505,7 +1505,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.BLOSUM62_Pij",
+    "location": "Information_API.html#MIToS.Information.BLOSUM62_Pij",
     "page": "Information",
     "title": "MIToS.Information.BLOSUM62_Pij",
     "category": "Constant",
@@ -1513,7 +1513,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#Constants-1",
+    "location": "Information_API.html#Constants-1",
     "page": "Information",
     "title": "Constants",
     "category": "section",
@@ -1521,7 +1521,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#Macros-1",
+    "location": "Information_API.html#Macros-1",
     "page": "Information",
     "title": "Macros",
     "category": "section",
@@ -1529,7 +1529,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#Base.LinAlg.normalize!-Tuple{MIToS.Information.ContingencyTable{T,N,A}}",
+    "location": "Information_API.html#Base.LinAlg.normalize!-Tuple{MIToS.Information.ContingencyTable{T,N,A}}",
     "page": "Information",
     "title": "Base.LinAlg.normalize!",
     "category": "Method",
@@ -1537,7 +1537,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#Base.LinAlg.normalize-Tuple{MIToS.Information.ContingencyTable{T,N,A}}",
+    "location": "Information_API.html#Base.LinAlg.normalize-Tuple{MIToS.Information.ContingencyTable{T,N,A}}",
     "page": "Information",
     "title": "Base.LinAlg.normalize",
     "category": "Method",
@@ -1545,7 +1545,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#Base.count-Tuple{Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}",
+    "location": "Information_API.html#Base.count-Tuple{Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}",
     "page": "Information",
     "title": "Base.count",
     "category": "Method",
@@ -1553,7 +1553,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.APC!-Tuple{Array{T,2}}",
+    "location": "Information_API.html#MIToS.Information.APC!-Tuple{Array{T,2}}",
     "page": "Information",
     "title": "MIToS.Information.APC!",
     "category": "Method",
@@ -1561,7 +1561,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.BLMI-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
+    "location": "Information_API.html#MIToS.Information.BLMI-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
     "page": "Information",
     "title": "MIToS.Information.BLMI",
     "category": "Method",
@@ -1569,7 +1569,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.apply_pseudocount!-Tuple{MIToS.Information.ContingencyTable{T,N,A},T}",
+    "location": "Information_API.html#MIToS.Information.apply_pseudocount!-Tuple{MIToS.Information.ContingencyTable{T,N,A},T}",
     "page": "Information",
     "title": "MIToS.Information.apply_pseudocount!",
     "category": "Method",
@@ -1577,7 +1577,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.apply_pseudofrequencies!-Tuple{MIToS.Information.ContingencyTable{T,2,MIToS.MSA.UngappedAlphabet},MIToS.Information.BLOSUM_Pseudofrequencies}",
+    "location": "Information_API.html#MIToS.Information.apply_pseudofrequencies!-Tuple{MIToS.Information.ContingencyTable{T,2,MIToS.MSA.UngappedAlphabet},MIToS.Information.BLOSUM_Pseudofrequencies}",
     "page": "Information",
     "title": "MIToS.Information.apply_pseudofrequencies!",
     "category": "Method",
@@ -1585,7 +1585,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.buslje09-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
+    "location": "Information_API.html#MIToS.Information.buslje09-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
     "page": "Information",
     "title": "MIToS.Information.buslje09",
     "category": "Method",
@@ -1593,7 +1593,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.count!-Tuple{MIToS.Information.ContingencyTable{T,N,A},Any,MIToS.Information.Pseudocount,Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}",
+    "location": "Information_API.html#MIToS.Information.count!-Tuple{MIToS.Information.ContingencyTable{T,N,A},Any,MIToS.Information.Pseudocount,Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}",
     "page": "Information",
     "title": "MIToS.Information.count!",
     "category": "Method",
@@ -1601,7 +1601,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.cumulative-Tuple{PairwiseListMatrices.PairwiseListMatrix{T,D,VT},T}",
+    "location": "Information_API.html#MIToS.Information.cumulative-Tuple{PairwiseListMatrices.PairwiseListMatrix{T,D,VT},T}",
     "page": "Information",
     "title": "MIToS.Information.cumulative",
     "category": "Method",
@@ -1609,7 +1609,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.delete_dimensions!-Tuple{MIToS.Information.ContingencyTable{T,S,A},MIToS.Information.ContingencyTable{T,N,A},Vararg{Int64,N}}",
+    "location": "Information_API.html#MIToS.Information.delete_dimensions!-Tuple{MIToS.Information.ContingencyTable{T,S,A},MIToS.Information.ContingencyTable{T,N,A},Vararg{Int64,N}}",
     "page": "Information",
     "title": "MIToS.Information.delete_dimensions!",
     "category": "Method",
@@ -1617,7 +1617,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.delete_dimensions-Tuple{MIToS.Information.ContingencyTable{T,N,A},Vararg{Int64,I}}",
+    "location": "Information_API.html#MIToS.Information.delete_dimensions-Tuple{MIToS.Information.ContingencyTable{T,N,A},Vararg{Int64,I}}",
     "page": "Information",
     "title": "MIToS.Information.delete_dimensions",
     "category": "Method",
@@ -1625,7 +1625,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.gap_intersection_percentage-Tuple{MIToS.Information.Counts{T,2,MIToS.MSA.GappedAlphabet}}",
+    "location": "Information_API.html#MIToS.Information.gap_intersection_percentage-Tuple{MIToS.Information.Counts{T,2,MIToS.MSA.GappedAlphabet}}",
     "page": "Information",
     "title": "MIToS.Information.gap_intersection_percentage",
     "category": "Method",
@@ -1633,7 +1633,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.gap_union_percentage-Tuple{MIToS.Information.Counts{T,2,MIToS.MSA.GappedAlphabet}}",
+    "location": "Information_API.html#MIToS.Information.gap_union_percentage-Tuple{MIToS.Information.Counts{T,2,MIToS.MSA.GappedAlphabet}}",
     "page": "Information",
     "title": "MIToS.Information.gap_union_percentage",
     "category": "Method",
@@ -1641,7 +1641,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.gaussdca-Tuple{Any}",
+    "location": "Information_API.html#MIToS.Information.gaussdca-Tuple{Any}",
     "page": "Information",
     "title": "MIToS.Information.gaussdca",
     "category": "Method",
@@ -1649,7 +1649,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.getalphabet-Tuple{MIToS.Information.ContingencyTable}",
+    "location": "Information_API.html#MIToS.Information.getalphabet-Tuple{MIToS.Information.ContingencyTable}",
     "page": "Information",
     "title": "MIToS.Information.getalphabet",
     "category": "Method",
@@ -1657,7 +1657,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.getcontingencytable-Tuple{MIToS.Information.Probabilities{T,N,A}}",
+    "location": "Information_API.html#MIToS.Information.getcontingencytable-Tuple{MIToS.Information.Probabilities{T,N,A}}",
     "page": "Information",
     "title": "MIToS.Information.getcontingencytable",
     "category": "Method",
@@ -1665,7 +1665,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.getmarginals-Tuple{MIToS.Information.ContingencyTable}",
+    "location": "Information_API.html#MIToS.Information.getmarginals-Tuple{MIToS.Information.ContingencyTable}",
     "page": "Information",
     "title": "MIToS.Information.getmarginals",
     "category": "Method",
@@ -1673,7 +1673,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.getmarginalsarray-Tuple{MIToS.Information.ContingencyTable}",
+    "location": "Information_API.html#MIToS.Information.getmarginalsarray-Tuple{MIToS.Information.ContingencyTable}",
     "page": "Information",
     "title": "MIToS.Information.getmarginalsarray",
     "category": "Method",
@@ -1681,7 +1681,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.gettable-Tuple{MIToS.Information.ContingencyTable}",
+    "location": "Information_API.html#MIToS.Information.gettable-Tuple{MIToS.Information.ContingencyTable}",
     "page": "Information",
     "title": "MIToS.Information.gettable",
     "category": "Method",
@@ -1689,7 +1689,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.gettablearray-Tuple{MIToS.Information.ContingencyTable}",
+    "location": "Information_API.html#MIToS.Information.gettablearray-Tuple{MIToS.Information.ContingencyTable}",
     "page": "Information",
     "title": "MIToS.Information.gettablearray",
     "category": "Method",
@@ -1697,7 +1697,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.gettotal-Tuple{MIToS.Information.ContingencyTable}",
+    "location": "Information_API.html#MIToS.Information.gettotal-Tuple{MIToS.Information.ContingencyTable}",
     "page": "Information",
     "title": "MIToS.Information.gettotal",
     "category": "Method",
@@ -1705,7 +1705,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.kullback_leibler-Tuple{MIToS.Information.Probabilities{T,1,A},Any,Real}",
+    "location": "Information_API.html#MIToS.Information.kullback_leibler-Tuple{MIToS.Information.Probabilities{T,1,A},Any,Real}",
     "page": "Information",
     "title": "MIToS.Information.kullback_leibler",
     "category": "Method",
@@ -1713,7 +1713,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.mapcolfreq!-Tuple{Function,AbstractArray{MIToS.MSA.Residue,2},Union{MIToS.Information.Counts{T,1,A},MIToS.Information.Probabilities{T,1,A}}}",
+    "location": "Information_API.html#MIToS.Information.mapcolfreq!-Tuple{Function,AbstractArray{MIToS.MSA.Residue,2},Union{MIToS.Information.Counts{T,1,A},MIToS.Information.Probabilities{T,1,A}}}",
     "page": "Information",
     "title": "MIToS.Information.mapcolfreq!",
     "category": "Method",
@@ -1721,7 +1721,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.mapcolpairfreq!",
+    "location": "Information_API.html#MIToS.Information.mapcolpairfreq!",
     "page": "Information",
     "title": "MIToS.Information.mapcolpairfreq!",
     "category": "Function",
@@ -1729,7 +1729,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.mapseqfreq!-Tuple{Function,AbstractArray{MIToS.MSA.Residue,2},Union{MIToS.Information.Counts{T,1,A},MIToS.Information.Probabilities{T,1,A}}}",
+    "location": "Information_API.html#MIToS.Information.mapseqfreq!-Tuple{Function,AbstractArray{MIToS.MSA.Residue,2},Union{MIToS.Information.Counts{T,1,A},MIToS.Information.Probabilities{T,1,A}}}",
     "page": "Information",
     "title": "MIToS.Information.mapseqfreq!",
     "category": "Method",
@@ -1737,7 +1737,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.mapseqpairfreq!",
+    "location": "Information_API.html#MIToS.Information.mapseqpairfreq!",
     "page": "Information",
     "title": "MIToS.Information.mapseqpairfreq!",
     "category": "Function",
@@ -1745,7 +1745,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.marginal_entropy-Tuple{Union{MIToS.Information.Counts{T,N,A},MIToS.Information.Probabilities{T,N,A}},Int64,Real}",
+    "location": "Information_API.html#MIToS.Information.marginal_entropy-Tuple{Union{MIToS.Information.Counts{T,N,A},MIToS.Information.Probabilities{T,N,A}},Int64,Real}",
     "page": "Information",
     "title": "MIToS.Information.marginal_entropy",
     "category": "Method",
@@ -1753,7 +1753,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.mutual_information-Tuple{Union{MIToS.Information.Counts{T,N,A},MIToS.Information.Probabilities{T,N,A}},Real}",
+    "location": "Information_API.html#MIToS.Information.mutual_information-Tuple{Union{MIToS.Information.Counts{T,N,A},MIToS.Information.Probabilities{T,N,A}},Real}",
     "page": "Information",
     "title": "MIToS.Information.mutual_information",
     "category": "Method",
@@ -1761,7 +1761,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.normalized_mutual_information-Tuple{Union{MIToS.Information.Counts{T,N,A},MIToS.Information.Probabilities{T,N,A}}}",
+    "location": "Information_API.html#MIToS.Information.normalized_mutual_information-Tuple{Union{MIToS.Information.Counts{T,N,A},MIToS.Information.Probabilities{T,N,A}}}",
     "page": "Information",
     "title": "MIToS.Information.normalized_mutual_information",
     "category": "Method",
@@ -1769,7 +1769,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.pairwisegapfraction-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
+    "location": "Information_API.html#MIToS.Information.pairwisegapfraction-Tuple{AbstractArray{MIToS.MSA.Residue,2}}",
     "page": "Information",
     "title": "MIToS.Information.pairwisegapfraction",
     "category": "Method",
@@ -1777,7 +1777,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.probabilities!-Tuple{MIToS.Information.ContingencyTable{T,N,A},Any,MIToS.Information.Pseudocount,MIToS.Information.Pseudofrequencies,Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}",
+    "location": "Information_API.html#MIToS.Information.probabilities!-Tuple{MIToS.Information.ContingencyTable{T,N,A},Any,MIToS.Information.Pseudocount,MIToS.Information.Pseudofrequencies,Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}",
     "page": "Information",
     "title": "MIToS.Information.probabilities!",
     "category": "Method",
@@ -1785,7 +1785,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#MIToS.Information.probabilities-Tuple{Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}",
+    "location": "Information_API.html#MIToS.Information.probabilities-Tuple{Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}",
     "page": "Information",
     "title": "MIToS.Information.probabilities",
     "category": "Method",
@@ -1793,7 +1793,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#StatsBase.entropy-Tuple{Union{MIToS.Information.Counts{T,N,A},MIToS.Information.Probabilities{T,N,A}},Real}",
+    "location": "Information_API.html#StatsBase.entropy-Tuple{Union{MIToS.Information.Counts{T,N,A},MIToS.Information.Probabilities{T,N,A}},Real}",
     "page": "Information",
     "title": "StatsBase.entropy",
     "category": "Method",
@@ -1801,7 +1801,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Information_API.html#Methods-and-functions-1",
+    "location": "Information_API.html#Methods-and-functions-1",
     "page": "Information",
     "title": "Methods and functions",
     "category": "section",
@@ -1809,7 +1809,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#",
+    "location": "SIFTS_API.html#",
     "page": "SIFTS",
     "title": "SIFTS",
     "category": "page",
@@ -1817,7 +1817,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#MIToS.SIFTS",
+    "location": "SIFTS_API.html#MIToS.SIFTS",
     "page": "SIFTS",
     "title": "MIToS.SIFTS",
     "category": "Module",
@@ -1825,7 +1825,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#SIFTS-1",
+    "location": "SIFTS_API.html#SIFTS-1",
     "page": "SIFTS",
     "title": "SIFTS",
     "category": "section",
@@ -1833,7 +1833,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#Contents-1",
+    "location": "SIFTS_API.html#Contents-1",
     "page": "SIFTS",
     "title": "Contents",
     "category": "section",
@@ -1841,7 +1841,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#MIToS.SIFTS.SIFTSResidue",
+    "location": "SIFTS_API.html#MIToS.SIFTS.SIFTSResidue",
     "page": "SIFTS",
     "title": "MIToS.SIFTS.SIFTSResidue",
     "category": "Type",
@@ -1849,7 +1849,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#MIToS.SIFTS.dbCATH",
+    "location": "SIFTS_API.html#MIToS.SIFTS.dbCATH",
     "page": "SIFTS",
     "title": "MIToS.SIFTS.dbCATH",
     "category": "Type",
@@ -1857,7 +1857,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#MIToS.SIFTS.dbInterPro",
+    "location": "SIFTS_API.html#MIToS.SIFTS.dbInterPro",
     "page": "SIFTS",
     "title": "MIToS.SIFTS.dbInterPro",
     "category": "Type",
@@ -1865,7 +1865,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#MIToS.SIFTS.dbNCBI",
+    "location": "SIFTS_API.html#MIToS.SIFTS.dbNCBI",
     "page": "SIFTS",
     "title": "MIToS.SIFTS.dbNCBI",
     "category": "Type",
@@ -1873,7 +1873,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#MIToS.SIFTS.dbPDB",
+    "location": "SIFTS_API.html#MIToS.SIFTS.dbPDB",
     "page": "SIFTS",
     "title": "MIToS.SIFTS.dbPDB",
     "category": "Type",
@@ -1881,7 +1881,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#MIToS.SIFTS.dbPDBe",
+    "location": "SIFTS_API.html#MIToS.SIFTS.dbPDBe",
     "page": "SIFTS",
     "title": "MIToS.SIFTS.dbPDBe",
     "category": "Type",
@@ -1889,7 +1889,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#MIToS.SIFTS.dbPfam",
+    "location": "SIFTS_API.html#MIToS.SIFTS.dbPfam",
     "page": "SIFTS",
     "title": "MIToS.SIFTS.dbPfam",
     "category": "Type",
@@ -1897,7 +1897,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#MIToS.SIFTS.dbSCOP",
+    "location": "SIFTS_API.html#MIToS.SIFTS.dbSCOP",
     "page": "SIFTS",
     "title": "MIToS.SIFTS.dbSCOP",
     "category": "Type",
@@ -1905,7 +1905,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#MIToS.SIFTS.dbUniProt",
+    "location": "SIFTS_API.html#MIToS.SIFTS.dbUniProt",
     "page": "SIFTS",
     "title": "MIToS.SIFTS.dbUniProt",
     "category": "Type",
@@ -1913,7 +1913,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#Types-1",
+    "location": "SIFTS_API.html#Types-1",
     "page": "SIFTS",
     "title": "Types",
     "category": "section",
@@ -1921,7 +1921,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#Constants-1",
+    "location": "SIFTS_API.html#Constants-1",
     "page": "SIFTS",
     "title": "Constants",
     "category": "section",
@@ -1929,7 +1929,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#Macros-1",
+    "location": "SIFTS_API.html#Macros-1",
     "page": "SIFTS",
     "title": "Macros",
     "category": "section",
@@ -1937,7 +1937,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#Base.parse-Tuple{LightXML.XMLDocument,Type{MIToS.SIFTS.SIFTSXML}}",
+    "location": "SIFTS_API.html#Base.parse-Tuple{LightXML.XMLDocument,Type{MIToS.SIFTS.SIFTSXML}}",
     "page": "SIFTS",
     "title": "Base.parse",
     "category": "Method",
@@ -1945,7 +1945,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#MIToS.SIFTS.downloadsifts-Tuple{String}",
+    "location": "SIFTS_API.html#MIToS.SIFTS.downloadsifts-Tuple{String}",
     "page": "SIFTS",
     "title": "MIToS.SIFTS.downloadsifts",
     "category": "Method",
@@ -1953,7 +1953,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#MIToS.SIFTS.siftsmapping-Tuple{String,Type{F},String,Type{T},String}",
+    "location": "SIFTS_API.html#MIToS.SIFTS.siftsmapping-Tuple{String,Type{F},String,Type{T},String}",
     "page": "SIFTS",
     "title": "MIToS.SIFTS.siftsmapping",
     "category": "Method",
@@ -1961,7 +1961,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/SIFTS_API.html#Methods-and-functions-1",
+    "location": "SIFTS_API.html#Methods-and-functions-1",
     "page": "SIFTS",
     "title": "Methods and functions",
     "category": "section",
@@ -1969,7 +1969,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#",
+    "location": "PDB_API.html#",
     "page": "PDB",
     "title": "PDB",
     "category": "page",
@@ -1977,7 +1977,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB",
+    "location": "PDB_API.html#MIToS.PDB",
     "page": "PDB",
     "title": "MIToS.PDB",
     "category": "Module",
@@ -1985,7 +1985,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#PDB-1",
+    "location": "PDB_API.html#PDB-1",
     "page": "PDB",
     "title": "PDB",
     "category": "section",
@@ -1993,7 +1993,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#Contents-1",
+    "location": "PDB_API.html#Contents-1",
     "page": "PDB",
     "title": "Contents",
     "category": "section",
@@ -2001,7 +2001,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.Coordinates",
+    "location": "PDB_API.html#MIToS.PDB.Coordinates",
     "page": "PDB",
     "title": "MIToS.PDB.Coordinates",
     "category": "Type",
@@ -2009,7 +2009,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.PDBAtom",
+    "location": "PDB_API.html#MIToS.PDB.PDBAtom",
     "page": "PDB",
     "title": "MIToS.PDB.PDBAtom",
     "category": "Type",
@@ -2017,7 +2017,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.PDBFile",
+    "location": "PDB_API.html#MIToS.PDB.PDBFile",
     "page": "PDB",
     "title": "MIToS.PDB.PDBFile",
     "category": "Type",
@@ -2025,7 +2025,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.PDBML",
+    "location": "PDB_API.html#MIToS.PDB.PDBML",
     "page": "PDB",
     "title": "MIToS.PDB.PDBML",
     "category": "Type",
@@ -2033,7 +2033,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.PDBResidue",
+    "location": "PDB_API.html#MIToS.PDB.PDBResidue",
     "page": "PDB",
     "title": "MIToS.PDB.PDBResidue",
     "category": "Type",
@@ -2041,7 +2041,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.PDBResidueIdentifier",
+    "location": "PDB_API.html#MIToS.PDB.PDBResidueIdentifier",
     "page": "PDB",
     "title": "MIToS.PDB.PDBResidueIdentifier",
     "category": "Type",
@@ -2049,7 +2049,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#Types-1",
+    "location": "PDB_API.html#Types-1",
     "page": "PDB",
     "title": "Types",
     "category": "section",
@@ -2057,7 +2057,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.covalentradius",
+    "location": "PDB_API.html#MIToS.PDB.covalentradius",
     "page": "PDB",
     "title": "MIToS.PDB.covalentradius",
     "category": "Constant",
@@ -2065,7 +2065,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.vanderwaalsradius",
+    "location": "PDB_API.html#MIToS.PDB.vanderwaalsradius",
     "page": "PDB",
     "title": "MIToS.PDB.vanderwaalsradius",
     "category": "Constant",
@@ -2073,7 +2073,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#Constants-1",
+    "location": "PDB_API.html#Constants-1",
     "page": "PDB",
     "title": "Constants",
     "category": "section",
@@ -2081,7 +2081,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.@atoms-Tuple{Any,Symbol,Any,Symbol,Any,Symbol,Any,Symbol,Any,Symbol,Any}",
+    "location": "PDB_API.html#MIToS.PDB.@atoms-Tuple{Any,Symbol,Any,Symbol,Any,Symbol,Any,Symbol,Any,Symbol,Any}",
     "page": "PDB",
     "title": "MIToS.PDB.@atoms",
     "category": "Macro",
@@ -2089,7 +2089,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.@residues-Tuple{Any,Symbol,Any,Symbol,Any,Symbol,Any,Symbol,Any}",
+    "location": "PDB_API.html#MIToS.PDB.@residues-Tuple{Any,Symbol,Any,Symbol,Any,Symbol,Any,Symbol,Any}",
     "page": "PDB",
     "title": "MIToS.PDB.@residues",
     "category": "Macro",
@@ -2097,7 +2097,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.@residuesdict-Tuple{Any,Symbol,Any,Symbol,Any,Symbol,Any,Symbol,Any}",
+    "location": "PDB_API.html#MIToS.PDB.@residuesdict-Tuple{Any,Symbol,Any,Symbol,Any,Symbol,Any,Symbol,Any}",
     "page": "PDB",
     "title": "MIToS.PDB.@residuesdict",
     "category": "Macro",
@@ -2105,7 +2105,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#Macros-1",
+    "location": "PDB_API.html#Macros-1",
     "page": "PDB",
     "title": "Macros",
     "category": "section",
@@ -2113,7 +2113,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#Base.angle-Tuple{MIToS.PDB.Coordinates,MIToS.PDB.Coordinates,MIToS.PDB.Coordinates}",
+    "location": "PDB_API.html#Base.angle-Tuple{MIToS.PDB.Coordinates,MIToS.PDB.Coordinates,MIToS.PDB.Coordinates}",
     "page": "PDB",
     "title": "Base.angle",
     "category": "Method",
@@ -2121,7 +2121,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#Base.any-Tuple{Function,MIToS.PDB.PDBResidue,MIToS.PDB.PDBResidue,Function}",
+    "location": "PDB_API.html#Base.any-Tuple{Function,MIToS.PDB.PDBResidue,MIToS.PDB.PDBResidue,Function}",
     "page": "PDB",
     "title": "Base.any",
     "category": "Method",
@@ -2129,7 +2129,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#Base.any-Tuple{Function,MIToS.PDB.PDBResidue,MIToS.PDB.PDBResidue}",
+    "location": "PDB_API.html#Base.any-Tuple{Function,MIToS.PDB.PDBResidue,MIToS.PDB.PDBResidue}",
     "page": "PDB",
     "title": "Base.any",
     "category": "Method",
@@ -2137,7 +2137,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#Base.parse-Tuple{LightXML.XMLDocument,Type{MIToS.PDB.PDBML}}",
+    "location": "PDB_API.html#Base.parse-Tuple{LightXML.XMLDocument,Type{MIToS.PDB.PDBML}}",
     "page": "PDB",
     "title": "Base.parse",
     "category": "Method",
@@ -2145,7 +2145,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#Base.parse-Tuple{Union{IO,String},Type{MIToS.PDB.PDBFile}}",
+    "location": "PDB_API.html#Base.parse-Tuple{Union{IO,String},Type{MIToS.PDB.PDBFile}}",
     "page": "PDB",
     "title": "Base.parse",
     "category": "Method",
@@ -2153,7 +2153,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#Base.print",
+    "location": "PDB_API.html#Base.print",
     "page": "PDB",
     "title": "Base.print",
     "category": "Function",
@@ -2161,7 +2161,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.CAmatrix-Tuple{AbstractArray{MIToS.PDB.PDBResidue,1}}",
+    "location": "PDB_API.html#MIToS.PDB.CAmatrix-Tuple{AbstractArray{MIToS.PDB.PDBResidue,1}}",
     "page": "PDB",
     "title": "MIToS.PDB.CAmatrix",
     "category": "Method",
@@ -2169,7 +2169,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.aromatic-Tuple{MIToS.PDB.PDBResidue,MIToS.PDB.PDBResidue}",
+    "location": "PDB_API.html#MIToS.PDB.aromatic-Tuple{MIToS.PDB.PDBResidue,MIToS.PDB.PDBResidue}",
     "page": "PDB",
     "title": "MIToS.PDB.aromatic",
     "category": "Method",
@@ -2177,7 +2177,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.aromaticsulphur-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
+    "location": "PDB_API.html#MIToS.PDB.aromaticsulphur-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
     "page": "PDB",
     "title": "MIToS.PDB.aromaticsulphur",
     "category": "Method",
@@ -2185,7 +2185,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.atoms",
+    "location": "PDB_API.html#MIToS.PDB.atoms",
     "page": "PDB",
     "title": "MIToS.PDB.atoms",
     "category": "Function",
@@ -2193,7 +2193,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.bestoccupancy-Tuple{Array{MIToS.PDB.PDBAtom,1}}",
+    "location": "PDB_API.html#MIToS.PDB.bestoccupancy-Tuple{Array{MIToS.PDB.PDBAtom,1}}",
     "page": "PDB",
     "title": "MIToS.PDB.bestoccupancy",
     "category": "Method",
@@ -2201,7 +2201,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.center!-Tuple{Array{Float64,2}}",
+    "location": "PDB_API.html#MIToS.PDB.center!-Tuple{Array{Float64,2}}",
     "page": "PDB",
     "title": "MIToS.PDB.center!",
     "category": "Method",
@@ -2209,7 +2209,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.centeredcoordinates",
+    "location": "PDB_API.html#MIToS.PDB.centeredcoordinates",
     "page": "PDB",
     "title": "MIToS.PDB.centeredcoordinates",
     "category": "Function",
@@ -2217,7 +2217,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.centeredresidues",
+    "location": "PDB_API.html#MIToS.PDB.centeredresidues",
     "page": "PDB",
     "title": "MIToS.PDB.centeredresidues",
     "category": "Function",
@@ -2225,7 +2225,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.change_coordinates",
+    "location": "PDB_API.html#MIToS.PDB.change_coordinates",
     "page": "PDB",
     "title": "MIToS.PDB.change_coordinates",
     "category": "Function",
@@ -2233,7 +2233,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.change_coordinates-Tuple{AbstractArray{MIToS.PDB.PDBResidue,1},Array{Float64,2}}",
+    "location": "PDB_API.html#MIToS.PDB.change_coordinates-Tuple{AbstractArray{MIToS.PDB.PDBResidue,1},Array{Float64,2}}",
     "page": "PDB",
     "title": "MIToS.PDB.change_coordinates",
     "category": "Method",
@@ -2241,7 +2241,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.change_coordinates-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.Coordinates}",
+    "location": "PDB_API.html#MIToS.PDB.change_coordinates-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.Coordinates}",
     "page": "PDB",
     "title": "MIToS.PDB.change_coordinates",
     "category": "Method",
@@ -2249,7 +2249,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.check_atoms_for_interactions-Tuple{MIToS.PDB.PDBResidue}",
+    "location": "PDB_API.html#MIToS.PDB.check_atoms_for_interactions-Tuple{MIToS.PDB.PDBResidue}",
     "page": "PDB",
     "title": "MIToS.PDB.check_atoms_for_interactions",
     "category": "Method",
@@ -2257,7 +2257,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.contact-Tuple{Array{MIToS.PDB.PDBResidue,1},AbstractFloat}",
+    "location": "PDB_API.html#MIToS.PDB.contact-Tuple{Array{MIToS.PDB.PDBResidue,1},AbstractFloat}",
     "page": "PDB",
     "title": "MIToS.PDB.contact",
     "category": "Method",
@@ -2265,7 +2265,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.contact-Tuple{MIToS.PDB.Coordinates,MIToS.PDB.Coordinates,AbstractFloat}",
+    "location": "PDB_API.html#MIToS.PDB.contact-Tuple{MIToS.PDB.Coordinates,MIToS.PDB.Coordinates,AbstractFloat}",
     "page": "PDB",
     "title": "MIToS.PDB.contact",
     "category": "Method",
@@ -2273,7 +2273,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.contact-Tuple{MIToS.PDB.PDBResidue,MIToS.PDB.PDBResidue,AbstractFloat}",
+    "location": "PDB_API.html#MIToS.PDB.contact-Tuple{MIToS.PDB.PDBResidue,MIToS.PDB.PDBResidue,AbstractFloat}",
     "page": "PDB",
     "title": "MIToS.PDB.contact",
     "category": "Method",
@@ -2281,7 +2281,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.coordinatesmatrix-Tuple{MIToS.PDB.PDBResidue}",
+    "location": "PDB_API.html#MIToS.PDB.coordinatesmatrix-Tuple{MIToS.PDB.PDBResidue}",
     "page": "PDB",
     "title": "MIToS.PDB.coordinatesmatrix",
     "category": "Method",
@@ -2289,7 +2289,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.covalent-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
+    "location": "PDB_API.html#MIToS.PDB.covalent-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
     "page": "PDB",
     "title": "MIToS.PDB.covalent",
     "category": "Method",
@@ -2297,7 +2297,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.distance-Tuple{Array{MIToS.PDB.PDBResidue,1}}",
+    "location": "PDB_API.html#MIToS.PDB.distance-Tuple{Array{MIToS.PDB.PDBResidue,1}}",
     "page": "PDB",
     "title": "MIToS.PDB.distance",
     "category": "Method",
@@ -2305,7 +2305,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.distance-Tuple{MIToS.PDB.Coordinates,MIToS.PDB.Coordinates}",
+    "location": "PDB_API.html#MIToS.PDB.distance-Tuple{MIToS.PDB.Coordinates,MIToS.PDB.Coordinates}",
     "page": "PDB",
     "title": "MIToS.PDB.distance",
     "category": "Method",
@@ -2313,7 +2313,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.disulphide-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
+    "location": "PDB_API.html#MIToS.PDB.disulphide-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
     "page": "PDB",
     "title": "MIToS.PDB.disulphide",
     "category": "Method",
@@ -2321,7 +2321,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.downloadpdb-Tuple{String}",
+    "location": "PDB_API.html#MIToS.PDB.downloadpdb-Tuple{String}",
     "page": "PDB",
     "title": "MIToS.PDB.downloadpdb",
     "category": "Method",
@@ -2329,7 +2329,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.findCB-Tuple{MIToS.PDB.PDBResidue}",
+    "location": "PDB_API.html#MIToS.PDB.findCB-Tuple{MIToS.PDB.PDBResidue}",
     "page": "PDB",
     "title": "MIToS.PDB.findCB",
     "category": "Method",
@@ -2337,7 +2337,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.findatoms-Tuple{Array{MIToS.PDB.PDBAtom,1},String}",
+    "location": "PDB_API.html#MIToS.PDB.findatoms-Tuple{Array{MIToS.PDB.PDBAtom,1},String}",
     "page": "PDB",
     "title": "MIToS.PDB.findatoms",
     "category": "Method",
@@ -2345,7 +2345,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.findheavy-Tuple{Array{MIToS.PDB.PDBAtom,1}}",
+    "location": "PDB_API.html#MIToS.PDB.findheavy-Tuple{Array{MIToS.PDB.PDBAtom,1}}",
     "page": "PDB",
     "title": "MIToS.PDB.findheavy",
     "category": "Method",
@@ -2353,7 +2353,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.getCA-Tuple{MIToS.PDB.PDBResidue}",
+    "location": "PDB_API.html#MIToS.PDB.getCA-Tuple{MIToS.PDB.PDBResidue}",
     "page": "PDB",
     "title": "MIToS.PDB.getCA",
     "category": "Method",
@@ -2361,7 +2361,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.getpdbdescription-Tuple{String}",
+    "location": "PDB_API.html#MIToS.PDB.getpdbdescription-Tuple{String}",
     "page": "PDB",
     "title": "MIToS.PDB.getpdbdescription",
     "category": "Method",
@@ -2369,7 +2369,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.hydrogenbond-Tuple{MIToS.PDB.PDBResidue,MIToS.PDB.PDBResidue}",
+    "location": "PDB_API.html#MIToS.PDB.hydrogenbond-Tuple{MIToS.PDB.PDBResidue,MIToS.PDB.PDBResidue}",
     "page": "PDB",
     "title": "MIToS.PDB.hydrogenbond",
     "category": "Method",
@@ -2377,7 +2377,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.hydrophobic-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
+    "location": "PDB_API.html#MIToS.PDB.hydrophobic-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
     "page": "PDB",
     "title": "MIToS.PDB.hydrophobic",
     "category": "Method",
@@ -2385,7 +2385,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.ionic-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
+    "location": "PDB_API.html#MIToS.PDB.ionic-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
     "page": "PDB",
     "title": "MIToS.PDB.ionic",
     "category": "Method",
@@ -2393,7 +2393,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.isanionic-Tuple{MIToS.PDB.PDBAtom,String}",
+    "location": "PDB_API.html#MIToS.PDB.isanionic-Tuple{MIToS.PDB.PDBAtom,String}",
     "page": "PDB",
     "title": "MIToS.PDB.isanionic",
     "category": "Method",
@@ -2401,7 +2401,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.isaromatic-Tuple{MIToS.PDB.PDBAtom,String}",
+    "location": "PDB_API.html#MIToS.PDB.isaromatic-Tuple{MIToS.PDB.PDBAtom,String}",
     "page": "PDB",
     "title": "MIToS.PDB.isaromatic",
     "category": "Method",
@@ -2409,7 +2409,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.isatom-Tuple{MIToS.PDB.PDBAtom,Any}",
+    "location": "PDB_API.html#MIToS.PDB.isatom-Tuple{MIToS.PDB.PDBAtom,Any}",
     "page": "PDB",
     "title": "MIToS.PDB.isatom",
     "category": "Method",
@@ -2417,7 +2417,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.iscationic-Tuple{MIToS.PDB.PDBAtom,String}",
+    "location": "PDB_API.html#MIToS.PDB.iscationic-Tuple{MIToS.PDB.PDBAtom,String}",
     "page": "PDB",
     "title": "MIToS.PDB.iscationic",
     "category": "Method",
@@ -2425,7 +2425,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.ishbondacceptor-Tuple{MIToS.PDB.PDBAtom,String}",
+    "location": "PDB_API.html#MIToS.PDB.ishbondacceptor-Tuple{MIToS.PDB.PDBAtom,String}",
     "page": "PDB",
     "title": "MIToS.PDB.ishbondacceptor",
     "category": "Method",
@@ -2433,7 +2433,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.ishbonddonor-Tuple{MIToS.PDB.PDBAtom,String}",
+    "location": "PDB_API.html#MIToS.PDB.ishbonddonor-Tuple{MIToS.PDB.PDBAtom,String}",
     "page": "PDB",
     "title": "MIToS.PDB.ishbonddonor",
     "category": "Method",
@@ -2441,7 +2441,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.isresidue-Tuple{MIToS.PDB.PDBResidueIdentifier,Any,Any,Any,Any}",
+    "location": "PDB_API.html#MIToS.PDB.isresidue-Tuple{MIToS.PDB.PDBResidueIdentifier,Any,Any,Any,Any}",
     "page": "PDB",
     "title": "MIToS.PDB.isresidue",
     "category": "Method",
@@ -2449,7 +2449,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.kabsch-Tuple{Array{Float64,2},Array{Float64,2}}",
+    "location": "PDB_API.html#MIToS.PDB.kabsch-Tuple{Array{Float64,2},Array{Float64,2}}",
     "page": "PDB",
     "title": "MIToS.PDB.kabsch",
     "category": "Method",
@@ -2457,7 +2457,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.mean_coordinates-Tuple{AbstractArray{Array{Float64,2},1}}",
+    "location": "PDB_API.html#MIToS.PDB.mean_coordinates-Tuple{AbstractArray{Array{Float64,2},1}}",
     "page": "PDB",
     "title": "MIToS.PDB.mean_coordinates",
     "category": "Method",
@@ -2465,7 +2465,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.pication-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
+    "location": "PDB_API.html#MIToS.PDB.pication-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
     "page": "PDB",
     "title": "MIToS.PDB.pication",
     "category": "Method",
@@ -2473,7 +2473,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.proximitymean",
+    "location": "PDB_API.html#MIToS.PDB.proximitymean",
     "page": "PDB",
     "title": "MIToS.PDB.proximitymean",
     "category": "Function",
@@ -2481,7 +2481,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.residuepairsmatrix-Tuple{Array{MIToS.PDB.PDBResidue,1},Type{T},Type{Val{diagonal}},T}",
+    "location": "PDB_API.html#MIToS.PDB.residuepairsmatrix-Tuple{Array{MIToS.PDB.PDBResidue,1},Type{T},Type{Val{diagonal}},T}",
     "page": "PDB",
     "title": "MIToS.PDB.residuepairsmatrix",
     "category": "Method",
@@ -2489,7 +2489,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.residues",
+    "location": "PDB_API.html#MIToS.PDB.residues",
     "page": "PDB",
     "title": "MIToS.PDB.residues",
     "category": "Function",
@@ -2497,7 +2497,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.residuesdict",
+    "location": "PDB_API.html#MIToS.PDB.residuesdict",
     "page": "PDB",
     "title": "MIToS.PDB.residuesdict",
     "category": "Function",
@@ -2505,7 +2505,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.rmsd-Tuple{AbstractArray{MIToS.PDB.PDBResidue,1},AbstractArray{MIToS.PDB.PDBResidue,1}}",
+    "location": "PDB_API.html#MIToS.PDB.rmsd-Tuple{AbstractArray{MIToS.PDB.PDBResidue,1},AbstractArray{MIToS.PDB.PDBResidue,1}}",
     "page": "PDB",
     "title": "MIToS.PDB.rmsd",
     "category": "Method",
@@ -2513,7 +2513,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.rmsd-Tuple{Array{Float64,2},Array{Float64,2}}",
+    "location": "PDB_API.html#MIToS.PDB.rmsd-Tuple{Array{Float64,2},Array{Float64,2}}",
     "page": "PDB",
     "title": "MIToS.PDB.rmsd",
     "category": "Method",
@@ -2521,7 +2521,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.rmsf-Tuple{AbstractArray{Array{Float64,2},1}}",
+    "location": "PDB_API.html#MIToS.PDB.rmsf-Tuple{AbstractArray{Array{Float64,2},1}}",
     "page": "PDB",
     "title": "MIToS.PDB.rmsf",
     "category": "Method",
@@ -2529,7 +2529,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.selectbestoccupancy-Tuple{Array{MIToS.PDB.PDBAtom,1},Array{Int64,1}}",
+    "location": "PDB_API.html#MIToS.PDB.selectbestoccupancy-Tuple{Array{MIToS.PDB.PDBAtom,1},Array{Int64,1}}",
     "page": "PDB",
     "title": "MIToS.PDB.selectbestoccupancy",
     "category": "Method",
@@ -2537,7 +2537,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.squared_distance-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom}",
+    "location": "PDB_API.html#MIToS.PDB.squared_distance-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom}",
     "page": "PDB",
     "title": "MIToS.PDB.squared_distance",
     "category": "Method",
@@ -2545,7 +2545,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.squared_distance-Tuple{MIToS.PDB.PDBResidue,MIToS.PDB.PDBResidue}",
+    "location": "PDB_API.html#MIToS.PDB.squared_distance-Tuple{MIToS.PDB.PDBResidue,MIToS.PDB.PDBResidue}",
     "page": "PDB",
     "title": "MIToS.PDB.squared_distance",
     "category": "Method",
@@ -2553,7 +2553,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.superimpose-Tuple{Array{MIToS.PDB.PDBResidue,1},Array{MIToS.PDB.PDBResidue,1}}",
+    "location": "PDB_API.html#MIToS.PDB.superimpose-Tuple{Array{MIToS.PDB.PDBResidue,1},Array{MIToS.PDB.PDBResidue,1}}",
     "page": "PDB",
     "title": "MIToS.PDB.superimpose",
     "category": "Method",
@@ -2561,7 +2561,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.vanderwaals-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
+    "location": "PDB_API.html#MIToS.PDB.vanderwaals-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
     "page": "PDB",
     "title": "MIToS.PDB.vanderwaals",
     "category": "Method",
@@ -2569,7 +2569,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#MIToS.PDB.vanderwaalsclash-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
+    "location": "PDB_API.html#MIToS.PDB.vanderwaalsclash-Tuple{MIToS.PDB.PDBAtom,MIToS.PDB.PDBAtom,Any,Any}",
     "page": "PDB",
     "title": "MIToS.PDB.vanderwaalsclash",
     "category": "Method",
@@ -2577,7 +2577,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/PDB_API.html#Methods-and-functions-1",
+    "location": "PDB_API.html#Methods-and-functions-1",
     "page": "PDB",
     "title": "Methods and functions",
     "category": "section",
@@ -2585,7 +2585,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#",
+    "location": "Pfam_API.html#",
     "page": "Pfam",
     "title": "Pfam",
     "category": "page",
@@ -2593,7 +2593,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#MIToS.Pfam",
+    "location": "Pfam_API.html#MIToS.Pfam",
     "page": "Pfam",
     "title": "MIToS.Pfam",
     "category": "Module",
@@ -2601,7 +2601,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#Pfam-1",
+    "location": "Pfam_API.html#Pfam-1",
     "page": "Pfam",
     "title": "Pfam",
     "category": "section",
@@ -2609,7 +2609,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#Contents-1",
+    "location": "Pfam_API.html#Contents-1",
     "page": "Pfam",
     "title": "Contents",
     "category": "section",
@@ -2617,7 +2617,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#Types-1",
+    "location": "Pfam_API.html#Types-1",
     "page": "Pfam",
     "title": "Types",
     "category": "section",
@@ -2625,7 +2625,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#Constants-1",
+    "location": "Pfam_API.html#Constants-1",
     "page": "Pfam",
     "title": "Constants",
     "category": "section",
@@ -2633,7 +2633,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#Macros-1",
+    "location": "Pfam_API.html#Macros-1",
     "page": "Pfam",
     "title": "Macros",
     "category": "section",
@@ -2641,7 +2641,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#MIToS.Pfam.downloadpfam-Tuple{String}",
+    "location": "Pfam_API.html#MIToS.Pfam.downloadpfam-Tuple{String}",
     "page": "Pfam",
     "title": "MIToS.Pfam.downloadpfam",
     "category": "Method",
@@ -2649,7 +2649,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#MIToS.Pfam.getcontactmasks-Tuple{Array{T<:AbstractFloat,1}}",
+    "location": "Pfam_API.html#MIToS.Pfam.getcontactmasks-Tuple{Array{T<:AbstractFloat,1}}",
     "page": "Pfam",
     "title": "MIToS.Pfam.getcontactmasks",
     "category": "Method",
@@ -2657,7 +2657,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#MIToS.Pfam.getseq2pdb-Tuple{MIToS.MSA.AnnotatedMultipleSequenceAlignment}",
+    "location": "Pfam_API.html#MIToS.Pfam.getseq2pdb-Tuple{MIToS.MSA.AnnotatedMultipleSequenceAlignment}",
     "page": "Pfam",
     "title": "MIToS.Pfam.getseq2pdb",
     "category": "Method",
@@ -2665,7 +2665,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#MIToS.Pfam.hasresidues-Tuple{MIToS.MSA.AnnotatedMultipleSequenceAlignment,Dict{Int64,String}}",
+    "location": "Pfam_API.html#MIToS.Pfam.hasresidues-Tuple{MIToS.MSA.AnnotatedMultipleSequenceAlignment,Dict{Int64,String}}",
     "page": "Pfam",
     "title": "MIToS.Pfam.hasresidues",
     "category": "Method",
@@ -2673,7 +2673,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#MIToS.Pfam.msacolumn2pdbresidue-Tuple{MIToS.MSA.AnnotatedMultipleSequenceAlignment,String,String,String,String,String}",
+    "location": "Pfam_API.html#MIToS.Pfam.msacolumn2pdbresidue-Tuple{MIToS.MSA.AnnotatedMultipleSequenceAlignment,String,String,String,String,String}",
     "page": "Pfam",
     "title": "MIToS.Pfam.msacolumn2pdbresidue",
     "category": "Method",
@@ -2681,7 +2681,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#MIToS.Pfam.msacontacts",
+    "location": "Pfam_API.html#MIToS.Pfam.msacontacts",
     "page": "Pfam",
     "title": "MIToS.Pfam.msacontacts",
     "category": "Function",
@@ -2689,7 +2689,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#MIToS.Pfam.msaresidues-Tuple{MIToS.MSA.AnnotatedMultipleSequenceAlignment,DataStructures.OrderedDict{String,MIToS.PDB.PDBResidue},Dict{Int64,String}}",
+    "location": "Pfam_API.html#MIToS.Pfam.msaresidues-Tuple{MIToS.MSA.AnnotatedMultipleSequenceAlignment,DataStructures.OrderedDict{String,MIToS.PDB.PDBResidue},Dict{Int64,String}}",
     "page": "Pfam",
     "title": "MIToS.Pfam.msaresidues",
     "category": "Method",
@@ -2697,7 +2697,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#ROCAnalysis.AUC-Tuple{Array{T,1},BitArray{1},BitArray{1}}",
+    "location": "Pfam_API.html#ROCAnalysis.AUC-Tuple{Array{T,1},BitArray{1},BitArray{1}}",
     "page": "Pfam",
     "title": "ROCAnalysis.AUC",
     "category": "Method",
@@ -2705,7 +2705,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#ROCAnalysis.AUC-Tuple{NamedArrays.NamedArray{L,2,PairwiseListMatrices.PairwiseListMatrix{L,false,VL},NL},BitArray{1},BitArray{1}}",
+    "location": "Pfam_API.html#ROCAnalysis.AUC-Tuple{NamedArrays.NamedArray{L,2,PairwiseListMatrices.PairwiseListMatrix{L,false,VL},NL},BitArray{1},BitArray{1}}",
     "page": "Pfam",
     "title": "ROCAnalysis.AUC",
     "category": "Method",
@@ -2713,7 +2713,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#ROCAnalysis.AUC-Tuple{NamedArrays.NamedArray{L<:AbstractFloat,2,PairwiseListMatrices.PairwiseListMatrix{L<:AbstractFloat,false,VL},NL},NamedArrays.NamedArray{R<:AbstractFloat,2,PairwiseListMatrices.PairwiseListMatrix{L<:AbstractFloat,false,VR},NR}}",
+    "location": "Pfam_API.html#ROCAnalysis.AUC-Tuple{NamedArrays.NamedArray{L<:AbstractFloat,2,PairwiseListMatrices.PairwiseListMatrix{L<:AbstractFloat,false,VL},NL},NamedArrays.NamedArray{R<:AbstractFloat,2,PairwiseListMatrices.PairwiseListMatrix{L<:AbstractFloat,false,VR},NR}}",
     "page": "Pfam",
     "title": "ROCAnalysis.AUC",
     "category": "Method",
@@ -2721,7 +2721,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Pfam_API.html#Methods-and-functions-1",
+    "location": "Pfam_API.html#Methods-and-functions-1",
     "page": "Pfam",
     "title": "Methods and functions",
     "category": "section",
@@ -2729,7 +2729,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#",
+    "location": "Utils_API.html#",
     "page": "Utils",
     "title": "Utils",
     "category": "page",
@@ -2737,7 +2737,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#MIToS.Utils",
+    "location": "Utils_API.html#MIToS.Utils",
     "page": "Utils",
     "title": "MIToS.Utils",
     "category": "Module",
@@ -2745,7 +2745,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#API-Utils-1",
+    "location": "Utils_API.html#API-Utils-1",
     "page": "Utils",
     "title": "Utils",
     "category": "section",
@@ -2753,7 +2753,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#Contents-1",
+    "location": "Utils_API.html#Contents-1",
     "page": "Utils",
     "title": "Contents",
     "category": "section",
@@ -2761,7 +2761,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#MIToS.Utils.All",
+    "location": "Utils_API.html#MIToS.Utils.All",
     "page": "Utils",
     "title": "MIToS.Utils.All",
     "category": "Type",
@@ -2769,7 +2769,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#MIToS.Utils.Format",
+    "location": "Utils_API.html#MIToS.Utils.Format",
     "page": "Utils",
     "title": "MIToS.Utils.Format",
     "category": "Type",
@@ -2777,7 +2777,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#Types-1",
+    "location": "Utils_API.html#Types-1",
     "page": "Utils",
     "title": "Types",
     "category": "section",
@@ -2785,7 +2785,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#Constants-1",
+    "location": "Utils_API.html#Constants-1",
     "page": "Utils",
     "title": "Constants",
     "category": "section",
@@ -2793,7 +2793,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#Macros-1",
+    "location": "Utils_API.html#Macros-1",
     "page": "Utils",
     "title": "Macros",
     "category": "section",
@@ -2801,7 +2801,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#Base.read-Tuple{AbstractString,Type{T<:MIToS.Utils.Format},Vararg{Any,N}}",
+    "location": "Utils_API.html#Base.read-Tuple{AbstractString,Type{T<:MIToS.Utils.Format},Vararg{Any,N}}",
     "page": "Utils",
     "title": "Base.read",
     "category": "Method",
@@ -2809,7 +2809,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#Base.write",
+    "location": "Utils_API.html#Base.write",
     "page": "Utils",
     "title": "Base.write",
     "category": "Function",
@@ -2817,7 +2817,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#MIToS.Utils.check_file-Tuple{Any}",
+    "location": "Utils_API.html#MIToS.Utils.check_file-Tuple{Any}",
     "page": "Utils",
     "title": "MIToS.Utils.check_file",
     "category": "Method",
@@ -2825,7 +2825,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#MIToS.Utils.check_pdbcode-Tuple{String}",
+    "location": "Utils_API.html#MIToS.Utils.check_pdbcode-Tuple{String}",
     "page": "Utils",
     "title": "MIToS.Utils.check_pdbcode",
     "category": "Method",
@@ -2833,7 +2833,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#MIToS.Utils.download_file-Tuple{AbstractString,AbstractString}",
+    "location": "Utils_API.html#MIToS.Utils.download_file-Tuple{AbstractString,AbstractString}",
     "page": "Utils",
     "title": "MIToS.Utils.download_file",
     "category": "Method",
@@ -2841,7 +2841,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#MIToS.Utils.get_n_words-Tuple{String,Int64}",
+    "location": "Utils_API.html#MIToS.Utils.get_n_words-Tuple{String,Int64}",
     "page": "Utils",
     "title": "MIToS.Utils.get_n_words",
     "category": "Method",
@@ -2849,7 +2849,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#MIToS.Utils.getarray-Tuple{NamedArrays.NamedArray}",
+    "location": "Utils_API.html#MIToS.Utils.getarray-Tuple{NamedArrays.NamedArray}",
     "page": "Utils",
     "title": "MIToS.Utils.getarray",
     "category": "Method",
@@ -2857,7 +2857,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#MIToS.Utils.hascoordinates-Tuple{Any}",
+    "location": "Utils_API.html#MIToS.Utils.hascoordinates-Tuple{Any}",
     "page": "Utils",
     "title": "MIToS.Utils.hascoordinates",
     "category": "Method",
@@ -2865,7 +2865,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#MIToS.Utils.isnotemptyfile-Tuple{Any}",
+    "location": "Utils_API.html#MIToS.Utils.isnotemptyfile-Tuple{Any}",
     "page": "Utils",
     "title": "MIToS.Utils.isnotemptyfile",
     "category": "Method",
@@ -2873,7 +2873,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#MIToS.Utils.lineiterator-Tuple{String}",
+    "location": "Utils_API.html#MIToS.Utils.lineiterator-Tuple{String}",
     "page": "Utils",
     "title": "MIToS.Utils.lineiterator",
     "category": "Method",
@@ -2881,7 +2881,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#MIToS.Utils.list2matrix-Tuple{AbstractArray{T,1},Int64}",
+    "location": "Utils_API.html#MIToS.Utils.list2matrix-Tuple{AbstractArray{T,1},Int64}",
     "page": "Utils",
     "title": "MIToS.Utils.list2matrix",
     "category": "Method",
@@ -2889,7 +2889,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#MIToS.Utils.matrix2list-Tuple{AbstractArray{T,2}}",
+    "location": "Utils_API.html#MIToS.Utils.matrix2list-Tuple{AbstractArray{T,2}}",
     "page": "Utils",
     "title": "MIToS.Utils.matrix2list",
     "category": "Method",
@@ -2897,7 +2897,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#MIToS.Utils.select_element",
+    "location": "Utils_API.html#MIToS.Utils.select_element",
     "page": "Utils",
     "title": "MIToS.Utils.select_element",
     "category": "Function",
@@ -2905,7 +2905,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "man/Utils_API.html#Methods-and-functions-1",
+    "location": "Utils_API.html#Methods-and-functions-1",
     "page": "Utils",
     "title": "Methods and functions",
     "category": "section",
