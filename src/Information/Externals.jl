@@ -17,24 +17,26 @@ PloS one 9, no. 3 (2014): e92721.
 """
 function gaussdca(msa; juliapath::String=joinpath(JULIA_HOME,Base.julia_exename()), kargs...)
     plm = fill!(columnpairsmatrix(msa), NaN)
+    script_file = tempname() * ".jl"
     msa_file = tempname() * ".fasta"
     write(msa_file, msa, FASTA)
     jdl_file = tempname() * ".jld"
     try
-        string_call = _create_string_call(msa_file, jdl_file; kargs...)
-        run(`$juliapath -e $string_call`)
+        _create_script(script_file, msa_file, jdl_file; kargs...)
+        run(`$juliapath -e "include(\"$script_file\")"`)
         pairedvalues = JLD.load(jdl_file, "values")
         for (i,j,value) in pairedvalues
            plm[i,j] = value
         end
     finally
+        isfile(script_file) && rm(script_file)
         isfile(msa_file) && rm(msa_file)
         isfile(jdl_file) && rm(jdl_file)
     end
     plm
 end
 
-function _create_string_call(msa_file::String, jdl_file::String; kargs...)
+function _create_script(script_file::String, msa_file::String, jdl_file::String; kargs...)
     if length(kargs) > 0
         for (k,v) in kargs
             @assert isa(v,Number) || isa(v,Symbol) "Argument values must be numbers or symbols"
@@ -43,9 +45,9 @@ function _create_string_call(msa_file::String, jdl_file::String; kargs...)
     else
         str_kargs = ""
     end
-    string(
-    "using GaussDCA, JLD;",
-    "values = GaussDCA.gDCA(\"$msa_file\"$str_kargs);",
-    "JLD.save(\"$(jdl_file)\", \"values\", values)"
-    )
+    open(script_file, "w") do fh
+        println(fh, "using GaussDCA, JLD;")
+        println(fh, "values = GaussDCA.gDCA(\"$msa_file\"$str_kargs);")
+        println(fh, "JLD.save(\"$(jdl_file)\", \"values\", values)")
+    end
 end

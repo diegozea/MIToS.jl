@@ -1,7 +1,7 @@
 if [[ "$TRAVIS_OS_NAME" == "linux" ]]
 then
     # COVERAGE
-    - julia -e 'cd(Pkg.dir("MIToS")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder()); Codecov.submit(Codecov.process_folder())'
+    julia -e 'cd(Pkg.dir("MIToS")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder()); Codecov.submit(Codecov.process_folder())'
     # DOCS
     if [[ "$TRAVIS_BRANCH" != "master" ]]
     then
