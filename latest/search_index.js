@@ -613,7 +613,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Scripts",
     "title": "Buslje09.jl",
     "category": "section",
-    "text": "julia_path = ENV[\"_\"]\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"Buslje09.jl\")\nrun(`$julia_path $script_path -h`)"
+    "text": "julia_path = joinpath(Base.JULIA_HOME, \"julia\")\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"Buslje09.jl\")\nrun(`$julia_path $script_path -h`)"
 },
 
 {
@@ -621,7 +621,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Scripts",
     "title": "BLMI.jl",
     "category": "section",
-    "text": "julia_path = ENV[\"_\"]\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"BLMI.jl\")\nrun(`$julia_path $script_path -h`)"
+    "text": "julia_path = joinpath(Base.JULIA_HOME, \"julia\")\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"BLMI.jl\")\nrun(`$julia_path $script_path -h`)"
 },
 
 {
@@ -629,7 +629,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Scripts",
     "title": "DownloadPDB.jl",
     "category": "section",
-    "text": "julia_path = ENV[\"_\"]\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"DownloadPDB.jl\")\nrun(`$julia_path $script_path -h`)"
+    "text": "julia_path = joinpath(Base.JULIA_HOME, \"julia\")\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"DownloadPDB.jl\")\nrun(`$julia_path $script_path -h`)"
 },
 
 {
@@ -637,7 +637,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Scripts",
     "title": "Distances.jl",
     "category": "section",
-    "text": "julia_path = ENV[\"_\"]\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"Distances.jl\")\nrun(`$julia_path $script_path -h`)"
+    "text": "julia_path = joinpath(Base.JULIA_HOME, \"julia\")\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"Distances.jl\")\nrun(`$julia_path $script_path -h`)"
 },
 
 {
@@ -645,7 +645,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Scripts",
     "title": "MSADescription.jl",
     "category": "section",
-    "text": "julia_path = ENV[\"_\"]\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"MSADescription.jl\")\nrun(`$julia_path $script_path -h`)"
+    "text": "julia_path = joinpath(Base.JULIA_HOME, \"julia\")\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"MSADescription.jl\")\nrun(`$julia_path $script_path -h`)"
 },
 
 {
@@ -653,7 +653,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Scripts",
     "title": "PercentIdentity.jl",
     "category": "section",
-    "text": "julia_path = ENV[\"_\"]\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"PercentIdentity.jl\")\nrun(`$julia_path $script_path -h`)"
+    "text": "julia_path = joinpath(Base.JULIA_HOME, \"julia\")\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"PercentIdentity.jl\")\nrun(`$julia_path $script_path -h`)"
 },
 
 {
@@ -661,7 +661,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Scripts",
     "title": "AlignedColumns.jl",
     "category": "section",
-    "text": "julia_path = ENV[\"_\"]\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"AlignedColumns.jl\")\nrun(`$julia_path $script_path -h`)"
+    "text": "julia_path = joinpath(Base.JULIA_HOME, \"julia\")\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"AlignedColumns.jl\")\nrun(`$julia_path $script_path -h`)"
 },
 
 {
@@ -669,7 +669,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Scripts",
     "title": "SplitStockholm.jl",
     "category": "section",
-    "text": "julia_path = ENV[\"_\"]\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"SplitStockholm.jl\")\nrun(`$julia_path $script_path -h`)"
+    "text": "julia_path = joinpath(Base.JULIA_HOME, \"julia\")\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"SplitStockholm.jl\")\nrun(`$julia_path $script_path -h`)"
 },
 
 {
