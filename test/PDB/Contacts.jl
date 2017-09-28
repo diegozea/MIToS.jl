@@ -218,13 +218,18 @@
         code = "2VQC"
         pdb = read(txt(code), PDBFile)
 
-        dist = distance(pdb)
-        cont = contact(pdb, 6.05)
+        for criteria in ["All", "CA", "CB", "Heavy"]
+            dist = distance(pdb, criteria=criteria)
+            sq_d = squared_distance(pdb, criteria=criteria)
+            cont = contact(pdb, 6.05, criteria=criteria)
 
-        @test dist[1,1] == 0.0
-        @test cont[1,1]
+            @test all(diag(cont))
+            @test all(diag(dist) .== 0.0)
+            @test all(diag(sq_d) .== 0.0)
 
-        @test all((dist .<= 6.05) .== cont)
+            @test all((dist .<= 6.05) .== cont)
+            @test all((sq_d .<= 36.6025) .== cont) # 6.05^2
+        end
     end
 
     @testset "Proximity Mean" begin

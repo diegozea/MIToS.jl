@@ -10,10 +10,8 @@ function _mapfreq_kernel!{T,N,A}(f::Function,
                                  weights, pseudocounts, pseudofrequencies,
                                  res::Vararg{AbstractVector{Residue},N})
     table = freqtable.table
-    _cleanup_table!(table) # count! call _cleanup_temporal! and cleans marginals
-    count!(table, weights, pseudocounts, res...)
-    apply_pseudocount!(table, pseudocounts)
-    _update!(table)
+    _cleanup_table!(table) # count! calls _cleanup_temporal! and cleans marginals
+    count!(table, weights, pseudocounts, res...) # count! calls apply_pseudocount! and  _update!
     if isa(freqtable, Probabilities{T,N,A})
         normalize!(table)
         apply_pseudofrequencies!(table, pseudofrequencies)

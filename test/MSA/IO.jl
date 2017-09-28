@@ -226,6 +226,31 @@
             @test takebuf_string(out) == fasta_string
         end
 
+        @testset "File input/output" begin
+
+            msa = read(gaoetal2011, FASTA)
+
+            path = tempdir()
+            uncompressed = joinpath(path, ".tmp.fasta")
+            try
+                write(uncompressed, msa, FASTA)
+                @test read(uncompressed, FASTA) == msa
+            finally
+                if isfile(uncompressed)
+                    rm(uncompressed)
+                end
+            end
+            compressed = joinpath(path, ".tmp.fasta.gz")
+            try
+                write(compressed, msa, FASTA)
+                @test read(compressed, FASTA) == msa
+            finally
+                if isfile(compressed)
+                    rm(compressed)
+                end
+            end
+        end
+
         @testset "Non standard residues and mapping" begin
 
             seqs = read(joinpath(pwd(), "data", "alphabet.fasta"), FASTA,

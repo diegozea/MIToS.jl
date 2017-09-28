@@ -48,6 +48,7 @@ end
     include(joinpath("PDB", "PDB.jl"))
     include(joinpath("PDB", "Contacts.jl"))
     include(joinpath("PDB", "Kabsch.jl"))
+    include(joinpath("PDB", "Internals.jl"))
 end
 
 # SIFTS

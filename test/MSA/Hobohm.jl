@@ -26,7 +26,7 @@ end
 
         @test getweight(clusters) == clusters.weights
         @test assignments(clusters) == clusters.clusters
-        @test counts(cluster) == cluster.clustersize
+        @test counts(clusters) == clusters.clustersize
     end
 
     @testset "Convert to Clusters" begin
