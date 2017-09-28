@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Scripts · MIToS</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>MIToS</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" action="search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="index.html">Home</a></li><li><a class="toctext" href="Installation.html">Installation</a></li><li><a class="toctext" href="Example.html">Example</a></li><li><span class="toctext">Modules</span><ul><li><a class="toctext" href="MSA.html">MSA</a></li><li><a class="toctext" href="Information.html">Information</a></li><li><a class="toctext" href="SIFTS.html">SIFTS</a></li><li><a class="toctext" href="PDB.html">PDB</a></li><li><a class="toctext" href="Pfam.html">Pfam</a></li></ul></li><li class="current"><a class="toctext" href="Scripts.html">Scripts</a><ul class="internal"><li><a class="toctext" href="#Buslje09.jl-1">Buslje09.jl</a></li><li><a class="toctext" href="#BLMI.jl-1">BLMI.jl</a></li><li><a class="toctext" href="#DownloadPDB.jl-1">DownloadPDB.jl</a></li><li><a class="toctext" href="#Distances.jl-1">Distances.jl</a></li><li><a class="toctext" href="#MSADescription.jl-1">MSADescription.jl</a></li><li><a class="toctext" href="#PercentIdentity.jl-1">PercentIdentity.jl</a></li><li><a class="toctext" href="#AlignedColumns.jl-1">AlignedColumns.jl</a></li><li><a class="toctext" href="#SplitStockholm.jl-1">SplitStockholm.jl</a></li></ul></li><li><span class="toctext">API</span><ul><li><a class="toctext" href="MSA_API.html">MSA</a></li><li><a class="toctext" href="Information_API.html">Information</a></li><li><a class="toctext" href="SIFTS_API.html">SIFTS</a></li><li><a class="toctext" href="PDB_API.html">PDB</a></li><li><a class="toctext" href="Pfam_API.html">Pfam</a></li><li><a class="toctext" href="Utils_API.html">Utils</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href="Scripts.html">Scripts</a></li></ul><a class="edit-page" href="https://github.com/diegozea/MIToS.jl/tree/04f32caf94c37edfa479944c5c3612a2f51b4ac8/docs/src/Scripts.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Scripts</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Scripts-1" href="#Scripts-1">Scripts</a></h1><p>MIToS implements several useful scripts to <strong>command line execution (without requiring Julia coding)</strong>. All this scripts are located in the <code>scripts</code> folder of the MIToS directory. You can copy them to your working directory, use the path to their folder or put them in the path (look into the <strong>Installation</strong> section of this manual).  </p><ul><li><a href="Scripts.html#Scripts-1">Scripts</a></li><ul><li><a href="Scripts.html#Buslje09.jl-1">Buslje09.jl</a></li><li><a href="Scripts.html#BLMI.jl-1">BLMI.jl</a></li><li><a href="Scripts.html#DownloadPDB.jl-1">DownloadPDB.jl</a></li><li><a href="Scripts.html#Distances.jl-1">Distances.jl</a></li><li><a href="Scripts.html#MSADescription.jl-1">MSADescription.jl</a></li><li><a href="Scripts.html#PercentIdentity.jl-1">PercentIdentity.jl</a></li><li><a href="Scripts.html#AlignedColumns.jl-1">AlignedColumns.jl</a></li><li><a href="Scripts.html#SplitStockholm.jl-1">SplitStockholm.jl</a></li></ul></ul><h2><a class="nav-anchor" id="Buslje09.jl-1" href="#Buslje09.jl-1">Buslje09.jl</a></h2><pre><code class="language-julia-repl">julia&gt; julia_path = joinpath(Base.JULIA_HOME, &quot;julia&quot;)
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Scripts · MIToS</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>MIToS</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" action="search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="index.html">Home</a></li><li><a class="toctext" href="Installation.html">Installation</a></li><li><a class="toctext" href="Example.html">Example</a></li><li><span class="toctext">Modules</span><ul><li><a class="toctext" href="MSA.html">MSA</a></li><li><a class="toctext" href="Information.html">Information</a></li><li><a class="toctext" href="SIFTS.html">SIFTS</a></li><li><a class="toctext" href="PDB.html">PDB</a></li><li><a class="toctext" href="Pfam.html">Pfam</a></li></ul></li><li class="current"><a class="toctext" href="Scripts.html">Scripts</a><ul class="internal"><li><a class="toctext" href="#Buslje09.jl-1">Buslje09.jl</a></li><li><a class="toctext" href="#BLMI.jl-1">BLMI.jl</a></li><li><a class="toctext" href="#DownloadPDB.jl-1">DownloadPDB.jl</a></li><li><a class="toctext" href="#Distances.jl-1">Distances.jl</a></li><li><a class="toctext" href="#MSADescription.jl-1">MSADescription.jl</a></li><li><a class="toctext" href="#PercentIdentity.jl-1">PercentIdentity.jl</a></li><li><a class="toctext" href="#AlignedColumns.jl-1">AlignedColumns.jl</a></li><li><a class="toctext" href="#SplitStockholm.jl-1">SplitStockholm.jl</a></li></ul></li><li><span class="toctext">API</span><ul><li><a class="toctext" href="MSA_API.html">MSA</a></li><li><a class="toctext" href="Information_API.html">Information</a></li><li><a class="toctext" href="SIFTS_API.html">SIFTS</a></li><li><a class="toctext" href="PDB_API.html">PDB</a></li><li><a class="toctext" href="Pfam_API.html">Pfam</a></li><li><a class="toctext" href="Utils_API.html">Utils</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href="Scripts.html">Scripts</a></li></ul><a class="edit-page" href="https://github.com/diegozea/MIToS.jl/tree/a8b5f9e32d3e1cebb8256e9dd35e28e9757a8c00/docs/src/Scripts.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Scripts</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Scripts-1" href="#Scripts-1">Scripts</a></h1><p>MIToS implements several useful scripts to <strong>command line execution (without requiring Julia coding)</strong>. All this scripts are located in the <code>scripts</code> folder of the MIToS directory. You can copy them to your working directory, use the path to their folder or put them in the path (look into the <strong>Installation</strong> section of this manual).  </p><ul><li><a href="Scripts.html#Scripts-1">Scripts</a></li><ul><li><a href="Scripts.html#Buslje09.jl-1">Buslje09.jl</a></li><li><a href="Scripts.html#BLMI.jl-1">BLMI.jl</a></li><li><a href="Scripts.html#DownloadPDB.jl-1">DownloadPDB.jl</a></li><li><a href="Scripts.html#Distances.jl-1">Distances.jl</a></li><li><a href="Scripts.html#MSADescription.jl-1">MSADescription.jl</a></li><li><a href="Scripts.html#PercentIdentity.jl-1">PercentIdentity.jl</a></li><li><a href="Scripts.html#AlignedColumns.jl-1">AlignedColumns.jl</a></li><li><a href="Scripts.html#SplitStockholm.jl-1">SplitStockholm.jl</a></li></ul></ul><h2><a class="nav-anchor" id="Buslje09.jl-1" href="#Buslje09.jl-1">Buslje09.jl</a></h2><pre><code class="language-julia-repl">julia&gt; julia_path = joinpath(Base.JULIA_HOME, &quot;julia&quot;)
 &quot;/home/travis/julia/bin/julia&quot;
 
 julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;, &quot;Buslje09.jl&quot;)
 &quot;/home/travis/.julia/v0.5/MIToS/scripts/Buslje09.jl&quot;
 
 julia&gt; run(`$julia_path $script_path -h`)
-WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: Method definition describe(AbstractArray) in module StatsBase at /home/travis/.julia/v0.5/StatsBase/src/scalarstats.jl:560 overwritten in module DataFrames at /home/travis/.julia/v0.5/DataFrames/src/abstractdataframe/abstractdataframe.jl:407.
+WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
 usage: Buslje09.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT]
                    [-L LAMBDA] [-c] [-i THRESHOLD] [-g MAXGAP] [-a]
@@ -73,8 +73,8 @@ julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;
 &quot;/home/travis/.julia/v0.5/MIToS/scripts/BLMI.jl&quot;
 
 julia&gt; run(`$julia_path $script_path -h`)
-WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: Method definition describe(AbstractArray) in module StatsBase at /home/travis/.julia/v0.5/StatsBase/src/scalarstats.jl:560 overwritten in module DataFrames at /home/travis/.julia/v0.5/DataFrames/src/abstractdataframe/abstractdataframe.jl:407.
+WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
 usage: BLMI.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT] [-b BETA]
                [-i THRESHOLD] [-g MAXGAP] [-a] [-s SAMPLES] [-F]
@@ -136,8 +136,8 @@ julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;
 &quot;/home/travis/.julia/v0.5/MIToS/scripts/DownloadPDB.jl&quot;
 
 julia&gt; run(`$julia_path $script_path -h`)
-WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: Method definition describe(AbstractArray) in module StatsBase at /home/travis/.julia/v0.5/StatsBase/src/scalarstats.jl:560 overwritten in module DataFrames at /home/travis/.julia/v0.5/DataFrames/src/abstractdataframe/abstractdataframe.jl:407.
+WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
 usage: DownloadPDB.jl [-c CODE] [-l LIST] [-f FORMAT] [--version] [-h]
 
@@ -163,8 +163,8 @@ julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;
 &quot;/home/travis/.julia/v0.5/MIToS/scripts/Distances.jl&quot;
 
 julia&gt; run(`$julia_path $script_path -h`)
-WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: Method definition describe(AbstractArray) in module StatsBase at /home/travis/.julia/v0.5/StatsBase/src/scalarstats.jl:560 overwritten in module DataFrames at /home/travis/.julia/v0.5/DataFrames/src/abstractdataframe/abstractdataframe.jl:407.
+WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
 usage: Distances.jl [-l] [-o OUTPUT] [-p PARALLEL] [-d DISTANCE]
                     [-f FORMAT] [-m MODEL] [-c CHAIN] [-g GROUP] [-i]
@@ -223,8 +223,8 @@ julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;
 &quot;/home/travis/.julia/v0.5/MIToS/scripts/MSADescription.jl&quot;
 
 julia&gt; run(`$julia_path $script_path -h`)
-WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: Method definition describe(AbstractArray) in module StatsBase at /home/travis/.julia/v0.5/StatsBase/src/scalarstats.jl:560 overwritten in module DataFrames at /home/travis/.julia/v0.5/DataFrames/src/abstractdataframe/abstractdataframe.jl:407.
+WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
 usage: MSADescription.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT]
                         [-e] [--version] [-h] [FILE]
@@ -275,8 +275,8 @@ julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;
 &quot;/home/travis/.julia/v0.5/MIToS/scripts/PercentIdentity.jl&quot;
 
 julia&gt; run(`$julia_path $script_path -h`)
-WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: Method definition describe(AbstractArray) in module StatsBase at /home/travis/.julia/v0.5/StatsBase/src/scalarstats.jl:560 overwritten in module DataFrames at /home/travis/.julia/v0.5/DataFrames/src/abstractdataframe/abstractdataframe.jl:407.
+WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
 usage: PercentIdentity.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT]
                         [-s] [--version] [-h] [FILE]
@@ -330,8 +330,8 @@ julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;
 &quot;/home/travis/.julia/v0.5/MIToS/scripts/AlignedColumns.jl&quot;
 
 julia&gt; run(`$julia_path $script_path -h`)
-WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: Method definition describe(AbstractArray) in module StatsBase at /home/travis/.julia/v0.5/StatsBase/src/scalarstats.jl:560 overwritten in module DataFrames at /home/travis/.julia/v0.5/DataFrames/src/abstractdataframe/abstractdataframe.jl:407.
+WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
 usage: AlignedColumns.jl [-l] [-o OUTPUT] [-p PARALLEL] [--version]
                         [-h] [FILE]
@@ -378,8 +378,8 @@ julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;
 &quot;/home/travis/.julia/v0.5/MIToS/scripts/SplitStockholm.jl&quot;
 
 julia&gt; run(`$julia_path $script_path -h`)
-WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: Method definition describe(AbstractArray) in module StatsBase at /home/travis/.julia/v0.5/StatsBase/src/scalarstats.jl:560 overwritten in module DataFrames at /home/travis/.julia/v0.5/DataFrames/src/abstractdataframe/abstractdataframe.jl:407.
+WARNING: Method definition require(Symbol) in module Base at loading.jl:345 overwritten in module Main at /home/travis/.julia/v0.5/Requires/src/require.jl:12.
 WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
 usage: SplitStockholm.jl [-p PATH] [--version] [-h] file
 
