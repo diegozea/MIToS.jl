@@ -26,8 +26,8 @@ fast indexing using them.
 """
 type MultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
     matrix::NamedArray{ Residue, 2, Array{Residue, 2},
-                        Tuple{OrderedDict{String, Int64},
-                        OrderedDict{String, Int64}} }
+                        Tuple{OrderedDict{String, Int},
+                        OrderedDict{String, Int}} }
 
     function (::Type{MultipleSequenceAlignment})(matrix::NamedArray{Residue,2})
         setdimnames!(matrix,("Seq","Col"))
@@ -42,8 +42,8 @@ to UniProt residue numbers).
 """
 type AnnotatedMultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
     matrix::NamedArray{ Residue, 2, Array{Residue, 2},
-                        Tuple{OrderedDict{String, Int64},
-                        OrderedDict{String, Int64}} }
+                        Tuple{OrderedDict{String, Int},
+                        OrderedDict{String, Int}} }
     annotations::Annotations
 
     function (::Type{AnnotatedMultipleSequenceAlignment})(matrix::NamedArray{Residue,2},
@@ -62,8 +62,8 @@ An `AlignedSequence` wraps a `NamedArray{Residue,2}` with only 1 row/sequence. T
 """
 type AlignedSequence <: AbstractAlignedSequence
     matrix::NamedArray{ Residue, 2, Array{Residue, 2},
-                        Tuple{OrderedDict{String, Int64},
-                        OrderedDict{String, Int64}} }
+                        Tuple{OrderedDict{String, Int},
+                        OrderedDict{String, Int}} }
 
     function (::Type{AlignedSequence})(matrix::NamedArray{Residue,2})
         @assert size(matrix,1) == 1 "There are more than one sequence."
@@ -78,8 +78,8 @@ its `Annotations`.
 """
 type AnnotatedAlignedSequence <: AbstractAlignedSequence
     matrix::NamedArray{ Residue, 2, Array{Residue, 2},
-                        Tuple{OrderedDict{String, Int64},
-                        OrderedDict{String, Int64}} }
+                        Tuple{OrderedDict{String, Int},
+                        OrderedDict{String, Int}} }
     annotations::Annotations
 
     function (::Type{AnnotatedAlignedSequence})(matrix::NamedArray{Residue,2},

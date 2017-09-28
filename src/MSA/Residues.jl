@@ -224,7 +224,7 @@ function _get_msa_size(sequences::Array{String,1})
     nseq, nres
 end
 
-function _convert_to_matrix_residues(sequences::Array{String,1}, size::Tuple{Int64,Int64})
+function _convert_to_matrix_residues(sequences::Array{String,1}, size::Tuple{Int,Int})
     nseq, nres = size
     aln = Array(Residue, nseq, nres)
     # @inbounds @threads for i in 1:nseq
