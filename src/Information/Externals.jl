@@ -23,7 +23,7 @@ function gaussdca(msa; juliapath::String=joinpath(JULIA_HOME,Base.julia_exename(
     jdl_file = tempname() * ".jld"
     try
         _create_script(script_file, msa_file, jdl_file; kargs...)
-        run(`$juliapath -e "include(\"$script_file\")"`)
+        run(`$juliapath $script_file`)
         pairedvalues = JLD.load(jdl_file, "values")
         for (i,j,value) in pairedvalues
            plm[i,j] = value
