@@ -5,8 +5,11 @@ then
     # DOCS
     julia -e 'ENV["PYTHON"] = ""; Pkg.add("PyCall"); Pkg.build("PyCall")' # PyCall
     julia -e 'ENV["PYTHON"] = ""; Pkg.add("PyPlot"); Pkg.build("PyPlot")' # PyPlot
+    julia -e 'using Conda; Conda.update()'
+    julia -e 'using PyPlot'
     julia -e 'Pkg.add("Plots")' # Plots
     julia -e 'Pkg.add("DataFrames"); Pkg.add("StatPlots")' # These are used in MSA.md
     julia -e 'Pkg.add("Documenter")'
+    echo "DOCS"
     julia -e 'cd(Pkg.dir("MIToS")); include(joinpath("docs", "make.jl"))'
 fi
