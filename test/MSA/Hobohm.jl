@@ -29,7 +29,7 @@ end
         @test counts(cluster) == cluster.clustersize
     end
 
-    @testset "Convert to Clusters" beging
+    @testset "Convert to Clusters" begin
 
         @test convert(Clusters, clusters) == clusters
 
