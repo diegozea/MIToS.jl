@@ -1,7 +1,7 @@
 @testset "Scripts" begin
 
     # julia bin
-    julia = joinpath(Base.JULIA_HOME, julia)
+    julia = joinpath(Base.JULIA_HOME, "julia")
     # ../../
     mitos_folder = splitdir(splitdir(dirname(@__FILE__))[1])[1]
 
