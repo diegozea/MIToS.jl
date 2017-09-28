@@ -7,7 +7,7 @@
 immutable NoClustering <: ClusteringResult end
 
 "Data structure to represent sequence clusters. The sequence data itself is not included."
-immutable Clusters <: ClusteringResult
+@auto_hash_equals immutable Clusters <: ClusteringResult
     clustersize::Vector{Int}
     clusters::Vector{Int}
     weights::StatsBase.Weights{Float64, Float64, Array{Float64,1}}

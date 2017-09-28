@@ -16,6 +16,7 @@ before_install:
   - chmod +x ./.travis_after_success.sh
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+  - julia -e 'Pkg.clone("https://github.com/carlobaldassi/GaussDCA.jl.git")' # GaussDCA test
   - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("MIToS"); Pkg.test("MIToS"; coverage=true)'
 after_success:
   - ./.travis_after_success.sh

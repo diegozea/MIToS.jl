@@ -16,7 +16,7 @@ using MIToS.MSA
 module MSA
 
 using DataStructures        # OrderedDicts for Annotations
-using AutoHashEquals        # Annotations
+using AutoHashEquals        # Annotations, Clusters
 using NamedArrays           # Col and Seq names, basic sequence/MSA object
 using FastaIO               # FastaReader (fast)
 using Base.Random           # shuffle!
