@@ -138,6 +138,9 @@
 
     @testset "Pseudocount" begin
 
+        @test AdditiveSmoothing(1.0) ==  one(AdditiveSmoothing{Float64})
+        @test AdditiveSmoothing(0.0) == zero(AdditiveSmoothing{Float64})
+
         for alphabet in (UngappedAlphabet(),
                          GappedAlphabet(),
                          ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"))
