@@ -2,6 +2,7 @@ language: julia
 os:
   - linux
   - osx
+sudo: required
 julia:
   - 0.5
 #  - nightly
@@ -19,4 +20,4 @@ script:
   - julia -e 'Pkg.clone("https://github.com/carlobaldassi/GaussDCA.jl.git")' # GaussDCA test
   - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("MIToS"); Pkg.test("MIToS"; coverage=true)'
 after_success:
-  - ./.travis_after_success.sh
+  - sudo ./.travis_after_success.sh
