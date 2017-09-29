@@ -20,4 +20,4 @@ script:
   - julia -e 'Pkg.clone("https://github.com/carlobaldassi/GaussDCA.jl.git")' # GaussDCA test
   - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("MIToS"); Pkg.test("MIToS"; coverage=true)'
 after_success:
-  - sudo ./.travis_after_success.sh
+  - ./.travis_after_success.sh
