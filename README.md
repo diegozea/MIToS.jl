@@ -16,13 +16,15 @@ Code Coverage:
 
 **MIToS v2.0.0** for **Julia 0.5** is out, check out the [NEWS!](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
 You need to do `Pkg.add("MIToS")` to install it or `Pkg.update()` to update your installed
-version.
+version. At the moment we are working on Julia 0.6 support for MIToS.  
+Some breaking changes were introduced. See the [NEWS.md](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md) 
+file and the [new documentation](https://diegozea.github.io/MIToS.jl/stable) to migrate code from an old version 
+of MIToS. If you need more help to migrate code from MIToS 1.0 in Julia 0.4 to MIToS 2.0 in Julia 0.5, you can 
+write a mail to diegozea at gmail dot com asking for assistance.  
 
 **DOCUMENTATION**:  
 [MIToS 1.0 for Julia 0.4](https://diegozea.github.io/mitosghpage-legacy/)  
-MIToS 2.0 for Julia 0.5:  
-[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://diegozea.github.io/MIToS.jl/stable)  
-[![](https://img.shields.io/badge/docs-latest-blue.svg)](https://diegozea.github.io/MIToS.jl/latest)  
+MIToS 2.0 for Julia 0.5:[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://diegozea.github.io/MIToS.jl/stable) [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://diegozea.github.io/MIToS.jl/latest)  
 
 MIToS is an environment for Mutual Information (MI) analysis and implements several useful
 tools for Multiple Sequence Alignments (MSAs) and PDB structures management in the Julia
@@ -75,7 +77,7 @@ the MSA and gap percentage.
 
 If you use MIToS, please cite:
 
-Diego J. Zea, Diego Anfossi, Morten Nielsen, Cristina Marino-Buslje; MIToS.jl: mutual information tools for protein sequence analysis in the Julia language, Bioinformatics, Volume 33, Issue 4, 15 February 2017, Pages 564–565, [https://doi.org/10.1093/bioinformatics/btw646](https://doi.org/10.1093/bioinformatics/btw646)
+Diego J. Zea, Diego Anfossi, Morten Nielsen, Cristina Marino-Buslje; **MIToS.jl: mutual information tools for protein sequence analysis in the Julia language**, Bioinformatics, Volume 33, Issue 4, 15 February 2017, Pages 564–565, [https://doi.org/10.1093/bioinformatics/btw646](https://doi.org/10.1093/bioinformatics/btw646)
 
 #### References
 
