@@ -190,7 +190,7 @@ probability estimations. It is shown in
 that low-count corrections, can lead to improvements in the contact prediction capabilities
 of the Mutual Information. The Information module has available two low-count corrections:  
 
-1. [Additive Smoothing![](./assets/external-link.png)](https://en.wikipedia.org/wiki/Additive_smoothing); the constant value pseudocount described in [*Buslje et. al. 2009*![](/assets/external-link.png)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2672635/).  
+1. [Additive Smoothing![](./assets/external-link.png)](https://en.wikipedia.org/wiki/Additive_smoothing); the constant value pseudocount described in [*Buslje et. al. 2009*![](./assets/external-link.png)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2672635/).  
 2. BLOSUM62 based pseudo frequencies of residues pairs, similar to [*Altschul et. al. 1997*![](./assets/external-link.png)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC146917/).  
 
 ```@example inf_msa
