@@ -5,6 +5,8 @@ Julia 0.4:
 [![MIToS](http://pkg.julialang.org/badges/MIToS_0.4.svg)](http://pkg.julialang.org/?pkg=MIToS)  
 Julia 0.5:
 [![MIToS](http://pkg.julialang.org/badges/MIToS_0.5.svg)](http://pkg.julialang.org/?pkg=MIToS)  
+Julia 0.6:
+[![MIToS](http://pkg.julialang.org/badges/MIToS_0.6.svg)](http://pkg.julialang.org/?pkg=MIToS)
 
 Linux, OSX:
 [![Build Status](https://travis-ci.org/diegozea/MIToS.jl.svg?branch=master)](https://travis-ci.org/diegozea/MIToS.jl)  
@@ -14,17 +16,17 @@ Windows:
 Code Coverage:
 [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/diegozea/MIToS.jl?branch=master) [![codecov.io](http://codecov.io/github/diegozea/MIToS.jl/coverage.svg?branch=master)](http://codecov.io/github/diegozea/MIToS.jl?branch=master)
 
-**MIToS v2.0.0** for **Julia 0.5** is out, check out the [NEWS!](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
+**MIToS v2.1.0** for **Julia 0.6** is out, check out the [NEWS!](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
 You need to do `Pkg.add("MIToS")` to install it or `Pkg.update()` to update your installed
-version. At the moment we are working on Julia 0.6 support for MIToS.  
-Some breaking changes were introduced. See the [NEWS.md](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md) 
-file and the [new documentation](https://diegozea.github.io/MIToS.jl/stable) to migrate code from an old version 
-of MIToS. If you need more help to migrate code from MIToS 1.0 in Julia 0.4 to MIToS 2.0 in Julia 0.5, you can 
+version.  
+Some breaking changes were introduced in v2.0.0. See the [NEWS.md](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
+file and the [new documentation](https://diegozea.github.io/MIToS.jl/stable) to migrate code from an old version
+of MIToS. If you need more help to migrate code from MIToS 1.0 in Julia 0.4 to MIToS 2.1 in Julia 0.6, you can
 write a mail to diegozea at gmail dot com asking for assistance.  
 
 **DOCUMENTATION**:  
-[MIToS 1.0 for Julia 0.4](https://diegozea.github.io/mitosghpage-legacy/)  
-MIToS 2.0 for Julia 0.5: [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://diegozea.github.io/MIToS.jl/stable) [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://diegozea.github.io/MIToS.jl/latest)  
+Documentation for [MIToS 1.0 in Julia 0.4](https://diegozea.github.io/mitosghpage-legacy/)  
+Documentation for MIToS 2.0 or greater in Julia 0.5 or greater: [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://diegozea.github.io/MIToS.jl/stable) [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://diegozea.github.io/MIToS.jl/latest)  
 
 MIToS is an environment for Mutual Information (MI) analysis and implements several useful
 tools for Multiple Sequence Alignments (MSAs) and PDB structures management in the Julia

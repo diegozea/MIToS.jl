@@ -1,5 +1,9 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.0 to v2.1
+
+MIToS v2.1 requires Julia v0.6. This release drops Julia 0.5 support.
+
 ### Changes from v1.2.3 to v2.0
 
 **MIToS 2.0** is the first MIToS version with **Julia 0.5** support
