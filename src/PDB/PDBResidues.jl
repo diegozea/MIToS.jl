@@ -274,7 +274,7 @@ end
 # https://discourse.julialang.org/t/avoid-calling-push-in-base-find/1336
 function _find(f::Function, vector::Vector{T}) where T
     N = length(vector)
-    indices = Array(Int, N)
+    indices = Array{Int}(N)
     j = 0
     @inbounds for i in 1:N
         if f(vector[i])

@@ -6,8 +6,8 @@ struct FASTA <: Format end
 function _pre_readfasta(io::AbstractString)
     seqs = split(io, '>')
     N = length(seqs) - 1
-    IDS  = Array(String, N)
-    SEQS = Array(String, N)
+    IDS  = Array{String}(N)
+    SEQS = Array{String}(N)
     for i in 1:N
         fields = split(seqs[i+1], '\n')
         IDS[i] = fields[1]

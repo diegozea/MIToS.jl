@@ -47,10 +47,10 @@ end
 
 function ReducedAlphabet(str::AbstractString)
     N = Int(XAA)
-    mapping = fill!(Array(Int, N), N)
+    mapping = fill!(Array{Int}(N), N)
     ingroup = false
     pos = 0
-    group_names = fill!(Array(String, N), "")
+    group_names = fill!(Array{String}(N), "")
     for char in str
         if char == '('
             ingroup = true
@@ -165,7 +165,7 @@ julia> names(ab)
  "NQST"
  "DE"
  "FWY"
- "C"    
+ "C"
  "G"
  "P"
 

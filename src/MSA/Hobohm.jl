@@ -39,7 +39,7 @@ by the number of sequences in the cluster.
 """
 function _get_sequence_weight(clustersize, cluster)
     nseq = length(cluster)
-    sequence_weight = Array(Float64, nseq)
+    sequence_weight = Array{Float64}(nseq)
     for i in 1:nseq
         @inbounds sequence_weight[i] = 1.0 / clustersize[cluster[i]]
     end

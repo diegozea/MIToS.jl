@@ -206,7 +206,7 @@ Base.convert(::Type{Vector{Residue}}, str::AbstractString) = Residue[ char for c
 function Base.convert(::Type{String}, seq::Vector{Residue})
     # Buffer length can be length(seq) since Char(res) is always ASCII
     #                 data                         readable    writable
-    buffer = IOBuffer(Array(UInt8, length(seq)),    true,       true)
+    buffer = IOBuffer(Array{UInt8}(length(seq)),    true,       true)
     # To start at the beginning of the buffer:
     truncate(buffer,0)
     for res in seq
@@ -226,7 +226,7 @@ end
 
 function _convert_to_matrix_residues(sequences::Array{String,1}, size::Tuple{Int,Int})
     nseq, nres = size
-    aln = Array(Residue, nseq, nres)
+    aln = Array{Residue}(nseq, nres)
     # @inbounds @threads for i in 1:nseq
     @inbounds for i in 1:nseq
         aln[i,:] = collect(sequences[i])

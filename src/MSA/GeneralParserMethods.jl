@@ -26,9 +26,9 @@ end
 function _to_msa_mapping(sequences::Array{String,1})
     nseq = size(sequences,1)
     nres = length(sequences[1])
-    aln = Array(Residue, nres, nseq)
-    mapp = Array(String, nseq)
-    seq_ann = Array(String, nres)
+    aln = Array{Residue}(nres, nseq)
+    mapp = Array{String}(nseq)
+    seq_ann = Array{String}(nres)
     for i in 1:nseq
         # It checks sequence lengths
         mapp[i], last = _fill_aln_seq_ann!(aln, seq_ann, sequences[i], 1, nres, i)
@@ -42,9 +42,9 @@ end
 function _to_msa_mapping(sequences::Array{String,1}, ids::Array{String,1})
     nseq = size(sequences,1)
     nres = length(sequences[1])
-    aln = Array(Residue, nres, nseq)
-    mapp = Array(String, nseq)
-    seq_ann = Array(String, nres)
+    aln = Array{Residue}(nres, nseq)
+    mapp = Array{String}(nseq)
+    seq_ann = Array{String}(nres)
     sep = r"/|-"
     for i in 1:nseq
         fields = split(ids[i], sep)

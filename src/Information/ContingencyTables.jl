@@ -389,7 +389,7 @@ Base.normalize(table::ContingencyTable{T,N,A}) where {T,N,A} = normalize!(deepco
 function _list_without_dimensions(len::Int, output_len::Int, dimensions::Int...)
   ndim = length(dimensions)
   @assert (len-ndim) == output_len "$output_len should be = $(len-ndim)"
-  index_list = Array(Int, output_len)
+  index_list = Array{Int}(output_len)
   j = 1
   @inbounds for i in 1:len
     if ! (i in dimensions)

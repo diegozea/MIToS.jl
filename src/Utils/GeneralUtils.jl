@@ -28,7 +28,7 @@ function get_n_words(line::String, n::Int)
     if length(str) == 0
         return String[]
     end
-    words = Array(String, n)
+    words = Array{String}(n)
     N  = 1
     last_spaces = 0:0
     while true
@@ -91,7 +91,7 @@ function matrix2list(mat::AbstractMatrix{T}; part="upper", diagonal::Bool=false)
         d = 1
         N = div((ncol * ncol) - ncol, 2)
     end
-    list = Array(T, N)
+    list = Array{T}(N)
     k = 1
     if part=="upper"
         for i in 1:(ncol-d)

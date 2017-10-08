@@ -248,7 +248,7 @@ annotations nor column/sequence names.
 function getresiduesequences(msa::Matrix{Residue})
     nseq = nsequences(msa)
     tmsa = permutedims(msa, [2,1])
-    sequences = Array(Vector{Residue}, nseq)
+    sequences = Array{Vector{Residue}}(nseq)
     for i in 1:nseq
         @inbounds sequences[i] = tmsa[:,i]
     end
@@ -400,7 +400,7 @@ julia> _str2int_mapping(",,2,,4,5")
 function _str2int_mapping(mapping::String)
     values = split(mapping, ',')
     len = length(values)
-    intmap = Array(Int, len)
+    intmap = Array{Int}(len)
     @inbounds for i in 1:len
         value = values[i]
         intmap[i] = value == "" ? 0 : parse(Int, value)
