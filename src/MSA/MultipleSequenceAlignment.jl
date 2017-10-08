@@ -173,7 +173,7 @@ for T in (  :(AlignedSequence),
             :(AnnotatedAlignedSequence),
             :(MultipleSequenceAlignment),
             :(AnnotatedMultipleSequenceAlignment)  )
-    @eval Base.linearindexing(::Type{$(T)}) = Base.LinearFast()
+    @eval Base.IndexStyle(::Type{$(T)}) = Base.IndexLinear()
 end
 
 @inline Base.getindex(x::AbstractAlignedObject,
