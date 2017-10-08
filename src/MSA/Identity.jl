@@ -111,7 +111,7 @@ Calculates the identity between all the sequences on a MSA. You can indicate the
 element type with the last optional parameter (`Float64` by default). For a MSA with a lot
 of sequences, you can use `Float32` or `Flot16` in order to avoid the `OutOfMemoryError()`.
 """
-function percentidentity{T}(msa::AbstractMatrix{Residue}, out::Type{T}=Float64)
+function percentidentity(msa::AbstractMatrix{Residue}, out::Type{T}=Float64) where T
     aln = getresiduesequences(msa)
     nseq = length(aln)
     len = length(aln[1])

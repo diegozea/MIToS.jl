@@ -5,16 +5,16 @@
 MIToS MSA and aligned sequences (aligned objects) are subtypes of `AbstractMatrix{Residue}`,
 because MSAs and sequences are stored as `Matrix` of `Residue`s.
 """
-abstract AbstractAlignedObject <: AbstractMatrix{Residue}
+abstract type AbstractAlignedObject <: AbstractMatrix{Residue} end
 
 """
 MSAs are stored as `Matrix{Residue}`. It's possible to use a `NamedArray{Residue,2}` as the
 most simple MSA with sequence identifiers and column names.
 """
-abstract AbstractMultipleSequenceAlignment <: AbstractAlignedObject
+abstract type AbstractMultipleSequenceAlignment <: AbstractAlignedObject end
 
 "A MIToS aligned sequence is an `AbstractMatrix{Residue}` with only 1 row/sequence."
-abstract AbstractAlignedSequence <: AbstractAlignedObject
+abstract type AbstractAlignedSequence <: AbstractAlignedObject end
 
 # Multiple Sequence Alignment
 # ===========================
@@ -24,7 +24,7 @@ This MSA type include a `NamedArray` wrapping a `Matrix` of `Residue`s. The use 
 `NamedArray` allows to store sequence names and original column numbers as `String`s, and
 fast indexing using them.
 """
-type MultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
+mutable struct MultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
     matrix::NamedArray{ Residue, 2, Array{Residue, 2},
                         Tuple{OrderedDict{String, Int},
                         OrderedDict{String, Int}} }
@@ -40,7 +40,7 @@ This type represent an MSA, similar to `MultipleSequenceAlignment`, but It also 
 `Annotations`. This annotations are used to store residue coordinates (i.e. mapping
 to UniProt residue numbers).
 """
-type AnnotatedMultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
+mutable struct AnnotatedMultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
     matrix::NamedArray{ Residue, 2, Array{Residue, 2},
                         Tuple{OrderedDict{String, Int},
                         OrderedDict{String, Int}} }
@@ -60,7 +60,7 @@ end
 An `AlignedSequence` wraps a `NamedArray{Residue,2}` with only 1 row/sequence. The
 `NamedArray` stores the sequence name and original column numbers as `String`s.
 """
-type AlignedSequence <: AbstractAlignedSequence
+mutable struct AlignedSequence <: AbstractAlignedSequence
     matrix::NamedArray{ Residue, 2, Array{Residue, 2},
                         Tuple{OrderedDict{String, Int},
                         OrderedDict{String, Int}} }
@@ -76,7 +76,7 @@ end
 This type represent an aligned sequence, similar to `AlignedSequence`, but It also stores
 its `Annotations`.
 """
-type AnnotatedAlignedSequence <: AbstractAlignedSequence
+mutable struct AnnotatedAlignedSequence <: AbstractAlignedSequence
     matrix::NamedArray{ Residue, 2, Array{Residue, 2},
                         Tuple{OrderedDict{String, Int},
                         OrderedDict{String, Int}} }
@@ -93,43 +93,43 @@ end
 # Constructors
 # ------------
 
-function (::Type{AnnotatedMultipleSequenceAlignment})(msa::NamedArray{Residue,2})
+function AnnotatedMultipleSequenceAlignment(msa::NamedArray{Residue,2})
     AnnotatedMultipleSequenceAlignment(msa, Annotations())
 end
 
-function (::Type{AnnotatedMultipleSequenceAlignment})(msa::Matrix{Residue})
+function AnnotatedMultipleSequenceAlignment(msa::Matrix{Residue})
     AnnotatedMultipleSequenceAlignment(NamedArray(msa))
 end
 
-function (::Type{MultipleSequenceAlignment})(msa::Matrix{Residue})
+function MultipleSequenceAlignment(msa::Matrix{Residue})
     MultipleSequenceAlignment(NamedArray(msa))
 end
 
-function (::Type{AnnotatedAlignedSequence})(seq::NamedArray{Residue,2})
+function AnnotatedAlignedSequence(seq::NamedArray{Residue,2})
     AnnotatedAlignedSequence(seq, Annotations())
 end
 
-function (::Type{AnnotatedAlignedSequence})(seq::Matrix{Residue})
+function AnnotatedAlignedSequence(seq::Matrix{Residue})
     AnnotatedAlignedSequence(NamedArray(seq))
 end
 
-function (::Type{AlignedSequence})(seq::Matrix{Residue})
+function AlignedSequence(seq::Matrix{Residue})
     AlignedSequence(NamedArray(seq))
 end
 
 # AnnotatedAlignedObject
 # ----------------------
 
-typealias AnnotatedAlignedObject Union{ AnnotatedMultipleSequenceAlignment,
+const AnnotatedAlignedObject = Union{ AnnotatedMultipleSequenceAlignment,
                                         AnnotatedAlignedSequence    }
 
-typealias UnannotatedAlignedObject Union{   MultipleSequenceAlignment,
+const UnannotatedAlignedObject = Union{   MultipleSequenceAlignment,
                                             AlignedSequence    }
 
 # Matrices
 # --------
 
-typealias MSAMatrix Union{ Matrix{Residue}, NamedArray{Residue,2} }
+const MSAMatrix = Union{ Matrix{Residue}, NamedArray{Residue,2} }
 
 # Getters
 # -------

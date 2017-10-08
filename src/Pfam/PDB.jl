@@ -219,7 +219,7 @@ true contacts and 0.0 for not contacts (NaN or other numbers for missing values)
 Returns two `BitVector`s, the first with `true`s where `contact_list` is 1.0 and the second
 with `true`s where `contact_list` is 0.0. There are useful for AUC calculations.
 """
-function getcontactmasks{T <: AbstractFloat}(contact_list::Vector{T})
+function getcontactmasks(contact_list::Vector{T}) where T <: AbstractFloat
     N = length(contact_list)
     true_contacts  = falses(N)
     false_contacts = falses(N)
@@ -235,11 +235,11 @@ function getcontactmasks{T <: AbstractFloat}(contact_list::Vector{T})
     true_contacts, false_contacts
 end
 
-function getcontactmasks{T <: AbstractFloat,VT}(plm::PairwiseListMatrix{T,false,VT})
+function getcontactmasks(plm::PairwiseListMatrix{T,false,VT}) where {T <: AbstractFloat,VT}
     getcontactmasks(getlist(plm))
 end
 
-function getcontactmasks{T,TV,DN}(nplm::NamedArray{T,2,PairwiseListMatrix{T,false,TV},DN})
+function getcontactmasks(nplm::NamedArray{T,2,PairwiseListMatrix{T,false,TV},DN}) where {T,TV,DN}
     getcontactmasks(getarray(nplm))
 end
 
@@ -250,9 +250,9 @@ Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of 
 `scores_list` for `true_contacts` prediction. The three vectors should have the same
 length and `false_contacts` should be `true` where there are not contacts.
 """
-function ROCAnalysis.AUC{T}(scores_list::Vector{T},
-                            true_contacts::BitVector,
-                            false_contacts::BitVector)
+function ROCAnalysis.AUC(scores_list::Vector{T},
+                         true_contacts::BitVector,
+                         false_contacts::BitVector) where T
     1 - auc(roc(scores_list[true_contacts  & !isnan(scores_list)],
                 scores_list[false_contacts & !isnan(scores_list)]))
 end
@@ -265,9 +265,9 @@ Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of 
 should have the same number of elements and `false_contacts` should be `true` where
 there are not contacts.
 """
-function ROCAnalysis.AUC{L,VL,NL}(scores::NamedArray{L,2,PairwiseListMatrix{L,false,VL},NL},
-                                  true_contacts::BitVector,
-                                  false_contacts::BitVector)
+function ROCAnalysis.AUC(scores::NamedArray{L,2,PairwiseListMatrix{L,false,VL},NL},
+                         true_contacts::BitVector,
+                         false_contacts::BitVector) where {L,VL,NL}
     AUC(getlist(getarray(scores)), true_contacts, false_contacts)
 end
 
@@ -279,9 +279,9 @@ Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of 
 (inner join) by their labels (i.e. column number in the file). `msacontact` should have
 1.0 for true contacts and 0.0 for not contacts (NaN or other numbers for missing values).
 """
-function ROCAnalysis.AUC{L <: AbstractFloat, R <: AbstractFloat,VL,VR,NL,NR}(
-                            scores::NamedArray{L,2,PairwiseListMatrix{L,false,VL},NL},
-                            msacontacts::NamedArray{R,2,PairwiseListMatrix{L,false,VR},NR})
+function ROCAnalysis.AUC(
+scores::NamedArray{L,2,PairwiseListMatrix{L,false,VL},NL},
+msacontacts::NamedArray{R,2,PairwiseListMatrix{L,false,VR},NR}) where {L <: AbstractFloat, R <: AbstractFloat,VL,VR,NL,NR}
     sco, con = join(scores, msacontacts, kind=:inner)
     true_contacts, false_contacts = getcontactmasks(con)
     AUC(sco, true_contacts, false_contacts)

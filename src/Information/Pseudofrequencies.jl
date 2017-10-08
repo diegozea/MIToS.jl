@@ -2,13 +2,13 @@
 # =================
 
 "Parametric abstract type to define pseudofrequencies types"
-abstract Pseudofrequencies
+abstract type Pseudofrequencies end
 
 """
 You can use `NoPseudofrequencies()` to avoid pseudocount corrections where a
 `Pseudofrequencies` type is needed.
 """
-immutable NoPseudofrequencies <: Pseudofrequencies end
+struct NoPseudofrequencies <: Pseudofrequencies end
 
 # BLOSUM based pseudofrequencies
 # ==============================
@@ -19,7 +19,7 @@ immutable NoPseudofrequencies <: Pseudofrequencies end
 - `α` : Usually the number of sequences or sequence clusters in the MSA.
 - `β` : The weight of the pseudofrequencies, a value close to 8.512 when `α` is the number of sequence clusters.
 """
-immutable BLOSUM_Pseudofrequencies <: Pseudofrequencies
+struct BLOSUM_Pseudofrequencies <: Pseudofrequencies
     α::Float64
     β::Float64
 end
@@ -33,7 +33,7 @@ frequencies/probabilities `Pab` because they are used to estimate the pseudofreq
 
 `Gab = Σcd  Pcd ⋅ BLOSUM62( a | c ) ⋅ BLOSUM62( b | d )`
 """
-function _calculate_blosum_pseudofrequencies!{T}(Pab::ContingencyTable{T,2,UngappedAlphabet})
+function _calculate_blosum_pseudofrequencies!(Pab::ContingencyTable{T,2,UngappedAlphabet}) where T
     @assert gettotal(Pab) ≈ one(T) "The input should be a probability table (normalized)"
     pab  = getarray(gettable(Pab))
     gab  = Pab.temporal
@@ -75,8 +75,8 @@ of the pseudofrequencies.
 `Gab = Σcd  Pcd ⋅ BLOSUM62( a | c ) ⋅ BLOSUM62( b | d )`
 `Pab = (α ⋅ Pab + β ⋅ Gab )/(α + β)`
 """
-function apply_pseudofrequencies!{T}(Pab::ContingencyTable{T,2,UngappedAlphabet},
-                                     pseudofrequencies::BLOSUM_Pseudofrequencies)
+function apply_pseudofrequencies!(Pab::ContingencyTable{T,2,UngappedAlphabet},
+                                  pseudofrequencies::BLOSUM_Pseudofrequencies) where T
     α = T(pseudofrequencies.α)
     β = T(pseudofrequencies.β)
     if β == 0.0

@@ -12,7 +12,7 @@ It has the following fields that you can access at any moment for query purposes
     - `model` : The model number as a string, e.g. `"1"`.
     - `chain` : The chain as a string, e.g. `"A"`.
 """
-@auto_hash_equals immutable PDBResidueIdentifier
+@auto_hash_equals struct PDBResidueIdentifier
     PDBe_number::String # PDBe
     number::String # PDB
     name::String
@@ -22,7 +22,7 @@ It has the following fields that you can access at any moment for query purposes
 end
 
 "A `Coordinates` object is a fixed size vector with the coordinates x,y,z."
-@auto_hash_equals immutable Coordinates <: FixedVectorNoTuple{3, Float64}
+@auto_hash_equals struct Coordinates <: FixedVectorNoTuple{3, Float64}
     x::Float64
     y::Float64
     z::Float64
@@ -41,7 +41,7 @@ residue. It has the following fields that you can access at any moment for query
     - `occupancy` : A float number with the occupancy, e.g. `1.0`.
     - `B` : B factor as a string, e.g. `"23.60"`.
 """
-@auto_hash_equals immutable PDBAtom
+@auto_hash_equals struct PDBAtom
     coordinates::Coordinates
     atom::String
     element::String
@@ -56,7 +56,7 @@ following fields that you can access at any moment for query purposes:
     - `id` : A `PDBResidueIdentifier` object.
     - `atoms` : A vector of `PDBAtom`s.
 """
-@auto_hash_equals type PDBResidue
+@auto_hash_equals mutable struct PDBResidue
     id::PDBResidueIdentifier
     atoms::Vector{PDBAtom}
 end
@@ -160,8 +160,8 @@ isatom(atom::PDBAtom, name) = _is(atom.atom, name)
 These return a new vector with the selected subset of residues from a list of residues. You
 can use the type `All` (default value) to avoid filtering a that level.
 """
-function residues{N}(residue_list::AbstractArray{PDBResidue,N},
-                     model=All, chain=All, group=All, residue=All)
+function residues(residue_list::AbstractArray{PDBResidue,N},
+                  model=All, chain=All, group=All, residue=All) where N
     filter(res -> isresidue(res, model, chain, group, residue), residue_list)
 end
 
@@ -191,8 +191,8 @@ end
 These return a dictionary (using PDB residue numbers as keys) with the selected subset of
 residues. You can use the type `All` (default value) to avoid filtering a that level.
 """
-function residuesdict{N}(residue_list::AbstractArray{PDBResidue,N},
-                         model=All, chain=All, group=All, residue=All)
+function residuesdict(residue_list::AbstractArray{PDBResidue,N},
+                      model=All, chain=All, group=All, residue=All) where N
     dict = sizehint!(OrderedDict{String, PDBResidue}(), length(residue_list))
     for res in residue_list
         if isresidue(res, model, chain, group, residue)
@@ -272,7 +272,7 @@ end
 # This _find implementation should be faster than Base.find. It is faster than Base.find
 # for small vectors (like atoms) because and allocations is't a problem:
 # https://discourse.julialang.org/t/avoid-calling-push-in-base-find/1336
-function _find{T}(f::Function, vector::Vector{T})
+function _find(f::Function, vector::Vector{T}) where T
     N = length(vector)
     indices = Array(Int, N)
     j = 0
@@ -535,10 +535,10 @@ It creates a `NamedArray` containing a `PairwiseListMatrix` where each element
 the value type of the matrix (default to `Float64`), if the list should have the
 diagonal values (default to `Val{false}`) and the diagonal values (default to `NaN`).
 """
-function residuepairsmatrix{T,diagonal}(residue_list::Vector{PDBResidue},
-                                        ::Type{T},
-                                        ::Type{Val{diagonal}},
-                                        diagonalvalue::T)
+function residuepairsmatrix(residue_list::Vector{PDBResidue},
+                            ::Type{T},
+                            ::Type{Val{diagonal}},
+                            diagonalvalue::T) where {T,diagonal}
     plm = PairwiseListMatrix(T, length(residue_list), diagonal, diagonalvalue)
     resnames = [ string(res.id.model, '_',
                         res.id.chain, '_',
@@ -610,11 +610,11 @@ Buslje, Cristina Marino, Elin Teppa, Tomas Di Doménico, José María Delfino, a
 *Networks of high mutual information define the structural proximity of catalytic sites: implications for catalytic residue identification.*
 PLoS Comput Biol 6, no. 11 (2010): e1000978.
 """
-function proximitymean{T <: AbstractFloat}(residues::Vector{PDBResidue},
-                                           scores::AbstractVector{T},
-                                           limit::T = 6.05;
-                                           criteria::String="Heavy",
-                                           include::Bool=false)
+function proximitymean(residues::Vector{PDBResidue},
+                       scores::AbstractVector{T},
+                       limit::T = 6.05;
+                       criteria::String="Heavy",
+                       include::Bool=false) where T <: AbstractFloat
     N = length(residues)
     @assert N == length(scores) "Vectors must have the same length."
     count = zeros(Int, N)

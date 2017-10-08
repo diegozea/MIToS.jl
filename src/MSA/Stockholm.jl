@@ -1,4 +1,4 @@
-immutable Stockholm <: Format end
+struct Stockholm <: Format end
 
 @inline function _fill_with_sequence_line!(line, IDS, SEQS)
     if !startswith(line,'#') && !startswith(line,"//")

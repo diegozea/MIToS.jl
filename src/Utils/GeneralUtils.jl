@@ -1,7 +1,7 @@
 """
 All is used instead of MIToS 1.0 "all" or "*", because it's possible to dispatch on it.
 """
-immutable All end
+struct All end
 
 _get_function_name(str::String)::String = split(str,'.')[end]
 
@@ -65,7 +65,7 @@ Selects the first element of the vector. This is useful for unpacking one elemen
 Throws a warning if there are more elements. `element_name` is *element* by default,
 but the name can be changed using the second argument.
 """
-function select_element{T}(vector::Array{T,1}, element_name::String="element")
+function select_element(vector::Array{T,1}, element_name::String="element") where T
     len = length(vector)
     if len == 0
         throw(ErrorException("There is not $element_name"))
@@ -79,7 +79,7 @@ end
 Returns a vector with the `part` ("upper" or "lower") of the square matrix `mat`.
 The `diagonal` is not included by default.
 """
-function matrix2list{T}(mat::AbstractMatrix{T}; part="upper", diagonal::Bool=false)
+function matrix2list(mat::AbstractMatrix{T}; part="upper", diagonal::Bool=false) where T
     nrow, ncol = size(mat)
     if nrow != ncol
         throw(ErrorException("Should be a square matrix"))
@@ -118,7 +118,7 @@ Returns a square symmetric matrix from the vector `vec`. `side` is the number of
 rows/columns. The `diagonal` is not included by default, set to `true` if there are
 diagonal elements in the list.
 """
-function list2matrix{T}(vec::AbstractVector{T}, side::Int; diagonal::Bool=false)
+function list2matrix(vec::AbstractVector{T}, side::Int; diagonal::Bool=false) where T
     d = diagonal ? 0 : 1
     mat = zeros(T, side, side)
     k = 1

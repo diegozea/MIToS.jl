@@ -2,9 +2,9 @@
 # ========
 
 if Int === Int64
-    bitstype 64 Residue
+    primitive type Residue 64 end
 else
-    bitstype 32 Residue
+    primitive type Residue 32 end
 end
 
 @doc """

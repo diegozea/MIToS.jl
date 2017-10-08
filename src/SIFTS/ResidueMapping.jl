@@ -1,9 +1,9 @@
-abstract DataBase
+abstract type DataBase end
 
 """
 `dbPDBe` stores the residue `number` and `name` in PDBe as strings.
 """
-@auto_hash_equals immutable dbPDBe <: DataBase
+@auto_hash_equals struct dbPDBe <: DataBase
     number::String # Cross referenced residue number
     name::String # Cross referenced residue name
 end
@@ -11,7 +11,7 @@ end
 """
 `dbInterPro` stores the residue `id`, `number`, `name` and `evidence` in InterPro as strings.
 """
-@auto_hash_equals immutable dbInterPro <: DataBase
+@auto_hash_equals struct dbInterPro <: DataBase
     id::String
     number::String # Cross referenced residue number
     name::String # Cross referenced residue name
@@ -21,7 +21,7 @@ end
 for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
     @eval begin
 
-        @auto_hash_equals immutable $(ref_type) <: DataBase
+        @auto_hash_equals struct $(ref_type) <: DataBase
             id::String # The cross reference database identifier
             number::String # Cross referenced residue number
             name::String # Cross referenced residue name
@@ -45,7 +45,7 @@ end
 for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
     @eval begin
 
-        @auto_hash_equals immutable $(ref_type) <: DataBase
+        @auto_hash_equals struct $(ref_type) <: DataBase
             id::String
             number::String
             name::String
@@ -94,7 +94,7 @@ end
 for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
     @eval begin
 
-        function (::Type{$(ref_type)})(map::LightXML.XMLElement)
+        function $(ref_type)(map::LightXML.XMLElement)
             $(ref_type)(
                 _get_attribute(map, "dbAccessionId"),
                 _get_attribute(map, "dbResNum"),
@@ -108,7 +108,7 @@ end
 for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
     @eval begin
 
-        function (::Type{$(ref_type)})(map::LightXML.XMLElement)
+        function $(ref_type)(map::LightXML.XMLElement)
             $(ref_type)(
                 _get_attribute(map, "dbAccessionId"),
                 _get_attribute(map, "dbResNum"),
@@ -118,7 +118,7 @@ for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
     end
 end
 
-function (::Type{dbInterPro})(map::LightXML.XMLElement)
+function dbInterPro(map::LightXML.XMLElement)
     dbInterPro(
         _get_attribute(map, "dbAccessionId"),
         _get_attribute(map, "dbResNum"),
@@ -127,7 +127,7 @@ function (::Type{dbInterPro})(map::LightXML.XMLElement)
     )
 end
 
-function (::Type{dbPDBe})(map::LightXML.XMLElement)
+function dbPDBe(map::LightXML.XMLElement)
       dbPDBe(
         _get_attribute(map, "dbResNum"),
         _get_attribute(map, "dbResName")
@@ -150,7 +150,7 @@ following fields that you can access at any moment for query purposes:
     - `sscode` : A string with the secondary structure code of the residue.
     - `ssname` : A string with the secondary structure name of the residue.
 """
-@auto_hash_equals immutable SIFTSResidue
+@auto_hash_equals struct SIFTSResidue
     PDBe::dbPDBe
     # crossRefDb
     UniProt::Nullable{dbUniProt}
@@ -188,14 +188,14 @@ end
 @inline Base.get(res::SIFTSResidue, db::Type{dbSCOP})    = res.SCOP
 @inline Base.get(res::SIFTSResidue, db::Type{dbCATH})    = res.CATH
 
-function Base.get{T<:Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbCATH}}(res::SIFTSResidue,
-                 db::Type{T}, field::Symbol, default::String)
+function Base.get(res::SIFTSResidue,
+db::Type{T}, field::Symbol, default::String) where T<:Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbCATH}
     database = get(res, db)
     isnull(database) ? default : getfield(get(database), field)
 end
 
-function Base.get{T<:Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbCATH}}(res::SIFTSResidue,
-                 db::Type{T}, field::Symbol)
+function Base.get(res::SIFTSResidue,
+db::Type{T}, field::Symbol) where T<:Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbCATH}
     database = get(res, db)
     S = fieldtype(T, field)
     isnull(database) ? Nullable{S}() : Nullable{S}(getfield(get(database),field))
@@ -229,8 +229,8 @@ end
 # Creation
 # --------
 
-function (::Type{SIFTSResidue})(residue::LightXML.XMLElement, missing::Bool,
-                                sscode::String, ssname::String)
+function SIFTSResidue(residue::LightXML.XMLElement, missing::Bool,
+                      sscode::String, ssname::String)
     PDBe = dbPDBe(residue)
     UniProt = Nullable{dbUniProt}()
     Pfam = Nullable{dbPfam}()
@@ -272,7 +272,7 @@ function (::Type{SIFTSResidue})(residue::LightXML.XMLElement, missing::Bool,
                  ssname)
 end
 
-function (::Type{SIFTSResidue})(residue::LightXML.XMLElement)
+function SIFTSResidue(residue::LightXML.XMLElement)
     SIFTSResidue(residue, _get_details(residue)...)
 end
 
@@ -288,13 +288,13 @@ with the given identifiers. A `chain` could be specified (`All` by default). If 
 is `true` (default) all the residues are used, even if they haven’t coordinates in the
 PDB file.
 """
-function siftsmapping{F, T}(filename::String,
-                            db_from::Type{F},
-                            id_from::String,
-                            db_to::Type{T},
-                            id_to::String;
-                            chain::Union{Type{All},String} = All,
-                            missings::Bool = true)
+function siftsmapping(filename::String,
+                      db_from::Type{F},
+                      id_from::String,
+                      db_to::Type{T},
+                      id_to::String;
+                      chain::Union{Type{All},String} = All,
+                      missings::Bool = true) where {F, T}
     mapping = Dict{String,String}()
     xdoc = parse_file(filename)
     try
@@ -370,7 +370,7 @@ end
 
 for F in (:find, :filter!, :filter)
     @eval begin
-        function Base.$(F){T<:DataBase}(f::Function,list::AbstractVector{SIFTSResidue},db::Type{T})
+        function Base.$(F)(f::Function,list::AbstractVector{SIFTSResidue},db::Type{T}) where T<:DataBase
             $(F)(list) do res
                 database = get(res, db)
                 if !isnull(database)

@@ -1,5 +1,5 @@
 "Abstract type to define residue alphabet types."
-abstract ResidueAlphabet
+abstract type ResidueAlphabet end
 
 """
 This type defines the usual alphabet of the 20 natural residues and a gap character.
@@ -10,7 +10,7 @@ MIToS.MSA.GappedAlphabet of length 21. Residues : res"ARNDCQEGHILKMFPSTWYV-"
 
 ```
 """
-immutable GappedAlphabet <: ResidueAlphabet end
+struct GappedAlphabet <: ResidueAlphabet end
 
 """
 This type defines the usual alphabet of the 20 natural residues, without the gap character.
@@ -21,7 +21,7 @@ MIToS.MSA.UngappedAlphabet of length 20. Residues : res"ARNDCQEGHILKMFPSTWYV"
 
 ```
 """
-immutable UngappedAlphabet <: ResidueAlphabet end
+struct UngappedAlphabet <: ResidueAlphabet end
 
 """
 `ReducedAlphabet` allows the construction of reduced residue alphabets, where residues
@@ -36,7 +36,7 @@ julia> ab[Residue('K')]
 
 ```
 """
-immutable ReducedAlphabet <: ResidueAlphabet
+struct ReducedAlphabet <: ResidueAlphabet
     mapping::Array{Int,1} # Residue -> Int
     named::NamedArray{Int,1,Array{Int,1},Tuple{OrderedDict{String,Int}}}
     len::Int
@@ -45,7 +45,7 @@ end
 # Creation
 # --------
 
-function (::Type{ReducedAlphabet})(str::AbstractString)
+function ReducedAlphabet(str::AbstractString)
     N = Int(XAA)
     mapping = fill!(Array(Int, N), N)
     ingroup = false

@@ -1,4 +1,4 @@
-immutable FASTA <: Format end
+struct FASTA <: Format end
 
 # FASTA Parser
 # ============

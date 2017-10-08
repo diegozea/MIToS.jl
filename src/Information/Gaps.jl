@@ -2,12 +2,12 @@
 # =======================
 
 "It calculates the gap intersection as percentage from a table of `Counts`."
-function gap_intersection_percentage{T}(nxy::Counts{T,2,GappedAlphabet})
+function gap_intersection_percentage(nxy::Counts{T,2,GappedAlphabet}) where T
     T(100.0) * gettablearray(nxy)[21,21] / gettotal(nxy)
 end
 
 "It calculates the gap union as percentage from a table of `Counts`."
-function gap_union_percentage{T}(nxy::Counts{T,2,GappedAlphabet})
+function gap_union_percentage(nxy::Counts{T,2,GappedAlphabet}) where T
     marginals = getmarginalsarray(nxy)
     T(100.0) * (marginals[21,1] + marginals[21,2] - gettablearray(nxy)[21,21]) / gettotal(nxy)
 end
@@ -42,7 +42,7 @@ function pairwisegapfraction(aln::AbstractMatrix{Residue}; clustering::Bool=true
     gu, gi
 end
 
-function pairwisegapfraction{T <: Format}(filename::String, format::Type{T}; kargs...)
+function pairwisegapfraction(filename::String, format::Type{T}; kargs...) where T <: Format
     aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
     pairwisegapfraction(aln; kargs...)
 end

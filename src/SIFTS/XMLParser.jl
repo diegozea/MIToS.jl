@@ -1,4 +1,4 @@
-immutable SIFTSXML <: Format end
+struct SIFTSXML <: Format end
 
 # Download SIFTS
 # ==============

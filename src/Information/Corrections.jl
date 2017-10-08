@@ -2,7 +2,7 @@
 Mean mutual information of column a (Dunn et. al. 2008).
 Summation is over j=1 to N, j ≠ a. Total is N-1.
 """
-_mean_column{T}(mi::Matrix{T}) = (squeeze(sum(mi,1),1) .- diag(mi)) ./ (size(mi,1)-1)
+_mean_column(mi::Matrix{T}) where {T} = (squeeze(sum(mi,1),1) .- diag(mi)) ./ (size(mi,1)-1)
 
 """
 Mean mutual information of column a (Dunn et. al. 2008).
@@ -11,13 +11,13 @@ Summation is over j=1 to N, j ≠ a. Total is N-1.
 Overall mean mutual information (Dunn et. al. 2008).
 2/(N*(N-1)) by the sum of MI where the indices run i=1 to N-1, j=i+1 to N (triu).
 """
-function _mean_total{T}(mi::Matrix{T})
+function _mean_total(mi::Matrix{T}) where T
     values = matrix2list(mi)
     sum(values) / length(values)
 end
 
 "APC (Dunn et. al. 2008)"
-function APC!{T}(MI::Matrix{T})
+function APC!(MI::Matrix{T}) where T
     nrow, ncol = size(MI)
     MI_mean = _mean_total(MI)
     #   if MI_mean ==  0.0
@@ -36,7 +36,7 @@ function APC!{T}(MI::Matrix{T})
     MI
 end
 
-function APC!{T <: AbstractFloat}(MI::PairwiseListMatrix{T,true,Vector{T}})
+function APC!(MI::PairwiseListMatrix{T,true,Vector{T}}) where T <: AbstractFloat
     ncol = MI.nelements
     MI_col_sum = vec(sum_nodiag(MI, 1))
     MI_mean = sum(MI_col_sum) / (length(MI) - ncol)
@@ -56,7 +56,7 @@ function APC!{T <: AbstractFloat}(MI::PairwiseListMatrix{T,true,Vector{T}})
     MI
 end
 
-function APC!{T <: AbstractFloat}(MI::PairwiseListMatrix{T,false,Vector{T}})
+function APC!(MI::PairwiseListMatrix{T,false,Vector{T}}) where T <: AbstractFloat
     ncol = MI.nelements
     MI_col_sum = vec(sum_nodiag(MI, 1))
     MI_mean = sum(MI_col_sum) / (length(MI) - ncol)
@@ -73,7 +73,7 @@ function APC!{T <: AbstractFloat}(MI::PairwiseListMatrix{T,false,Vector{T}})
     MI
 end
 
-function APC!{T,D}(MI::NamedArray{T,2,PairwiseListMatrix{T,D,Vector{T}},NTuple{2,OrderedDict{String,Int}}})
+function APC!(MI::NamedArray{T,2,PairwiseListMatrix{T,D,Vector{T}},NTuple{2,OrderedDict{String,Int}}}) where {T,D}
     plm = getarray(MI)::PairwiseListMatrix{T,D,Vector{T}}
     APC!(plm)
     MI
