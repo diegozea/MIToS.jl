@@ -8,14 +8,13 @@ _get_function_name(str::String)::String = split(str,'.')[end]
 """
 `get_n_words{T <: Union{ASCIIString, UTF8String}}(line::T, n::Int)`
 It returns a `Vector{T}` with the first `n` (possibles) words/fields (delimited
-by space, tab or newline). If there is more than `n` words, the last word
+by space or tab). If there is more than `n` words, the last word
 returned contains the finals words and the delimiters. The length of the
 returned vector is `n` or less (if the number of words is less than `n`).
-The last newline character is always removed.
 This is used for parsing the Stockholm format.
 
 ```julia
-julia> get_n_words("#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH\n", 3)
+julia> get_n_words("#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH", 3)
 3-element Array{String,1}:
  "#=GR"
  "O31698/18-71"
@@ -24,8 +23,7 @@ julia> get_n_words("#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHH
 ```
 """
 function get_n_words(line::String, n::Int)
-    str = chomp(line)
-    if length(str) == 0
+    if length(line) == 0
         return String[]
     end
     words = Array{String}(n)
@@ -33,12 +31,12 @@ function get_n_words(line::String, n::Int)
     last_spaces = 0:0
     while true
         if N == n
-            words[N] = str[(last(last_spaces)+1):end]
+            words[N] = line[(last(last_spaces)+1):end]
             break
         end
         spaces = search(line, r"[ |\t]+", last(last_spaces)+1)
         if first(spaces) == 0
-            words[N] = str[(last(last_spaces)+1):end]
+            words[N] = line[(last(last_spaces)+1):end]
             break
         end
         words[N] = line[(last(last_spaces)+1):(first(spaces)-1)]

@@ -6,7 +6,7 @@ struct Raw <: Format end
 function _get_seqs(io::Union{IO, AbstractString})
     SEQS = String[]
     for line in lineiterator(io)
-        push!(SEQS, chomp(line))
+        push!(SEQS, line)
     end
     SEQS
 end

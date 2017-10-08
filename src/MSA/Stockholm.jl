@@ -53,7 +53,7 @@ function _pre_readstockholm(io::Union{IO, AbstractString})
     GR = Dict{Tuple{String,String},String}()
 
     @inbounds for line in lineiterator(io)
-        if length(line) >= 4
+        if length(line) >= 3
             _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
             if startswith(line,"//")
                break
@@ -74,7 +74,7 @@ function _pre_readstockholm_sequences(io::Union{IO, AbstractString})
     IDS  = String[]
     SEQS = String[]
     @inbounds for line in lineiterator(io)
-        if length(line) >= 4
+        if length(line) >= 3
             _fill_with_sequence_line!(line, IDS, SEQS)
             if startswith(line,"//")
                break

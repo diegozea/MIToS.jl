@@ -4,6 +4,9 @@
 
 MIToS v2.1 requires Julia v0.6. This release drops Julia 0.5 support.
 
+* `get_n_words(...` doesn't remove the last newline character, use `get_n_words(chomp(...`
+to get the previous behaviour. 
+
 ### Changes from v1.2.3 to v2.0
 
 **MIToS 2.0** is the first MIToS version with **Julia 0.5** support

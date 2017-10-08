@@ -132,11 +132,11 @@ function runscript(args)
         fh_in = file === nothing ? STDIN : open(file, "r")
         if nprocs() != 1
             pmap(eachline(fh_in)) do line
-                run_single_script(chomp(line), args)
+                run_single_script(line, args)
             end
         else
             for line in eachline(fh_in)
-                run_single_script(chomp(line), args)
+                run_single_script(line, args)
             end
         end
     else

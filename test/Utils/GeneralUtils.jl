@@ -1,16 +1,12 @@
 @testset "get_n_words!" begin
 
     line = "#=GF AC PF00571"
-    line_n = "#=GF AC PF00571\n"
     @test get_n_words(line, 1) == String[line]
     @test get_n_words(line, 2) == String["#=GF", "AC PF00571"]
     @test get_n_words(line, 3) == String["#=GF", "AC", "PF00571"]
     @test get_n_words(line, 4) == String["#=GF", "AC", "PF00571"]
-    for i in 1:4
-        @test get_n_words(line, i) == get_n_words(line_n, i)
-    end
 
-    @test get_n_words("\n",1) == String[]
+    @test get_n_words("\n",1) == String["\n"]
     @test get_n_words("#", 1) == String["#"]
 
     # ASCII
@@ -69,15 +65,16 @@ end
 
     @testset "lineiterator" begin
 
+        # Julia 0.6: eachline return lines without line endings by default
         ppap = "pen\npineapple\napple\npen\n"
         @test collect(lineiterator(ppap)) == collect(eachline(IOBuffer(ppap)))
 
         @test collect(lineiterator("Hola")) == ["Hola"]
-        @test collect(lineiterator("Hola\n")) == ["Hola\n"]
-        @test collect(lineiterator("\n")) == ["\n"]
-        @test collect(lineiterator("Hola\nMundo")) == ["Hola\n", "Mundo"]
-        @test collect(lineiterator("Hola\nMundo\n")) == ["Hola\n", "Mundo\n"]
-        @test collect(lineiterator("Hola\nMundo\n\n")) == ["Hola\n", "Mundo\n", "\n"]
+        @test collect(lineiterator("Hola\n")) == ["Hola"]
+        @test collect(lineiterator("\n")) == [""]
+        @test collect(lineiterator("Hola\nMundo")) == ["Hola", "Mundo"]
+        @test collect(lineiterator("Hola\nMundo\n")) == ["Hola", "Mundo"]
+        @test collect(lineiterator("Hola\nMundo\n\n")) == ["Hola", "Mundo", ""]
     end
 
     @testset "File checking" begin
