@@ -1,8 +1,8 @@
 # Counting
 # ========
 
-@generated function _temporal_counts!{T,N,A}(counts::ContingencyTable{T,N,A}, weights,
-                                  seqs::Vararg{AbstractVector{Residue},N})
+@generated function _temporal_counts!(counts::ContingencyTable{T,N,A}, weights,
+                           seqs::Vararg{AbstractVector{Residue},N}) where {T,N,A}
     quote
         @assert N == length(seqs) "Number of residue arrays and table dimension doesn't match."
         # seq_1 = seqs[1]
@@ -33,17 +33,17 @@ pseudocounts as second and third positional arguments respectively. You can use
 `NoPseudofrequencies()` and `NoClustering()` to avoid the use of sequence weighting and
 pseudocounts, respectively.
 """
-function count!{T,N,A}(table::ContingencyTable{T,N,A},
-                       weights,
-                       pseudocounts::Pseudocount,
-                       seqs::Vararg{AbstractVector{Residue},N})
+function count!(table::ContingencyTable{T,N,A},
+                weights,
+                pseudocounts::Pseudocount,
+                seqs::Vararg{AbstractVector{Residue},N}) where {T,N,A}
     _temporal_counts!(table, weights, seqs...)
     apply_pseudocount!(table, pseudocounts)
     _update!(table)
     table
 end
 
-function count!{T,N,A}(table::Counts{T,N,A}, args...)
+function count!(table::Counts{T,N,A}, args...) where {T,N,A}
     count!(getcontingencytable(table), args...)
     table
 end
@@ -68,10 +68,10 @@ to indicate the alphabet of the table (default to `UngappedAlphabet()`), a clust
 result (default to `NoClustering()`) and the pseudocounts (default to `NoPseudocount()`)
 to be used during the estimation of the frequencies.
 """
-function Base.count{N}(seqs::Vararg{AbstractVector{Residue},N};
-                       alphabet::ResidueAlphabet = UngappedAlphabet(),
-                       weights = NoClustering(),
-                       pseudocounts::Pseudocount = NoPseudocount())
+function Base.count(seqs::Vararg{AbstractVector{Residue},N};
+                    alphabet::ResidueAlphabet = UngappedAlphabet(),
+                    weights = NoClustering(),
+                    pseudocounts::Pseudocount = NoPseudocount()) where N
     Counts(_count(alphabet, weights, pseudocounts, seqs...))
 end
 
@@ -86,11 +86,11 @@ pseudocounts and pseudofrequencies as second, third and fourth positional argume
 respectively. You can use `NoClustering()`, `NoPseudocount()` and `NoPseudofrequencies()`
 to avoid the use of sequence weighting, pseudocounts and pseudofrequencies, respectively.
 """
-function probabilities!{T,N,A}(table::ContingencyTable{T,N,A},
-                               weights,
-                               pseudocounts::Pseudocount,
-                               pseudofrequencies::Pseudofrequencies,
-                               seqs::Vararg{AbstractVector{Residue},N})
+function probabilities!(table::ContingencyTable{T,N,A},
+                        weights,
+                        pseudocounts::Pseudocount,
+                        pseudofrequencies::Pseudofrequencies,
+                        seqs::Vararg{AbstractVector{Residue},N}) where {T,N,A}
     count!(table, weights, pseudocounts, seqs...)
     normalize!(table)
     apply_pseudofrequencies!(table, pseudofrequencies)
@@ -98,7 +98,7 @@ function probabilities!{T,N,A}(table::ContingencyTable{T,N,A},
 end
 
 
-function probabilities!{T,N,A}(table::Probabilities{T,N,A}, args...)
+function probabilities!(table::Probabilities{T,N,A}, args...) where {T,N,A}
     probabilities!(getcontingencytable(table), args...)
     table
 end
@@ -124,10 +124,10 @@ the number of sequences. You can use the keyword arguments `alphabet`, `weights`
 the pseudocounts (default to `NoPseudocount()`) and the pseudofrequencies
 (default to `NoPseudofrequencies()`) to be used during the estimation of the probabilities.
 """
-function probabilities{N}(seqs::Vararg{AbstractVector{Residue},N};
-                          alphabet::ResidueAlphabet = UngappedAlphabet(),
-                          weights = NoClustering(),
-                          pseudocounts::Pseudocount = NoPseudocount(),
-                          pseudofrequencies::Pseudofrequencies = NoPseudofrequencies())
+function probabilities(seqs::Vararg{AbstractVector{Residue},N};
+                       alphabet::ResidueAlphabet = UngappedAlphabet(),
+                       weights = NoClustering(),
+                       pseudocounts::Pseudocount = NoPseudocount(),
+                       pseudofrequencies::Pseudofrequencies = NoPseudofrequencies()) where N
     Probabilities(_probabilities(alphabet,weights,pseudocounts,pseudofrequencies,seqs...))
 end

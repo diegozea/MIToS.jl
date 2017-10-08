@@ -3,7 +3,7 @@
 
 const _MI_MAT_TYPE = NamedArray{Float64,2,PairwiseListMatrix{Float64,false,Vector{Float64}},NTuple{2,OrderedDict{String,Int}}}
 
-function _buslje09{A}(aln, alphabet::A, clusters, lambda, apc)
+function _buslje09(aln, alphabet::A, clusters, lambda, apc) where A
     mi = mapcolpairfreq!(mutual_information, aln,
                          Counts{Float64,2,A}(ContingencyTable(Float64,Val{2},alphabet)),
                          Val{false}, # use diagonal
@@ -67,7 +67,7 @@ function buslje09(aln::AbstractMatrix{Residue};
     end
 end
 
-function buslje09{T <: Format}(filename::String, format::Type{T}; kargs...)
+function buslje09(filename::String, format::Type{T}; kargs...) where T <: Format
     aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
     buslje09(aln; kargs...)
 end
@@ -142,7 +142,7 @@ function BLMI(aln::AbstractMatrix{Residue};
     end
 end
 
-function BLMI{T <: Format}(filename::String, format::Type{T}; kargs...)
+function BLMI(filename::String, format::Type{T}; kargs...) where T <: Format
     aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
     BLMI(aln; kargs...)
 end

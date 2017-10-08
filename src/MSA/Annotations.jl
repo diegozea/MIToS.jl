@@ -12,14 +12,14 @@ MIToS also uses MSA annotations to keep track of:
 - Positions numbers in the original MSA file (**column mapping:** `ColMap`)
 - Position of the residues in the sequence (**sequence mapping:** `SeqMap`)
 """
-@auto_hash_equals type Annotations
+@auto_hash_equals mutable struct Annotations
     file::OrderedDict{String, String}
     sequences::Dict{Tuple{String,String},String}
     columns::Dict{String,String}
     residues::Dict{Tuple{String,String},String}
 end
 
-(::Type{Annotations})() = Annotations(  OrderedDict{String, String}(),
+Annotations() = Annotations(  OrderedDict{String, String}(),
                                         Dict{Tuple{String,String},String}(),
                                         Dict{String, String}(),
                                         Dict{Tuple{String,String},String}() )

@@ -1,4 +1,4 @@
-immutable Raw <: Format end
+struct Raw <: Format end
 
 # Raw Parser
 # ==========

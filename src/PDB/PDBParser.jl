@@ -5,7 +5,7 @@ Protein Data Bank (PDB) format.
 It provides a standard representation for macromolecular
 structure data derived from X-ray diffraction and NMR studies.
 """
-immutable PDBFile <: Format end
+struct PDBFile <: Format end
 
 """
 `parse(io, ::Type{PDBFile}; chain=All, model=All, group=All, atomname=All, onlyheavy=false, occupancyfilter=false)`

@@ -2,13 +2,13 @@
 # ============
 
 "Parametric abstract type to define pseudocount types"
-abstract Pseudocount{T<:Real}
+abstract type Pseudocount{T<:Real} end
 
 """
 You can use `NoPseudocount()` to avoid pseudocount corrections where a
 `Pseudocount` type is needed.
 """
-immutable NoPseudocount <: Pseudocount end
+struct NoPseudocount <: Pseudocount end
 
 """
 **Additive Smoothing** or fixed pseudocount `λ` for `ResidueCount`
@@ -23,9 +23,9 @@ Common values of `λ` are:
 - `0.5` : Jeffreys prior (Jeffreys, 1946).
 - `1` : Bayes-Laplace uniform prior, aka. Laplace smoothing.
 """
-immutable AdditiveSmoothing{T} <: Pseudocount{T}
+struct AdditiveSmoothing{T} <: Pseudocount{T}
     λ::T
 end
 
-Base.zero{T}(::Type{AdditiveSmoothing{T}}) = AdditiveSmoothing(zero(T))
-Base.one{T}(::Type{AdditiveSmoothing{T}}) = AdditiveSmoothing(one(T))
+Base.zero(::Type{AdditiveSmoothing{T}}) where {T} = AdditiveSmoothing(zero(T))
+Base.one(::Type{AdditiveSmoothing{T}}) where {T} = AdditiveSmoothing(one(T))

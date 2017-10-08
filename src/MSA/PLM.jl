@@ -7,8 +7,8 @@ the actual column numbers. You can use the positional argument to indicate the n
 `Type` (default: `Float64`), if the `PairwiseListMatrix` should store the diagonal values
 on the list (default: `false`) and a default value for the diagonal (default: `NaN`).
 """
-function sequencepairsmatrix{T,diagonal}(msa::AbstractMatrix{Residue}, ::Type{T},
-                                         ::Type{Val{diagonal}}, diagonalvalue::T)
+function sequencepairsmatrix(msa::AbstractMatrix{Residue}, ::Type{T},
+                             ::Type{Val{diagonal}}, diagonalvalue::T) where {T,diagonal}
     plm = PairwiseListMatrix(T, nsequences(msa), diagonal, diagonalvalue)
     nplm = setlabels(plm, sequencenames(msa))
     setdimnames!(nplm, ["Seq1", "Seq2"])
@@ -26,8 +26,8 @@ You can use the positional argument to indicate the number `Type` (default: `Flo
 if the `PairwiseListMatrix` should store the diagonal values on the list (default: `false`)
 and a default value for the diagonal (default: `NaN`).
 """
-function columnpairsmatrix{T,diagonal}(msa::AbstractMatrix{Residue}, ::Type{T},
-                                       ::Type{Val{diagonal}}, diagonalvalue::T)
+function columnpairsmatrix(msa::AbstractMatrix{Residue}, ::Type{T},
+                           ::Type{Val{diagonal}}, diagonalvalue::T) where {T,diagonal}
     plm = PairwiseListMatrix(T, ncolumns(msa), diagonal, diagonalvalue)
     nplm = setlabels(plm, columnnames(msa))
     setdimnames!(nplm, ["Col1", "Col2"])

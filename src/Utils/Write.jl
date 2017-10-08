@@ -7,8 +7,8 @@ This function opens a file with `filename` and `mode` (default: "w")
 and writes (`print`) the `object` with the given `format`.
 Gzipped files should end on `.gz`.
 """
-function write{T<:Format}(filename::AbstractString, object, format::Type{T},
-                          mode::String="w")
+function write(filename::AbstractString, object, format::Type{T},
+               mode::String="w") where T<:Format
     fh = endswith(filename, ".gz") ? GZip.open(filename, mode) : open(filename, mode)
     try
         print(fh, object, format)
