@@ -8,7 +8,7 @@ abstract type Pseudocount{T<:Real} end
 You can use `NoPseudocount()` to avoid pseudocount corrections where a
 `Pseudocount` type is needed.
 """
-struct NoPseudocount <: Pseudocount end
+struct NoPseudocount <: Pseudocount{Float64} end
 
 """
 **Additive Smoothing** or fixed pseudocount `λ` for `ResidueCount`
