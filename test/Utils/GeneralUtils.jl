@@ -10,16 +10,16 @@
     @test get_n_words("#", 1) == String["#"]
 
     # ASCII
-    str = "#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH\n"
+    str = "#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH"
     @test get_n_words(str, 3) ==
         String["#=GR", "O31698/18-71", "SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH"]
 
     # UTF-8
-    str = "#=GF CC   (Römling U.  and Galperin M.Y. “Bacterial cellulose\n"
+    str = "#=GF CC   (Römling U.  and Galperin M.Y. “Bacterial cellulose"
     @test get_n_words(str, 3) ==
         String["#=GF", "CC", "(Römling U.  and Galperin M.Y. “Bacterial cellulose"]
 
-    str = "#=GF CC   not present in all SecA2–SecY2 systems. This family of Asp5 is\n"
+    str = "#=GF CC   not present in all SecA2–SecY2 systems. This family of Asp5 is"
     @test get_n_words(str, 3) ==
         String["#=GF", "CC", "not present in all SecA2–SecY2 systems. This family of Asp5 is"]
 end
