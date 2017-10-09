@@ -31,9 +31,10 @@
 
             MIp = APC!(MI)
 
-            @test MIp ≈ [  NaN -1.0  0.25
-                          -1.0  NaN  1.00
-                          0.25 1.00   NaN ]
+            @test filter(x -> !isnan(x), vec(full(MIp))) ≈ filter(x -> !isnan(x), vec(
+                [   NaN -1.0  0.25
+                    -1.0  NaN  1.00
+                    0.25 1.00   NaN ]))
         end
     end
 
@@ -102,7 +103,7 @@
                 # APC = (total * total) / total == total
                 # MI - APC == total - total == 0.0
                 APC!(zerodiagonal)
-                @test_approx_eq zerodiagonal[1,2] 0.0
+                @test zerodiagonal[1,2] ≈ 0.0
             end
         end
 
@@ -113,7 +114,7 @@
             # Is almost the same MI, Z score should be 0.0
             results = buslje09(aln, lambda=0.05, clustering=false, apc=false)
 
-            @test_approx_eq results[MIToS_ZSCORE][1,2] 0.0
+            @test results[MIToS_ZSCORE][1,2] ≈ 0.0
 
             @test aln == Residue[ 'A' 'A'
                                   'A' 'R' ]
@@ -131,7 +132,7 @@
             N = 2 # There are 2 sequences
             Pij[2,1] = (1/N) # R A
             Pij[1,2] = (1/N) # A R
-            @test_approx_eq sum(Pij) 1.0
+            @test sum(Pij) ≈ 1.0
             Pi = squeeze(Base.sum(Pij,2),2)
             @test Pi[2] == 0.5 # R
             @test Pi[1] == 0.5 # A
@@ -158,7 +159,7 @@
             fill!(Pij, 0.05/N);
             Pij[2,1] =(1.05/N) # R A
             Pij[1,2] =(1.05/N) # A R
-            @test_approx_eq sum(Pij) 1.0
+            @test sum(Pij) ≈ 1.0
             Pi = squeeze(Base.sum(Pij,2),2)
             Pj = squeeze(Base.sum(Pij,1),1)
             total = 0.0
