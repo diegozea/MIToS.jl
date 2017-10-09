@@ -31,9 +31,9 @@
 
             MIp = APC!(MI)
 
-            @test_approx_eq MIp [  NaN -1.0  0.25
-                                  -1.0  NaN  1.00
-                                  0.25 1.00   NaN ]
+            @test MIp ≈ [  NaN -1.0  0.25
+                          -1.0  NaN  1.00
+                          0.25 1.00   NaN ]
         end
     end
 

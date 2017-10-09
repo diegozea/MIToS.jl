@@ -70,7 +70,7 @@ function filtersequences!(data::Annotations, ids::Vector{String},
     nresannot = length(data.residues)
     nseqannot = length(data.residues)
     if nresannot > 0 || nseqannot > 0
-        del = ids[ !mask ]
+        del = ids[ .!mask ]
     end
     if nresannot > 0
         for key in keys(data.residues)
