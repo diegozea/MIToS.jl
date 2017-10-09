@@ -68,7 +68,7 @@ function filtersequences!(msa::AnnotatedMultipleSequenceAlignment,
     # Filter annotations first, names will be changed by filtersequences:
     msa.matrix = filtersequences(namedmatrix(msa), boolean_vector)
     annotate && annotate_modification!(msa, string("filtersequences! : ",
-                                                    sum(~boolean_vector),
+                                                    sum(.~boolean_vector),
                                                     " sequences have been deleted."))
     msa
 end
@@ -104,7 +104,7 @@ function filtercolumns!(x::AnnotatedAlignedObject,
     boolean_vector = _column_mask(mask, x)
     filtercolumns!(annotations(x), boolean_vector)
     x.matrix = filtercolumns(namedmatrix(x), boolean_vector)
-    annotate && annotate_modification!(x,string("filtercolumns! : ", sum(~boolean_vector),
+    annotate && annotate_modification!(x,string("filtercolumns! : ", sum(.~boolean_vector),
                                                 " columns have been deleted."))
     x
 end
