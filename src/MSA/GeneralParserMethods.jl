@@ -252,5 +252,5 @@ function _keepinserts!(SEQS, annot)
         isupper(char) || char == '-' ? '1' : '0'
     end
     setannotcolumn!(annot, "Aligned", aligned)
-    map!(uppercase, SEQS)
+    map!(uppercase, SEQS, SEQS)
 end
