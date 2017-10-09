@@ -86,6 +86,12 @@ Base.convert(::Type{Residue}, x::Int) = reinterpret(Residue, _valid_residue_inte
 # Conversion to `Int` doesn’t check if the residue is valid
 @inline Base.convert(::Type{Int}, x::Residue) = reinterpret(Int,x)
 
+# ndims
+# -----
+
+Base.ndims(r::Residue) = 0
+Base.ndims(::Type{Residue}) = 0
+
 # Gaps
 # ----
 
