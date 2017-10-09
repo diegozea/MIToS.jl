@@ -191,6 +191,11 @@ end
     setindex!(namedmatrix(x), value, 1, i)
 end
 
+# Broadcast
+# ---------
+
+Base.broadcast(f, x::AbstractAlignedObject, as...) = broadcast(f, namedmatrix(x), as...)
+
 # Show
 # ----
 
