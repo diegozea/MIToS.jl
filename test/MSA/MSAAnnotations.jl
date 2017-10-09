@@ -25,7 +25,7 @@
         buffer = IOBuffer()
 
         print(buffer, annotations(pfam))
-        printed = split(takebuf_string(buffer), '\n')
+        printed = split(String(take!(buffer)), '\n')
         @test length(printed) == 17
         @test printed[1] == string("#=GF NCol\t120")
         @test printed[2] ==
@@ -45,7 +45,7 @@
 
         delete_annotated_modifications!(pfam)
         print(buffer, annotations(pfam))
-        printed = split(takebuf_string(buffer), '\n')
+        printed = split(String(take!(buffer)), '\n')
         @test length(printed) == 17 - 2 # 2 MIToS annotations
         @test !ismatch(r"MIToS_", printed[3])
         @test !ismatch(r"MIToS_", printed[4])

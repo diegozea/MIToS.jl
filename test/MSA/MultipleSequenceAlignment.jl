@@ -123,28 +123,28 @@
             out = IOBuffer()
 
             show(out, msa)
-            str = takebuf_string(out)
+            str = String(take!(out))
             @test startswith(str,"MultipleSequenceAlignment : ")
             @test contains(str,"Seq")
             @test contains(str,"Col")
             @test length(split(str,'\n')) == 6
 
             show(out, annotated_msa)
-            str = takebuf_string(out)
+            str = String(take!(out))
             @test startswith(str,"AnnotatedMultipleSequenceAlignment with 0 annotations : ")
             @test contains(str,"Seq")
             @test contains(str,"Col")
             @test length(split(str,'\n')) == 6
 
             show(out, sequence)
-            str = takebuf_string(out)
+            str = String(take!(out))
             @test startswith(str,"AlignedSequence : ")
             @test contains(str,"Seq")
             @test contains(str,"Col")
             @test length(split(str,'\n')) == 4
 
             show(out, annotated_sequence)
-            str = takebuf_string(out)
+            str = String(take!(out))
             @test startswith(str,"AnnotatedAlignedSequence with 0 annotations : ")
             @test contains(str,"Seq")
             @test contains(str,"Col")

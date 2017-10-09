@@ -223,7 +223,7 @@
 
             out = IOBuffer()
             print(out, msa, FASTA)
-            @test takebuf_string(out) == fasta_string
+            @test String(take!(out)) == fasta_string
         end
 
         @testset "File input/output" begin
@@ -296,10 +296,10 @@
 
             buffer = IOBuffer()
             print(buffer, raw, Raw)
-            @test takebuf_string(buffer) == raw_string
+            @test String(take!(buffer)) == raw_string
 
             print(buffer, mat, Raw)
-            @test takebuf_string(buffer) == raw_string
+            @test String(take!(buffer)) == raw_string
         end
 
         @testset "Stats" begin

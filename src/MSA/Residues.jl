@@ -212,7 +212,7 @@ function Base.convert(::Type{String}, seq::Vector{Residue})
     for res in seq
         write(buffer, Char(res))
     end
-    takebuf_string(buffer)
+    String(take!(buffer))
 end
 
 function _get_msa_size(sequences::Array{String,1})

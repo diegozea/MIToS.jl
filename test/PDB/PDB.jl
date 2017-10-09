@@ -273,7 +273,7 @@ end
         io = IOBuffer()
         pdb = read(txt(code), PDBFile)
         print(io, pdb, PDBFile)
-        printed = split(takebuf_string(io), '\n')
+        printed = split(String(take!(io)), '\n')
 
         @test length(printed) == 609 # Only ATOM, HETATM & END + 1 because the trailing \n
         @test printed[1]   == "ATOM      1  N   THR A   4       2.431  19.617   6.520  1.00 24.37           N  "
@@ -286,7 +286,7 @@ end
 
         pdb = read(txt(code), PDBFile)
         print(io, pdb, PDBFile)
-        printed = split(takebuf_string(io), '\n')
+        printed = split(String(take!(io)), '\n')
 
         @test sum(map(x -> startswith(x, "MODEL "), printed)) == 14 # 14 models
         @test sum(map(x -> x == "ENDMDL", printed)) == 14 # 14 models
@@ -298,7 +298,7 @@ end
 
         pdb = read(txt(code), PDBFile)
         print(io, pdb, PDBFile)
-        printed = split(takebuf_string(io), '\n')
+        printed = split(String(take!(io)), '\n')
 
         # MIToS only prints TER for the ATOM group if the chain changes.
         # Some modified residues are annotated as HETATM in the middle of the ATOM chain:
@@ -316,7 +316,7 @@ end
 
            readed = read(txt(code), PDBFile)
            print(io, readed, PDBFile)
-           readed_writed_readed = parse(takebuf_string(io), PDBFile)
+           readed_writed_readed = parse(String(take!(io)), PDBFile)
 
            @test readed_writed_readed == readed
        end

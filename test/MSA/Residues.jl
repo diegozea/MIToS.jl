@@ -141,11 +141,11 @@
         alphabet = "ARNDCQEGHILKMFPSTWYV-X"
         for char in alphabet
             show(io, Residue(char))
-            @test takebuf_string(io) == String([char])
+            @test String(take!(io)) == String([char])
         end
 
         show(io, reinterpret(Residue, -30))
-        @test takebuf_string(io) == "�"
+        @test String(take!(io)) == "�"
     end
 
     @testset "Print" begin
@@ -154,10 +154,10 @@
         alphabet = "ARNDCQEGHILKMFPSTWYV-X"
         for char in alphabet
             print(io, Residue(char))
-            @test takebuf_string(io) == String([char])
+            @test String(take!(io)) == String([char])
         end
 
         print(io, reinterpret(Residue, -30))
-        @test takebuf_string(io) == "X"
+        @test String(take!(io)) == "X"
     end
 end

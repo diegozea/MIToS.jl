@@ -56,15 +56,15 @@
 
         tmp = IOBuffer()
         show(tmp, UngappedAlphabet())
-        @test takebuf_string(tmp) ==
+        @test String(take!(tmp)) ==
         "MIToS.MSA.UngappedAlphabet of length 20. Residues : res\"ARNDCQEGHILKMFPSTWYV\""
 
         show(tmp, GappedAlphabet())
-        @test takebuf_string(tmp) ==
+        @test String(take!(tmp)) ==
         "MIToS.MSA.GappedAlphabet of length 21. Residues : res\"ARNDCQEGHILKMFPSTWYV-\""
 
         show(tmp, ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"))
-        @test takebuf_string(tmp) ==
+        @test String(take!(tmp)) ==
         "MIToS.MSA.ReducedAlphabet of length 8 : \"(AILMV)(NQST)(RHK)(DE)(FWY)CGP\""
     end
 end

@@ -48,7 +48,7 @@ function _filter(str::String, mask::AbstractArray{Bool})
         end
         i += 1
     end
-    takebuf_string(buffer)
+    String(take!(buffer))
 end
 
 _filter(str::String, indexes::AbstractArray{Int}) = String(collect(str)[indexes])

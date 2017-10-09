@@ -133,10 +133,10 @@
         for T in (Stockholm, FASTA, Raw)
             buffer = IOBuffer()
             print(buffer, pfam, T)
-            @test parse(takebuf_string(buffer), T) == pfam
+            @test parse(String(take!(buffer)), T) == pfam
 
             print(buffer, gao, T)
-            @test parse(takebuf_string(buffer), T) == gao
+            @test parse(String(take!(buffer)), T) == gao
         end
     end
 end

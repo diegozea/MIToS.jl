@@ -124,9 +124,9 @@
         setannotsequence!(annot, "O31698/88-139", "OS", "Bacillus subtilis")
 
         print(io, annot)
-        @test takebuf_string(io) == output_string
+        @test String(take!(io)) == output_string
 
         show(io, annot)
-        @test takebuf_string(io) == output_string
+        @test String(take!(io)) == output_string
     end
 end
