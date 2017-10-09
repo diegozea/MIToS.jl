@@ -253,8 +253,8 @@ length and `false_contacts` should be `true` where there are not contacts.
 function ROCAnalysis.AUC(scores_list::Vector{T},
                          true_contacts::BitVector,
                          false_contacts::BitVector) where T
-    1 - auc(roc(scores_list[true_contacts  & !isnan(scores_list)],
-                scores_list[false_contacts & !isnan(scores_list)]))
+    1 - auc(roc(scores_list[true_contacts  .& !isnan(scores_list)],
+                scores_list[false_contacts .& !isnan(scores_list)]))
 end
 
 """

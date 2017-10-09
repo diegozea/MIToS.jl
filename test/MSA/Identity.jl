@@ -28,8 +28,8 @@
             for i₂ in αβ, j₂ in αβ, k₂ in αβ
                 seq₂ = Residue[i₂,j₂,k₂]
                 val = percentidentity(seq₁, seq₂)
-                if  sum((seq₁ .== GAP) & (seq₂ .== GAP)) +
-                    sum((seq₁ .== XAA) | (seq₂ .== XAA)) == 3
+                if  sum((seq₁ .== GAP) .& (seq₂ .== GAP)) +
+                    sum((seq₁ .== XAA) .| (seq₂ .== XAA)) == 3
 
                     @test isnan(val)
                 elseif seq₁ == seq₂
