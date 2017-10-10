@@ -43,7 +43,7 @@
              51.09 -1.88 47.58
              52.36 -1.20 48.03
              52.71 -1.18 49.38] # P and Q are from BiomolecularStructures.jl' kabsch tests
-        Qdistances = Float64[ sqrt(sumabs2(Q[j,:] .- Q[i,:])) for i in 1:4, j in 1:4 ]
+        Qdistances = Float64[ sqrt(sum(abs2, Q[j,:] .- Q[i,:])) for i in 1:4, j in 1:4 ]
 
         center!(P)
         center!(Q)
@@ -57,8 +57,8 @@
         @test PDB.rmsd(P, rotated) ≈ 0.0030426652601371583
 
         # Internal distances mustn't change
-        @test Float64[sqrt(sumabs2(Q[j,:] .- Q[i,:])) for i in 1:4, j in 1:4] ≈ Qdistances # Translated
-        @test Float64[sqrt(sumabs2(rotated[j,:] .- rotated[i,:])) for i in 1:4, j in 1:4] ≈ Qdistances # Translated  and rotated
+        @test Float64[sqrt(sum(abs2, Q[j,:] .- Q[i,:])) for i in 1:4, j in 1:4] ≈ Qdistances # Translated
+        @test Float64[sqrt(sum(abs2, rotated[j,:] .- rotated[i,:])) for i in 1:4, j in 1:4] ≈ Qdistances # Translated  and rotated
     end
 
     @testset "Test II" begin
