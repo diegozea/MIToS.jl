@@ -69,25 +69,41 @@ end
 
 "Returns the Cα with best occupancy in the `PDBResidue`."
 function getCA(res::PDBResidue)
-    @assert length(res) != 0
-    caindex = selectbestoccupancy(res, findatoms(res, "CA"))
-    res.atoms[caindex]
+    @assert length(res) != 0 "There is no atoms in the residue."
+    CAs = findatoms(res, "CA")
+    @assert length(CAs) != 0 "There is no alpha carbons in the residue."
+    CAindex = selectbestoccupancy(res, CAs)
+    res.atoms[CAindex]
 end
 
 """
 Returns a matrix with the x, y and z coordinates of the Cα with best occupancy for each
-`PDBResidue`.
+`PDBResidue` of the ATOM group. If a residue doesn't have a Cα, its Cα coordinates are NaNs.
 """
 function CAmatrix(residues::AbstractVector{PDBResidue})
     len = length(residues)
-    CAmat = Array{Float64}(3, len)
-    for i in 1:len
-        coord = getCA(residues[i]).coordinates
-        CAmat[1,i] = coord.x
-        CAmat[2,i] = coord.y
-        CAmat[3,i] = coord.z
+    CAlist = Array{Float64}(3 * len)
+    j = 0
+    r = 0
+    @inbounds for i in 1:len
+        res = residues[i]
+        if (res.id.group == "ATOM") && (length(res) > 0)
+            r += 1
+            CAs = findatoms(res, "CA")
+            if length(CAs) != 0
+                CAindex = selectbestoccupancy(res, CAs)
+                coord = res.atoms[CAindex].coordinates
+                CAlist[j+=1] = coord.x
+                CAlist[j+=1] = coord.y
+                CAlist[j+=1] = coord.z
+            else
+                CAlist[j+=1] = NaN
+                CAlist[j+=1] = NaN
+                CAlist[j+=1] = NaN
+            end
+        end
     end
-    CAmat'
+    reshape(resize!(CAlist,j),(3,r))'
 end
 
 "Returns a matrix with the x, y, z coordinates of each atom in each `PDBResidue`"
