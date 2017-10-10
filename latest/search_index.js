@@ -5,7 +5,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Home",
     "category": "page",
-    "text": "(Image: MIToS.jl)  MIToS is an environment for Mutual Information (MI) analysis and implements several useful tools for Multiple Sequence Alignments (MSAs) and PDB structures management in the Julia language.This is the documentation for MIToS 2.0 in Julia 0.5. If you are using MIToS 1.0 in Julia 0.4, please read this documentation  instead.  "
+    "text": "(Image: MIToS.jl)  MIToS is an environment for Mutual Information (MI) analysis and implements several useful tools for Multiple Sequence Alignments (MSAs) and PDB structures management in the Julia language.This is the documentation for MIToS 2.1 in Julia 0.6. If you are using MIToS 1.0 in Julia 0.4, please read this documentation  instead.  "
 },
 
 {
@@ -365,7 +365,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Information",
     "title": "Example: Estimating corrected MI from an MSA",
     "category": "section",
-    "text": "using Plots\npyplot()using MIToS.MSA\nusing MIToS.Information\n\nmsa = read(\"http://pfam.xfam.org/family/PF16078/alignment/full\", Stockholm)\nZMIp, MIp  = buslje09(msa)\nZMIpZBLMIp, BLMIp  = BLMI(msa)\nZBLMIp"
+    "text": "using Plots\npyplot()\nusing PlotRecipesusing MIToS.MSA\nusing MIToS.Information\n\nmsa = read(\"http://pfam.xfam.org/family/PF16078/alignment/full\", Stockholm)\nZMIp, MIp  = buslje09(msa)\nZMIpZBLMIp, BLMIp  = BLMI(msa)\nZBLMIp"
 },
 
 {
@@ -373,7 +373,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Information",
     "title": "Visualize Mutual Information",
     "category": "section",
-    "text": "You can use the function of the Plots package to visualize the Mutual Information (MI) network between residues. As an example, we are going to visualize the MI between residues of the Pfam domain PF16078. The heatmap is the simplest way to visualize the values of the Mutual Information matrix.  using Plots\npyplot()\n\nheatmap(ZMIp, yflip=true)\npng(\"inf_heatmap.png\") # hide\nnothing # hide(Image: )   ZMIp is a Z score of the corrected MIp against its distribution on a random MSA (shuffling the residues in each sequence), so pairs with highest values are more likely to co-evolve. Here, we are going to use the top 1% pairs of MSA columns.  using PairwiseListMatrices # to use getlist\n\nthreshold = quantile(getlist(ZMIp), 0.99)ZMIp[ ZMIp .< threshold ] = NaN\nheatmap(ZMIp, yflip=true)\npng(\"inf_heatmap_top.png\") # hide\nnothing # hide(Image: )   We are going to calculate the cMI (cumulative mutual information) value of each node. Where cMI is a mutual information score per position that characterizes the extent of mutual information \"interactions\" in its neighbourhood. This score is calculated as the sum of MI values above a certain threshold for every amino acid pair where the particular residue appears. This value defines to what degree a given amino acid takes part in a mutual information network and we are going to indicate it using the node color. To calculate cMI we are going to use the cumulative function:   cMI = cumulative(ZMIp, threshold)The nodes have an order, because they are columns in a MSA. So, the arc diagram it's useful to visualize long and short association between MSA positions. In general, long interactions has more interest.using PlotRecipes\n\ngraphplot(ZMIp, size=(600,250), method=:arcdiagram) # , zcolor=cMI)You can also use a chord diagram to see the same pattern.  graphplot(ZMIp, size=(600,600), method=:chorddiagram)"
+    "text": "You can use the function of the Plots package to visualize the Mutual Information (MI) network between residues. As an example, we are going to visualize the MI between residues of the Pfam domain PF16078. The heatmap is the simplest way to visualize the values of the Mutual Information matrix.  using Plots\npyplot()\n\nheatmap(ZMIp, yflip=true)\npng(\"inf_heatmap.png\") # hide\nnothing # hide(Image: )   ZMIp is a Z score of the corrected MIp against its distribution on a random MSA (shuffling the residues in each sequence), so pairs with highest values are more likely to co-evolve. Here, we are going to use the top 1% pairs of MSA columns.  using PairwiseListMatrices # to use getlist\n\nthreshold = quantile(getlist(ZMIp), 0.99)ZMIp[ ZMIp .< threshold ] = NaN\nheatmap(ZMIp, yflip=true)\npng(\"inf_heatmap_top.png\") # hide\nnothing # hide(Image: )   We are going to calculate the cMI (cumulative mutual information) value of each node. Where cMI is a mutual information score per position that characterizes the extent of mutual information \"interactions\" in its neighbourhood. This score is calculated as the sum of MI values above a certain threshold for every amino acid pair where the particular residue appears. This value defines to what degree a given amino acid takes part in a mutual information network and we are going to indicate it using the node color. To calculate cMI we are going to use the cumulative function:   cMI = cumulative(ZMIp, threshold)The nodes have an order, because they are columns in a MSA. So, the arc diagram it's useful to visualize long and short association between MSA positions. In general, long interactions has more interest.using PlotRecipes\n\ngraphplot(ZMIp, size=(600,250), method=:arcdiagram) # , zcolor=cMI)\npng(\"inf_arcdiagram.png\") # hide\nnothing # hide(Image: )   You can also use a chord diagram to see the same pattern.  graphplot(ZMIp, size=(600,600), method=:chorddiagram)\npng(\"inf_chorddiagram.png\") # hide\nnothing # hide(Image: )   "
 },
 
 {
@@ -889,7 +889,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "MSA_API.html#Base.Random.shuffle-Tuple{AbstractRNG,Array{MIToS.MSA.Residue,2},Vararg{Any,N}}",
+    "location": "MSA_API.html#Base.Random.shuffle-Tuple{AbstractRNG,Array{MIToS.MSA.Residue,2},Vararg{Any,N} where N}",
     "page": "MSA",
     "title": "Base.Random.shuffle",
     "category": "Method",
@@ -909,7 +909,7 @@ var documenterSearchIndex = {"docs": [
     "page": "MSA",
     "title": "Base.names",
     "category": "Method",
-    "text": "It returns the name of each group. The name is a string with the one letter code of each residue that belong to the group.\n\njulia> ab = ReducedAlphabet(\"(AILMV)(RHK)(NQST)(DE)(FWY)CGP\")\nMIToS.MSA.ReducedAlphabet of length 8 : \"(AILMV)(RHK)(NQST)(DE)(FWY)CGP\"\n\njulia> names(ab)\n8-element Array{String,1}:\n \"AILMV\"\n \"RHK\"\n \"NQST\"\n \"DE\"\n \"FWY\"\n \"C\"    \n \"G\"\n \"P\"\n\n\n\n\n"
+    "text": "It returns the name of each group. The name is a string with the one letter code of each residue that belong to the group.\n\njulia> ab = ReducedAlphabet(\"(AILMV)(RHK)(NQST)(DE)(FWY)CGP\")\nMIToS.MSA.ReducedAlphabet of length 8 : \"(AILMV)(RHK)(NQST)(DE)(FWY)CGP\"\n\njulia> names(ab)\n8-element Array{String,1}:\n \"AILMV\"\n \"RHK\"\n \"NQST\"\n \"DE\"\n \"FWY\"\n \"C\"\n \"G\"\n \"P\"\n\n\n\n\n"
 },
 
 {
@@ -977,7 +977,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "MSA_API.html#MIToS.MSA.columnnames-Tuple{NamedArrays.NamedArray{MIToS.MSA.Residue,2,AT,DT}}",
+    "location": "MSA_API.html#MIToS.MSA.columnnames-Tuple{NamedArrays.NamedArray{MIToS.MSA.Residue,2,AT,DT} where DT where AT}",
     "page": "MSA",
     "title": "MIToS.MSA.columnnames",
     "category": "Method",
@@ -985,7 +985,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "MSA_API.html#MIToS.MSA.columnpairsmatrix-Tuple{AbstractArray{MIToS.MSA.Residue,2},Type{T},Type{Val{diagonal}},T}",
+    "location": "MSA_API.html#MIToS.MSA.columnpairsmatrix-Union{Tuple{AbstractArray{MIToS.MSA.Residue,2},Type{T},Type{Val{diagonal}},T}, Tuple{T}, Tuple{diagonal}} where diagonal where T",
     "page": "MSA",
     "title": "MIToS.MSA.columnpairsmatrix",
     "category": "Method",
@@ -1065,7 +1065,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "MSA_API.html#MIToS.MSA.gapfraction-Tuple{AbstractArray{MIToS.MSA.Residue,N}}",
+    "location": "MSA_API.html#MIToS.MSA.gapfraction-Tuple{AbstractArray{MIToS.MSA.Residue,N} where N}",
     "page": "MSA",
     "title": "MIToS.MSA.gapfraction",
     "category": "Method",
@@ -1225,14 +1225,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "MSA_API.html#MIToS.MSA.percentidentity",
-    "page": "MSA",
-    "title": "MIToS.MSA.percentidentity",
-    "category": "Function",
-    "text": "percentidentity(msa[, out::Type=Float64])\n\nCalculates the identity between all the sequences on a MSA. You can indicate the output element type with the last optional parameter (Float64 by default). For a MSA with a lot of sequences, you can use Float32 or Flot16 in order to avoid the OutOfMemoryError().\n\n\n\n"
-},
-
-{
     "location": "MSA_API.html#MIToS.MSA.percentidentity-Tuple{Any,Any,Any}",
     "page": "MSA",
     "title": "MIToS.MSA.percentidentity",
@@ -1249,6 +1241,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "MSA_API.html#MIToS.MSA.percentidentity-Union{Tuple{AbstractArray{MIToS.MSA.Residue,2},Type{T}}, Tuple{AbstractArray{MIToS.MSA.Residue,2}}, Tuple{T}} where T",
+    "page": "MSA",
+    "title": "MIToS.MSA.percentidentity",
+    "category": "Method",
+    "text": "percentidentity(msa[, out::Type=Float64])\n\nCalculates the identity between all the sequences on a MSA. You can indicate the output element type with the last optional parameter (Float64 by default). For a MSA with a lot of sequences, you can use Float32 or Flot16 in order to avoid the OutOfMemoryError().\n\n\n\n"
+},
+
+{
     "location": "MSA_API.html#MIToS.MSA.percentsimilarity",
     "page": "MSA",
     "title": "MIToS.MSA.percentsimilarity",
@@ -1257,7 +1257,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "MSA_API.html#MIToS.MSA.percentsimilarity-Tuple{AbstractArray{MIToS.MSA.Residue,2},Vararg{Any,N}}",
+    "location": "MSA_API.html#MIToS.MSA.percentsimilarity-Tuple{AbstractArray{MIToS.MSA.Residue,2},Vararg{Any,N} where N}",
     "page": "MSA",
     "title": "MIToS.MSA.percentsimilarity",
     "category": "Method",
@@ -1281,7 +1281,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "MSA_API.html#MIToS.MSA.residuefraction-Tuple{AbstractArray{MIToS.MSA.Residue,N}}",
+    "location": "MSA_API.html#MIToS.MSA.residuefraction-Tuple{AbstractArray{MIToS.MSA.Residue,N} where N}",
     "page": "MSA",
     "title": "MIToS.MSA.residuefraction",
     "category": "Method",
@@ -1289,7 +1289,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "MSA_API.html#MIToS.MSA.sequencenames-Tuple{NamedArrays.NamedArray{MIToS.MSA.Residue,2,AT,DT}}",
+    "location": "MSA_API.html#MIToS.MSA.sequencenames-Tuple{NamedArrays.NamedArray{MIToS.MSA.Residue,2,AT,DT} where DT where AT}",
     "page": "MSA",
     "title": "MIToS.MSA.sequencenames",
     "category": "Method",
@@ -1297,7 +1297,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "MSA_API.html#MIToS.MSA.sequencepairsmatrix-Tuple{AbstractArray{MIToS.MSA.Residue,2},Type{T},Type{Val{diagonal}},T}",
+    "location": "MSA_API.html#MIToS.MSA.sequencepairsmatrix-Union{Tuple{AbstractArray{MIToS.MSA.Residue,2},Type{T},Type{Val{diagonal}},T}, Tuple{T}, Tuple{diagonal}} where diagonal where T",
     "page": "MSA",
     "title": "MIToS.MSA.sequencepairsmatrix",
     "category": "Method",
@@ -1417,35 +1417,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.AdditiveSmoothing",
-    "page": "Information",
-    "title": "MIToS.Information.AdditiveSmoothing",
-    "category": "Type",
-    "text": "Additive Smoothing or fixed pseudocount λ for ResidueCount (in order to estimate probabilities when the number of samples is low).\n\nCommon values of λ are:\n\n0 : No cell frequency prior, gives you the maximum likelihood estimator.\n0.05 is the optimum value for λ found in Buslje et. al. 2009, similar results was obtained for λ in the range [0.025, 0.075].\n1 / p : Perks prior (Perks, 1947) where p the number of parameters (i.e. residues, pairs of residues) to estimate. If p is the number of residues (20 without counting gaps), this gives you 0.05.\nsqrt(n) / p : Minimax prior (Trybula, 1958) where n is the number of samples and p the number of parameters to estimate. If the number of samples n is 400 (minimum number of sequence clusters for achieve good performance in Buslje et. al. 2009) for estimating 400 parameters (pairs of residues without counting gaps) this gives you 0.05.\n0.5 : Jeffreys prior (Jeffreys, 1946).\n1 : Bayes-Laplace uniform prior, aka. Laplace smoothing.\n\n\n\n"
-},
-
-{
     "location": "Information_API.html#MIToS.Information.BLOSUM_Pseudofrequencies",
     "page": "Information",
     "title": "MIToS.Information.BLOSUM_Pseudofrequencies",
     "category": "Type",
     "text": "BLOSUM_Pseudofrequencies type. It takes to arguments/fields:\n\nα : Usually the number of sequences or sequence clusters in the MSA.\nβ : The weight of the pseudofrequencies, a value close to 8.512 when α is the number of sequence clusters.\n\n\n\n"
-},
-
-{
-    "location": "Information_API.html#MIToS.Information.ContingencyTable",
-    "page": "Information",
-    "title": "MIToS.Information.ContingencyTable",
-    "category": "Type",
-    "text": "A ContingencyTable is a multidimensional array. It stores the contingency matrix, its marginal values and total. The type also has an internal and private temporal array and an alphabet object. It's a parametric type, taking three ordered parameters:\n\nT : The element type of the multidimensional array.\nN : It's the dimension of the array and should be an Int.\nA : This should be a type, subtype of ResidueAlphabet, i.e.: UngappedAlphabet,\n\nGappedAlphabet or ReducedAlphabet.\n\nA ContingencyTable can be created from an alphabet if all the parameters are given. Otherwise, you need to give a type, a number (Val) and an alphabet. You can also create a ContingencyTable using a matrix and a alphabet. For example:\n\nContingencyTable{Float64, 2, UngappedAlphabet}(UngappedAlphabet())\nContingencyTable(Float64, Val{2}, UngappedAlphabet())\nContingencyTable(zeros(Float64,20,20), UngappedAlphabet())\n\n\n\n"
-},
-
-{
-    "location": "Information_API.html#MIToS.Information.Counts",
-    "page": "Information",
-    "title": "MIToS.Information.Counts",
-    "category": "Type",
-    "text": "A Counts object wraps a ContingencyTable storing counts/frequencies.\n\n\n\n"
 },
 
 {
@@ -1465,22 +1441,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.Probabilities",
-    "page": "Information",
-    "title": "MIToS.Information.Probabilities",
-    "category": "Type",
-    "text": "A Probabilities object wraps a ContingencyTable storing probabilities. It doesn't perform any check. If the total isn't one, you must use normalize or normalize!on the ContingencyTable before wrapping it to make the sum of the probabilities equal to one.\n\n\n\n"
-},
-
-{
-    "location": "Information_API.html#MIToS.Information.Pseudocount",
-    "page": "Information",
-    "title": "MIToS.Information.Pseudocount",
-    "category": "Type",
-    "text": "Parametric abstract type to define pseudocount types\n\n\n\n"
-},
-
-{
     "location": "Information_API.html#MIToS.Information.Pseudofrequencies",
     "page": "Information",
     "title": "MIToS.Information.Pseudofrequencies",
@@ -1494,6 +1454,14 @@ var documenterSearchIndex = {"docs": [
     "title": "Types",
     "category": "section",
     "text": "Modules = [MIToS.Information]\nPrivate = false\nOrder   = [:type]"
+},
+
+{
+    "location": "Information_API.html#MIToS.Information.AdditiveSmoothing",
+    "page": "Information",
+    "title": "MIToS.Information.AdditiveSmoothing",
+    "category": "Type",
+    "text": "Additive Smoothing or fixed pseudocount λ for ResidueCount (in order to estimate probabilities when the number of samples is low).\n\nCommon values of λ are:\n\n0 : No cell frequency prior, gives you the maximum likelihood estimator.\n0.05 is the optimum value for λ found in Buslje et. al. 2009, similar results was obtained for λ in the range [0.025, 0.075].\n1 / p : Perks prior (Perks, 1947) where p the number of parameters (i.e. residues, pairs of residues) to estimate. If p is the number of residues (20 without counting gaps), this gives you 0.05.\nsqrt(n) / p : Minimax prior (Trybula, 1958) where n is the number of samples and p the number of parameters to estimate. If the number of samples n is 400 (minimum number of sequence clusters for achieve good performance in Buslje et. al. 2009) for estimating 400 parameters (pairs of residues without counting gaps) this gives you 0.05.\n0.5 : Jeffreys prior (Jeffreys, 1946).\n1 : Bayes-Laplace uniform prior, aka. Laplace smoothing.\n\n\n\n"
 },
 
 {
@@ -1513,6 +1481,38 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "Information_API.html#MIToS.Information.ContingencyTable",
+    "page": "Information",
+    "title": "MIToS.Information.ContingencyTable",
+    "category": "Type",
+    "text": "A ContingencyTable is a multidimensional array. It stores the contingency matrix, its marginal values and total. The type also has an internal and private temporal array and an alphabet object. It's a parametric type, taking three ordered parameters:\n\nT : The element type of the multidimensional array.\nN : It's the dimension of the array and should be an Int.\nA : This should be a type, subtype of ResidueAlphabet, i.e.: UngappedAlphabet,\n\nGappedAlphabet or ReducedAlphabet.\n\nA ContingencyTable can be created from an alphabet if all the parameters are given. Otherwise, you need to give a type, a number (Val) and an alphabet. You can also create a ContingencyTable using a matrix and a alphabet. For example:\n\nContingencyTable{Float64, 2, UngappedAlphabet}(UngappedAlphabet())\nContingencyTable(Float64, Val{2}, UngappedAlphabet())\nContingencyTable(zeros(Float64,20,20), UngappedAlphabet())\n\n\n\n"
+},
+
+{
+    "location": "Information_API.html#MIToS.Information.Counts",
+    "page": "Information",
+    "title": "MIToS.Information.Counts",
+    "category": "Type",
+    "text": "A Counts object wraps a ContingencyTable storing counts/frequencies.\n\n\n\n"
+},
+
+{
+    "location": "Information_API.html#MIToS.Information.Probabilities",
+    "page": "Information",
+    "title": "MIToS.Information.Probabilities",
+    "category": "Type",
+    "text": "A Probabilities object wraps a ContingencyTable storing probabilities. It doesn't perform any check. If the total isn't one, you must use normalize or normalize!on the ContingencyTable before wrapping it to make the sum of the probabilities equal to one.\n\n\n\n"
+},
+
+{
+    "location": "Information_API.html#MIToS.Information.Pseudocount",
+    "page": "Information",
+    "title": "MIToS.Information.Pseudocount",
+    "category": "Type",
+    "text": "Parametric abstract type to define pseudocount types\n\n\n\n"
+},
+
+{
     "location": "Information_API.html#Constants-1",
     "page": "Information",
     "title": "Constants",
@@ -1529,7 +1529,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#Base.LinAlg.normalize!-Tuple{MIToS.Information.ContingencyTable{T,N,A}}",
+    "location": "Information_API.html#Base.LinAlg.normalize!-Union{Tuple{A}, Tuple{MIToS.Information.ContingencyTable{T,N,A}}, Tuple{N}, Tuple{T}} where A where N where T",
     "page": "Information",
     "title": "Base.LinAlg.normalize!",
     "category": "Method",
@@ -1537,7 +1537,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#Base.LinAlg.normalize-Tuple{MIToS.Information.ContingencyTable{T,N,A}}",
+    "location": "Information_API.html#Base.LinAlg.normalize-Union{Tuple{A}, Tuple{MIToS.Information.ContingencyTable{T,N,A}}, Tuple{N}, Tuple{T}} where A where N where T",
     "page": "Information",
     "title": "Base.LinAlg.normalize",
     "category": "Method",
@@ -1545,7 +1545,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#Base.count-Tuple{Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}",
+    "location": "Information_API.html#Base.count-Union{Tuple{N}, Tuple{Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}} where N",
     "page": "Information",
     "title": "Base.count",
     "category": "Method",
@@ -1553,7 +1553,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.APC!-Tuple{Array{T,2}}",
+    "location": "Information_API.html#MIToS.Information.APC!-Union{Tuple{Array{T,2}}, Tuple{T}} where T",
     "page": "Information",
     "title": "MIToS.Information.APC!",
     "category": "Method",
@@ -1569,7 +1569,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.apply_pseudocount!-Tuple{MIToS.Information.ContingencyTable{T,N,A},T}",
+    "location": "Information_API.html#MIToS.Information.apply_pseudocount!-Union{Tuple{A}, Tuple{MIToS.Information.ContingencyTable{T,N,A},T}, Tuple{N}, Tuple{T}} where A where N where T",
     "page": "Information",
     "title": "MIToS.Information.apply_pseudocount!",
     "category": "Method",
@@ -1577,7 +1577,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.apply_pseudofrequencies!-Tuple{MIToS.Information.ContingencyTable{T,2,MIToS.MSA.UngappedAlphabet},MIToS.Information.BLOSUM_Pseudofrequencies}",
+    "location": "Information_API.html#MIToS.Information.apply_pseudofrequencies!-Union{Tuple{MIToS.Information.ContingencyTable{T,2,MIToS.MSA.UngappedAlphabet},MIToS.Information.BLOSUM_Pseudofrequencies}, Tuple{T}} where T",
     "page": "Information",
     "title": "MIToS.Information.apply_pseudofrequencies!",
     "category": "Method",
@@ -1593,7 +1593,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.count!-Tuple{MIToS.Information.ContingencyTable{T,N,A},Any,MIToS.Information.Pseudocount,Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}",
+    "location": "Information_API.html#MIToS.Information.count!-Union{Tuple{A}, Tuple{MIToS.Information.ContingencyTable{T,N,A},Any,MIToS.Information.Pseudocount,Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}, Tuple{N}, Tuple{T}} where A where N where T",
     "page": "Information",
     "title": "MIToS.Information.count!",
     "category": "Method",
@@ -1601,7 +1601,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.cumulative-Tuple{PairwiseListMatrices.PairwiseListMatrix{T,D,VT},T}",
+    "location": "Information_API.html#MIToS.Information.cumulative-Union{Tuple{D}, Tuple{PairwiseListMatrices.PairwiseListMatrix{T,D,VT},T}, Tuple{T}, Tuple{VT}} where VT where D where T",
     "page": "Information",
     "title": "MIToS.Information.cumulative",
     "category": "Method",
@@ -1609,7 +1609,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.delete_dimensions!-Tuple{MIToS.Information.ContingencyTable{T,S,A},MIToS.Information.ContingencyTable{T,N,A},Vararg{Int64,N}}",
+    "location": "Information_API.html#MIToS.Information.delete_dimensions!-Union{Tuple{A}, Tuple{MIToS.Information.ContingencyTable{T,S,A},MIToS.Information.ContingencyTable{T,N,A},Vararg{Int64,N} where N}, Tuple{N}, Tuple{S}, Tuple{T}} where A where S where N where T",
     "page": "Information",
     "title": "MIToS.Information.delete_dimensions!",
     "category": "Method",
@@ -1617,7 +1617,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.delete_dimensions-Tuple{MIToS.Information.ContingencyTable{T,N,A},Vararg{Int64,I}}",
+    "location": "Information_API.html#MIToS.Information.delete_dimensions-Union{Tuple{A}, Tuple{I}, Tuple{MIToS.Information.ContingencyTable{T,N,A},Vararg{Int64,I}}, Tuple{N}, Tuple{T}} where I where A where N where T",
     "page": "Information",
     "title": "MIToS.Information.delete_dimensions",
     "category": "Method",
@@ -1625,7 +1625,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.gap_intersection_percentage-Tuple{MIToS.Information.Counts{T,2,MIToS.MSA.GappedAlphabet}}",
+    "location": "Information_API.html#MIToS.Information.gap_intersection_percentage-Union{Tuple{MIToS.Information.Counts{T,2,MIToS.MSA.GappedAlphabet}}, Tuple{T}} where T",
     "page": "Information",
     "title": "MIToS.Information.gap_intersection_percentage",
     "category": "Method",
@@ -1633,7 +1633,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.gap_union_percentage-Tuple{MIToS.Information.Counts{T,2,MIToS.MSA.GappedAlphabet}}",
+    "location": "Information_API.html#MIToS.Information.gap_union_percentage-Union{Tuple{MIToS.Information.Counts{T,2,MIToS.MSA.GappedAlphabet}}, Tuple{T}} where T",
     "page": "Information",
     "title": "MIToS.Information.gap_union_percentage",
     "category": "Method",
@@ -1657,7 +1657,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.getcontingencytable-Tuple{MIToS.Information.Probabilities{T,N,A}}",
+    "location": "Information_API.html#MIToS.Information.getcontingencytable-Union{Tuple{A}, Tuple{MIToS.Information.Probabilities{T,N,A}}, Tuple{N}, Tuple{T}} where A where N where T",
     "page": "Information",
     "title": "MIToS.Information.getcontingencytable",
     "category": "Method",
@@ -1705,7 +1705,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.kullback_leibler-Tuple{MIToS.Information.Probabilities{T,1,A},Any,Real}",
+    "location": "Information_API.html#MIToS.Information.kullback_leibler-Union{Tuple{A}, Tuple{MIToS.Information.Probabilities{T,1,A},Any,Real}, Tuple{T}} where A where T",
     "page": "Information",
     "title": "MIToS.Information.kullback_leibler",
     "category": "Method",
@@ -1713,7 +1713,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.mapcolfreq!-Tuple{Function,AbstractArray{MIToS.MSA.Residue,2},Union{MIToS.Information.Counts{T,1,A},MIToS.Information.Probabilities{T,1,A}}}",
+    "location": "Information_API.html#MIToS.Information.mapcolfreq!-Union{Tuple{A}, Tuple{Function,AbstractArray{MIToS.MSA.Residue,2},Union{MIToS.Information.Counts{T,1,A}, MIToS.Information.Probabilities{T,1,A}}}, Tuple{T}} where A where T",
     "page": "Information",
     "title": "MIToS.Information.mapcolfreq!",
     "category": "Method",
@@ -1721,15 +1721,15 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.mapcolpairfreq!",
+    "location": "Information_API.html#MIToS.Information.mapcolpairfreq!-Union{Tuple{A}, Tuple{D}, Tuple{Function,AbstractArray{MIToS.MSA.Residue,2},Union{MIToS.Information.Counts{T,2,A}, MIToS.Information.Probabilities{T,2,A}},Type{Val{D}}}, Tuple{Function,AbstractArray{MIToS.MSA.Residue,2},Union{MIToS.Information.Counts{T,2,A}, MIToS.Information.Probabilities{T,2,A}}}, Tuple{T}} where D where A where T",
     "page": "Information",
     "title": "MIToS.Information.mapcolpairfreq!",
-    "category": "Function",
+    "category": "Method",
     "text": "It efficiently map a function (first argument) that takes a table of Counts or Probabilities (third argument). The table is filled in place with the counts or probabilities of each pair of columns from the msa (second argument). The fourth positional argument usediagonal indicates if the function should be applied to identical element pairs (default to Val{true}).\n\nweights (default: NoClustering()): Weights to be used for table counting.\npseudocounts (default: NoPseudocount()): Pseudocount object to be applied to table.\npseudofrequencies (default: NoPseudofrequencies()): Pseudofrequencies to be applied to the normalized (probabilities) table.\ndiagonalvalue (default: 0): Value to fill diagonal elements if usediagonal is Val{false}.\n\n\n\n"
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.mapseqfreq!-Tuple{Function,AbstractArray{MIToS.MSA.Residue,2},Union{MIToS.Information.Counts{T,1,A},MIToS.Information.Probabilities{T,1,A}}}",
+    "location": "Information_API.html#MIToS.Information.mapseqfreq!-Union{Tuple{A}, Tuple{Function,AbstractArray{MIToS.MSA.Residue,2},Union{MIToS.Information.Counts{T,1,A}, MIToS.Information.Probabilities{T,1,A}}}, Tuple{T}} where A where T",
     "page": "Information",
     "title": "MIToS.Information.mapseqfreq!",
     "category": "Method",
@@ -1737,15 +1737,15 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.mapseqpairfreq!",
+    "location": "Information_API.html#MIToS.Information.mapseqpairfreq!-Union{Tuple{A}, Tuple{D}, Tuple{Function,AbstractArray{MIToS.MSA.Residue,2},Union{MIToS.Information.Counts{T,2,A}, MIToS.Information.Probabilities{T,2,A}},Type{Val{D}}}, Tuple{Function,AbstractArray{MIToS.MSA.Residue,2},Union{MIToS.Information.Counts{T,2,A}, MIToS.Information.Probabilities{T,2,A}}}, Tuple{T}} where D where A where T",
     "page": "Information",
     "title": "MIToS.Information.mapseqpairfreq!",
-    "category": "Function",
+    "category": "Method",
     "text": "It efficiently map a function (first argument) that takes a table of Counts or Probabilities (third argument). The table is filled in place with the counts or probabilities of each pair of sequences from the msa (second argument). The fourth positional argument usediagonal indicates if the function should be applied to identical element pairs (default to Val{true}).\n\nweights (default: NoClustering()): Weights to be used for table counting.\npseudocounts (default: NoPseudocount()): Pseudocount object to be applied to table.\npseudofrequencies (default: NoPseudofrequencies()): Pseudofrequencies to be applied to the normalized (probabilities) table.\ndiagonalvalue (default: 0): Value to fill diagonal elements if usediagonal is Val{false}.\n\n\n\n"
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.marginal_entropy-Tuple{Union{MIToS.Information.Counts{T,N,A},MIToS.Information.Probabilities{T,N,A}},Int64,Real}",
+    "location": "Information_API.html#MIToS.Information.marginal_entropy-Union{Tuple{A}, Tuple{N}, Tuple{T}, Tuple{Union{MIToS.Information.Counts{T,N,A}, MIToS.Information.Probabilities{T,N,A}},Int64,Real}} where A where N where T",
     "page": "Information",
     "title": "MIToS.Information.marginal_entropy",
     "category": "Method",
@@ -1753,7 +1753,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.mutual_information-Tuple{Union{MIToS.Information.Counts{T,N,A},MIToS.Information.Probabilities{T,N,A}},Real}",
+    "location": "Information_API.html#MIToS.Information.mutual_information-Union{Tuple{A}, Tuple{N}, Tuple{T}, Tuple{Union{MIToS.Information.Counts{T,N,A}, MIToS.Information.Probabilities{T,N,A}},Real}} where A where N where T",
     "page": "Information",
     "title": "MIToS.Information.mutual_information",
     "category": "Method",
@@ -1761,7 +1761,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.normalized_mutual_information-Tuple{Union{MIToS.Information.Counts{T,N,A},MIToS.Information.Probabilities{T,N,A}}}",
+    "location": "Information_API.html#MIToS.Information.normalized_mutual_information-Union{Tuple{A}, Tuple{N}, Tuple{T}, Tuple{Union{MIToS.Information.Counts{T,N,A}, MIToS.Information.Probabilities{T,N,A}}}} where A where N where T",
     "page": "Information",
     "title": "MIToS.Information.normalized_mutual_information",
     "category": "Method",
@@ -1777,7 +1777,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.probabilities!-Tuple{MIToS.Information.ContingencyTable{T,N,A},Any,MIToS.Information.Pseudocount,MIToS.Information.Pseudofrequencies,Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}",
+    "location": "Information_API.html#MIToS.Information.probabilities!-Union{Tuple{A}, Tuple{MIToS.Information.ContingencyTable{T,N,A},Any,MIToS.Information.Pseudocount,MIToS.Information.Pseudofrequencies,Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}, Tuple{N}, Tuple{T}} where A where N where T",
     "page": "Information",
     "title": "MIToS.Information.probabilities!",
     "category": "Method",
@@ -1785,7 +1785,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.probabilities-Tuple{Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}",
+    "location": "Information_API.html#MIToS.Information.probabilities-Union{Tuple{N}, Tuple{Vararg{AbstractArray{MIToS.MSA.Residue,1},N}}} where N",
     "page": "Information",
     "title": "MIToS.Information.probabilities",
     "category": "Method",
@@ -1793,7 +1793,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#StatsBase.entropy-Tuple{Union{MIToS.Information.Counts{T,N,A},MIToS.Information.Probabilities{T,N,A}},Real}",
+    "location": "Information_API.html#StatsBase.entropy-Union{Tuple{A}, Tuple{N}, Tuple{T}, Tuple{Union{MIToS.Information.Counts{T,N,A}, MIToS.Information.Probabilities{T,N,A}},Real}} where A where N where T",
     "page": "Information",
     "title": "StatsBase.entropy",
     "category": "Method",
@@ -1953,7 +1953,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "SIFTS_API.html#MIToS.SIFTS.siftsmapping-Tuple{String,Type{F},String,Type{T},String}",
+    "location": "SIFTS_API.html#MIToS.SIFTS.siftsmapping-Union{Tuple{F}, Tuple{String,Type{F},String,Type{T},String}, Tuple{T}} where T where F",
     "page": "SIFTS",
     "title": "MIToS.SIFTS.siftsmapping",
     "category": "Method",
@@ -2145,7 +2145,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "PDB_API.html#Base.parse-Tuple{Union{IO,String},Type{MIToS.PDB.PDBFile}}",
+    "location": "PDB_API.html#Base.parse-Tuple{Union{IO, String},Type{MIToS.PDB.PDBFile}}",
     "page": "PDB",
     "title": "Base.parse",
     "category": "Method",
@@ -2321,7 +2321,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "PDB_API.html#MIToS.PDB.downloadpdb-Tuple{String}",
+    "location": "PDB_API.html#MIToS.PDB.downloadpdb-Union{Tuple{String}, Tuple{T}} where T<:MIToS.Utils.Format",
     "page": "PDB",
     "title": "MIToS.PDB.downloadpdb",
     "category": "Method",
@@ -2473,15 +2473,15 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "PDB_API.html#MIToS.PDB.proximitymean",
+    "location": "PDB_API.html#MIToS.PDB.proximitymean-Union{Tuple{Array{MIToS.PDB.PDBResidue,1},AbstractArray{T,1},T}, Tuple{Array{MIToS.PDB.PDBResidue,1},AbstractArray{T,1}}, Tuple{T}} where T<:AbstractFloat",
     "page": "PDB",
     "title": "MIToS.PDB.proximitymean",
-    "category": "Function",
+    "category": "Method",
     "text": "proximitymean calculates the proximity mean/average for each residue as the average score (from a scores list) of all the residues within a certain physical distance to a given amino acid. The score of that residue is not included in the mean unless you set include to true. The default values are 6.05 for the distance threshold/limit and \"Heavy\" for the criteria keyword argument. This function allows to calculate pMI (proximity mutual information) and pC (proximity conservation) as in Buslje et. al. 2010.\n\nBuslje, Cristina Marino, Elin Teppa, Tomas Di Doménico, José María Delfino, and Morten Nielsen. Networks of high mutual information define the structural proximity of catalytic sites: implications for catalytic residue identification. PLoS Comput Biol 6, no. 11 (2010): e1000978.\n\n\n\n"
 },
 
 {
-    "location": "PDB_API.html#MIToS.PDB.residuepairsmatrix-Tuple{Array{MIToS.PDB.PDBResidue,1},Type{T},Type{Val{diagonal}},T}",
+    "location": "PDB_API.html#MIToS.PDB.residuepairsmatrix-Union{Tuple{Array{MIToS.PDB.PDBResidue,1},Type{T},Type{Val{diagonal}},T}, Tuple{T}, Tuple{diagonal}} where diagonal where T",
     "page": "PDB",
     "title": "MIToS.PDB.residuepairsmatrix",
     "category": "Method",
@@ -2489,18 +2489,18 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "PDB_API.html#MIToS.PDB.residues",
+    "location": "PDB_API.html#MIToS.PDB.residues-Union{Tuple{AbstractArray{MIToS.PDB.PDBResidue,N},Any,Any,Any,Any}, Tuple{AbstractArray{MIToS.PDB.PDBResidue,N},Any,Any,Any}, Tuple{AbstractArray{MIToS.PDB.PDBResidue,N},Any,Any}, Tuple{AbstractArray{MIToS.PDB.PDBResidue,N},Any}, Tuple{AbstractArray{MIToS.PDB.PDBResidue,N}}, Tuple{N}} where N",
     "page": "PDB",
     "title": "MIToS.PDB.residues",
-    "category": "Function",
+    "category": "Method",
     "text": "residues(residue_list, model, chain, group, residue)\n\nThese return a new vector with the selected subset of residues from a list of residues. You can use the type All (default value) to avoid filtering a that level.\n\n\n\n"
 },
 
 {
-    "location": "PDB_API.html#MIToS.PDB.residuesdict",
+    "location": "PDB_API.html#MIToS.PDB.residuesdict-Union{Tuple{AbstractArray{MIToS.PDB.PDBResidue,N},Any,Any,Any,Any}, Tuple{AbstractArray{MIToS.PDB.PDBResidue,N},Any,Any,Any}, Tuple{AbstractArray{MIToS.PDB.PDBResidue,N},Any,Any}, Tuple{AbstractArray{MIToS.PDB.PDBResidue,N},Any}, Tuple{AbstractArray{MIToS.PDB.PDBResidue,N}}, Tuple{N}} where N",
     "page": "PDB",
     "title": "MIToS.PDB.residuesdict",
-    "category": "Function",
+    "category": "Method",
     "text": "residuesdict(residue_list, model, chain, group, residue)\n\nThese return a dictionary (using PDB residue numbers as keys) with the selected subset of residues. You can use the type All (default value) to avoid filtering a that level.\n\n\n\n"
 },
 
@@ -2649,7 +2649,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Pfam_API.html#MIToS.Pfam.getcontactmasks-Tuple{Array{T<:AbstractFloat,1}}",
+    "location": "Pfam_API.html#MIToS.Pfam.getcontactmasks-Union{Tuple{Array{T,1}}, Tuple{T}} where T<:AbstractFloat",
     "page": "Pfam",
     "title": "MIToS.Pfam.getcontactmasks",
     "category": "Method",
@@ -2697,7 +2697,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Pfam_API.html#ROCAnalysis.AUC-Tuple{Array{T,1},BitArray{1},BitArray{1}}",
+    "location": "Pfam_API.html#ROCAnalysis.AUC-Union{Tuple{Array{T,1},BitArray{1},BitArray{1}}, Tuple{T}} where T",
     "page": "Pfam",
     "title": "ROCAnalysis.AUC",
     "category": "Method",
@@ -2705,19 +2705,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Pfam_API.html#ROCAnalysis.AUC-Tuple{NamedArrays.NamedArray{L,2,PairwiseListMatrices.PairwiseListMatrix{L,false,VL},NL},BitArray{1},BitArray{1}}",
-    "page": "Pfam",
-    "title": "ROCAnalysis.AUC",
-    "category": "Method",
-    "text": "AUC(scores::PairwiseListMatrix, true_contacts::BitVector, false_contacts::BitVector)\n\nReturns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the scores for true_contacts prediction. scores, true_contacts and false_contacts should have the same number of elements and false_contacts should be true where there are not contacts.\n\n\n\n"
-},
-
-{
-    "location": "Pfam_API.html#ROCAnalysis.AUC-Tuple{NamedArrays.NamedArray{L<:AbstractFloat,2,PairwiseListMatrices.PairwiseListMatrix{L<:AbstractFloat,false,VL},NL},NamedArrays.NamedArray{R<:AbstractFloat,2,PairwiseListMatrices.PairwiseListMatrix{L<:AbstractFloat,false,VR},NR}}",
+    "location": "Pfam_API.html#ROCAnalysis.AUC-Union{Tuple{L}, Tuple{NL}, Tuple{NR}, Tuple{NamedArrays.NamedArray{L,2,PairwiseListMatrices.PairwiseListMatrix{L,false,VL},NL},NamedArrays.NamedArray{R,2,PairwiseListMatrices.PairwiseListMatrix{L,false,VR},NR}}, Tuple{R}, Tuple{VL}, Tuple{VR}} where NR where NL where VR where VL where R<:AbstractFloat where L<:AbstractFloat",
     "page": "Pfam",
     "title": "ROCAnalysis.AUC",
     "category": "Method",
     "text": "AUC(scores::PairwiseListMatrix, msacontacts::PairwiseListMatrix)\n\nReturns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the scores for msacontact prediction. score and msacontact lists are vinculated (inner join) by their labels (i.e. column number in the file). msacontact should have 1.0 for true contacts and 0.0 for not contacts (NaN or other numbers for missing values).\n\n\n\n"
+},
+
+{
+    "location": "Pfam_API.html#ROCAnalysis.AUC-Union{Tuple{L}, Tuple{NL}, Tuple{NamedArrays.NamedArray{L,2,PairwiseListMatrices.PairwiseListMatrix{L,false,VL},NL},BitArray{1},BitArray{1}}, Tuple{VL}} where NL where VL where L",
+    "page": "Pfam",
+    "title": "ROCAnalysis.AUC",
+    "category": "Method",
+    "text": "AUC(scores::PairwiseListMatrix, true_contacts::BitVector, false_contacts::BitVector)\n\nReturns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the scores for true_contacts prediction. scores, true_contacts and false_contacts should have the same number of elements and false_contacts should be true where there are not contacts.\n\n\n\n"
 },
 
 {
@@ -2801,7 +2801,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Utils_API.html#Base.read-Tuple{AbstractString,Type{T<:MIToS.Utils.Format},Vararg{Any,N}}",
+    "location": "Utils_API.html#Base.read-Union{Tuple{AbstractString,Type{T},Vararg{Any,N} where N}, Tuple{T}} where T<:MIToS.Utils.Format",
     "page": "Utils",
     "title": "Base.read",
     "category": "Method",
@@ -2809,10 +2809,10 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Utils_API.html#Base.write",
+    "location": "Utils_API.html#Base.write-Union{Tuple{AbstractString,Any,Type{T},String}, Tuple{AbstractString,Any,Type{T}}, Tuple{T}} where T<:MIToS.Utils.Format",
     "page": "Utils",
     "title": "Base.write",
-    "category": "Function",
+    "category": "Method",
     "text": "write{T<:Format}(filename::AbstractString, object, format::Type{T}, mode::ASCIIString=\"w\")\n\nThis function opens a file with filename and mode (default: \"w\") and writes (print) the object with the given format. Gzipped files should end on .gz.\n\n\n\n"
 },
 
@@ -2845,7 +2845,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Utils",
     "title": "MIToS.Utils.get_n_words",
     "category": "Method",
-    "text": "get_n_words{T <: Union{ASCIIString, UTF8String}}(line::T, n::Int) It returns a Vector{T} with the first n (possibles) words/fields (delimited by space, tab or newline). If there is more than n words, the last word returned contains the finals words and the delimiters. The length of the returned vector is n or less (if the number of words is less than n). The last newline character is always removed. This is used for parsing the Stockholm format.\n\njulia> get_n_words(\"#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH\n\", 3)\n3-element Array{String,1}:\n \"#=GR\"\n \"O31698/18-71\"\n \"SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH\"\n\n\n\n\n"
+    "text": "get_n_words{T <: Union{ASCIIString, UTF8String}}(line::T, n::Int) It returns a Vector{T} with the first n (possibles) words/fields (delimited by space or tab). If there is more than n words, the last word returned contains the finals words and the delimiters. The length of the returned vector is n or less (if the number of words is less than n). This is used for parsing the Stockholm format.\n\njulia> get_n_words(\"#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH\", 3)\n3-element Array{String,1}:\n \"#=GR\"\n \"O31698/18-71\"\n \"SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH\"\n\n\n\n\n"
 },
 
 {
@@ -2881,7 +2881,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Utils_API.html#MIToS.Utils.list2matrix-Tuple{AbstractArray{T,1},Int64}",
+    "location": "Utils_API.html#MIToS.Utils.list2matrix-Union{Tuple{AbstractArray{T,1},Int64}, Tuple{T}} where T",
     "page": "Utils",
     "title": "MIToS.Utils.list2matrix",
     "category": "Method",
@@ -2889,7 +2889,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Utils_API.html#MIToS.Utils.matrix2list-Tuple{AbstractArray{T,2}}",
+    "location": "Utils_API.html#MIToS.Utils.matrix2list-Union{Tuple{AbstractArray{T,2}}, Tuple{T}} where T",
     "page": "Utils",
     "title": "MIToS.Utils.matrix2list",
     "category": "Method",
@@ -2897,10 +2897,10 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Utils_API.html#MIToS.Utils.select_element",
+    "location": "Utils_API.html#MIToS.Utils.select_element-Union{Tuple{Array{T,1},String}, Tuple{Array{T,1}}, Tuple{T}} where T",
     "page": "Utils",
     "title": "MIToS.Utils.select_element",
-    "category": "Function",
+    "category": "Method",
     "text": "Selects the first element of the vector. This is useful for unpacking one element vectors. Throws a warning if there are more elements. element_name is element by default, but the name can be changed using the second argument.\n\n\n\n"
 },
 
