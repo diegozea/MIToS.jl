@@ -22,7 +22,7 @@ It has the following fields that you can access at any moment for query purposes
 end
 
 "A `Coordinates` object is a fixed size vector with the coordinates x,y,z."
-@auto_hash_equals struct Coordinates <: FixedVectorNoTuple{3, Float64}
+@auto_hash_equals struct Coordinates <: FieldVector{3, Float64}
     x::Float64
     y::Float64
     z::Float64

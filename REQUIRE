@@ -8,7 +8,7 @@ PairwiseListMatrices
 ArgParse
 ROCAnalysis
 Clustering
-FixedSizeArrays 0.2.3
+StaticArrays
 FastaIO
 Requests
 PkgBenchmark
