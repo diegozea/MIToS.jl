@@ -88,7 +88,7 @@ end
         @test res[map[7]].id.number == "4"
 
         contacts = msacontacts(msa, res, map, 6.05)
-        missings = sum(isnan(contacts), 1)
+        missings = sum(isnan.(contacts), 1)
 
         @test size(contacts) == (110,110)
 
