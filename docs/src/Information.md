@@ -438,6 +438,7 @@ BLMI
 ```@setup inf_buslje09
 using Plots
 pyplot()
+using PlotRecipes
 ```
 
 ```@example inf_buslje09
@@ -507,14 +508,23 @@ The nodes have an order, because they are columns in a MSA. So, the **arc diagra
 useful to visualize long and short association between MSA positions. In general, long
 interactions has more interest.
 
-```julia
+```@example inf_buslje09
 using PlotRecipes
 
 graphplot(ZMIp, size=(600,250), method=:arcdiagram) # , zcolor=cMI)
+png("inf_arcdiagram.png") # hide
+nothing # hide
 ```  
+
+![](inf_arcdiagram.png)   
+
 
 You can also use a **chord diagram** to see the same pattern.  
 
-```julia
+```@example inf_buslje09
 graphplot(ZMIp, size=(600,600), method=:chorddiagram)
+png("inf_chorddiagram.png") # hide
+nothing # hide
 ```  
+
+![](inf_chorddiagram.png)   

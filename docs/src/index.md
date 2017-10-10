@@ -4,7 +4,7 @@
 useful tools for Multiple Sequence Alignments (MSAs) and PDB structures management in
 the Julia language.*
 
-This is the documentation for MIToS 2.0 in Julia 0.5. If you are using MIToS 1.0 in
+This is the documentation for MIToS 2.1 in Julia 0.6. If you are using MIToS 1.0 in
 Julia 0.4, please read [this documentation](https://diegozea.github.io/mitosghpage-legacy/)
  instead.  
 
