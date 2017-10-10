@@ -2165,7 +2165,7 @@ var documenterSearchIndex = {"docs": [
     "page": "PDB",
     "title": "MIToS.PDB.CAmatrix",
     "category": "Method",
-    "text": "Returns a matrix with the x, y and z coordinates of the Cα with best occupancy for each PDBResidue.\n\n\n\n"
+    "text": "Returns a matrix with the x, y and z coordinates of the Cα with best occupancy for each PDBResidue of the ATOM group. If a residue doesn't have a Cα, its Cα coordinates are NaNs.\n\n\n\n"
 },
 
 {
