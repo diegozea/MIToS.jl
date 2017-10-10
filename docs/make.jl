@@ -26,7 +26,7 @@ makedocs(
 deploydocs(
     repo   = "github.com/diegozea/MIToS.jl.git",
     target = "build",
-    julia  = "0.5",
+    julia  = "0.6",
     deps   = nothing,
     make   = nothing
 )
