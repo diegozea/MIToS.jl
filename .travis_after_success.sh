@@ -7,6 +7,8 @@ then
     sudo pip install --upgrade matplotlib # PyPlot
     julia -e 'Pkg.add("PyPlot"); Pkg.build("PyPlot")' # PyPlot
     julia -e 'Pkg.add("Plots")' # Plots
+    julia -e 'Pkg.add("PlotRecipes")' # PlotRecipes
+    julia -e 'Pkg.checkout("PlotRecipes")' # PlotRecipes
     julia -e 'Pkg.add("DataFrames"); Pkg.add("StatPlots")' # These are used in MSA.md
     julia -e 'Pkg.add("Documenter")'
     echo "DOCS"
