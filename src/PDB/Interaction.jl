@@ -277,36 +277,3 @@ Aacc is the hydrogen bond acceptor atom and Aacc-antecednt is the atom anteceden
 hydrogen bond acceptor atom.
 """
 hydrogenbond(a::PDBResidue, b::PDBResidue) = _hydrogenbond_don_acc(a,b) || _hydrogenbond_don_acc(b,a)
-
-# STRIDE Hydrogen bonds
-# =====================
-
-function stridehydrogenbond(filename::String; model::String="1", group::String="ATOM", path::String="stride")
-    out = split(readall(`$path -h $filename`),'\n')
-    pairs = Set{(PDBResidueIdentifier,PDBResidueIdentifier)}()
-    for line in out
-        if length(line) > 3 && ( line[1:3] == "DNR" || line[1:3] == "ACC" )
-            push!(pairs, (PDBResidueIdentifier(Nullable{Int}(), replace(line[12:15],' ', ""), replace(line[6:8],' ', ""), group, model, line[10:10]),
-                          PDBResidueIdentifier(Nullable{Int}(), replace(line[32:35],' ', ""), replace(line[26:28],' ', ""), group, model, line[30:30])))
-        end
-    end
-    sizehint!(pairs,length(pairs))
-end
-
-# CHIMERA Hydrogen bonds
-# ======================
-
-function chimerahydrogenbond(filename::String; chain::String="A", model::String="1", commands::String="relax 0 intraRes 0")
-    sel = "select :*.$chain; select ~ligand & ~solvent" #ATOM
-    out =  split(readall( `echo "select #$model; $sel; hbonds log 1 selRestrict both intermodel 0 batch 1 namingStyle simple $commands"` |> `chimera -n $filename` ), '\n')
-    parser = r"^([A-Z]{3})\s+(\S+)\.(\S)\s+\S+\s+([A-Z]{3})\s+(\S+)\.(\S)\s+\S+\s+[A-Z]{3}\s+\S+\.\S\s+\S+"
-    pairs = Set{(PDBResidueIdentifier,PDBResidueIdentifier)}()
-    for line in out
-        m = match(parser, line)
-        if m !== nothing && length(m.captures) == 6
-            push!(pairs, (PDBResidueIdentifier(Nullable{Int}(), m.captures[2], m.captures[1], "ATOM", model, m.captures[3]),
-                          PDBResidueIdentifier(Nullable{Int}(), m.captures[5], m.captures[4], "ATOM", model, m.captures[6])))
-        end
-    end
-    sizehint!(pairs,length(pairs))
-end
