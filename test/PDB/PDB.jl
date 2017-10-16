@@ -26,6 +26,18 @@
         finally
             rm(filename)
         end
+
+        filename = downloadpdb(code,
+            headers=Dict("User-Agent" => "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)"),
+            format=PDBFile)
+        try
+            d_pdb = read(filename, PDBFile)
+
+            @test findfirst(x -> x.id.number == "4", pdb) == findfirst(x -> x.id.number == "4", d_pdb)
+            @test findfirst(x -> x.id.number == "73",pdb) == findfirst(x -> x.id.number == "73",d_pdb)
+        finally
+            rm(filename)
+        end
     end
 
     @testset "1H4A: Chain A (auth) == Chain X (label)" begin

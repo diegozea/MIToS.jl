@@ -11,7 +11,7 @@ function downloadpfam(pfamcode::String; filename::String="$pfamcode.stockholm.gz
     if ismatch(r"^PF\d{5}$"i, pfamcode)
         number = pfamcode[3:end]
         download_file("http://pfam.xfam.org/family/PF$(number)/alignment/full/gzipped",
-                      filename, kargs...)
+                      filename; kargs...)
     else
         throw(ErrorException("$pfamcode is not a correct Pfam code"))
     end

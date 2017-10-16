@@ -123,7 +123,7 @@ function downloadpdb(pdbcode::String;
         pdbfilename = uppercase(pdbcode) * _file_extension(format)
         filename = _inputnameforgzip(filename)
         sepchar = endswith(baseurl,"/") ? "" : "/";
-        download_file(string(baseurl,sepchar,pdbfilename), filename, kargs...)
+        download_file(string(baseurl,sepchar,pdbfilename), filename; kargs...)
     else
         throw(ErrorException("$pdbcode is not a correct PDB code"))
     end
@@ -139,7 +139,7 @@ function downloadpdbheader(pdbcode::String; filename::String=tempname()*".xml", 
     @assert endswith(filename,".xml") "filename must end with the xml extension: .xml"
     if check_pdbcode(pdbcode)
         query = "http://www.rcsb.org/pdb/rest/describePDB?structureId=" * pdbcode
-        download_file(query, filename, kargs...)
+        download_file(query, filename; kargs...)
     else
         throw(ErrorException("$pdbcode is not a correct PDB code"))
     end
