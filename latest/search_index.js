@@ -1417,46 +1417,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.BLOSUM_Pseudofrequencies",
-    "page": "Information",
-    "title": "MIToS.Information.BLOSUM_Pseudofrequencies",
-    "category": "Type",
-    "text": "BLOSUM_Pseudofrequencies type. It takes to arguments/fields:\n\nα : Usually the number of sequences or sequence clusters in the MSA.\nβ : The weight of the pseudofrequencies, a value close to 8.512 when α is the number of sequence clusters.\n\n\n\n"
-},
-
-{
-    "location": "Information_API.html#MIToS.Information.NoPseudocount",
-    "page": "Information",
-    "title": "MIToS.Information.NoPseudocount",
-    "category": "Type",
-    "text": "You can use NoPseudocount() to avoid pseudocount corrections where a Pseudocount type is needed.\n\n\n\n"
-},
-
-{
-    "location": "Information_API.html#MIToS.Information.NoPseudofrequencies",
-    "page": "Information",
-    "title": "MIToS.Information.NoPseudofrequencies",
-    "category": "Type",
-    "text": "You can use NoPseudofrequencies() to avoid pseudocount corrections where a Pseudofrequencies type is needed.\n\n\n\n"
-},
-
-{
-    "location": "Information_API.html#MIToS.Information.Pseudofrequencies",
-    "page": "Information",
-    "title": "MIToS.Information.Pseudofrequencies",
-    "category": "Type",
-    "text": "Parametric abstract type to define pseudofrequencies types\n\n\n\n"
-},
-
-{
-    "location": "Information_API.html#Types-1",
-    "page": "Information",
-    "title": "Types",
-    "category": "section",
-    "text": "Modules = [MIToS.Information]\nPrivate = false\nOrder   = [:type]"
-},
-
-{
     "location": "Information_API.html#MIToS.Information.AdditiveSmoothing",
     "page": "Information",
     "title": "MIToS.Information.AdditiveSmoothing",
@@ -1465,19 +1425,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Information_API.html#MIToS.Information.BLOSUM62_Pi",
+    "location": "Information_API.html#MIToS.Information.BLOSUM_Pseudofrequencies",
     "page": "Information",
-    "title": "MIToS.Information.BLOSUM62_Pi",
-    "category": "Constant",
-    "text": "BLOSUM62 probabilities P(aa) for each residue on the UngappedAlphabet. SUM:  0.9987\n\n\n\n"
-},
-
-{
-    "location": "Information_API.html#MIToS.Information.BLOSUM62_Pij",
-    "page": "Information",
-    "title": "MIToS.Information.BLOSUM62_Pij",
-    "category": "Constant",
-    "text": "Table with conditional probabilities of residues based on BLOSUM62. The normalization is done row based. The firts row contains the P(aa|A) and so one.\n\n\n\n"
+    "title": "MIToS.Information.BLOSUM_Pseudofrequencies",
+    "category": "Type",
+    "text": "BLOSUM_Pseudofrequencies type. It takes to arguments/fields:\n\nα : Usually the number of sequences or sequence clusters in the MSA.\nβ : The weight of the pseudofrequencies, a value close to 8.512 when α is the number of sequence clusters.\n\n\n\n"
 },
 
 {
@@ -1497,6 +1449,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "Information_API.html#MIToS.Information.NoPseudocount",
+    "page": "Information",
+    "title": "MIToS.Information.NoPseudocount",
+    "category": "Type",
+    "text": "You can use NoPseudocount() to avoid pseudocount corrections where a Pseudocount type is needed.\n\n\n\n"
+},
+
+{
+    "location": "Information_API.html#MIToS.Information.NoPseudofrequencies",
+    "page": "Information",
+    "title": "MIToS.Information.NoPseudofrequencies",
+    "category": "Type",
+    "text": "You can use NoPseudofrequencies() to avoid pseudocount corrections where a Pseudofrequencies type is needed.\n\n\n\n"
+},
+
+{
     "location": "Information_API.html#MIToS.Information.Probabilities",
     "page": "Information",
     "title": "MIToS.Information.Probabilities",
@@ -1510,6 +1478,38 @@ var documenterSearchIndex = {"docs": [
     "title": "MIToS.Information.Pseudocount",
     "category": "Type",
     "text": "Parametric abstract type to define pseudocount types\n\n\n\n"
+},
+
+{
+    "location": "Information_API.html#MIToS.Information.Pseudofrequencies",
+    "page": "Information",
+    "title": "MIToS.Information.Pseudofrequencies",
+    "category": "Type",
+    "text": "Parametric abstract type to define pseudofrequencies types\n\n\n\n"
+},
+
+{
+    "location": "Information_API.html#Types-1",
+    "page": "Information",
+    "title": "Types",
+    "category": "section",
+    "text": "Modules = [MIToS.Information]\nPrivate = false\nOrder   = [:type]"
+},
+
+{
+    "location": "Information_API.html#MIToS.Information.BLOSUM62_Pi",
+    "page": "Information",
+    "title": "MIToS.Information.BLOSUM62_Pi",
+    "category": "Constant",
+    "text": "BLOSUM62 probabilities P(aa) for each residue on the UngappedAlphabet. SUM:  0.9987\n\n\n\n"
+},
+
+{
+    "location": "Information_API.html#MIToS.Information.BLOSUM62_Pij",
+    "page": "Information",
+    "title": "MIToS.Information.BLOSUM62_Pij",
+    "category": "Constant",
+    "text": "Table with conditional probabilities of residues based on BLOSUM62. The normalization is done row based. The firts row contains the P(aa|A) and so one.\n\n\n\n"
 },
 
 {
@@ -2325,7 +2325,7 @@ var documenterSearchIndex = {"docs": [
     "page": "PDB",
     "title": "MIToS.PDB.downloadpdb",
     "category": "Method",
-    "text": "Download a gzipped PDB file from PDB database. Requires a four character pdbcode. By default the format is PDBML (PDB XML) and uses the baseurl http://www.rcsb.org/pdb/files/. filename is the path/name of the output file.\n\n\n\n"
+    "text": "It downloads a gzipped PDB file from PDB database. It requires a four character pdbcode. Its default format is PDBML (PDB XML) and It uses the baseurl \"http://www.rcsb.org/pdb/files/\". filename is the path/name of the output file. This function calls MIToS.Utils.download_file that calls Requests.get_streaming. You can use keyword arguments from Requests.get_streaming (e.g. header).\n\n\n\n"
 },
 
 {
