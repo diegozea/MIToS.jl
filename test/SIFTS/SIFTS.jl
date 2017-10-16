@@ -77,6 +77,29 @@
         @test length(mapII[2].InterPro) == 4 # Same ResNum for different InterPros
     end
 
+    @testset "None" begin
+    # 4CPA : It has "None"
+    # <residue dbSource="PDBe" dbCoordSys="PDBe" dbResNum="2" dbResName="GLX">
+    #   <crossRefDb dbSource="PDB" dbCoordSys="PDBresnum" dbAccessionId="4cpa" dbResNum="2" dbResName="GLX" dbChainId="J"/>
+    #   <crossRefDb dbSource="SCOP" dbCoordSys="PDBresnum" dbAccessionId="118683" dbResNum="2" dbResName="GLX" dbChainId="J"/>
+    #   <crossRefDb dbSource="InterPro" dbCoordSys="UniProt" dbAccessionId="IPR011052" dbResNum="None" dbResName="None" dbEvidence="SSF57027"/>
+    #   <crossRefDb dbSource="InterPro" dbCoordSys="UniProt" dbAccessionId="IPR021142" dbResNum="None" dbResName="None" dbEvidence="PD884054"/>
+    #   <crossRefDb dbSource="InterPro" dbCoordSys="UniProt" dbAccessionId="IPR004231" dbResNum="None" dbResName="None" dbEvidence="PF02977"/>
+    #   <residueDetail dbSource="PDBe" property="codeSecondaryStructure">T</residueDetail>
+    #   <residueDetail dbSource="PDBe" property="nameSecondaryStructure">loop</residueDetail>
+    # </residue>
+
+        _4cpa_file = joinpath(pwd(), "data", "4cpa.xml.gz")
+
+        map = read(_4cpa_file, SIFTSXML, chain="J")
+        res = filter(r -> r.PDBe.number == "2", map)[1]
+        @test length(res.InterPro) == 3
+        for i in 1:3
+            @test res.InterPro[i].name == ""
+            @test res.InterPro[i].number == ""
+        end
+    end
+
     @testset "NMR" begin
     # 1AS5 : NMR
 
