@@ -2325,7 +2325,7 @@ var documenterSearchIndex = {"docs": [
     "page": "PDB",
     "title": "MIToS.PDB.downloadpdb",
     "category": "Method",
-    "text": "It downloads a gzipped PDB file from PDB database. It requires a four character pdbcode. Its default format is PDBML (PDB XML) and It uses the baseurl \"http://www.rcsb.org/pdb/files/\". filename is the path/name of the output file. This function calls MIToS.Utils.download_file that calls Requests.get_streaming. You can use keyword arguments from Requests.get_streaming (e.g. header).\n\n\n\n"
+    "text": "Download a gzipped PDB file from PDB database. Requires a four character pdbcode. By default the format is PDBML (PDB XML) and uses the baseurl http://www.rcsb.org/pdb/files/. filename is the path/name of the output file.\n\n\n\n"
 },
 
 {
