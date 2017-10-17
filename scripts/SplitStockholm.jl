@@ -52,7 +52,6 @@ function main(input)
     end
 
 	for line in eachline(infh)
-        line = readline(infh)
 		if length(line) > 7 && line[1:7] == "#=GF AC"
 			id = get_n_words(line, 3)[3]
 		end
@@ -67,9 +66,11 @@ function main(input)
 			id = "no_accessionumber"
 			empty!(lines)
 		end
+
         if Args["progress"]:
             next!(prog)
         end
+
 	end
 	close(infh)
 end
