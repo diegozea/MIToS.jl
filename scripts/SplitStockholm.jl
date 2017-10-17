@@ -3,6 +3,7 @@
 using ArgParse
 using GZip
 using MIToS.Utils # get_n_words, check_file
+using ProgressMeter
 
 function parse_commandline()
     s = ArgParseSettings(description = "Splits a file with multiple sequence alignments in Stockholm format, creating one compressed file per MSA in Stockholm format: accessionumber.gz",
@@ -17,6 +18,10 @@ function parse_commandline()
         		help = "Path for the output files [default: execution directory]"
 		        arg_type = String
     		    default = ""
+        "--progress"
+                help = "Display progress bar [default: true]"
+                arg_type = Boolean,
+                default = true
     end
 
     s.epilog = """
@@ -38,7 +43,14 @@ function main(input)
 	infh = GZip.open(input)
 	lines = []
 	id = "no_accessionumber"
+
+    maximum.(eachline(infh))
+    fileSize = position(infh)
+    seek(infh, 0)
+    prog = Progress(fileSize, 1)
+
 	for line in eachline(infh)
+        line = readline(infh)
 		if length(line) > 7 && line[1:7] == "#=GF AC"
 			id = get_n_words(line, 3)[3]
 		end
@@ -53,6 +65,7 @@ function main(input)
 			id = "no_accessionumber"
 			empty!(lines)
 		end
+        next!(prog)
 	end
 	close(infh)
 end
