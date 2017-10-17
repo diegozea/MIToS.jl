@@ -44,10 +44,12 @@ function main(input)
 	lines = []
 	id = "no_accessionumber"
 
-    maximum.(eachline(infh))
-    fileSize = position(infh)
-    seek(infh, 0)
-    prog = Progress(fileSize, 1)
+    if Args["progress"]:
+        maximum.(eachline(infh))
+        fileSize = position(infh)
+        seek(infh, 0)
+        prog = Progress(fileSize, 1)
+    end
 
 	for line in eachline(infh)
         line = readline(infh)
@@ -65,7 +67,9 @@ function main(input)
 			id = "no_accessionumber"
 			empty!(lines)
 		end
-        next!(prog)
+        if Args["progress"]:
+            next!(prog)
+        end
 	end
 	close(infh)
 end
