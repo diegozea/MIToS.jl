@@ -15,9 +15,9 @@ function parse_commandline()
             help = "Input file"
             required = true
         "--path", "-p"
-        		help = "Path for the output files [default: execution directory]"
-		        arg_type = String
-    		    default = ""
+                help = "Path for the output files [default: execution directory]"
+            arg_type = String
+                default = ""
         "--progress"
                 help = "Display progress bar [default: true]"
                 arg_type = Boolean,
@@ -40,39 +40,36 @@ end
 const Args = parse_commandline()
 
 function main(input)
-	infh = GZip.open(input)
-	lines = []
-	id = "no_accessionumber"
+    infh = GZip.open(input)
+    lines = []
+    id = "no_accessionumber"
 
     if Args["progress"]:
-        maximum.(eachline(infh))
-        fileSize = position(infh)
-        seek(infh, 0)
-        prog = Progress(fileSize, 1)
+        thresh = filesize(infh)
+        prog = ProgressThresh(thresh, "Bytes read:")
     end
 
-	for line in eachline(infh)
-		if length(line) > 7 && line[1:7] == "#=GF AC"
-			id = get_n_words(line, 3)[3]
-		end
-		push!(lines, line)
-		if line == "//\n"
-			filename = joinpath(Args["path"], string(id, ".gz"))
-			outfh = GZip.open(filename, "w")
-			for l in lines
-				write(outfh, string(l))
-			end
-			close(outfh)
-			id = "no_accessionumber"
-			empty!(lines)
-		end
-
-        if Args["progress"]:
-            next!(prog)
+    while !eof(infh)
+        line = readline(infh)
+        if length(line) > 7 && line[1:7] == "#=GF AC"
+            id = get_n_words(line, 3)[3]
         end
-
-	end
-	close(infh)
+        push!(lines, line)
+        if line == "//\n"
+            filename = joinpath(Args["path"], string(id, ".gz"))
+            outfh = GZip.open(filename, "w")
+            for l in lines
+                write(outfh, string(l))
+            end
+            close(outfh)
+            id = "no_accessionumber"
+            empty!(lines)
+            if Args["progress"]:
+                update!(prog, prog.value + filesize(outfh))
+            end
+        end
+    end
+    close(infh)
 end
 
 main(check_file(Args["file"]))
