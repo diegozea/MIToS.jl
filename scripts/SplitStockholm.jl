@@ -18,10 +18,9 @@ function parse_commandline()
                 help = "Path for the output files [default: execution directory]"
                 arg_type = String
                 default = ""
-        "--hide-progress"
-                help = "Hide the progress [default: true]"
-                action = :store_false
-                default = :store_true
+        "--progress"
+                help = "Display the progress"
+                action = :store_true
     end
 
     s.epilog = """
@@ -44,7 +43,7 @@ function main(input)
     lines = []
     id = "no_accessionumber"
 
-    if !Args["hide-progress"]
+    if Args["progress"]
         thresh = filesize(input)
         prog = ProgressThresh(thresh, "Bytes read:")
     end
@@ -63,7 +62,7 @@ function main(input)
             close(outfh)
             id = "no_accessionumber"
             empty!(lines)
-            if !Args["hide-progress"]
+            if Args["progress"]
                 update!(prog, prog.val + filesize(filename))
             end
         end
