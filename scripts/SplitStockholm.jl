@@ -16,7 +16,7 @@ function parse_commandline()
             required = true
         "--path", "-p"
                 help = "Path for the output files [default: execution directory]"
-            arg_type = String
+                arg_type = String
                 default = ""
         "--hide-progress"
                 help = "Hide the progress [default: true]"
@@ -43,13 +43,12 @@ function main(input)
     lines = []
     id = "no_accessionumber"
 
-    if Args["progress"]
+    if !Args["hide-progress"]
         thresh = filesize(input)
         prog = ProgressThresh(thresh, "Bytes read:")
     end
 
-    while !eof(infh)
-        line = readline(infh)
+    for line in eachline(infh)
         if length(line) > 7 && line[1:7] == "#=GF AC"
             id = get_n_words(line, 3)[3]
         end
@@ -63,7 +62,7 @@ function main(input)
             close(outfh)
             id = "no_accessionumber"
             empty!(lines)
-            if Args["progress"]
+            if !Args["hide-progress"]
                 update!(prog, prog.val + filesize(filename))
             end
         end
