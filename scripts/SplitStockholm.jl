@@ -45,10 +45,11 @@ function main(input)
 
     if Args["progress"]
         totalsize = filesize(input)
-        val = totalsize
-        prog = ProgressThresh(1, "Bytes remaining:")
+        val = 0
+        prog = Progress(totalsize, 1)
     end
 
+    # for line in eachline(infh)
     while !eof(infh)
         line = readline(infh)
         if length(line) > 7 && line[1:7] == "#=GF AC"
@@ -65,7 +66,7 @@ function main(input)
             id = "no_accessionumber"
             empty!(lines)
             if Args["progress"]
-                val -= filesize(filename)
+                val += filesize(filename)
                 ProgressMeter.update!(prog, val)
             end
         end
