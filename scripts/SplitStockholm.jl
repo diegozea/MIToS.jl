@@ -18,7 +18,7 @@ function parse_commandline()
             help = "Path for the output files [default: execution directory]"
             arg_type = String
             default = ""
-        "--progress"
+        "--hideprogress"
             help = "Display the progress"
             action = :store_true
     end
@@ -43,7 +43,7 @@ function main(input)
     lines = []
     id = "no_accessionumber"
 
-    if Args["progress"]
+    if !Args["hideprogress"]
         totalsize = filesize(input)
         val = 0
         prog = Progress(totalsize, 1)
@@ -53,7 +53,7 @@ function main(input)
     while !eof(infh)
         line = readline(infh)
         if length(line) > 7 && line[1:7] == "#=GF AC"
-            id = get_n_words(line, 3)[3]
+            id = get_n_words(String(chomp(line)), 3)[3]
         end
         push!(lines, line)
         if line == "//\n"
@@ -65,7 +65,7 @@ function main(input)
             close(outfh)
             id = "no_accessionumber"
             empty!(lines)
-            if Args["progress"]
+            if !Args["hideprogress"]
                 val += filesize(filename)
                 ProgressMeter.update!(prog, val)
             end
