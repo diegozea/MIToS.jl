@@ -15,12 +15,12 @@ function parse_commandline()
             help = "Input file"
             required = true
         "--path", "-p"
-                help = "Path for the output files [default: execution directory]"
-                arg_type = String
-                default = ""
+            help = "Path for the output files [default: execution directory]"
+            arg_type = String
+            default = ""
         "--progress"
-                help = "Display the progress"
-                action = :store_true
+            help = "Display the progress"
+            action = :store_true
     end
 
     s.epilog = """
@@ -44,11 +44,13 @@ function main(input)
     id = "no_accessionumber"
 
     if Args["progress"]
-        thresh = filesize(input)
-        prog = ProgressThresh(thresh, "Bytes read:")
+        totalsize = filesize(input)
+        val = totalsize
+        prog = ProgressThresh(1, "Bytes remaining:")
     end
 
-    for line in eachline(infh)
+    while !eof(infh)
+        line = readline(infh)
         if length(line) > 7 && line[1:7] == "#=GF AC"
             id = get_n_words(line, 3)[3]
         end
@@ -63,7 +65,8 @@ function main(input)
             id = "no_accessionumber"
             empty!(lines)
             if Args["progress"]
-                update!(prog, prog.val + filesize(filename))
+                val -= filesize(filename)
+                ProgressMeter.update!(prog, val)
             end
         end
     end
