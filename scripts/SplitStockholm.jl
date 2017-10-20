@@ -21,6 +21,7 @@ function parse_commandline()
         "--hide-progress"
                 help = "Hide the progress [default: true]"
                 action = :store_false
+                default = :store_true
     end
 
     s.epilog = """
