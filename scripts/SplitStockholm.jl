@@ -3,6 +3,7 @@
 using ArgParse
 using GZip
 using MIToS.Utils # get_n_words, check_file
+using ProgressMeter
 
 function parse_commandline()
     s = ArgParseSettings(description = "Splits a file with multiple sequence alignments in Stockholm format, creating one compressed file per MSA in Stockholm format: accessionumber.gz",
@@ -14,9 +15,12 @@ function parse_commandline()
             help = "Input file"
             required = true
         "--path", "-p"
-        		help = "Path for the output files [default: execution directory]"
-		        arg_type = String
-    		    default = ""
+            help = "Path for the output files [default: execution directory]"
+            arg_type = String
+            default = ""
+        "--hideprogress"
+            help = "Display the progress"
+            action = :store_true
     end
 
     s.epilog = """
@@ -35,26 +39,39 @@ end
 const Args = parse_commandline()
 
 function main(input)
-	infh = GZip.open(input)
-	lines = []
-	id = "no_accessionumber"
-	for line in eachline(infh)
-		if length(line) > 7 && line[1:7] == "#=GF AC"
-			id = get_n_words(line, 3)[3]
-		end
-		push!(lines, line)
-		if line == "//\n"
-			filename = joinpath(Args["path"], string(id, ".gz"))
-			outfh = GZip.open(filename, "w")
-			for l in lines
-				write(outfh, string(l))
-			end
-			close(outfh)
-			id = "no_accessionumber"
-			empty!(lines)
-		end
-	end
-	close(infh)
+    infh = GZip.open(input)
+    lines = []
+    id = "no_accessionumber"
+
+    if !Args["hideprogress"]
+        totalsize = filesize(input)
+        val = 0
+        prog = Progress(totalsize, 1)
+    end
+
+    # for line in eachline(infh)
+    while !eof(infh)
+        line = readline(infh)
+        if length(line) > 7 && line[1:7] == "#=GF AC"
+            id = get_n_words(String(chomp(line)), 3)[3]
+        end
+        push!(lines, line)
+        if line == "//\n"
+            filename = joinpath(Args["path"], string(id, ".gz"))
+            outfh = GZip.open(filename, "w")
+            for l in lines
+                write(outfh, string(l))
+            end
+            close(outfh)
+            id = "no_accessionumber"
+            empty!(lines)
+            if !Args["hideprogress"]
+                val += filesize(filename)
+                ProgressMeter.update!(prog, val)
+            end
+        end
+    end
+    close(infh)
 end
 
 main(check_file(Args["file"]))
