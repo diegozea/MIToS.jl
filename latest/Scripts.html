@@ -365,7 +365,8 @@ julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;
 
 julia&gt; run(`$julia_path $script_path -h`)
 WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
-usage: SplitStockholm.jl [-p PATH] [--version] [-h] file
+usage: SplitStockholm.jl [-p PATH] [--hideprogress] [--version] [-h]
+                        file
 
 Splits a file with multiple sequence alignments in Stockholm format,
 creating one compressed file per MSA in Stockholm format:
@@ -377,6 +378,7 @@ positional arguments:
 optional arguments:
   -p, --path PATH  Path for the output files [default: execution
                    directory] (default: &quot;&quot;)
+  --hideprogress   Display the progress
   --version        show version information and exit
   -h, --help       show this help message and exit
 
