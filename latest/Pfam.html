@@ -29,7 +29,7 @@ A0A0D1A7S7_9LACO/1-49      │   -    M    T    A    G  …    F    A    D    T 
   &quot;Q9KLB0_VIBCH/8-57&quot; =&gt; Tuple{String,String}[(&quot;3NZ2&quot;, &quot;J&quot;), (&quot;3NZ2&quot;, &quot;D&quot;), (&quot;3…
   &quot;Q81N16_BACAN/7-58&quot; =&gt; Tuple{String,String}[(&quot;3IGJ&quot;, &quot;A&quot;), (&quot;3HJJ&quot;, &quot;C&quot;), (&quot;3…</code></pre></div><p>Once you know the association between PDB chains and sequences, you can use that information together with the <code>msacolumn2pdbresidue</code> function to get the PDB residue number that correspond to each MSA column for given a determined sequence and PDB chain. That function downloads information from SIFTS to generate the mapping.  </p><div><pre><code class="language-julia">col2res = msacolumn2pdbresidue(msa, &quot;MAA_ECOLI/7-58&quot;, &quot;1OCX&quot;, &quot;C&quot;)</code></pre><pre><code class="language-none">  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0100 23536  100 23536    0     0  10370      0  0:00:02  0:00:02 --:--:-- 10372
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0100 23536  100 23536    0     0  11184      0  0:00:02  0:00:02 --:--:-- 11186
 Dict{Int64,String} with 51 entries:
   68  =&gt; &quot;36&quot;
   148 =&gt; &quot;50&quot;
@@ -174,4 +174,4 @@ Stacktrace:
  [22] process_options(::Base.JLOptions) at ./client.jl:286
  [23] _start() at ./client.jl:371
 while loading /home/travis/.julia/v0.6/MIToS/docs/make.jl, in expression starting on line 3
-0.7868350163046047</code></pre></div><footer><hr/><a class="previous" href="PDB.html"><span class="direction">Previous</span><span class="title">PDB</span></a><a class="next" href="Scripts.html"><span class="direction">Next</span><span class="title">Scripts</span></a></footer></article></body></html>
+0.786724743615999</code></pre></div><footer><hr/><a class="previous" href="PDB.html"><span class="direction">Previous</span><span class="title">PDB</span></a><a class="next" href="Scripts.html"><span class="direction">Next</span><span class="title">Scripts</span></a></footer></article></body></html>
