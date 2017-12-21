@@ -29,7 +29,7 @@ A0A0D1A7S7_9LACO/1-49      │   -    M    T    A    G  …    F    A    D    T 
   &quot;Q9KLB0_VIBCH/8-57&quot; =&gt; Tuple{String,String}[(&quot;3NZ2&quot;, &quot;J&quot;), (&quot;3NZ2&quot;, &quot;D&quot;), (&quot;3…
   &quot;Q81N16_BACAN/7-58&quot; =&gt; Tuple{String,String}[(&quot;3IGJ&quot;, &quot;A&quot;), (&quot;3HJJ&quot;, &quot;C&quot;), (&quot;3…</code></pre></div><p>Once you know the association between PDB chains and sequences, you can use that information together with the <code>msacolumn2pdbresidue</code> function to get the PDB residue number that correspond to each MSA column for given a determined sequence and PDB chain. That function downloads information from SIFTS to generate the mapping.  </p><div><pre><code class="language-julia">col2res = msacolumn2pdbresidue(msa, &quot;MAA_ECOLI/7-58&quot;, &quot;1OCX&quot;, &quot;C&quot;)</code></pre><pre><code class="language-none">  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0100 23519  100 23519    0     0  10620      0  0:00:02  0:00:02 --:--:-- 10622
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0100 23536  100 23536    0     0  10370      0  0:00:02  0:00:02 --:--:-- 10372
 Dict{Int64,String} with 51 entries:
   68  =&gt; &quot;36&quot;
   148 =&gt; &quot;50&quot;
@@ -121,7 +121,7 @@ Col1 ╲ Col2 │  19   20   21   22   23   24  …  150  151  152  153  154  15
 155         │ 0.0  0.0  0.0  0.0  0.0  0.0  …  1.0  0.0  1.0  1.0  1.0  NaN</code></pre></div><p>That protein contact map can be used to calculate the Area Under the ROC Curve for a given score with the <code>AUC</code> function.  </p><div><pre><code class="language-julia">using MIToS.Information
 ZMIp, MIp = buslje09(msa)
 
-AUC(ZMIp, cmap)</code></pre><pre><code class="language-none">WARNING: abs{T &lt;: Number}(x::AbstractArray{T}) is deprecated, use abs.(x) instead.
+AUC(ZMIp, cmap)</code></pre><pre><code class="language-none">WARNING: abs(x::AbstractArray{T}) where T &lt;: Number is deprecated, use abs.(x) instead.
 Stacktrace:
  [1] depwarn(::String, ::Symbol) at ./deprecated.jl:70
  [2] abs(::Array{Float64,1}) at ./deprecated.jl:57
@@ -134,15 +134,15 @@ Stacktrace:
  [9] eval(::Module, ::Any) at ./boot.jl:235
  [10] #8 at /home/travis/.julia/v0.6/Documenter/src/Expanders.jl:459 [inlined]
  [11] cd(::Documenter.Expanders.##8#10, ::String) at ./file.jl:70
- [12] withoutput(::Documenter.Expanders.##7#9{Documenter.Documents.Page}) at /home/travis/.julia/v0.6/Documenter/src/Utilities/Utilities.jl:583
+ [12] withoutput(::Documenter.Expanders.##7#9{Documenter.Documents.Page}) at /home/travis/.julia/v0.6/Documenter/src/Utilities/Utilities.jl:589
  [13] runner(::Type{Documenter.Expanders.ExampleBlocks}, ::Base.Markdown.Code, ::Documenter.Documents.Page, ::Documenter.Documents.Document) at /home/travis/.julia/v0.6/Documenter/src/Expanders.jl:457
  [14] dispatch(::Type{Documenter.Expanders.ExpanderPipeline}, ::Base.Markdown.Code, ::Documenter.Documents.Page, ::Documenter.Documents.Document) at /home/travis/.julia/v0.6/Documenter/src/Selectors.jl:164
  [15] expand(::Documenter.Documents.Document) at /home/travis/.julia/v0.6/Documenter/src/Expanders.jl:29
  [16] dispatch(::Type{Documenter.Builder.DocumentPipeline}, ::Documenter.Documents.Document) at /home/travis/.julia/v0.6/Documenter/src/Selectors.jl:164
  [17] cd(::Documenter.##2#3{Documenter.Documents.Document}, ::String) at ./file.jl:70
- [18] #makedocs#1(::Bool, ::Array{Any,1}, ::Function) at /home/travis/.julia/v0.6/Documenter/src/Documenter.jl:186
+ [18] #makedocs#1(::Bool, ::Array{Any,1}, ::Function) at /home/travis/.julia/v0.6/Documenter/src/Documenter.jl:187
  [19] (::Documenter.#kw##makedocs)(::Array{Any,1}, ::Documenter.#makedocs) at ./&lt;missing&gt;:0
- [20] include_from_node1(::String) at ./loading.jl:569
+ [20] include_from_node1(::String) at ./loading.jl:576
  [21] include(::String) at ./sysimg.jl:14
  [22] eval(::Module, ::Any) at ./boot.jl:235
  [23] process_options(::Base.JLOptions) at ./client.jl:286
@@ -160,18 +160,18 @@ Stacktrace:
  [8] eval(::Module, ::Any) at ./boot.jl:235
  [9] #8 at /home/travis/.julia/v0.6/Documenter/src/Expanders.jl:459 [inlined]
  [10] cd(::Documenter.Expanders.##8#10, ::String) at ./file.jl:70
- [11] withoutput(::Documenter.Expanders.##7#9{Documenter.Documents.Page}) at /home/travis/.julia/v0.6/Documenter/src/Utilities/Utilities.jl:583
+ [11] withoutput(::Documenter.Expanders.##7#9{Documenter.Documents.Page}) at /home/travis/.julia/v0.6/Documenter/src/Utilities/Utilities.jl:589
  [12] runner(::Type{Documenter.Expanders.ExampleBlocks}, ::Base.Markdown.Code, ::Documenter.Documents.Page, ::Documenter.Documents.Document) at /home/travis/.julia/v0.6/Documenter/src/Expanders.jl:457
  [13] dispatch(::Type{Documenter.Expanders.ExpanderPipeline}, ::Base.Markdown.Code, ::Documenter.Documents.Page, ::Documenter.Documents.Document) at /home/travis/.julia/v0.6/Documenter/src/Selectors.jl:164
  [14] expand(::Documenter.Documents.Document) at /home/travis/.julia/v0.6/Documenter/src/Expanders.jl:29
  [15] dispatch(::Type{Documenter.Builder.DocumentPipeline}, ::Documenter.Documents.Document) at /home/travis/.julia/v0.6/Documenter/src/Selectors.jl:164
  [16] cd(::Documenter.##2#3{Documenter.Documents.Document}, ::String) at ./file.jl:70
- [17] #makedocs#1(::Bool, ::Array{Any,1}, ::Function) at /home/travis/.julia/v0.6/Documenter/src/Documenter.jl:186
+ [17] #makedocs#1(::Bool, ::Array{Any,1}, ::Function) at /home/travis/.julia/v0.6/Documenter/src/Documenter.jl:187
  [18] (::Documenter.#kw##makedocs)(::Array{Any,1}, ::Documenter.#makedocs) at ./&lt;missing&gt;:0
- [19] include_from_node1(::String) at ./loading.jl:569
+ [19] include_from_node1(::String) at ./loading.jl:576
  [20] include(::String) at ./sysimg.jl:14
  [21] eval(::Module, ::Any) at ./boot.jl:235
  [22] process_options(::Base.JLOptions) at ./client.jl:286
  [23] _start() at ./client.jl:371
 while loading /home/travis/.julia/v0.6/MIToS/docs/make.jl, in expression starting on line 3
-0.7882685612564786</code></pre></div><footer><hr/><a class="previous" href="PDB.html"><span class="direction">Previous</span><span class="title">PDB</span></a><a class="next" href="Scripts.html"><span class="direction">Next</span><span class="title">Scripts</span></a></footer></article></body></html>
+0.7868350163046047</code></pre></div><footer><hr/><a class="previous" href="PDB.html"><span class="direction">Previous</span><span class="title">PDB</span></a><a class="next" href="Scripts.html"><span class="direction">Next</span><span class="title">Scripts</span></a></footer></article></body></html>

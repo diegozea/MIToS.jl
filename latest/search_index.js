@@ -625,6 +625,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "Scripts.html#Conservation.jl-1",
+    "page": "Scripts",
+    "title": "Conservation.jl",
+    "category": "section",
+    "text": "julia_path = joinpath(Base.JULIA_HOME, \"julia\")\nscript_path = joinpath(Pkg.dir(\"MIToS\"), \"scripts\", \"Conservation.jl\")\nrun(`$julia_path $script_path -h`)"
+},
+
+{
     "location": "Scripts.html#DownloadPDB.jl-1",
     "page": "Scripts",
     "title": "DownloadPDB.jl",

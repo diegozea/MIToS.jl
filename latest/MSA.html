@@ -20,11 +20,11 @@ A0A0B0IGB5_9BACI/1-170   │   -    -    -    -    -  …    -    -    -    -   
  -  -  -  -  -  -  -  -  -  -  -  -  -     -  -  -  -  -  -  -  -  -  -  -  -</code></pre></div><p>Given that <code>read</code> calls <code>parse</code>, you should look into the documentation of the last one to know the available keyword arguments. The optional keyword arguments of those functions are:  </p><ul><li><p><code>generatemapping</code> : If <code>generatemapping</code> is <code>true</code> (default: <code>false</code>), sequences and</p></li></ul><p>columns mappings are generated and saved in the MSA annotations. <strong>The default is <code>false</code> to not overwrite mappings by mistake when you read an annotated MSA file saved with MIToS.</strong>  </p><ul><li><p><code>useidcoordinates</code> : If <code>useidcoordinates</code> is <code>true</code> (default: <code>false</code>) and the names</p></li></ul><p>have the form <em>seqname/start-end</em>, MIToS uses this coordinates to generate sequence mappings. This is safe and useful with unmodified Pfam MSAs. <strong>Do not use it when reading an MSA saved with MIToS. MIToS deletes unaligned insert columns, therefore disrupts sequences that have them.</strong>  </p><ul><li><p><code>deletefullgaps</code> : Given that lowercase characters and dots are converted to gaps,</p></li></ul><p>unaligned insert columns in the MSA (derived from a HMM profile) are converted into full gap columns. <code>deletefullgaps</code> is <code>true</code> by default, deleting full gaps columns and therefore insert columns.  </p><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p><strong>If you want to keep the insert columns...</strong>  Use the keyword argument <code>keepinserts</code> to <code>true</code> in <code>read</code>/<code>parse</code>. This only works with an <code>AnnotatedMultipleSequenceAlignment</code> output. A column annotation (<code>&quot;Aligned&quot;</code>) is stored in the annotations, where insert columns are marked with <code>0</code> and aligned columns with <code>1</code>.  </p></div></div><p>When <code>read</code> returns an <code>AnnotatedMultipleSequenceAlignment</code>, it uses the MSA <code>Annotations</code> to keep track of performed modifications. To access this notes, use <code>printmodifications</code>:  </p><div><pre><code class="language-julia">msa = read(&quot;http://pfam.xfam.org/family/PF01565/alignment/full&quot;, Stockholm)
 
 printmodifications(msa)</code></pre><pre><code class="language-none">-------------------
-2017-10-23T10:35:19.58
+2017-12-21T15:48:45.485
 
 deletefullgaps!  :  Deletes 746 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
 -------------------
-2017-10-23T10:35:19.62
+2017-12-21T15:48:45.513
 
 filtercolumns! : 746 columns have been deleted.</code></pre></div><h3><a class="nav-anchor" id="Writing-MSA-files-1" href="#Writing-MSA-files-1">Writing MSA files</a></h3><p>Julia REPL shows MSAs as Matrices. If you want to print them in another format, you should use the <code>print</code> function with an MSA object as first argument and the <code>Format</code> <code>FASTA</code>, <code>Stockholm</code> or <code>Raw</code> as second argument.  </p><div><pre><code class="language-julia">using MIToS.MSA
 
@@ -63,8 +63,8 @@ KKDLFYKEVEGRMESLKRRPAEKEKTTRSEKINVTFNVIIGLVILLGVIFTLFRV</code></pre></div><p>To 
 #=GF CC	not present in all SecA2-SecY2 systems. This family of Asp4 is
 #=GF CC	found in Firmicutes [1].
 #=GF SQ	6
-#=GF MIToS_2017-10-23T10:35:20.485	deletefullgaps!  :  Deletes 11 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
-#=GF MIToS_2017-10-23T10:35:20.485	filtercolumns! : 11 columns have been deleted.
+#=GF MIToS_2017-12-21T15:48:46.189	deletefullgaps!  :  Deletes 11 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
+#=GF MIToS_2017-12-21T15:48:46.189	filtercolumns! : 11 columns have been deleted.
 #=GS A3CM62_STRSV/3-57	AC	A3CM62.1
 #=GS A0A139NTT2_9STRE/3-57	AC	A0A139NTT2.1
 #=GS A0A139NMD7_9STRE/4-59	AC	A0A139NMD7.1
@@ -143,8 +143,8 @@ msa = parse(&quot;PROT_SPECI/3-15 .....insertALIGNED&quot;, Stockholm, generatem
 ────────────────┼───────────────────────────
 PROT_SPECI/3-15 │  A   L   I   G   N   E   D</code></pre></div><p>MIToS also keeps the column number of the input MSA and its total number of columns. All this data is stored in the MSA annotations using the <code>SeqMap</code>, <code>ColMap</code> and <code>NCol</code> feature names.  </p><div><pre><code class="language-julia">annotations(msa)</code></pre><pre><code class="language-none">#=GF NCol	18
 #=GF ColMap	12,13,14,15,16,17,18
-#=GF MIToS_2017-10-23T10:35:26.719	deletefullgaps!  :  Deletes 11 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
-#=GF MIToS_2017-10-23T10:35:26.728	filtercolumns! : 11 columns have been deleted.
+#=GF MIToS_2017-12-21T15:48:51.254	deletefullgaps!  :  Deletes 11 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
+#=GF MIToS_2017-12-21T15:48:51.262	filtercolumns! : 11 columns have been deleted.
 #=GS PROT_SPECI/3-15	SeqMap	9,10,11,12,13,14,15</code></pre></div><p>To have an easy access to mapping data, MIToS provides the <code>getsequencemapping</code> and <code>getcolumnmapping</code> functions.  </p><div><pre><code class="language-julia">getsequencemapping(msa, &quot;PROT_SPECI/3-15&quot;)</code></pre><pre><code class="language-none">7-element Array{Int64,1}:
   9
  10
@@ -162,7 +162,7 @@ PROT_SPECI/3-15 │  A   L   I   G   N   E   D</code></pre></div><p>MIToS also k
  18</code></pre></div><h4><a class="nav-anchor" id="Example:-Exporting-a-MSA-for-freecontact-(part-II)-1" href="#Example:-Exporting-a-MSA-for-freecontact-(part-II)-1">Example: Exporting a MSA for freecontact (part II)</a></h4><p>If we want to use the <code>--mincontsep</code> argument of <code>freecontact</code> to calculate scores between distant residues, we will need to add a header to the MSA. This header should contains the residue number of the first residue of the sequence and the full fragment of that sequence (with the inserts). This data is used by FreeContact to calculate the residue number of each residue in the reference sequence.   We are going to use MIToS mapping data to create this header, so we read the MSA with <code>generatemapping</code> and <code>useidcoordinates</code> setted to <code>true</code>.  </p><div><pre><code class="language-julia">using MIToS.MSA
 
 msa = read( &quot;http://pfam.xfam.org/family/PF02476/alignment/full&quot;, Stockholm,
-            generatemapping=true, useidcoordinates=true)</code></pre><pre><code class="language-none">AnnotatedMultipleSequenceAlignment with 30 annotations : 3×126 Named Array{MIToS.MSA.Residue,2}
+            generatemapping=true, useidcoordinates=true)</code></pre><pre><code class="language-none">AnnotatedMultipleSequenceAlignment with 29 annotations : 3×126 Named Array{MIToS.MSA.Residue,2}
          Seq ╲ Col │   2    3    4    5    6  …  140  141  142  143  144
 ───────────────────┼────────────────────────────────────────────────────
 US02_GAHVM/120-237 │   M    L    E    S    E  …    F    C    C    -    -
@@ -199,7 +199,7 @@ MLESEVSGNAPHSLWIVGAADICRIALECIPLPKRLLAIKVSGTWSGMPWAIPDNIQTLLTSTWEPKFDTPEDRAHFCDS
 -LHRDQPSPRLYHLWVVGAADLCVPFLEYAQKIRRFIAIKTPDAWVGEPWAVPTRFLPEWTVAWTPFPAAPNHPLETLLSRYEYQYGVVLPRWLRSLIALHKPHPATPGPLTTSHPVRRPCCAC</code></pre></div><h2><a class="nav-anchor" id="Get-sequences-from-a-MSA-1" href="#Get-sequences-from-a-MSA-1">Get sequences from a MSA</a></h2><p>It&#39;s possible to index the MSA as any other matrix to get an aligned sequence. This will be return a <code>Array</code> of <code>Residue</code>s without annotations but keeping names/identifiers.  </p><div><pre><code class="language-julia">using MIToS.MSA
 
 msa = read( &quot;http://pfam.xfam.org/family/PF16996/alignment/full&quot;, Stockholm,
-            generatemapping=true, useidcoordinates=true)</code></pre><pre><code class="language-none">AnnotatedMultipleSequenceAlignment with 35 annotations : 6×55 Named Array{MIToS.MSA.Residue,2}
+            generatemapping=true, useidcoordinates=true)</code></pre><pre><code class="language-none">AnnotatedMultipleSequenceAlignment with 36 annotations : 6×55 Named Array{MIToS.MSA.Residue,2}
             Seq ╲ Col │  2   3   4   5   6   7  …  51  52  53  54  55  56
 ──────────────────────┼──────────────────────────────────────────────────
 A0A139NMD7_9STRE/4-59 │  K   D   D   I   F   Y  …   F   T   L   F   R   I
@@ -231,7 +231,7 @@ Col  │
 56   │ -</code></pre></div><div><pre><code class="language-julia">msa[2:2,:] # Using the range 2:2 to select the second sequence, keeping the sequence name</code></pre><pre><code class="language-none">1×55 Named Array{MIToS.MSA.Residue,2}
             Seq ╲ Col │  2   3   4   5   6   7  …  51  52  53  54  55  56
 ──────────────────────┼──────────────────────────────────────────────────
-A0A139NPI6_9STRE/5-59 │  -   E   D   L   F   Y  …   F   T   L   L   R   -</code></pre></div><p>If you want to obtain the aligned sequence with its name and annotations (and therefore sequence and column mappings), you should use the function <code>getsequence</code>. This function returns an <code>AlignedSequence</code> with the sequence name from a <code>MultipleSequenceAlignment</code> or an <code>AnnotatedAlignedSequence</code>, that also contains annotations, from an <code>AnnotatedMultipleSequenceAlignment</code>.  </p><div><pre><code class="language-julia">secondsequence = getsequence(msa, 2)</code></pre><pre><code class="language-none">AnnotatedAlignedSequence with 25 annotations : 1×55 Named Array{MIToS.MSA.Residue,2}
+A0A139NPI6_9STRE/5-59 │  -   E   D   L   F   Y  …   F   T   L   L   R   -</code></pre></div><p>If you want to obtain the aligned sequence with its name and annotations (and therefore sequence and column mappings), you should use the function <code>getsequence</code>. This function returns an <code>AlignedSequence</code> with the sequence name from a <code>MultipleSequenceAlignment</code> or an <code>AnnotatedAlignedSequence</code>, that also contains annotations, from an <code>AnnotatedMultipleSequenceAlignment</code>.  </p><div><pre><code class="language-julia">secondsequence = getsequence(msa, 2)</code></pre><pre><code class="language-none">AnnotatedAlignedSequence with 26 annotations : 1×55 Named Array{MIToS.MSA.Residue,2}
             Seq ╲ Col │  2   3   4   5   6   7  …  51  52  53  54  55  56
 ──────────────────────┼──────────────────────────────────────────────────
 A0A139NPI6_9STRE/5-59 │  -   E   D   L   F   Y  …   F   T   L   L   R   -</code></pre></div><div><pre><code class="language-julia">annotations(secondsequence)</code></pre><pre><code class="language-none">#=GF ID	Asp4
@@ -258,8 +258,8 @@ A0A139NPI6_9STRE/5-59 │  -   E   D   L   F   Y  …   F   T   L   L   R   -</c
 #=GF SQ	6
 #=GF NCol	66
 #=GF ColMap	2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56
-#=GF MIToS_2017-10-23T10:35:28.231	deletefullgaps!  :  Deletes 11 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
-#=GF MIToS_2017-10-23T10:35:28.231	filtercolumns! : 11 columns have been deleted.
+#=GF MIToS_2017-12-21T15:48:52.581	deletefullgaps!  :  Deletes 11 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
+#=GF MIToS_2017-12-21T15:48:52.582	filtercolumns! : 11 columns have been deleted.
 #=GS A0A139NPI6_9STRE/5-59	SeqMap	,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,
 #=GS A0A139NPI6_9STRE/5-59	AC	A0A139NPI6.1
 #=GC seq_cons			KcDLFYKDVEGRM--LKp+sPKKEKpohuE+lNphFslsLGLVILlGLlFTLh..</code></pre></div><p>Use <code>stringsequence</code> if you want to get the sequence as a string.  </p><div><pre><code class="language-julia">stringsequence(msa, 2)</code></pre><pre><code class="language-none">&quot;-EDLFYKEVEGRMADLQQKAPEKEKKTGAERLNTLFSLALGLVILLGLLFTLLR-&quot;</code></pre></div><p>Given that matrices are stored columnwise in Julia, you will find useful the <code>getresiduesequences</code> function when you need to heavily operate over sequences.  </p><div><pre><code class="language-julia">getresiduesequences(msa)</code></pre><pre><code class="language-none">6-element Array{Array{MIToS.MSA.Residue,1},1}:
@@ -366,10 +366,12 @@ df = DataFrame( seqnum = 1:nsequences(msa),
 │ 175 │ 175    │ &quot;A0A090MXF3_STRRB/2-104&quot;   │ 29      │ 0.836207 │
 │ 176 │ 176    │ &quot;G3WPK1_SARHA/11-126&quot;      │ 15      │ 0.991379 │
 │ 177 │ 177    │ &quot;RM55_MOUSE/9-124&quot;         │ 2       │ 1.0      │
-│ 178 │ 178    │ &quot;M3XPJ7_MUSPF/10-125&quot;      │ 2       │ 0.991379 │</code></pre></div><p>It is possible to use this <code>DataFrame</code> and <code>Plots</code> to plot the sequence coverage of the MSA and also an histogram of the number of sequences in each cluster:  </p><div><pre><code class="language-julia">using StatPlots # Plotting DataFrames
+│ 178 │ 178    │ &quot;M3XPJ7_MUSPF/10-125&quot;      │ 2       │ 0.991379 │</code></pre></div><p>It is possible to use this <code>DataFrame</code> and <code>Plots</code> to plot the sequence coverage of the MSA and also an histogram of the number of sequences in each cluster:  </p><pre><code class="language-">using StatPlots # Plotting DataFrames
 h = histogram(df[:cluster], ylabel=&quot;nseq&quot;)
 p = plot(df, :cluster, :coverage, linetype=:scatter)
-plot(p, h, nc=1, xlim=(0, nclusters(clusters)+1 ), legend=false)</code></pre></div><p><img src="msa_clusters_ii.png" alt/>  </p><p>We use the <em>Split-Apply-Combine</em> strategy, though the <code>by</code> function of the <code>DataFrames</code> package, to select the sequence of highest coverage for each cluster.  </p><div><pre><code class="language-julia">maxcoverage = by(df, :cluster, cl -&gt; cl[ findmax(cl[:coverage])[2] ,:])</code></pre><pre><code class="language-none">66×5 DataFrames.DataFrame
+plot(p, h, nc=1, xlim=(0, nclusters(clusters)+1 ), legend=false)
+png(&quot;msa_clusters_ii.png&quot;) # hide
+nothing # hide</code></pre><p><img src="msa_clusters_ii.png" alt/>  </p><p>We use the <em>Split-Apply-Combine</em> strategy, though the <code>by</code> function of the <code>DataFrames</code> package, to select the sequence of highest coverage for each cluster.  </p><div><pre><code class="language-julia">maxcoverage = by(df, :cluster, cl -&gt; cl[ findmax(cl[:coverage])[2] ,:])</code></pre><pre><code class="language-none">66×5 DataFrames.DataFrame
 │ Row │ cluster │ seqnum │ seqname                    │ cluster_1 │ coverage │
 ├─────┼─────────┼────────┼────────────────────────────┼───────────┼──────────┤
 │ 1   │ 1       │ 1      │ &quot;E4XN03_OIKDI/34-146&quot;      │ 1         │ 0.706897 │
@@ -389,9 +391,11 @@ plot(p, h, nc=1, xlim=(0, nclusters(clusters)+1 ), legend=false)</code></pre></d
 │ 63  │ 63      │ 159    │ &quot;A0A0N5CW25_THECL/95-207&quot;  │ 63        │ 0.844828 │
 │ 64  │ 64      │ 160    │ &quot;X6R631_HUMAN/1-52&quot;        │ 64        │ 0.448276 │
 │ 65  │ 65      │ 163    │ &quot;A7RNQ0_NEMVE/28-143&quot;      │ 65        │ 0.818966 │
-│ 66  │ 66      │ 174    │ &quot;T1FXF3_HELRO/1-90&quot;        │ 66        │ 0.775862 │</code></pre></div><div><pre><code class="language-julia">p = plot(maxcoverage, :cluster, :coverage, linetype=:scatter)
+│ 66  │ 66      │ 174    │ &quot;T1FXF3_HELRO/1-90&quot;        │ 66        │ 0.775862 │</code></pre></div><pre><code class="language-">p = plot(maxcoverage, :cluster, :coverage, linetype=:scatter)
 h = histogram(maxcoverage[:cluster], ylabel=&quot;nseq&quot;)
-plot(p, h, nc=1, xlim=(0, nclusters(clusters)+1 ), legend=false)</code></pre></div><p><img src="msa_clusters_iii.png" alt/>  </p><p>We can easily generate a mask using list comprehension, to select only the representative sequences of the MSA (deleting the rest of the sequences with <code>filtersequences!</code>).  </p><div><pre><code class="language-julia">cluster_references = Bool[ seqnum in maxcoverage[:seqnum] for seqnum in 1:nsequences(msa) ]</code></pre><pre><code class="language-none">178-element Array{Bool,1}:
+plot(p, h, nc=1, xlim=(0, nclusters(clusters)+1 ), legend=false)
+png(&quot;msa_clusters_iii.png&quot;) # hide
+nothing # hide</code></pre><p><img src="msa_clusters_iii.png" alt/>  </p><p>We can easily generate a mask using list comprehension, to select only the representative sequences of the MSA (deleting the rest of the sequences with <code>filtersequences!</code>).  </p><div><pre><code class="language-julia">cluster_references = Bool[ seqnum in maxcoverage[:seqnum] for seqnum in 1:nsequences(msa) ]</code></pre><pre><code class="language-none">178-element Array{Bool,1}:
   true
  false
  false
