@@ -57,7 +57,7 @@ Args = parse_commandline(
     # Keywords...
     description="""
     This takes a MSA file as input.
-    Calculates and saves on *.busjle09.csv a Z score and a corrected MI/MIp as described on:\n
+    It calculates and saves on *.busjle09.csv a Z score and a corrected MI/MIp as described on:\n
     Buslje, C. M., Santos, J., Delfino, J. M., & Nielsen, M. (2009).
     Correction for phylogeny, small number of observations and data redundancy improves the identification of coevolving amino acid pairs using mutual information.
     Bioinformatics, 25(9), 1125-1131.

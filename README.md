@@ -61,6 +61,8 @@ in this package.
 
 * **Buslje09.jl** : Calculates the corrected MI/MIp described on Buslje et. al. 2009 [2].
 * **BLMI.jl** : Calculates corrected mutual information using BLOSUM62 based-pseudocounts.
+* **Conservation.jl** : Calculates the Shannon entropy and the Kullback-Leibler divergence
+of each MSA column.
 * **DownloadPDB.jl** : Downloads gzipped files from PDB.
 * **Distances.jl** : Calculates residues distances in a PDB file.
 * **SplitStockholm.jl** : Splits a Stockholm file with multiple alignments into one

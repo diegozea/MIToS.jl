@@ -27,6 +27,14 @@ script_path = joinpath(Pkg.dir("MIToS"), "scripts", "BLMI.jl")
 run(`$julia_path $script_path -h`)
 ```  
 
+## Conservation.jl
+
+```@repl
+julia_path = joinpath(Base.JULIA_HOME, "julia")
+script_path = joinpath(Pkg.dir("MIToS"), "scripts", "Conservation.jl")
+run(`$julia_path $script_path -h`)
+```  
+
 ## DownloadPDB.jl
 
 ```@repl

@@ -49,6 +49,15 @@
         @test ismatch(r"1,2,0,0.13",output)
     end
 
+    @testset "Conservation.jl" begin
+        path_script = joinpath(mitos_folder, "scripts", "Conservation.jl")
+        path_file   = joinpath(mitos_folder, "test", "data", "simple.fasta")
+        output = readstring(`$julia $path_script $path_file -o STDOUT -c --format FASTA`)
+
+        @test ismatch(r"1,0.6931471805599453,2.0901394960274127",output)
+        @test ismatch(r"2,0.6931471805599453,2.0901394960274127",output)
+    end
+
     @testset "DownloadPDB.jl" begin
         # Helper functions
         _get_files() = filter!(f -> startswith(f, "3NIR"),readdir())

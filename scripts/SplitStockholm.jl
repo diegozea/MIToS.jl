@@ -19,7 +19,7 @@ function parse_commandline()
             arg_type = String
             default = ""
         "--hideprogress"
-            help = "Display the progress"
+            help = "Hide the progress bar"
             action = :store_true
     end
 
@@ -72,6 +72,10 @@ function main(input)
         end
     end
     close(infh)
+
+    if !Args["hideprogress"]
+        println()
+    end
 end
 
 main(check_file(Args["file"]))
