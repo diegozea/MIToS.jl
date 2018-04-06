@@ -310,13 +310,13 @@ function rmsf(vector::AbstractVector{Matrix{Float64}})
     # Kuzmanic, Antonija, and Bojan Zagrovic.
     # "Determination of ensemble-average pairwise root mean-square deviation from experimental B-factors."
     # Biophysical journal 98.5 (2010): 861-871.
-    vec(sqrt(mean(map( mat -> mapslices(x -> sum(abs2, x), mat .- m, 2), vector ))))
+    vec(sqrt.(mean(map( mat -> mapslices(x -> sum(abs2, x), mat .- m, 2), vector ))))
 end
 
 function rmsf(vector::AbstractVector{Matrix{Float64}}, matrixweights::AbstractVector{Float64})
     m = mean_coordinates(vector, matrixweights)
     d = map( mat -> mapslices(x -> sum(abs2, x), mat .- m, 2), vector )
-    vec(sqrt(sum(d .* matrixweights)/sum(matrixweights)))
+    vec(sqrt.(sum(d .* matrixweights)/sum(matrixweights)))
 end
 
 function rmsf(vec::AbstractVector{Vector{PDBResidue}}, args...; calpha::Bool=true)
