@@ -110,6 +110,7 @@
                 @test vec(getresidues(getsequence(copy_msa,1))) ==
                     res"QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ"
                 setreference!(copy_msa, "C3N734_SULIY/1-95")
+                @test_throws ErrorException setreference!(copy_msa, "FALSE_SEQID/1-95")
                 @test vec(getresidues(getsequence(copy_msa,4))) ==
                     res"QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ"
                 @test copy_msa == msa
