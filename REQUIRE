@@ -3,7 +3,7 @@ LightXML
 GZip
 AutoHashEquals
 DataStructures
-Formatting
+Formatting 0.3.1
 PairwiseListMatrices
 ArgParse
 ROCAnalysis
