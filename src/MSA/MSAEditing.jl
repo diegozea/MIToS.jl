@@ -118,6 +118,22 @@ end
 
 filtercolumns(x::AbstractAlignedObject, args...) = filtercolumns!(deepcopy(x), args...)
 
+# Util function
+# -------------
+
+"""
+This function takes a vector of sequence names and a sequence id.
+It returns the position of that id in the vector.
+If the id isn't in the vector, It throws an error.
+"""
+function _get_seqid_index(names::Vector{String}, sequence_id::String)
+    id_index = findfirst(names, sequence_id)
+    if id_index == 0
+        throw(ErrorException("$sequence_id is not in the list of sequence names."))
+    end
+    id_index
+end
+
 # Reference
 # ---------
 "It swaps the names on the positions `i` and `j` of a `Vector{String}`"
@@ -147,7 +163,9 @@ end
 
 function swapsequences!(matrix::NamedArray, i::String, j::String)
     seqnames = sequencenames(matrix)
-    swapsequences!(matrix, findfirst(seqnames,i), findfirst(seqnames,j))
+    swapsequences!(matrix,
+                   _get_seqid_index(seqnames,i),
+                   _get_seqid_index(seqnames,j))
 end
 
 """
@@ -179,7 +197,7 @@ setreference!(msa::NamedArray{Residue,2}, id::String, annotate::Bool=false) =
 
 function setreference!(msa::AbstractMultipleSequenceAlignment, id::String,
                        annotate::Bool=true)
-    setreference!(msa, findfirst(sequencenames(msa), id), annotate)
+    setreference!(msa, _get_seqid_index(sequencenames(msa), id), annotate)
 end
 
 function setreference!(msa::Matrix{Residue}, i::Int, annotate::Bool=false)
