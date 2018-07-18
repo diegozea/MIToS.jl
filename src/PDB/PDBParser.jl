@@ -7,33 +7,24 @@ structure data derived from X-ray diffraction and NMR studies.
 """
 struct PDBFile <: Format end
 
-function _parse_residueidentifier(line, atom_chain, line_id, actual_model)
+function _parse_residueidentifier(line::String, atom_chain, line_id, actual_model)
     # 23 - 26        Integer         Residue sequence number.
     # 27             AChar           Code for insertion of residues.
     PDB_number = String(strip(SubString(line, 23, 27), ' '))
 
     name = String(strip(SubString(line, 18, 20), ' '))
 
-    PDBResidueIdentifier("",
-                         PDB_number,
-                         name,
-                         line_id,
-                         actual_model,
-                         atom_chain)
+    PDBResidueIdentifier("", PDB_number, name, line_id, actual_model, atom_chain)
 end
 
-function _parse_pdbatom(line, atom_name, element)
+function _parse_pdbatom(line::String, atom_name, element)
     x = float(SubString(line, 31, 38))
     y = float(SubString(line, 39, 46))
     z = float(SubString(line, 47, 54))
     occupancy = float(SubString(line, 55, 60))
     B = String(strip(SubString(line, 61, 66), ' '))
 
-    PDBAtom(Coordinates(x,y,z),
-            atom_name,
-            element,
-            occupancy,
-            B)
+    PDBAtom(Coordinates(x,y,z), atom_name, element, occupancy, B)
 end
 
 """
@@ -81,8 +72,9 @@ function Base.parse(io::Union{IO, String}, ::Type{PDBFile};
                         (residue_id.model != actual_model) ||
                         (SubString(previous_used_line, 18, 27) != SubString(line, 18, 27))
 
-                    if occupancyfilter && length(residues) > 0
-                        residues[end].atoms = bestoccupancy(residues[end].atoms)
+                    n_res = length(residues)
+                    if occupancyfilter && n_res > 0
+                        residues[n_res].atoms = bestoccupancy(residues[n_res].atoms)
                     end
 
                     residue_id = _parse_residueidentifier(line,
@@ -99,6 +91,11 @@ function Base.parse(io::Union{IO, String}, ::Type{PDBFile};
             end
         end
     end
+
+    if occupancyfilter
+        residues[end].atoms = bestoccupancy(residues[end].atoms)
+    end
+
     residues
 end
 

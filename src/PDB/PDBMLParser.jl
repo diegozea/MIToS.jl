@@ -60,47 +60,140 @@ function Base.parse(pdbml::LightXML.XMLDocument, ::Type{PDBML};
                     label::Bool=true,
                     occupancyfilter::Bool=false)
 
-    residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
+    residues = Vector{PDBResidue}()
 
     prefix = label ? "label" : "auth"
     chain_attribute = string(prefix, "_asym_id")
     atom_attribute = string(prefix, "_atom_id")
     comp_attribute = string(prefix, "_comp_id")
 
+    residue_id = PDBResidueIdentifier("", "", "", "", "", "")
     atoms = _get_atom_iterator(pdbml)
     for atom in atoms
 
-        atom_group = _get_text(atom, "group_PDB")
-        atom_model = _get_text(atom, "pdbx_PDB_model_num")
-        atom_chain = _get_text(atom, chain_attribute)
         atom_name = _get_text(atom, atom_attribute)
-        element = _get_text(atom, "type_symbol")
-
-        if  _is(atom_group, group) && _is(atom_chain,chain) &&
-                _is(atom_model, model) && _is(atom_name,atomname) &&
-                (!onlyheavy || element!="H")
-
-            PDBe_number = _get_text(atom, "label_seq_id")
-
-            #  Residue_No  _atom_site.auth_seq_id
-            #  Ins_Code    _atom_site.pdbx_PDB_ins_code
-            PDB_number = string(_get_text(atom, "auth_seq_id"), _get_ins_code(atom))
-            name = _get_text(atom, comp_attribute)
-            x = float(_get_text(atom, "Cartn_x"))
-            y = float(_get_text(atom, "Cartn_y"))
-            z = float(_get_text(atom, "Cartn_z"))
-            occupancy = float(_get_text(atom, "occupancy"))
-            B = _get_text(atom, "B_iso_or_equiv")
-
-            residue_id = PDBResidueIdentifier(PDBe_number, PDB_number, name, atom_group, atom_model, atom_chain)
-            atom_data  = PDBAtom(Coordinates(x,y,z), atom_name, element, occupancy, B)
-
-            value = get!(residue_dict, residue_id, PDBAtom[])
-            push!(value, atom_data)
+        if !_is(atom_name, atomname)
+            continue
         end
+
+        element = _get_text(atom, "type_symbol")
+        if onlyheavy && element=="H"
+            continue
+        end
+
+        atom_group = _get_text(atom, "group_PDB")
+        if !_is(atom_group, group)
+            continue
+        end
+
+        atom_chain = _get_text(atom, chain_attribute)
+        if !_is(atom_chain, chain)
+            continue
+        end
+
+        atom_model = _get_text(atom, "pdbx_PDB_model_num")
+        if !_is(atom_model, model)
+            continue
+        end
+
+        PDBe_number = _get_text(atom, "label_seq_id")
+
+        #  Residue_No  _atom_site.auth_seq_id
+        #  Ins_Code    _atom_site.pdbx_PDB_ins_code
+        PDB_number = string(_get_text(atom, "auth_seq_id"), _get_ins_code(atom))
+        name = _get_text(atom, comp_attribute)
+
+        if (residue_id.PDBe_number != PDBe_number) ||
+                (residue_id.number != PDB_number) ||
+                (residue_id.name != name) ||
+                (residue_id.chain != atom_chain) ||
+                (residue_id.group != atom_group) ||
+                (residue_id.model != atom_model)
+
+            n_res = length(residues)
+            if occupancyfilter && n_res > 0
+                residues[n_res].atoms = bestoccupancy(residues[n_res].atoms)
+            end
+
+            residue_id = PDBResidueIdentifier(PDBe_number,
+                                              PDB_number,
+                                              name,
+                                              atom_group,
+                                              atom_model,
+                                              atom_chain)
+            push!(residues, PDBResidue(residue_id, Vector{PDBAtom}()))
+        end
+
+        x = float(_get_text(atom, "Cartn_x"))
+        y = float(_get_text(atom, "Cartn_y"))
+        z = float(_get_text(atom, "Cartn_z"))
+        occupancy = float(_get_text(atom, "occupancy"))
+        B = _get_text(atom, "B_iso_or_equiv")
+
+        push!(residues[end].atoms, PDBAtom(Coordinates(x,y,z),
+                                           atom_name,
+                                           element,
+                                           occupancy,
+                                           B))
     end
-    _generate_residues(residue_dict, occupancyfilter)
+
+    if occupancyfilter
+        residues[end].atoms = bestoccupancy(residues[end].atoms)
+    end
+
+    residues
 end
+
+# function Base.parse(pdbml::LightXML.XMLDocument, ::Type{PDBML};
+#                     chain::Union{String,Type{All}} = All,
+#                     model::Union{String,Type{All}} = All,
+#                     group::Union{String,Type{All}} = All,
+#                     atomname::Union{String,Type{All}} = All,
+#                     onlyheavy::Bool=false,
+#                     label::Bool=true,
+#                     occupancyfilter::Bool=false)
+#
+#     residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
+#
+#     prefix = label ? "label" : "auth"
+#     chain_attribute = string(prefix, "_asym_id")
+#     atom_attribute = string(prefix, "_atom_id")
+#     comp_attribute = string(prefix, "_comp_id")
+#
+#     atoms = _get_atom_iterator(pdbml)
+#     for atom in atoms
+#
+#         atom_group = _get_text(atom, "group_PDB")
+#         atom_model = _get_text(atom, "pdbx_PDB_model_num")
+#         atom_chain = _get_text(atom, chain_attribute)
+#         atom_name = _get_text(atom, atom_attribute)
+#         element = _get_text(atom, "type_symbol")
+#
+#         if  _is(atom_group, group) && _is(atom_chain,chain) &&
+#                 _is(atom_model, model) && _is(atom_name,atomname) &&
+#                 (!onlyheavy || element!="H")
+#
+#             PDBe_number = _get_text(atom, "label_seq_id")
+#
+#             #  Residue_No  _atom_site.auth_seq_id
+#             #  Ins_Code    _atom_site.pdbx_PDB_ins_code
+#             PDB_number = string(_get_text(atom, "auth_seq_id"), _get_ins_code(atom))
+#             name = _get_text(atom, comp_attribute)
+#             x = float(_get_text(atom, "Cartn_x"))
+#             y = float(_get_text(atom, "Cartn_y"))
+#             z = float(_get_text(atom, "Cartn_z"))
+#             occupancy = float(_get_text(atom, "occupancy"))
+#             B = _get_text(atom, "B_iso_or_equiv")
+#
+#             residue_id = PDBResidueIdentifier(PDBe_number, PDB_number, name, atom_group, atom_model, atom_chain)
+#             atom_data  = PDBAtom(Coordinates(x,y,z), atom_name, element, occupancy, B)
+#
+#             value = get!(residue_dict, residue_id, PDBAtom[])
+#             push!(value, atom_data)
+#         end
+#     end
+#     _generate_residues(residue_dict, occupancyfilter)
+# end
 
 # Download PDB
 # ============
