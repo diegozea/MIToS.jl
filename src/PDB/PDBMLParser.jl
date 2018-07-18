@@ -27,6 +27,16 @@ function _get_atom_iterator(document::LightXML.XMLDocument)
     child_elements(get_elements_by_tagname(pdbroot, "atom_siteCategory")[1])
 end
 
+"Used for parsing a PDB file into `Vector{PDBResidue}`"
+function _generate_residues(residue_dict::OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}},
+                            occupancyfilter::Bool=false)
+    if occupancyfilter
+        return( PDBResidue[ PDBResidue(k, bestoccupancy(v)) for (k,v) in residue_dict ] )
+    else
+        return( PDBResidue[ PDBResidue(k, v) for (k,v) in residue_dict ] )
+    end
+end
+
 """
 `parse(pdbml, ::Type{PDBML}; chain=All, model=All, group=All, atomname=All, onlyheavy=false, label=true, occupancyfilter=false)`
 

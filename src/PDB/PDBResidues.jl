@@ -680,28 +680,6 @@ end
 #   (cross(points[2] - points[1], points[3] - points[1]), sum(points)./length(points))
 # end
 
-# For Parsing...
-# ==============
-
-"Used for parsing a PDB file into `Vector{PDBResidue}`"
-function _generate_residues(residue_dict::OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}},
-                            occupancyfilter::Bool=false)
-    if occupancyfilter
-        return( PDBResidue[ PDBResidue(k, bestoccupancy(v)) for (k,v) in residue_dict ] )
-    else
-        return( PDBResidue[ PDBResidue(k, v) for (k,v) in residue_dict ] )
-    end
-end
-
-function _generate_residues(residues::Vector{Tuple{PDBResidueIdentifier, Vector{PDBAtom}}},
-                            occupancyfilter::Bool=false)
-    if occupancyfilter
-        return(PDBResidue[PDBResidue(id, bestoccupancy(atoms)) for (id, atoms) in residues])
-    else
-        return(PDBResidue[PDBResidue(id, atoms) for (id, atoms) in residues])
-    end
-end
-
 # Show PDB* objects (using Formatting)
 # ====================================
 
