@@ -7,6 +7,35 @@ structure data derived from X-ray diffraction and NMR studies.
 """
 struct PDBFile <: Format end
 
+function _parse_residueidentifier(line, atom_chain, line_id, actual_model)
+    # 23 - 26        Integer         Residue sequence number.
+    # 27             AChar           Code for insertion of residues.
+    PDB_number = String(strip(SubString(line, 23, 27), ' '))
+
+    name = String(strip(SubString(line, 18, 20), ' '))
+
+    PDBResidueIdentifier("",
+                         PDB_number,
+                         name,
+                         line_id,
+                         actual_model,
+                         atom_chain)
+end
+
+function _parse_pdbatom(line, atom_name, element)
+    x = float(SubString(line, 31, 38))
+    y = float(SubString(line, 39, 46))
+    z = float(SubString(line, 47, 54))
+    occupancy = float(SubString(line, 55, 60))
+    B = String(strip(SubString(line, 61, 66), ' '))
+
+    PDBAtom(Coordinates(x,y,z),
+            atom_name,
+            element,
+            occupancy,
+            B)
+end
+
 """
 `parse(io, ::Type{PDBFile}; chain=All, model=All, group=All, atomname=All, onlyheavy=false, occupancyfilter=false)`
 
@@ -25,43 +54,52 @@ function Base.parse(io::Union{IO, String}, ::Type{PDBFile};
                     atomname::Union{String,Type{All}} = All,
                     onlyheavy::Bool=false,
                     occupancyfilter::Bool=false)
-    residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
-    atom_model = 0
-    for line in lineiterator(io)
-        line_id = length(line) < 6 ? replace(line, ' ', "") : replace(line[1:6], ' ', "") # i.e. "END\n"
+    residues = Vector{PDBResidue}()
+    model_counter = 0
+    actual_model = "1"
+    is_model = _is(actual_model, model)
+    previous_used_line  = ""
+    residue_id = PDBResidueIdentifier("", "", "", "", "", "")
+    for line::String in lineiterator(io)
+        line_id = match(r"^\S{0,6}", line).match
+
         if line_id == "MODEL"
-            atom_model += 1
+            model_counter += 1
+            actual_model = string(model_counter)
+            is_model = _is(actual_model, model)
         end
+
         if (group === All && (line_id=="ATOM" || line_id=="HETATM")) || (line_id == group)
             atom_chain = string(line[22])
-            atom_name = replace(line[13:16],' ',"")
-            element = replace(line[77:78],' ',"")
-            if  _is(atom_chain,chain) && _is(string(atom_model+1),model) &&
-                    _is(atom_name,atomname) && (!onlyheavy || element!="H")
+            atom_name = String(strip(SubString(line, 13, 16), ' '))
+            element = String(strip(SubString(line, 77, 78), ' '))
+            if  is_model && _is(atom_chain, chain) &&
+                    _is(atom_name, atomname) && (!onlyheavy || element!="H")
 
-                # 23 - 26        Integer         Residue sequence number.
-                # 27             AChar           Code for insertion of residues.
-                PDB_number = replace(line[23:27],' ',"")
+                if (previous_used_line == "") ||
+                        (residue_id.group != line_id) ||
+                        (residue_id.model != actual_model) ||
+                        (SubString(previous_used_line, 18, 27) != SubString(line, 18, 27))
 
-                name = replace(line[18:20],' ',"")
-                x = float(replace(line[31:38],' ',""))
-                y = float(replace(line[39:46],' ',""))
-                z = float(replace(line[47:54],' ',""))
-                occupancy = float(replace(line[55:60],' ',""))
-                B = replace(line[61:66],' ',"")
+                    if occupancyfilter && length(residues) > 0
+                        residues[end].atoms = bestoccupancy(residues[end].atoms)
+                    end
 
-                mdl = atom_model == 0 ? "1" : string(atom_model)
+                    residue_id = _parse_residueidentifier(line,
+                                                          atom_chain,
+                                                          line_id,
+                                                          actual_model)
+                    push!(residues, PDBResidue(residue_id, Vector{PDBAtom}()))
+                end
 
-                residue_id = PDBResidueIdentifier("",PDB_number,name,line_id,mdl,atom_chain)
-                atom_data  = PDBAtom(Coordinates(x,y,z), atom_name, element, occupancy, B)
+                atom_data  = _parse_pdbatom(line, atom_name, element)
+                push!(residues[end].atoms, atom_data)
 
-                value = get!(residue_dict, residue_id, PDBAtom[])
-                push!(value, atom_data)
-
+                previous_used_line = line
             end
         end
     end
-    _generate_residues(residue_dict, occupancyfilter)
+    residues
 end
 
 # Print PDB

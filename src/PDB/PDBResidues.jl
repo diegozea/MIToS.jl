@@ -693,6 +693,15 @@ function _generate_residues(residue_dict::OrderedDict{PDBResidueIdentifier, Vect
     end
 end
 
+function _generate_residues(residues::Vector{Tuple{PDBResidueIdentifier, Vector{PDBAtom}}},
+                            occupancyfilter::Bool=false)
+    if occupancyfilter
+        return(PDBResidue[PDBResidue(id, bestoccupancy(atoms)) for (id, atoms) in residues])
+    else
+        return(PDBResidue[PDBResidue(id, atoms) for (id, atoms) in residues])
+    end
+end
+
 # Show PDB* objects (using Formatting)
 # ====================================
 
