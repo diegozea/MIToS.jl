@@ -53,6 +53,7 @@ export  # Residue
         MultipleSequenceAlignment, AnnotatedMultipleSequenceAlignment,
         AlignedSequence, AnnotatedAlignedSequence,
         AnnotatedAlignedObject, UnannotatedAlignedObject,
+        NamedResidueMatrix,
         annotations,
         namedmatrix,
         nsequences,

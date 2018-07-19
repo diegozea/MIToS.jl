@@ -76,10 +76,10 @@ function Base.shuffle(msa::Matrix{Residue}, args...)
 end
 
 function Base.shuffle(r::AbstractRNG,
-                      msa::Union{AbstractAlignedObject, NamedArray{Residue,2}}, args...)
+                      msa::Union{AbstractAlignedObject, NamedResidueMatrix}, args...)
     shuffle(r, copy(getresidues(msa)), args...)
 end
 
-function Base.shuffle(msa::Union{AbstractAlignedObject, NamedArray{Residue,2}}, args...)
+function Base.shuffle(msa::Union{AbstractAlignedObject, NamedResidueMatrix}, args...)
     shuffle(GLOBAL_RNG, copy(getresidues(msa)), args...)
 end

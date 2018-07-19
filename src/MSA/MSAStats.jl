@@ -41,7 +41,7 @@ macro keep_names_dimension(functions)
         f = esc(function_names[i])
         definitions[i] = quote
 
-            function ($f)(msa::NamedArray{Residue,2}, dimension::Int)
+            function ($f)(msa::NamedResidueMatrix, dimension::Int)
                 result = ($f)(getarray(msa), dimension)
                 if dimension == 1
                     name_list = names(msa,2)

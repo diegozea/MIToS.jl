@@ -52,10 +52,10 @@ function _pre_readstockholm(io::Union{IO, AbstractString})
     GS = Dict{Tuple{String,String},String}()
     GR = Dict{Tuple{String,String},String}()
 
-    @inbounds for line in lineiterator(io)
+    @inbounds for line::String in lineiterator(io)
         if length(line) >= 3
             _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
-            if startswith(line,"//")
+            if startswith(line, "//")
                break
             end
         end
@@ -73,10 +73,10 @@ end
 function _pre_readstockholm_sequences(io::Union{IO, AbstractString})
     IDS  = String[]
     SEQS = String[]
-    @inbounds for line in lineiterator(io)
+    @inbounds for line::String in lineiterator(io)
         if length(line) >= 3
             _fill_with_sequence_line!(line, IDS, SEQS)
-            if startswith(line,"//")
+            if startswith(line, "//")
                break
             end
         end
@@ -91,7 +91,7 @@ function Base.parse(io::Union{IO, AbstractString},
                    generatemapping::Bool=false,
                    useidcoordinates::Bool=false,
                    deletefullgaps::Bool=true,
-                   keepinserts::Bool=false)
+                   keepinserts::Bool=false)::AnnotatedMultipleSequenceAlignment
     IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
     annot = Annotations(GF, GS, GC, GR)
     _generate_annotated_msa(annot, IDS, SEQS, keepinserts, generatemapping,
@@ -100,8 +100,8 @@ end
 
 function Base.parse(io::Union{IO, AbstractString},
                    format::Type{Stockholm},
-                   output::Type{NamedArray{Residue,2}};
-                   deletefullgaps::Bool=true)
+                   output::Type{NamedResidueMatrix};
+                   deletefullgaps::Bool=true)::NamedResidueMatrix
     IDS, SEQS = _pre_readstockholm_sequences(io)
     msa = _generate_named_array(SEQS, IDS)
     if deletefullgaps
@@ -113,15 +113,18 @@ end
 function Base.parse(io::Union{IO, AbstractString},
                    format::Type{Stockholm},
                    output::Type{MultipleSequenceAlignment};
-                   deletefullgaps::Bool=true)
-    msa = parse(io, format, NamedArray{Residue,2}, deletefullgaps=deletefullgaps)
+                   deletefullgaps::Bool=true)::MultipleSequenceAlignment
+    msa = parse(io,
+                format,
+                NamedResidueMatrix,
+                deletefullgaps=deletefullgaps)
     MultipleSequenceAlignment(msa)
 end
 
 function Base.parse(io::Union{IO,AbstractString},
                    format::Type{Stockholm},
                    output::Type{Matrix{Residue}};
-                   deletefullgaps::Bool=true)
+                   deletefullgaps::Bool=true)::Matrix{Residue}
     IDS, SEQS = _pre_readstockholm_sequences(io)
     _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
 end
@@ -130,7 +133,7 @@ function Base.parse(io, format::Type{Stockholm};
                     generatemapping::Bool=false,
                     useidcoordinates::Bool=false,
                     deletefullgaps::Bool=true,
-                    keepinserts::Bool=false)
+                    keepinserts::Bool=false)::AnnotatedMultipleSequenceAlignment
     parse(io, Stockholm, AnnotatedMultipleSequenceAlignment,
           generatemapping=generatemapping,
           useidcoordinates=useidcoordinates,

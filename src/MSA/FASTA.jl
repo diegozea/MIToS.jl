@@ -43,7 +43,7 @@ end
 
 function Base.parse(io::Union{IO, AbstractString},
                     format::Type{FASTA},
-                    output::Type{NamedArray{Residue,2}};
+                    output::Type{NamedResidueMatrix};
                     deletefullgaps::Bool=true)
     IDS, SEQS = _pre_readfasta(io)
     msa = _generate_named_array(SEQS, IDS)
@@ -57,7 +57,7 @@ function Base.parse(io::Union{IO, AbstractString},
                    format::Type{FASTA},
                    output::Type{MultipleSequenceAlignment};
                    deletefullgaps::Bool=true)
-    msa = parse(io, format, NamedArray{Residue,2}, deletefullgaps=deletefullgaps)
+    msa = parse(io, format, NamedResidueMatrix, deletefullgaps=deletefullgaps)
     MultipleSequenceAlignment(msa)
 end
 

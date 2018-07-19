@@ -5,7 +5,7 @@ struct Raw <: Format end
 
 function _get_seqs(io::Union{IO, AbstractString})
     SEQS = String[]
-    for line in lineiterator(io)
+    for line::String in lineiterator(io)
         push!(SEQS, line)
     end
     SEQS
@@ -51,7 +51,7 @@ function Base.parse(io::Union{IO, AbstractString},
                     format::Type{Raw},
                     output::Type{MultipleSequenceAlignment};
                     deletefullgaps::Bool=true)
-    msa = parse(io, Raw, NamedArray{Residue,2}; deletefullgaps=deletefullgaps)
+    msa = parse(io, Raw, NamedResidueMatrix; deletefullgaps=deletefullgaps)
     MultipleSequenceAlignment(msa)
 end
 

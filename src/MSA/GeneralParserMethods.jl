@@ -109,10 +109,10 @@ end
 # NamedArray{Residue,2} and AnnotatedMultipleSequenceAlignment generation
 # -----------------------------------------------------------------------
 
-function _generate_named_array(SEQS, IDS)
+function _generate_named_array(SEQS, IDS)::NamedResidueMatrix
     nseq, nres = _get_msa_size(SEQS)
     msa = _convert_to_matrix_residues(SEQS, (nseq, nres))
-    NamedArray(msa,
+    NamedResidueMatrix(msa,
         (   OrderedDict{String,Int}(zip(IDS, 1:nseq)),
             OrderedDict{String,Int}(string(i) => i for i in 1:nres)  ),
         ("Seq","Col"))

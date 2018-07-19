@@ -189,10 +189,10 @@ function setreference!(msa::MultipleSequenceAlignment, i::Int, annotate::Bool=fa
     msa
 end
 
-setreference!(msa::NamedArray{Residue,2}, i::Int, annotate::Bool=false) =
+setreference!(msa::NamedResidueMatrix, i::Int, annotate::Bool=false) =
     swapsequences!(msa, 1, i)
 
-setreference!(msa::NamedArray{Residue,2}, id::String, annotate::Bool=false) =
+setreference!(msa::NamedResidueMatrix, id::String, annotate::Bool=false) =
     swapsequences!(msa, names(msa,1)[1], id)
 
 function setreference!(msa::AbstractMultipleSequenceAlignment, id::String,

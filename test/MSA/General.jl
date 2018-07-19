@@ -2,7 +2,7 @@
 
     msa_types = (
         Matrix{Residue},
-        NamedArray{Residue,2},
+        NamedResidueMatrix,
         MultipleSequenceAlignment,
         AnnotatedMultipleSequenceAlignment
         )
@@ -84,7 +84,7 @@
 
         @testset "Creation" begin
             seq_types = (   Matrix{Residue},
-                            NamedArray{Residue,2},
+                            NamedResidueMatrix,
                             AlignedSequence,
                             AnnotatedAlignedSequence    )
 
