@@ -1,24 +1,24 @@
 struct Stockholm <: Format end
 
-@inline function _fill_with_sequence_line!(line, IDS, SEQS)
+@inline function _fill_with_sequence_line!(IDS, SEQS, line)
     if !startswith(line,'#') && !startswith(line,"//")
         words = get_n_words(line, 2)
-        id = words[1]
-        i = findfirst(IDS, id)
-        if i == 0
-            push!(IDS, id)
-            push!(SEQS,words[2])
-        else
+        @inbounds id = words[1]
+        if id in IDS
             # It's useful when sequences are split into several lines
             # It can be a problem with duplicated IDs
+            i = findfirst(IDS, id)
             SEQS[i] = SEQS[i] * words[2]
+        else
+            push!(IDS, id)
+            push!(SEQS, words[2])
         end
     end
 end
 
-function _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
+function _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
     if startswith(line,"#=GF")
-        words = get_n_words(line,3)
+        words = get_n_words(line, 3)
         id = words[2]
         if id in keys(GF)
             GF[ id ] = GF[ id ] * "\n" * words[3]
@@ -26,7 +26,7 @@ function _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
             GF[ id ] = words[3]
         end
     elseif startswith(line,"#=GS")
-        words = get_n_words(line,4)
+        words = get_n_words(line, 4)
         idtuple = (words[2],words[3])
         if idtuple in keys(GS)
             GS[ idtuple ] = GS[ idtuple ] * "\n" * words[4]
@@ -34,18 +34,18 @@ function _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
             GS[ idtuple ] = words[4]
         end
     elseif startswith(line,"#=GC")
-        words = get_n_words(line,3)
+        words = get_n_words(line, 3)
         GC[words[2]] = words[3]
     elseif startswith(line,"#=GR")
-        words = get_n_words(line,4)
+        words = get_n_words(line, 4)
         GR[(words[2],words[3])] = words[4]
     else
-        _fill_with_sequence_line!(line, IDS, SEQS)
+        _fill_with_sequence_line!(IDS, SEQS, line)
     end
 end
 
 function _pre_readstockholm(io::Union{IO, AbstractString})
-    IDS  = String[]
+    IDS  = OrderedSet{String}()
     SEQS = String[]
     GF = OrderedDict{String,String}()
     GC = Dict{String,String}()
@@ -53,8 +53,9 @@ function _pre_readstockholm(io::Union{IO, AbstractString})
     GR = Dict{Tuple{String,String},String}()
 
     @inbounds for line::String in lineiterator(io)
-        if length(line) >= 3
-            _fill_with_line!(line, IDS, SEQS, GF, GS, GC, GR)
+        line_length = length(line)
+        if line_length >= 3
+            _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
             if startswith(line, "//")
                break
             end
@@ -71,11 +72,12 @@ function _pre_readstockholm(io::Union{IO, AbstractString})
 end
 
 function _pre_readstockholm_sequences(io::Union{IO, AbstractString})
-    IDS  = String[]
+    IDS  = OrderedSet{String}()
     SEQS = String[]
     @inbounds for line::String in lineiterator(io)
-        if length(line) >= 3
-            _fill_with_sequence_line!(line, IDS, SEQS)
+        line_length = length(line)
+        if line_length >= 3
+            _fill_with_sequence_line!(IDS, SEQS, line)
             if startswith(line, "//")
                break
             end

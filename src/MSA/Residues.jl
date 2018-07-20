@@ -233,14 +233,10 @@ end
 function _convert_to_matrix_residues(sequences::Array{String,1}, size::Tuple{Int,Int})
    nseq, nres = size
    aln = Array{Residue}(nseq, nres)
-   i = 1
-   @inbounds for str in sequences
-       j = 1
-       @inbounds for char in str
+   @inbounds for (i, str) in enumerate(sequences)
+       @inbounds for (j, char) in enumerate(str)
            aln[i, j] = convert(Residue, char)
-           j += 1
        end
-       i += 1
    end
    aln
 end

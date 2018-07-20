@@ -39,7 +39,7 @@ function _to_msa_mapping(sequences::Array{String,1})
     (msa, mapp)
 end
 
-function _to_msa_mapping(sequences::Array{String,1}, ids::Array{String,1})
+function _to_msa_mapping(sequences::Array{String,1}, ids)
     nseq = size(sequences,1)
     nres = length(sequences[1])
     aln = Array{Residue}(nres, nseq)
@@ -109,12 +109,29 @@ end
 # NamedArray{Residue,2} and AnnotatedMultipleSequenceAlignment generation
 # -----------------------------------------------------------------------
 
+function _ids_ordered_dict(ids, nseq::Int)
+        dict = OrderedDict{String,Int}()
+        sizehint!(dict, length(ids))
+        for (i, id) in enumerate(ids)
+            dict[id] = i
+        end
+        return dict
+end
+
+function _colnumber_ordered_dict(nres::Int)
+        dict = OrderedDict{String,Int}()
+        sizehint!(dict, nres)
+        for i in 1:nres
+            dict[string(i)] = i
+        end
+        return dict
+end
+
 function _generate_named_array(SEQS, IDS)::NamedResidueMatrix
     nseq, nres = _get_msa_size(SEQS)
     msa = _convert_to_matrix_residues(SEQS, (nseq, nres))
     NamedResidueMatrix(msa,
-        (   OrderedDict{String,Int}(zip(IDS, 1:nseq)),
-            OrderedDict{String,Int}(string(i) => i for i in 1:nres)  ),
+        (   _ids_ordered_dict(IDS, nseq), _colnumber_ordered_dict(nres)  ),
         ("Seq","Col"))
 end
 

@@ -31,15 +31,15 @@ function get_n_words(line::String, n::Int)
     last_spaces = 0:0
     while true
         if N == n
-            words[N] = line[(last(last_spaces)+1):end]
+            @inbounds words[N] = line[(last(last_spaces)+1):end]
             break
         end
         spaces = search(line, r"[ |\t]+", last(last_spaces)+1)
         if first(spaces) == 0
-            words[N] = line[(last(last_spaces)+1):end]
+            @inbounds words[N] = line[(last(last_spaces)+1):end]
             break
         end
-        words[N] = line[(last(last_spaces)+1):(first(spaces)-1)]
+        @inbounds words[N] = line[(last(last_spaces)+1):(first(spaces)-1)]
         last_spaces = spaces
         N += 1
     end
