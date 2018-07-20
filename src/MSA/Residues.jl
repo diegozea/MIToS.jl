@@ -230,33 +230,17 @@ function _get_msa_size(sequences::Array{String,1})
     nseq, nres
 end
 
-# function _convert_to_matrix_residues(sequences::Array{String,1}, size::Tuple{Int,Int})
-#     nseq, nres = size
-#     aln = Array{Residue}(nseq, nres)
-#     # @inbounds @threads for i in 1:nseq
-#     @inbounds for i in 1:nseq
-#         aln[i,:] = collect(sequences[i])
-#     end
-#     aln
-# end
-
-function _collect!(residues::Vector{Residue}, sequence::String)
-    i = 1
-    @inbounds for char in sequence
-        residues[i] = convert(Residue, char)
-        i += 1
-    end
-end
-
 function _convert_to_matrix_residues(sequences::Array{String,1}, size::Tuple{Int,Int})
    nseq, nres = size
    aln = Array{Residue}(nseq, nres)
-   residues = Vector{Residue}(nres)
-   @inbounds for i in 1:nseq
-       _collect!(residues, sequences[i])
-        @inbounds for j in 1:nres
-           aln[i, j] = residues[j]
+   i = 1
+   @inbounds for str in sequences
+       j = 1
+       @inbounds for char in str
+           aln[i, j] = convert(Residue, char)
+           j += 1
        end
+       i += 1
    end
    aln
 end
