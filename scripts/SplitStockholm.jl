@@ -1,7 +1,7 @@
 #!/usr/bin/env julia
 
 using ArgParse
-using GZip
+using CodecZlib
 using MIToS.Utils # get_n_words, check_file
 using ProgressMeter
 
@@ -39,7 +39,7 @@ end
 const Args = parse_commandline()
 
 function main(input)
-    infh = GZip.open(input)
+    infh = GzipDecompressorStream(open(input))
     lines = []
     id = "no_accessionumber"
 
@@ -58,7 +58,7 @@ function main(input)
         push!(lines, line)
         if line == "//\n"
             filename = joinpath(Args["path"], string(id, ".gz"))
-            outfh = GZip.open(filename, "w")
+            outfh = GzipCompressorStream(open(filename, "w"))
             for l in lines
                 write(outfh, string(l))
             end

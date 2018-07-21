@@ -83,7 +83,10 @@ end
 function open_output(file, output)
     output_name = _generate_output_name(file, output)
     if output_name != "STDOUT"
-        fh = endswith(output_name, ".gz") ? GZip.open(output_name, "w") : open(output_name, "w")
+        fh = open(output_name, "w")
+        if endswith(output_name, ".gz")
+            return(GzipCompressorStream(fh))
+        end
         return(fh)
     else
         return(STDOUT)

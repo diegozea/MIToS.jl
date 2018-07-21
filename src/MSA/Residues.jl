@@ -164,7 +164,7 @@ _to_residue[ Int('*') ] = GAP # Usual representation of a translated stop codon
 
 @inline function Base.convert(::Type{Residue}, char::Char)
     i = Int(char)
-    if 1 <= i <= _max_char
+    if 0 < i <= _max_char
         @inbounds res = _to_residue[ i ]
     else
         res = XAA
@@ -235,7 +235,7 @@ function _convert_to_matrix_residues(sequences::Array{String,1}, size::Tuple{Int
    aln = Array{Residue}(nseq, nres)
    @inbounds for (i, str) in enumerate(sequences)
        @inbounds for (j, char) in enumerate(str)
-           aln[i, j] = convert(Residue, char)
+           aln[i, j] = char
        end
    end
    aln

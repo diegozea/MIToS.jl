@@ -24,6 +24,7 @@ using PairwiseListMatrices  # Percent Identity Matrices
 using Clustering            # Used for sequence clustering: ClusteringResult
 using StatsBase             # Weights for clustering
 using RecipesBase           # Plots for MSAs
+using TranscodingStreams    # To solve MethodError seek(::TranscodingStream, ::Int)
 using MIToS.Utils
 
 import Clustering: ClusteringResult, nclusters, counts, assignments

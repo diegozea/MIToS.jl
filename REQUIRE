@@ -1,6 +1,7 @@
 julia 0.6
 LightXML
-GZip
+CodecZlib
+TranscodingStreams
 AutoHashEquals
 DataStructures
 Formatting 0.3.1

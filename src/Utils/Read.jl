@@ -56,7 +56,8 @@ function _read(completename, filename, format, args...; kargs...)
             free(document)
         end
     else
-        io = endswith(completename, ".gz") ? gzopen(filename, "r") : open(filename, "r")
+        fh = open(filename, "r")
+        io = endswith(completename, ".gz") ? GzipDecompressorStream(fh) : fh
         try
             parse(io, format, args...; kargs...)
         finally

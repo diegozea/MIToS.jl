@@ -8,7 +8,7 @@ using MIToS.Utils
 module Utils
 
 using Requests
-using GZip
+using CodecZlib
 using LightXML
 using NamedArrays
 
@@ -49,7 +49,7 @@ export  parse_commandline,
         open_output, close_output,
         readorparse
 
-using ArgParse, GZip
+using ArgParse, CodecZlib
 
 include("Scripts.jl")
 

@@ -3,8 +3,8 @@ struct FASTA <: Format end
 # FASTA Parser
 # ============
 
-function _pre_readfasta(io::AbstractString)
-    seqs = split(io, '>')
+function _pre_readfasta(string::AbstractString)
+    seqs = split(string, '>')
     N = length(seqs) - 1
     IDS  = Array{String}(N)
     SEQS = Array{String}(N)
@@ -17,7 +17,10 @@ function _pre_readfasta(io::AbstractString)
     (IDS, SEQS)
 end
 
-function _pre_readfasta(io::IO)
+# MethodError: no method matching seek(::TranscodingStreams.TranscodingStream, ::Int)
+_pre_readfasta(io::TranscodingStreams.TranscodingStream) = _pre_readfasta(readstring(io))
+
+function _pre_readfasta(io)
     IDS  = String[]
     SEQS = String[]
     for (name, seq) in FastaReader{String}(io) # FastaIO

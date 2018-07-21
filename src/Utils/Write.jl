@@ -9,7 +9,10 @@ Gzipped files should end on `.gz`.
 """
 function write(filename::AbstractString, object, format::Type{T},
                mode::String="w") where T<:Format
-    fh = endswith(filename, ".gz") ? GZip.open(filename, mode) : open(filename, mode)
+    fh = open(filename, mode)
+    if endswith(filename, ".gz")
+        fh = GzipCompressorStream(open(filename, mode))
+    end
     try
         print(fh, object, format)
     finally
