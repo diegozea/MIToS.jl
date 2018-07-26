@@ -4,23 +4,23 @@
 "seq1 and seq2 should have the same len"
 function _percentidentity(seq1, seq2, len)
     count = 0
-    colgap = 0
-    colxaa = 0
-    @inbounds for i in 1:len
-        aa1 = seq1[i]
-        aa2 = seq2[i]
-        # Columns with Residue('X') aren't used
-        if aa1 == XAA || aa2 == XAA
-            colxaa += 1
-            continue
-        end
+    notcount = 0
+    for i in 1:len
+        @inbounds aa1 = seq1[i]
+        @inbounds aa2 = seq2[i]
         if aa1 == aa2
-            count += 1
-            colgap += Int(aa1 == GAP)
+            if aa1 == GAP || aa1 == XAA
+                notcount += 1
+            else
+                count += 1
+            end
+        else
+            if aa1 == XAA || aa2 == XAA
+                notcount += 1
+            end
         end
     end
-    alnlen = len - colgap - colxaa
-    100.0 * (count-colgap) / alnlen
+    100.0 * count / (len - notcount)
 end
 
 """
