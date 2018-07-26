@@ -23,7 +23,7 @@ julia> get_n_words("#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHH
 ```
 """
 function get_n_words(line::String, n::Int)
-    if length(line) == 0
+    if isempty(line)
         return String[]
     end
     words = Array{String}(n)
