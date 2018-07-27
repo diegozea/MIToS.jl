@@ -90,8 +90,17 @@ end
 
     @testset "Download file" begin
 
-        @test ".tmp" == download_file("http://www.uniprot.org/uniprot/P69905.fasta",".tmp",
-        allow_redirects=false,
-        headers=Dict("User-Agent" => "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)"))
+        try
+            @test ".tmp" == download_file("http://www.uniprot.org/uniprot/P69905.fasta",
+                ".tmp",
+                allow_redirects=false,
+                headers=Dict("User-Agent" =>
+                    "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)"))
+            @test_throws ErrorException download_file("ftp://ftp.ebi.ac.uk/", ".tmp")
+        finally
+            if isfile(".tmp")
+                rm(".tmp")
+            end
+        end
     end
 end

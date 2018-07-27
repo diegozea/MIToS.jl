@@ -201,25 +201,20 @@ end
 
 @testset "MIToS 1.0 error" begin
 
-    sf = downloadsifts("4gcr", filename=tempname()*".xml.gz")
-    try
-        mapping = siftsmapping(sf, dbPfam, "PF00030", dbPDB, "4gcr")
-        @test mapping["3"] == "2"
-    finally
-        isfile(sf) && rm(sf)
-    end
+    sf = joinpath(pwd(), "data", "4gcr.xml.gz")
+
+    mapping = siftsmapping(sf, dbPfam, "PF00030", dbPDB, "4gcr")
+    @test mapping["3"] == "2"
 end
 
 @testset "download" begin
 
     pdb = "2vqc"
     mapping = read(joinpath(pwd(), "data", "$(pdb).xml.gz"), SIFTSXML)
-    filename = downloadsifts(pdb, filename=tempname()*".xml.gz")
-    try
-        @test_throws AssertionError downloadsifts(pdb, filename="bad_name.txt")
-        @test_throws ErrorException downloadsifts("2vqc_A")
-        @test length(read(filename, SIFTSXML)) == length(mapping)
-    finally
-        rm(filename)
-    end
+
+    @test_throws AssertionError downloadsifts(pdb, filename="bad_name.txt")
+    @test_throws ErrorException downloadsifts("2vqc_A")
+    # FTP causes problem with Travis-CI
+    # filename = downloadsifts(pdb, filename=tempname()*".xml.gz")
+    # @test length(read(filename, SIFTSXML)) == length(mapping)
 end
