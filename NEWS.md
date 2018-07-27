@@ -1,5 +1,15 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.1.1 to v2.1.2
+
+* `FTPClient.jl` is used in `Utils.download_file` to download files from FTP.
+
+* `CodecZlib.jl` is used in place of `GZip.jl` speeding up the parsing of compressed files.
+
+* Improvements in MSA and PDB parsing speed.
+
+* Improvement in `MSA.percentidentity` speed.
+
 ### Changes from v2.1 to v2.1.1
 
 * The script `Conservation.jl` was added to measure residue conservation of MSA columns.

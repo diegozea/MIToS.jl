@@ -16,7 +16,7 @@ Windows:
 Code Coverage:
 [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/diegozea/MIToS.jl?branch=master) [![codecov.io](http://codecov.io/github/diegozea/MIToS.jl/coverage.svg?branch=master)](http://codecov.io/github/diegozea/MIToS.jl?branch=master)
 
-**MIToS v2.1.0** for **Julia 0.6** is out, check out the [NEWS!](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
+**MIToS v2.1.2** for **Julia 0.6** is out, check out the [NEWS!](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
 You need to do `Pkg.add("MIToS")` to install it or `Pkg.update()` to update your installed
 version.  
 Some breaking changes were introduced in v2.0.0. See the [NEWS.md](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)

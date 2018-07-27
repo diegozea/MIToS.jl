@@ -4,7 +4,8 @@ import Base: read
 abstract type Format end
 
 """
-`download_file` uses **Requests.jl** instead of system calls to download files from the web.
+`download_file` uses **Requests.jl** and **FTPClient.jl** instead of system calls to 
+download files from the web.
 It takes the file url as first argument and, optionally, a path to save it.
 Keyword arguments (ie. `allow_redirects`, `max_redirects`, `timeout`, `headers`)
 are are directly passed to to `Requests.get_streaming`.
@@ -18,8 +19,18 @@ julia> download_file("http://www.uniprot.org/uniprot/P69905.fasta","seq.fasta",
 ```
 """
 function download_file(url::AbstractString, filename::AbstractString; kargs...)
-    response = get(url; kargs...)
-    save(response, filename)
+    if startswith(url, "ftp://")
+        ftp_url = match(r"^ftp:\/\/(.+)\/([^\/]+)$", url)
+        if ftp_url !== nothing
+            ftp = FTP(hostname=ftp_url[1])
+            download(ftp, ftp_url[2], filename)
+        else
+            throw(ErrorException(string(url, " doesn't have the form ftp://.../...")))
+        end
+    else
+        response = get(url; kargs...)
+        save(response, filename)
+    end
     filename
 end
 
@@ -74,9 +85,9 @@ the given `Format` and `Type` on it. If the  `pathname` is an HTTP or FTP URL,
 the file is downloaded with `download` in a temporal file.
 Gzipped files should end on `.gz`.
 """
-function read(completename::AbstractString, format::Type{T}, args...; kargs...) where T<:Format
-    if  startswith(completename, "http://")  ||
-        startswith(completename, "https://") ||
+function read(completename::AbstractString, format::Type{T}, args...; kargs...) where T <: Format
+    if  startswith(completename, "http://")  || 
+        startswith(completename, "https://") || 
         startswith(completename, "ftp://")
 
         filename = download_file(completename)

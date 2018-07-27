@@ -11,6 +11,7 @@ ROCAnalysis
 Clustering
 StaticArrays
 FastaIO
+FTPClient
 Requests
 PkgBenchmark
 NamedArrays
