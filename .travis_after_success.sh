@@ -3,9 +3,10 @@ then
     # COVERAGE
     julia -e 'cd(Pkg.dir("MIToS")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder()); Codecov.submit(Codecov.process_folder())'
     # DOCS
-    sudo python -m pip install --upgrade pip # PyPlot
-    sudo pip install --upgrade matplotlib # PyPlot
-    julia -e 'Pkg.add("PyPlot"); Pkg.build("PyPlot")' # PyPlot
+    # sudo python -m pip install --upgrade pip # PyPlot
+    # sudo pip install --upgrade matplotlib # PyPlot
+    julia -e 'Pkg.add("PyCall"); ENV["PYTHON"]=""; Pkg.build("PyCall")'
+    julia -e 'Pkg.add("PyPlot"); ENV["PYTHON"]=""; Pkg.build("PyPlot")' # PyPlot
     julia -e 'Pkg.add("Plots")' # Plots
     julia -e 'Pkg.add("PlotRecipes")' # PlotRecipes
     julia -e 'Pkg.checkout("PlotRecipes")' # PlotRecipes
