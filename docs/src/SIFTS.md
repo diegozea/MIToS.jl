@@ -51,9 +51,15 @@ types will be depend on the residue number type in that database.
 
 To download the XML SIFTS file of a determined PDB use the `downloadsifts` function.  
 
+```@setup sifts_simple
+using MIToS.SIFTS
+siftsfile = joinpath("data", "1ivo.xml.gz")
+```
+
 ```@example sifts_simple
 using MIToS.SIFTS
-
+```
+```julia
 siftsfile = downloadsifts("1IVO")
 ```  
 
@@ -198,12 +204,16 @@ function. In this example, we are going to ask for the *UniProt id*
 
 ```@setup sifts_1jqz
 using MIToS.SIFTS
-downloadsifts("1JQZ")
+siftsfile = joinpath("data", "1jqz.xml.gz")
+```
+
+```julia
+siftsfile = downloadsifts("1JQZ")
 ```
 
 ```@repl
 using MIToS.SIFTS
-sifts_1jqz = read("1jqz.xml.gz", SIFTSXML); # It has an amino terminal his tag
+sifts_1jqz = read(siftsfile, SIFTSXML); # It has an amino terminal his tag
 missings = [ (  ( get(res, dbUniProt, :id, "") == "P05230" ) &
                 ( get(res, dbPDB, :chain, "") ==  "A" ) &
                 res.missing ) for res in sifts_1jqz             ];

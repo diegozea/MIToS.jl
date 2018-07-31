@@ -506,7 +506,7 @@ println( "After:\t", nsequences(msa), "\t\t",  ncolumns(msa)  )
 ```@example msa_plots
 histogram(  vec(columngapfraction(msa)),
             # Using vec() to get a Vector{Float64} with the fraction of gaps of each column
-            xlabel = "gap fraction in [0,1]", legend=false)
+            xlabel = "gap fraction in [0,1]", bins = 20, legend = false)
 png("msa_hist_gaps.png") # hide
 nothing # hide
 ```  
@@ -514,7 +514,7 @@ nothing # hide
 ![](msa_hist_gaps.png)  
 
 ```@example msa_plots
-histogram(  coverage(msa) .* 100.0, #  Column with the coverage of each sequence
+histogram(  vec(coverage(msa) .* 100.0), #  Column with the coverage of each sequence
             xlabel = "coverage [%]", legend=false)
 png("msa_hist_coverage.png") # hide
 nothing # hide
@@ -662,8 +662,8 @@ and also an histogram of the number of sequences in each cluster:
 
 ```@example msa_clusters
 using StatPlots # Plotting DataFrames
-h = histogram(df[:cluster], ylabel="nseq")
-p = plot(df, :cluster, :coverage, linetype=:scatter)
+h = @df df histogram(:cluster, ylabel="nseq")
+p = @df df plot(:cluster, :coverage, linetype=:scatter)
 plot(p, h, nc=1, xlim=(0, nclusters(clusters)+1 ), legend=false)
 png("msa_clusters_ii.png") # hide
 nothing # hide
@@ -675,12 +675,13 @@ We use the *Split-Apply-Combine* strategy, though the `by` function of the `Data
 package, to select the sequence of highest coverage for each cluster.  
 
 ```@example msa_clusters
-maxcoverage = by(df, :cluster, cl -> cl[ findmax(cl[:coverage])[2] ,:])
+maxcoverage = by(df, :cluster, cl -> cl[ findmax(cl[:coverage])[2] ,
+                 [:seqnum, :seqname, :coverage]])
 ```
 
 ```@example msa_clusters
-p = plot(maxcoverage, :cluster, :coverage, linetype=:scatter)
-h = histogram(maxcoverage[:cluster], ylabel="nseq")
+p = @df maxcoverage plot(:cluster, :coverage, linetype=:scatter)
+h = @df maxcoverage histogram(:cluster, ylabel="nseq")
 plot(p, h, nc=1, xlim=(0, nclusters(clusters)+1 ), legend=false)
 png("msa_clusters_iii.png") # hide
 nothing # hide
