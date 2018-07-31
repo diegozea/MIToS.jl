@@ -155,16 +155,10 @@ dmap = distance(pdb, criteria=&quot;All&quot;) # Minimum distance between residu
 1_A_ATOM_509 │        false         false            false         false
 1_A_ATOM_510 │        false         false             true          true
 1_A_ATOM_511 │        false         false             true          true
-1_A_ATOM_512 │        false         false  …          true          true</code></pre></div><div></div><pre><code class="language-">using Plots
+1_A_ATOM_512 │        false         false  …          true          true</code></pre></div><div></div><div><pre><code class="language-julia">using Plots
 pyplot()
 
-heatmap(dmap, grid=false, yflip=true, ratio=:equal)
-
-png(&quot;pdb_dmap.png&quot;) # hide
-nothing # hide</code></pre><p><img src="pdb_dmap.png" alt/>  </p><pre><code class="language-">heatmap(cmap, grid=false, yflip=true, ratio=:equal)
-
-png(&quot;pdb_cmap.png&quot;) # hide
-nothing # hide</code></pre><p><img src="pdb_cmap.png" alt/>  </p><h2><a class="nav-anchor" id="Structural-superposition-1" href="#Structural-superposition-1">Structural superposition</a></h2><div></div><pre><code class="language-">using MIToS.PDB
+heatmap(dmap, grid=false, yflip=true, ratio=:equal)</code></pre></div><p><img src="pdb_dmap.png" alt/>  </p><div><pre><code class="language-julia">heatmap(cmap, grid=false, yflip=true, ratio=:equal)</code></pre></div><p><img src="pdb_cmap.png" alt/>  </p><h2><a class="nav-anchor" id="Structural-superposition-1" href="#Structural-superposition-1">Structural superposition</a></h2><div></div><div><pre><code class="language-julia">using MIToS.PDB
 
 pdbfile = downloadpdb(&quot;2HHB&quot;)
 
@@ -177,12 +171,7 @@ using Plots
 pyplot()
 
 scatter3d(chain_A, label=&quot;A&quot;, alpha=0.5)
-scatter3d!(chain_C, label=&quot;C&quot;, alpha=0.5)
+scatter3d!(chain_C, label=&quot;C&quot;, alpha=0.5)</code></pre></div><p><img src="pdb_unaligned.png" alt/>  </p><div><pre><code class="language-julia">superimposed_A, superimposed_C, RMSD = superimpose(chain_A, chain_C)
 
-png(&quot;pdb_unaligned.png&quot;) # hide
-nothing # hide</code></pre><p><img src="pdb_unaligned.png" alt/>  </p><div><pre><code class="language-julia">superimposed_A, superimposed_C, RMSD = superimpose(chain_A, chain_C)
-
-RMSD</code></pre><pre><code class="language-none">0.23003870483785097</code></pre></div><pre><code class="language-">scatter3d(superimposed_A, label=&quot;A&quot;, alpha=0.5)
-scatter3d!(superimposed_C, label=&quot;C&quot;, alpha=0.5)
-png(&quot;pdb_aligned.png&quot;) # hide
-nothing # hide</code></pre><p><img src="pdb_aligned.png" alt/>  </p><footer><hr/><a class="previous" href="SIFTS.html"><span class="direction">Previous</span><span class="title">SIFTS</span></a><a class="next" href="Pfam.html"><span class="direction">Next</span><span class="title">Pfam</span></a></footer></article></body></html>
+RMSD</code></pre><pre><code class="language-none">0.23003870483785074</code></pre></div><div><pre><code class="language-julia">scatter3d(superimposed_A, label=&quot;A&quot;, alpha=0.5)
+scatter3d!(superimposed_C, label=&quot;C&quot;, alpha=0.5)</code></pre></div><p><img src="pdb_aligned.png" alt/>  </p><footer><hr/><a class="previous" href="SIFTS.html"><span class="direction">Previous</span><span class="title">SIFTS</span></a><a class="next" href="Pfam.html"><span class="direction">Next</span><span class="title">Pfam</span></a></footer></article></body></html>
