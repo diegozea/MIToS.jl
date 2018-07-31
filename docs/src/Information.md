@@ -504,7 +504,7 @@ To calculate cMI we are going to use the `cumulative` function:
 cMI = cumulative(ZMIp, threshold)
 ```
 
-```@setup
+```@setup comment_block
 # Setup block to hide this until PlotRecipes get fixed
 
 The nodes have an order, because they are columns in a MSA. So, the **arc diagram** it's
