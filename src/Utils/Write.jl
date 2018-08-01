@@ -11,7 +11,7 @@ function write(filename::AbstractString, object, format::Type{T},
                mode::String="w") where T<:Format
     fh = open(filename, mode)
     if endswith(filename, ".gz")
-        fh = GzipCompressorStream(open(filename, mode))
+        fh = GzipCompressorStream(fh)
     end
     try
         print(fh, object, format)

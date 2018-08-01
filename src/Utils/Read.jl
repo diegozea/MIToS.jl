@@ -4,7 +4,7 @@ import Base: read
 abstract type Format end
 
 """
-`download_file` uses **Requests.jl** and **FTPClient.jl** instead of system calls to 
+`download_file` uses **Requests.jl** and **FTPClient.jl** instead of system calls to
 download files from the web.
 It takes the file url as first argument and, optionally, a path to save it.
 Keyword arguments (ie. `allow_redirects`, `max_redirects`, `timeout`, `headers`)
@@ -68,11 +68,11 @@ function _read(completename, filename, format, args...; kargs...)
         end
     else
         fh = open(filename, "r")
-        io = endswith(completename, ".gz") ? GzipDecompressorStream(fh) : fh
         try
-            parse(io, format, args...; kargs...)
+            fh = endswith(completename, ".gz") ? GzipDecompressorStream(fh) : fh
+            parse(fh, format, args...; kargs...)
         finally
-            close(io)
+            close(fh)
         end
     end
 end
@@ -86,8 +86,8 @@ the file is downloaded with `download` in a temporal file.
 Gzipped files should end on `.gz`.
 """
 function read(completename::AbstractString, format::Type{T}, args...; kargs...) where T <: Format
-    if  startswith(completename, "http://")  || 
-        startswith(completename, "https://") || 
+    if  startswith(completename, "http://")  ||
+        startswith(completename, "https://") ||
         startswith(completename, "ftp://")
 
         filename = download_file(completename)
