@@ -2845,7 +2845,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Utils",
     "title": "MIToS.Utils.download_file",
     "category": "method",
-    "text": "download_file uses Requests.jl and FTPClient.jl instead of system calls to  download files from the web. It takes the file url as first argument and, optionally, a path to save it. Keyword arguments (ie. allow_redirects, max_redirects, timeout, headers) are are directly passed to to Requests.get_streaming.\n\njulia> download_file(\"http://www.uniprot.org/uniprot/P69905.fasta\",\"seq.fasta\",\n       allow_redirects=false,\n       headers=Dict(\"User-Agent\" => \"Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)\"))\n\"seq.fasta\"\n\n\n\n\n"
+    "text": "download_file uses Requests.jl and FTPClient.jl instead of system calls to download files from the web. It takes the file url as first argument and, optionally, a path to save it. Keyword arguments (ie. allow_redirects, max_redirects, timeout, headers) are are directly passed to to Requests.get_streaming.\n\njulia> download_file(\"http://www.uniprot.org/uniprot/P69905.fasta\",\"seq.fasta\",\n       allow_redirects=false,\n       headers=Dict(\"User-Agent\" => \"Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)\"))\n\"seq.fasta\"\n\n\n\n\n"
 },
 
 {
