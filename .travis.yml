@@ -9,15 +9,10 @@ julia:
 #  - release
 notifications:
   email: false
-addons:
-  apt:
-    packages:
-    - hdf5-tools
 before_install:
   - chmod +x ./.travis_after_success.sh
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'Pkg.add("HDF5"); Pkg.build("HDF5")'
   - julia -e 'Pkg.clone("https://github.com/carlobaldassi/GaussDCA.jl.git")' # GaussDCA test
   - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("MIToS"); Pkg.test("MIToS"; coverage=true)'
 after_success:
