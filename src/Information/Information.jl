@@ -26,7 +26,6 @@ using MIToS: Utils, MSA
 using Base.Cartesian        # nloops for ContingencyTables
 using NamedArrays           # ContingencyTables have NamedArrays
 using DataStructures        # OrderedDicts for NamedArrays
-using JLD                   # gaussdca
 using StatsBase             # entropy
 using PairwiseListMatrices
 

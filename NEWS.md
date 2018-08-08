@@ -10,6 +10,8 @@
 
 * Improvement in `MSA.percentidentity` speed.
 
+* `Information.gaussdca` now uses Julia's `serialize` and `deserialize` instead of `JLD`.
+
 ### Changes from v2.1 to v2.1.1
 
 * The script `Conservation.jl` was added to measure residue conservation of MSA columns.

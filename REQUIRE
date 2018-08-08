@@ -15,6 +15,5 @@ FTPClient
 Requests
 PkgBenchmark
 NamedArrays
-JLD
 RecipesBase
 ProgressMeter

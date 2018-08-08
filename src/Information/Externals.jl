@@ -10,6 +10,10 @@ Pkg.clone("https://github.com/carlobaldassi/GaussDCA.jl")
 Look into [GaussDCA.jl README](https://github.com/carlobaldassi/GaussDCA.jl) for further information.
 If you use this wrapper, **please cite the GaussDCA publication and the package's doi**.
 
+It's possible to indicate the path to the julia binary where GaussDCA is installed.
+However, it's recommended to use the same version where MIToS is installed. That is
+because this function use `serialize`/`deserialize` to transfer data between the processes.
+
 **GaussDCA Publication:**
 Baldassi, Carlo, Marco Zamparo, Christoph Feinauer, Andrea Procaccini, Riccardo Zecchina, Martin Weigt, and Andrea Pagnani.
 "Fast and accurate multivariate Gaussian modeling of protein families: predicting residue contacts and protein-interaction partners."
@@ -23,11 +27,11 @@ function gaussdca(msa; juliapath::String=joinpath(JULIA_HOME,Base.julia_exename(
     script_file = tempname() * ".jl"
     msa_file = tempname() * ".fasta"
     write(msa_file, msa, FASTA)
-    jdl_file = tempname() * ".jld"
+    jdl_file = tempname() * ".jls"
     try
         _create_script(script_file, msa_file, jdl_file; kargs...)
         run(`$juliapath $script_file`)
-        pairedvalues = JLD.load(jdl_file, "values")
+        pairedvalues = open(deserialize, jdl_file, "r")
         for (i,j,value) in pairedvalues
            plm[i,j] = value
         end
@@ -49,8 +53,8 @@ function _create_script(script_file::String, msa_file::String, jdl_file::String;
         str_kargs = ""
     end
     open(script_file, "w") do fh
-        println(fh, "using GaussDCA, JLD;")
+        println(fh, "using GaussDCA;")
         println(fh, "values = GaussDCA.gDCA(\"$msa_file\"$str_kargs);")
-        println(fh, "JLD.save(\"$(jdl_file)\", \"values\", values)")
+        println(fh, "open(fh -> serialize(fh, values), \"$(jdl_file)\", \"w\")")
     end
 end
