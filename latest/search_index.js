@@ -1653,7 +1653,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Information",
     "title": "MIToS.Information.gaussdca",
     "category": "method",
-    "text": "Wrapper function to GaussDCA.gDCA. You need to install GaussDCA:\n\nPkg.clone(\"https://github.com/carlobaldassi/GaussDCA.jl\")\n\nLook into GaussDCA.jl README for further information. If you use this wrapper, please cite the GaussDCA publication and the package\'s doi.\n\nGaussDCA Publication: Baldassi, Carlo, Marco Zamparo, Christoph Feinauer, Andrea Procaccini, Riccardo Zecchina, Martin Weigt, and Andrea Pagnani. \"Fast and accurate multivariate Gaussian modeling of protein families: predicting residue contacts and protein-interaction partners.\" PloS one 9, no. 3 (2014): e92721.\n\n\n\n"
+    "text": "Wrapper function to GaussDCA.gDCA. You need to install GaussDCA:\n\nPkg.clone(\"https://github.com/carlobaldassi/GaussDCA.jl\")\n\nLook into GaussDCA.jl README for further information. If you use this wrapper, please cite the GaussDCA publication and the package\'s doi.\n\nIt\'s possible to indicate the path to the julia binary where GaussDCA is installed. However, it\'s recommended to use the same version where MIToS is installed. That is because this function use serialize/deserialize to transfer data between the processes.\n\nGaussDCA Publication: Baldassi, Carlo, Marco Zamparo, Christoph Feinauer, Andrea Procaccini, Riccardo Zecchina, Martin Weigt, and Andrea Pagnani. \"Fast and accurate multivariate Gaussian modeling of protein families: predicting residue contacts and protein-interaction partners.\" PloS one 9, no. 3 (2014): e92721.\n\n\n\n"
 },
 
 {
