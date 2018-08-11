@@ -280,8 +280,8 @@ end
 # Comparisons
 # -----------
 
-Base.:(==)(x::Residue, y::Residue) = Int(x) == Int(y)
-Base.:(!=)(x::Residue, y::Residue) = Int(x) != Int(y)
+Base.:(==)(x::Residue, y::Residue) = x === y
+Base.:(!=)(x::Residue, y::Residue) = x !== y
 
 Base.length(res::Residue) = length(Int(res))
 
