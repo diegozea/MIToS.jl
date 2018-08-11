@@ -36,4 +36,6 @@ msaresidues(msa, resdict, col2res)</code></pre><p>...or to delete the columns wi
 filtercolumns!(msa, hasresidues(msa, col2res))</code></pre><h3><a class="nav-anchor" id="PDB-contacts-and-AUC-1" href="#PDB-contacts-and-AUC-1">PDB contacts and AUC</a></h3><p>The <code>Dict</code> between MSA columns and PDB residue number also can be used to generate a protein contact map associated to the MSA.  </p><pre><code class="language-">cmap = msacontacts(msa, resdict, col2res)</code></pre><p>That protein contact map can be used to calculate the Area Under the ROC Curve for a given score with the <code>AUC</code> function.  </p><pre><code class="language-">using MIToS.Information
 ZMIp, MIp = buslje09(msa)
 
+using ROCAnalysis # You need to load ROCAnalysis to use the AUC function
+
 AUC(ZMIp, cmap)</code></pre><footer><hr/><a class="previous" href="PDB.html"><span class="direction">Previous</span><span class="title">PDB</span></a><a class="next" href="Scripts.html"><span class="direction">Next</span><span class="title">Scripts</span></a></footer></article></body></html>

@@ -589,7 +589,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Pfam",
     "title": "PDB contacts and AUC",
     "category": "section",
-    "text": "The Dict between MSA columns and PDB residue number also can be used to generate a protein contact map associated to the MSA.  cmap = msacontacts(msa, resdict, col2res)That protein contact map can be used to calculate the Area Under the ROC Curve for a given score with the AUC function.  using MIToS.Information\nZMIp, MIp = buslje09(msa)\n\nAUC(ZMIp, cmap)"
+    "text": "The Dict between MSA columns and PDB residue number also can be used to generate a protein contact map associated to the MSA.  cmap = msacontacts(msa, resdict, col2res)That protein contact map can be used to calculate the Area Under the ROC Curve for a given score with the AUC function.  using MIToS.Information\nZMIp, MIp = buslje09(msa)\n\nusing ROCAnalysis # You need to load ROCAnalysis to use the AUC function\n\nAUC(ZMIp, cmap)"
 },
 
 {
@@ -2702,30 +2702,6 @@ var documenterSearchIndex = {"docs": [
     "title": "MIToS.Pfam.msaresidues",
     "category": "method",
     "text": "This function takes an AnnotatedMultipleSequenceAlignment with correct ColMap annotations and two dicts:\n\nThe first is an OrderedDict{String,PDBResidue} from PDB residue number to PDBResidue.\nThe second is a Dict{Int,String} from MSA column number on the input file to PDB residue number.\n\nmsaresidues returns an OrderedDict{Int,PDBResidue} from input column number (ColMap) to PDBResidue. Residues on inserts are not included.\n\n\n\n"
-},
-
-{
-    "location": "Pfam_API.html#ROCAnalysis.AUC-Union{Tuple{Array{T,1},BitArray{1},BitArray{1}}, Tuple{T}} where T",
-    "page": "Pfam",
-    "title": "ROCAnalysis.AUC",
-    "category": "method",
-    "text": "AUC(scores_list::Vector, true_contacts::BitVector, false_contacts::BitVector)\n\nReturns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the scores_list for true_contacts prediction. The three vectors should have the same length and false_contacts should be true where there are not contacts.\n\n\n\n"
-},
-
-{
-    "location": "Pfam_API.html#ROCAnalysis.AUC-Union{Tuple{L}, Tuple{NL}, Tuple{NR}, Tuple{NamedArrays.NamedArray{L,2,PairwiseListMatrices.PairwiseListMatrix{L,false,VL},NL},NamedArrays.NamedArray{R,2,PairwiseListMatrices.PairwiseListMatrix{L,false,VR},NR}}, Tuple{R}, Tuple{VL}, Tuple{VR}} where NR where NL where VR where VL where R<:AbstractFloat where L<:AbstractFloat",
-    "page": "Pfam",
-    "title": "ROCAnalysis.AUC",
-    "category": "method",
-    "text": "AUC(scores::PairwiseListMatrix, msacontacts::PairwiseListMatrix)\n\nReturns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the scores for msacontact prediction. score and msacontact lists are vinculated (inner join) by their labels (i.e. column number in the file). msacontact should have 1.0 for true contacts and 0.0 for not contacts (NaN or other numbers for missing values).\n\n\n\n"
-},
-
-{
-    "location": "Pfam_API.html#ROCAnalysis.AUC-Union{Tuple{L}, Tuple{NL}, Tuple{NamedArrays.NamedArray{L,2,PairwiseListMatrices.PairwiseListMatrix{L,false,VL},NL},BitArray{1},BitArray{1}}, Tuple{VL}} where NL where VL where L",
-    "page": "Pfam",
-    "title": "ROCAnalysis.AUC",
-    "category": "method",
-    "text": "AUC(scores::PairwiseListMatrix, true_contacts::BitVector, false_contacts::BitVector)\n\nReturns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the scores for true_contacts prediction. scores, true_contacts and false_contacts should have the same number of elements and false_contacts should be true where there are not contacts.\n\n\n\n"
 },
 
 {
