@@ -285,7 +285,7 @@ end
 "Deletes all the MIToS annotated modifications"
 function delete_annotated_modifications!(ann::Annotations)
     for key in keys(ann.file)
-        if length(key) > 6 && key[1:6] == "MIToS_"
+        if startswith(key, "MIToS_")
             delete!(ann.file, key)
         end
     end
@@ -294,7 +294,7 @@ end
 "Prints MIToS annotated modifications"
 function printmodifications(ann::Annotations)
     for (key,value) in ann.file
-        if length(key) > 6 && key[1:6] == "MIToS_"
+        if startswith(key, "MIToS_")
             list_k = split(key, '_')
             println("-------------------")
             println(list_k[2])
