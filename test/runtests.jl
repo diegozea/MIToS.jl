@@ -1,7 +1,6 @@
 using Base.Test
 
 using MIToS: Utils, MSA, Information, PDB, SIFTS, Pfam
-
 using NamedArrays           # array
 using StatsBase             # WeightVec
 using PairwiseListMatrices  # getlist

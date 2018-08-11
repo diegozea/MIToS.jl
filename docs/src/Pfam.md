@@ -90,5 +90,7 @@ score with the `AUC` function.
 using MIToS.Information
 ZMIp, MIp = buslje09(msa)
 
+using ROCAnalysis # You need to load ROCAnalysis to use the AUC function
+
 AUC(ZMIp, cmap)
 ```

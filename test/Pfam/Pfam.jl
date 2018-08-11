@@ -148,7 +148,7 @@ end
         vcat(ones(Float16, ntru), zeros(Float16, nfal)), Float16[1.0 for x in 1:20], 20))
     score = NamedArray(PairwiseListMatrix{Float16,false,Vector{Float16}}(
         vcat(score_tru, score_fal), Float16[NaN for x in 1:20], 20))
-    correct = 1 - auc(roc(score_tru, score_fal))
+    correct = 1.0 - auc(roc(score_tru, score_fal))
 
     @test AUC(score, msacontacts) == correct
 
