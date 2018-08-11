@@ -12,7 +12,6 @@ StaticArrays
 FastaIO
 FTPClient
 Requests
-PkgBenchmark
 NamedArrays
 RecipesBase
 ProgressMeter

@@ -23,6 +23,7 @@ install:
 build_script:
   - echo "%JL_BUILD_SCRIPT%"
   - C:\julia\bin\julia -e "%JL_BUILD_SCRIPT%"
+  - C:\julia\bin\julia -e "Pkg.add(\"ROCAnalysis\")"
 
 test_script:
   - echo "%JL_TEST_SCRIPT%"
