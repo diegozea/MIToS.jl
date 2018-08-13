@@ -6,7 +6,8 @@ Julia 0.4:
 Julia 0.5:
 [![MIToS](http://pkg.julialang.org/badges/MIToS_0.5.svg)](http://pkg.julialang.org/?pkg=MIToS)  
 Julia 0.6:
-[![MIToS](http://pkg.julialang.org/badges/MIToS_0.6.svg)](http://pkg.julialang.org/?pkg=MIToS)
+[![MIToS](http://pkg.julialang.org/badges/MIToS_0.6.svg)](http://pkg.julialang.org/?pkg=MIToS)  
+Julia 1.0: *Work in progress*  
 
 Linux, OSX:
 [![Build Status](https://travis-ci.org/diegozea/MIToS.jl.svg?branch=master)](https://travis-ci.org/diegozea/MIToS.jl)  
@@ -16,9 +17,9 @@ Windows:
 Code Coverage:
 [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/diegozea/MIToS.jl?branch=master) [![codecov.io](http://codecov.io/github/diegozea/MIToS.jl/coverage.svg?branch=master)](http://codecov.io/github/diegozea/MIToS.jl?branch=master)
 
-**MIToS v2.1.2** for **Julia 0.6** is out, check out the [NEWS!](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
-You need to do `Pkg.add("MIToS")` to install it or `Pkg.update()` to update your installed
-version.  
+**NOTE:** [Julia has reached a stable 1.0 version!](https://julialang.org/blog/2018/08/one-point-zero) I'm updating MIToS to work in Julia 0.7/1.0. For the moment, use **MIToS v2.1.2** on **Julia 0.6.4**. 
+
+. You need to do `Pkg.add("MIToS")` to install it or `Pkg.update()` to update your installed version.  
 Some breaking changes were introduced in v2.0.0. See the [NEWS.md](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
 file and the [new documentation](https://diegozea.github.io/MIToS.jl/stable) to migrate code from an old version
 of MIToS. If you need more help to migrate code from MIToS 1.0 in Julia 0.4 to MIToS 2.1 in Julia 0.6, you can
