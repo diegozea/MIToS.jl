@@ -27,15 +27,101 @@ A0A0D1A7S7_9LACO/1-49      │   -    M    T    A    G  …    F    A    D    T 
   &quot;THGA_ECOLI/8-59&quot;   =&gt; Tuple{String,String}[(&quot;1KRR&quot;, &quot;B&quot;), (&quot;1KRU&quot;, &quot;A&quot;), (&quot;1…
   &quot;MAA_ECOLI/7-58&quot;    =&gt; Tuple{String,String}[(&quot;1OCX&quot;, &quot;C&quot;), (&quot;1OCX&quot;, &quot;A&quot;), (&quot;1…
   &quot;Q9KLB0_VIBCH/8-57&quot; =&gt; Tuple{String,String}[(&quot;3NZ2&quot;, &quot;J&quot;), (&quot;3NZ2&quot;, &quot;D&quot;), (&quot;3…
-  &quot;Q81N16_BACAN/7-58&quot; =&gt; Tuple{String,String}[(&quot;3IGJ&quot;, &quot;A&quot;), (&quot;3HJJ&quot;, &quot;C&quot;), (&quot;3…</code></pre></div><p>Once you know the association between PDB chains and sequences, you can use that information together with the <code>msacolumn2pdbresidue</code> function to get the PDB residue number that correspond to each MSA column for given a determined sequence and PDB chain. That function downloads information from SIFTS to generate the mapping.  </p><pre><code class="language-">col2res = msacolumn2pdbresidue(msa, &quot;MAA_ECOLI/7-58&quot;, &quot;1OCX&quot;, &quot;C&quot;)</code></pre><p>The returned dictionary can be used to get the PDB residue associated to each column (using the <code>msaresidues</code> function)...  </p><pre><code class="language-">using MIToS.PDB
+  &quot;Q81N16_BACAN/7-58&quot; =&gt; Tuple{String,String}[(&quot;3IGJ&quot;, &quot;A&quot;), (&quot;3HJJ&quot;, &quot;C&quot;), (&quot;3…</code></pre></div><p>Once you know the association between PDB chains and sequences, you can use that information together with the <code>msacolumn2pdbresidue</code> function to get the PDB residue number that correspond to each MSA column for given a determined sequence and PDB chain. That function downloads information from SIFTS to generate the mapping.  </p><div><pre><code class="language-julia">col2res = msacolumn2pdbresidue(msa, &quot;MAA_ECOLI/7-58&quot;, &quot;1OCX&quot;, &quot;C&quot;)</code></pre><pre><code class="language-none">Dict{Int64,String} with 51 entries:
+  68  =&gt; &quot;36&quot;
+  148 =&gt; &quot;50&quot;
+  124 =&gt; &quot;43&quot;
+  46  =&gt; &quot;19&quot;
+  25  =&gt; &quot;13&quot;
+  55  =&gt; &quot;25&quot;
+  151 =&gt; &quot;53&quot;
+  29  =&gt; &quot;16&quot;
+  58  =&gt; &quot;27&quot;
+  59  =&gt; &quot;28&quot;
+  155 =&gt; &quot;57&quot;
+  150 =&gt; &quot;52&quot;
+  95  =&gt; &quot;40&quot;
+  57  =&gt; &quot;26&quot;
+  20  =&gt; &quot;8&quot;
+  31  =&gt; &quot;17&quot;
+  70  =&gt; &quot;37&quot;
+  52  =&gt; &quot;22&quot;
+  96  =&gt; &quot;41&quot;
+  ⋮   =&gt; ⋮</code></pre></div><p>The returned dictionary can be used to get the PDB residue associated to each column (using the <code>msaresidues</code> function)...  </p><div><pre><code class="language-julia">using MIToS.PDB
 pdbfile = downloadpdb(&quot;1OCX&quot;)
 pdb = read(pdbfile, PDBML)
 resdict = @residuesdict pdb model &quot;1&quot; chain &quot;C&quot; group &quot;ATOM&quot; residue All
 
-msaresidues(msa, resdict, col2res)</code></pre><p>...or to delete the columns without PDB residues (using the <code>hasresidues</code> function):  </p><pre><code class="language-">using MIToS.MSA
-filtercolumns!(msa, hasresidues(msa, col2res))</code></pre><h3><a class="nav-anchor" id="PDB-contacts-and-AUC-1" href="#PDB-contacts-and-AUC-1">PDB contacts and AUC</a></h3><p>The <code>Dict</code> between MSA columns and PDB residue number also can be used to generate a protein contact map associated to the MSA.  </p><pre><code class="language-">cmap = msacontacts(msa, resdict, col2res)</code></pre><p>That protein contact map can be used to calculate the Area Under the ROC Curve for a given score with the <code>AUC</code> function.  </p><pre><code class="language-">using MIToS.Information
+msaresidues(msa, resdict, col2res)</code></pre><pre><code class="language-none">DataStructures.OrderedDict{Int64,MIToS.PDB.PDBResidue} with 51 entries:
+  19 =&gt; PDBResidue:…
+  20 =&gt; PDBResidue:…
+  21 =&gt; PDBResidue:…
+  22 =&gt; PDBResidue:…
+  23 =&gt; PDBResidue:…
+  24 =&gt; PDBResidue:…
+  25 =&gt; PDBResidue:…
+  26 =&gt; PDBResidue:…
+  27 =&gt; PDBResidue:…
+  29 =&gt; PDBResidue:…
+  31 =&gt; PDBResidue:…
+  35 =&gt; PDBResidue:…
+  46 =&gt; PDBResidue:…
+  50 =&gt; PDBResidue:…
+  51 =&gt; PDBResidue:…
+  52 =&gt; PDBResidue:…
+  53 =&gt; PDBResidue:…
+  54 =&gt; PDBResidue:…
+  55 =&gt; PDBResidue:…
+  ⋮  =&gt; ⋮</code></pre></div><p>...or to delete the columns without PDB residues (using the <code>hasresidues</code> function):  </p><div><pre><code class="language-julia">using MIToS.MSA
+filtercolumns!(msa, hasresidues(msa, col2res))</code></pre><pre><code class="language-none">AnnotatedMultipleSequenceAlignment with 5304 annotations : 2634×51 Named Array{MIToS.MSA.Residue,2}
+                 Seq ╲ Col │  19   20   21   22   23  …  151  152  153  154  155
+───────────────────────────┼────────────────────────────────────────────────────
+C5KKB6_PERM5/11-65         │   R    M    S    S    G  …    F    F    G    A    C
+R6YY02_9BACE/7-59          │   -    C    R    L    G       L    L    G    K    T
+A0A142EJF7_9BACT/7-58      │   K    M    L    A    G       L    L    G    K    I
+R7INL8_9FIRM/6-57          │   R    M    L    A    G       I    L    G    K    C
+A0A0Q5MZT3_9MICO/16-67     │   R    M    L    A    G       L    L    G    -    -
+A0A0U1M3J6_9EURO/37-101    │   R    M    V    S    G       L    L    G    G    -
+H0A616_9PROT/32-83         │   K    M    L    A    G       A    F    G    E    V
+G5H9F3_9BACT/1-50          │   -    M    L    A    G       L    L    P    N    T
+A0A161Y4T0_9PEZI/31-89     │   K    M    I    S    G       L    F    G    K    V
+⋮                              ⋮    ⋮    ⋮    ⋮    ⋮  ⋱    ⋮    ⋮    ⋮    ⋮    ⋮
+A0A135S4T6_9PEZI/22-73     │   R    M    R    N    G       -    -    -    -    -
+A0A094FF46_9PEZI/28-85     │   R    M    I    S    G       L    I    G    R    I
+G4L336_TETHN/9-58          │   K    M    I    A    G       T    F    G    S    V
+A0A087APF1_9BIFI/34-85     │   -    M    M    D    G       L    L    P    H    H
+I1YX66_PREI7/6-57          │   -    -    -    -    -       L    L    G    K    T
+A0A0R2I416_CARDV/7-56      │   K    M    I    A    G       L    L    G    K    V
+R7YHZ5_CONA1/28-89         │   R    M    I    S    G       I    L    G    S    I
+S9VZL4_SCHCR/21-76         │   K    M    I    Q    G       -    -    -    -    -
+A0A0D1A7S7_9LACO/1-49      │   -    M    T    A    G  …    L    F    A    D    T</code></pre></div><h3><a class="nav-anchor" id="PDB-contacts-and-AUC-1" href="#PDB-contacts-and-AUC-1">PDB contacts and AUC</a></h3><p>The <code>Dict</code> between MSA columns and PDB residue number also can be used to generate a protein contact map associated to the MSA.  </p><div><pre><code class="language-julia">cmap = msacontacts(msa, resdict, col2res)</code></pre><pre><code class="language-none">51×51 Named PairwiseListMatrices.PairwiseListMatrix{Float64,false,Array{Float64,1}}
+Col1 ╲ Col2 │  19   20   21   22   23   24  …  150  151  152  153  154  155
+────────────┼──────────────────────────────────────────────────────────────
+19          │ NaN  1.0  1.0  1.0  1.0  1.0  …  0.0  0.0  0.0  0.0  0.0  0.0
+20          │ 1.0  NaN  1.0  1.0  1.0  1.0     0.0  0.0  0.0  0.0  0.0  0.0
+21          │ 1.0  1.0  NaN  1.0  1.0  1.0     0.0  0.0  0.0  0.0  0.0  0.0
+22          │ 1.0  1.0  1.0  NaN  1.0  1.0     0.0  0.0  0.0  0.0  0.0  0.0
+23          │ 1.0  1.0  1.0  1.0  NaN  1.0     0.0  0.0  0.0  0.0  0.0  0.0
+24          │ 1.0  1.0  1.0  1.0  1.0  NaN     0.0  0.0  0.0  0.0  0.0  0.0
+25          │ 1.0  1.0  0.0  0.0  1.0  1.0     0.0  0.0  0.0  0.0  0.0  0.0
+26          │ 1.0  1.0  1.0  0.0  0.0  1.0     0.0  0.0  0.0  0.0  0.0  0.0
+27          │ 0.0  0.0  0.0  0.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0
+⋮               ⋮    ⋮    ⋮    ⋮    ⋮    ⋮  ⋱    ⋮    ⋮    ⋮    ⋮    ⋮    ⋮
+147         │ 0.0  0.0  0.0  0.0  0.0  0.0     1.0  1.0  1.0  0.0  0.0  0.0
+148         │ 0.0  0.0  0.0  0.0  0.0  0.0     1.0  1.0  1.0  1.0  0.0  1.0
+149         │ 0.0  0.0  0.0  0.0  0.0  0.0     1.0  1.0  1.0  1.0  0.0  1.0
+150         │ 0.0  0.0  0.0  0.0  0.0  0.0     NaN  1.0  1.0  0.0  0.0  1.0
+151         │ 0.0  0.0  0.0  0.0  0.0  0.0     1.0  NaN  1.0  1.0  0.0  0.0
+152         │ 0.0  0.0  0.0  0.0  0.0  0.0     1.0  1.0  NaN  1.0  1.0  1.0
+153         │ 0.0  0.0  0.0  0.0  0.0  0.0     0.0  1.0  1.0  NaN  1.0  1.0
+154         │ 0.0  0.0  0.0  0.0  0.0  0.0     0.0  0.0  1.0  1.0  NaN  1.0
+155         │ 0.0  0.0  0.0  0.0  0.0  0.0  …  1.0  0.0  1.0  1.0  1.0  NaN</code></pre></div><p>That protein contact map can be used to calculate the Area Under the ROC Curve for a given score with the <code>AUC</code> function.  </p><div><pre><code class="language-julia">using MIToS.Information
 ZMIp, MIp = buslje09(msa)
 
 using ROCAnalysis # You need to load ROCAnalysis to use the AUC function
 
-AUC(ZMIp, cmap)</code></pre><footer><hr/><a class="previous" href="PDB.html"><span class="direction">Previous</span><span class="title">PDB</span></a><a class="next" href="Scripts.html"><span class="direction">Next</span><span class="title">Scripts</span></a></footer></article></body></html>
+AUC(ZMIp, cmap)</code></pre><pre><code class="language-none">WARNING: Method definition detplot(ROCAnalysis.Roc{T} where T&lt;:Real) in module ROCAnalysis at /home/travis/.julia/v0.6/ROCAnalysis/src/plot.jl:9 overwritten at /home/travis/.julia/v0.6/ROCAnalysis/src/pyplot.jl:10.
+WARNING: Method definition detplot(ROCAnalysis.Roc{T} where T&lt;:Real, Any) in module ROCAnalysis at /home/travis/.julia/v0.6/ROCAnalysis/src/plot.jl:9 overwritten at /home/travis/.julia/v0.6/ROCAnalysis/src/pyplot.jl:10.
+WARNING: Method definition #detplot(Array{Any, 1}, typeof(ROCAnalysis.detplot), ROCAnalysis.Roc{T} where T&lt;:Real) in module ROCAnalysis overwritten.
+WARNING: Method definition #detplot(Array{Any, 1}, typeof(ROCAnalysis.detplot), ROCAnalysis.Roc{T} where T&lt;:Real, Any) in module ROCAnalysis overwritten.
+0.7863978638604893</code></pre></div><footer><hr/><a class="previous" href="PDB.html"><span class="direction">Previous</span><span class="title">PDB</span></a><a class="next" href="Scripts.html"><span class="direction">Next</span><span class="title">Scripts</span></a></footer></article></body></html>
