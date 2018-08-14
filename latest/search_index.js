@@ -141,7 +141,7 @@ var documenterSearchIndex = {"docs": [
     "page": "MSA",
     "title": "Reading MSA files",
     "category": "section",
-    "text": "The main function for reading MSA files in MIToS is read and it is defined in the Utils module. This function takes a filename/path as a first argument followed by other arguments. It opens the file and uses the arguments to call the parse function. read decides how to open the file, using the prefixes and suffixes of the file name, while parse does the actual parsing of the file. You can read gzipped files if they have the .gz extension and also urls pointing to a web file.   The second argument of read and parse is the file Format. The supported MSA formats at the moment are Stockholm, FASTA and Raw.   For example, reading with MIToS the full Stockholm MSA of the family PF07388 using the Pfam RESTful interface will be:  using MIToS.MSA\n\nread(\"http://pfam.xfam.org/family/PF07388/alignment/full\", Stockholm)The third (and optional) argument of read and parse is the output MSA type:  Matrix{Residue} : It contains the aligned sequences.  \nMultipleSequenceAlignment : It contains the aligned sequences and theirnames/identifiers.  AnnotatedMultipleSequenceAlignment : Is the richest MSA format of MIToS. It\'s thedefault. It includes the aligned sequences, their names and the MSA annotations.  Example of Matrix{Residue} output using a Stockholm file as input:read(\"http://pfam.xfam.org/family/PF07388/alignment/full\", Stockholm, Matrix{Residue})Given that read calls parse, you should look into the documentation of the last one to know the available keyword arguments. The optional keyword arguments of those functions are:  generatemapping : If generatemapping is true (default: false), sequences andcolumns mappings are generated and saved in the MSA annotations. The default is false to not overwrite mappings by mistake when you read an annotated MSA file saved with MIToS.  useidcoordinates : If useidcoordinates is true (default: false) and the nameshave the form seqname/start-end, MIToS uses this coordinates to generate sequence mappings. This is safe and useful with unmodified Pfam MSAs. Do not use it when reading an MSA saved with MIToS. MIToS deletes unaligned insert columns, therefore disrupts sequences that have them.  deletefullgaps : Given that lowercase characters and dots are converted to gaps,unaligned insert columns in the MSA (derived from a HMM profile) are converted into full gap columns. deletefullgaps is true by default, deleting full gaps columns and therefore insert columns.  note: Note\nIf you want to keep the insert columns...  Use the keyword argument keepinserts to true in read/parse. This only works with an AnnotatedMultipleSequenceAlignment output. A column annotation (\"Aligned\") is stored in the annotations, where insert columns are marked with 0 and aligned columns with 1.  When read returns an AnnotatedMultipleSequenceAlignment, it uses the MSA Annotations to keep track of performed modifications. To access this notes, use printmodifications:  msa = read(\"http://pfam.xfam.org/family/PF01565/alignment/full\", Stockholm)\n\nprintmodifications(msa)"
+    "text": "The main function for reading MSA files in MIToS is read and it is defined in the Utils module. This function takes a filename/path as a first argument followed by other arguments. It opens the file and uses the arguments to call the parse function. read decides how to open the file, using the prefixes and suffixes of the file name, while parse does the actual parsing of the file. You can read gzipped files if they have the .gz extension and also urls pointing to a web file.   The second argument of read and parse is the file FileFormat. The supported MSA formats at the moment are Stockholm, FASTA and Raw.   For example, reading with MIToS the full Stockholm MSA of the family PF07388 using the Pfam RESTful interface will be:  using MIToS.MSA\n\nread(\"http://pfam.xfam.org/family/PF07388/alignment/full\", Stockholm)The third (and optional) argument of read and parse is the output MSA type:  Matrix{Residue} : It contains the aligned sequences.  \nMultipleSequenceAlignment : It contains the aligned sequences and theirnames/identifiers.  AnnotatedMultipleSequenceAlignment : Is the richest MSA format of MIToS. It\'s thedefault. It includes the aligned sequences, their names and the MSA annotations.  Example of Matrix{Residue} output using a Stockholm file as input:read(\"http://pfam.xfam.org/family/PF07388/alignment/full\", Stockholm, Matrix{Residue})Given that read calls parse, you should look into the documentation of the last one to know the available keyword arguments. The optional keyword arguments of those functions are:  generatemapping : If generatemapping is true (default: false), sequences andcolumns mappings are generated and saved in the MSA annotations. The default is false to not overwrite mappings by mistake when you read an annotated MSA file saved with MIToS.  useidcoordinates : If useidcoordinates is true (default: false) and the nameshave the form seqname/start-end, MIToS uses this coordinates to generate sequence mappings. This is safe and useful with unmodified Pfam MSAs. Do not use it when reading an MSA saved with MIToS. MIToS deletes unaligned insert columns, therefore disrupts sequences that have them.  deletefullgaps : Given that lowercase characters and dots are converted to gaps,unaligned insert columns in the MSA (derived from a HMM profile) are converted into full gap columns. deletefullgaps is true by default, deleting full gaps columns and therefore insert columns.  note: Note\nIf you want to keep the insert columns...  Use the keyword argument keepinserts to true in read/parse. This only works with an AnnotatedMultipleSequenceAlignment output. A column annotation (\"Aligned\") is stored in the annotations, where insert columns are marked with 0 and aligned columns with 1.  When read returns an AnnotatedMultipleSequenceAlignment, it uses the MSA Annotations to keep track of performed modifications. To access this notes, use printmodifications:  msa = read(\"http://pfam.xfam.org/family/PF01565/alignment/full\", Stockholm)\n\nprintmodifications(msa)"
 },
 
 {
@@ -149,7 +149,7 @@ var documenterSearchIndex = {"docs": [
     "page": "MSA",
     "title": "Writing MSA files",
     "category": "section",
-    "text": "Julia REPL shows MSAs as Matrices. If you want to print them in another format, you should use the print function with an MSA object as first argument and the Format FASTA, Stockholm or Raw as second argument.  using MIToS.MSA\n\nmsa = read(\"http://pfam.xfam.org/family/PF16996/alignment/full\", Stockholm) # reads a Stockholm MSA file\n\nprint(msa, FASTA) # prints msa in FASTA formatTo save an MSA object to a file, use the write function. This function takes a filename as a first argument. If the filename ends with .gz, the output will be a compressed (gzipped) file. The next two arguments of write are passed to print, so write behaves as print.  write(\"msa.gz\", msa, FASTA) # writes msa in FASTA format in a gzipped file"
+    "text": "Julia REPL shows MSAs as Matrices. If you want to print them in another format, you should use the print function with an MSA object as first argument and the FileFormat FASTA, Stockholm or Raw as second argument.  using MIToS.MSA\n\nmsa = read(\"http://pfam.xfam.org/family/PF16996/alignment/full\", Stockholm) # reads a Stockholm MSA file\n\nprint(msa, FASTA) # prints msa in FASTA formatTo save an MSA object to a file, use the write function. This function takes a filename as a first argument. If the filename ends with .gz, the output will be a compressed (gzipped) file. The next two arguments of write are passed to print, so write behaves as print.  write(\"msa.gz\", msa, FASTA) # writes msa in FASTA format in a gzipped file"
 },
 
 {
@@ -341,7 +341,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Information",
     "title": "MIToS.Information.buslje09",
     "category": "function",
-    "text": "buslje09 takes a MSA or a file and a Format as first arguments. It calculates a Z score and a corrected MI/MIp as described on Busjle et. al. 2009.\n\nkeyword argument, type, default value and descriptions:\n\n  - lambda      Float64   0.05    Low count value\n  - clustering  Bool      true    Sequence clustering (Hobohm I)\n  - threshold             62      Percent identity threshold for clustering\n  - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation\n  - apc         Bool      true    Use APC correction (MIp)\n  - samples     Int       100     Number of samples for Z-score\n  - fixedgaps   Bool      true    Fix gaps positions for the random samples\n  - alphabet    ResidueAlphabet UngappedAlphabet()  Residue alphabet to be used\n\nThis function returns:\n\n  - Z score\n  - MI or MIp\n\n\n\n"
+    "text": "buslje09 takes a MSA or a file and a FileFormat as first arguments. It calculates a Z score and a corrected MI/MIp as described on Busjle et. al. 2009.\n\nkeyword argument, type, default value and descriptions:\n\n  - lambda      Float64   0.05    Low count value\n  - clustering  Bool      true    Sequence clustering (Hobohm I)\n  - threshold             62      Percent identity threshold for clustering\n  - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation\n  - apc         Bool      true    Use APC correction (MIp)\n  - samples     Int       100     Number of samples for Z-score\n  - fixedgaps   Bool      true    Fix gaps positions for the random samples\n  - alphabet    ResidueAlphabet UngappedAlphabet()  Residue alphabet to be used\n\nThis function returns:\n\n  - Z score\n  - MI or MIp\n\n\n\n"
 },
 
 {
@@ -349,7 +349,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Information",
     "title": "MIToS.Information.BLMI",
     "category": "function",
-    "text": "BLMI takes a MSA or a file and a Format as first arguments. It calculates a Z score (ZBLMI) and a corrected MI/MIp as described on Busjle et. al. 2009 but using using BLOSUM62 pseudo frequencies instead of a fixed pseudocount.\n\nKeyword argument, type, default value and descriptions:\n\n  - beta        Float64   8.512   β for BLOSUM62 pseudo frequencies\n  - lambda      Float64   0.0     Low count value\n  - threshold             62      Percent identity threshold for sequence clustering (Hobohm I)\n  - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation\n  - apc         Bool      true    Use APC correction (MIp)\n  - samples     Int       50      Number of samples for Z-score\n  - fixedgaps   Bool      true    Fix gaps positions for the random samples\n\nThis function returns:\n\n  - Z score (ZBLMI)\n  - MI or MIp using BLOSUM62 pseudo frequencies (BLMI/BLMIp)\n\n\n\n"
+    "text": "BLMI takes a MSA or a file and a FileFormat as first arguments. It calculates a Z score (ZBLMI) and a corrected MI/MIp as described on Busjle et. al. 2009 but using using BLOSUM62 pseudo frequencies instead of a fixed pseudocount.\n\nKeyword argument, type, default value and descriptions:\n\n  - beta        Float64   8.512   β for BLOSUM62 pseudo frequencies\n  - lambda      Float64   0.0     Low count value\n  - threshold             62      Percent identity threshold for sequence clustering (Hobohm I)\n  - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation\n  - apc         Bool      true    Use APC correction (MIp)\n  - samples     Int       50      Number of samples for Z-score\n  - fixedgaps   Bool      true    Fix gaps positions for the random samples\n\nThis function returns:\n\n  - Z score (ZBLMI)\n  - MI or MIp using BLOSUM62 pseudo frequencies (BLMI/BLMIp)\n\n\n\n"
 },
 
 {
@@ -421,7 +421,7 @@ var documenterSearchIndex = {"docs": [
     "page": "SIFTS",
     "title": "Storing residue-level mapping",
     "category": "section",
-    "text": "If you need more than the residue number mapping between two databases, you could access all the residue-level cross references using the function read in the SIFTSXMLFormat file. The parse function (and therefore the read function) for the SIFTSXML format, also takes the keyword arguments chain and missings. The read/parse function returns a Vector of SIFTSResidues objects that stores the cross references between residues in each database.  siftsresidues = read(siftsfile, SIFTSXML, chain=\"A\", missings=false) # Array{SIFTSResidue,1}\n\nresidue_data = siftsresidues[300]You are free to access the SIFTSResidue fields in order to get the desired information. SIFTSResidue objects contain db... objects (sub-types of DataBase), with the cross referenced information. You should note that, except for the PDBe and InterPro fields, the fields are Nullables objects so, you need to use the get function to access the db... object. For example, getting the UniProt residue name (one letter code of the amino acid) would be:  isnull(residue_data.UniProt) ? \"\" : get(residue_data.UniProt).nameThat line of code returns an empty string if the UniProt field is null. Otherwise, it returns a string with the name of the residue in UniProt. Because that way of access values in a Residue is too verbose, MIToS defines a more complex signature for get. Using MIToS get the previous line of code will be:  #   SIFTSResidue  database   field  default\nget(residue_data, dbUniProt, :name, \"\")The is not need to use the full signature, but the returned value will change. In particular, a Nullable object is returned if a default value is not given at the end of the signature:  using MIToS.SIFTS; residue_data = read(\"1ivo.xml.gz\", SIFTSXML)[301] # hide\nget(residue_data, dbUniProt) # Takes the database type and returns a nullable with the field content\nget(residue_data, dbUniProt, :name) # Takes also a Symbol with a field name and returns a nullable with the field content inside the database typeBut you don\'t need the getfunction to access the three letter code of the residue in PDBe because the PDBe field is not Nullable.residue_data.PDBe.nameSIFTSResidue also store information about if that residue is missing in the PDB structure and the information about the secondary structure (sscode and ssname):  using MIToS.SIFTS; residue_data = read(\"1ivo.xml.gz\", SIFTSXML)[301] # hide\nresidue_data.missing\nresidue_data.sscode\nresidue_data.ssname"
+    "text": "If you need more than the residue number mapping between two databases, you could access all the residue-level cross references using the function read in the SIFTSXMLFile.Format file. The parse function (and therefore the read function) for the SIFTSXML format, also takes the keyword arguments chain and missings. The read/parse function returns a Vector of SIFTSResidues objects that stores the cross references between residues in each database.  siftsresidues = read(siftsfile, SIFTSXML, chain=\"A\", missings=false) # Array{SIFTSResidue,1}\n\nresidue_data = siftsresidues[300]You are free to access the SIFTSResidue fields in order to get the desired information. SIFTSResidue objects contain db... objects (sub-types of DataBase), with the cross referenced information. You should note that, except for the PDBe and InterPro fields, the fields are Nullables objects so, you need to use the get function to access the db... object. For example, getting the UniProt residue name (one letter code of the amino acid) would be:  isnull(residue_data.UniProt) ? \"\" : get(residue_data.UniProt).nameThat line of code returns an empty string if the UniProt field is null. Otherwise, it returns a string with the name of the residue in UniProt. Because that way of access values in a Residue is too verbose, MIToS defines a more complex signature for get. Using MIToS get the previous line of code will be:  #   SIFTSResidue  database   field  default\nget(residue_data, dbUniProt, :name, \"\")The is not need to use the full signature, but the returned value will change. In particular, a Nullable object is returned if a default value is not given at the end of the signature:  using MIToS.SIFTS; residue_data = read(\"1ivo.xml.gz\", SIFTSXML)[301] # hide\nget(residue_data, dbUniProt) # Takes the database type and returns a nullable with the field content\nget(residue_data, dbUniProt, :name) # Takes also a Symbol with a field name and returns a nullable with the field content inside the database typeBut you don\'t need the getfunction to access the three letter code of the residue in PDBe because the PDBe field is not Nullable.residue_data.PDBe.nameSIFTSResidue also store information about if that residue is missing in the PDB structure and the information about the secondary structure (sscode and ssname):  using MIToS.SIFTS; residue_data = read(\"1ivo.xml.gz\", SIFTSXML)[301] # hide\nresidue_data.missing\nresidue_data.sscode\nresidue_data.ssname"
 },
 
 {
@@ -485,7 +485,7 @@ var documenterSearchIndex = {"docs": [
     "page": "PDB",
     "title": "Read and parse PDB files",
     "category": "section",
-    "text": "This is easy using the read and parse functions, indicating the filename and the Format: PDBML for PDB XML files or PDBFile for usual PDB files. These functions returns a Vector of PDBResidue objects with all the residues in the PDB.   To return only a specific subset of residues/atoms you can use any of the following keyword arguments:  keyword arguments default returns only ...\nchain All residues from a PDB chain, i.e. \"A\"\nmodel All residues from a determined model, i.e. \"1\"\ngroup All residues from a group: \"ATOM\", \"HETATM\" or All for both\natomname All atoms with a specific name, i.e. \"CA\"\nonlyheavy false heavy atoms (not hydrogens) if it\'s true\noccupancyfilter false only the atoms with the best occupancy are returned if it\'s truenote: Note\nFor PDBML files it is possible to use the keyword argument label to false (default to true) to get the auth_ attributes instead of the label_ attributes for chain, atom and residue name fields. The auth_ attributes are alternatives provided by an author in order to match the identification/values used in the publication that describes the structure.  # Read α carbon of each residue from the 1ivo pdb file, in the model 1, chain A and in the ATOM group.\nCA_1ivo = read(pdbfile, PDBFile, model=\"1\", chain=\"A\", group=\"ATOM\", atomname=\"CA\")\n\nCA_1ivo[1] # First residue. It has only the α carbon."
+    "text": "This is easy using the read and parse functions, indicating the filename and the FileFormat: PDBML for PDB XML files or PDBFile for usual PDB files. These functions returns a Vector of PDBResidue objects with all the residues in the PDB.   To return only a specific subset of residues/atoms you can use any of the following keyword arguments:  keyword arguments default returns only ...\nchain All residues from a PDB chain, i.e. \"A\"\nmodel All residues from a determined model, i.e. \"1\"\ngroup All residues from a group: \"ATOM\", \"HETATM\" or All for both\natomname All atoms with a specific name, i.e. \"CA\"\nonlyheavy false heavy atoms (not hydrogens) if it\'s true\noccupancyfilter false only the atoms with the best occupancy are returned if it\'s truenote: Note\nFor PDBML files it is possible to use the keyword argument label to false (default to true) to get the auth_ attributes instead of the label_ attributes for chain, atom and residue name fields. The auth_ attributes are alternatives provided by an author in order to match the identification/values used in the publication that describes the structure.  # Read α carbon of each residue from the 1ivo pdb file, in the model 1, chain A and in the ATOM group.\nCA_1ivo = read(pdbfile, PDBFile, model=\"1\", chain=\"A\", group=\"ATOM\", atomname=\"CA\")\n\nCA_1ivo[1] # First residue. It has only the α carbon."
 },
 
 {
@@ -573,7 +573,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Pfam",
     "title": "Getting a Pfam MSA",
     "category": "section",
-    "text": "The function downloadpfam takes a Pfam accession and downloads a Pfam MSA in Stockholm format. Use read function and the Stockholm Format to get a AnnotatedMultipleSequenceAlignment object with the MSA and its Pfam annotations. You must set generatemapping and useidcoordinates to true the first time you read the downloaded MSA. This is necessary to some of the methods in the Pfam module.  using MIToS.Pfam\npfamfile = downloadpfam(\"PF12464\")\nmsa = read(pfamfile, Stockholm, generatemapping=true, useidcoordinates=true)"
+    "text": "The function downloadpfam takes a Pfam accession and downloads a Pfam MSA in Stockholm format. Use read function and the Stockholm FileFormat to get a AnnotatedMultipleSequenceAlignment object with the MSA and its Pfam annotations. You must set generatemapping and useidcoordinates to true the first time you read the downloaded MSA. This is necessary to some of the methods in the Pfam module.  using MIToS.Pfam\npfamfile = downloadpfam(\"PF12464\")\nmsa = read(pfamfile, Stockholm, generatemapping=true, useidcoordinates=true)"
 },
 
 {
@@ -1573,7 +1573,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Information",
     "title": "MIToS.Information.BLMI",
     "category": "method",
-    "text": "BLMI takes a MSA or a file and a Format as first arguments. It calculates a Z score (ZBLMI) and a corrected MI/MIp as described on Busjle et. al. 2009 but using using BLOSUM62 pseudo frequencies instead of a fixed pseudocount.\n\nKeyword argument, type, default value and descriptions:\n\n  - beta        Float64   8.512   β for BLOSUM62 pseudo frequencies\n  - lambda      Float64   0.0     Low count value\n  - threshold             62      Percent identity threshold for sequence clustering (Hobohm I)\n  - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation\n  - apc         Bool      true    Use APC correction (MIp)\n  - samples     Int       50      Number of samples for Z-score\n  - fixedgaps   Bool      true    Fix gaps positions for the random samples\n\nThis function returns:\n\n  - Z score (ZBLMI)\n  - MI or MIp using BLOSUM62 pseudo frequencies (BLMI/BLMIp)\n\n\n\n"
+    "text": "BLMI takes a MSA or a file and a FileFormat as first arguments. It calculates a Z score (ZBLMI) and a corrected MI/MIp as described on Busjle et. al. 2009 but using using BLOSUM62 pseudo frequencies instead of a fixed pseudocount.\n\nKeyword argument, type, default value and descriptions:\n\n  - beta        Float64   8.512   β for BLOSUM62 pseudo frequencies\n  - lambda      Float64   0.0     Low count value\n  - threshold             62      Percent identity threshold for sequence clustering (Hobohm I)\n  - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation\n  - apc         Bool      true    Use APC correction (MIp)\n  - samples     Int       50      Number of samples for Z-score\n  - fixedgaps   Bool      true    Fix gaps positions for the random samples\n\nThis function returns:\n\n  - Z score (ZBLMI)\n  - MI or MIp using BLOSUM62 pseudo frequencies (BLMI/BLMIp)\n\n\n\n"
 },
 
 {
@@ -1597,7 +1597,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Information",
     "title": "MIToS.Information.buslje09",
     "category": "method",
-    "text": "buslje09 takes a MSA or a file and a Format as first arguments. It calculates a Z score and a corrected MI/MIp as described on Busjle et. al. 2009.\n\nkeyword argument, type, default value and descriptions:\n\n  - lambda      Float64   0.05    Low count value\n  - clustering  Bool      true    Sequence clustering (Hobohm I)\n  - threshold             62      Percent identity threshold for clustering\n  - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation\n  - apc         Bool      true    Use APC correction (MIp)\n  - samples     Int       100     Number of samples for Z-score\n  - fixedgaps   Bool      true    Fix gaps positions for the random samples\n  - alphabet    ResidueAlphabet UngappedAlphabet()  Residue alphabet to be used\n\nThis function returns:\n\n  - Z score\n  - MI or MIp\n\n\n\n"
+    "text": "buslje09 takes a MSA or a file and a FileFormat as first arguments. It calculates a Z score and a corrected MI/MIp as described on Busjle et. al. 2009.\n\nkeyword argument, type, default value and descriptions:\n\n  - lambda      Float64   0.05    Low count value\n  - clustering  Bool      true    Sequence clustering (Hobohm I)\n  - threshold             62      Percent identity threshold for clustering\n  - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation\n  - apc         Bool      true    Use APC correction (MIp)\n  - samples     Int       100     Number of samples for Z-score\n  - fixedgaps   Bool      true    Fix gaps positions for the random samples\n  - alphabet    ResidueAlphabet UngappedAlphabet()  Residue alphabet to be used\n\nThis function returns:\n\n  - Z score\n  - MI or MIp\n\n\n\n"
 },
 
 {
@@ -1781,7 +1781,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Information",
     "title": "MIToS.Information.pairwisegapfraction",
     "category": "method",
-    "text": "It takes a MSA or a file and a Format as first arguments. It calculates the percentage of gaps on columns pairs (union and intersection) using sequence clustering (Hobohm I).\n\nArgument, type, default value and descriptions:\n\n    - clustering  Bool      true    Sequence clustering (Hobohm I)\n    - threshold             62      Percent identity threshold for sequence clustering (Hobohm I)\n\nThis function returns:\n\n    - pairwise gap union as percentage\n    - pairwise gap intersection as percentage\n\n\n\n"
+    "text": "It takes a MSA or a file and a FileFormat as first arguments. It calculates the percentage of gaps on columns pairs (union and intersection) using sequence clustering (Hobohm I).\n\nArgument, type, default value and descriptions:\n\n    - clustering  Bool      true    Sequence clustering (Hobohm I)\n    - threshold             62      Percent identity threshold for sequence clustering (Hobohm I)\n\nThis function returns:\n\n    - pairwise gap union as percentage\n    - pairwise gap intersection as percentage\n\n\n\n"
 },
 
 {
@@ -2029,7 +2029,7 @@ var documenterSearchIndex = {"docs": [
     "page": "PDB",
     "title": "MIToS.PDB.PDBFile",
     "category": "type",
-    "text": "PDBFile <: Format\n\nProtein Data Bank (PDB) format. It provides a standard representation for macromolecular structure data derived from X-ray diffraction and NMR studies.\n\n\n\n"
+    "text": "PDBFile <: FileFormat\n\nProtein Data Bank (PDB) format. It provides a standard representation for macromolecular structure data derived from X-ray diffraction and NMR studies.\n\n\n\n"
 },
 
 {
@@ -2037,7 +2037,7 @@ var documenterSearchIndex = {"docs": [
     "page": "PDB",
     "title": "MIToS.PDB.PDBML",
     "category": "type",
-    "text": "PDBML <: Format\n\nProtein Data Bank Markup Language (PDBML), a representation of PDB data in XML format.\n\n\n\n"
+    "text": "PDBML <: FileFormat\n\nProtein Data Bank Markup Language (PDBML), a representation of PDB data in XML format.\n\n\n\n"
 },
 
 {
@@ -2329,7 +2329,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "PDB_API.html#MIToS.PDB.downloadpdb-Union{Tuple{String}, Tuple{T}} where T<:MIToS.Utils.Format",
+    "location": "PDB_API.html#MIToS.PDB.downloadpdb-Union{Tuple{String}, Tuple{T}} where T<:MIToS.Utils.FileFormat",
     "page": "PDB",
     "title": "MIToS.PDB.downloadpdb",
     "category": "method",
@@ -2753,11 +2753,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Utils_API.html#MIToS.Utils.Format",
+    "location": "Utils_API.html#MIToS.Utils.FileFormat",
     "page": "Utils",
-    "title": "MIToS.Utils.Format",
+    "title": "MIToS.Utils.FileFormat",
     "category": "type",
-    "text": "Format is used for write special parse (and read) methods on it.\n\n\n\n"
+    "text": "FileFormat is used for write special parse (and read) methods on it.\n\n\n\n"
 },
 
 {
@@ -2785,19 +2785,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "Utils_API.html#Base.read-Union{Tuple{AbstractString,Type{T},Vararg{Any,N} where N}, Tuple{T}} where T<:MIToS.Utils.Format",
+    "location": "Utils_API.html#Base.read-Union{Tuple{AbstractString,Type{T},Vararg{Any,N} where N}, Tuple{T}} where T<:MIToS.Utils.FileFormat",
     "page": "Utils",
     "title": "Base.read",
     "category": "method",
-    "text": "read(pathname, Format [, Type [, … ] ] ) -> Type\n\nThis function opens a file in the pathname and calls parse(io, ...) for the given Format and Type on it. If the  pathname is an HTTP or FTP URL, the file is downloaded with download in a temporal file. Gzipped files should end on .gz.\n\n\n\n"
+    "text": "read(pathname, FileFormat [, Type [, … ] ] ) -> Type\n\nThis function opens a file in the pathname and calls parse(io, ...) for the given FileFormat and Type on it. If the  pathname is an HTTP or FTP URL, the file is downloaded with download in a temporal file. Gzipped files should end on .gz.\n\n\n\n"
 },
 
 {
-    "location": "Utils_API.html#Base.write-Union{Tuple{AbstractString,Any,Type{T},String}, Tuple{AbstractString,Any,Type{T}}, Tuple{T}} where T<:MIToS.Utils.Format",
+    "location": "Utils_API.html#Base.write-Union{Tuple{AbstractString,Any,Type{T},String}, Tuple{AbstractString,Any,Type{T}}, Tuple{T}} where T<:MIToS.Utils.FileFormat",
     "page": "Utils",
     "title": "Base.write",
     "category": "method",
-    "text": "write{T<:Format}(filename::AbstractString, object, format::Type{T}, mode::ASCIIString=\"w\")\n\nThis function opens a file with filename and mode (default: \"w\") and writes (print) the object with the given format. Gzipped files should end on .gz.\n\n\n\n"
+    "text": "write{T<:FileFormat}(filename::AbstractString, object, format::Type{T}, mode::ASCIIString=\"w\")\n\nThis function opens a file with filename and mode (default: \"w\") and writes (print) the object with the given format. Gzipped files should end on .gz.\n\n\n\n"
 },
 
 {
