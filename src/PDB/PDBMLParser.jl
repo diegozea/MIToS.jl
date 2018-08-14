@@ -214,19 +214,22 @@ It requires a four character `pdbcode`.
 Its default `format` is `PDBML` (PDB XML) and It uses the
 `baseurl` "http://www.rcsb.org/pdb/files/".
 `filename` is the path/name of the output file.
-This function calls `MIToS.Utils.download_file` that calls `Requests.get_streaming`.
-You can use keyword arguments from `Requests.get_streaming` (e.g. `header`).
+This function calls `MIToS.Utils.download_file` that calls `HTTP.open`.
+You can use keyword arguments from `HTTP.request` (e.g. `redirect`).
+Use the `headers` keyword argument to pass a `Dict{String, String}`
+with the header information.
 """
 function downloadpdb(pdbcode::String;
                      format::Type{T} = PDBML,
                      filename::String= uppercase(pdbcode)*_file_extension(format),
                      baseurl::String = "http://www.rcsb.org/pdb/files/",
+                     headers::Dict{String, String} = Dict{String, String}(),
                      kargs...) where T <: FileFormat
     if check_pdbcode(pdbcode)
         pdbfilename = uppercase(pdbcode) * _file_extension(format)
         filename = _inputnameforgzip(filename)
         sepchar = endswith(baseurl,"/") ? "" : "/";
-        download_file(string(baseurl,sepchar,pdbfilename), filename; kargs...)
+        download_file(string(baseurl,sepchar,pdbfilename), filename; headers=headers, kargs...)
     else
         throw(ErrorException("$pdbcode is not a correct PDB code"))
     end

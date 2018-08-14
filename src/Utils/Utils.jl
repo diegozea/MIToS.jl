@@ -7,8 +7,7 @@ using MIToS.Utils
 """
 module Utils
 
-using FTPClient
-using Requests
+using HTTP
 using CodecZlib
 using LightXML
 using NamedArrays

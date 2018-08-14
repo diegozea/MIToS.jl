@@ -4,37 +4,38 @@ import Base: read
 abstract type FileFormat end
 
 """
-`download_file` uses **Requests.jl** and **FTPClient.jl** instead of system calls to
-download files from the web.
-It takes the file url as first argument and, optionally, a path to save it.
-Keyword arguments (ie. `allow_redirects`, `max_redirects`, `timeout`, `headers`)
-are are directly passed to to `Requests.get_streaming`.
+`download_file` uses **HTTP.jl** instead of system calls to download files 
+from the web. It takes the file url as first argument and, optionally, a path to save it.
+Keyword arguments (ie. `redirect`, `retry`, `readtimeout`)
+are are directly passed to to `HTTP.open` (`HTTP.request`).
+Use the `headers` keyword argument to pass a `Dict{String,String}` with the 
+header information.  
 
 ```julia
 julia> download_file("http://www.uniprot.org/uniprot/P69905.fasta","seq.fasta",
-       allow_redirects=false,
-       headers=Dict("User-Agent" => "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)"))
+       headers = Dict("User-Agent" => 
+                      "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)"),
+       redirect=true)
 "seq.fasta"
 
 ```
 """
-function download_file(url::AbstractString, filename::AbstractString; kargs...)
-    if startswith(url, "ftp://")
-        ftp_url = match(r"^ftp:\/\/(.+)\/([^\/]+)$", url)
-        if ftp_url !== nothing
-            ftp = FTP(hostname=ftp_url[1])
-            download(ftp, ftp_url[2], filename)
-        else
-            throw(ErrorException(string(url, " doesn't have the form ftp://.../...")))
+function download_file(url::AbstractString, filename::AbstractString;
+                       headers::Dict{String,String}=Dict{String,String}(), 
+                       kargs...)
+    HTTP.open("GET", url, headers; kargs...) do stream
+        open(filename, "w") do fh
+           write(fh, stream)
         end
-    else
-        response = get(url; kargs...)
-        save(response, filename)
     end
     filename
 end
 
-download_file(url::AbstractString; kargs...) = download_file(url, tempname(); kargs...)
+function download_file(url::AbstractString; 
+                       headers::Dict{String,String}=Dict{String,String}(), 
+                       kargs...) 
+    download_file(url, tempname(); headers=headers, kargs...)
+end
 
 "Create an iterable object that will yield each line from a stream **or string**."
 lineiterator(string::String) = eachline(IOBuffer(string))

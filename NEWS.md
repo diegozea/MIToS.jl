@@ -1,5 +1,15 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.1.2 to master
+
+* `HTTP.jl` is used in place of `FTPClient.jl` and the deprecated `Requests.jl` in 
+`Utils.download_file` to download files.
+
+* `Format.jl` is used in place of `Formatting.jl`
+
+* `Utils.Format` was renamed to `Utils.FileFormat`
+
+
 ### Changes from v2.1.1 to v2.2
 
 * `ROCAnalysis.jl` is not longer a dependency and it's now used with `@require` from
