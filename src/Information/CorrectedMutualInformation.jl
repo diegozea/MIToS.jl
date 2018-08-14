@@ -17,7 +17,7 @@ function _buslje09(aln, alphabet::A, clusters, lambda, apc) where A
 end
 
 """
-`buslje09` takes a MSA or a file and a `Format` as first arguments. It calculates a Z score
+`buslje09` takes a MSA or a file and a `FileFormat` as first arguments. It calculates a Z score
 and a corrected MI/MIp as described on **Busjle et. al. 2009**.
 
 keyword argument, type, default value and descriptions:
@@ -67,7 +67,7 @@ function buslje09(aln::AbstractMatrix{Residue};
     end
 end
 
-function buslje09(filename::String, format::Type{T}; kargs...) where T <: Format
+function buslje09(filename::String, format::Type{T}; kargs...) where T <: FileFormat
     aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
     buslje09(aln; kargs...)
 end
@@ -92,7 +92,7 @@ function _BLMI(aln, clusters, alpha, beta, apc, lambda::Float64=0.0)
 end
 
 """
-`BLMI` takes a MSA or a file and a `Format` as first arguments. It calculates a Z score
+`BLMI` takes a MSA or a file and a `FileFormat` as first arguments. It calculates a Z score
 (ZBLMI) and a corrected MI/MIp as described on **Busjle et. al. 2009** but using using
 BLOSUM62 pseudo frequencies instead of a fixed pseudocount.
 
@@ -142,7 +142,7 @@ function BLMI(aln::AbstractMatrix{Residue};
     end
 end
 
-function BLMI(filename::String, format::Type{T}; kargs...) where T <: Format
+function BLMI(filename::String, format::Type{T}; kargs...) where T <: FileFormat
     aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
     BLMI(aln; kargs...)
 end

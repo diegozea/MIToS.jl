@@ -1,4 +1,4 @@
-struct SIFTSXML <: Format end
+struct SIFTSXML <: FileFormat end
 
 # Download SIFTS
 # ==============

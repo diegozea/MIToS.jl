@@ -1,4 +1,4 @@
-struct Raw <: Format end
+struct Raw <: FileFormat end
 
 # Raw Parser
 # ==========

@@ -22,7 +22,7 @@ export  # GeneralUtils.jl
         check_pdbcode,
         getarray,
         # Read.jl
-        Format,
+        FileFormat,
         lineiterator,
         check_file, isnotemptyfile,
         download_file,

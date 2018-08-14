@@ -1,4 +1,4 @@
-struct FASTA <: Format end
+struct FASTA <: FileFormat end
 
 # FASTA Parser
 # ============

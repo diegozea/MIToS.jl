@@ -26,7 +26,7 @@ Depth = 4
 ## [Getting a Pfam MSA](@id Getting-a-Pfam-MSA)
 
 The function `downloadpfam` takes a Pfam accession and downloads a Pfam MSA in Stockholm
-format. Use `read` function and the `Stockholm` `Format` to get a
+format. Use `read` function and the `Stockholm` `FileFormat` to get a
 `AnnotatedMultipleSequenceAlignment` object with the MSA and its Pfam annotations.
 You must set `generatemapping` and `useidcoordinates` to `true` the first time you read
 the downloaded MSA. This is necessary to some of the methods in the `Pfam` module.  

@@ -44,7 +44,7 @@ getpdbdescription("1IVO")
 ## [Read and parse PDB files](@id Read-and-parse-PDB-files)  
 
 This is easy using the `read` and `parse` functions, indicating the filename and the
-`Format`: `PDBML` for PDB XML files or `PDBFile` for usual PDB files. These functions
+`FileFormat`: `PDBML` for PDB XML files or `PDBFile` for usual PDB files. These functions
 returns a `Vector` of `PDBResidue` objects with all the residues in the PDB.  
 To return only a specific subset of residues/atoms you can use any of the following
 keyword arguments:  

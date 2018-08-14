@@ -1,7 +1,7 @@
 import Base: read
 
-"`Format` is used for write special `parse` (and `read`) methods on it."
-abstract type Format end
+"`FileFormat` is used for write special `parse` (and `read`) methods on it."
+abstract type FileFormat end
 
 """
 `download_file` uses **Requests.jl** and **FTPClient.jl** instead of system calls to
@@ -78,14 +78,14 @@ function _read(completename, filename, format, args...; kargs...)
 end
 
 """
-`read(pathname, Format [, Type [, … ] ] ) -> Type`
+`read(pathname, FileFormat [, Type [, … ] ] ) -> Type`
 
 This function opens a file in the `pathname` and calls `parse(io, ...)` for
-the given `Format` and `Type` on it. If the  `pathname` is an HTTP or FTP URL,
+the given `FileFormat` and `Type` on it. If the  `pathname` is an HTTP or FTP URL,
 the file is downloaded with `download` in a temporal file.
 Gzipped files should end on `.gz`.
 """
-function read(completename::AbstractString, format::Type{T}, args...; kargs...) where T <: Format
+function read(completename::AbstractString, format::Type{T}, args...; kargs...) where T <: FileFormat
     if  startswith(completename, "http://")  ||
         startswith(completename, "https://") ||
         startswith(completename, "ftp://")

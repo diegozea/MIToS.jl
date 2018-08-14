@@ -1,11 +1,11 @@
 """
-`PDBFile <: Format`
+`PDBFile <: FileFormat`
 
 Protein Data Bank (PDB) format.
 It provides a standard representation for macromolecular
 structure data derived from X-ray diffraction and NMR studies.
 """
-struct PDBFile <: Format end
+struct PDBFile <: FileFormat end
 
 function _parse_residueidentifier(line::String, atom_chain, line_id, actual_model)
     # 23 - 26        Integer         Residue sequence number.

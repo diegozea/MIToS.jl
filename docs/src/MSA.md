@@ -33,7 +33,7 @@ arguments. It opens the file and uses the arguments to call the `parse` function
 decides how to open the file, using the prefixes and suffixes of the file name, while
 `parse` does the actual parsing of the file. You can `read` **gzipped files** if they have
 the `.gz` extension and also urls pointing to a **web file**.  
-The second argument of `read` and `parse` is the file `Format`. The supported MSA formats
+The second argument of `read` and `parse` is the file `FileFormat`. The supported MSA formats
 at the moment are `Stockholm`, `FASTA` and `Raw`.  
 For example, reading with MIToS the full Stockholm MSA of the family PF07388 using the Pfam
 RESTful interface will be:  
@@ -93,7 +93,7 @@ printmodifications(msa)
 ### [Writing MSA files](@id Writing-MSA-files)
 
 Julia REPL shows MSAs as Matrices. If you want to print them in another format, you should
-use the `print` function with an MSA object as first argument and the `Format` `FASTA`,
+use the `print` function with an MSA object as first argument and the `FileFormat` `FASTA`,
 `Stockholm` or `Raw` as second argument.  
 
 ```@example msa_write

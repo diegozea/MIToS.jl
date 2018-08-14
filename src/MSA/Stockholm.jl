@@ -1,4 +1,4 @@
-struct Stockholm <: Format end
+struct Stockholm <: FileFormat end
 
 @inline function _fill_with_sequence_line!(IDS, SEQS, line)
     if !startswith(line,'#') && !startswith(line,"//")

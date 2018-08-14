@@ -1,9 +1,9 @@
 """
-`PDBML <: Format`
+`PDBML <: FileFormat`
 
 Protein Data Bank Markup Language (PDBML), a representation of PDB data in XML format.
 """
-struct PDBML <: Format end
+struct PDBML <: FileFormat end
 
 function _get_text(elem, name)
     sub = find_element(elem, name)
@@ -221,7 +221,7 @@ function downloadpdb(pdbcode::String;
                      format::Type{T} = PDBML,
                      filename::String= uppercase(pdbcode)*_file_extension(format),
                      baseurl::String = "http://www.rcsb.org/pdb/files/",
-                     kargs...) where T<:Format
+                     kargs...) where T <: FileFormat
     if check_pdbcode(pdbcode)
         pdbfilename = uppercase(pdbcode) * _file_extension(format)
         filename = _inputnameforgzip(filename)
@@ -249,7 +249,7 @@ function downloadpdbheader(pdbcode::String; filename::String=tempname()*".xml", 
     filename
 end
 
-struct PDBMLHeader <: Format end
+struct PDBMLHeader <: FileFormat end
 
 function Base.parse(document::LightXML.XMLDocument, ::Type{PDBMLHeader})
     xmlroot = root(document)

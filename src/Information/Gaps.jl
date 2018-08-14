@@ -17,7 +17,7 @@ end
 # =============================
 
 """
-It takes a MSA or a file and a `Format` as first arguments. It calculates the percentage
+It takes a MSA or a file and a `FileFormat` as first arguments. It calculates the percentage
 of gaps on columns pairs (union and intersection) using sequence clustering (Hobohm I).
 
 Argument, type, default value and descriptions:
@@ -42,7 +42,7 @@ function pairwisegapfraction(aln::AbstractMatrix{Residue}; clustering::Bool=true
     gu, gi
 end
 
-function pairwisegapfraction(filename::String, format::Type{T}; kargs...) where T <: Format
+function pairwisegapfraction(filename::String, format::Type{T}; kargs...) where T <: FileFormat
     aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
     pairwisegapfraction(aln; kargs...)
 end

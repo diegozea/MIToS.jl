@@ -19,11 +19,11 @@ using RecipesBase           # Plots for PDB Residues
 using AutoHashEquals
 using StaticArrays
 using DataStructures
-using Formatting
 using PairwiseListMatrices
 using NamedArrays
 using LightXML
 using MIToS.Utils
+using Format
 
 export  # PDBResidues
         PDBResidueIdentifier,
