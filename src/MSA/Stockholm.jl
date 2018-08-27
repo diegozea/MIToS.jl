@@ -162,10 +162,10 @@ function Base.print(io::IO, msa::AnnotatedMultipleSequenceAlignment,
     for i in 1:nsequences(msa)
         id = seqnames[i]
         seq = stringsequence(msa, i)
-        println(io, string(id, "\t\t\t", seq))
+        println(io, id, "\t\t\t", seq)
         if id in keys(res_annotations)
             for line in res_annotations[id]
-                println(io, string("#=GR ", line))
+                println(io, "#=GR ", line)
             end
         end
     end
@@ -173,10 +173,10 @@ function Base.print(io::IO, msa::AnnotatedMultipleSequenceAlignment,
     println(io, "//")
 end
 
-function Base.print(io::IO, msa::MultipleSequenceAlignment, format::Type{Stockholm})
+function Base.print(io::IO, msa::AbstractMatrix{Residue}, format::Type{Stockholm})
     seqnames = sequencenames(msa)
     for i in 1:nsequences(msa)
-        println(io, string(seqnames[i], "\t\t\t", stringsequence(msa, i)))
+        println(io, seqnames[i], "\t\t\t", stringsequence(msa, i))
     end
     println(io, "//")
 end

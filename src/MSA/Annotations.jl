@@ -20,9 +20,9 @@ MIToS also uses MSA annotations to keep track of:
 end
 
 Annotations() = Annotations(  OrderedDict{String, String}(),
-                                        Dict{Tuple{String,String},String}(),
-                                        Dict{String, String}(),
-                                        Dict{Tuple{String,String},String}() )
+                              Dict{Tuple{String,String},String}(),
+                              Dict{String, String}(),
+                              Dict{Tuple{String,String},String}() )
 
 # Length
 # ------

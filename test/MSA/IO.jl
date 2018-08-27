@@ -22,6 +22,8 @@
 
         @testset "Read" begin
 
+            # TODO : @inferred read(pf09645_sto, Stockholm);
+
             @test isa(read(pf09645_sto, Stockholm), AnnotatedMultipleSequenceAlignment)
             for T in msa_types
                 @test isa(read(pf09645_sto, Stockholm, T), T)
@@ -99,6 +101,21 @@
             @test length(annotations(msa)) > 8 # 8 + modifications
             @test length(getannotcolumn(msa)) == 2
             @test length(getannotresidue(msa)) == 1
+        end
+
+        @testset "File write Matrix{Residue}" begin
+
+            path = tempdir()
+            tmp_file = joinpath(path, ".tmp.stockholm")
+            try
+                msa = read(pf09645_sto, Stockholm, Matrix{Residue})
+                write(tmp_file, msa, Stockholm)
+                @test read(tmp_file, Stockholm, Matrix{Residue}) == msa
+            finally
+                if isfile(tmp_file)
+                    rm(tmp_file)
+                end
+            end
         end
 
         @testset "Keep insert columns" begin
@@ -328,6 +345,98 @@
             @test vec(getsequence(ref, 1)) == res"THAYQAIHQ-"
             ref = adjustreference(ref)
             @test vec(getsequence(ref, 1)) == res"THAYQAIHQ"
+        end
+    end
+
+    @testset "NBRF/PIR" begin
+
+        # Example NBRF file: http://iubio.bio.indiana.edu/soft/molbio/readseq/classic/src/Formats
+        # "The sequence is free format and may be interrupted by blanks for ease of reading"
+        example = joinpath(pwd(), "data", "example.nbrf")
+        # Alignment file (PIR) from https://salilab.org/modeller/9v7/manual/node445.html
+        modeller = joinpath(pwd(), "data", "modeller.pir.gz")
+        # http://emboss.sourceforge.net/docs/themes/seqformats/NbrfFormat.html
+        # "sequence may contain punctuation symbols to indicate various degrees of
+        # reliability of the data"
+        emboss = joinpath(pwd(), "data", "emboss.pir")
+
+        @testset "Read" begin
+
+            @test isa(read(modeller, PIR), AnnotatedMultipleSequenceAlignment)
+            for T in msa_types
+                @test isa(read(modeller, PIR, T), T)
+            end
+
+            msa = read(modeller, PIR)
+            @test size(msa) == (2, 106)
+        end
+
+        @testset "Print" begin
+
+            msa = read(example, PIR)
+
+            @test stringsequence(msa, 1) == "MTNIRKSHPLFKIINHSFIDLPAPSVTHICRDVNYGWLIRYTWIGGQPVEHPFIIIGQLASISYFSIILILMPISGIVEDKMLKWN"
+
+            out = IOBuffer()
+            print(out, msa, PIR)
+            @test String(take!(out)) == """
+                >P1;CBRT
+                Cytochrome b - Rat mitochondrion (SGC1)
+                MTNIRKSHPLFKIINHSFIDLPAPSVTHICRDVNYGWLIRYTWIGGQPVEHPFIIIGQLASISYFSIILILMPISGIVED
+                KMLKWN*
+                """
+
+            out = IOBuffer()
+            print(out, msa.matrix, PIR) # NamedResidueMatrix
+            @test String(take!(out)) == """
+                >XX;CBRT
+
+                MTNIRKSHPLFKIINHSFIDLPAPSVTHICRDVNYGWLIRYTWIGGQPVEHPFIIIGQLASISYFSIILILMPISGIVED
+                KMLKWN*
+                """
+
+            out = IOBuffer()
+            print(out, msa.matrix.array, PIR) # Matrix{Residue}
+            @test String(take!(out)) == """
+                >XX;1
+
+                MTNIRKSHPLFKIINHSFIDLPAPSVTHICRDVNYGWLIRYTWIGGQPVEHPFIIIGQLASISYFSIILILMPISGIVED
+                KMLKWN*
+                """
+
+        end
+
+        @testset "Gaps" begin
+
+            msa = read(modeller, PIR)
+            @test gapfraction(msa, 2) ≈ [0.0, 0.49056603773584906]
+            @test getannotsequence(msa, "5fd1", "Type") == "P1"
+            @test getannotsequence(msa, "5fd1",
+                "Title") == "structureX:5fd1:1    :A:106  :A:ferredoxin:Azotobacter vinelandii: 1.90: 0.19"
+        end
+
+        @testset "String input/output" begin
+
+            emboss_string = """
+                >P1;AZBR
+                finger protein zfpA - turnip fern chloroplast
+                GDVE(G.K.G.I.F=T,M,C.S.Q,C.H.V,E.K.G.G.K.H)
+                FTGPNLHGLFGRK.TGQAVGYSYTAANK.NK.GIIWGDDTLM
+                EYLENPK.RYIPGTK.MVFTGLSK.YRE
+                RTNLIAYLK.EK.TAA*
+                """
+            # MIToS always reads . as -
+            msa = read(emboss, PIR, deletefullgaps=false)
+            @test parse(emboss_string, PIR, deletefullgaps=false) == msa
+
+            out = IOBuffer()
+            print(out, msa, PIR)
+            @test String(take!(out)) == """
+                >P1;AZBR
+                finger protein zfpA - turnip fern chloroplast
+                GDVEG-K-G-I-FTMC-S-QC-H-VE-K-G-G-K-HFTGPNLHGLFGRK-TGQAVGYSYTAANK-NK-GIIWGDDTLMEY
+                LENPK-RYIPGTK-MVFTGLSK-YRERTNLIAYLK-EK-TAA*
+                """
         end
     end
 end

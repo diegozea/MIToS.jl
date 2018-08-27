@@ -121,10 +121,10 @@ end
 # ----------------------
 
 const AnnotatedAlignedObject = Union{ AnnotatedMultipleSequenceAlignment,
-                                        AnnotatedAlignedSequence    }
+                                      AnnotatedAlignedSequence    }
 
-const UnannotatedAlignedObject = Union{   MultipleSequenceAlignment,
-                                            AlignedSequence    }
+const UnannotatedAlignedObject = Union{ MultipleSequenceAlignment,
+                                        AlignedSequence    }
 
 # Matrices
 # --------

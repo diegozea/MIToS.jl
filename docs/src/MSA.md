@@ -9,7 +9,7 @@ using MIToS.MSA # to load the MSA module
 
 ## Features
 
-- [**Read**](@ref Reading-MSA-files) and [**write**](@ref Writing-MSA-files) MSAs in `Stockholm`, `FASTA` or `Raw` format.
+- [**Read**](@ref Reading-MSA-files) and [**write**](@ref Writing-MSA-files) MSAs in `Stockholm`, `FASTA`, `PIR` or `Raw` format.
 - Handle [**MSA annotations**](@ref MSA-Annotations).
 - [**Edit the MSA**](@ref Editing-your-MSA), e.g. delete columns or sequences, change sequence order, shuffling...
 - [**Keep track of positions**](@ref Column-and-sequence-mappings) and annotations after modifications on the MSA.
@@ -34,7 +34,7 @@ decides how to open the file, using the prefixes and suffixes of the file name, 
 `parse` does the actual parsing of the file. You can `read` **gzipped files** if they have
 the `.gz` extension and also urls pointing to a **web file**.  
 The second argument of `read` and `parse` is the file `FileFormat`. The supported MSA formats
-at the moment are `Stockholm`, `FASTA` and `Raw`.  
+at the moment are `Stockholm`, `FASTA`, `PIR` (NBRF) and `Raw`.  
 For example, reading with MIToS the full Stockholm MSA of the family PF07388 using the Pfam
 RESTful interface will be:  
 
@@ -94,7 +94,7 @@ printmodifications(msa)
 
 Julia REPL shows MSAs as Matrices. If you want to print them in another format, you should
 use the `print` function with an MSA object as first argument and the `FileFormat` `FASTA`,
-`Stockholm` or `Raw` as second argument.  
+`Stockholm`, `PIR` or `Raw` as second argument.  
 
 ```@example msa_write
 using MIToS.MSA
@@ -125,7 +125,10 @@ have feature names as keys and the values are strings (free text). Lines startin
 - **Column annotations** : They have feature names as keys and strings with exactly 1 char
 per column as values. Lines starting with `#=GC` in Stockholm format.  
 - **Sequence annotations** : The keys are tuples with the sequence name and the feature
-name. The values are free text (strings). Lines starting with `#=GS` in Stockholm format.  
+name. The values are free text (strings). Lines starting with `#=GS` in Stockholm format.
+Annotations in the `PIR`/NBRF format are also stored as sequence annotations. In
+particular, we use the names `"Type"` and `"Title"` to name the sequence type in the
+identifier line and the first comment line before the sequence in PIR files, respectively.  
 - **Residue annotations** : The keys are tuples with the sequence name and the feature
 name. The values are strings with exactly 1 char per column/residues. `#=GR` lines in
 Stockholm format.  

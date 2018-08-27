@@ -2,13 +2,16 @@
 
 ### Changes from v2.1.2 to master
 
-* `HTTP.jl` is used in place of `FTPClient.jl` and the deprecated `Requests.jl` in 
+* `PIR` `FileFormat` is included to read and write alignments in PIR/NBRF format.
+
+* `Utils.Format` was renamed to `Utils.FileFormat`
+
+* `HTTP.jl` is used in place of `FTPClient.jl` and the deprecated `Requests.jl` in
 `Utils.download_file` to download files.
 
 * `Format.jl` is used in place of `Formatting.jl`
 
-* `Utils.Format` was renamed to `Utils.FileFormat`
-
+* Solve bug in the printing of matrices of `Residue`s using `FileFormat`s.
 
 ### Changes from v2.1.1 to v2.2
 

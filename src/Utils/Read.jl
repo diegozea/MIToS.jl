@@ -4,16 +4,16 @@ import Base: read
 abstract type FileFormat end
 
 """
-`download_file` uses **HTTP.jl** instead of system calls to download files 
+`download_file` uses **HTTP.jl** instead of system calls to download files
 from the web. It takes the file url as first argument and, optionally, a path to save it.
 Keyword arguments (ie. `redirect`, `retry`, `readtimeout`)
 are are directly passed to to `HTTP.open` (`HTTP.request`).
-Use the `headers` keyword argument to pass a `Dict{String,String}` with the 
-header information.  
+Use the `headers` keyword argument to pass a `Dict{String,String}` with the
+header information.
 
 ```julia
 julia> download_file("http://www.uniprot.org/uniprot/P69905.fasta","seq.fasta",
-       headers = Dict("User-Agent" => 
+       headers = Dict("User-Agent" =>
                       "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)"),
        redirect=true)
 "seq.fasta"
@@ -21,7 +21,7 @@ julia> download_file("http://www.uniprot.org/uniprot/P69905.fasta","seq.fasta",
 ```
 """
 function download_file(url::AbstractString, filename::AbstractString;
-                       headers::Dict{String,String}=Dict{String,String}(), 
+                       headers::Dict{String,String}=Dict{String,String}(),
                        kargs...)
     HTTP.open("GET", url, headers; kargs...) do stream
         open(filename, "w") do fh
@@ -31,9 +31,9 @@ function download_file(url::AbstractString, filename::AbstractString;
     filename
 end
 
-function download_file(url::AbstractString; 
-                       headers::Dict{String,String}=Dict{String,String}(), 
-                       kargs...) 
+function download_file(url::AbstractString;
+                       headers::Dict{String,String}=Dict{String,String}(),
+                       kargs...)
     download_file(url, tempname(); headers=headers, kargs...)
 end
 
@@ -58,12 +58,15 @@ end
 isnotemptyfile(filename) = isfile(filename) && filesize(filename) > 0
 
 # for using with download, since filename doesn't have file extension
-function _read(completename, filename, format, args...; kargs...)
+function _read(completename::AbstractString,
+               filename::AbstractString,
+               format::Type{T},
+               args...; kargs...) where T <: FileFormat
     check_file(filename)
     if endswith(completename, ".xml.gz") || endswith(completename, ".xml")
         document = parse_file(filename)
         try
-            parse(document, format, args...; kargs...)
+            parse(document, T, args...; kargs...)
         finally
             free(document)
         end
@@ -71,7 +74,7 @@ function _read(completename, filename, format, args...; kargs...)
         fh = open(filename, "r")
         try
             fh = endswith(completename, ".gz") ? GzipDecompressorStream(fh) : fh
-            parse(fh, format, args...; kargs...)
+            parse(fh, T, args...; kargs...)
         finally
             close(fh)
         end
@@ -86,19 +89,21 @@ the given `FileFormat` and `Type` on it. If the  `pathname` is an HTTP or FTP UR
 the file is downloaded with `download` in a temporal file.
 Gzipped files should end on `.gz`.
 """
-function read(completename::AbstractString, format::Type{T}, args...; kargs...) where T <: FileFormat
+function read(completename::AbstractString,
+              format::Type{T},
+              args...; kargs...) where T <: FileFormat
     if  startswith(completename, "http://")  ||
         startswith(completename, "https://") ||
         startswith(completename, "ftp://")
 
         filename = download_file(completename)
         try
-            _read(completename, filename, format, args...; kargs...)
+            _read(completename, filename, T, args...; kargs...)
         finally
             rm(filename)
         end
     else
-        _read(completename, completename, format, args...; kargs...)
-            # completename and filename are the same
+        # completename and filename are the same
+        _read(completename, completename, T, args...; kargs...)
     end
 end

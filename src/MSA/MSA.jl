@@ -82,6 +82,8 @@ export  # Residue
         Stockholm,
         # FASTA
         FASTA,
+        # NBRF/PIR
+        PIR,
         # PLM
         sequencepairsmatrix, columnpairsmatrix,
         # Identity
@@ -112,6 +114,7 @@ include("GeneralParserMethods.jl")
 include("Raw.jl")
 include("Stockholm.jl")
 include("FASTA.jl")
+include("PIR.jl")
 include("Shuffle.jl")
 include("PLM.jl")
 include("Identity.jl")
