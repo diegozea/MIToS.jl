@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Scripts · MIToS</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>MIToS</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="index.html">Home</a></li><li><a class="toctext" href="Installation.html">Installation</a></li><li><a class="toctext" href="Example.html">Example</a></li><li><span class="toctext">Modules</span><ul><li><a class="toctext" href="MSA.html">MSA</a></li><li><a class="toctext" href="Information.html">Information</a></li><li><a class="toctext" href="SIFTS.html">SIFTS</a></li><li><a class="toctext" href="PDB.html">PDB</a></li><li><a class="toctext" href="Pfam.html">Pfam</a></li></ul></li><li class="current"><a class="toctext" href="Scripts.html">Scripts</a><ul class="internal"><li><a class="toctext" href="#Buslje09.jl-1">Buslje09.jl</a></li><li><a class="toctext" href="#BLMI.jl-1">BLMI.jl</a></li><li><a class="toctext" href="#Conservation.jl-1">Conservation.jl</a></li><li><a class="toctext" href="#DownloadPDB.jl-1">DownloadPDB.jl</a></li><li><a class="toctext" href="#Distances.jl-1">Distances.jl</a></li><li><a class="toctext" href="#MSADescription.jl-1">MSADescription.jl</a></li><li><a class="toctext" href="#PercentIdentity.jl-1">PercentIdentity.jl</a></li><li><a class="toctext" href="#AlignedColumns.jl-1">AlignedColumns.jl</a></li><li><a class="toctext" href="#SplitStockholm.jl-1">SplitStockholm.jl</a></li></ul></li><li><span class="toctext">API</span><ul><li><a class="toctext" href="MSA_API.html">MSA</a></li><li><a class="toctext" href="Information_API.html">Information</a></li><li><a class="toctext" href="SIFTS_API.html">SIFTS</a></li><li><a class="toctext" href="PDB_API.html">PDB</a></li><li><a class="toctext" href="Pfam_API.html">Pfam</a></li><li><a class="toctext" href="Utils_API.html">Utils</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href="Scripts.html">Scripts</a></li></ul><a class="edit-page" href="https://github.com/diegozea/MIToS.jl/blob/master/docs/src/Scripts.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Scripts</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Scripts-1" href="#Scripts-1">Scripts</a></h1><p>MIToS implements several useful scripts to <strong>command line execution (without requiring Julia coding)</strong>. All this scripts are located in the <code>scripts</code> folder of the MIToS directory. You can copy them to your working directory, use the path to their folder or put them in the path (look into the <strong>Installation</strong> section of this manual).  </p><ul><li><a href="Scripts.html#Scripts-1">Scripts</a></li><ul><li><a href="Scripts.html#Buslje09.jl-1">Buslje09.jl</a></li><li><a href="Scripts.html#BLMI.jl-1">BLMI.jl</a></li><li><a href="Scripts.html#Conservation.jl-1">Conservation.jl</a></li><li><a href="Scripts.html#DownloadPDB.jl-1">DownloadPDB.jl</a></li><li><a href="Scripts.html#Distances.jl-1">Distances.jl</a></li><li><a href="Scripts.html#MSADescription.jl-1">MSADescription.jl</a></li><li><a href="Scripts.html#PercentIdentity.jl-1">PercentIdentity.jl</a></li><li><a href="Scripts.html#AlignedColumns.jl-1">AlignedColumns.jl</a></li><li><a href="Scripts.html#SplitStockholm.jl-1">SplitStockholm.jl</a></li></ul></ul><h2><a class="nav-anchor" id="Buslje09.jl-1" href="#Buslje09.jl-1">Buslje09.jl</a></h2><pre><code class="language-julia-repl">julia&gt; julia_path = joinpath(Base.JULIA_HOME, &quot;julia&quot;)
+&quot;/home/travis/julia/bin/julia&quot;
+
+julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;, &quot;Buslje09.jl&quot;)
+&quot;/home/travis/.julia/v0.6/MIToS/scripts/Buslje09.jl&quot;
+
+julia&gt; run(`$julia_path $script_path -h`)
+WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
+usage: Buslje09.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT]
+                   [-L LAMBDA] [-c] [-i THRESHOLD] [-g MAXGAP] [-a]
+                   [-s SAMPLES] [-G] [-F] [--version] [-h] [FILE]
+
+This takes a MSA file as input. It calculates and saves on
+*.busjle09.csv a Z score and a corrected MI/MIp as described on:
+Buslje, C. M., Santos, J., Delfino, J. M., &amp; Nielsen, M. (2009).
+Correction for phylogeny, small number of observations and data
+redundancy improves the identification of coevolving amino acid pairs
+using mutual information. Bioinformatics, 25(9), 1125-1131.
+
+positional arguments:
+  FILE                  File name. If it is not used, the script reads
+                        from STDIN.
+
+optional arguments:
+  -l, --list            The input is a list of file names. If -p is
+                        used, files will be processed in parallel.
+  -o, --output OUTPUT   Name of the output file. Output will be gzip
+                        if the extension is &quot;.gz&quot;. If it starts with a
+                        dot, the name is used as a suffix or extension
+                        of the input filename. If it ends with a dot,
+                        is used as a prefix. If the output name starts
+                        and ends with dots, it&#39;s used as an interfix
+                        before the extension.If a single file is used
+                        and there is not a file name (STDIN), the
+                        output will be print into STDOUT, unless a
+                        output filename is used. You can use &quot;STDOUT&quot;
+                        to force print into STDOUT. STDOUT can not be
+                        use with --list. (default: &quot;.busjle09.csv&quot;)
+  -p, --parallel PARALLEL
+                        Number of worker processes. (type: Int64,
+                        default: 1)
+  -f, --format FORMAT   Format of the MSA: Stockholm, Raw or FASTA
+                        (default: &quot;Stockholm&quot;)
+  -L, --lambda LAMBDA   Low count value (type: Float64, default: 0.05)
+  -c, --clustering      Sequence clustering (Hobohm I)
+  -i, --threshold THRESHOLD
+                        Percent identity threshold for sequence
+                        clustering (Hobohm I) (type: Float64, default:
+                        62.0)
+  -g, --maxgap MAXGAP   Maximum fraction of gaps in positions included
+                        in calculation (type: Float64, default: 0.5)
+  -a, --apc             Use APC correction (MIp)
+  -s, --samples SAMPLES
+                        Number of samples for Z-score (type: Int64,
+                        default: 100)
+  -G, --usegap          Use gaps on statistics
+  -F, --fixedgaps       Fix gaps positions for the random samples
+  --version             show version information and exit
+  -h, --help            show this help message and exit
+
+
+MIToS 2.1.2+
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h2><a class="nav-anchor" id="BLMI.jl-1" href="#BLMI.jl-1">BLMI.jl</a></h2><pre><code class="language-julia-repl">julia&gt; julia_path = joinpath(Base.JULIA_HOME, &quot;julia&quot;)
+&quot;/home/travis/julia/bin/julia&quot;
+
+julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;, &quot;BLMI.jl&quot;)
+&quot;/home/travis/.julia/v0.6/MIToS/scripts/BLMI.jl&quot;
+
+julia&gt; run(`$julia_path $script_path -h`)
+WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
+usage: BLMI.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT] [-b BETA]
+               [-i THRESHOLD] [-g MAXGAP] [-a] [-s SAMPLES] [-F]
+               [--version] [-h] [FILE]
+
+This takes a MSA file as input. Calculates and saves on *.BLMI.csv a Z
+score and a corrected MI/MIp. The script uses BLOSUM62 based pseudo
+frequencies and sequences clustering (Hobohm I).
+
+positional arguments:
+  FILE                  File name. If it is not used, the script reads
+                        from STDIN.
+
+optional arguments:
+  -l, --list            The input is a list of file names. If -p is
+                        used, files will be processed in parallel.
+  -o, --output OUTPUT   Name of the output file. Output will be gzip
+                        if the extension is &quot;.gz&quot;. If it starts with a
+                        dot, the name is used as a suffix or extension
+                        of the input filename. If it ends with a dot,
+                        is used as a prefix. If the output name starts
+                        and ends with dots, it&#39;s used as an interfix
+                        before the extension.If a single file is used
+                        and there is not a file name (STDIN), the
+                        output will be print into STDOUT, unless a
+                        output filename is used. You can use &quot;STDOUT&quot;
+                        to force print into STDOUT. STDOUT can not be
+                        use with --list. (default: &quot;.BLMI.csv&quot;)
+  -p, --parallel PARALLEL
+                        Number of worker processes. (type: Int64,
+                        default: 1)
+  -f, --format FORMAT   Format of the MSA: Stockholm, Raw or FASTA
+                        (default: &quot;Stockholm&quot;)
+  -b, --beta BETA       β for BLOSUM62 pseudo frequencies (type:
+                        Float64, default: 8.512)
+  -i, --threshold THRESHOLD
+                        Percent identity threshold for sequence
+                        clustering (Hobohm I) (type: Float64, default:
+                        62.0)
+  -g, --maxgap MAXGAP   Maximum fraction of gaps in positions included
+                        in calculation (type: Float64, default: 0.5)
+  -a, --apc             Use APC correction (MIp)
+  -s, --samples SAMPLES
+                        Number of samples for Z-score (type: Int64,
+                        default: 50)
+  -F, --fixedgaps       Fix gaps positions for the random samples
+  --version             show version information and exit
+  -h, --help            show this help message and exit
+
+
+MIToS 2.1.2+
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h2><a class="nav-anchor" id="Conservation.jl-1" href="#Conservation.jl-1">Conservation.jl</a></h2><pre><code class="language-julia-repl">julia&gt; julia_path = joinpath(Base.JULIA_HOME, &quot;julia&quot;)
+&quot;/home/travis/julia/bin/julia&quot;
+
+julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;, &quot;Conservation.jl&quot;)
+&quot;/home/travis/.julia/v0.6/MIToS/scripts/Conservation.jl&quot;
+
+julia&gt; run(`$julia_path $script_path -h`)
+WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
+usage: Conservation.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT] [-c]
+                       [-i THRESHOLD] [--version] [-h] [FILE]
+
+This takes a MSA file as input and it calculates and saves on
+*.conservation.csv the Shannon entropy (H) and Kullback-Leibler
+divergence (KL) values for each column (Johansson and Toh 2010).
+It is possible to do a sequence clustering using the Hobohm I
+algorithm to avoid the effect of sequence redundancy in the
+conservation scores. Each sequence in a cluster is weighted using the
+inverse of the number of elements in that cluster.
+Shannon entropy is a common measure of the residue variability of a
+particular MSA column. For each column, we consider the frequency of
+the 20 natural protein residues. This uses the Euler&#39;s number e as the
+base of the logarithm, so the entropy is measured in nats.
+The Kullback-Leibler divergence, also called relative entropy, is a
+measure of residue conservation. It measures how much a probability
+distribution differs from a background distribution. In particular,
+this implementation measures the divergence between the residue
+distribution of an MSA column and the probabilities derived from the
+BLOSUM62 substitution matrix.
+Johansson, F., Toh, H., 2010. A comparative study of conservation and
+variation scores. BMC Bioinformatics 11, 388.
+
+positional arguments:
+  FILE                  File name. If it is not used, the script reads
+                        from STDIN.
+
+optional arguments:
+  -l, --list            The input is a list of file names. If -p is
+                        used, files will be processed in parallel.
+  -o, --output OUTPUT   Name of the output file. Output will be gzip
+                        if the extension is &quot;.gz&quot;. If it starts with a
+                        dot, the name is used as a suffix or extension
+                        of the input filename. If it ends with a dot,
+                        is used as a prefix. If the output name starts
+                        and ends with dots, it&#39;s used as an interfix
+                        before the extension.If a single file is used
+                        and there is not a file name (STDIN), the
+                        output will be print into STDOUT, unless a
+                        output filename is used. You can use &quot;STDOUT&quot;
+                        to force print into STDOUT. STDOUT can not be
+                        use with --list. (default:
+                        &quot;.conservation.csv&quot;)
+  -p, --parallel PARALLEL
+                        Number of worker processes. (type: Int64,
+                        default: 1)
+  -f, --format FORMAT   Format of the MSA: Stockholm, Raw or FASTA
+                        (default: &quot;Stockholm&quot;)
+  -c, --clustering      Sequence clustering (Hobohm I)
+  -i, --threshold THRESHOLD
+                        Percent identity threshold for sequence
+                        clustering (Hobohm I) (type: Float64, default:
+                        62.0)
+  --version             show version information and exit
+  -h, --help            show this help message and exit
+
+
+MIToS 2.1.2+
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h2><a class="nav-anchor" id="DownloadPDB.jl-1" href="#DownloadPDB.jl-1">DownloadPDB.jl</a></h2><pre><code class="language-julia-repl">julia&gt; julia_path = joinpath(Base.JULIA_HOME, &quot;julia&quot;)
+&quot;/home/travis/julia/bin/julia&quot;
+
+julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;, &quot;DownloadPDB.jl&quot;)
+&quot;/home/travis/.julia/v0.6/MIToS/scripts/DownloadPDB.jl&quot;
+
+julia&gt; run(`$julia_path $script_path -h`)
+WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
+usage: DownloadPDB.jl [-c CODE] [-l LIST] [-f FORMAT] [--version] [-h]
+
+Download gzipped files from PDB.
+
+optional arguments:
+  -c, --code CODE      PDB code
+  -l, --list LIST      File with a list of PDB codes (one per line)
+  -f, --format FORMAT  Format. It should be PDBFile (pdb) or PDBML
+                       (xml) (default: &quot;PDBML&quot;)
+  --version            show version information and exit
+  -h, --help           show this help message and exit
+
+
+MIToS 2.1.2+
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h2><a class="nav-anchor" id="Distances.jl-1" href="#Distances.jl-1">Distances.jl</a></h2><pre><code class="language-julia-repl">julia&gt; julia_path = joinpath(Base.JULIA_HOME, &quot;julia&quot;)
+&quot;/home/travis/julia/bin/julia&quot;
+
+julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;, &quot;Distances.jl&quot;)
+&quot;/home/travis/.julia/v0.6/MIToS/scripts/Distances.jl&quot;
+
+julia&gt; run(`$julia_path $script_path -h`)
+WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
+usage: Distances.jl [-l] [-o OUTPUT] [-p PARALLEL] [-d DISTANCE]
+                    [-f FORMAT] [-m MODEL] [-c CHAIN] [-g GROUP] [-i]
+                    [--version] [-h] [FILE]
+
+Calculates residues distance and writes them into a *.distances.csv.gz
+gzipped file.
+
+positional arguments:
+  FILE                  File name. If it is not used, the script reads
+                        from STDIN.
+
+optional arguments:
+  -l, --list            The input is a list of file names. If -p is
+                        used, files will be processed in parallel.
+  -o, --output OUTPUT   Name of the output file. Output will be gzip
+                        if the extension is &quot;.gz&quot;. If it starts with a
+                        dot, the name is used as a suffix or extension
+                        of the input filename. If it ends with a dot,
+                        is used as a prefix. If the output name starts
+                        and ends with dots, it&#39;s used as an interfix
+                        before the extension.If a single file is used
+                        and there is not a file name (STDIN), the
+                        output will be print into STDOUT, unless a
+                        output filename is used. You can use &quot;STDOUT&quot;
+                        to force print into STDOUT. STDOUT can not be
+                        use with --list. (default:
+                        &quot;.distances.csv.gz&quot;)
+  -p, --parallel PARALLEL
+                        Number of worker processes. (type: Int64,
+                        default: 1)
+  -d, --distance DISTANCE
+                        The distance to be calculated, options: All,
+                        Heavy, CA, CB (default: &quot;All&quot;)
+  -f, --format FORMAT   Format of the PDB file: It should be PDBFile
+                        or PDBML (default: &quot;PDBFile&quot;)
+  -m, --model MODEL     The model to be used, use All for all
+                        (default: &quot;1&quot;)
+  -c, --chain CHAIN     The chain to be used, use All for all
+                        (default: &quot;All&quot;)
+  -g, --group GROUP     Group of atoms to be used, should be ATOM,
+                        HETATM or All for all (default: &quot;All&quot;)
+  -i, --inter           Calculate inter chain distances
+  --version             show version information and exit
+  -h, --help            show this help message and exit
+
+
+MIToS 2.1.2+
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h2><a class="nav-anchor" id="MSADescription.jl-1" href="#MSADescription.jl-1">MSADescription.jl</a></h2><pre><code class="language-julia-repl">julia&gt; julia_path = joinpath(Base.JULIA_HOME, &quot;julia&quot;)
+&quot;/home/travis/julia/bin/julia&quot;
+
+julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;, &quot;MSADescription.jl&quot;)
+&quot;/home/travis/.julia/v0.6/MIToS/scripts/MSADescription.jl&quot;
+
+julia&gt; run(`$julia_path $script_path -h`)
+WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
+usage: MSADescription.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT]
+                        [-e] [--version] [-h] [FILE]
+
+Creates an *.description.csv from a Stockholm file with: the number of
+columns, sequences, clusters after Hobohm clustering at 62% identity
+and mean percent identity. Also the mean, standard deviation and
+quantiles of: sequence coverage of the MSA, gap percentage.
+
+positional arguments:
+  FILE                  File name. If it is not used, the script reads
+                        from STDIN.
+
+optional arguments:
+  -l, --list            The input is a list of file names. If -p is
+                        used, files will be processed in parallel.
+  -o, --output OUTPUT   Name of the output file. Output will be gzip
+                        if the extension is &quot;.gz&quot;. If it starts with a
+                        dot, the name is used as a suffix or extension
+                        of the input filename. If it ends with a dot,
+                        is used as a prefix. If the output name starts
+                        and ends with dots, it&#39;s used as an interfix
+                        before the extension.If a single file is used
+                        and there is not a file name (STDIN), the
+                        output will be print into STDOUT, unless a
+                        output filename is used. You can use &quot;STDOUT&quot;
+                        to force print into STDOUT. STDOUT can not be
+                        use with --list. (default: &quot;.description.csv&quot;)
+  -p, --parallel PARALLEL
+                        Number of worker processes. (type: Int64,
+                        default: 1)
+  -f, --format FORMAT   Format of the MSA: Stockholm, Raw or FASTA
+                        (default: &quot;Stockholm&quot;)
+  -e, --exact           If it&#39;s true, the mean percent identity is
+                        exact (using all the pairwise comparisons).
+  --version             show version information and exit
+  -h, --help            show this help message and exit
+
+
+MIToS 2.1.2+
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h2><a class="nav-anchor" id="PercentIdentity.jl-1" href="#PercentIdentity.jl-1">PercentIdentity.jl</a></h2><pre><code class="language-julia-repl">julia&gt; julia_path = joinpath(Base.JULIA_HOME, &quot;julia&quot;)
+&quot;/home/travis/julia/bin/julia&quot;
+
+julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;, &quot;PercentIdentity.jl&quot;)
+&quot;/home/travis/.julia/v0.6/MIToS/scripts/PercentIdentity.jl&quot;
+
+julia&gt; run(`$julia_path $script_path -h`)
+WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
+usage: PercentIdentity.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT]
+                        [-s] [--version] [-h] [FILE]
+
+Calculates the percentage identity between all the sequences of an MSA
+and creates an *.pidstats.csv file with: The number of columns and
+sequences. The mean, standard deviation, median, minimum and maximum
+values and first and third quantiles of the percentage identity. It
+could also create and pidlist.csv file with the percentage identity
+for each pairwise comparison.
+
+positional arguments:
+  FILE                  File name. If it is not used, the script reads
+                        from STDIN.
+
+optional arguments:
+  -l, --list            The input is a list of file names. If -p is
+                        used, files will be processed in parallel.
+  -o, --output OUTPUT   Name of the output file. Output will be gzip
+                        if the extension is &quot;.gz&quot;. If it starts with a
+                        dot, the name is used as a suffix or extension
+                        of the input filename. If it ends with a dot,
+                        is used as a prefix. If the output name starts
+                        and ends with dots, it&#39;s used as an interfix
+                        before the extension.If a single file is used
+                        and there is not a file name (STDIN), the
+                        output will be print into STDOUT, unless a
+                        output filename is used. You can use &quot;STDOUT&quot;
+                        to force print into STDOUT. STDOUT can not be
+                        use with --list. (default: &quot;.pidstats.csv&quot;)
+  -p, --parallel PARALLEL
+                        Number of worker processes. (type: Int64,
+                        default: 1)
+  -f, --format FORMAT   Format of the MSA: Stockholm, Raw or FASTA
+                        (default: &quot;Stockholm&quot;)
+  -s, --savelist        Create and pidlist.csv file with the
+                        percentage identity for each pairwise
+                        comparison.
+  --version             show version information and exit
+  -h, --help            show this help message and exit
+
+
+MIToS 2.1.2+
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h2><a class="nav-anchor" id="AlignedColumns.jl-1" href="#AlignedColumns.jl-1">AlignedColumns.jl</a></h2><pre><code class="language-julia-repl">julia&gt; julia_path = joinpath(Base.JULIA_HOME, &quot;julia&quot;)
+&quot;/home/travis/julia/bin/julia&quot;
+
+julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;, &quot;AlignedColumns.jl&quot;)
+&quot;/home/travis/.julia/v0.6/MIToS/scripts/AlignedColumns.jl&quot;
+
+julia&gt; run(`$julia_path $script_path -h`)
+WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
+usage: AlignedColumns.jl [-l] [-o OUTPUT] [-p PARALLEL] [--version]
+                        [-h] [FILE]
+
+Creates a file in Stockholm format with the aligned columns from a
+Pfam Stockholm file. Insertions are deleted, as they are unaligned in
+a proﬁle HMM. The output file *.aligned.* contains UniProt residue
+numbers and original column numbers in its annotations.
+
+positional arguments:
+  FILE                  File name. If it is not used, the script reads
+                        from STDIN.
+
+optional arguments:
+  -l, --list            The input is a list of file names. If -p is
+                        used, files will be processed in parallel.
+  -o, --output OUTPUT   Name of the output file. Output will be gzip
+                        if the extension is &quot;.gz&quot;. If it starts with a
+                        dot, the name is used as a suffix or extension
+                        of the input filename. If it ends with a dot,
+                        is used as a prefix. If the output name starts
+                        and ends with dots, it&#39;s used as an interfix
+                        before the extension.If a single file is used
+                        and there is not a file name (STDIN), the
+                        output will be print into STDOUT, unless a
+                        output filename is used. You can use &quot;STDOUT&quot;
+                        to force print into STDOUT. STDOUT can not be
+                        use with --list. (default: &quot;.aligned.&quot;)
+  -p, --parallel PARALLEL
+                        Number of worker processes. (type: Int64,
+                        default: 1)
+  --version             show version information and exit
+  -h, --help            show this help message and exit
+
+
+MIToS 2.1.2+
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h2><a class="nav-anchor" id="SplitStockholm.jl-1" href="#SplitStockholm.jl-1">SplitStockholm.jl</a></h2><pre><code class="language-julia-repl">julia&gt; julia_path = joinpath(Base.JULIA_HOME, &quot;julia&quot;)
+&quot;/home/travis/julia/bin/julia&quot;
+
+julia&gt; script_path = joinpath(Pkg.dir(&quot;MIToS&quot;), &quot;scripts&quot;, &quot;SplitStockholm.jl&quot;)
+&quot;/home/travis/.julia/v0.6/MIToS/scripts/SplitStockholm.jl&quot;
+
+julia&gt; run(`$julia_path $script_path -h`)
+WARNING: unknown MIToS commit 66e8c36b, metadata may be ahead of package cache
+usage: SplitStockholm.jl [-p PATH] [--hideprogress] [--version] [-h]
+                        file
+
+Splits a file with multiple sequence alignments in Stockholm format,
+creating one compressed file per MSA in Stockholm format:
+accessionumber.gz
+
+positional arguments:
+  file             Input file
+
+optional arguments:
+  -p, --path PATH  Path for the output files [default: execution
+                   directory] (default: &quot;&quot;)
+  --hideprogress   Hide the progress bar
+  --version        show version information and exit
+  -h, --help       show this help message and exit
+
+
+MIToS 2.1.2+
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><footer><hr/><a class="previous" href="Pfam.html"><span class="direction">Previous</span><span class="title">Pfam</span></a><a class="next" href="MSA_API.html"><span class="direction">Next</span><span class="title">MSA</span></a></footer></article></body></html>

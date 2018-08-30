@@ -544,25 +544,25 @@ ZMIp, MIp  = buslje09(msa)
 ZMIp</code></pre><pre><code class="language-none">39×39 Named PairwiseListMatrices.PairwiseListMatrix{Float64,false,Array{Float64,1}}
 Col1 ╲ Col2 │          15           16  …           57           58
 ────────────┼──────────────────────────────────────────────────────
-15          │         NaN     0.388047  …     -2.84018     0.847402
-16          │    0.388047          NaN       -0.420577      2.01798
-17          │      2.9865      1.57733      -0.0903354      0.55317
-18          │   -0.129721     0.955075          1.2914    0.0910981
-19          │    -2.01211     -1.69574         4.40047    -0.920247
-20          │    -4.21838     0.556921         1.00129     -2.16015
-21          │     1.86949     -1.14698          2.2209    -0.844973
-25          │    -2.87653     -2.26656      -0.0253401     -3.22464
-26          │    -4.50218     -2.74178         -1.7497     -3.23836
+15          │         NaN    0.0713293  …      -2.9916      1.02629
+16          │   0.0713293          NaN       -0.414708      1.91223
+17          │     2.96537      1.56729       -0.150611     0.485423
+18          │   -0.161444     0.828683         1.37017  -0.00836149
+19          │    -1.47511     -1.98941          4.8521     -1.08321
+20          │     -4.6776     0.560726         1.26513     -2.38342
+21          │     1.90296     -1.10512         2.46699     -1.01748
+25          │      -2.994     -2.46442       0.0745888     -3.70591
+26          │    -4.26998     -2.69964        -2.13908     -3.11294
 ⋮                       ⋮            ⋮  ⋱            ⋮            ⋮
-50          │    -1.48219    -0.647509         2.75802     -1.12499
-51          │    -1.94448      6.54325         8.79807    -0.697803
-52          │     4.37394      -2.5067        -2.94628     0.411775
-53          │    -1.41135     -1.15021        0.663412     0.913684
-54          │     -2.6291    -0.424941         6.44538     0.276776
-55          │     0.68388     -2.16626         4.94271     -0.46532
-56          │    -3.75264      5.44335         6.35719      3.37318
-57          │    -2.84018    -0.420577             NaN      2.69011
-58          │    0.847402      2.01798  …      2.69011          NaN</code></pre></div><div><pre><code class="language-julia">ZBLMIp, BLMIp  = BLMI(msa)
+50          │    -1.26166    -0.665622         2.79251     -1.41861
+51          │    -1.88857      5.97933          8.7062    -0.594707
+52          │     4.27788      -2.0903        -3.20541     0.296535
+53          │    -1.55336     -1.01263        0.915417     0.602973
+54          │    -2.37987    -0.627754         4.97491     0.384514
+55          │    0.635889     -2.22077         4.42686    -0.366245
+56          │    -4.04955      5.23749         5.10712      3.07709
+57          │     -2.9916    -0.414708             NaN      2.95575
+58          │     1.02629      1.91223  …      2.95575          NaN</code></pre></div><div><pre><code class="language-julia">ZBLMIp, BLMIp  = BLMI(msa)
 ZBLMIp</code></pre><pre><code class="language-none">39×39 Named PairwiseListMatrices.PairwiseListMatrix{Float64,false,Array{Float64,1}}
 Col1 ╲ Col2 │           15            16  …            57            58
 ────────────┼──────────────────────────────────────────────────────────
@@ -589,8 +589,8 @@ pyplot()
 
 heatmap(ZMIp, yflip=true)</code></pre></div><p><img src="inf_heatmap.png" alt/>   </p><p>ZMIp is a Z score of the corrected MIp against its distribution on a random MSA (shuffling the residues in each sequence), so pairs with highest values are more likely to co-evolve. Here, we are going to use the top 1% pairs of MSA columns.  </p><div><pre><code class="language-julia">using PairwiseListMatrices # to use getlist
 
-threshold = quantile(getlist(ZMIp), 0.99)</code></pre><pre><code class="language-none">8.603296127951813</code></pre></div><div><pre><code class="language-julia">ZMIp[ ZMIp .&lt; threshold ] = NaN
+threshold = quantile(getlist(ZMIp), 0.99)</code></pre><pre><code class="language-none">8.240764663779105</code></pre></div><div><pre><code class="language-julia">ZMIp[ ZMIp .&lt; threshold ] = NaN
 heatmap(ZMIp, yflip=true)</code></pre></div><p><img src="inf_heatmap_top.png" alt/>   </p><p>We are going to calculate the cMI (cumulative mutual information) value of each node. Where cMI is a mutual information score per position that characterizes the extent of mutual information &quot;interactions&quot; in its neighbourhood. This score is calculated as the sum of MI values above a certain threshold for every amino acid pair where the particular residue appears. This value defines to what degree a given amino acid takes part in a mutual information network and we are going to indicate it using the node color. To calculate cMI we are going to use the <code>cumulative</code> function:   </p><div><pre><code class="language-julia">cMI = cumulative(ZMIp, threshold)</code></pre><pre><code class="language-none">1×39 Named Array{Float64,2}
 Function ╲ Col2 │      15       16       17  …       56       57       58
 ────────────────┼────────────────────────────────────────────────────────
-cumulative      │     0.0      0.0      0.0  …  9.39632  8.79807      0.0</code></pre></div><div></div><footer><hr/><a class="previous" href="MSA.html"><span class="direction">Previous</span><span class="title">MSA</span></a><a class="next" href="SIFTS.html"><span class="direction">Next</span><span class="title">SIFTS</span></a></footer></article></body></html>
+cumulative      │     0.0      0.0      0.0  …  10.4668   8.7062      0.0</code></pre></div><div></div><footer><hr/><a class="previous" href="MSA.html"><span class="direction">Previous</span><span class="title">MSA</span></a><a class="next" href="SIFTS.html"><span class="direction">Next</span><span class="title">SIFTS</span></a></footer></article></body></html>
