@@ -18,7 +18,7 @@ Code Coverage:
 [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/diegozea/MIToS.jl?branch=master) [![codecov.io](http://codecov.io/github/diegozea/MIToS.jl/coverage.svg?branch=master)](http://codecov.io/github/diegozea/MIToS.jl?branch=master)
 
 **NOTE:** [Julia has reached a stable 1.0 version!](https://julialang.org/blog/2018/08/one-point-zero) I'm updating MIToS to work in Julia 0.7/1.0.  
-For the moment, use **MIToS v2.1.2** on [Julia 0.6.4](https://julialang.org/downloads/oldreleases.html). You need to do `Pkg.add("MIToS")` to **install** MIToS on Julia 0.6.4 or `Pkg.update()` to update your installed version.  
+For the moment, use **MIToS v2.2** on [Julia 0.6.4](https://julialang.org/downloads/oldreleases.html). You need to do `Pkg.add("MIToS")` to **install** MIToS on Julia 0.6.4 or `Pkg.update()` to update your installed version.  
 
 Some breaking changes were introduced in MIToS v2.0.0. See the [NEWS.md](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
 file and the [new documentation](https://diegozea.github.io/MIToS.jl/stable) to migrate code from an old version
