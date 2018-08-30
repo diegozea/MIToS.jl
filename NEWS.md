@@ -1,6 +1,6 @@
 ## MIToS.jl Release Notes
 
-### Changes from v2.1.2 to master
+### Changes from v2.1.2 to v2.2
 
 * `PIR` `FileFormat` is included to read and write alignments in PIR/NBRF format.
 
@@ -13,11 +13,6 @@
 
 * Solve bug in the printing of matrices of `Residue`s using `FileFormat`s.
 
-### Changes from v2.1.1 to v2.2
-
-* `ROCAnalysis.jl` is not longer a dependency and it's now used with `@require` from
-`Requires.jl`. To use the `AUC` function you need to do `using ROCAnalysis`.
-
 ### Changes from v2.1.1 to v2.1.2
 
 * `FTPClient.jl` is used in `Utils.download_file` to download files from FTP.
@@ -29,6 +24,9 @@
 * Improvement in `MSA.percentidentity` speed.
 
 * `Information.gaussdca` now uses Julia's `serialize` and `deserialize` instead of `JLD`.
+
+* `ROCAnalysis.jl` is not longer a dependency and it's now used with `@require` from
+`Requires.jl`. To use the `AUC` function you need to do `using ROCAnalysis`.
 
 ### Changes from v2.1 to v2.1.1
 
