@@ -11,10 +11,10 @@ function _get_seqs(io::Union{IO, AbstractString})
     SEQS
 end
 
-function Base.parse{T <: MSAMatrix}(io::Union{IO, AbstractString},
-                                    format::Type{Raw},
-                                    output::Type{T};
-                                    deletefullgaps::Bool=true)::T
+function Base.parse(io::Union{IO, AbstractString},
+                    format::Type{Raw},
+                    output::Type{T};
+                    deletefullgaps::Bool=true)::T where T <: MSAMatrix
     SEQS = _get_seqs(io)
     _strings_to_msa(T, SEQS, deletefullgaps)
 end
