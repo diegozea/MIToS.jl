@@ -51,10 +51,10 @@ end
 # Default counters
 # ================
 
-function _count{N,A <: ResidueAlphabet}(alphabet::A,
-                                        weights, pseudocounts,
-                                        seqs::Vararg{AbstractVector{Residue},N}
-                                        )::ContingencyTable{Float64,N,A}
+function _count(alphabet::A,
+                weights, pseudocounts,
+                seqs::Vararg{AbstractVector{Residue},N}
+                )::ContingencyTable{Float64,N,A} where {N,A <: ResidueAlphabet}
     table = ContingencyTable(Float64, Val{N}, alphabet)::ContingencyTable{Float64,N,A}
     count!(table, weights, pseudocounts, seqs...)
     table
@@ -106,10 +106,10 @@ end
 # Default probabilities
 # =====================
 
-function _probabilities{N,A <: ResidueAlphabet}(alphabet::A,
-                                                weights, pseudocounts, pseudofrequencies,
-                                                seqs::Vararg{AbstractVector{Residue},N}
-                                                )::ContingencyTable{Float64,N,A}
+function _probabilities(alphabet::A,
+                        weights, pseudocounts, pseudofrequencies,
+                        seqs::Vararg{AbstractVector{Residue},N}
+                        )::ContingencyTable{Float64,N,A} where {N,A <: ResidueAlphabet}
     table = ContingencyTable(Float64, Val{N}, alphabet)::ContingencyTable{Float64,N,A}
     probabilities!(table, weights, pseudocounts, pseudofrequencies, seqs...)
     table
