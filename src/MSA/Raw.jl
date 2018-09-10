@@ -69,4 +69,4 @@ function Base.print(io::IO, msa::AbstractMatrix{Residue}, format::Type{Raw})
     end
 end
 
-Base.print(msa::AbstractMatrix{Residue}, format::Type{Raw}) = print(STDOUT, msa, Raw)
+Base.print(msa::AbstractMatrix{Residue}, format::Type{Raw}) = print(stdout, msa, Raw)

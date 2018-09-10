@@ -229,7 +229,7 @@ end
 
 function ContingencyTable(matrix::AbstractArray{T,N}, alphabet::A) where {T,N,A}
     n = length(alphabet)
-    @assert size(matrix) == ((n for i in 1:N)...) "Matrix size doesn't match alphabet length"
+    @assert size(matrix) == ((n for i in 1:N)...,) "Matrix size doesn't match alphabet length"
     table = ContingencyTable(T, Val{N}, alphabet)
     getarray(table.table)[:] = matrix
     _update_marginals!(table)
@@ -372,7 +372,7 @@ function _div!(matrix::NamedArray, value)
 end
 
 "`normalize!` makes the sum of the frequencies to be one, in place."
-function Base.normalize!(table::ContingencyTable{T,N,A}) where {T,N,A}
+function LinearAlgebra.normalize!(table::ContingencyTable{T,N,A}) where {T,N,A}
     if table.total != one(T)
         _div!(table.table, table.total)
         update_marginals!(table)
@@ -381,7 +381,7 @@ function Base.normalize!(table::ContingencyTable{T,N,A}) where {T,N,A}
 end
 
 "`normalize` returns another table where the sum of the frequencies is one."
-Base.normalize(table::ContingencyTable{T,N,A}) where {T,N,A} = normalize!(deepcopy(table))
+LinearAlgebra.normalize(table::ContingencyTable{T,N,A}) where {T,N,A} = normalize!(deepcopy(table))
 
 # Delete Dimensions
 # =================
@@ -389,7 +389,7 @@ Base.normalize(table::ContingencyTable{T,N,A}) where {T,N,A} = normalize!(deepco
 function _list_without_dimensions(len::Int, output_len::Int, dimensions::Int...)
   ndim = length(dimensions)
   @assert (len-ndim) == output_len "$output_len should be = $(len-ndim)"
-  index_list = Array{Int}(output_len)
+  index_list = Array{Int}(undef, output_len)
   j = 1
   @inbounds for i in 1:len
     if ! (i in dimensions)

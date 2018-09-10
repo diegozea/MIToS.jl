@@ -128,7 +128,7 @@
     @testset "Other base methods" begin
 
         for i in 1:22
-            @test bits(i) == bits(Residue(i))
+            @test bitstring(i) == bitstring(Residue(i))
         end
 
         @test typemin(Residue) == Residue(1)

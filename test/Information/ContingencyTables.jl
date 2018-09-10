@@ -8,7 +8,7 @@
             for N in 1:3
                 table = ContingencyTable(Float64, Val{N}, alphabet) # zeros in MIToS 1.0
 
-                @test size(table) == (Int[length(alphabet) for i in 1:N]...)
+                @test size(table) == (Int[length(alphabet) for i in 1:N]...,)
                 @test length(table) == length(alphabet)^N
                 @test length(getmarginals(table)) == length(alphabet)* N
                 @test size(getmarginals(table)) == (length(alphabet), N)

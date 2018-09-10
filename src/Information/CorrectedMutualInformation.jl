@@ -53,7 +53,7 @@ function buslje09(aln::AbstractMatrix{Residue};
     clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
     mi = _buslje09(aln, alphabet, clusters, lambda, apc)
     if samples > 0
-        rand_mi = Array{PairwiseListMatrix{Float64,false,Vector{Float64}}}(samples)
+        rand_mi = Array{PairwiseListMatrix{Float64,false,Vector{Float64}}}(undef, samples)
         zmi = copy(mi)
         residuematrix = getresidues(aln)
         for ns in 1:samples
@@ -128,7 +128,7 @@ function BLMI(aln::AbstractMatrix{Residue};
     numbercl = Float64(nclusters(clusters))
     mi = _BLMI(aln, clusters, numbercl, beta, apc, lambda)
     if samples > 0
-        rand_mi = Array{PairwiseListMatrix{Float64,false,Vector{Float64}}}(samples)
+        rand_mi = Array{PairwiseListMatrix{Float64,false,Vector{Float64}}}(undef, samples)
         zmi = copy(mi)
         residuematrix = getresidues(aln)
         for ns in 1:samples

@@ -1,5 +1,7 @@
 using PkgBenchmark
-using MIToS: Utils, MSA
+using Random
+using MIToS.Utils
+using MIToS.MSA
 
 @benchgroup "Utils" begin
     include(joinpath("Utils", "GeneralUtils.jl"))

@@ -1,6 +1,3 @@
-__precompile__()
-
-
 module MIToS
 
   export Utils, MSA, Information, PDB, SIFTS, Pfam

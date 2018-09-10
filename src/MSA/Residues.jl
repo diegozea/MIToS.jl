@@ -86,6 +86,9 @@ Base.convert(::Type{Residue}, x::Int) = reinterpret(Residue, _valid_residue_inte
 # Conversion to `Int` doesn’t check if the residue is valid
 @inline Base.convert(::Type{Int}, x::Residue) = reinterpret(Int,x)
 
+Residue(i::Int) = convert(Residue, i)
+Base.Int(res::Residue) = convert(Int, res)
+
 # ndims
 # -----
 
@@ -172,10 +175,13 @@ _to_residue[ Int('*') ] = GAP # Usual representation of a translated stop codon
     res
 end
 
+Base.Char(res::Residue) = convert(Char, res)
+Residue(char::Char) = convert(Residue, char)
+
 # Bits
 # ----
 
-Base.bits(res::Residue) = bits(reinterpret(Int, res))
+Base.bitstring(res::Residue) = bitstring(reinterpret(Int, res))
 
 # Show
 # ----
@@ -212,7 +218,7 @@ Base.convert(::Type{Vector{Residue}}, str::AbstractString) = Residue[ char for c
 function Base.convert(::Type{String}, seq::Vector{Residue})
     # Buffer length can be length(seq) since Char(res) is always ASCII
     #                 data                         readable    writable
-    buffer = IOBuffer(Array{UInt8}(length(seq)),    true,       true)
+    buffer = IOBuffer(Array{UInt8}(undef, length(seq)), true, true)
     # To start at the beginning of the buffer:
     truncate(buffer,0)
     for res in seq
@@ -232,7 +238,7 @@ end
 
 function _convert_to_matrix_residues(sequences::Array{String,1}, size::Tuple{Int,Int})
    nseq, nres = size
-   aln = Array{Residue}(nseq, nres)
+   aln = Array{Residue}(undef, nseq, nres)
    @inbounds for (i, str) in enumerate(sequences)
        @inbounds for (j, char) in enumerate(str)
            aln[i, j] = char
@@ -292,7 +298,9 @@ Base.length(res::Residue) = length(Int(res))
 It chooses from the 20 natural residues (it doesn't generate gaps).
 
 ```julia
-julia> srand(1); # Reseed the random number generator.
+julia> using Random
+
+julia> Random.seed!(1); # Reseed the random number generator.
 
 julia> rand(Residue)
 Y

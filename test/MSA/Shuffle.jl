@@ -16,7 +16,7 @@
     lcol = [ mean(msa .== Residue('L'), 1) for msa in msas ]
     lseq = [ mean(msa .== Residue('L'), 2) for msa in msas ]
 
-    srand(42)
+    Random.seed!(42)
 
     @testset "General" begin
 

@@ -16,7 +16,7 @@
 #                 m1 = match(r"^_chem_comp.one_letter_code\s+(\w{1})\s*$",line) # It avoids: ?
 #             end
 #             if startswith(line,"_chem_comp.type")
-#                 peptide = ismatch(r"peptide"i,line) # It avoids 0DA, 2DA, etc...
+#                 peptide = occursin(r"peptide"i,line) # It avoids 0DA, 2DA, etc...
 #             end
 #             if m1 != nothing && m3 != nothing && parent != nothing && peptide
 #                 res = collect(m1[1])[1]

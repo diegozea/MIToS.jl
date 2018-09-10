@@ -6,8 +6,8 @@ struct FASTA <: FileFormat end
 function _pre_readfasta(string::AbstractString)
     seqs = split(string, '>')
     N = length(seqs) - 1
-    IDS  = Array{String}(N)
-    SEQS = Array{String}(N)
+    IDS  = Array{String}(undef, N)
+    SEQS = Array{String}(undef, N)
     for i in 1:N
         fields = split(seqs[i+1], '\n')
         IDS[i] = fields[1]
@@ -18,7 +18,7 @@ function _pre_readfasta(string::AbstractString)
 end
 
 # MethodError: no method matching seek(::TranscodingStreams.TranscodingStream, ::Int)
-_pre_readfasta(io::TranscodingStreams.TranscodingStream) = _pre_readfasta(readstring(io))
+_pre_readfasta(io::TranscodingStreams.TranscodingStream) = _pre_readfasta(read(io, String))
 
 function _pre_readfasta(io)
     IDS  = String[]
@@ -93,4 +93,4 @@ function Base.print(io::IO, msa::AbstractMatrix{Residue}, format::Type{FASTA})
     end
 end
 
-Base.print(msa::AbstractMatrix{Residue}, format::Type{FASTA}) = print(STDOUT, msa, FASTA)
+Base.print(msa::AbstractMatrix{Residue}, format::Type{FASTA}) = print(stdout, msa, FASTA)

@@ -38,7 +38,7 @@ end
 function _filter(str::String, mask::AbstractArray{Bool})
     @assert length(str) == length(mask) "The string and the mask must have the same length"
     #                 data                         readable    writable
-    buffer = IOBuffer(Array{UInt8}(endof(str)),    true,       true)
+    buffer = IOBuffer(Array{UInt8}(undef, endof(str)), true, true)
     # To start at the beginning of the buffer:
     truncate(buffer,0)
     i = 1
@@ -210,7 +210,7 @@ It returns per residue annotation for `(seqname, feature)`
 
 function _test_feature_name(feature::String)
     @assert length(feature) <= 50 "Feature name has a limit of 50 characters."
-    @assert !ismatch(r"\s", feature) "Feature name must not have spaces."
+    @assert !occursin(r"\s", feature) "Feature name must not have spaces."
 end
 
 function setannotfile!(ann::Annotations, feature::String, annotation::String)

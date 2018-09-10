@@ -178,12 +178,12 @@ end
         cap = map(mapping) do res
             number = get(res, dbPDB, :number, "")
             if get(res, dbPDB, :id, "") == "1nsa" && number == "95A"
-                Nullable{String}(number)
+                number
             else
-                Nullable{String}()
+                missing
             end
         end
-        @test get(cap[ [!isnull(x) for x in cap] ][1]) == "95A"
+        @test get(cap[ [!ismissing(x) for x in cap] ][1]) == "95A"
     end
 end
 

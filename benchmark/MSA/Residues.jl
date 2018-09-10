@@ -1,7 +1,7 @@
 # En Pfam 30.0 PF00400 has 268378 sequences
 @benchgroup "Residue conversions" ["IO", "MSA"] begin
 
-    srand(1)
+    Random.seed!(1)
     chars = rand(['.','-','a':'z'...,'A':'Z'...], 268378*2)
     residues = Residue[ char for char in chars ]
     ints = Int[ res for res in residues ]

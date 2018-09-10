@@ -181,4 +181,4 @@ function Base.print(io::IO, msa::AbstractMatrix{Residue}, format::Type{Stockholm
     println(io, "//")
 end
 
-Base.print(msa::AnnotatedMultipleSequenceAlignment) = print(STDOUT, msa, Stockholm)
+Base.print(msa::AnnotatedMultipleSequenceAlignment) = print(stdout, msa, Stockholm)

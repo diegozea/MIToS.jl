@@ -22,11 +22,13 @@ using MIToS.Information
 """
 module Information
 
-using MIToS: Utils, MSA
+using MIToS.Utils
+using MIToS.MSA
 using Base.Cartesian        # nloops for ContingencyTables
 using NamedArrays           # ContingencyTables have NamedArrays
 using DataStructures        # OrderedDicts for NamedArrays
 using StatsBase             # entropy
+using LinearAlgebra         # normalize
 using PairwiseListMatrices
 
 export  # MIToS.MSA

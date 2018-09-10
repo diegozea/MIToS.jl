@@ -1,5 +1,5 @@
 """
-It's like `Base.shuffle`. When a `Matrix{Residue}` is used, you can indicate if the gaps
+It's like `Random.shuffle`. When a `Matrix{Residue}` is used, you can indicate if the gaps
 should remain their positions using the last boolean argument. The previous argument should
 be the dimension to shuffle, 1 for shuffling residues in a sequence (row) or 2 for shuffling
 residues in a column.
@@ -11,7 +11,7 @@ julia> msa = hcat(res"RRE",res"DDK", res"G--")
  R  D  -
  E  K  -
 
-julia> srand(42);
+julia> Random.seed!(42);
 
 julia> shuffle(msa, 1, true)
 3×3 Array{MIToS.MSA.Residue,2}:
@@ -19,7 +19,7 @@ julia> shuffle(msa, 1, true)
  D  R  -
  E  K  -
 
-julia> srand(42);
+julia> Random.seed!(42);
 
 julia> shuffle(msa, 1, false)
 3×3 Array{MIToS.MSA.Residue,2}:
@@ -29,7 +29,7 @@ julia> shuffle(msa, 1, false)
 
 ```
 """
-function Base.shuffle!(r::AbstractRNG, msa::Matrix{Residue},
+function Random.shuffle!(r::AbstractRNG, msa::Matrix{Residue},
                        dim::Int, fixedgaps::Bool=true)
     nseq, ncol = size(msa)
     @assert dim == 1 || dim == 2 "The dimension must be 1 (sequences) or 2 (columns)"
@@ -58,7 +58,7 @@ function Base.shuffle!(r::AbstractRNG, msa::Matrix{Residue},
     msa
 end
 
-function Base.shuffle!(msa::Matrix{Residue}, args...)
+function Random.shuffle!(msa::Matrix{Residue}, args...)
     shuffle!(GLOBAL_RNG, msa, args...)
 end
 
@@ -67,19 +67,19 @@ It's like `shuffle` but in-place. When a `Matrix{Residue}` or a `AbstractAligned
 (sequence or MSA) is used, you can indicate if the gaps should remain their positions
 using the last boolean argument.
 """
-function Base.shuffle(r::AbstractRNG, msa::Matrix{Residue}, args...)
+function Random.shuffle(r::AbstractRNG, msa::Matrix{Residue}, args...)
     shuffle!(r, copy(msa), args...)
 end
 
-function Base.shuffle(msa::Matrix{Residue}, args...)
+function Random.shuffle(msa::Matrix{Residue}, args...)
     shuffle!(GLOBAL_RNG, copy(msa), args...)
 end
 
-function Base.shuffle(r::AbstractRNG,
+function Random.shuffle(r::AbstractRNG,
                       msa::Union{AbstractAlignedObject, NamedResidueMatrix}, args...)
     shuffle(r, copy(getresidues(msa)), args...)
 end
 
-function Base.shuffle(msa::Union{AbstractAlignedObject, NamedResidueMatrix}, args...)
+function Random.shuffle(msa::Union{AbstractAlignedObject, NamedResidueMatrix}, args...)
     shuffle(GLOBAL_RNG, copy(getresidues(msa)), args...)
 end

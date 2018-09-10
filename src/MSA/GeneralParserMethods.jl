@@ -26,9 +26,9 @@ end
 function _to_msa_mapping(sequences::Array{String,1})
     nseq = size(sequences,1)
     nres = length(sequences[1])
-    aln = Array{Residue}(nres, nseq)
-    mapp = Array{String}(nseq)
-    seq_ann = Array{String}(nres)
+    aln = Array{Residue}(undef, nres, nseq)
+    mapp = Array{String}(undef, nseq)
+    seq_ann = Array{String}(undef, nres)
     for i in 1:nseq
         # It checks sequence lengths
         mapp[i], last = _fill_aln_seq_ann!(aln, seq_ann, sequences[i], 1, nres, i)
@@ -42,9 +42,9 @@ end
 function _to_msa_mapping(sequences::Array{String,1}, ids)
     nseq = size(sequences,1)
     nres = length(sequences[1])
-    aln = Array{Residue}(nres, nseq)
-    mapp = Array{String}(nseq)
-    seq_ann = Array{String}(nres)
+    aln = Array{Residue}(undef, nres, nseq)
+    mapp = Array{String}(undef, nseq)
+    seq_ann = Array{String}(undef, nres)
     sep = r"/|-"
     for i in 1:nseq
         fields = split(ids[i], sep)
@@ -148,7 +148,7 @@ function _generate_annotated_msa(annot::Annotations, IDS, SEQS, keepinserts,
             setnames!(MSA, IDS, 1)
         end
         if getannotfile(annot,"ColMap","") != ""
-            warn("""
+            @warn("""
             The file already has column annotations. ColMap will be replaced.
             You can use generatemapping=false to keep the file mapping annotations.
             """)
@@ -157,7 +157,7 @@ function _generate_annotated_msa(annot::Annotations, IDS, SEQS, keepinserts,
         setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
         N = length(IDS)
         if N > 0 && getannotsequence(annot,IDS[1],"SeqMap","") != ""
-            warn("""
+            @warn("""
             The file already has sequence mappings for some sequences. SeqMap will be replaced.
             You can use generatemapping=false to keep the file sequence mapping annotations.
             """)

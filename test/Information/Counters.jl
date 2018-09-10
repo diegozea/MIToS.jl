@@ -7,7 +7,7 @@
                          GappedAlphabet(),
                          ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"))
             for N in 1:3
-                seqs = ((seq for i in 1:N)...)::NTuple{N,Vector{Residue}}
+                seqs = ((seq for i in 1:N)...,)::NTuple{N,Vector{Residue}}
 
                 table = ContingencyTable(Float64, Val{N}, alphabet) # zeros in MIToS 1.0
                 @test table[1,1] == 0.0
@@ -46,7 +46,7 @@
                             ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"))
 
                 for N in 1:3
-                    seqs = ((seq for i in 1:N)...)::NTuple{N,Vector{Residue}}
+                    seqs = ((seq for i in 1:N)...,)::NTuple{N,Vector{Residue}}
 
                     table = ContingencyTable(Float64, Val{N}, alphabet)
 
@@ -82,7 +82,7 @@
                             ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"))
 
                 for N in 1:3
-                    seqs = ((seq for i in 1:N)...)::NTuple{N,Vector{Residue}}
+                    seqs = ((seq for i in 1:N)...,)::NTuple{N,Vector{Residue}}
 
                     table = ContingencyTable(Float64, Val{N}, alphabet)
 

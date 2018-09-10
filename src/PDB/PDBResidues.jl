@@ -125,14 +125,14 @@ function Base.angle(a::PDBAtom, b::PDBAtom, c::PDBAtom)
     angle(a.coordinates, b.coordinates, c.coordinates)
 end
 
-Base.cross(a::PDBAtom, b::PDBAtom) = cross(a.coordinates, b.coordinates)
+LinearAlgebra.cross(a::PDBAtom, b::PDBAtom) = cross(a.coordinates, b.coordinates)
 
 # Find Residues/Atoms
 # ===================
 
 @inline _is(element::String, all::Type{All}) = true
 @inline _is(element::String, value::String) = element == value
-@inline _is(element::String, regex::Regex) = ismatch(regex, element)
+@inline _is(element::String, regex::Regex) = occursin(regex, element)
 @inline _is(element::String, f::Function) = f(element)
 
 """
@@ -274,7 +274,7 @@ end
 # https://discourse.julialang.org/t/avoid-calling-push-in-base-find/1336
 function _find(f::Function, vector::Vector{T}) where T
     N = length(vector)
-    indices = Array{Int}(N)
+    indices = Array{Int}(undef, N)
     j = 0
     @inbounds for i in 1:N
         if f(vector[i])
@@ -347,7 +347,7 @@ Takes a `Vector` of `PDBAtom`s and returns a `Vector` of the `PDBAtom`s with bes
 function bestoccupancy(atoms::Vector{PDBAtom})::Vector{PDBAtom}
     N = length(atoms)
     if N == 0
-        warn("There are no atoms.")
+        @warn("There are no atoms.")
         return(atoms)
     elseif N == 1
         return(atoms)

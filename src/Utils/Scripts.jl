@@ -55,7 +55,7 @@ function _generate_output_name(file, output)
     begins = startswith(output, '.')
     ends = endswith(output,'.')
 
-    if file !== nothing && file !== STDIN
+    if file !== nothing && file !== stdin
 
         if begins && ends
             parts = split(file, '.')
@@ -89,13 +89,13 @@ function open_output(file, output)
         end
         return(fh)
     else
-        return(STDOUT)
+        return(stdout)
     end
 end
 
 "Close output (check if output is STDOUT)."
 function close_output(fh_out)
-    fh_out === STDOUT ? nothing : close(fh_out)
+    fh_out === stdout ? nothing : close(fh_out)
     nothing
 end
 
@@ -132,7 +132,7 @@ If `list` is `true`, for loop or `pmap` is used over eachline of the input.
 function runscript(args)
     file = args["FILE"]
     if args["list"]
-        fh_in = file === nothing ? STDIN : open(file, "r")
+        fh_in = file === nothing ? stdin : open(file, "r")
         if nprocs() != 1
             pmap(eachline(fh_in)) do line
                 run_single_script(line, args)
@@ -143,7 +143,7 @@ function runscript(args)
             end
         end
     else
-        run_single_script(file === nothing ? STDIN : file, args)
+        run_single_script(file === nothing ? stdin : file, args)
     end
 end
 

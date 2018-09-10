@@ -1,6 +1,13 @@
-using Base.Test
+using Test
 
-using MIToS: Utils, MSA, Information, PDB, SIFTS, Pfam
+using MIToS.Utils
+using MIToS.MSA
+using MIToS.Information
+using MIToS.PDB
+using MIToS.SIFTS
+using MIToS.Pfam
+using LinearAlgebra
+using Random
 using NamedArrays           # array
 using StatsBase             # WeightVec
 using PairwiseListMatrices  # getlist

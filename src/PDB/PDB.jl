@@ -22,6 +22,7 @@ using DataStructures
 using PairwiseListMatrices
 using NamedArrays
 using LightXML
+using LinearAlgebra
 using MIToS.Utils
 using Format
 

@@ -290,8 +290,8 @@ function Base.print(io::IO,reslist::AbstractVector{PDBResidue},format::Type{PDBF
     nothing
 end
 
-Base.print(reslist::AbstractVector{PDBResidue},format::Type{PDBFile}) = print(STDOUT,reslist,format)
-Base.print(res::PDBResidue, format::Type{PDBFile}) = print(STDOUT, res, format)
+Base.print(reslist::AbstractVector{PDBResidue},format::Type{PDBFile}) = print(stdout,reslist,format)
+Base.print(res::PDBResidue, format::Type{PDBFile}) = print(stdout, res, format)
 
 @doc """
 `print(io, res, format::Type{PDBFile})`

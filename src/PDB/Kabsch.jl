@@ -82,7 +82,7 @@ Returns a matrix with the x, y and z coordinates of the Cα with best occupancy 
 """
 function CAmatrix(residues::AbstractVector{PDBResidue})
     len = length(residues)
-    CAlist = Array{Float64}(3 * len)
+    CAlist = Array{Float64}(undef, 3 * len)
     j = 0
     r = 0
     @inbounds for i in 1:len
@@ -110,7 +110,7 @@ end
 function coordinatesmatrix(res::PDBResidue)
     atoms = res.atoms
     len = length(atoms)
-    mat = Array{Float64}(3, len)
+    mat = Array{Float64}(undef, 3, len)
     for i in 1:len
         coord = atoms[i].coordinates
         mat[1,i] = coord.x
@@ -179,7 +179,7 @@ Returns a new `Vector{PDBResidues}` with (x,y,z) from a coordinates `Matrix{Floa
 """
 function change_coordinates(residues::AbstractVector{PDBResidue}, coordinates::Matrix{Float64})
     nres = length(residues)
-    updated = Array{PDBResidue}(nres)
+    updated = Array{PDBResidue}(undef, nres)
     j = 1
     for i in 1:nres
         residue = residues[i]

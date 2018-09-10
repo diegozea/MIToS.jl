@@ -9,6 +9,7 @@ PairwiseListMatrices
 ArgParse
 Clustering
 StaticArrays
+StatsBase
 FastaIO
 HTTP
 NamedArrays

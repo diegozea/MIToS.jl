@@ -102,7 +102,7 @@ the fields are `Nullable`s objects so, you need to use the `get` function to acc
 (one letter code of the amino acid) would be:  
 
 ```@example sifts_simple
-isnull(residue_data.UniProt) ? "" : get(residue_data.UniProt).name
+ismissing(residue_data.UniProt) ? "" : get(residue_data.UniProt).name
 ```  
 
 That line of code returns an empty string if the UniProt field is null. Otherwise, it
@@ -155,11 +155,11 @@ get(residue_data, dbUniProt, :name, "") in ["H", "K", "R"]
 
 Use higher order functions and lambda expressions (anonymous functions) or
 list comprehension to easily ask for information on the `Vector{SIFTSResidue}`. You can
-use `get` with the previous signature or simple `get`, direct field access and `isnull`.
+use `get` with the previous signature or simple `get`, direct field access and `ismissing`.
 
 ```@example sifts_simple
 # Captures PDB residue numbers if the Pfam id is "PF00757"
-resnums = [ get(res.PDB).number for res in siftsresidues if !isnull(res.PDB) && get(res, dbPfam, :id, "") == "PF00757" ]
+resnums = [ get(res.PDB).number for res in siftsresidues if !ismissing(res.PDB) && get(res, dbPfam, :id, "") == "PF00757" ]
 ```  
 
 **Useful higher order functions are:**

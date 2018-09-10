@@ -35,7 +35,7 @@ end
 macro keep_names_dimension(functions)
     function_names = functions.args
     n = length(function_names)
-    definitions = Array{Any}(n)
+    definitions = Array{Any}(undef, n)
 
     for i in 1:n
         f = esc(function_names[i])

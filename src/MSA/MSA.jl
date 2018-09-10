@@ -19,7 +19,7 @@ using DataStructures        # OrderedDicts for Annotations
 using AutoHashEquals        # Annotations, Clusters
 using NamedArrays           # Col and Seq names, basic sequence/MSA object
 using FastaIO               # FastaReader (fast)
-using Base.Random           # shuffle!
+using Random           # shuffle!
 using PairwiseListMatrices  # Percent Identity Matrices
 using Clustering            # Used for sequence clustering: ClusteringResult
 using StatsBase             # Weights for clustering

@@ -208,7 +208,7 @@ sequencenames(msa) # the function sequencenames returns the sequence names in th
 ```  
 
 ```@example msa_edit
-mask = map(x -> ismatch(r"_9ACTN", x), sequencenames(msa)) # an element of mask is true if "_9ACTN" is in the name
+mask = map(x -> occursin(r"_9ACTN", x), sequencenames(msa)) # an element of mask is true if "_9ACTN" is in the name
 ```  
 
 ```@example msa_edit

@@ -19,7 +19,7 @@ function getseq2pdb(msa::AnnotatedMultipleSequenceAlignment)
     for (k, v) in getannotsequence(msa)
         id, annot = k
         # i.e.: "#=GS F112_SSV1/3-112 DR PDB; 2VQC A; 4-73;\n"
-        if annot == "DR" && ismatch(_regex_PDB_from_GS, v)
+        if annot == "DR" && occursin(_regex_PDB_from_GS, v)
             for m in eachmatch(_regex_PDB_from_GS, v)
                 if haskey(dict, id)
                     push!(dict[id], (m.captures[1], m.captures[2]))
@@ -67,19 +67,19 @@ function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
 
     up2res = Dict{String,Tuple{String,String,Char}}()
     for res in siftsres
-        if !isnull(res.Pfam) && get(res.Pfam).id == uppercase(pfamid)
+        if !ismissing(res.Pfam) && get(res.Pfam).id == uppercase(pfamid)
             pfnum  = get(res.Pfam).number
             if pfnum == ""
                 continue
             end
             pfname = get(res.Pfam).name
-            if !isnull(res.PDB) && (get(res.PDB).id == lowercase(pdbid)) && !res.missing
+            if !ismissing(res.PDB) && (get(res.PDB).id == lowercase(pdbid)) && !res.missing
                 up2res[pfnum] = checkpdbname ?
                     (pfname,get(res.PDB).number,three2residue(get(res.PDB).name)) :
                     (pfname,get(res.PDB).number,'-')
             else
                 up2res[pfnum] = checkpdbname ?
-                    (pfname,"",isnull(res.PDB) ? "" : three2residue(get(res.PDB).name)) :
+                    (pfname,"",ismissing(res.PDB) ? "" : three2residue(get(res.PDB).name)) :
                     (pfname,"",'-')
             end
         end

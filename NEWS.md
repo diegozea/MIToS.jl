@@ -1,15 +1,22 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.1.2 to master
+
+#### Julia 0.7/1.0 deprecations
+
+* `bits` was deprecated to `bitstring`.
+
+
 ### Changes from v2.1.2 to v2.2
 
 * `PIR` `FileFormat` is included to read and write alignments in PIR/NBRF format.
 
-* `Utils.Format` was renamed to `Utils.FileFormat`
+* `Utils.Format` was renamed to `Utils.FileFormat`.
 
 * `HTTP.jl` is used in place of `FTPClient.jl` and the deprecated `Requests.jl` in
 `Utils.download_file` to download files.
 
-* `Format.jl` is used in place of `Formatting.jl`
+* `Format.jl` is used in place of `Formatting.jl`.
 
 * Solve bug in the printing of matrices of `Residue`s using `FileFormat`s.
 

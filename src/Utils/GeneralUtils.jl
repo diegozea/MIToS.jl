@@ -26,7 +26,7 @@ function get_n_words(line::String, n::Int)
     if isempty(line)
         return String[]
     end
-    words = Array{String}(n)
+    words = Array{String}(undef, n)
     N  = 1
     last_spaces = 0:0
     while true
@@ -34,7 +34,7 @@ function get_n_words(line::String, n::Int)
             @inbounds words[N] = line[(last(last_spaces)+1):end]
             break
         end
-        spaces = search(line, r"[ |\t]+", last(last_spaces)+1)
+        spaces = something(findnext(r"[ |\t]+", line, last(last_spaces)+1), 0:-1)
         if first(spaces) == 0
             @inbounds words[N] = line[(last(last_spaces)+1):end]
             break
@@ -55,7 +55,7 @@ It returns `true` if `id`/sequence name has the format: **UniProt/start-end**
 (i.e. O83071/192-246)
 """
 function hascoordinates(id)
-    ismatch(r"^\w+/\d+-\d+$", id)
+    occursin(r"^\w+/\d+-\d+$", id)
 end
 
 """
@@ -89,7 +89,7 @@ function matrix2list(mat::AbstractMatrix{T}; part="upper", diagonal::Bool=false)
         d = 1
         N = div((ncol * ncol) - ncol, 2)
     end
-    list = Array{T}(N)
+    list = Array{T}(undef, N)
     k = 1
     if part=="upper"
         for i in 1:(ncol-d)
@@ -134,7 +134,7 @@ end
 """
 It checks if a PDB code has the correct format.
 """
-check_pdbcode(pdbcode::String) = ismatch(r"^\w{4}$", pdbcode)
+check_pdbcode(pdbcode::String) = occursin(r"^\w{4}$", pdbcode)
 
 """
 Getter for the `array` field of `NamedArray`s

@@ -46,7 +46,7 @@ end
     @testset "STDIN -> STDOUT" begin
         out = readstring( pipeline(`$julia -e 'print(trues(2,2))'`, `$julia $template`) )
 
-        @test ismatch(r"RUN : 0", out)
+        @test occursin(r"RUN : 0", out)
         @test length(matchall(r"true", out)) == 4
 
         @static if is_unix()
@@ -54,7 +54,7 @@ end
             @testset "--arg" begin
                 out = readstring( pipeline(`cat $list_file`, `$julia $template --arg 42`) )
 
-                @test ismatch(r"RUN : 42", out)
+                @test occursin(r"RUN : 42", out)
                 @test length(matchall(r"\.tmp", out)) == 2
             end
 
@@ -62,13 +62,13 @@ end
                 _clean_up_outputs()
                 out = readstring( pipeline(`cat $list_file`, `$julia $template -a 42 --list`) )
 
-                @test ismatch(r"ONE", out) # Printed into STDOUT
-                @test ismatch(r"TWO", out) # Printed into STDOUT
-                @test !ismatch(r"RUN : 42", out) # Printed into the file
+                @test occursin(r"ONE", out) # Printed into STDOUT
+                @test occursin(r"TWO", out) # Printed into STDOUT
+                @test !occursin(r"RUN : 42", out) # Printed into the file
                 @test filesize(one_out) != 0 # Created file
                 @test filesize(two_out) != 0 # Created file
-                @test ismatch(r"RUN : 42", readstring(one_out)) # Printed into the file
-                @test ismatch(r"RUN : 42", readstring(two_out)) # Printed into the file
+                @test occursin(r"RUN : 42", readstring(one_out)) # Printed into the file
+                @test occursin(r"RUN : 42", readstring(two_out)) # Printed into the file
 
                 _clean_up_outputs()
             end
@@ -81,13 +81,13 @@ end
             _clean_up_outputs()
             out = readstring( `$julia $template $list_file --a 42 --list` )
 
-            @test ismatch(r"ONE", out) # Printed into STDOUT
-            @test ismatch(r"TWO", out) # Printed into STDOUT
-            @test !ismatch(r"RUN : 42", out) # Printed into the file
+            @test occursin(r"ONE", out) # Printed into STDOUT
+            @test occursin(r"TWO", out) # Printed into STDOUT
+            @test !occursin(r"RUN : 42", out) # Printed into the file
             @test filesize(one_out) != 0 # Created file
             @test filesize(two_out) != 0 # Created file
-            @test ismatch(r"RUN : 42", readstring(one_out)) # Printed into the file
-            @test ismatch(r"RUN : 42", readstring(two_out)) # Printed into the file
+            @test occursin(r"RUN : 42", readstring(one_out)) # Printed into the file
+            @test occursin(r"RUN : 42", readstring(two_out)) # Printed into the file
 
             _clean_up_outputs()
         end
@@ -99,13 +99,13 @@ end
             _clean_up_outputs()
             out = readstring( `$julia $template $list_file -p 2 --a 42 --list` )
 
-            @test ismatch(r"ONE", out) # Printed into STDOUT
-            @test ismatch(r"TWO", out) # Printed into STDOUT
-            @test !ismatch(r"RUN : 42", out) # Printed into the file
+            @test occursin(r"ONE", out) # Printed into STDOUT
+            @test occursin(r"TWO", out) # Printed into STDOUT
+            @test !occursin(r"RUN : 42", out) # Printed into the file
             @test filesize(one_out) != 0 # Created file
             @test filesize(two_out) != 0 # Created file
-            @test ismatch(r"RUN : 42", readstring(one_out)) # Printed into the file
-            @test ismatch(r"RUN : 42", readstring(two_out)) # Printed into the file
+            @test occursin(r"RUN : 42", readstring(one_out)) # Printed into the file
+            @test occursin(r"RUN : 42", readstring(two_out)) # Printed into the file
 
             _clean_up_outputs()
         end
@@ -116,13 +116,13 @@ end
                 _clean_up_outputs()
                 out = readstring(pipeline(`cat $list_file`,`$julia $template -p 2 --a 42 --list`))
 
-                @test ismatch(r"ONE", out) # Printed into STDOUT
-                @test ismatch(r"TWO", out) # Printed into STDOUT
-                @test !ismatch(r"RUN : 42", out) # Printed into the file
+                @test occursin(r"ONE", out) # Printed into STDOUT
+                @test occursin(r"TWO", out) # Printed into STDOUT
+                @test !occursin(r"RUN : 42", out) # Printed into the file
                 @test filesize(one_out) != 0 # Created file
                 @test filesize(two_out) != 0 # Created file
-                @test ismatch(r"RUN : 42", readstring(one_out)) # Printed into the file
-                @test ismatch(r"RUN : 42", readstring(two_out)) # Printed into the file
+                @test occursin(r"RUN : 42", readstring(one_out)) # Printed into the file
+                @test occursin(r"RUN : 42", readstring(two_out)) # Printed into the file
                 _clean_up_outputs()
             end
         end

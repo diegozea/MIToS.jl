@@ -47,10 +47,10 @@ end
 
 function ReducedAlphabet(str::AbstractString)
     N = Int(XAA)
-    mapping = fill!(Array{Int}(N), N)
+    mapping = fill!(Array{Int}(undef, N), N)
     ingroup = false
     pos = 0
-    group_names = fill!(Array{String}(N), "")
+    group_names = fill!(Array{String}(undef, N), "")
     for char in str
         if char == '('
             ingroup = true

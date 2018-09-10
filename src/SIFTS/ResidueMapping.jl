@@ -80,15 +80,12 @@ function _get_attribute(elem::LightXML.XMLElement, attr::String)
 end
 
 """
-Returns NULL (`Nullable{String}`) if the attributte is missing
+Returns `missing` if the attributte is missing
 """
-function _get_nullable_attribute(elem::LightXML.XMLElement, attr::String)::Nullable{String}
+function _get_nullable_attribute(elem::LightXML.XMLElement,
+                                 attr::String)::Union{String, Missing}
     text = attribute(elem, attr)
-    if text === nothing || text == "None"
-        return(Nullable{String}())
-    else
-        return(Nullable{String}(text))
-    end
+    (text === nothing || text == "None") ? missing : text
 end
 
 for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
@@ -139,13 +136,13 @@ A `SIFTSResidue` object stores the SIFTS residue level mapping for a residue. It
 following fields that you can access at any moment for query purposes:
 
     - `PDBe` : A `dbPDBe` object, it's present in all the `SIFTSResidue`s.
-    - `UniProt` : A `Nullable` wrapping a `dbUniProt` object.
-    - `Pfam` : A `Nullable` wrapping a `dbPfam` object.
-    - `NCBI` : A `Nullable` wrapping a `dbNCBI` object.
-    - `InterPro` : A `Nullable` wrapping a `dbInterPro` object.
-    - `PDB` : A `Nullable` wrapping a `dbPDB` object.
-    - `SCOP` : A `Nullable` wrapping a `dbSCOP` object.
-    - `CATH` : A `Nullable` wrapping a `dbCATH` object.
+    - `UniProt` : A `dbUniProt` object or `missing`.
+    - `Pfam` : A `dbPfam` object or `missing`.
+    - `NCBI` : A `dbNCBI` object or `missing`.
+    - `InterPro` : A `dbInterPro` object or `missing`.
+    - `PDB` : A `dbPDB` object or `missing`.
+    - `SCOP` : A `dbSCOP` object or `missing`.
+    - `CATH` : A `dbCATH` object or `missing`.
     - `missing` : It's `true` if the residue is missing, i.e. not observed, in the structure.
     - `sscode` : A string with the secondary structure code of the residue.
     - `ssname` : A string with the secondary structure name of the residue.
@@ -153,13 +150,13 @@ following fields that you can access at any moment for query purposes:
 @auto_hash_equals struct SIFTSResidue
     PDBe::dbPDBe
     # crossRefDb
-    UniProt::Nullable{dbUniProt}
-    Pfam::Nullable{dbPfam}
-    NCBI::Nullable{dbNCBI}
+    UniProt::Union{dbUniProt, Missing}
+    Pfam::Union{dbPfam, Missing}
+    NCBI::Union{dbNCBI, Missing}
     InterPro::Array{dbInterPro, 1}
-    PDB::Nullable{dbPDB}
-    SCOP::Nullable{dbSCOP}
-    CATH::Nullable{dbCATH}
+    PDB::Union{dbPDB, Missing}
+    SCOP::Union{dbSCOP, Missing}
+    CATH::Union{dbCATH, Missing}
     # residueDetail
     missing::Bool  # XML: <residueDetail dbSource="PDBe" property="Annotation" ...
     sscode::String # XML: <residueDetail dbSource="PDBe" property="codeSecondaryStructure"...
@@ -191,14 +188,14 @@ end
 function Base.get(res::SIFTSResidue,
 db::Type{T}, field::Symbol, default::String) where T<:Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbCATH}
     database = get(res, db)
-    isnull(database) ? default : getfield(get(database), field)
+    ismissing(database) ? default : getfield(get(database), field)
 end
 
 function Base.get(res::SIFTSResidue,
 db::Type{T}, field::Symbol) where T<:Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbCATH}
     database = get(res, db)
     S = fieldtype(T, field)
-    isnull(database) ? Nullable{S}() : Nullable{S}(getfield(get(database),field))
+    ismissing(database) ? missing : getfield(get(database), field)
 end
 
 # Print
@@ -216,8 +213,8 @@ function Base.show(io::IO, res::SIFTSResidue)
     println(io, "    name: ", res.PDBe.name)
     for dbname in [:UniProt, :Pfam, :NCBI, :PDB, :SCOP, :CATH]
         dbfield = getfield(res, dbname)
-        if !isnull(dbfield)
-            println(io, "  ", dbname, " (Nullable) :")
+        if !ismissing(dbfield)
+            println(io, "  ", dbname, " :")
             for f in fieldnames(get(dbfield))
                 println(io, "    ", f, ": ",  getfield(get(dbfield), f))
             end
@@ -232,29 +229,29 @@ end
 function SIFTSResidue(residue::LightXML.XMLElement, missing::Bool,
                       sscode::String, ssname::String)
     PDBe = dbPDBe(residue)
-    UniProt = Nullable{dbUniProt}()
-    Pfam = Nullable{dbPfam}()
-    NCBI = Nullable{dbNCBI}()
+    UniProt = missing
+    Pfam = missing
+    NCBI = missing
     InterPro = dbInterPro[]
-    PDB = Nullable{dbPDB}()
-    SCOP = Nullable{dbSCOP}()
-    CATH = Nullable{dbCATH}()
+    PDB = missing
+    SCOP = missing
+    CATH = missing
     for crossref in get_elements_by_tagname(residue, "crossRefDb")
         db = attribute(crossref, "dbSource")
         if db == "UniProt"
-            UniProt = Nullable(dbUniProt(crossref))
+            UniProt = dbUniProt(crossref)
         elseif db == "Pfam"
-            Pfam = Nullable(dbPfam(crossref))
+            Pfam = dbPfam(crossref)
         elseif db == "NCBI"
-            NCBI = Nullable(dbNCBI(crossref))
+            NCBI = dbNCBI(crossref)
         elseif db == "InterPro"
             push!(InterPro, dbInterPro(crossref))
         elseif db == "PDB"
-            PDB = Nullable(dbPDB(crossref))
+            PDB = dbPDB(crossref)
         elseif db == "SCOP"
-            SCOP = Nullable(dbSCOP(crossref))
+            SCOP = dbSCOP(crossref)
         elseif db == "CATH"
-            CATH = Nullable(dbCATH(crossref))
+            CATH = dbCATH(crossref)
         else
             warn(string(db, " is not in the MIToS' DataBases."))
         end
@@ -304,8 +301,8 @@ function siftsmapping(filename::String,
                 residues = _get_residues(segment)
                 for residue in residues
                     in_chain = _is_All(chain)
-                    key_data = _name(db_from) == "PDBe" ? Nullable(attribute(residue,"dbResNum")) : Nullable{String}()
-                    value_data = _name(db_to) == "PDBe" ? Nullable(attribute(residue,"dbResNum")) : Nullable{String}()
+                    key_data = _name(db_from) == "PDBe" ? attribute(residue,"dbResNum") : missing
+                    value_data = _name(db_to) == "PDBe" ? attribute(residue,"dbResNum") : missing
                     if missings || !_is_missing(residue)
                         crossref = get_elements_by_tagname(residue, "crossRefDb")
                         for ref in crossref
@@ -320,7 +317,7 @@ function siftsmapping(filename::String,
                                 in_chain = attribute(ref, "dbChainId") == chain
                             end
                         end
-                        if !isnull(key_data) && !isnull(value_data) && in_chain
+                        if !ismissing(key_data) && !ismissing(value_data) && in_chain
                             key = get(key_data)
                             if haskey(mapping, key)
                                 warn(string("$key is already in the mapping with the value ",
@@ -355,7 +352,7 @@ function Base.parse(document::LightXML.XMLDocument, ::Type{SIFTSXML};
                 missing, sscode, ssname = _get_details(residue)
                 if missings || !missing
                     sifts_res = SIFTSResidue(residue, missing, sscode, ssname)
-                    if _is_All(chain) || (!isnull(sifts_res.PDB) && get(sifts_res.PDB).chain == chain)
+                    if _is_All(chain) || (!ismissing(sifts_res.PDB) && get(sifts_res.PDB).chain == chain)
                         push!(vector, sifts_res)
                     end
                 end
@@ -373,7 +370,7 @@ for F in (:find, :filter!, :filter)
         function Base.$(F)(f::Function,list::AbstractVector{SIFTSResidue},db::Type{T}) where T<:DataBase
             $(F)(list) do res
                 database = get(res, db)
-                if !isnull(database)
+                if !ismissing(database)
                     f(get(database))
                 end
             end
