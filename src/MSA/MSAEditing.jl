@@ -4,36 +4,36 @@
 # Creation of a boolean mask array
 # --------------------------------
 
-# If the input is a matrix, squeeze the singleton dimension
+# If the input is a matrix, dropdims the singleton dimension
 
 function _column_mask(mask::AbstractMatrix{Bool}, msa)
     @assert size(mask, 1) == 1 "The mask should be a vector or a matrix of size (1,ncol)"
     @assert size(mask, 2) == ncolumns(msa) "One boolean value per column is needed."
-    squeeze(mask, 1)
+    dropdims(mask, dims=1)
 end
 
 function _sequence_mask(mask::AbstractMatrix{Bool}, msa)
     @assert size(mask, 2) == 1 "The mask should be a vector or a matrix of size (nseq,1)"
     @assert size(mask, 1) == nsequences(msa) "One boolean value per sequence is needed."
-    squeeze(mask, 2)
+    dropdims(mask, dims=2)
 end
 
 # If the input is a function, apply it to the respective slice
 
 function _column_mask(mask::Function, msa)
-    out = mapslices(mask, msa, 1)
+    out = mapslices(mask, msa, dims=1)
     if size(out) != (1, ncolumns(msa)) || eltype(out) != Bool
         error("The function must return a Bool element per column.")
     end
-    squeeze(out, 1)
+    dropdims(out, dims=1)
 end
 
 function _sequence_mask(mask::Function, msa)
-    out = mapslices(mask, msa, 2)
+    out = mapslices(mask, msa, dims=2)
     if size(out) != (nsequences(msa), 1) || eltype(out) != Bool
         error("The function must return a Bool element per column.")
     end
-    squeeze(out, 2)
+    dropdims(out, dims=2)
 end
 
 # If the mask is an AbstractVector{Bool}, return it without changes
@@ -127,7 +127,7 @@ It returns the position of that id in the vector.
 If the id isn't in the vector, It throws an error.
 """
 function _get_seqid_index(names::Vector{String}, sequence_id::String)
-    id_index = findfirst(names, sequence_id)
+    id_index = something(findfirst(isequal(sequence_id), names), 0)
     if id_index == 0
         throw(ErrorException("$sequence_id is not in the list of sequence names."))
     end

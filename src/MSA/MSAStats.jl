@@ -18,7 +18,7 @@ function gapfraction(x::AbstractArray{Residue})
 end
 
 function gapfraction(x::AbstractArray{Residue}, dimension::Int)
-    mapslices(gapfraction, x, dimension)
+    mapslices(gapfraction, x, dims=dimension)
 end
 
 """
@@ -29,7 +29,7 @@ for calculation of the residue fraction over the given dimension
 residuefraction(x::AbstractArray{Residue}) = 1.0 - gapfraction(x)
 
 function residuefraction(x::AbstractArray{Residue}, dimension::Int)
-    mapslices(residuefraction, x, dimension)
+    mapslices(residuefraction, x, dims=dimension)
 end
 
 macro keep_names_dimension(functions)

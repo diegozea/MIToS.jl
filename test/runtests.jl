@@ -7,7 +7,9 @@ using MIToS.PDB
 using MIToS.SIFTS
 using MIToS.Pfam
 using LinearAlgebra
+using Statistics
 using Random
+using Clustering            # test/MSA/Hobohm.jl
 using NamedArrays           # array
 using StatsBase             # WeightVec
 using PairwiseListMatrices  # getlist

@@ -53,12 +53,12 @@ function _pre_readpir(io::Union{IO, AbstractString})
             if endswith(line, '*')
                 finished = true
             end
-            push!(SEQS, replace(line, nonres, ""))
+            push!(SEQS, replace(line, nonres => ""))
         elseif !finished && length(SEQS) == seq_number && seq_number != 0
             if endswith(line, '*')
                 finished = true
             end
-            @inbounds SEQS[seq_number] = SEQS[seq_number] * replace(line, nonres, "")
+            @inbounds SEQS[seq_number] = SEQS[seq_number] * replace(line, nonres => "")
         end
     end
 

@@ -135,8 +135,9 @@ function _generate_named_array(SEQS, IDS)::NamedResidueMatrix
         ("Seq","Col"))
 end
 
-function _generate_annotated_msa(annot::Annotations, IDS, SEQS, keepinserts,
-                                generatemapping, useidcoordinates, deletefullgaps)
+function _generate_annotated_msa(annot::Annotations, IDS::Vector{String},
+                                 SEQS, keepinserts, generatemapping,
+                                 useidcoordinates, deletefullgaps)
     if keepinserts
         _keepinserts!(SEQS, annot)
     end

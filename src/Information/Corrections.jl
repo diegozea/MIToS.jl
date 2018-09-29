@@ -2,7 +2,7 @@
 Mean mutual information of column a (Dunn et. al. 2008).
 Summation is over j=1 to N, j ≠ a. Total is N-1.
 """
-_mean_column(mi::Matrix{T}) where {T} = (squeeze(sum(mi,1),1) .- diag(mi)) ./ (size(mi,1)-1)
+_mean_column(mi::Matrix{T}) where {T} = (dropdims(sum(mi,1),1) .- diag(mi)) ./ (size(mi,1)-1)
 
 """
 Mean mutual information of column a (Dunn et. al. 2008).

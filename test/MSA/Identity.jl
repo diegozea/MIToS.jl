@@ -10,8 +10,8 @@
         @test percentidentity(res"AH-", res"AG-") == 50.
         @test percentidentity(res"A--", res"AG-") == 50.
         # Columns with XAA aren't counted
-        @test percentidentity(res"AXA-", res"AG--") == 100.*(1+0+0+0)/(1+0+1+0)
-        @test percentidentity(res"AAX-", res"AG--") == 100.*(1+0+0+0)/(1+1+0+0)
+        @test percentidentity(res"AXA-", res"AG--") == 100 .* (1+0+0+0) / (1+0+1+0)
+        @test percentidentity(res"AAX-", res"AG--") == 100 .* (1+0+0+0) / (1+1+0+0)
         @test percentidentity(res"AH-", res"AX-") == 100.
         @test percentidentity(res"AH-", res"XG-") == 0.
         @test percentidentity(res"AGG", res"AHX") == 50.
@@ -187,8 +187,8 @@
                 @test percentsimilarity(res"AH-",res"AG-", αβ) == 50.
                 @test percentsimilarity(res"A--",res"AG-", αβ) == 50.
                 # Columns with XAA aren't counted
-                @test percentsimilarity(res"AXA-",res"AG--", αβ) == 100.*(1+0+0+0)/(1+0+1+0)
-                @test percentsimilarity(res"AAX-",res"AG--", αβ) == 100.*(1+0+0+0)/(1+1+0+0)
+                @test percentsimilarity(res"AXA-",res"AG--", αβ) == 100 .* (1+0+0+0) / (1+0+1+0)
+                @test percentsimilarity(res"AAX-",res"AG--", αβ) == 100 .* (1+0+0+0) / (1+1+0+0)
                 @test percentsimilarity(res"AH-", res"AX-", αβ) == 100.
                 @test percentsimilarity(res"AH-", res"XG-", αβ) == 0.
                 @test percentsimilarity(res"AGG", res"AHX", αβ) == 50.

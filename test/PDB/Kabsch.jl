@@ -9,15 +9,15 @@
              1 2 0
              1+cos(pi/4) 1+sin(pi/4)  0 ] # mean(b,1) 1.2357  1.56904  0.0
         sa = a[1:3, :]
-        ma = mean(sa, 1) # mean x, y, z for a[1:3,:]
+        ma = mean(sa, dims=1) # mean x, y, z for a[1:3,:]
 
         # Center b, sa, a
         center!(b)
         sa[:,:] = sa .- ma
         a[:,:]  = a  .- ma # center != 0
 
-        @test isapprox(vec(mean(b,1)), [0.0, 0.0, 0.0], atol=1e-13)
-        @test isapprox(vec(mean(sa,1)), [0.0, 0.0, 0.0], atol=1e-13)
+        @test isapprox(vec(mean(b, dims=1)), [0.0, 0.0, 0.0], atol=1e-13)
+        @test isapprox(vec(mean(sa, dims=1)), [0.0, 0.0, 0.0], atol=1e-13)
 
         F = kabsch(b, sa) # Reference: b
         R = sa * F
@@ -48,8 +48,8 @@
         center!(P)
         center!(Q)
 
-        @test isapprox(vec(mean(P,1)), zeros(3), atol=1e-13)
-        @test isapprox(vec(mean(Q,1)), zeros(3), atol=1e-13)
+        @test isapprox(vec(mean(P, dims=1)), zeros(3), atol=1e-13)
+        @test isapprox(vec(mean(Q, dims=1)), zeros(3), atol=1e-13)
 
         rotationmatrix = kabsch(P, Q)
         rotated = Q * rotationmatrix
@@ -145,10 +145,10 @@
             ca_b2 = CAmatrix(b2)
 
             @testset "Centered" begin
-                @test isapprox(mean(ca_a1,1), zeros(1,3), atol=1e-13)
-                @test isapprox(mean(ca_a2,1), zeros(1,3), atol=1e-13)
-                @test isapprox(mean(ca_b1,1), zeros(1,3), atol=1e-13)
-                @test isapprox(mean(ca_b2,1), zeros(1,3), atol=1e-13)
+                @test isapprox(mean(ca_a1, dims=1), zeros(1,3), atol=1e-13)
+                @test isapprox(mean(ca_a2, dims=1), zeros(1,3), atol=1e-13)
+                @test isapprox(mean(ca_b1, dims=1), zeros(1,3), atol=1e-13)
+                @test isapprox(mean(ca_b2, dims=1), zeros(1,3), atol=1e-13)
 
                 @test PDB._iscentered(ca_a1)
                 @test PDB._iscentered(ca_a2)

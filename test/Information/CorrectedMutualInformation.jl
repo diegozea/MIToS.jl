@@ -52,9 +52,9 @@
             Pij[1,2] = (1/N) # A R
             @test sum(Pij) ≈ 1.0 # Is the matrix correct?
             # Fill the marginals
-            Pi = squeeze(Base.sum(Pij,2),2)
+            Pi = dropdims(Base.sum(Pij,2), dims=2)
             @test Pi[1] == 1.0 # Is always A
-            Pj = squeeze(Base.sum(Pij,1),1)
+            Pj = dropdims(Base.sum(Pij,1), dims=1)
             @test Pj[1] == 0.5 # A
             @test Pj[2] == 0.5 # R
             # Start to sum with 0.0
@@ -78,8 +78,8 @@
             Pij[1,1] =(1.05/N) # A A
             Pij[1,2] =(1.05/N) # A R
             @test sum(Pij) ≈ 1.0
-            Pi = squeeze(Base.sum(Pij,2),2)
-            Pj = squeeze(Base.sum(Pij,1),1)
+            Pi = dropdims(Base.sum(Pij,2), dims=2)
+            Pj = dropdims(Base.sum(Pij,1), dims=1)
             total = 0.0
             for i in 1:20, j in 1:20
                 total += (Pij[i,j] * log(Pij[i,j]/(Pi[i]*Pj[j])))
@@ -133,10 +133,10 @@
             Pij[2,1] = (1/N) # R A
             Pij[1,2] = (1/N) # A R
             @test sum(Pij) ≈ 1.0
-            Pi = squeeze(Base.sum(Pij,2),2)
+            Pi = dropdims(Base.sum(Pij,2), dims=2)
             @test Pi[2] == 0.5 # R
             @test Pi[1] == 0.5 # A
-            Pj = squeeze(Base.sum(Pij,1),1)
+            Pj = dropdims(Base.sum(Pij,1), dims=1)
             @test Pj[1] == 0.5 # A
             @test Pj[2] == 0.5 # R
             total = 0.0
@@ -160,8 +160,8 @@
             Pij[2,1] =(1.05/N) # R A
             Pij[1,2] =(1.05/N) # A R
             @test sum(Pij) ≈ 1.0
-            Pi = squeeze(Base.sum(Pij,2),2)
-            Pj = squeeze(Base.sum(Pij,1),1)
+            Pi = dropdims(Base.sum(Pij,2), dims=2)
+            Pj = dropdims(Base.sum(Pij,1), dims=1)
             total = 0.0
             for i in 1:20, j in 1:20
                 total += (Pij[i,j] * log(Pij[i,j]/(Pi[i]*Pj[j])))

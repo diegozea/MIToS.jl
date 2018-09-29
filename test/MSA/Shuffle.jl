@@ -13,8 +13,8 @@
 
     msas = [ read(pf09645_sto, Stockholm, T) for T in msa_types ]
     gaps = [ msa .== GAP for msa in msas ]
-    lcol = [ mean(msa .== Residue('L'), 1) for msa in msas ]
-    lseq = [ mean(msa .== Residue('L'), 2) for msa in msas ]
+    lcol = [ mean(msa .== Residue('L'), dims=1) for msa in msas ]
+    lseq = [ mean(msa .== Residue('L'), dims=2) for msa in msas ]
 
     Random.seed!(42)
 
@@ -52,13 +52,13 @@
             aln = shuffle(msa, 2, true)
             @test aln != getresidues(msa)
             @test (aln .== GAP) == gaps[i]
-            @test lcol[i] == mean(aln .== Residue('L'), 1)
-            @test lseq[i] != mean(aln .== Residue('L'), 2)
+            @test lcol[i] == mean(aln .== Residue('L'), dims=1)
+            @test lseq[i] != mean(aln .== Residue('L'), dims=2)
             # Change gap positions
             aln = shuffle(msa, 2, false)
             @test aln != getresidues(msa)
             @test (aln .== GAP) != gaps[i]
-            @test lcol[i] == mean(aln .== Residue('L'), 1)
+            @test lcol[i] == mean(aln .== Residue('L'), dims=1)
         end
     end
 
@@ -70,13 +70,13 @@
             aln = shuffle(msa, 1, true)
             @test aln != getresidues(msa)
             @test (aln .== GAP) == gaps[i]
-            @test lcol[i] != mean(aln .== Residue('L'), 1)
-            @test lseq[i] == mean(aln .== Residue('L'), 2)
+            @test lcol[i] != mean(aln .== Residue('L'), dims=1)
+            @test lseq[i] == mean(aln .== Residue('L'), dims=2)
             # Change gap positions
             aln = shuffle(msa, 1, false)
             @test aln != getresidues(msa)
             @test (aln .== GAP) != gaps[i]
-            @test lseq[i] == mean(aln .== Residue('L'), 2)
+            @test lseq[i] == mean(aln .== Residue('L'), dims=2)
         end
     end
 end

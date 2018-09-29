@@ -6,7 +6,7 @@ This type defines the usual alphabet of the 20 natural residues and a gap charac
 
 ```julia
 julia> GappedAlphabet()
-MIToS.MSA.GappedAlphabet of length 21. Residues : res"ARNDCQEGHILKMFPSTWYV-"
+GappedAlphabet of length 21. Residues : res"ARNDCQEGHILKMFPSTWYV-"
 
 ```
 """
@@ -17,7 +17,7 @@ This type defines the usual alphabet of the 20 natural residues, without the gap
 
 ```julia
 julia> UngappedAlphabet()
-MIToS.MSA.UngappedAlphabet of length 20. Residues : res"ARNDCQEGHILKMFPSTWYV"
+UngappedAlphabet of length 20. Residues : res"ARNDCQEGHILKMFPSTWYV"
 
 ```
 """
@@ -29,7 +29,7 @@ inside parenthesis belong to the same group.
 
 ```julia
 julia> ab = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
-MIToS.MSA.ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
+ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
 
 julia> ab[Residue('K')]
 2
@@ -101,7 +101,7 @@ end
 
 function Base.show(io::IO, ab::ReducedAlphabet)
     groups = names(ab.named, 1)
-    print(io, "MIToS.MSA.ReducedAlphabet of length ", length(ab), " : \"")
+    print(io, "ReducedAlphabet of length ", length(ab), " : \"")
     for i in ab
         chars = groups[i]
         if length(chars) == 1
@@ -156,7 +156,7 @@ residue that belong to the group.
 
 ```julia
 julia> ab = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
-MIToS.MSA.ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
+ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
 
 julia> names(ab)
 8-element Array{String,1}:
@@ -190,7 +190,7 @@ It takes a `ResidueAlphabet` and returns a dictionary from group name to group p
 
 ```julia
 julia> ab = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
-MIToS.MSA.ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
+ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
 
 julia> getnamedict(ab)
 DataStructures.OrderedDict{String,Int64} with 8 entries:

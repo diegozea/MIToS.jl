@@ -11,7 +11,7 @@ function _pre_readfasta(string::AbstractString)
     for i in 1:N
         fields = split(seqs[i+1], '\n')
         IDS[i] = fields[1]
-        SEQS[i] = replace(join(fields[2:end]), r"\s+", "")
+        SEQS[i] = replace(join(fields[2:end]), r"\s+" => "")
     end
     _check_seq_len(IDS, SEQS)
     (IDS, SEQS)

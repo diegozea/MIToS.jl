@@ -7,7 +7,7 @@ struct Stockholm <: FileFormat end
         if id in IDS
             # It's useful when sequences are split into several lines
             # It can be a problem with duplicated IDs
-            i = findfirst(IDS, id)
+            i = something(findfirst(isequal(id), IDS), 0)
             SEQS[i] = SEQS[i] * words[2]
         else
             push!(IDS, id)
@@ -90,8 +90,8 @@ function Base.parse(io::Union{IO, AbstractString},
                    keepinserts::Bool=false)::AnnotatedMultipleSequenceAlignment
     IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
     annot = Annotations(GF, GS, GC, GR)
-    _generate_annotated_msa(annot, IDS, SEQS, keepinserts, generatemapping,
-                            useidcoordinates, deletefullgaps)
+    _generate_annotated_msa(annot, collect(IDS), SEQS, keepinserts,
+                            generatemapping, useidcoordinates, deletefullgaps)
 end
 
 function Base.parse(io::Union{IO, AbstractString},

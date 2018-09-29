@@ -217,8 +217,7 @@ Base.convert(::Type{Vector{Residue}}, str::AbstractString) = Residue[ char for c
 
 function Base.convert(::Type{String}, seq::Vector{Residue})
     # Buffer length can be length(seq) since Char(res) is always ASCII
-    #                 data                         readable    writable
-    buffer = IOBuffer(Array{UInt8}(undef, length(seq)), true, true)
+    buffer = IOBuffer(Array{UInt8}(undef, length(seq)), read=true, write=true)
     # To start at the beginning of the buffer:
     truncate(buffer,0)
     for res in seq
@@ -226,6 +225,8 @@ function Base.convert(::Type{String}, seq::Vector{Residue})
     end
     String(take!(buffer))
 end
+
+Base.String(seq::Vector{Residue}) = convert(String, seq)
 
 function _get_msa_size(sequences::Array{String,1})
     nseq = length(sequences)

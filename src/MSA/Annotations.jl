@@ -37,8 +37,8 @@ end
 # This function is useful because of the Julia issue #12495
 function _filter(str::String, mask::AbstractArray{Bool})
     @assert length(str) == length(mask) "The string and the mask must have the same length"
-    #                 data                         readable    writable
-    buffer = IOBuffer(Array{UInt8}(undef, endof(str)), true, true)
+    #                 data                             readable   writable
+    buffer = IOBuffer(Array{UInt8}(undef, lastindex(str)), read=true, write=true)
     # To start at the beginning of the buffer:
     truncate(buffer,0)
     i = 1

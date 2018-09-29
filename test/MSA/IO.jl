@@ -125,7 +125,7 @@
             @test (collect(getannotcolumn(msa, "Aligned")) .== '1') == (F112_SSV1 .!= '.')
             @test stringsequence(msa, 1) == replace(uppercase(
                 "...mp---NSYQMAEIMYKILQQKKEISLEDILAQFEISASTAYNVQRTLRMICEKHPDECEVQTKNRRTIFKWIKNEETTEEGQEE--QEIEKILNAQPAE-------------k...."
-                ), '.', '-')
+                ), '.' => '-')
         end
     end
 
@@ -195,10 +195,10 @@
                 end
 
                 for msa in gaoetal_msas[2:end]
-                    # getsequence returns a matrix, use vec(seq) or squeeze(seq,1)
+                    # getsequence returns a matrix, use vec(seq) or dropdims(seq,  dims=1)
                     # to get a vector:
                     @test vec(getresidues(getsequence(msa, 1))) == res"DAWAEE"
-                    @test squeeze(getresidues(getsequence(msa, 1)),1) == res"DAWAEE"
+                    @test dropdims(getresidues(getsequence(msa, 1)),  dims=1) == res"DAWAEE"
                 end
             end
 
