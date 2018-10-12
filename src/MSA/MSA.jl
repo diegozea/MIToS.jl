@@ -19,7 +19,8 @@ using DataStructures        # OrderedDicts for Annotations
 using AutoHashEquals        # Annotations, Clusters
 using NamedArrays           # Col and Seq names, basic sequence/MSA object
 using FastaIO               # FastaReader (fast)
-using Random           # shuffle!
+using Random                # GLOBAL_RNG, shuffle!, rand, Sampler
+using Dates                 # Dates.now()
 using PairwiseListMatrices  # Percent Identity Matrices
 using Clustering            # Used for sequence clustering: ClusteringResult
 using StatsBase             # Weights for clustering
@@ -95,7 +96,7 @@ export  # Residue
         getweight, nelements,
         # Hobohm
         hobohmI,
-        # Imported from Base (and exported for docs)
+        # Imported from Base or StdLib (and exported for docs)
         names,
         parse,
         isvalid,

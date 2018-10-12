@@ -153,15 +153,13 @@
 
         @testset "Transpose" begin
 
-            @test size(msa') == (7,3) # ctranspose
-            @test size(annotated_msa') == (7,3)
-            @test size(msa.') == (7,3) # transpose
-            @test size(annotated_msa.') == (7,3)
+            @test transpose(msa) == permutedims(msa)
+            @test size(transpose(msa)) == (7,3)
+            @test size(transpose(annotated_msa)) == (7,3)
 
-            @test size(sequence') == (21,1) # ctranspose
-            @test size(annotated_sequence') == (21,1)
-            @test size(sequence.') == (21,1) # transpose
-            @test size(annotated_sequence.') == (21,1)
+            @test transpose(sequence) == permutedims(sequence)
+            @test size(transpose(sequence)) == (21,1)
+            @test size(transpose(annotated_sequence)) == (21,1)
         end
 
         @testset "Get residues" begin

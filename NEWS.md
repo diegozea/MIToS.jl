@@ -6,6 +6,8 @@
 
 * `bits` was deprecated to `bitstring`.
 
+* `'` and `.'` are deprecated for alignments and sequences, use `transpose` or
+`permutedims` instead. `ctranspose` is not longer available for matrices of `Residue`s.
 
 ### Changes from v2.1.2 to v2.2
 

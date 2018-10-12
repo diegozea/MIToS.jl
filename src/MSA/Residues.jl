@@ -95,6 +95,11 @@ Base.Int(res::Residue) = convert(Int, res)
 Base.ndims(r::Residue) = 0
 Base.ndims(::Type{Residue}) = 0
 
+# Scalar
+# ------
+
+Base.broadcastable(x::Residue) = Ref(x)
+
 # Gaps
 # ----
 
@@ -315,4 +320,10 @@ julia> rand(Residue, 4, 4)
 
 ```
 """
-Base.rand(r, ::Type{Residue}) = Residue(rand(r, 1:20))
+Random.rand(rng::AbstractRNG, ::Random.SamplerType{Residue}) = Residue(rand(rng, 1:20))
+
+function Random.Sampler(RNG::Type{<:AbstractRNG}, res::Residue, r::Random.Repetition)
+    Random.SamplerSimple(res, Random.Sampler(RNG, 1:20, r))
+end
+
+Random.rand(rng::AbstractRNG, sp::Random.SamplerSimple{Residue}) = rand(rng, sp.data)

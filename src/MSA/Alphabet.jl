@@ -81,15 +81,16 @@ Base.length(ab::UngappedAlphabet)  = 20
 Base.length(ab::GappedAlphabet)    = 21
 Base.length(ab::ReducedAlphabet) = ab.len
 
-Base.start(ab::ResidueAlphabet) = 1
-
-Base.next(ab::ResidueAlphabet, state) = (state, state + 1)
-
-Base.done(ab::UngappedAlphabet, state) = state > length(ab)
-Base.done(ab::GappedAlphabet, state)   = state > length(ab)
-Base.done(ab::ReducedAlphabet, state)  = state > length(ab)
-
 Base.eltype(::ResidueAlphabet) = Int
+
+function Base.iterate(ab::ResidueAlphabet, state=0)
+    if state ≥ length(ab)
+        return nothing
+    else
+        next_state = state + 1
+        return (next_state, next_state)
+    end
+end
 
 # Show
 # ----

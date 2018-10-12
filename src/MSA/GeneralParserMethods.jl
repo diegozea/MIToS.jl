@@ -267,7 +267,7 @@ Function to keep insert columns in `parse`. It uses the first sequence to genera
 """
 function _keepinserts!(SEQS, annot)
     aligned = map(SEQS[1]) do char
-        isupper(char) || char == '-' ? '1' : '0'
+        isuppercase(char) || char == '-' ? '1' : '0'
     end
     setannotcolumn!(annot, "Aligned", aligned)
     map!(uppercase, SEQS, SEQS)

@@ -59,7 +59,7 @@ function Random.shuffle!(r::AbstractRNG, msa::Matrix{Residue},
 end
 
 function Random.shuffle!(msa::Matrix{Residue}, args...)
-    shuffle!(GLOBAL_RNG, msa, args...)
+    shuffle!(Random.GLOBAL_RNG, msa, args...)
 end
 
 """
@@ -72,7 +72,7 @@ function Random.shuffle(r::AbstractRNG, msa::Matrix{Residue}, args...)
 end
 
 function Random.shuffle(msa::Matrix{Residue}, args...)
-    shuffle!(GLOBAL_RNG, copy(msa), args...)
+    shuffle!(Random.GLOBAL_RNG, copy(msa), args...)
 end
 
 function Random.shuffle(r::AbstractRNG,
@@ -81,5 +81,5 @@ function Random.shuffle(r::AbstractRNG,
 end
 
 function Random.shuffle(msa::Union{AbstractAlignedObject, NamedResidueMatrix}, args...)
-    shuffle(GLOBAL_RNG, copy(getresidues(msa)), args...)
+    shuffle(Random.GLOBAL_RNG, copy(getresidues(msa)), args...)
 end

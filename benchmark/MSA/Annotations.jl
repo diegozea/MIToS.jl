@@ -48,7 +48,7 @@
     annot = Annotations()
     setannotresidue!(annot, "K1PKS6_CRAGI/1-58", "SEQ", seq)
 
-    mask = convert(BitArray, Bool[isupper(char) || char == '-' for char in seq])
+    mask = convert(BitArray, Bool[isuppercase(char) || char == '-' for char in seq])
     indexes = collect(1:length(seq))[mask]
 
     @bench "boolean mask" filtercolumns!(copy($annot), $mask)

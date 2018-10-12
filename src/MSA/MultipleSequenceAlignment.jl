@@ -101,8 +101,16 @@ function AnnotatedMultipleSequenceAlignment(msa::Matrix{Residue})
     AnnotatedMultipleSequenceAlignment(NamedArray(msa))
 end
 
+function AnnotatedMultipleSequenceAlignment(msa::AbstractMatrix{Residue})
+    AnnotatedMultipleSequenceAlignment(convert(Matrix{Residue}, msa))
+end
+
 function MultipleSequenceAlignment(msa::Matrix{Residue})
     MultipleSequenceAlignment(NamedArray(msa))
+end
+
+function MultipleSequenceAlignment(msa::AbstractMatrix{Residue})
+    MultipleSequenceAlignment(convert(Matrix{Residue}, msa))
 end
 
 function AnnotatedAlignedSequence(seq::NamedResidueMatrix)
@@ -113,8 +121,16 @@ function AnnotatedAlignedSequence(seq::Matrix{Residue})
     AnnotatedAlignedSequence(NamedArray(seq))
 end
 
+function AnnotatedAlignedSequence(seq::AbstractMatrix{Residue})
+    AnnotatedAlignedSequence(convert(Matrix{Residue}, seq))
+end
+
 function AlignedSequence(seq::Matrix{Residue})
     AlignedSequence(NamedArray(seq))
+end
+
+function AlignedSequence(seq::AbstractMatrix{Residue})
+    AlignedSequence(convert(Matrix{Residue}, seq))
 end
 
 # AnnotatedAlignedObject
@@ -222,12 +238,9 @@ end
 
 # Transpose
 # ---------
-#
-# transpose is ~ 0.00022 seconds faster than ctranspose for PF00085
-#
 
 Base.transpose(x::AbstractAlignedObject)  = transpose(namedmatrix(x))
-Base.ctranspose(x::AbstractAlignedObject) = transpose(namedmatrix(x))
+Base.permutedims(x::AbstractAlignedObject, args...) = permutedims(namedmatrix(x), args...)
 
 # Selection without Mappings
 # --------------------------
@@ -298,7 +311,7 @@ object and a sequence identifier are used, this function returns the annotations
 to the sequence.
 """ getsequence
 
-getsequence(msa::Matrix{Residue}, i::Int) = msa[i:i,:]
+getsequence(msa::AbstractMatrix{Residue}, i::Int) = msa[i:i,:]
 
 getsequence(msa::NamedResidueMatrix, i::Int) = msa[i:i,:]
 getsequence(msa::NamedResidueMatrix, id::String) = msa[String[id],:]
@@ -315,7 +328,11 @@ function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::String)
     AnnotatedAlignedSequence(seq, annot)
 end
 
-function getsequence(msa::MultipleSequenceAlignment, seq::Union{Int,String})
+function getsequence(msa::MultipleSequenceAlignment, seq::String)
+    AlignedSequence(getsequence(namedmatrix(msa), seq))
+end
+
+function getsequence(msa::MultipleSequenceAlignment, seq::Int)
     AlignedSequence(getsequence(namedmatrix(msa), seq))
 end
 

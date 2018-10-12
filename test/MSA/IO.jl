@@ -54,8 +54,8 @@
 
                 for msa in msa_objects
                     @test size(msa, 1) == 4
-                    @test size(msa, 2) == sum(F112_SSV1 .!= '.') # without inserts
-                    @test view(msa,4,:) == map(Residue, F112_SSV1[ F112_SSV1 .!= '.' ])
+                    @test size(msa, 2) == sum(F112_SSV1 .!= Ref('.')) # without inserts
+                    @test view(msa,4,:) == map(Residue, F112_SSV1[ F112_SSV1 .!= Ref('.') ])
                 end
             end
         end
@@ -122,7 +122,7 @@
 
             msa = read(pf09645_sto, Stockholm, keepinserts=true)
             # Aligned columns
-            @test (collect(getannotcolumn(msa, "Aligned")) .== '1') == (F112_SSV1 .!= '.')
+            @test (collect(getannotcolumn(msa, "Aligned")) .== Ref('1')) == (F112_SSV1 .!= Ref('.'))
             @test stringsequence(msa, 1) == replace(uppercase(
                 "...mp---NSYQMAEIMYKILQQKKEISLEDILAQFEISASTAYNVQRTLRMICEKHPDECEVQTKNRRTIFKWIKNEETTEEGQEE--QEIEKILNAQPAE-------------k...."
                 ), '.' => '-')
@@ -212,8 +212,8 @@
 
                 for msa in pfam_msas
                     @test size(msa, 1) == 4
-                    @test size(msa, 2) == sum(F112_SSV1 .!= '.') # without inserts
-                    @test view(msa,4,:) == map(Residue, F112_SSV1[ F112_SSV1 .!= '.' ])
+                    @test size(msa, 2) == sum(F112_SSV1 .!= Ref('.')) # without inserts
+                    @test view(msa,4,:) == map(Residue, F112_SSV1[ F112_SSV1 .!= Ref('.') ])
                 end
             end
         end

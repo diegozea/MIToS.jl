@@ -96,7 +96,7 @@
         #filtersequences!(annot, IndexedArray(["O31698/88-139", "O31698/18-71"]), [true, false])
         #@test length( getannotresidue(annot) ) == 0
 
-        mask = collect("CCCCCHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEEH") .!= 'E'
+        mask = collect("CCCCCHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEEH") .!= Ref('E')
         filtercolumns!(annot, mask)
         @test ncolumns(annot) == 19
         @test getannotcolumn(annot, "SS_cons") == "CCCCCHHHHHHHHHHHHHH"
