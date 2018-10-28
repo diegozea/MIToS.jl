@@ -89,7 +89,7 @@ You can do it by adding the path of the MIToS script folder into the `~/.bashrc`
 ```julia
 open(joinpath(homedir(), ".bashrc"), "r+") do fh
     path_to_scripts = joinpath(Pkg.dir("MIToS"), "scripts")
-    if all(line -> !contains(line, path_to_scripts), eachline(fh))
+    if all(line -> !occursin(path_to_scripts, line), eachline(fh))
         println(fh, "export PATH=\"\$PATH:", path_to_scripts, "\"")
     end
 end

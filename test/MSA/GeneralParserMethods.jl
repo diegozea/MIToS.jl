@@ -27,7 +27,7 @@
     @testset "Delete full gap columns" begin
 
         M = reshape(reinterpret(Residue,collect(1:21)),(3,7))
-        M[:,[2,4,6]] = GAP
+        M[:,[2,4,6]] .= GAP
         msa = MultipleSequenceAlignment(M)
         named = namedmatrix(msa)
         annotated_msa = AnnotatedMultipleSequenceAlignment(M)
