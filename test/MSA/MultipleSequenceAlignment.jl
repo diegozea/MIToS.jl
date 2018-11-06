@@ -56,7 +56,7 @@
             @test isa(annotations(annotated_sequence), Annotations)
 
             for object in (msa, annotated_msa, sequence, annotated_sequence)
-                @test isa(namedmatrix(object), NamedResidueMatrix)
+                @test isa(namedmatrix(object), NamedResidueMatrix{Array{Residue,2}})
             end
         end
 

@@ -2,7 +2,7 @@
 
     msa_types = (
         Matrix{Residue},
-        NamedResidueMatrix,
+        NamedResidueMatrix{Array{Residue,2}},
         MultipleSequenceAlignment,
         AnnotatedMultipleSequenceAlignment
         )
@@ -387,7 +387,7 @@
                 """
 
             out = IOBuffer()
-            print(out, msa.matrix, PIR) # NamedResidueMatrix
+            print(out, msa.matrix, PIR) # NamedResidueMatrix{Array{Residue,2}}
             @test String(take!(out)) == """
                 >XX;CBRT
 

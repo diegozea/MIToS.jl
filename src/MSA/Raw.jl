@@ -51,7 +51,7 @@ function Base.parse(io::Union{IO, AbstractString},
                     format::Type{Raw},
                     output::Type{MultipleSequenceAlignment};
                     deletefullgaps::Bool=true)
-    msa = parse(io, Raw, NamedResidueMatrix; deletefullgaps=deletefullgaps)
+    msa = parse(io, Raw, NamedResidueMatrix{Array{Residue,2}}; deletefullgaps=deletefullgaps)
     MultipleSequenceAlignment(msa)
 end
 

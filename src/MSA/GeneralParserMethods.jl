@@ -127,10 +127,10 @@ function _colnumber_ordered_dict(nres::Int)
         return dict
 end
 
-function _generate_named_array(SEQS, IDS)::NamedResidueMatrix
+function _generate_named_array(SEQS, IDS)::NamedResidueMatrix{Array{Residue,2}}
     nseq, nres = _get_msa_size(SEQS)
     msa = _convert_to_matrix_residues(SEQS, (nseq, nres))
-    NamedResidueMatrix(msa,
+    NamedResidueMatrix{Array{Residue,2}}(msa,
         (   _ids_ordered_dict(IDS, nseq), _colnumber_ordered_dict(nres)  ),
         ("Seq","Col"))
 end

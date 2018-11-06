@@ -2,7 +2,7 @@
 
     msa_types = (
         Matrix{Residue},
-        NamedResidueMatrix,
+        NamedResidueMatrix{Array{Residue,2}},
         MultipleSequenceAlignment,
         AnnotatedMultipleSequenceAlignment
         )

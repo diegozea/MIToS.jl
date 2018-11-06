@@ -81,8 +81,8 @@ end
 
 function Base.parse(io::Union{IO, AbstractString},
                    format::Type{PIR},
-                   output::Type{NamedResidueMatrix};
-                   deletefullgaps::Bool=true)::NamedResidueMatrix
+                   output::Type{NamedResidueMatrix{Array{Residue,2}}};
+                   deletefullgaps::Bool=true)::NamedResidueMatrix{Array{Residue,2}}
     IDS, SEQS, _ = _pre_readpir(io)
     msa = _generate_named_array(SEQS, IDS)
     if deletefullgaps
@@ -97,7 +97,7 @@ function Base.parse(io::Union{IO, AbstractString},
                    deletefullgaps::Bool=true)::MultipleSequenceAlignment
     msa = parse(io,
                 format,
-                NamedResidueMatrix,
+                NamedResidueMatrix{Array{Residue,2}},
                 deletefullgaps=deletefullgaps)
     MultipleSequenceAlignment(msa)
 end
