@@ -414,7 +414,7 @@ function delete_dimensions!(output::ContingencyTable{T,S,A},
   input_marginals = getarray(input.marginals)
   input_table = getarray(input.table)
   output_marginals[:] = input_marginals[:,_list_without_dimensions(N, S, dimensions...)]
-  output_table[:] = sum(input_table, dimensions)
+  output_table[:] = sum(input_table, dims=dimensions)
   output.total = input.total
   output
 end

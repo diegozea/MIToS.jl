@@ -14,7 +14,7 @@ Returns the rotation matrix. You should do `B * RotationMatrix` to get the rotat
 function kabsch(A::Matrix{Float64}, B::Matrix{Float64})
     @assert size(A) == size(B)
     M::Matrix{Float64} = B' * A
-    χ = eye(M)
+    χ = Matrix{Float64}(I, size(M, 1), size(M, 2))
     χ[end,end] = sign(det(M))
     u::Matrix{Float64}, σ::Vector{Float64}, v::Matrix{Float64} = svd(M)
     return u * χ * v'

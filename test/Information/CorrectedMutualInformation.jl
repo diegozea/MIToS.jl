@@ -8,11 +8,11 @@
     end
 
     ## Column numbers for the output of Buslje et. al. 2009
-    const SCORE = 9
-    const ZSCORE = 12
+    SCORE = 9
+    ZSCORE = 12
 
-    const MIToS_SCORE = 2
-    const MIToS_ZSCORE = 1
+    MIToS_SCORE = 2
+    MIToS_ZSCORE = 1
 
     @testset "APC!" begin
 
@@ -52,9 +52,9 @@
             Pij[1,2] = (1/N) # A R
             @test sum(Pij) ≈ 1.0 # Is the matrix correct?
             # Fill the marginals
-            Pi = dropdims(Base.sum(Pij,2), dims=2)
+            Pi = dropdims(Base.sum(Pij, dims=2), dims=2)
             @test Pi[1] == 1.0 # Is always A
-            Pj = dropdims(Base.sum(Pij,1), dims=1)
+            Pj = dropdims(Base.sum(Pij, dims=1), dims=1)
             @test Pj[1] == 0.5 # A
             @test Pj[2] == 0.5 # R
             # Start to sum with 0.0
@@ -78,8 +78,8 @@
             Pij[1,1] =(1.05/N) # A A
             Pij[1,2] =(1.05/N) # A R
             @test sum(Pij) ≈ 1.0
-            Pi = dropdims(Base.sum(Pij,2), dims=2)
-            Pj = dropdims(Base.sum(Pij,1), dims=1)
+            Pi = dropdims(Base.sum(Pij, dims=2), dims=2)
+            Pj = dropdims(Base.sum(Pij, dims=1), dims=1)
             total = 0.0
             for i in 1:20, j in 1:20
                 total += (Pij[i,j] * log(Pij[i,j]/(Pi[i]*Pj[j])))
@@ -133,10 +133,10 @@
             Pij[2,1] = (1/N) # R A
             Pij[1,2] = (1/N) # A R
             @test sum(Pij) ≈ 1.0
-            Pi = dropdims(Base.sum(Pij,2), dims=2)
+            Pi = dropdims(Base.sum(Pij, dims=2), dims=2)
             @test Pi[2] == 0.5 # R
             @test Pi[1] == 0.5 # A
-            Pj = dropdims(Base.sum(Pij,1), dims=1)
+            Pj = dropdims(Base.sum(Pij, dims=1), dims=1)
             @test Pj[1] == 0.5 # A
             @test Pj[2] == 0.5 # R
             total = 0.0
@@ -160,8 +160,8 @@
             Pij[2,1] =(1.05/N) # R A
             Pij[1,2] =(1.05/N) # A R
             @test sum(Pij) ≈ 1.0
-            Pi = dropdims(Base.sum(Pij,2), dims=2)
-            Pj = dropdims(Base.sum(Pij,1), dims=1)
+            Pi = dropdims(Base.sum(Pij, dims=2), dims=2)
+            Pj = dropdims(Base.sum(Pij, dims=1), dims=1)
             total = 0.0
             for i in 1:20, j in 1:20
                 total += (Pij[i,j] * log(Pij[i,j]/(Pi[i]*Pj[j])))
@@ -228,25 +228,25 @@
             results = buslje09(joinpath(pwd(), "data", "simple.fasta"), FASTA,
                                lambda=0.0, clustering=false, apc=false)
 
-            @test isapprox(Float64(data[1, SCORE]), results[MIToS_SCORE][1,2], atol=1e-6)
-            @test isapprox(Float64(data[1, ZSCORE]), results[MIToS_ZSCORE][1,2], atol=1.5)
+            @test isapprox(parse(Float64, data[1, SCORE]), results[MIToS_SCORE][1,2], atol=1e-6)
+            @test isapprox(parse(Float64, data[1, ZSCORE]), results[MIToS_ZSCORE][1,2], atol=1.5)
         end
 
         @testset "Gaoetal2011" begin
             data = readdlm(gao11_buslje09("MI"))
             results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=false)
 
-            @test isapprox(convert(Vector{Float64},data[:,SCORE]),
+            @test isapprox([ parse(Float64, x) for x in data[:,SCORE] ],
                            matrix2list(results[MIToS_SCORE]), atol=1e-6)
-            @test isapprox(convert(Vector{Float64},data[:,ZSCORE]),
+            @test isapprox([ parse(Float64, x) for x in data[:,ZSCORE] ],
                            matrix2list(results[MIToS_ZSCORE]), atol=1.5)
 
             # println(cor(convert(Vector{Float64},data[:,ZSCORE]),matrix2list(results[MIToS_ZSCORE])))
 
             @testset "cMI" begin
                 result = copy(results[1])
-                result[diagind(result)] = 0.0
-                @test cumulative(results[1], -Inf) == sum(result, 1)
+                result[diagind(result)] .= 0.0
+                @test cumulative(results[1], -Inf) == sum(result, dims=1)
                 @test all((cumulative(results[2],0.5) .-
                            [0.0,0.0,1.38629,1.38629,1.38629,0.0]') .< 0.00001)
                            #        1.38629 = 0.693147 + 0.693147
@@ -262,9 +262,9 @@
         data = readdlm(gao11_buslje09("MI_clustering"))
         results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=false)
 
-        @test isapprox(convert(Vector{Float64}, data[:, SCORE]),
+        @test isapprox([ parse(Float64, x) for x in data[:,SCORE] ],
                        matrix2list(results[MIToS_SCORE]), atol=1e-6)
-        @test isapprox(convert(Vector{Float64}, data[:, ZSCORE]),
+        @test isapprox([ parse(Float64, x) for x in data[:,ZSCORE] ],
                        matrix2list(results[MIToS_ZSCORE]), atol=1.5)
     end
 
@@ -273,9 +273,9 @@
         data = readdlm(gao11_buslje09("MI_APC"))
         results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=true)
 
-        @test isapprox(convert(Vector{Float64}, data[:, SCORE]),
+        @test isapprox([ parse(Float64, x) for x in data[:,SCORE] ],
                        matrix2list(results[MIToS_SCORE]), atol=1e-6)
-        @test isapprox(convert(Vector{Float64}, data[:, ZSCORE]),
+        @test isapprox([ parse(Float64, x) for x in data[:,ZSCORE] ],
                        matrix2list(results[MIToS_ZSCORE]), atol=1.5)
 
         @test isapprox(results[MIToS_SCORE][5,6], 0.018484, atol=0.000001)
@@ -286,9 +286,9 @@
         data = readdlm(gao11_buslje09("MI_APC_clustering"))
         results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=true)
 
-        @test isapprox(convert(Vector{Float64}, data[:, SCORE]),
+        @test isapprox([ parse(Float64, x) for x in data[:,SCORE] ],
                        matrix2list(results[MIToS_SCORE]), atol=1e-6)
-        @test isapprox(convert(Vector{Float64}, data[:, ZSCORE]),
+        @test isapprox([ parse(Float64, x) for x in data[:,ZSCORE] ],
                        matrix2list(results[MIToS_ZSCORE]), atol=1.5)
 
         @test isapprox(results[MIToS_SCORE][5,6], 0.018484, atol=0.000001)

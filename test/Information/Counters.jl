@@ -10,7 +10,13 @@
                 seqs = ((seq for i in 1:N)...,)::NTuple{N,Vector{Residue}}
 
                 table = ContingencyTable(Float64, Val{N}, alphabet) # zeros in MIToS 1.0
-                @test table[1,1] == 0.0
+                if N == 1
+                    @test table[1] == 0.0
+                elseif N == 2
+                    @test table[1,1] == 0.0
+                else
+                    @test table[1,1,1] == 0.0
+                end
                 @test getmarginals(table)[1,1] == 0.0
                 @test gettotal(table) == 0.0
 
@@ -27,8 +33,9 @@
                     @test getmarginals(table)[1] == 1.0
                     @test gettotal(table) ≈ length(alphabet)
                     if N == 2
-                        @test gettablearray(table) == eye(length(alphabet))
-                        @test getmarginalsarray(table)[:,1] == [1.0 for i in 1:length(alphabet)]
+                        len = length(alphabet)
+                        @test gettablearray(table) == Matrix{Float64}(I, len, len)
+                        @test getmarginalsarray(table)[:,1] == [1.0 for i in 1:len]
                     end
                 end
 
@@ -64,7 +71,7 @@
                         @test getmarginals(table)[1] == 1.0/21
                         @test gettotal(table) ≈ (1.0/21) * len
                         if N == 2
-                            @test gettablearray(table) == (1.0/21) .* eye(len)
+                            @test gettablearray(table) == (1.0/21) .* Matrix{Float64}(I, len, len)
                             @test getmarginalsarray(table)[:,1] == [1.0/21 for i in 1:len]
                         end
                     end
@@ -101,7 +108,7 @@
                         @test getmarginals(table)[1] == 1. + (N==1 ? 1. : N==2 ? len : len^2)
                         @test gettotal(table) ≈ len + length(gettable(table))
                         if N == 2
-                            @test gettablearray(table) == eye(Int(len)) .+ 1.0
+                            @test gettablearray(table) == Matrix{Float64}(I, Int(len), Int(len)) .+ 1.0
                             @test getmarginalsarray(table)[:,1] == [ len + 1.0 for i in 1:len ]
                         end
                     end
@@ -127,7 +134,7 @@
             @test table[1] == 1.0/20.
             @test getmarginals(table)[1] == 1.0/20.
             @test gettotal(table) ≈ 1.0
-            @test gettablearray(table) == eye(20) ./ 20.0
+            @test gettablearray(table) == Matrix{Float64}(I, 20, 20) ./ 20.0
 
             @test table != probabilities(seq, seq,
                                          pseudofrequencies = BLOSUM_Pseudofrequencies(0.,1.))
