@@ -58,11 +58,11 @@
 
         for residue_list in [pdb, pdbml]
 
-            @test find(res -> res.id.number == "15A", residue_list) == [1]
-            @test find(res -> isresidue(res,All,All,All,"15A"), residue_list) == [1]
+            @test findall(res -> res.id.number == "15A", residue_list) == [1]
+            @test findall(res -> isresidue(res,All,All,All,"15A"), residue_list) == [1]
 
-            @test find(res -> res.id.number == "15B", residue_list) == [2]
-            @test find(res -> isresidue(res,All,All,All,"15B"), residue_list) == [2]
+            @test findall(res -> res.id.number == "15B", residue_list) == [2]
+            @test findall(res -> isresidue(res,All,All,All,"15B"), residue_list) == [2]
         end
 
         @testset "@residues" begin
@@ -242,10 +242,10 @@
         # But 'A':'F' chains for PDBML (label_asym_id)
         @test unique([r.id.chain for r in pdbml]) == [string(chain) for chain in 'A':'F']
 
-        ind = find(r -> r.id.number=="95A", pdbml)[1]
+        ind = findall(r -> r.id.number=="95A", pdbml)[1]
         @test pdbml[ind + 1].id.number == "4"
 
-        ind = find(r -> r.id.number=="95A", pdb)[1]
+        ind = findall(r -> r.id.number=="95A", pdb)[1]
         @test pdb[ind + 1].id.number == "4"
     end
 
@@ -260,12 +260,12 @@
         pdbml_B = @residues pdbml model "1" chain "B" group All residue All
 
         for B in [pdb_B, pdbml_B]
-            @test B[find(r -> r.id.number == "2S", B)[1]   + 1].id.number == "323P"
-            @test B[find(r -> r.id.number == "334P", B)[1] + 1].id.number == "6"
-            @test B[find(r -> r.id.number == "94", B)[1]   + 1].id.number == "94A"
-            @test B[find(r -> r.id.number == "94A", B)[1]  + 1].id.number == "95"
-            @test B[find(r -> r.id.number == "188", B)[1]  + 1].id.number == "1T"
-            @test B[find(r -> r.id.number == "1T", B)[1]   + 1].id.number == "2T"
+            @test B[findall(r -> r.id.number == "2S", B)[1]   + 1].id.number == "323P"
+            @test B[findall(r -> r.id.number == "334P", B)[1] + 1].id.number == "6"
+            @test B[findall(r -> r.id.number == "94", B)[1]   + 1].id.number == "94A"
+            @test B[findall(r -> r.id.number == "94A", B)[1]  + 1].id.number == "95"
+            @test B[findall(r -> r.id.number == "188", B)[1]  + 1].id.number == "1T"
+            @test B[findall(r -> r.id.number == "1T", B)[1]   + 1].id.number == "2T"
         end
     end
 end

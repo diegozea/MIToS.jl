@@ -436,12 +436,12 @@ function check_atoms_for_interactions(res::PDBResidue)
     if haskey(_interaction_keys, res.id.name)
         used = _interaction_keys[res.id.name]
     else
-        warn("RESIDUE $(res.id.name) is unknown to MIToS.PDB (AtomsData.jl)")
+        @warn "RESIDUE $(res.id.name) is unknown to MIToS.PDB (AtomsData.jl)"
         return(false)
     end
     for atom in atoms
         if !( atom in used )
-            warn("RESIDUE $(res.id.name) ATOM $(atom) is unknown to MIToS.PDB (AtomsData.jl)")
+            @warn "RESIDUE $(res.id.name) ATOM $(atom) is unknown to MIToS.PDB (AtomsData.jl)"
             return( false )
         end
     end

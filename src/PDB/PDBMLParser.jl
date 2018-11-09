@@ -124,10 +124,10 @@ function Base.parse(pdbml::LightXML.XMLDocument, ::Type{PDBML};
             push!(residues, PDBResidue(residue_id, Vector{PDBAtom}()))
         end
 
-        x = float(_get_text(atom, "Cartn_x"))
-        y = float(_get_text(atom, "Cartn_y"))
-        z = float(_get_text(atom, "Cartn_z"))
-        occupancy = float(_get_text(atom, "occupancy"))
+        x = parse(Float64, _get_text(atom, "Cartn_x"))
+        y = parse(Float64, _get_text(atom, "Cartn_y"))
+        z = parse(Float64, _get_text(atom, "Cartn_z"))
+        occupancy = parse(Float64, _get_text(atom, "occupancy"))
         B = _get_text(atom, "B_iso_or_equiv")
 
         push!(residues[end].atoms, PDBAtom(Coordinates(x,y,z),
@@ -179,10 +179,10 @@ end
 #             #  Ins_Code    _atom_site.pdbx_PDB_ins_code
 #             PDB_number = string(_get_text(atom, "auth_seq_id"), _get_ins_code(atom))
 #             name = _get_text(atom, comp_attribute)
-#             x = float(_get_text(atom, "Cartn_x"))
-#             y = float(_get_text(atom, "Cartn_y"))
-#             z = float(_get_text(atom, "Cartn_z"))
-#             occupancy = float(_get_text(atom, "occupancy"))
+#             x = parse(Float64, _get_text(atom, "Cartn_x"))
+#             y = parse(Float64, _get_text(atom, "Cartn_y"))
+#             z = parse(Float64, _get_text(atom, "Cartn_z"))
+#             occupancy = parse(Float64, _get_text(atom, "occupancy"))
 #             B = _get_text(atom, "B_iso_or_equiv")
 #
 #             residue_id = PDBResidueIdentifier(PDBe_number, PDB_number, name, atom_group, atom_model, atom_chain)

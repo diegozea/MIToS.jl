@@ -23,6 +23,7 @@ using PairwiseListMatrices
 using NamedArrays
 using LightXML
 using LinearAlgebra
+using Statistics            # mean
 using MIToS.Utils
 using Format
 

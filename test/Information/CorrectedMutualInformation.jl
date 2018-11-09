@@ -31,7 +31,7 @@
 
             MIp = APC!(MI)
 
-            @test filter(x -> !isnan(x), vec(full(MIp))) ≈ filter(x -> !isnan(x), vec(
+            @test filter(x -> !isnan(x), vec(Matrix(MIp))) ≈ filter(x -> !isnan(x), vec(
                 [   NaN -1.0  0.25
                     -1.0  NaN  1.00
                     0.25 1.00   NaN ]))
@@ -224,21 +224,21 @@
 
         @testset "Simple" begin
             data = readdlm(joinpath(pwd(), "data",
-                           "data_simple_soft_Busljeetal2009_measure_MI.txt"))
+                           "data_simple_soft_Busljeetal2009_measure_MI.txt"), comments=true)
             results = buslje09(joinpath(pwd(), "data", "simple.fasta"), FASTA,
                                lambda=0.0, clustering=false, apc=false)
 
-            @test isapprox(parse(Float64, data[1, SCORE]), results[MIToS_SCORE][1,2], atol=1e-6)
-            @test isapprox(parse(Float64, data[1, ZSCORE]), results[MIToS_ZSCORE][1,2], atol=1.5)
+            @test isapprox(Float64(data[1, SCORE]), results[MIToS_SCORE][1,2], atol=1e-6)
+            @test isapprox(Float64(data[1, ZSCORE]), results[MIToS_ZSCORE][1,2], atol=2.)
         end
 
         @testset "Gaoetal2011" begin
-            data = readdlm(gao11_buslje09("MI"))
+            data = readdlm(gao11_buslje09("MI"), comments=true)
             results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=false)
 
-            @test isapprox([ parse(Float64, x) for x in data[:,SCORE] ],
+            @test isapprox([ Float64(x) for x in data[:,SCORE] ],
                            matrix2list(results[MIToS_SCORE]), atol=1e-6)
-            @test isapprox([ parse(Float64, x) for x in data[:,ZSCORE] ],
+            @test isapprox([ Float64(x) for x in data[:,ZSCORE] ],
                            matrix2list(results[MIToS_ZSCORE]), atol=1.5)
 
             # println(cor(convert(Vector{Float64},data[:,ZSCORE]),matrix2list(results[MIToS_ZSCORE])))
@@ -259,37 +259,37 @@
 
     @testset "MI + clustering" begin
 
-        data = readdlm(gao11_buslje09("MI_clustering"))
+        data = readdlm(gao11_buslje09("MI_clustering"), comments=true)
         results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=false)
 
-        @test isapprox([ parse(Float64, x) for x in data[:,SCORE] ],
+        @test isapprox([ Float64(x) for x in data[:,SCORE] ],
                        matrix2list(results[MIToS_SCORE]), atol=1e-6)
-        @test isapprox([ parse(Float64, x) for x in data[:,ZSCORE] ],
+        @test isapprox([ Float64(x) for x in data[:,ZSCORE] ],
                        matrix2list(results[MIToS_ZSCORE]), atol=1.5)
     end
 
     @testset "MIp" begin
 
-        data = readdlm(gao11_buslje09("MI_APC"))
+        data = readdlm(gao11_buslje09("MI_APC"), comments=true)
         results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=true)
 
-        @test isapprox([ parse(Float64, x) for x in data[:,SCORE] ],
+        @test isapprox([ Float64(x) for x in data[:,SCORE] ],
                        matrix2list(results[MIToS_SCORE]), atol=1e-6)
-        @test isapprox([ parse(Float64, x) for x in data[:,ZSCORE] ],
-                       matrix2list(results[MIToS_ZSCORE]), atol=1.5)
+        @test isapprox([ Float64(x) for x in data[:,ZSCORE] ],
+                       matrix2list(results[MIToS_ZSCORE]), atol=2.0)
 
         @test isapprox(results[MIToS_SCORE][5,6], 0.018484, atol=0.000001)
     end
 
     @testset "MIp + clustering" begin
 
-        data = readdlm(gao11_buslje09("MI_APC_clustering"))
+        data = readdlm(gao11_buslje09("MI_APC_clustering"), comments=true)
         results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=true)
 
-        @test isapprox([ parse(Float64, x) for x in data[:,SCORE] ],
+        @test isapprox([ Float64(x) for x in data[:,SCORE] ],
                        matrix2list(results[MIToS_SCORE]), atol=1e-6)
-        @test isapprox([ parse(Float64, x) for x in data[:,ZSCORE] ],
-                       matrix2list(results[MIToS_ZSCORE]), atol=1.5)
+        @test isapprox([ Float64(x) for x in data[:,ZSCORE] ],
+                       matrix2list(results[MIToS_ZSCORE]), atol=2.)
 
         @test isapprox(results[MIToS_SCORE][5,6], 0.018484, atol=0.000001)
     end

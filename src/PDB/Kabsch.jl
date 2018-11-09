@@ -1,7 +1,7 @@
 # Jorge Fernández de Cossío Díaz ( @cossio ) wrote the kabsch, rmsd and center! functions.
 
 """
-`kabsch(A::Matrix{Float64}, B::Matrix{Float64})`
+`kabsch(A::AbstractMatrix{Float64}, B::AbstractMatrix{Float64})`
 
 This function takes two sets of points, `A` (refrence) and `B` as NxD matrices, where D
 is the dimension and N is the number of points.
@@ -11,34 +11,34 @@ in the `(0.0, 0.0, 0.0)`.
 Rotates `B` so that `rmsd(A,B)` is minimized.
 Returns the rotation matrix. You should do `B * RotationMatrix` to get the rotated B.
 """
-function kabsch(A::Matrix{Float64}, B::Matrix{Float64})
+function kabsch(A::AbstractMatrix{Float64}, B::AbstractMatrix{Float64})
     @assert size(A) == size(B)
-    M::Matrix{Float64} = B' * A
+    M::AbstractMatrix{Float64} = B' * A
     χ = Matrix{Float64}(I, size(M, 1), size(M, 2))
     χ[end,end] = sign(det(M))
-    u::Matrix{Float64}, σ::Vector{Float64}, v::Matrix{Float64} = svd(M)
+    u::AbstractMatrix{Float64}, σ::Vector{Float64}, v::AbstractMatrix{Float64} = svd(M)
     return u * χ * v'
 end
 
 """
-`center!(A::Matrix{Float64})`
+`center!(A::AbstractMatrix{Float64})`
 
 Takes a set of points `A` as an NxD matrix (N: number of points, D: dimension).
 Translates `A` in place so that its centroid is at the origin of coordinates
 """
-function center!(A::Matrix{Float64})
+function center!(A::AbstractMatrix{Float64})
     for i = 1:size(A)[2]
-        A[:,i] -= mean(A[:,i])
+        A[:,i] .-= mean(A[:,i])
     end
 end
 
 """
-`rmsd(A::Matrix{Float64}, B::Matrix{Float64})`
+`rmsd(A::AbstractMatrix{Float64}, B::AbstractMatrix{Float64})`
 
 Return RMSD between two sets of points `A` and `B`, given as NxD matrices
 (N: number of points, D: dimension).
 """
-function rmsd(A::Matrix{Float64}, B::Matrix{Float64})
+function rmsd(A::AbstractMatrix{Float64}, B::AbstractMatrix{Float64})
     @assert size(A) == size(B)
     N, D = size(A)
     s::Float64 = 0.0
@@ -129,7 +129,7 @@ be used to center the matrix.
 """
 function centeredcoordinates(residues::AbstractVector{PDBResidue}, CA::Bool=true)
     coordinates = PDB.coordinatesmatrix(residues)
-    meancoord = CA ? mean(PDB.CAmatrix(residues), 1) : mean(coordinates, 1)
+    meancoord = CA ? mean(PDB.CAmatrix(residues), dims=1) : mean(coordinates, dims=1)
     coordinates .- meancoord
 end
 
@@ -157,13 +157,13 @@ function change_coordinates(atom::PDBAtom, coordinates::Coordinates)
 end
 
 """
-`change_coordinates(residue::PDBResidue, coordinates::Matrix{Float64}, offset::Int=1)`
+`change_coordinates(residue::PDBResidue, coordinates::AbstractMatrix{Float64}, offset::Int=1)`
 
-Returns a new `PDBResidues` with (x,y,z) from a coordinates `Matrix{Float64}`
+Returns a new `PDBResidues` with (x,y,z) from a coordinates `AbstractMatrix{Float64}`
 You can give an `offset` indicating in wich matrix row starts the (x,y,z) coordinates
 of the residue.
 """
-function change_coordinates(residue::PDBResidue, coordinates::Matrix{Float64}, offset::Int=1)
+function change_coordinates(residue::PDBResidue, coordinates::AbstractMatrix{Float64}, offset::Int=1)
     centeredatoms = map(residue.atoms) do atom
         atoms = change_coordinates(atom, Coordinates(vec(coordinates[offset,:])))
         offset += 1
@@ -173,11 +173,11 @@ function change_coordinates(residue::PDBResidue, coordinates::Matrix{Float64}, o
 end
 
 """
-`change_coordinates(residues::AbstractVector{PDBResidue}, coordinates::Matrix{Float64})`
+`change_coordinates(residues::AbstractVector{PDBResidue}, coordinates::AbstractMatrix{Float64})`
 
 Returns a new `Vector{PDBResidues}` with (x,y,z) from a coordinates `Matrix{Float64}`
 """
-function change_coordinates(residues::AbstractVector{PDBResidue}, coordinates::Matrix{Float64})
+function change_coordinates(residues::AbstractVector{PDBResidue}, coordinates::AbstractMatrix{Float64})
     nres = length(residues)
     updated = Array{PDBResidue}(undef, nres)
     j = 1
@@ -200,40 +200,40 @@ end
 
 _iscentered(x::Float64, y::Float64, z::Float64) = (abs(x) <= 1e-13) && (abs(y) <= 1e-13) && (abs(z) <= 1e-13)
 
-_iscentered(meanCα::Vector{Float64}) = _iscentered(meanCα[1], meanCα[2], meanCα[3])
+_iscentered(meanCα::AbstractVector{Float64}) = _iscentered(meanCα[1], meanCα[2], meanCα[3])
 
-_iscentered(CA::Matrix{Float64}) = _iscentered(vec(mean(CA,1)))
+_iscentered(CA::AbstractMatrix{Float64}) = _iscentered(vec(mean(CA, dims=1)))
 
 """
-This function takes `A::Vector{PDBResidue}` (reference) and `B::Vector{PDBResidue}`.
-Translates `A` and `B` to the origin of coordinates,
+This function takes `A::AbstractVector{PDBResidue}` (reference) and
+`B::AbstractVector{PDBResidue}`. Translates `A` and `B` to the origin of coordinates,
 and rotates `B` so that `rmsd(A,B)` is minimized with the Kabsch algorithm
 (using only their α carbons).
 Returns the rotated and translated versions of `A` and `B`, and the RMSD value.
 """
-function superimpose(A::Vector{PDBResidue}, B::Vector{PDBResidue})
+function superimpose(A::AbstractVector{PDBResidue}, B::AbstractVector{PDBResidue})
     @assert length(A) == length(B)
     Bxyz = PDB.coordinatesmatrix(B)
     ACα = PDB.CAmatrix(A)
     BCα = PDB.CAmatrix(B)
-    meanACα = vec(mean(ACα,1))
-    meanBCα = vec(mean(BCα,1))
+    meanACα = vec(mean(ACα, dims=1))
+    meanBCα = vec(mean(BCα, dims=1))
     if !_iscentered(meanBCα)
-        @inbounds BCα[:,1] -= meanBCα[1]
-        @inbounds BCα[:,2] -= meanBCα[2]
-        @inbounds BCα[:,3] -= meanBCα[3]
-        @inbounds Bxyz[:,1] -= meanBCα[1]
-        @inbounds Bxyz[:,2] -= meanBCα[2]
-        @inbounds Bxyz[:,3] -= meanBCα[3]
+        @inbounds BCα[:,1] .-= meanBCα[1]
+        @inbounds BCα[:,2] .-= meanBCα[2]
+        @inbounds BCα[:,3] .-= meanBCα[3]
+        @inbounds Bxyz[:,1] .-= meanBCα[1]
+        @inbounds Bxyz[:,2] .-= meanBCα[2]
+        @inbounds Bxyz[:,3] .-= meanBCα[3]
     end
     if !_iscentered(meanACα)
-        @inbounds ACα[:,1] -= meanACα[1]
-        @inbounds ACα[:,2] -= meanACα[2]
-        @inbounds ACα[:,3] -= meanACα[3]
+        @inbounds ACα[:,1] .-= meanACα[1]
+        @inbounds ACα[:,2] .-= meanACα[2]
+        @inbounds ACα[:,3] .-= meanACα[3]
         Axyz = PDB.coordinatesmatrix(A)
-        @inbounds Axyz[:,1] -= meanACα[1]
-        @inbounds Axyz[:,2] -= meanACα[2]
-        @inbounds Axyz[:,3] -= meanACα[3]
+        @inbounds Axyz[:,1] .-= meanACα[1]
+        @inbounds Axyz[:,2] .-= meanACα[2]
+        @inbounds Axyz[:,3] .-= meanACα[3]
         RotationMatrix = PDB.kabsch(ACα, BCα)
         return(
             change_coordinates(A, Axyz),
@@ -270,41 +270,48 @@ end
 
 """
 Calculates the average/mean position of each atom in a set of structure.
-The function takes a vector (`AbstractVector`) of vectors (`Vector{PDBResidue}`)
-or matrices (`Matrix{Float64}`) as first argument. As second (optional) argument this
+The function takes a vector (`AbstractVector`) of vectors (`AbstractVector{PDBResidue}`)
+or matrices (`AbstractMatrix{Float64}`) as first argument. As second (optional) argument this
 function can take an `AbstractVector{Float64}` of matrix/structure weights to return a
-weighted mean. When a Vector{PDBResidue} is used, if the keyword argument `calpha` is
+weighted mean. When a AbstractVector{PDBResidue} is used, if the keyword argument `calpha` is
 `false` the RMSF is calculated for all the atoms. By default only alpha carbons are used
 (default: `calpha=true`).
 """
-function mean_coordinates(vec::AbstractVector{Matrix{Float64}})
+function mean_coordinates(vec::AbstractVector{T}) where T <: AbstractMatrix{Float64}
     _rmsf_test(vec)
     n = length(vec)
     reduce(+, vec) ./ n
 end
 
-function mean_coordinates(vec::AbstractVector{Matrix{Float64}}, matrixweights::AbstractVector{Float64})
+function mean_coordinates(vec::AbstractVector{T},
+                          matrixweights::AbstractVector{Float64}) where T <: AbstractMatrix{Float64}
     _rmsf_test(vec)
     @assert length(vec) == length(matrixweights) "The number of matrix weights must be equal to the number of matrices."
     n = sum(matrixweights)
     reduce(+, (vec .* matrixweights)) ./ n
 end
 
-function mean_coordinates(vec::AbstractVector{Vector{PDBResidue}}, args...; calpha::Bool=true)
+function mean_coordinates(vec::AbstractVector{T};
+                          calpha::Bool=true) where T <: AbstractVector{PDBResidue}
+    mean_coordinates(map(calpha ? CAmatrix : coordinatesmatrix, vec))
+end
+
+function mean_coordinates(vec::AbstractVector{T},
+                          args...; calpha::Bool=true) where T <: AbstractVector{PDBResidue}
     mean_coordinates(map(calpha ? CAmatrix : coordinatesmatrix, vec), args...)
 end
 
 """
 Calculates the RMSF (Root Mean-Square-Fluctuation) between an atom and its average
 position in a set of structures. The function takes a vector (`AbstractVector`) of
-vectors (`Vector{PDBResidue}`) or matrices (`Matrix{Float64}`) as first argument.
-As second (optional) argument this function can take an `AbstractVector{Float64}`
+vectors (`AbstractVector{PDBResidue}`) or matrices (`AbstractMatrix{Float64}`) as first
+argument. As second (optional) argument this function can take an `AbstractVector{Float64}`
 of matrix/structure weights to return the root weighted mean-square-fluctuation around
 the weighted mean structure. When a Vector{PDBResidue} is used, if the keyword argument
 `calpha` is `false` the RMSF is calculated for all the atoms. By default only alpha
 carbons are used (default: `calpha=true`).
 """
-function rmsf(vector::AbstractVector{Matrix{Float64}})
+function rmsf(vector::AbstractVector{T}) where T <: AbstractMatrix{Float64}
     m = mean_coordinates(vector)
     # MIToS RMSF is calculated as in Eq. 6 from:
     # Kuzmanic, Antonija, and Bojan Zagrovic.
@@ -313,12 +320,19 @@ function rmsf(vector::AbstractVector{Matrix{Float64}})
     vec(sqrt.(mean(map( mat -> mapslices(x -> sum(abs2, x), mat .- m, dims=2), vector ))))
 end
 
-function rmsf(vector::AbstractVector{Matrix{Float64}}, matrixweights::AbstractVector{Float64})
+function rmsf(vector::AbstractVector{T},
+              matrixweights::AbstractVector{Float64}) where T <: AbstractMatrix{Float64}
     m = mean_coordinates(vector, matrixweights)
     d = map( mat -> mapslices(x -> sum(abs2, x), mat .- m, dims=2), vector )
     vec(sqrt.(sum(d .* matrixweights)/sum(matrixweights)))
 end
 
-function rmsf(vec::AbstractVector{Vector{PDBResidue}}, args...; calpha::Bool=true)
+function rmsf(vec::AbstractVector{T}; calpha::Bool=true) where T <: AbstractVector{PDBResidue}
     rmsf(map(calpha ? CAmatrix : coordinatesmatrix, vec))
+end
+
+function rmsf(vec::AbstractVector{T},
+              matrixweights::AbstractVector{Float64};
+              calpha::Bool=true) where T <: AbstractVector{PDBResidue}
+    rmsf(map(calpha ? CAmatrix : coordinatesmatrix, vec), matrixweights)
 end

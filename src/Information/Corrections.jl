@@ -40,7 +40,7 @@ end
 
 function APC!(MI::PairwiseListMatrix{T,true,Vector{T}}) where T <: AbstractFloat
     ncol = MI.nelements
-    MI_col_sum = vec(sum_nodiag(MI, 1))
+    MI_col_sum = vec(sum_nodiag(MI, dims=1))
     MI_mean = sum(MI_col_sum) / (length(MI) - ncol)
     MI_col_mean = MI_col_sum ./ (ncol-1)
     k = 0
@@ -60,7 +60,7 @@ end
 
 function APC!(MI::PairwiseListMatrix{T,false,Vector{T}}) where T <: AbstractFloat
     ncol = MI.nelements
-    MI_col_sum = vec(sum_nodiag(MI, 1))
+    MI_col_sum = vec(sum_nodiag(MI, dims=1))
     MI_mean = sum(MI_col_sum) / (length(MI) - ncol)
     MI_col_mean = MI_col_sum ./ (ncol-1)
     k = 0
@@ -71,7 +71,7 @@ function APC!(MI::PairwiseListMatrix{T,false,Vector{T}}) where T <: AbstractFloa
             list[k] -= ((MI_col_mean[i] * MI_col_mean[j]) /  MI_mean)
         end
     end
-    MI.diag[:] = NaN
+    MI.diag[:] .= NaN
     MI
 end
 

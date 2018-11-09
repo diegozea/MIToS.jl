@@ -18,10 +18,10 @@ function _parse_residueidentifier(line::String, atom_chain, line_id, actual_mode
 end
 
 function _parse_pdbatom(line::String, atom_name, element)
-    x = float(SubString(line, 31, 38))
-    y = float(SubString(line, 39, 46))
-    z = float(SubString(line, 47, 54))
-    occupancy = float(SubString(line, 55, 60))
+    x = parse(Float64, SubString(line, 31, 38))
+    y = parse(Float64, SubString(line, 39, 46))
+    z = parse(Float64, SubString(line, 47, 54))
+    occupancy = parse(Float64, SubString(line, 55, 60))
     B = String(strip(SubString(line, 61, 66), ' '))
 
     PDBAtom(Coordinates(x,y,z), atom_name, element, occupancy, B)

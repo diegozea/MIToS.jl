@@ -9,6 +9,7 @@ using MIToS.Pfam
 using LinearAlgebra
 using Statistics
 using Random
+using Statistics            # mean
 using DelimitedFiles        # readdlm
 using Clustering            # test/MSA/Hobohm.jl
 using NamedArrays           # array

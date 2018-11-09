@@ -1,3 +1,5 @@
+using Pkg
+
 "Function from MLPlots.jl, written by Tom Breloff."
 function _is_installed(name::String)
     try
