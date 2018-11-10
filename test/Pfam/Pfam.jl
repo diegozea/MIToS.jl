@@ -152,7 +152,7 @@ end
 
     @test AUC(score, msacontacts) == correct
 
-    score[1:end,2] = NaN
-    msacontacts[1:end,3] = NaN
+    score[1:end,2] .= NaN
+    msacontacts[1:end,3] .= NaN
     @test AUC(score, msacontacts) < correct
 end

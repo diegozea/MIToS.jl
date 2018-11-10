@@ -49,7 +49,7 @@ end
         @test occursin(r"RUN : 0", out)
         @test length(matchall(r"true", out)) == 4
 
-        @static if is_unix()
+        @static if Sys.isunix()
 
             @testset "--arg" begin
                 out = readstring( pipeline(`cat $list_file`, `$julia $template --arg 42`) )

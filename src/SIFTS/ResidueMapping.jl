@@ -188,14 +188,14 @@ end
 function Base.get(res::SIFTSResidue,
 db::Type{T}, field::Symbol, default::String) where T<:Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbCATH}
     database = get(res, db)
-    ismissing(database) ? default : getfield(get(database), field)
+    ismissing(database) ? default : getfield(database, field)
 end
 
 function Base.get(res::SIFTSResidue,
 db::Type{T}, field::Symbol) where T<:Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbCATH}
     database = get(res, db)
     S = fieldtype(T, field)
-    ismissing(database) ? missing : getfield(get(database), field)
+    ismissing(database) ? missing : getfield(database, field)
 end
 
 # Print
@@ -215,8 +215,8 @@ function Base.show(io::IO, res::SIFTSResidue)
         dbfield = getfield(res, dbname)
         if !ismissing(dbfield)
             println(io, "  ", dbname, " :")
-            for f in fieldnames(get(dbfield))
-                println(io, "    ", f, ": ",  getfield(get(dbfield), f))
+            for f in fieldnames(typeof(dbfield))
+                println(io, "    ", f, ": ",  getfield(dbfield, f))
             end
         end
     end
@@ -226,7 +226,7 @@ end
 # Creation
 # --------
 
-function SIFTSResidue(residue::LightXML.XMLElement, missing::Bool,
+function SIFTSResidue(residue::LightXML.XMLElement, missing_residue::Bool,
                       sscode::String, ssname::String)
     PDBe = dbPDBe(residue)
     UniProt = missing
@@ -253,7 +253,7 @@ function SIFTSResidue(residue::LightXML.XMLElement, missing::Bool,
         elseif db == "CATH"
             CATH = dbCATH(crossref)
         else
-            warn(string(db, " is not in the MIToS' DataBases."))
+            @warn(string(db, " is not in the MIToS' DataBases."))
         end
     end
     SIFTSResidue(PDBe,
@@ -264,7 +264,7 @@ function SIFTSResidue(residue::LightXML.XMLElement, missing::Bool,
                  PDB,
                  SCOP,
                  CATH,
-                 missing,
+                 missing_residue,
                  sscode,
                  ssname)
 end
@@ -318,13 +318,13 @@ function siftsmapping(filename::String,
                             end
                         end
                         if !ismissing(key_data) && !ismissing(value_data) && in_chain
-                            key = get(key_data)
+                            key = key_data
                             if haskey(mapping, key)
-                                warn(string("$key is already in the mapping with the value ",
-                                            mapping[key],". The value is replaced by ",
-                                            get(value_data)))
+                                @warn string("$key is already in the mapping with the value ",
+                                             mapping[key],". The value is replaced by ",
+                                             value_data)
                             end
-                            mapping[key] = get(value_data)
+                            mapping[key] = value_data
                         end
                     end
                 end
@@ -349,10 +349,10 @@ function Base.parse(document::LightXML.XMLDocument, ::Type{SIFTSXML};
         for segment in _get_segments(entity)
             residues = _get_residues(segment)
             for residue in residues
-                missing, sscode, ssname = _get_details(residue)
-                if missings || !missing
-                    sifts_res = SIFTSResidue(residue, missing, sscode, ssname)
-                    if _is_All(chain) || (!ismissing(sifts_res.PDB) && get(sifts_res.PDB).chain == chain)
+                missing_residue, sscode, ssname = _get_details(residue)
+                if missings || !missing_residue
+                    sifts_res = SIFTSResidue(residue, missing_residue, sscode, ssname)
+                    if _is_All(chain) || (!ismissing(sifts_res.PDB) && sifts_res.PDB.chain == chain)
                         push!(vector, sifts_res)
                     end
                 end
@@ -371,7 +371,7 @@ for F in (:find, :filter!, :filter)
             $(F)(list) do res
                 database = get(res, db)
                 if !ismissing(database)
-                    f(get(database))
+                    f(database)
                 end
             end
         end

@@ -67,19 +67,19 @@ function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
 
     up2res = Dict{String,Tuple{String,String,Char}}()
     for res in siftsres
-        if !ismissing(res.Pfam) && get(res.Pfam).id == uppercase(pfamid)
-            pfnum  = get(res.Pfam).number
+        if !ismissing(res.Pfam) && res.Pfam.id == uppercase(pfamid)
+            pfnum  = res.Pfam.number
             if pfnum == ""
                 continue
             end
-            pfname = get(res.Pfam).name
-            if !ismissing(res.PDB) && (get(res.PDB).id == lowercase(pdbid)) && !res.missing
+            pfname = res.Pfam.name
+            if !ismissing(res.PDB) && (res.PDB.id == lowercase(pdbid)) && !res.missing
                 up2res[pfnum] = checkpdbname ?
-                    (pfname,get(res.PDB).number,three2residue(get(res.PDB).name)) :
-                    (pfname,get(res.PDB).number,'-')
+                    (pfname,res.PDB.number,three2residue(res.PDB.name)) :
+                    (pfname,res.PDB.number,'-')
             else
                 up2res[pfnum] = checkpdbname ?
-                    (pfname,"",ismissing(res.PDB) ? "" : three2residue(get(res.PDB).name)) :
+                    (pfname,"",ismissing(res.PDB) ? "" : three2residue(res.PDB.name)) :
                     (pfname,"",'-')
             end
         end

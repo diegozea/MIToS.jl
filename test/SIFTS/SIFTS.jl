@@ -166,11 +166,11 @@ end
     _1nsa_file = joinpath(pwd(), "data", "1nsa.xml.gz")
     mapping = read(_1nsa_file, SIFTSXML)
 
-    @testset "find & read" begin
+    @testset "findall & read" begin
 
         four = find(db -> db.id == "1nsa" && db.number == "4" , mapping, dbPDB)[1]
-        @test find(db -> db.id == "1nsa" && db.number == "95A", mapping, dbPDB)[1]+1 == four
-        @test get(mapping[find(db -> db.id == "1nsa" && db.number == "95A",mapping,dbPDB)][1].PDB).number == "95A"
+        @test findall(db -> db.id == "1nsa" && db.number == "95A", mapping, dbPDB)[1]+1 == four
+        @test get(mapping[findall(db -> db.id == "1nsa" && db.number == "95A",mapping,dbPDB)][1].PDB).number == "95A"
     end
 
     @testset "capture fields" begin
@@ -193,7 +193,7 @@ end
     mapp = read(joinpath(pwd(), "data", "1iao.xml.gz"), SIFTSXML)
 
     @test filter(db -> db.id == "1iao" && db.number == "1S" && db.chain == "B", mapp, dbPDB)[1].PDBe.number == "1"
-    i = find(db -> db.id == "1iao" && db.number == "1S" && db.chain == "B", mapp, dbPDB)[1]
+    i = findall(db -> db.id == "1iao" && db.number == "1S" && db.chain == "B", mapp, dbPDB)[1]
     res = mapp[i+2]
     @test get(res,dbPDB,:id,"") == "1iao" &&  get(res,dbPDB,:chain,"") == "B" &&
           get(res,dbPDB,:number,"") == "323P"
