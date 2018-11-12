@@ -1,5 +1,6 @@
 #!/usr/bin/env julia
 
+using Distributed
 using MIToS.Utils.Scripts
 
 Args = parse_commandline(

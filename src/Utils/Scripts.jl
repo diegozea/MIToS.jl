@@ -2,7 +2,7 @@
 function parse_commandline(args...; description::AbstractString="Made with MIToS",
                                     output::AbstractString=".mitos.",
                                     stdout::Bool=true)
-    mitos_version  = Pkg.installed("MIToS")
+    mitos_version  = Pkg.installed()["MIToS"]
     settings = ArgParseSettings(description = description,
                                 version = "MIToS $mitos_version",
                                 add_version = true,

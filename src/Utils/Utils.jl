@@ -49,6 +49,8 @@ export  parse_commandline,
         open_output, close_output,
         readorparse
 
+using Pkg
+using Distributed
 using ArgParse, CodecZlib
 
 include("Scripts.jl")

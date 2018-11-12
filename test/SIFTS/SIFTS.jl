@@ -168,9 +168,9 @@ end
 
     @testset "findall & read" begin
 
-        four = find(db -> db.id == "1nsa" && db.number == "4" , mapping, dbPDB)[1]
+        four = findall(db -> db.id == "1nsa" && db.number == "4" , mapping, dbPDB)[1]
         @test findall(db -> db.id == "1nsa" && db.number == "95A", mapping, dbPDB)[1]+1 == four
-        @test get(mapping[findall(db -> db.id == "1nsa" && db.number == "95A",mapping,dbPDB)][1].PDB).number == "95A"
+        @test mapping[findall(db -> db.id == "1nsa" && db.number == "95A",mapping,dbPDB)][1].PDB.number == "95A"
     end
 
     @testset "capture fields" begin
@@ -183,7 +183,7 @@ end
                 missing
             end
         end
-        @test get(cap[ [!ismissing(x) for x in cap] ][1]) == "95A"
+        @test cap[ [!ismissing(x) for x in cap] ][1] == "95A"
     end
 end
 

@@ -232,7 +232,7 @@ maxcoverage, indice = findmax(coverage(msa)) # chooses the sequence with more co
 setreference!(msa, indice)
 adjustreference!(msa)
 write("tofreecontact.msa", msa, Raw)
-print(readstring("tofreecontact.msa")) # It displays the contents of the output file
+print(read("tofreecontact.msa", String)) # It displays the contents of the output file
 ```
 
 ## [Column and sequence mappings](@id Column-and-sequence-mappings)
@@ -344,7 +344,7 @@ write("tofreecontact.msa", msa, Raw, "a")
 ```  
 
 ```@example freecontact_ii
-print(readstring("tofreecontact.msa")) # It displays the contents of the output file
+print(read("tofreecontact.msa", String)) # It displays the contents of the output file
 ```
 
 ## [Get sequences from a MSA](@id Get-sequences-from-a-MSA)

@@ -11,11 +11,11 @@ using Statistics
 using Random
 using Statistics            # mean
 using DelimitedFiles        # readdlm
+using ROCAnalysis           # AUC
 using Clustering            # test/MSA/Hobohm.jl
 using NamedArrays           # array
 using StatsBase             # WeightVec
 using PairwiseListMatrices  # getlist
-using ROCAnalysis           # AUC
 
 const DATA = joinpath(pwd(), "data")
 

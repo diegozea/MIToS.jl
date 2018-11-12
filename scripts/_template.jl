@@ -1,5 +1,6 @@
 #!/usr/bin/env julia
 
+using Distributed
 using MIToS.Utils.Scripts
 
 Args = parse_commandline(
@@ -35,7 +36,7 @@ set_parallel(Args["parallel"])
         arg_one = args["arg"]
         println(fh_out, "RUN : $arg_one")
         println("$input : ")
-        println(readstring(input))
+        println(read(input, String))
         # ------------------------------------------------------------------------
     end
 

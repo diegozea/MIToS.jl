@@ -1,5 +1,9 @@
 #!/usr/bin/env julia
 
+using Pkg
+using Dates
+using Distributed
+using Statistics
 using MIToS.Utils.Scripts
 
 Args = parse_commandline(
@@ -42,7 +46,7 @@ set_parallel(Args["parallel"])
                     args,
                     fh_out::Union{Base.LibuvStream, IO})
         # TO DO ------------------------------------------------------------------
-        println(fh_out, "# MIToS ", Pkg.installed("MIToS"), " MSADescription.jl ", now())
+        println(fh_out, "# MIToS ", Pkg.installed()["MIToS"], " MSADescription.jl ", now())
         println(fh_out, "# used arguments:")
 
         for (key, value) in args

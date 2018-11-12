@@ -1,5 +1,9 @@
 #!/usr/bin/env julia
 
+using Pkg
+using Dates
+using DelimitedFiles
+using Distributed
 using MIToS.Utils.Scripts
 
 Args = parse_commandline(
@@ -72,7 +76,7 @@ set_parallel(Args["parallel"])
                     args,
                     fh_out::Union{Base.LibuvStream, IO})
         # TO DO ------------------------------------------------------------------
-        println(fh_out, "# MIToS ", Pkg.installed("MIToS"), " BLMI.jl ", now())
+        println(fh_out, "# MIToS ", Pkg.installed()["MIToS"], " BLMI.jl ", now())
         println(fh_out, "# used arguments:")
         for (key, value) in args
             println(fh_out, "# \t", key, "\t\t", value)
@@ -91,7 +95,7 @@ set_parallel(Args["parallel"])
                            maxgap=args["maxgap"], apc=args["apc"], samples=args["samples"], fixedgaps=args["fixedgaps"])
         println(fh_out, "i,j,", args["apc"] ? "ZBLMIp" : "ZBLMI", ",", args["apc"] ? "BLMIp" : "BLMI")
         table = hcat(to_table(zscore, diagonal=false), to_table(mip, diagonal=false)[:,3])
-        writecsv(fh_out, table)
+        writedlm(fh_out, table, ',')
         # ------------------------------------------------------------------------
     end
 

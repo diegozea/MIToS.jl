@@ -365,7 +365,7 @@ end
 # Find SIFTSResidue
 # -----------------
 
-for F in (:find, :filter!, :filter)
+for F in (:findall, :filter!, :filter)
     @eval begin
         function Base.$(F)(f::Function,list::AbstractVector{SIFTSResidue},db::Type{T}) where T<:DataBase
             $(F)(list) do res

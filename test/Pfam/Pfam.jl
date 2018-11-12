@@ -25,7 +25,7 @@ end
     sifts_file = joinpath(pwd(), "data", "2vqc.xml.gz")
     pdb_file   = joinpath(pwd(), "data", "2VQC.xml")
     msa = read(msa_file, Stockholm, generatemapping=true, useidcoordinates=true)
-    map = msacolumn2pdbresidue(msa, "F112_SSV1/3-112", "2VQC", "A", "PF09645", sifts_file)
+    cmap = msacolumn2pdbresidue(msa, "F112_SSV1/3-112", "2VQC", "A", "PF09645", sifts_file)
     res = residuesdict(read(pdb_file, PDBML), "1", "A", "ATOM", All)
 
     #     -45              20 pdb
@@ -35,11 +35,11 @@ end
     #    ****              *
     #12345678901234567890123  ColMap
 
-    @test_throws KeyError map[5]  # insert
-    @test map[6]  == ""           # missing
-    @test map[7]  == "4"
-    @test map[8]  == "5"
-    @test map[23] == "20"
+    @test_throws KeyError cmap[5]  # insert
+    @test cmap[6]  == ""           # missing
+    @test cmap[7]  == "4"
+    @test cmap[8]  == "5"
+    @test cmap[23] == "20"
 
     #.....QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ..... msa seq
     #.....X---HHHHHHHHHHHHHHHSEE-HHHHHHHH---HHHHHHHHHHHHHHHHH-TTTEEEEE-SS-EEEEE--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX..... pdb ss
@@ -48,14 +48,14 @@ end
     #123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890 ColMap ones
     #                                                                           **                                     **
 
-    @test_throws KeyError map[116]   # insert
-    @test map[115] == ""             # missing
-    @test map[77]  == ""             # missing
-    @test map[76]  == "73"
+    @test_throws KeyError cmap[116]   # insert
+    @test cmap[115] == ""             # missing
+    @test cmap[77]  == ""             # missing
+    @test cmap[76]  == "73"
 
     @testset "Residues" begin
 
-        msares = msaresidues(msa, res, map)
+        msares = msaresidues(msa, res, cmap)
 
         @test_throws KeyError msares[5]   # insert
         @test_throws KeyError msares[6]   # missing
@@ -72,10 +72,10 @@ end
     @testset "Contacts" begin
 
         @test msacolumn2pdbresidue(msa, "F112_SSV1/3-112", "2VQC", "A", "PF09645",
-                                   sifts_file, strict=true, checkpdbname=true) == map
+                                   sifts_file, strict=true, checkpdbname=true) == cmap
 
         @test length(res) == 70
-        @test length(unique(values(map))) == 71
+        @test length(unique(values(cmap))) == 71
 
         #     -45              20 pdb
         #.....QTLNSYKMAEIMYKILEK  msa seq
@@ -85,10 +85,10 @@ end
         #     ***              *
 
         @test_throws KeyError res["3"]
-        @test res[map[7]].id.number == "4"
+        @test res[cmap[7]].id.number == "4"
 
-        contacts = msacontacts(msa, res, map, 6.05)
-        missings = sum(isnan.(contacts), 1)
+        contacts = msacontacts(msa, res, cmap, 6.05)
+        missings = sum(Int.(isnan.(contacts)), dims=1)
 
         @test size(contacts) == (110,110)
 
@@ -101,7 +101,7 @@ end
         @test missings[72]  == 110                 # missing
         @test missings[71]  == (110 - (70 - 1))
 
-        ncontacts = sum(contacts .== 1.0, 1)
+        ncontacts = sum(Int.(contacts .== 1.0), dims=1)
 
         @test ncontacts[1]  == 0
         @test ncontacts[2]  == 2
@@ -110,7 +110,7 @@ end
         @testset "using msaresidues" begin
         # Test MSA contact map using PDBResidues from the MSA
 
-            msares = msaresidues(msa, res, map)
+            msares = msaresidues(msa, res, cmap)
             ncol = ncolumns(msa)
             colmap = getcolumnmapping(msa)
 
@@ -123,7 +123,7 @@ end
 
             @testset "hasresidues" begin
 
-                mask = hasresidues(msa, map)
+                mask = hasresidues(msa, cmap)
 
                 @test mask[1] == false
                 @test mask[2] == true
@@ -133,7 +133,7 @@ end
 
         @testset "AUC" begin
 
-            @test round(AUC(buslje09(msa,lambda=0.05,threshold=62.0,samples=0)[2],contacts),4) == 0.5291
+            @test round(AUC(buslje09(msa,lambda=0.05,threshold=62.0,samples=0)[2],contacts), digits=4) == 0.5291
         end
     end
 end
@@ -154,5 +154,13 @@ end
 
     score[1:end,2] .= NaN
     msacontacts[1:end,3] .= NaN
-    @test AUC(score, msacontacts) < correct
+    list_score = getlist(getarray(score))
+    list_contact = getlist(getarray(msacontacts))
+    n_values = length(list_score)
+    @test n_values == length(list_contact)
+    tar = [ list_score[i] for i in 1:n_values if
+            !isnan(list_score[i]) & !isnan(list_score[i]) & (list_contact[i] == 1.0) ]
+    non = [ list_score[i] for i in 1:n_values if
+            !isnan(list_score[i]) & !isnan(list_score[i]) & (list_contact[i] == 0.0) ]
+    @test AUC(score, msacontacts) == AUC(roc(tar, non))
 end

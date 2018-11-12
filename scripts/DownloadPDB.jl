@@ -1,12 +1,15 @@
 #!/usr/bin/env julia
 
+using Pkg
+using Dates
+using Distributed
 using ArgParse
 import MIToS
 @everywhere using MIToS
 
 function parse_commandline()
     s = ArgParseSettings(description = "Download gzipped files from PDB.",
-                        version = "MIToS $(Pkg.installed("MIToS"))",
+                        version = "MIToS $(Pkg.installed()["MIToS"])",
                         add_version = true)
 
     @add_arg_table s begin
@@ -22,7 +25,7 @@ function parse_commandline()
 
     s.epilog = """
     \n
-    MIToS $(Pkg.installed("MIToS"))\n
+    MIToS $(Pkg.installed()["MIToS"])\n
     \n
     Bioinformatics Unit\n
     Leloir Institute Foundation\n

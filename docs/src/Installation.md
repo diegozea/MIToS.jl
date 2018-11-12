@@ -87,8 +87,9 @@ You might want to add this folder into your `PATH` to easily access MIToS’ scr
 You can do it by adding the path of the MIToS script folder into the `~/.bashrc` file:
 
 ```julia
+using MIToS
 open(joinpath(homedir(), ".bashrc"), "r+") do fh
-    path_to_scripts = joinpath(Pkg.dir("MIToS"), "scripts")
+    path_to_scripts = joinpath(dirname(pathof(MIToS)), "..", "scripts")
     if all(line -> !occursin(path_to_scripts, line), eachline(fh))
         println(fh, "export PATH=\"\$PATH:", path_to_scripts, "\"")
     end

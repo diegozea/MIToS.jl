@@ -34,7 +34,7 @@ end
 @testset "Template" begin
 
     # julia bin
-    julia = joinpath(Base.JULIA_HOME, "julia")
+    julia = joinpath(Base.Sys.BINDIR, "julia")
     # ../../
     mitos_folder = splitdir(splitdir(dirname(@__FILE__))[1])[1]
 
@@ -44,31 +44,31 @@ end
     two_out = joinpath(tempdir(), "two.mitos.tmp")
 
     @testset "STDIN -> STDOUT" begin
-        out = readstring( pipeline(`$julia -e 'print(trues(2,2))'`, `$julia $template`) )
+        out = read(pipeline(`$julia -e 'print(trues(2,2))'`, `$julia $template`), String)
 
         @test occursin(r"RUN : 0", out)
-        @test length(matchall(r"true", out)) == 4
+        @test length(collect((m.match for m = eachmatch(r"true", out)))) == 4
 
         @static if Sys.isunix()
 
             @testset "--arg" begin
-                out = readstring( pipeline(`cat $list_file`, `$julia $template --arg 42`) )
+                out = read(pipeline(`cat $list_file`, `$julia $template --arg 42`), String)
 
                 @test occursin(r"RUN : 42", out)
-                @test length(matchall(r"\.tmp", out)) == 2
+                @test length(collect((m.match for m = eachmatch(r"\.tmp", out)))) == 2
             end
 
             @testset "--list & -a" begin
                 _clean_up_outputs()
-                out = readstring( pipeline(`cat $list_file`, `$julia $template -a 42 --list`) )
+                out = read(pipeline(`cat $list_file`, `$julia $template -a 42 --list`), String)
 
                 @test occursin(r"ONE", out) # Printed into STDOUT
                 @test occursin(r"TWO", out) # Printed into STDOUT
                 @test !occursin(r"RUN : 42", out) # Printed into the file
                 @test filesize(one_out) != 0 # Created file
                 @test filesize(two_out) != 0 # Created file
-                @test occursin(r"RUN : 42", readstring(one_out)) # Printed into the file
-                @test occursin(r"RUN : 42", readstring(two_out)) # Printed into the file
+                @test occursin(r"RUN : 42", read(one_out, String)) # Printed into the file
+                @test occursin(r"RUN : 42", read(two_out, String)) # Printed into the file
 
                 _clean_up_outputs()
             end
@@ -79,15 +79,15 @@ end
 
         @testset "--list & -a" begin
             _clean_up_outputs()
-            out = readstring( `$julia $template $list_file --a 42 --list` )
+            out = read(`$julia $template $list_file --a 42 --list`, String)
 
             @test occursin(r"ONE", out) # Printed into STDOUT
             @test occursin(r"TWO", out) # Printed into STDOUT
             @test !occursin(r"RUN : 42", out) # Printed into the file
             @test filesize(one_out) != 0 # Created file
             @test filesize(two_out) != 0 # Created file
-            @test occursin(r"RUN : 42", readstring(one_out)) # Printed into the file
-            @test occursin(r"RUN : 42", readstring(two_out)) # Printed into the file
+            @test occursin(r"RUN : 42", read(one_out, String)) # Printed into the file
+            @test occursin(r"RUN : 42", read(two_out, String)) # Printed into the file
 
             _clean_up_outputs()
         end
@@ -97,32 +97,32 @@ end
 
         @testset "File -> File (--list)" begin
             _clean_up_outputs()
-            out = readstring( `$julia $template $list_file -p 2 --a 42 --list` )
+            out = read(`$julia $template $list_file -p 2 --a 42 --list`, String)
 
             @test occursin(r"ONE", out) # Printed into STDOUT
             @test occursin(r"TWO", out) # Printed into STDOUT
             @test !occursin(r"RUN : 42", out) # Printed into the file
             @test filesize(one_out) != 0 # Created file
             @test filesize(two_out) != 0 # Created file
-            @test occursin(r"RUN : 42", readstring(one_out)) # Printed into the file
-            @test occursin(r"RUN : 42", readstring(two_out)) # Printed into the file
+            @test occursin(r"RUN : 42", read(one_out, String)) # Printed into the file
+            @test occursin(r"RUN : 42", read(two_out, String)) # Printed into the file
 
             _clean_up_outputs()
         end
 
-        @static if is_unix()
+        @static if Sys.isunix()
 
             @testset "STDIN -> File (--list)" begin
                 _clean_up_outputs()
-                out = readstring(pipeline(`cat $list_file`,`$julia $template -p 2 --a 42 --list`))
+                out = read(pipeline(`cat $list_file`,`$julia $template -p 2 --a 42 --list`), String)
 
                 @test occursin(r"ONE", out) # Printed into STDOUT
                 @test occursin(r"TWO", out) # Printed into STDOUT
                 @test !occursin(r"RUN : 42", out) # Printed into the file
                 @test filesize(one_out) != 0 # Created file
                 @test filesize(two_out) != 0 # Created file
-                @test occursin(r"RUN : 42", readstring(one_out)) # Printed into the file
-                @test occursin(r"RUN : 42", readstring(two_out)) # Printed into the file
+                @test occursin(r"RUN : 42", read(one_out, String)) # Printed into the file
+                @test occursin(r"RUN : 42", read(two_out, String)) # Printed into the file
                 _clean_up_outputs()
             end
         end

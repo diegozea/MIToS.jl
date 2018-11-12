@@ -1,5 +1,9 @@
 #!/usr/bin/env julia
 
+using Pkg
+using Dates
+using DelimitedFiles
+using Distributed
 using MIToS.Utils.Scripts
 
 Args = parse_commandline(
@@ -84,10 +88,10 @@ set_parallel(Args["parallel"])
                     args,
                     fh_out::Union{Base.LibuvStream, IO})
         # TO DO ------------------------------------------------------------------
-        println(fh_out, "# MIToS ", Pkg.installed("MIToS"), " Buslje09.jl ", now())
+        println(fh_out, "# MIToS ", Pkg.installed()["MIToS"], " Buslje09.jl ", now())
         println(fh_out, "# \tBuslje, C. M., Santos, J., Delfino, J. M., & Nielsen, M. (2009).")
         println(fh_out, "# \tCorrection for phylogeny, small number of observations and data redundancy improves the identification of coevolving amino acid pairs using mutual information.")
-        println(fh_out, "# \tBioinformatics, 25(9), 1125-1131.""")
+        println(fh_out, "# \tBioinformatics, 25(9), 1125-1131.")
         println(fh_out, "# used arguments:")
         for (key, value) in args
             println(fh_out, "# \t", key, "\t\t", value)
@@ -109,7 +113,7 @@ set_parallel(Args["parallel"])
                                fixedgaps=args["fixedgaps"])
         println(fh_out, "i,j,", args["apc"] ? "ZMIp" : "ZMI", ",", args["apc"] ? "MIp" : "MI")
         table = hcat(to_table(zscore, diagonal=false), to_table(mip, diagonal=false)[:,3])
-        writecsv(fh_out, table)
+        writedlm(fh_out, table, ',')
         # ------------------------------------------------------------------------
     end
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env julia
 
+using Pkg
 using ArgParse
 using CodecZlib
 using MIToS.Utils # get_n_words, check_file
@@ -7,7 +8,7 @@ using ProgressMeter
 
 function parse_commandline()
     s = ArgParseSettings(description = "Splits a file with multiple sequence alignments in Stockholm format, creating one compressed file per MSA in Stockholm format: accessionumber.gz",
-                         version = "MIToS $(Pkg.installed("MIToS"))",
+                         version = "MIToS $(Pkg.installed()["MIToS"])",
                          add_version = true)
 
     @add_arg_table s begin
@@ -26,7 +27,7 @@ function parse_commandline()
     s.epilog = """
 
     \n
-    MIToS $(Pkg.installed("MIToS"))\n
+    MIToS $(Pkg.installed()["MIToS"])\n
     \n
     Bioinformatics Unit\n
     Leloir Institute Foundation\n

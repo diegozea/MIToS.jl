@@ -14,71 +14,80 @@ Depth = 4
 ## Buslje09.jl
 
 ```@repl
+using MIToS
 julia_path = joinpath(Base.JULIA_HOME, "julia")
-script_path = joinpath(Pkg.dir("MIToS"), "scripts", "Buslje09.jl")
+script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "Buslje09.jl")
 run(`$julia_path $script_path -h`)
 ```  
 
 ## BLMI.jl
 
 ```@repl
+using MIToS
 julia_path = joinpath(Base.JULIA_HOME, "julia")
-script_path = joinpath(Pkg.dir("MIToS"), "scripts", "BLMI.jl")
+script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "BLMI.jl")
 run(`$julia_path $script_path -h`)
 ```  
 
 ## Conservation.jl
 
 ```@repl
+using MIToS
 julia_path = joinpath(Base.JULIA_HOME, "julia")
-script_path = joinpath(Pkg.dir("MIToS"), "scripts", "Conservation.jl")
+script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "Conservation.jl")
 run(`$julia_path $script_path -h`)
 ```  
 
 ## DownloadPDB.jl
 
 ```@repl
+using MIToS
 julia_path = joinpath(Base.JULIA_HOME, "julia")
-script_path = joinpath(Pkg.dir("MIToS"), "scripts", "DownloadPDB.jl")
+script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "DownloadPDB.jl")
 run(`$julia_path $script_path -h`)
 ```  
 
 ## Distances.jl
 
 ```@repl
+using MIToS
 julia_path = joinpath(Base.JULIA_HOME, "julia")
-script_path = joinpath(Pkg.dir("MIToS"), "scripts", "Distances.jl")
+script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "Distances.jl")
 run(`$julia_path $script_path -h`)
 ```  
 
 ## MSADescription.jl
 
 ```@repl
+using MIToS
 julia_path = joinpath(Base.JULIA_HOME, "julia")
-script_path = joinpath(Pkg.dir("MIToS"), "scripts", "MSADescription.jl")
+script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "MSADescription.jl")
 run(`$julia_path $script_path -h`)
 ```  
 
 ## PercentIdentity.jl
 
 ```@repl
+using MIToS
 julia_path = joinpath(Base.JULIA_HOME, "julia")
-script_path = joinpath(Pkg.dir("MIToS"), "scripts", "PercentIdentity.jl")
+script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "PercentIdentity.jl")
 run(`$julia_path $script_path -h`)
 ```  
 
 ## AlignedColumns.jl
 
 ```@repl
+using MIToS
 julia_path = joinpath(Base.JULIA_HOME, "julia")
-script_path = joinpath(Pkg.dir("MIToS"), "scripts", "AlignedColumns.jl")
+script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "AlignedColumns.jl")
 run(`$julia_path $script_path -h`)
 ```  
 
 ## SplitStockholm.jl
 
 ```@repl
+using MIToS
 julia_path = joinpath(Base.JULIA_HOME, "julia")
-script_path = joinpath(Pkg.dir("MIToS"), "scripts", "SplitStockholm.jl")
+script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "SplitStockholm.jl")
 run(`$julia_path $script_path -h`)
 ```  

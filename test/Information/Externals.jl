@@ -1,15 +1,6 @@
 using Pkg
 
-"Function from MLPlots.jl, written by Tom Breloff."
-function _is_installed(name::String)
-    try
-        Pkg.installed(name) === nothing ? false : true
-    catch
-        false
-    end
-end
-
-if _is_installed("GaussDCA")
+if haskey(Pkg.installed(), "GaussDCA")
 
     println("Information.gaussdca")
     msa = map(Residue, rand(1:21,100,20))

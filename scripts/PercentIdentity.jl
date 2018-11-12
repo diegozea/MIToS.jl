@@ -1,5 +1,10 @@
 #!/usr/bin/env julia
 
+using Pkg
+using Dates
+using DelimitedFiles
+using Distributed
+using Statistics
 using MIToS.Utils.Scripts
 
 Args = parse_commandline(
@@ -42,7 +47,7 @@ set_parallel(Args["parallel"])
                     args,
                     fh_out::Union{Base.LibuvStream, IO})
         # TO DO ------------------------------------------------------------------
-        println(fh_out, "# MIToS ", Pkg.installed("MIToS"), " PercentIdentity.jl ", now())
+        println(fh_out, "# MIToS ", Pkg.installed()["MIToS"], " PercentIdentity.jl ", now())
         println(fh_out, "# used arguments:")
         for (key, value) in args
             println(fh_out, "# \t", key, "\t\t", value)
@@ -66,7 +71,7 @@ set_parallel(Args["parallel"])
         println(fh_out, size(msa, 2), ",", size(msa, 1), ",", mean_pid, ",", stdm(getlist(plm), mean_pid), ",", min_pid, ",", first, ",", med, ",", third, ",", max_pid)
         flush(fh_out)
         if savelist
-            writecsv("pidlist.csv", to_table(plm, diagonal=false))
+            writedlm("pidlist.csv", to_table(plm, diagonal=false), ',')
         end
         # ------------------------------------------------------------------------
     end
