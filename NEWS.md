@@ -2,6 +2,8 @@
 
 ### Changes from v2.1.2 to master
 
+* `Formatting.jl` is used in place of `Format.jl`.
+
 #### Julia 0.7/1.0 deprecations
 
 * `bits` was deprecated to `bitstring`.

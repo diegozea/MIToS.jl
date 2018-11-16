@@ -680,8 +680,8 @@ end
 #   (cross(points[2] - points[1], points[3] - points[1]), sum(points)./length(points))
 # end
 
-# Show PDB* objects (using Format)
-# ================================
+# Show PDB* objects (using Formatting)
+# ====================================
 
 const _Format_ResidueID = FormatExpr("{:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
 const _Format_ATOM = FormatExpr("{:>50} {:>15} {:>15} {:>15} {:>15}\n")

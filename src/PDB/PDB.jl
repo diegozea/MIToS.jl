@@ -25,7 +25,7 @@ using LightXML
 using LinearAlgebra
 using Statistics            # mean
 using MIToS.Utils
-using Format
+using Formatting
 
 export  # PDBResidues
         PDBResidueIdentifier,
