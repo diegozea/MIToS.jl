@@ -319,7 +319,7 @@ end
         # Only prints TER between chain A and B
         @test sum(map(x -> startswith(x, "TER "), printed)) == 1
 
-        @test filter(r"TER ", printed)[1] == "TER    1418      TRP A 178 "
+        @test filter!(s -> occursin(r"TER ", s), printed)[1] == "TER    1418      TRP A 178 "
     end
 
     @testset "read/write consistency" begin
