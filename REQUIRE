@@ -4,8 +4,8 @@ CodecZlib
 TranscodingStreams
 AutoHashEquals
 DataStructures
-Formatting
-PairwiseListMatrices
+Formatting 0.3.5
+PairwiseListMatrices 0.7.0
 ArgParse
 Clustering
 StaticArrays

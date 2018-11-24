@@ -211,12 +211,12 @@ cmap = contact(pdb, 8.0, criteria="CB") # Contact map
 
 ```@setup pdb_cmap
 using Plots
-pyplot() # Hide PyPlot warnings
+gr() # Hide possible warnings
 ```
 
 ```@example pdb_cmap
 using Plots
-pyplot()
+gr()
 
 heatmap(dmap, grid=false, yflip=true, ratio=:equal)
 
@@ -240,7 +240,7 @@ nothing # hide
 
 ```@setup pdb_rmsd
 using Plots
-pyplot() # Hide PyPlot warnings
+gr() # Hide possible warnings
 ```
 
 ```@example pdb_rmsd
@@ -254,7 +254,7 @@ chain_A = pdb = @residues res_2hhb model "1" chain "A" group "ATOM" residue All
 chain_C = pdb = @residues res_2hhb model "1" chain "C" group "ATOM" residue All
 
 using Plots
-pyplot()
+gr()
 
 scatter3d(chain_A, label="A", alpha=0.5)
 scatter3d!(chain_C, label="C", alpha=0.5)

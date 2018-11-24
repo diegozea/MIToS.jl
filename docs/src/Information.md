@@ -153,7 +153,7 @@ probabilities(seq[1,:]) # Select the single sequence and calculate the probabili
 
 ```@setup inf_plotfreq
 using Plots
-pyplot(size=(600,300))
+gr(size=(600,300))
 using MIToS.Information # to use the probabilities function
 using MIToS.MSA # to use getsequence on the one sequence FASTA (canonical) from UniProt
 seq = read("http://www.uniprot.org/uniprot/P29374.fasta", FASTA) # Small hack: read the single sequence as a MSA
@@ -162,7 +162,7 @@ frequencies = probabilities(seq[1,:]) # Select the single sequence and calculate
 
 ```@example inf_plotfreq
 using Plots # We choose Plots because it's intuitive, concise and backend independent
-pyplot(size=(600,300))
+gr(size=(600,300))
 ```  
 
 You can plot together with the probabilities of each residue in a given sequence, the
@@ -354,7 +354,7 @@ respectively.
 
 ```@setup inf_entropy
 using Plots
-pyplot()
+gr()
 ```
 
 ```@example inf_entropy
@@ -393,7 +393,7 @@ Time_Nab = map(1:100) do x
 end
 
 using Plots
-pyplot()
+gr()
 
 histogram( [Time_Pab Time_Nab],
     labels = ["Using ResidueProbability" "Using ResidueCount"],
@@ -437,7 +437,7 @@ BLMI
 
 ```@setup inf_buslje09
 using Plots
-pyplot()
+gr()
 using PlotRecipes
 ```
 
@@ -464,7 +464,7 @@ the Mutual Information matrix.
 
 ```@example inf_buslje09
 using Plots
-pyplot()
+gr()
 
 heatmap(ZMIp, yflip=true)
 png("inf_heatmap.png") # hide
@@ -479,12 +479,13 @@ to co-evolve. Here, we are going to use the top 1% pairs of MSA columns.
 
 ```@example inf_buslje09
 using PairwiseListMatrices # to use getlist
+using Statistics # to use quantile
 
 threshold = quantile(getlist(ZMIp), 0.99)
 ```
 
 ```@example inf_buslje09
-ZMIp[ ZMIp .< threshold ] = NaN
+ZMIp[ ZMIp .< threshold ] .= NaN
 heatmap(ZMIp, yflip=true)
 png("inf_heatmap_top.png") # hide
 nothing # hide

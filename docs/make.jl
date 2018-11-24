@@ -1,6 +1,7 @@
 using Documenter, MIToS
 
 makedocs(
+    doctest = true,
     format = :html,
     sitename = "MIToS",
     modules = [MIToS],
@@ -26,7 +27,6 @@ makedocs(
 deploydocs(
     repo   = "github.com/diegozea/MIToS.jl.git",
     target = "build",
-    julia  = "0.6",
     deps   = nothing,
     make   = nothing
 )

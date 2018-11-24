@@ -53,7 +53,9 @@ To download the XML SIFTS file of a determined PDB use the `downloadsifts` funct
 
 ```@setup sifts_simple
 using MIToS.SIFTS
-siftsfile = joinpath("data", "1ivo.xml.gz")
+
+import MIToS # to use pathof(MIToS)
+siftsfile = joinpath(dirname(pathof(MIToS)), "..", "docs", "data", "1ivo.xml.gz")
 ```
 
 ```@example sifts_simple

@@ -439,12 +439,12 @@ percentidentity(msa[1,:], msa[2,:], 62) # 50% >= 62%
 The `gapfraction` and `coverage` functions return a vector of number between `0.0` and
 `1.0` (fraction of...). Sometime it's useful to plot this data to quickly understand the
 MSA structure. In this example, we are going to use the [Plots![](./assets/external-link.png)](http://plots.readthedocs.org/en/latest/) package for
-plotting, with a [PyPlot![](./assets/external-link.png)](https://github.com/stevengj/PyPlot.jl)
+plotting, with the [GR![](./assets/external-link.png)](https://github.com/jheinen/GR.jl)
 backend, but you are free to use any of the Julia plotting libraries.  
 
 ```@setup msa_plots
 using Plots
-pyplot() # Hide PyPlot warnings
+gr() # Hide possible warnings
 ```
 
 ```@example msa_plots
@@ -454,7 +454,7 @@ msa = read("http://pfam.xfam.org/family/PF09776/alignment/full", Stockholm)
 
 using Plots
 
-pyplot(size=(600,300))
+gr(size=(600,300))
 
 plot(   1:ncolumns(msa), # x is a range from 1 to the number of columns
         vec(columngapfraction(msa)) .* 100.0, # y is a Vector{Float64} with the percentage of gaps of each column
@@ -554,6 +554,8 @@ pidtable = to_table(pid, diagonal=false)
 The function `quantile` gives a quick idea of the percentage identity distribution of the MSA.  
 
 ```@example msa_pid
+using Statistics
+
 quantile(convert(Vector{Float64}, pidtable[:,3]), [0.00, 0.25, 0.50, 0.75, 1.00])
 ```
 
@@ -571,13 +573,13 @@ package.
 
 ```@setup msa_pid
 using Plots
-pyplot() # Hide PyPlot warnings
+gr() # Hide possible warnings
 ```
 
 ```@example msa_pid
 using Plots
-pyplot()
-heatmap(full(pid), yflip=true, ratio=:equal)
+gr()
+heatmap(convert(Matrix, pid), yflip=true, ratio=:equal)
 png("msa_heatmap_pid.png") # hide
 nothing # hide
 ```  
@@ -618,7 +620,7 @@ Hobohm I algorithm at 62% identity.
 
 ```@setup msa_clusters
 using Plots
-pyplot() # Hide PyPlot warnings
+gr() # Hide possible warnings
 ```
 
 ```@example msa_clusters
@@ -639,7 +641,7 @@ println("...but has only ", nclusters(clusters), " sequence clusters after a clu
 
 ```@example msa_clusters
 using Plots
-pyplot()
+gr()
 
 plot(msa)
 png("msa_clusters_i.png") # hide

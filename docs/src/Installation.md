@@ -48,7 +48,6 @@ Pkg.add("Plots")
 And you also need to install at least one of the following backends:  
 
 ```julia
-Pkg.add("PyPlot")
 Pkg.add("GR") # Fast
 Pkg.add("PlotlyJS") # Interactive
 ```

@@ -15,7 +15,7 @@ MSA from the Pfam website and read it into Julia.
 
 ```@setup juliarepl
 using Plots
-pyplot() # Just to avoid warnings in the output
+gr() # Just to avoid warnings in the output
 ```
 
 ```@example juliarepl
@@ -36,7 +36,7 @@ You can plot this MSA and other MIToS’ objects using the [Plots![](./assets/ex
 
 ```@example juliarepl
 using Plots
-pyplot() # Best backend for MSA plots
+gr()
 plot(msa)
 png("msa.png") # hide
 nothing # hide
