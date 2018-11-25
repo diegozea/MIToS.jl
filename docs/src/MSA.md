@@ -29,10 +29,11 @@ Depth = 4
 
 The main function for reading MSA files in MIToS is `read` and it is defined in the `Utils`
 module. This function takes a filename/path as a first argument followed by other
-arguments. It opens the file and uses the arguments to call the `parse` function. `read`
-decides how to open the file, using the prefixes and suffixes of the file name, while
-`parse` does the actual parsing of the file. You can `read` **gzipped files** if they have
-the `.gz` extension and also urls pointing to a **web file**.  
+arguments. It opens the file and uses the arguments to call the `parse` function.
+`read` decides how to open the file, using the prefixes (e.g. https) and suffixes
+(i.e. extensions) of the file name, while `parse` does the actual parsing of
+the file. You can `read` **gzipped files** if they have the `.gz` extension and
+also urls pointing to a **web file**.  
 The second argument of `read` and `parse` is the file `FileFormat`. The supported MSA formats
 at the moment are `Stockholm`, `FASTA`, `PIR` (NBRF) and `Raw`.  
 For example, reading with MIToS the full Stockholm MSA of the family PF07388 using the Pfam
@@ -46,10 +47,10 @@ read("http://pfam.xfam.org/family/PF07388/alignment/full", Stockholm)
 
 The third (and optional) argument of `read` and `parse` is the output MSA type:  
 
-- `Matrix{Residue}` : It contains the aligned sequences.  
+- `Matrix{Residue}` : It only contains the aligned sequences.  
 - `MultipleSequenceAlignment` : It contains the aligned sequences and their
 names/identifiers.  
-- `AnnotatedMultipleSequenceAlignment` : Is the richest MSA format of MIToS. It's the
+- `AnnotatedMultipleSequenceAlignment` : It's the richest MIToS' MSA format and it's the
 default. It includes the aligned sequences, their names and the MSA annotations.  
 
 Example of `Matrix{Residue}` output using a `Stockholm` file as input:
@@ -58,9 +59,9 @@ Example of `Matrix{Residue}` output using a `Stockholm` file as input:
 read("http://pfam.xfam.org/family/PF07388/alignment/full", Stockholm, Matrix{Residue})
 ```
 
-Given that `read` calls `parse`, you should look into the documentation of the last one to
-know the available keyword arguments.
-The optional keyword arguments of those functions are:  
+Because `read` calls `parse`, you should look into the documentation of `parse`
+to know the available keyword arguments. The optional keyword arguments of
+those functions are:  
 
 - `generatemapping` : If `generatemapping` is `true` (default: `false`), sequences and
 columns mappings are generated and saved in the MSA annotations. **The default is `false` to
@@ -82,7 +83,7 @@ therefore insert columns.
     columns are marked with `0` and aligned columns with `1`.  
 
 When `read` returns an `AnnotatedMultipleSequenceAlignment`, it uses the MSA `Annotations`
-to keep track of performed modifications. To access this notes, use `printmodifications`:  
+to keep track of performed modifications. To access these notes, use `printmodifications`:  
 
 ```@example msa_read
 msa = read("http://pfam.xfam.org/family/PF01565/alignment/full", Stockholm)
@@ -141,21 +142,21 @@ function.
 annotations(msa)
 ```  
 
-Particular annotations can be accessed using the functions `getannot...`. This functions
+Particular annotations can be accessed using the functions `getannot...`. These functions
 take the MSA/sequence as first argument and the feature name of the desired annotation as
 the last. In the case of `getannotsequence` and `getannotresidue`, the second argument
 should be the sequence name.  
 
 ```@example msa_write
-getannotsequence(msa, "J0UVX5_STREE/3-39", "AC") # ("J0UVX5_STREE/3-39", "AC") is the key in the dictionary
+getannotsequence(msa, "A0A139NPI6_9STRE/5-59", "AC") # ("A0A139NPI6_9STRE/5-59", "AC") is the key in the dictionary
 ```  
 
-If you want to add new annotations, you should use the `setannot…!` functions. This
-functions have the same arguments that `getannot...` functions but with an extra argument
-to indicate the new annotation.  
+If you want to add new annotations, you should use the `setannot…!` functions. These
+functions have the same arguments that `getannot...` functions except for an
+extra argument used to indicate the new annotation value.  
 
 ```@example msa_write
-setannotsequence!(msa, "J0UVX5_STREE/3-39", "New_Feature_Name", "New_Annotation")
+setannotsequence!(msa, "A0A139NPI6_9STRE/5-59", "New_Feature_Name", "New_Annotation")
 ```  
 
 A `getannot...` function without the key (last arguments), returns the particular
@@ -168,20 +169,20 @@ getannotsequence(msa)
 
 ## [Editing your MSA](@id Editing-your-MSA)
 
-MIToS offers functions to edit your MSA. Given that this functions modify the msa, their
+MIToS offers functions to edit your MSA. Because these functions modify the msa, their
 names end with a bang `!`, following the Julia convention. Some of these functions have an
-`annotate` keyword argument (in general it is `true` by default) to indicate if the
+`annotate` keyword argument (in general, it's `true` by default) to indicate if the
 modification should be recorded in the MSA/sequence annotations.  
 
 One common task is to delete sequences or columns of the MSA. This could be done using the
-functions `filtersequences!` and `filtercolumns!`. This functions take the MSA or sequence
+functions `filtersequences!` and `filtercolumns!`. These functions take the MSA or sequence
 (if it's possible) as first argument and a `BitVector` or `Vector{Bool}` mask as second
-argument. It deletes all the sequences or columns where the mask is `false`. This functions
+argument. It deletes all the sequences or columns where the mask is `false`. These functions
 are also defined for `Annotations`, this allows to automatically update (modify) the
 annotations (and therefore, sequence and column mappings) in the MSA.  
 
-This two deleting operations are used in the second and third mutating functions of the
-following list:  
+This two deleting operations are used in the second and third mutating
+functions of the following list:  
 
 - `setreference!` : Sets one of the sequences as the first sequence of the MSA (query or
 reference sequence).  
@@ -228,8 +229,9 @@ with gaps in the reference) and `write` (to save it in `Raw` format) functions.
 ```@repl
 using MIToS.MSA
 msa = read("http://pfam.xfam.org/family/PF02476/alignment/full", Stockholm)
-maxcoverage, indice = findmax(coverage(msa)) # chooses the sequence with more coverage of the MSA
-setreference!(msa, indice)
+msa_coverage = coverage(msa)
+maxcoverage, maxindex = findmax(msa_coverage) # chooses the sequence with more coverage of the MSA
+setreference!(msa, maxindex[1])
 adjustreference!(msa)
 write("tofreecontact.msa", msa, Raw)
 print(read("tofreecontact.msa", String)) # It displays the contents of the output file
@@ -238,8 +240,8 @@ print(read("tofreecontact.msa", String)) # It displays the contents of the outpu
 ## [Column and sequence mappings](@id Column-and-sequence-mappings)
 
 Inserts in a Stockholm MSA allow to access the full fragment of the aligned sequences.
-Using this, combined with the sequence names with coordinates used in Pfam, you can know
-what is the UniProt residue number of each residue in the MSA.   
+Using this, combined with the sequence names that contain coordinates used in Pfam, you
+can know what is the UniProt residue number of each residue in the MSA.   
 
 ```julia
 "PROT_SPECI/3-15 .....insertALIGNED"
@@ -247,8 +249,8 @@ what is the UniProt residue number of each residue in the MSA.
 #                            012345
 ```
 
-MIToS `read` and `parse` functions deletes the insert columns, but they do the mapping of
-each residue to its residue number before deleting insert columns if `generatemapping` is
+MIToS `read` and `parse` functions delete the insert columns, but they do the mapping
+between each residue and its residue number before deleting insert columns when `generatemapping` is
 `true`. If you don't set `useidcoordinates` to `true`, the residue first `i` residue will
 be 1 instead of 3 in the previous example.  
 
@@ -285,7 +287,7 @@ residue number of the first residue of the sequence and the full fragment of tha
 (with the inserts). This data is used by FreeContact to calculate the residue number of
 each residue in the reference sequence.  
 We are going to use MIToS mapping data to create this header, so we read the MSA with
-`generatemapping` and `useidcoordinates` setted to `true`.  
+`generatemapping` and `useidcoordinates` set to `true`.  
 
 ```@example freecontact_ii
 using MIToS.MSA
@@ -298,13 +300,14 @@ Here, we are going to choose the sequence with more coverage of the MSA as our r
 sequence.  
 
 ```@example freecontact_ii
-maxcoverage, indice = findmax(coverage(msa))
-setreference!(msa, indice)
+msa_coverage = coverage(msa)
+maxcoverage, maxindex = findmax(msa_coverage)
+setreference!(msa, maxindex[1])
 adjustreference!(msa)
 ```
 
-MIToS deletes the residues in insert columns, so we are going to use the sequence mapping
-to generate the whole fragment of the reference sequence
+MIToS deletes the residues in insert columns, so we are going to use the
+sequence mapping to generate the whole fragment of the reference sequence
 (filling the missing regions with `'x'`).  
 
 ```@example freecontact_ii
@@ -314,7 +317,7 @@ seq = collect( stringsequence(msa, 1) ) # seq will be a Vector of Chars with the
 
 sequence = map(seqmap[1]:seqmap[end]) do seqpos # for each position in the whole fragment
     if seqpos in seqmap                         # if that position is in the MSA
-        shift!(seq)                             # the residue is taken from seq
+        popfirst!(seq)                          # the residue is taken from seq
     else                                        # otherwise
         'x'                                     # 'x' is included
     end
@@ -364,7 +367,7 @@ msa[2,:] # second sequence of the MSA, it keeps column names
 ```  
 
 ```@example msa_indexing
-msa[2:2,:] # Using the range 2:2 to select the second sequence, keeping the sequence name
+msa[2:2,:] # Using the range 2:2 to select the second sequence, keeping also the sequence name
 ```
 
 If you want to obtain the aligned sequence with its name and annotations (and therefore
@@ -387,7 +390,7 @@ Use `stringsequence` if you want to get the sequence as a string.
 stringsequence(msa, 2)
 ```
 
-Given that matrices are stored columnwise in Julia, you will find useful the
+Because matrices are stored columnwise in Julia, you will find useful the
 `getresiduesequences` function when you need to heavily operate over sequences.  
 
 ```@example msa_indexing
@@ -407,10 +410,10 @@ one can easily ask for...
 - The **percentage of identity** (PID) between each sequence of the MSA or its mean value
 with `percentidentity` and `meanpercentidentity`.  
 
-The percentage identity between two aligned sequences it's a common measure of sequence
-similarity and it's used by the `hobohmI` method to estimate and reduce MSA redundancy.
+The percentage identity between two aligned sequences is a common measure of sequence
+similarity and is used by the `hobohmI` method to estimate and reduce MSA redundancy.
 **MIToS functions to calculate percent identity don't align the sequences, they need
-sequences already aligned.** Full gaps columns don't count to the align length.  
+already aligned sequences.** Full gaps columns don't count to the alignment length.  
 
 ```@example msa_describe
 using MIToS.MSA
@@ -436,10 +439,10 @@ percentidentity(msa[1,:], msa[2,:], 62) # 50% >= 62%
 
 #### [Example: Plotting gap percentage per column and coverage per sequence](@id Example:-Plotting-gap-percentage-per-column-and-coverage-per-sequence)
 
-The `gapfraction` and `coverage` functions return a vector of number between `0.0` and
+The `gapfraction` and `coverage` functions return a vector of numbers between `0.0` and
 `1.0` (fraction of...). Sometime it's useful to plot this data to quickly understand the
-MSA structure. In this example, we are going to use the [Plots![](./assets/external-link.png)](http://plots.readthedocs.org/en/latest/) package for
-plotting, with the [GR![](./assets/external-link.png)](https://github.com/jheinen/GR.jl)
+MSA structure. In this example, we are going to use the [Plots![](./assets/external-link.png)](http://plots.readthedocs.org/en/latest/)
+package for plotting, with the [GR![](./assets/external-link.png)](https://github.com/jheinen/GR.jl)
 backend, but you are free to use any of the Julia plotting libraries.  
 
 ```@setup msa_plots
@@ -471,7 +474,7 @@ nothing # hide
 
 ```@example msa_plots
 plot(   1:nsequences(msa), # x is a range from 1 to the number of sequences
-        coverage(msa) .* 100, # y is a Vector{Float64} with the coverage of each sequence
+        vec(coverage(msa)) .* 100, # y is a Vector{Float64} with the coverage of each sequence
         linetype = :line,
         ylabel = "coverage [%]",
         xlabel = "sequences",
@@ -528,9 +531,9 @@ nothing # hide
 
 #### [Example: Plotting the percentage of identity between sequences](@id Example:-Plotting-the-percentage-of-identity-between-sequences)
 
-The distribution of the percentage of identity between every pairs of sequences in a MSA,
-gives an idea of the MSA diversity. In this example, we are going to use `percentidentity`
-over a MSA to get that values.  
+The distribution of the percentage of identity between every pair of sequences in an MSA,
+gives an idea of the MSA diversity. In this example, we are  using `percentidentity`
+over an MSA to get those identity values.  
 
 ```@example msa_pid
 using MIToS.MSA
@@ -596,8 +599,8 @@ nothing # hide
 
 ## [Sequence clustering](@id Sequence-clustering)  
 
-The `MSA` module allows to clusterize sequences in a MSA. The `hobohmI` function takes as
-input a MSA followed by an identity threshold value, and returns a `Clusters` type
+The `MSA` module allows to clusterize sequences in an MSA. The `hobohmI` function takes as
+input an MSA followed by an identity threshold value, and returns a `Clusters` type
 with the result of a [Hobohm I![](./assets/external-link.png)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2142204/)
 sequence clustering. The Hobohm I algorithm will add a sequence to an existing cluster, if
 the percentage of identity is equal or greater than the threshold.  
@@ -605,7 +608,7 @@ The `Clusters` is sub-type of `ClusteringResult` from the [Clustering.jl![](./as
 package. One advantage of use a sub-type of `ClusteringResult`is that you are able to use
 any method defined on `Clustering.jl` like `varinfo` (Variation of Information) for example.
 Also, you can use any clustering algorithm included in *Clustering.jl*, and convert its
-result to an `Clusters` object to use them with MIToS.  
+result to an `Clusters` object to use it with MIToS.  
 `MSA` defines the functions `nclusters` to get the resulting number of clusters, `counts`
 to get the number of sequences on each cluster and `assignments` to get the cluster number
 of each sequence. The most important method is `getweight`, which returns the weight of
@@ -614,12 +617,14 @@ each sequence. This method is used in the `Information` module of MIToS to reduc
 #### [Example: Reducing redundancy of a MSA](@id Example:-Reducing-redundancy-of-a-MSA)
 
 MSAs can suffer from an unnatural sequence redundancy and a high number of protein
-fragments. In this example, we will use a sequence clustering to make a non-redundant set
-of representative sequences using the function `hobohmI` to perform a clustering with the
+fragments. In this example, we are using a sequence clustering to make a non-redundant set
+of representative sequences. We are going to use the function `hobohmI` to perform the clustering with the
 Hobohm I algorithm at 62% identity.  
 
 ```@setup msa_clusters
 using Plots
+using StatPlots
+using DataFrames
 gr() # Hide possible warnings
 ```
 
@@ -651,7 +656,7 @@ nothing # hide
 ![](msa_clusters_i.png)  
 
 We are going to use the [DataFrames![](./assets/external-link.png)](http://dataframesjl.readthedocs.org/en/latest/)
-package to easily select the sequence with highest coverage of each cluster.  
+package to easily select the sequence with the highest coverage of each cluster.  
 
 ```@example msa_clusters
 using DataFrames
