@@ -186,16 +186,13 @@ end
 @inline Base.get(res::SIFTSResidue, db::Type{dbCATH})    = res.CATH
 
 function Base.get(res::SIFTSResidue,
-db::Type{T}, field::Symbol, default::String) where T<:Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbCATH}
+                  db::Type{T},
+                  field::Symbol,
+                  default::Union{String, Missing}=missing) where T <: Union{
+                        dbUniProt, dbPfam, dbNCBI, dbPDB, dbSCOP, dbCATH
+                    }
     database = get(res, db)
     ismissing(database) ? default : getfield(database, field)
-end
-
-function Base.get(res::SIFTSResidue,
-db::Type{T}, field::Symbol) where T<:Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbCATH}
-    database = get(res, db)
-    S = fieldtype(T, field)
-    ismissing(database) ? missing : getfield(database, field)
 end
 
 # Print

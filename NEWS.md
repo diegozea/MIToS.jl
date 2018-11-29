@@ -4,6 +4,8 @@
 
 * `Formatting.jl` is used in place of `Format.jl`.
 
+* `SIFTS.get` returns the desired object or `missing` instead of `Nullable`s.
+
 #### Julia 0.7/1.0 deprecations
 
 * `bits` was deprecated to `bitstring`.

@@ -99,17 +99,17 @@ residue_data = siftsresidues[300]
 You are free to access the `SIFTSResidue` fields in order to get the desired information.
 `SIFTSResidue` objects contain `db...` objects (sub-types of `DataBase`), with the cross
 referenced information. You should note that, except for the `PDBe` and `InterPro` fields,
-the fields are `Nullable`s objects so, you need to use the `get` function to access the
-`db...` object. For example, getting the UniProt residue name
+the field values can be `missing`. The `ismissing` function is helpful to know if there
+is a `db...` object. For example, getting the UniProt residue name
 (one letter code of the amino acid) would be:  
 
 ```@example sifts_simple
-ismissing(residue_data.UniProt) ? "" : get(residue_data.UniProt).name
+ismissing(residue_data.UniProt) ? "" : residue_data.UniProt.name
 ```  
 
-That line of code returns an empty string if the UniProt field is null. Otherwise, it
+That line of code returns an empty string if the UniProt field is `missing`. Otherwise, it
 returns a string with the name of the residue in UniProt. Because that way of access
-values in a Residue is too verbose, MIToS defines a more complex signature for `get`.
+values in a SIFT residue is too verbose, MIToS defines a more complex signature for `get`.
 Using MIToS `get` the previous line of code will be:  
 
 ```@example sifts_simple
@@ -117,25 +117,29 @@ Using MIToS `get` the previous line of code will be:
 get(residue_data, dbUniProt, :name, "")
 ```  
 
-The is not need to use the full signature, but the returned value will change. In
-particular, a `Nullable` object is returned if a default value is not given at the end of
-the signature:  
+The is not need to use the full signature. Other signatures are possible
+depending on the value you want to access. In particular, a `missing` object
+is returned if a default value is not given at the end of the signature and the
+value to access is missing:
+
+siftsresidues
 
 ```@repl
 using MIToS.SIFTS; residue_data = read("1ivo.xml.gz", SIFTSXML)[301] # hide
-get(residue_data, dbUniProt) # Takes the database type and returns a nullable with the field content
-get(residue_data, dbUniProt, :name) # Takes also a Symbol with a field name and returns a nullable with the field content inside the database type
+get(residue_data, dbUniProt) # get takes the database type (`db...`)
+get(residue_data, dbUniProt, :name) # and can also take a field name (Symbol)
 ```  
 
-But you don't need the `get`function to access the three letter code of the residue in
-`PDBe` because the `PDBe` field is not `Nullable`.
+But you don't need the `get` function to access the three letter code of the
+residue in `PDBe` because the `PDBe` field can not be `missing`.
 
 ```@example sifts_simple
 residue_data.PDBe.name
 ```  
 
-`SIFTSResidue` also store information about if that residue is `missing` in the
-PDB structure and the information about the secondary structure (`sscode` and `ssname`):  
+`SIFTSResidue` also store information about if that residue is `missing`
+(i.e. not resolved) in the PDB structure and the information about the
+secondary structure (`sscode` and `ssname`):  
 
 ```@repl
 using MIToS.SIFTS; residue_data = read("1ivo.xml.gz", SIFTSXML)[301] # hide
@@ -157,26 +161,26 @@ get(residue_data, dbUniProt, :name, "") in ["H", "K", "R"]
 
 Use higher order functions and lambda expressions (anonymous functions) or
 list comprehension to easily ask for information on the `Vector{SIFTSResidue}`. You can
-use `get` with the previous signature or simple `get`, direct field access and `ismissing`.
+use `get` with the previous signature or simple direct field access and `ismissing`.
 
 ```@example sifts_simple
 # Captures PDB residue numbers if the Pfam id is "PF00757"
-resnums = [ get(res.PDB).number for res in siftsresidues if !ismissing(res.PDB) && get(res, dbPfam, :id, "") == "PF00757" ]
+resnums = [ res.PDB.number for res in siftsresidues if !ismissing(res.PDB) && get(res, dbPfam, :id, "") == "PF00757" ]
 ```  
 
 **Useful higher order functions are:**
 
-**`find`**  
+**`findall`**  
 
 ```@example sifts_simple
 # Which of the residues have UniProt residue names in the list ["H", "K", "R"]? (basic residues)
-indexes = find(res -> get(res, dbUniProt, :name, "") in ["H", "K", "R"], siftsresidues)
+indexes = findall(res -> get(res, dbUniProt, :name, "") in ["H", "K", "R"], siftsresidues)
 ```  
 
 **`map`**  
 
 ```@example sifts_simple
-map(i -> get(siftsresidues[i].UniProt), indexes) # UniProt data of the basic residues
+map(i -> siftsresidues[i].UniProt, indexes) # UniProt data of the basic residues
 ```
 
 **`filter`**  
@@ -185,7 +189,7 @@ map(i -> get(siftsresidues[i].UniProt), indexes) # UniProt data of the basic res
 # SIFTSResidues with UniProt names in ["H", "K", "R"]
 basicresidues = filter(res -> get(res, dbUniProt, :name, "") in ["H", "K", "R"], siftsresidues)
 
-get(basicresidues[1].UniProt) # UniProt data of the first basic residue
+basicresidues[1].UniProt # UniProt data of the first basic residue
 ```  
 
 #### [Example: Which residues are missing in the PDB structure](@id Example:-Which-residues-are-missing-in-the-PDB-structure)
