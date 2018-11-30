@@ -14,7 +14,7 @@ notifications:
   email: false
 
 before_script:
-  - julia -e 'using Pkg; Pkg.add("https://github.com/carlobaldassi/GaussDCA.jl.git")' # GaussDCA test
+  - julia -e 'using Pkg; Pkg.add("https://github.com/carlobaldassi/GaussDCA.jl")' # GaussDCA test
 
 after_success:
   - julia -e 'using Pkg; Pkg.add("Plots"); Pkg.add("GR"); Pkg.add("PlotRecipes")' # DocDeps

@@ -25,9 +25,6 @@ build_script:
   - echo "%JL_BUILD_SCRIPT%"
   - C:\julia\bin\julia -e "%JL_BUILD_SCRIPT%"
 
-before_script:
-  - C:\julia\bin\julia -e "using Pkg; Pkg.add(\"https://github.com/carlobaldassi/GaussDCA.jl.git\")"
-
 test_script:
   - echo "%JL_TEST_SCRIPT%"
   - C:\julia\bin\julia -e "%JL_TEST_SCRIPT%"
