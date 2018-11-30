@@ -2,19 +2,22 @@ language: julia
 os:
   - linux
   - osx
-sudo: required
 julia:
-  - 0.6
-#  - nightly
-#  - release
+  - 0.7
+  - 1.0
+  - nightly
+
+codecov: true
+coveralls: true
+
 notifications:
   email: false
-before_install:
-  - chmod +x ./.travis_after_success.sh
-script:
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'Pkg.add("ROCAnalysis")' # AUC test
-  - julia -e 'Pkg.clone("https://github.com/carlobaldassi/GaussDCA.jl.git")' # GaussDCA test
-  - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("MIToS"); Pkg.test("MIToS"; coverage=true)'
+
+before_script:
+  - julia -e 'using Pkg; Pkg.add("https://github.com/carlobaldassi/GaussDCA.jl.git")' # GaussDCA test
+
 after_success:
-  - ./.travis_after_success.sh
+  - julia -e 'using Pkg; Pkg.add("Plots"); Pkg.add("GR"); Pkg.add("PlotRecipes")' # DocDeps
+  - julia -e 'Pkg.add("DataFrames"); Pkg.add("StatPlots")' # These are used in MSA.md
+  - julia -e 'using Pkg; Pkg.add("Documenter")'
+  - julia -e 'include(joinpath("docs", "make.jl"))'
