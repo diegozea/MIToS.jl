@@ -17,7 +17,8 @@ before_script:
   - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/carlobaldassi/GaussDCA.jl", rev="master"))' # GaussDCA test
 
 after_success:
-  - julia -e 'using Pkg; Pkg.add("Plots"); Pkg.add("GR"); Pkg.add("PlotRecipes")' # DocDeps
+  - julia -e 'using Pkg; Pkg.add("Plots"); Pkg.add("GR")' # DocDeps
+  # - julia -e 'using Pkg; Pkg.add("PlotRecipes")'
   - julia -e 'Pkg.add("DataFrames"); Pkg.add("StatPlots")' # These are used in MSA.md
   - julia -e 'using Pkg; Pkg.add("Documenter")'
   - julia -e 'include(joinpath("docs", "make.jl"))'
