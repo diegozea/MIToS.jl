@@ -438,7 +438,6 @@ BLMI
 ```@setup inf_buslje09
 using Plots
 gr()
-using PlotRecipes
 ```
 
 ```@example inf_buslje09
