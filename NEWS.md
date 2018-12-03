@@ -8,6 +8,8 @@ MIToS v2.3 requires Julia v0.7 or v1.0. This release drops Julia 0.6 support.
 
 * `SIFTS.get` returns the desired object or `missing` instead of `Nullable`s.
 
+* `SIFTS` function doesn't `warn` about unused databases. 
+
 #### Julia 0.7/1.0 deprecations
 
 * `bits` was deprecated to `bitstring`.

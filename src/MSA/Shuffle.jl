@@ -10,7 +10,7 @@ julia> using MIToS.MSA
 julia> using Random
 
 julia> msa = hcat(res"RRE",res"DDK", res"G--")
-3×3 Array{MIToS.MSA.Residue,2}:
+3×3 Array{Residue,2}:
  R  D  G
  R  D  -
  E  K  -
@@ -18,7 +18,7 @@ julia> msa = hcat(res"RRE",res"DDK", res"G--")
 julia> Random.seed!(42);
 
 julia> shuffle(msa, 1, true)
-3×3 Array{MIToS.MSA.Residue,2}:
+3×3 Array{Residue,2}:
  G  D  R
  D  R  -
  E  K  -
@@ -26,7 +26,7 @@ julia> shuffle(msa, 1, true)
 julia> Random.seed!(42);
 
 julia> shuffle(msa, 1, false)
-3×3 Array{MIToS.MSA.Residue,2}:
+3×3 Array{Residue,2}:
  G  D  R
  D  -  R
  -  E  K

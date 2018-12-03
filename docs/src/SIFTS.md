@@ -56,12 +56,10 @@ types will be depend on the residue number type in that database.
 To download the XML SIFTS file of a determined PDB use the `downloadsifts` function.  
 
 ```@setup sifts_simple
-@info "SIFTS: Simple"
 using MIToS.SIFTS
 
 import MIToS # to use pathof(MIToS)
-siftsfile = joinpath(dirname(pathof(MIToS)), "..", "docs", "data", "1ivo.xml.gz")
-@info siftsfile
+siftsfile = joinpath(dirname(pathof(MIToS)), "..", "docs", "data", "1ivo.xml.gz");
 ```
 
 ```@example sifts_simple
@@ -75,7 +73,6 @@ The following example, shows the residue number mapping between *Pfam* and *PDB*
 *Pfam* uses *UniProt* coordinates and *PDB* uses their own residue numbers with insertion
 codes. Note that **the `siftsmapping` function is case sensitive**, and that
 **SIFTS stores PDB identifiers using lowercase characters**.  
-
 
 ```@example sifts_simple
 siftsmap = siftsmapping(siftsfile,
@@ -96,10 +93,9 @@ also takes the keyword arguments `chain` and `missings`. The `read`/`parse` func
 returns a `Vector` of `SIFTSResidue`s objects that stores the cross references between
 residues in each database.  
 
-```@example sifts_simple
+```@setup sifts_simple
 siftsresidues = read(siftsfile, SIFTSXML, chain="A", missings=false) # Array{SIFTSResidue,1}
-
-residue_data = siftsresidues[300]
+residue_data = siftsresidues[301];
 ```
 
 You are free to access the `SIFTSResidue` fields in order to get the desired information.
@@ -129,13 +125,14 @@ is returned if a default value is not given at the end of the signature and the
 value to access is missing:
 
 ```@setup sifts_repl
-@info "SIFTS: REPL"
 import MIToS # to use pathof(MIToS)
 siftsfile = joinpath(dirname(pathof(MIToS)), "..", "docs", "data", "1ivo.xml.gz")
+
+using MIToS.SIFTS
+residue_data = read(siftsfile, SIFTSXML)[301]; # hide
 ```
 
 ```@repl sifts_repl
-using MIToS.SIFTS; residue_data = read(siftsfile, SIFTSXML)[301] # hide
 get(residue_data, dbUniProt) # get takes the database type (`db...`)
 get(residue_data, dbUniProt, :name) # and can also take a field name (Symbol)
 ```  
@@ -208,9 +205,8 @@ vector where there is a `true` value if the residue is missing in the structure.
 
 
 ```@setup sifts_repl_ii
-@info "SIFTS: REPL II"
 import MIToS # to use pathof(MIToS)
-siftsfile = joinpath(dirname(pathof(MIToS)), "..", "docs", "data", "1ivo.xml.gz")
+siftsfile = joinpath(dirname(pathof(MIToS)), "..", "docs", "data", "1ivo.xml.gz");
 ```
 
 ```@repl sifts_repl_ii
@@ -225,16 +221,17 @@ function. In this example, we are going to ask for the *UniProt id*
 `get` to select an specific PDB chain.  
 
 ```@setup sifts_1jqz
-@info "SIFTS: 1JQZ"
 using MIToS.SIFTS
-siftsfile = joinpath("data", "1jqz.xml.gz")
+
+import MIToS # to use pathof(MIToS)
+siftsfile = joinpath(dirname(pathof(MIToS)), "..", "docs", "data", "1jqz.xml.gz");
 ```
 
 ```julia
 siftsfile = downloadsifts("1JQZ")
 ```
 
-```@repl
+```@repl sifts_1jqz
 using MIToS.SIFTS
 sifts_1jqz = read(siftsfile, SIFTSXML); # It has an amino terminal his tag
 missings = [ (  ( get(res, dbUniProt, :id, "") == "P05230" ) &

@@ -40,7 +40,7 @@ julia> alanine = Residue('A')
 A
 
 julia> Char(alanine)
-'A'
+'A': ASCII/Unicode U+0041 (category Lu: Letter, uppercase)
 
 julia> for residue in res"ARNDCQEGHILKMFPSTWYV-X"
            println(residue, " ", Int(residue))
@@ -280,7 +280,7 @@ The MIToS macro `@res_str` takes a string and returns a `Vector` of `Residues` (
 julia> using MIToS.MSA
 
 julia> res"MIToS"
-5-element Array{MIToS.MSA.Residue,1}:
+5-element Array{Residue,1}:
  M
  I
  T
@@ -315,14 +315,14 @@ julia> using Random
 julia> Random.seed!(1); # Reseed the random number generator.
 
 julia> rand(Residue)
-Y
+P
 
 julia> rand(Residue, 4, 4)
-4×4 Array{MIToS.MSA.Residue,2}:
- E  L  K  P
- V  N  A  M
- I  D  A  F
- F  Y  C  P
+4×4 Array{Residue,2}:
+ N  N  T  D
+ G  Y  L  I
+ R  V  F  L
+ P  C  K  L
 
 ```
 """

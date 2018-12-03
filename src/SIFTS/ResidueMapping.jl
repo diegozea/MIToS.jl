@@ -250,7 +250,10 @@ function SIFTSResidue(residue::LightXML.XMLElement, missing_residue::Bool,
         elseif db == "CATH"
             CATH = dbCATH(crossref)
         else
-            @warn(string(db, " is not in the MIToS' DataBases."))
+            # "Ensembl is not in the MIToS' DataBases." makes docs to fail:
+            # https://github.com/JuliaDocs/Documenter.jl/issues/903
+
+            # @warn(string(db, " is not in the MIToS' DataBases."))
         end
     end
     SIFTSResidue(PDBe,
