@@ -450,6 +450,7 @@ package for plotting, with the [GR![](./assets/external-link.png)](https://githu
 backend, but you are free to use any of the Julia plotting libraries.  
 
 ```@setup msa_plots
+@info "MSA: Plots"
 using Plots
 gr() # Hide possible warnings
 ```
@@ -579,6 +580,7 @@ functions of the [Plots![](./assets/external-link.png)](https://github.com/tbrel
 package.  
 
 ```@setup msa_pid
+@info "MSA: PID"
 using Plots
 gr() # Hide possible warnings
 ```
@@ -626,6 +628,7 @@ of representative sequences. We are going to use the function `hobohmI` to perfo
 Hobohm I algorithm at 62% identity.  
 
 ```@setup msa_clusters
+@info "MSA: Clusters"
 using Plots
 using StatPlots
 using DataFrames

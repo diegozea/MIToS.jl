@@ -214,6 +214,7 @@ cmap = contact(pdb, 8.0, criteria="CB") # Contact map
 ```
 
 ```@setup pdb_cmap
+@info "PDB: Cmap"
 using Plots
 gr() # Hide possible warnings
 ```
@@ -243,6 +244,7 @@ nothing # hide
 ## Structural superposition  
 
 ```@setup pdb_rmsd
+@info "PDB: RMSD"
 using Plots
 gr() # Hide possible warnings
 ```

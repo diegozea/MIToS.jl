@@ -56,6 +56,7 @@ types will be depend on the residue number type in that database.
 To download the XML SIFTS file of a determined PDB use the `downloadsifts` function.  
 
 ```@setup sifts_simple
+@info "SIFTS: Simple"
 using MIToS.SIFTS
 
 import MIToS # to use pathof(MIToS)
@@ -213,6 +214,7 @@ function. In this example, we are going to ask for the *UniProt id*
 `get` to select an specific PDB chain.  
 
 ```@setup sifts_1jqz
+@info "SIFTS: 1JQZ"
 using MIToS.SIFTS
 siftsfile = joinpath("data", "1jqz.xml.gz")
 ```
