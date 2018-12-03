@@ -239,7 +239,7 @@
             @test isapprox([ Float64(x) for x in data[:,SCORE] ],
                            matrix2list(results[MIToS_SCORE]), atol=1e-6)
             @test isapprox([ Float64(x) for x in data[:,ZSCORE] ],
-                           matrix2list(results[MIToS_ZSCORE]), atol=1.5)
+                           matrix2list(results[MIToS_ZSCORE]), atol=2.)
 
             # println(cor(convert(Vector{Float64},data[:,ZSCORE]),matrix2list(results[MIToS_ZSCORE])))
 
@@ -265,7 +265,7 @@
         @test isapprox([ Float64(x) for x in data[:,SCORE] ],
                        matrix2list(results[MIToS_SCORE]), atol=1e-6)
         @test isapprox([ Float64(x) for x in data[:,ZSCORE] ],
-                       matrix2list(results[MIToS_ZSCORE]), atol=1.5)
+                       matrix2list(results[MIToS_ZSCORE]), atol=2.)
     end
 
     @testset "MIp" begin
