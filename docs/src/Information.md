@@ -505,31 +505,30 @@ cMI = cumulative(ZMIp, threshold)
 ```
 
 ```@setup comment_block
-# Setup block to hide this until PlotRecipes get fixed
+# # Setup block to hide this until PlotRecipes get fixed
 
-The nodes have an order, because they are columns in a MSA. So, the **arc diagram** it's
-useful to visualize long and short association between MSA positions. In general, long
-interactions has more interest.
+# The nodes have an order, because they are columns in a MSA. So, the **arc diagram** it's
+# useful to visualize long and short association between MSA positions. In general, long
+# interactions has more interest.
 
-#`#`#`@example inf_buslje09
-using PlotRecipes
+# ` ` `@example inf_buslje09
+# using PlotRecipes
 
-graphplot(ZMIp, size=(600,250), method=:arcdiagram) # , zcolor=cMI)
-png("inf_arcdiagram.png") # hide
-nothing # hide
-#`#`#`  
+# graphplot(ZMIp, size=(600,250), method=:arcdiagram) # , zcolor=cMI)
+# png("inf_arcdiagram.png") # hide
+# nothing # hide
+# ` ` `  
 
-![](inf_arcdiagram.png)   
+# ![](inf_arcdiagram.png)   
 
+# You can also use a **chord diagram** to see the same pattern.  
 
-You can also use a **chord diagram** to see the same pattern.  
+# ` ` `@example inf_buslje09
+# graphplot(ZMIp, size=(600,600), method=:chorddiagram)
+# png("inf_chorddiagram.png") # hide
+# nothing # hide
+# ` ` `  
 
-#`#`#`@example inf_buslje09
-graphplot(ZMIp, size=(600,600), method=:chorddiagram)
-png("inf_chorddiagram.png") # hide
-nothing # hide
-#`#`#`  
-
-![](inf_chorddiagram.png)   
+# ![](inf_chorddiagram.png)   
 
 ```
