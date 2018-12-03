@@ -1,6 +1,8 @@
 ## MIToS.jl Release Notes
 
-### Changes from v2.1.2 to master
+### Changes from v2.2.0 to v2.3.0
+
+MIToS v2.3 requires Julia v0.7 or v1.0. This release drops Julia 0.6 support.
 
 * `Formatting.jl` is used in place of `Format.jl`.
 
