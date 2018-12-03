@@ -61,6 +61,7 @@ using MIToS.SIFTS
 
 import MIToS # to use pathof(MIToS)
 siftsfile = joinpath(dirname(pathof(MIToS)), "..", "docs", "data", "1ivo.xml.gz")
+@info siftsfile
 ```
 
 ```@example sifts_simple
@@ -127,10 +128,14 @@ depending on the value you want to access. In particular, a `missing` object
 is returned if a default value is not given at the end of the signature and the
 value to access is missing:
 
-siftsresidues
+```@setup sifts_repl
+@info "SIFTS: REPL"
+import MIToS # to use pathof(MIToS)
+siftsfile = joinpath(dirname(pathof(MIToS)), "..", "docs", "data", "1ivo.xml.gz")
+```
 
-```@repl
-using MIToS.SIFTS; residue_data = read("1ivo.xml.gz", SIFTSXML)[301] # hide
+```@repl sifts_repl
+using MIToS.SIFTS; residue_data = read(siftsfile, SIFTSXML)[301] # hide
 get(residue_data, dbUniProt) # get takes the database type (`db...`)
 get(residue_data, dbUniProt, :name) # and can also take a field name (Symbol)
 ```  
@@ -146,8 +151,7 @@ residue_data.PDBe.name
 (i.e. not resolved) in the PDB structure and the information about the
 secondary structure (`sscode` and `ssname`):  
 
-```@repl
-using MIToS.SIFTS; residue_data = read("1ivo.xml.gz", SIFTSXML)[301] # hide
+```@repl sifts_repl
 residue_data.missing
 residue_data.sscode
 residue_data.ssname
@@ -157,9 +161,9 @@ residue_data.ssname
 
 You can ask for particular values in a single `SIFTSResidue` using the `get` function.  
 
-```@repl
+```@repl sifts_repl
 using MIToS.SIFTS
-residue_data = read("1ivo.xml.gz", SIFTSXML)[301]
+residue_data = read(siftsfile, SIFTSXML)[301]
 # Is the UniProt residue name in the list of basic amino acids ["H", "K", "R"]?
 get(residue_data, dbUniProt, :name, "") in ["H", "K", "R"]
 ```  
@@ -202,9 +206,16 @@ basicresidues[1].UniProt # UniProt data of the first basic residue
 Given that `SIFTSResidue` objects store a `missing` residue flag, it’s easy to get a
 vector where there is a `true` value if the residue is missing in the structure.  
 
-```@repl
+
+```@setup sifts_repl_ii
+@info "SIFTS: REPL II"
+import MIToS # to use pathof(MIToS)
+siftsfile = joinpath(dirname(pathof(MIToS)), "..", "docs", "data", "1ivo.xml.gz")
+```
+
+```@repl sifts_repl_ii
 using MIToS.SIFTS
-sifts_1ivo = read("1ivo.xml.gz", SIFTSXML, chain="A"); # SIFTSResidues of the 1IVO chain A
+sifts_1ivo = read(siftsfile, SIFTSXML, chain="A"); # SIFTSResidues of the 1IVO chain A
 [res.missing for res in sifts_1ivo]
 ```  
 
