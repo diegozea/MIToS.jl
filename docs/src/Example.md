@@ -1,3 +1,6 @@
+```@setup log
+@info "Example"
+```
 
 # Example
 

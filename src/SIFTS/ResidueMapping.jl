@@ -337,7 +337,7 @@ end
 `parse(document::LightXML.XMLDocument, ::Type{SIFTSXML}; chain=All, missings::Bool=true)`
 
 Returns a `Vector{SIFTSResidue}` parsed from a `SIFTSXML` file.
-By default, parses all the `chain`s and includes `missings` residues.
+By default, parses all the `chain`s and includes missing residues.
 """
 function Base.parse(document::LightXML.XMLDocument, ::Type{SIFTSXML};
                     chain::Union{Type{All},String}=All, missings::Bool = true)

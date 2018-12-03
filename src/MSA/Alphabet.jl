@@ -4,7 +4,9 @@ abstract type ResidueAlphabet end
 """
 This type defines the usual alphabet of the 20 natural residues and a gap character.
 
-```julia
+```jldoctest
+julia> using MIToS.MSA
+
 julia> GappedAlphabet()
 GappedAlphabet of length 21. Residues : res"ARNDCQEGHILKMFPSTWYV-"
 
@@ -15,7 +17,9 @@ struct GappedAlphabet <: ResidueAlphabet end
 """
 This type defines the usual alphabet of the 20 natural residues, without the gap character.
 
-```julia
+```jldoctest
+julia> using MIToS.MSA
+
 julia> UngappedAlphabet()
 UngappedAlphabet of length 20. Residues : res"ARNDCQEGHILKMFPSTWYV"
 
@@ -27,7 +31,9 @@ struct UngappedAlphabet <: ResidueAlphabet end
 `ReducedAlphabet` allows the construction of reduced residue alphabets, where residues
 inside parenthesis belong to the same group.
 
-```julia
+```jldoctest
+julia> using MIToS.MSA
+
 julia> ab = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
 ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
 
@@ -155,7 +161,9 @@ Base.in(res::Residue, alphabet::ReducedAlphabet) = alphabet[res] != 22
 It returns the name of each group. The name is a string with the one letter code of each
 residue that belong to the group.
 
-```julia
+```jldoctest
+julia> using MIToS.MSA
+
 julia> ab = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
 ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
 
@@ -189,7 +197,9 @@ const _GappedAlphabet_Names = OrderedDict{String,Int}(string(Residue(i))=>i for 
 """
 It takes a `ResidueAlphabet` and returns a dictionary from group name to group position.
 
-```julia
+```jldoctest
+julia> using MIToS.MSA
+
 julia> ab = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
 ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
 

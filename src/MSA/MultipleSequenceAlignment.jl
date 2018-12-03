@@ -411,8 +411,10 @@ end
 """
 Converts a string of mappings into a vector of `Int`s
 
-```
-julia> _str2int_mapping(",,2,,4,5")
+```jldoctest
+julia> using MIToS.MSA
+
+julia> MSA._str2int_mapping(",,2,,4,5")
 6-element Array{Int64,1}:
  0
  0

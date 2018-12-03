@@ -81,14 +81,14 @@ end
 
 function _get_details(residue)::Tuple{Bool,String,String}
     details = get_elements_by_tagname(residue, "residueDetail")
-    missing = false
+    missing_residue = false
     sscode  = " "
     ssname  = " "
     for det in details
         detail_property = attribute(det, "property")
         # XML: <residueDetail dbSource="PDBe" property="Annotation">Not_Observed</residueDetail>
         if  detail_property == "Annotation" && content(det) == "Not_Observed"
-            missing = true
+            missing_residue = true
             break
         # XML: <residueDetail dbSource="PDBe" property="codeSecondaryStructure"...
         elseif detail_property == "codeSecondaryStructure"
@@ -98,5 +98,5 @@ function _get_details(residue)::Tuple{Bool,String,String}
             ssname = content(det)
         end
     end
-    (missing, sscode, ssname)
+    (missing_residue, sscode, ssname)
 end

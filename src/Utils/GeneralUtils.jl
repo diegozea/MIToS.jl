@@ -13,7 +13,9 @@ returned contains the finals words and the delimiters. The length of the
 returned vector is `n` or less (if the number of words is less than `n`).
 This is used for parsing the Stockholm format.
 
-```julia
+```jldoctest
+julia> using MIToS.Utils
+
 julia> get_n_words("#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH", 3)
 3-element Array{String,1}:
  "#=GR"

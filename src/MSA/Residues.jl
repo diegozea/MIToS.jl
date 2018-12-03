@@ -33,7 +33,9 @@ operations and always return valid residues. In conversions from `Char`, lowerca
 character is translated to `XAA`. Since lowercase letters and dots are translated to gaps,
 Pfam MSA insert columns are converted to columns full of gaps.
 
-```julia
+```jldoctest
+julia> using MIToS.MSA
+
 julia> alanine = Residue('A')
 A
 
@@ -274,7 +276,9 @@ end
 """
 The MIToS macro `@res_str` takes a string and returns a `Vector` of `Residues` (sequence).
 
-```julia
+```jldoctest
+julia> using MIToS.MSA
+
 julia> res"MIToS"
 5-element Array{MIToS.MSA.Residue,1}:
  M
@@ -303,7 +307,9 @@ Base.length(res::Residue) = length(Int(res))
 """
 It chooses from the 20 natural residues (it doesn't generate gaps).
 
-```julia
+```jldoctest
+julia> using MIToS.MSA
+
 julia> using Random
 
 julia> Random.seed!(1); # Reseed the random number generator.

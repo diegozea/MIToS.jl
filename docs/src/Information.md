@@ -1,6 +1,11 @@
 ```@meta
 CurrentModule = MIToS.Information
 ```
+
+```@setup log
+@info "Information docs"
+```
+
 # [Information](@id Module-Information)
 
 The `Information` module of MIToS defines types and functions useful to calculate
@@ -152,6 +157,7 @@ probabilities(seq[1,:]) # Select the single sequence and calculate the probabili
     transform the matrix to a vector, e.g.: `probabilities(vec(getsequence(seq,1)))`.
 
 ```@setup inf_plotfreq
+@info "Information: Plots"
 using Plots
 gr(size=(600,300))
 using MIToS.Information # to use the probabilities function
@@ -353,6 +359,7 @@ Shannon `entropy` of MSA columns *H(X)* and the joint entropy *H(X, Y)* of colum
 respectively.  
 
 ```@setup inf_entropy
+@info "Information: Entropy"
 using Plots
 gr()
 ```
@@ -436,6 +443,7 @@ BLMI
 #### Example: Estimating corrected MI from an MSA
 
 ```@setup inf_buslje09
+@info "Information: MI"
 using Plots
 gr()
 ```

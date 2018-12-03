@@ -1,3 +1,7 @@
+```@setup log
+@info "MSA API docs"
+```
+
 # MSA
 
 ```@docs

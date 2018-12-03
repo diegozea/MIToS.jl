@@ -1,3 +1,7 @@
+```@setup log
+@info "Utils API docs"
+```
+
 # [Utils](@id API-Utils)
 
 ```@docs

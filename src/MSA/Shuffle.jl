@@ -4,7 +4,11 @@ should remain their positions using the last boolean argument. The previous argu
 be the dimension to shuffle, 1 for shuffling residues in a sequence (row) or 2 for shuffling
 residues in a column.
 
-```julia
+```jldoctest
+julia> using MIToS.MSA
+
+julia> using Random
+
 julia> msa = hcat(res"RRE",res"DDK", res"G--")
 3×3 Array{MIToS.MSA.Residue,2}:
  R  D  G

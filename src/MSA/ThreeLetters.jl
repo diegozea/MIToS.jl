@@ -42,7 +42,9 @@ const _res2three = [ "ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HI
 """
 This function returns the three letter name of the `Residue`.
 
-```julia
+```jldoctest
+julia> using MIToS.MSA
+
 julia> residue2three(Residue('G'))
 "GLY"
 
@@ -61,7 +63,9 @@ end
 It takes a three letter residue name and returns the corresponding `Residue`.
 If the name isn't in the MIToS dictionary, a `XAA` is returned.
 
-```julia
+```jldoctest
+julia> using MIToS.MSA
+
 julia> three2residue("ALA")
 A
 

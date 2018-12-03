@@ -1,3 +1,7 @@
+```@setup log
+@info "Information API docs"
+```
+
 # Information
 
 ```@docs

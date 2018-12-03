@@ -1,3 +1,7 @@
+```@setup log
+@info "PDB docs"
+```
+
 # [PDB](@id Module-PDB)
 
 The module `PDB` defines types and methods to work with protein structures inside Julia. It

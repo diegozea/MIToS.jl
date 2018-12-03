@@ -1,3 +1,7 @@
+```@setup log
+@info "SIFTS docs"
+```
+
 # [SIFTS](@id Module-SIFTS)
 
 The `SIFTS` module of MIToS allows to obtain the residue-level mapping between databases

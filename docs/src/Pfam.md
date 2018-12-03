@@ -1,3 +1,7 @@
+```@setup log
+@info "Pfam docs"
+```
+
 # [Pfam](@id Module-Pfam)
 
 MIToS defines methods and types useful for any MSA. The `Pfam` module uses other MIToS

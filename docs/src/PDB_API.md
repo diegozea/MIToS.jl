@@ -1,3 +1,7 @@
+```@setup log
+@info "PDB API docs"
+```
+
 # PDB
 
 ```@docs

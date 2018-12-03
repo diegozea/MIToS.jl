@@ -1,3 +1,7 @@
+```@setup log
+@info "Pfam API docs"
+```
+
 # Pfam
 
 ```@docs

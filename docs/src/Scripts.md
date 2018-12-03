@@ -1,3 +1,7 @@
+```@setup log
+@info "Scripts docs"
+```
+
 # Scripts
 
 MIToS implements several useful scripts to **command line execution

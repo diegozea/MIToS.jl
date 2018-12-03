@@ -1,3 +1,7 @@
+```@setup log
+@info "SIFTS API docs"
+```
+
 # SIFTS
 
 ```@docs
