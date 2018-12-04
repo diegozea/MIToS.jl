@@ -4,8 +4,10 @@
 """
 Wrapper function to `GaussDCA.gDCA`.
 You need to install GaussDCA:
+
 ```julia
-Pkg.clone("https://github.com/carlobaldassi/GaussDCA.jl")
+using Pkg
+Pkg.add(PackageSpec(url="https://github.com/carlobaldassi/GaussDCA.jl"))
 ```
 Look into [GaussDCA.jl README](https://github.com/carlobaldassi/GaussDCA.jl) for further information.
 If you use this wrapper, **please cite the GaussDCA publication and the package's doi**.
@@ -53,6 +55,7 @@ function _create_script(script_file::String, msa_file::String, jdl_file::String;
         str_kargs = ""
     end
     open(script_file, "w") do fh
+        println(fh, "using Serialization;")
         println(fh, "using GaussDCA;")
         println(fh, "values = GaussDCA.gDCA(\"$msa_file\"$str_kargs);")
         println(fh, "open(fh -> serialize(fh, values), \"$(jdl_file)\", \"w\")")

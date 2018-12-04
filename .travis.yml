@@ -13,9 +13,6 @@ coveralls: true
 notifications:
   email: false
 
-before_script:
-  - julia -e 'using Pkg; Pkg.add(PackageSpec(url="https://github.com/carlobaldassi/GaussDCA.jl", rev="master"))' # GaussDCA test
-
 jobs:
   include:
     - stage: "Documentation"

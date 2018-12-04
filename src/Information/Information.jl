@@ -24,6 +24,7 @@ module Information
 
 using MIToS.Utils
 using MIToS.MSA
+using Serialization         # GaussDCA
 using Base.Cartesian        # nloops for ContingencyTables
 using NamedArrays           # ContingencyTables have NamedArrays
 using DataStructures        # OrderedDicts for NamedArrays
