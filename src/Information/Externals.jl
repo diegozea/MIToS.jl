@@ -22,14 +22,19 @@ Baldassi, Carlo, Marco Zamparo, Christoph Feinauer, Andrea Procaccini, Riccardo 
 PloS one 9, no. 3 (2014): e92721.
 """
 function gaussdca(msa; juliapath::String=joinpath(Sys.BINDIR,Base.julia_exename()), kargs...)
-    if Sys.iswindows() & !endswith(juliapath,".exe")
-        juliapath = juliapath * ".exe"
+    base_name = tempname()
+    if Sys.iswindows()
+        base_name = escape_string(base_name)
+        juliapath = escape_string(juliapath)
+        if !endswith(juliapath, ".exe")
+            juliapath = juliapath * ".exe"
+        end
     end
+    script_file = base_name * ".jl"
+    msa_file = base_name * ".fasta"
+    jdl_file = base_name * ".jls"
     plm = fill!(columnpairsmatrix(msa), NaN)
-    script_file = tempname() * ".jl"
-    msa_file = tempname() * ".fasta"
     write(msa_file, msa, FASTA)
-    jdl_file = tempname() * ".jls"
     try
         _create_script(script_file, msa_file, jdl_file; kargs...)
         run(`$juliapath $script_file`)
