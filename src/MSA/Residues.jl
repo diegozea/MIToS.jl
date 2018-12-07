@@ -154,7 +154,11 @@ function Base.convert(::Type{Char}, res::Residue)
     char
 end
 
-const _max_char = Int('z') # 'z' is the maximum between 'A':'Z', 'a':'z', '.', '-' and '*'
+"""
+'z' is the maximum between 'A':'Z', 'a':'z', '.', '-' and '*'.
+'z' is 'GAP' but the next character to 'z' is '{', i.e. `XAA`.
+"""
+const _max_char = Int('z') + 1
 
 const _to_residue = fill(XAA, _max_char)
 
@@ -174,12 +178,11 @@ _to_residue[ Int('*') ] = GAP # Usual representation of a translated stop codon
 
 @inline function Base.convert(::Type{Residue}, char::Char)
     i = Int(char)
-    if 0 < i <= _max_char
-        @inbounds res = _to_residue[ i ]
+    @inbounds if i < _max_char
+        _to_residue[i]
     else
-        res = XAA
+        XAA
     end
-    res
 end
 
 Base.Char(res::Residue) = convert(Char, res)
@@ -248,7 +251,7 @@ function _convert_to_matrix_residues(sequences::Array{String,1}, size::Tuple{Int
    nseq, nres = size
    aln = Array{Residue}(undef, nseq, nres)
    @inbounds for (i, str) in enumerate(sequences)
-       @inbounds for (j, char) in enumerate(str)
+       for (j, char) in enumerate(str)
            aln[i, j] = char
        end
    end
