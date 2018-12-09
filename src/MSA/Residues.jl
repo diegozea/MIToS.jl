@@ -176,10 +176,9 @@ _to_residue[ Int('.') ] = GAP # Gap in insert columns
 _to_residue[ Int('-') ] = GAP # Usual GAP character
 _to_residue[ Int('*') ] = GAP # Usual representation of a translated stop codon
 
-@inline function Base.convert(::Type{Residue}, char::Char)
-    i = Int(char)
-    @inbounds if i < _max_char
-        _to_residue[i]
+@inline Base.@pure function Base.convert(::Type{Residue}, char::Char)::Residue
+    @inbounds if char < '{'
+        _to_residue[ Int(char) ]
     else
         XAA
     end
@@ -252,7 +251,7 @@ function _convert_to_matrix_residues(sequences::Array{String,1}, size::Tuple{Int
    aln = Array{Residue}(undef, nseq, nres)
    @inbounds for (i, str) in enumerate(sequences)
        for (j, char) in enumerate(str)
-           aln[i, j] = char
+           aln[CartesianIndex(i, j)] = Residue(char)
        end
    end
    aln
