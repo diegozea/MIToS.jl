@@ -191,7 +191,7 @@ Did you start &#39;gksqt&#39;?
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre></div><p><img src="../pdb_unaligned.png" alt/>  </p><div><pre><code class="language-julia">superimposed_A, superimposed_C, RMSD = superimpose(chain_A, chain_C)
 
-RMSD</code></pre><pre><code class="language-none">0.23003870483785066</code></pre></div><div><pre><code class="language-julia">scatter3d(superimposed_A, label=&quot;A&quot;, alpha=0.5)
+RMSD</code></pre><pre><code class="language-none">0.23003870483785105</code></pre></div><div><pre><code class="language-julia">scatter3d(superimposed_A, label=&quot;A&quot;, alpha=0.5)
 scatter3d!(superimposed_C, label=&quot;C&quot;, alpha=0.5)</code></pre><pre><code class="language-none">/home/travis/.julia/packages/GR/wFd9A/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
