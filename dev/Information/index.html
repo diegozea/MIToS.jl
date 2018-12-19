@@ -467,7 +467,7 @@ Ni = count(res&quot;PPCDPPPPPKDKKKKDDGPP&quot;) # Ni has the count table of resi
 
 H = entropy(Ni) # returns the Shannon entropy in nats (base e)</code></pre><pre><code class="language-none">1.327362863420189</code></pre></div><div><pre><code class="language-julia">H = entropy(Ni, 2.0) # returns the Shannon entropy in bits (base 2)</code></pre><pre><code class="language-none">1.9149798205164812</code></pre></div><p>Information module defines special iteration functions to easily and efficiently compute a measure over a MSA. In particular, <code>mapcolfreq!</code> and <code>mapseqfreq!</code> map a function that takes a table of <code>Counts</code> or <code>Probabilities</code>. The table is filled in place with the counts or probabilities of each column or sequence of a MSA, respectively. <code>mapcolpairfreq!</code> and <code>mapseqpairfreq!</code> are similar, but they fill the table using pairs of columns or sequences, respectively.  </p><p>This functions take three positional arguments: the function <code>f</code> to be calculated, the <code>msa</code> and <code>table</code> of <code>Counts</code> or <code>Probabilities</code>.  </p><p>After that, this function takes some keyword arguments:</p><ul><li><code>weights</code> (default: <code>NoClustering()</code>) : Weights to be used for table counting.</li><li><code>pseudocounts</code> (default: <code>NoPseudocount()</code>) : <code>Pseudocount</code> object to be applied to table.</li><li><code>pseudofrequencies</code> (default: <code>NoPseudofrequencies()</code>) : <code>Pseudofrequencies</code> to be</li></ul><p>applied to the normalized (probabilities) table.  </p><p><code>mapcolpairfreq!</code> and <code>mapseqpairfreq!</code> also have a fourth positional argument <code>usediagonal</code> that indicates if the function should be applied to identical element pairs (default to <code>Val{true}</code>). This two functions also have an extra keyword argument <code>diagonalvalue</code> (default to zero) to indicate the value used to fill the diagonal elements if <code>usediagonal</code> is <code>Val{false}</code>.  </p><h4><a class="nav-anchor" id="Example:-Estimating-*H(X)*-and-*H(X,-Y)*-over-an-MSA-1" href="#Example:-Estimating-*H(X)*-and-*H(X,-Y)*-over-an-MSA-1">Example: Estimating <em>H(X)</em> and <em>H(X, Y)</em> over an MSA</a></h4><p>In this example, we are going to use <code>mapcolfreq!</code> and <code>mapcolpairfreq!</code> to estimate Shannon <code>entropy</code> of MSA columns <em>H(X)</em> and the joint entropy <em>H(X, Y)</em> of columns pairs, respectively.  </p><div></div><div><pre><code class="language-julia">using MIToS.MSA
 
-msa = read(&quot;http://pfam.xfam.org/family/PF09776/alignment/full&quot;, Stockholm)</code></pre><pre><code class="language-none">AnnotatedMultipleSequenceAlignment with 276 annotations : 251×116 Named Array{MIToS.MSA.Residue,2}
+msa = read(&quot;http://pfam.xfam.org/family/PF09776/alignment/full&quot;, Stockholm)</code></pre><pre><code class="language-none">AnnotatedMultipleSequenceAlignment with 275 annotations : 251×116 Named Array{MIToS.MSA.Residue,2}
                  Seq ╲ Col │  35   36   37   38   39  …  183  184  185  186  187
 ───────────────────────────┼────────────────────────────────────────────────────
 A0A2A2LU69_9BILA/10-118    │   -    -    -    -    -  …    K    L    -    -    -
@@ -541,14 +541,14 @@ GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in ro
   - samples     Int       100     Number of samples for Z-score
   - fixedgaps   Bool      true    Fix gaps positions for the random samples
   - alphabet    ResidueAlphabet UngappedAlphabet()  Residue alphabet to be used</code></pre><p>This function returns:</p><pre><code class="language-none">  - Z score
-  - MI or MIp</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/diegozea/MIToS.jl/blob/6b981d34b8864d20fa616f895972109536488f1c/src/Information/CorrectedMutualInformation.jl#L19-L42">source</a></section><p>The second, implemented in the <code>BLMI</code> function, has the same corrections that the above algorithm, but use BLOSUM62 pseudo frequencies. This function is <strong>slower</strong> than <code>buslje09</code> (at the same number of samples), but gives <strong>better performance</strong> (for structural contact prediction) when the MSA has <strong>less than 400 clusters</strong> after a Hobohm I at 62% identity.  </p><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="MIToS.Information.BLMI" href="#MIToS.Information.BLMI"><code>MIToS.Information.BLMI</code></a> — <span class="docstring-category">Function</span>.</div><div><div><p><code>BLMI</code> takes a MSA or a file and a <code>FileFormat</code> as first arguments. It calculates a Z score (ZBLMI) and a corrected MI/MIp as described on <strong>Busjle et. al. 2009</strong> but using using BLOSUM62 pseudo frequencies instead of a fixed pseudocount.</p><p>Keyword argument, type, default value and descriptions:</p><pre><code class="language-none">  - beta        Float64   8.512   β for BLOSUM62 pseudo frequencies
+  - MI or MIp</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/diegozea/MIToS.jl/blob/72f0c2cdad45dc8641cf8f79d8e65ef8e17fdbe6/src/Information/CorrectedMutualInformation.jl#L19-L42">source</a></section><p>The second, implemented in the <code>BLMI</code> function, has the same corrections that the above algorithm, but use BLOSUM62 pseudo frequencies. This function is <strong>slower</strong> than <code>buslje09</code> (at the same number of samples), but gives <strong>better performance</strong> (for structural contact prediction) when the MSA has <strong>less than 400 clusters</strong> after a Hobohm I at 62% identity.  </p><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="MIToS.Information.BLMI" href="#MIToS.Information.BLMI"><code>MIToS.Information.BLMI</code></a> — <span class="docstring-category">Function</span>.</div><div><div><p><code>BLMI</code> takes a MSA or a file and a <code>FileFormat</code> as first arguments. It calculates a Z score (ZBLMI) and a corrected MI/MIp as described on <strong>Busjle et. al. 2009</strong> but using using BLOSUM62 pseudo frequencies instead of a fixed pseudocount.</p><p>Keyword argument, type, default value and descriptions:</p><pre><code class="language-none">  - beta        Float64   8.512   β for BLOSUM62 pseudo frequencies
   - lambda      Float64   0.0     Low count value
   - threshold             62      Percent identity threshold for sequence clustering (Hobohm I)
   - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation
   - apc         Bool      true    Use APC correction (MIp)
   - samples     Int       50      Number of samples for Z-score
   - fixedgaps   Bool      true    Fix gaps positions for the random samples</code></pre><p>This function returns:</p><pre><code class="language-none">  - Z score (ZBLMI)
-  - MI or MIp using BLOSUM62 pseudo frequencies (BLMI/BLMIp)</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/diegozea/MIToS.jl/blob/6b981d34b8864d20fa616f895972109536488f1c/src/Information/CorrectedMutualInformation.jl#L94-L117">source</a></section><h4><a class="nav-anchor" id="Example:-Estimating-corrected-MI-from-an-MSA-1" href="#Example:-Estimating-corrected-MI-from-an-MSA-1">Example: Estimating corrected MI from an MSA</a></h4><div></div><div><pre><code class="language-julia">using MIToS.MSA
+  - MI or MIp using BLOSUM62 pseudo frequencies (BLMI/BLMIp)</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/diegozea/MIToS.jl/blob/72f0c2cdad45dc8641cf8f79d8e65ef8e17fdbe6/src/Information/CorrectedMutualInformation.jl#L94-L117">source</a></section><h4><a class="nav-anchor" id="Example:-Estimating-corrected-MI-from-an-MSA-1" href="#Example:-Estimating-corrected-MI-from-an-MSA-1">Example: Estimating corrected MI from an MSA</a></h4><div></div><div><pre><code class="language-julia">using MIToS.MSA
 using MIToS.Information
 
 msa = read(&quot;http://pfam.xfam.org/family/PF16078/alignment/full&quot;, Stockholm)
@@ -556,25 +556,25 @@ ZMIp, MIp  = buslje09(msa)
 ZMIp</code></pre><pre><code class="language-none">39×39 Named PairwiseListMatrices.PairwiseListMatrix{Float64,false,Array{Float64,1}}
 Col1 ╲ Col2 │         15          16  …          59          60
 ────────────┼──────────────────────────────────────────────────
-15          │        NaN    0.838713  …    -2.53817     1.23743
-16          │   0.838713         NaN       0.106739     3.33714
-17          │    2.32034    0.992105       0.834553  -0.0781346
-18          │   0.590178     -1.3382       -1.83234   -0.506125
-19          │   -3.29949    -1.29421        7.41862    -2.58365
-20          │   -4.34191     1.34507      -0.401201   -0.940499
-21          │   0.971902    -2.32089        4.80461   -0.986899
-27          │   -3.74028   -0.102913      -0.055637    -3.93485
-28          │   -3.50228    -4.31973       -1.56881    -4.06206
+15          │        NaN    0.694755  …    -2.89611     1.24697
+16          │   0.694755         NaN       0.415204      3.4911
+17          │    2.38165     1.00551       0.813899  0.00777358
+18          │   0.690282    -1.23538       -1.76781   -0.470578
+19          │   -3.04684    -1.35354        6.31585     -2.9211
+20          │   -3.72069     1.40963      -0.564462    -1.01173
+21          │    1.04747    -2.24975         4.2676    -1.13952
+27          │   -3.66191   -0.340218      -0.261428    -4.16745
+28          │   -3.90301    -4.48875       -1.47821    -3.94659
 ⋮                      ⋮           ⋮  ⋱           ⋮           ⋮
-52          │   -2.28079    0.142822        3.63145    -1.26489
-53          │   -1.64839     6.39244        11.2308   -0.240548
-54          │    3.98482    -2.01751       -2.38314    0.413649
-55          │   -1.05764  -0.0232343        1.57905    0.293154
-56          │   -3.38241   -0.304616        8.46203    -0.37837
-57          │   0.672383     -3.8005        6.22362    -2.24981
-58          │   -2.51753     7.77811        6.58825     3.70325
-59          │   -2.53817    0.106739            NaN     3.20754
-60          │    1.23743     3.33714  …     3.20754         NaN</code></pre></div><div><pre><code class="language-julia">ZBLMIp, BLMIp  = BLMI(msa)
+52          │   -2.07735  -0.0301716        3.14164    -1.09374
+53          │   -1.59627      6.8331        9.72641   -0.126442
+54          │    3.69808    -2.45639       -2.94533     0.36477
+55          │   -1.15355   -0.222995        1.38589    0.197778
+56          │   -3.12183   -0.306902        8.24274   -0.544136
+57          │   0.673245    -3.66677         6.3135    -2.18271
+58          │   -2.49343     6.44421        7.25865     3.22835
+59          │   -2.89611    0.415204            NaN     3.15725
+60          │    1.24697      3.4911  …     3.15725         NaN</code></pre></div><div><pre><code class="language-julia">ZBLMIp, BLMIp  = BLMI(msa)
 ZBLMIp</code></pre><pre><code class="language-none">39×39 Named PairwiseListMatrices.PairwiseListMatrix{Float64,false,Array{Float64,1}}
 Col1 ╲ Col2 │           15            16  …            59            60
 ────────────┼──────────────────────────────────────────────────────────
@@ -608,7 +608,7 @@ GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre></div><p><img src="../inf_heatmap.png" alt/>   </p><p>ZMIp is a Z score of the corrected MIp against its distribution on a random MSA (shuffling the residues in each sequence), so pairs with highest values are more likely to co-evolve. Here, we are going to use the top 1% pairs of MSA columns.  </p><div><pre><code class="language-julia">using PairwiseListMatrices # to use getlist
 using Statistics # to use quantile
 
-threshold = quantile(getlist(ZMIp), 0.99)</code></pre><pre><code class="language-none">11.069904616534425</code></pre></div><div><pre><code class="language-julia">ZMIp[ ZMIp .&lt; threshold ] .= NaN
+threshold = quantile(getlist(ZMIp), 0.99)</code></pre><pre><code class="language-none">10.26274889447937</code></pre></div><div><pre><code class="language-julia">ZMIp[ ZMIp .&lt; threshold ] .= NaN
 heatmap(ZMIp, yflip=true)</code></pre><pre><code class="language-none">/home/travis/.julia/packages/GR/wFd9A/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
@@ -618,4 +618,4 @@ GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre></div><p><img src="../inf_heatmap_top.png" alt/>   </p><p>We are going to calculate the cMI (cumulative mutual information) value of each node. Where cMI is a mutual information score per position that characterizes the extent of mutual information &quot;interactions&quot; in its neighbourhood. This score is calculated as the sum of MI values above a certain threshold for every amino acid pair where the particular residue appears. This value defines to what degree a given amino acid takes part in a mutual information network and we are going to indicate it using the node color. To calculate cMI we are going to use the <code>cumulative</code> function:   </p><div><pre><code class="language-julia">cMI = cumulative(ZMIp, threshold)</code></pre><pre><code class="language-none">1×39 Named Array{Float64,2}
 Function ╲ Col2 │      15       16       17  …       58       59       60
 ────────────────┼────────────────────────────────────────────────────────
-cumulative      │     0.0      0.0      0.0  …      0.0  11.2308      0.0</code></pre></div><div></div><footer><hr/><a class="previous" href="../MSA/"><span class="direction">Previous</span><span class="title">MSA</span></a><a class="next" href="../SIFTS/"><span class="direction">Next</span><span class="title">SIFTS</span></a></footer></article></body></html>
+cumulative      │     0.0      0.0      0.0  …  11.1576      0.0      0.0</code></pre></div><div></div><footer><hr/><a class="previous" href="../MSA/"><span class="direction">Previous</span><span class="title">MSA</span></a><a class="next" href="../SIFTS/"><span class="direction">Next</span><span class="title">SIFTS</span></a></footer></article></body></html>

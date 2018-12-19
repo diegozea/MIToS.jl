@@ -34,11 +34,11 @@ A0A1S1T395_9RHIZ/6-168   │   -    -    -    -    -  …    -    -    -    -   
  -  -  -  -  -  -  -  -  -  -  -  -  -     -  -  -  -  -  -  -  -  -  -  -  -</code></pre></div><p>Because <code>read</code> calls <code>parse</code>, you should look into the documentation of <code>parse</code> to know the available keyword arguments. The optional keyword arguments of those functions are:  </p><ul><li><code>generatemapping</code> : If <code>generatemapping</code> is <code>true</code> (default: <code>false</code>), sequences and</li></ul><p>columns mappings are generated and saved in the MSA annotations. <strong>The default is <code>false</code> to not overwrite mappings by mistake when you read an annotated MSA file saved with MIToS.</strong>  </p><ul><li><code>useidcoordinates</code> : If <code>useidcoordinates</code> is <code>true</code> (default: <code>false</code>) and the names</li></ul><p>have the form <em>seqname/start-end</em>, MIToS uses this coordinates to generate sequence mappings. This is safe and useful with unmodified Pfam MSAs. <strong>Do not use it when reading an MSA saved with MIToS. MIToS deletes unaligned insert columns, therefore disrupts sequences that have them.</strong>  </p><ul><li><code>deletefullgaps</code> : Given that lowercase characters and dots are converted to gaps,</li></ul><p>unaligned insert columns in the MSA (derived from a HMM profile) are converted into full gap columns. <code>deletefullgaps</code> is <code>true</code> by default, deleting full gaps columns and therefore insert columns.  </p><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p><strong>If you want to keep the insert columns...</strong>  Use the keyword argument <code>keepinserts</code> to <code>true</code> in <code>read</code>/<code>parse</code>. This only works with an <code>AnnotatedMultipleSequenceAlignment</code> output. A column annotation (<code>&quot;Aligned&quot;</code>) is stored in the annotations, where insert columns are marked with <code>0</code> and aligned columns with <code>1</code>.  </p></div></div><p>When <code>read</code> returns an <code>AnnotatedMultipleSequenceAlignment</code>, it uses the MSA <code>Annotations</code> to keep track of performed modifications. To access these notes, use <code>printmodifications</code>:  </p><div><pre><code class="language-julia">msa = read(&quot;http://pfam.xfam.org/family/PF01565/alignment/full&quot;, Stockholm)
 
 printmodifications(msa)</code></pre><pre><code class="language-none">-------------------
-2018-12-09T05:26:12.06
+2018-12-19T18:27:28.996
 
 deletefullgaps!  :  Deletes 861 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
 -------------------
-2018-12-09T05:26:12.114
+2018-12-19T18:27:29.266
 
 filtercolumns! : 861 columns have been deleted.</code></pre></div><h3><a class="nav-anchor" id="Writing-MSA-files-1" href="#Writing-MSA-files-1">Writing MSA files</a></h3><p>Julia REPL shows MSAs as Matrices. If you want to print them in another format, you should use the <code>print</code> function with an MSA object as first argument and the <code>FileFormat</code> <code>FASTA</code>, <code>Stockholm</code>, <code>PIR</code> or <code>Raw</code> as second argument.  </p><div><pre><code class="language-julia">using MIToS.MSA
 
@@ -82,8 +82,8 @@ KKDLFYKDIEGRLDELKHGKPKKEKASLGENLNKAFVIVLGLMILIGLIFTLI--</code></pre></div><p>To 
 #=GF CC	not present in all SecA2-SecY2 systems. This family of Asp4 is
 #=GF CC	found in Firmicutes [1].
 #=GF SQ	8
-#=GF MIToS_2018-12-09T05:26:12.576	deletefullgaps!  :  Deletes 3 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
-#=GF MIToS_2018-12-09T05:26:12.576	filtercolumns! : 3 columns have been deleted.
+#=GF MIToS_2018-12-19T18:27:29.794	deletefullgaps!  :  Deletes 3 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
+#=GF MIToS_2018-12-19T18:27:29.794	filtercolumns! : 3 columns have been deleted.
 #=GS A3CM62_STRSV/3-57	AC	A3CM62.1
 #=GS A0A139NTT2_9STRE/3-57	AC	A0A139NTT2.1
 #=GS A0A139NMD7_9STRE/4-59	AC	A0A139NMD7.1
@@ -269,8 +269,8 @@ msa = parse(&quot;PROT_SPECI/3-15 .....insertALIGNED&quot;, Stockholm, generatem
 ────────────────┼───────────────────────────
 PROT_SPECI/3-15 │  A   L   I   G   N   E   D</code></pre></div><p>MIToS also keeps the column number of the input MSA and its total number of columns. All this data is stored in the MSA annotations using the <code>SeqMap</code>, <code>ColMap</code> and <code>NCol</code> feature names.  </p><div><pre><code class="language-julia">annotations(msa)</code></pre><pre><code class="language-none">#=GF NCol	18
 #=GF ColMap	12,13,14,15,16,17,18
-#=GF MIToS_2018-12-09T05:26:18.96	deletefullgaps!  :  Deletes 11 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
-#=GF MIToS_2018-12-09T05:26:18.973	filtercolumns! : 11 columns have been deleted.
+#=GF MIToS_2018-12-19T18:27:35.385	deletefullgaps!  :  Deletes 11 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
+#=GF MIToS_2018-12-19T18:27:35.394	filtercolumns! : 11 columns have been deleted.
 #=GS PROT_SPECI/3-15	SeqMap	9,10,11,12,13,14,15</code></pre></div><p>To have an easy access to mapping data, MIToS provides the <code>getsequencemapping</code> and <code>getcolumnmapping</code> functions.  </p><div><pre><code class="language-julia">getsequencemapping(msa, &quot;PROT_SPECI/3-15&quot;)</code></pre><pre><code class="language-none">7-element Array{Int64,1}:
   9
  10
@@ -437,8 +437,8 @@ T0TMU0_9STRE/1-43 │  -   -   -   -   -   -   -  …   I   F   T   L   I   -   
 #=GF SQ	8
 #=GF NCol	58
 #=GF ColMap	2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56
-#=GF MIToS_2018-12-09T05:26:20.754	deletefullgaps!  :  Deletes 3 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
-#=GF MIToS_2018-12-09T05:26:20.754	filtercolumns! : 3 columns have been deleted.
+#=GF MIToS_2018-12-19T18:27:36.967	deletefullgaps!  :  Deletes 3 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
+#=GF MIToS_2018-12-19T18:27:36.967	filtercolumns! : 3 columns have been deleted.
 #=GS T0TMU0_9STRE/1-43	SeqMap	,,,,,,,,,,,,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,,
 #=GS T0TMU0_9STRE/1-43	AC	T0TMU0.1
 #=GC seq_cons			KKDLFYK-lEGRM--LK++sPcKEKsTtuEKlNpsFslsLGLVILIGLIFTLlt.</code></pre></div><p>Use <code>stringsequence</code> if you want to get the sequence as a string.  </p><div><pre><code class="language-julia">stringsequence(msa, 2)</code></pre><pre><code class="language-none">&quot;------------MEELKQKPITKEKETRGEKINKSFSIMLGLVIIIGLIFTLI--&quot;</code></pre></div><p>Because matrices are stored columnwise in Julia, you will find useful the <code>getresiduesequences</code> function when you need to heavily operate over sequences.  </p><div><pre><code class="language-julia">getresiduesequences(msa)</code></pre><pre><code class="language-none">8-element Array{Array{MIToS.MSA.Residue,1},1}:
