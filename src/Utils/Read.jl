@@ -51,7 +51,7 @@ function check_file(filename)
     if !isfile(filename)
         throw(ErrorException(string(filename, " doesn't exist!")))
     elseif filesize(filename) == 0
-        warn(string(filename, " is empty!"))
+        @warn string(filename, " is empty!")
     end
     filename
 end
