@@ -35,7 +35,7 @@ function _pre_readpir(io::Union{IO, AbstractString})
             line_number = 1
             seq_number += 1
             finished = false
-            m = match(r"^>([A-Z][A-Z0-9]);(\S+)$", line) # e.g. >P1;5fd1
+            m = match(r"^>([A-Z][A-Z0-9]);(\S+)", line) # e.g. >P1;5fd1
             if m !== nothing
                 seq_type = m[1]
                 seq_id   = m[2]

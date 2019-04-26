@@ -359,6 +359,9 @@
         # "sequence may contain punctuation symbols to indicate various degrees of
         # reliability of the data"
         emboss = joinpath(pwd(), "data", "emboss.pir")
+        # http://caps.ncbs.res.in/pass2v3/pir.html
+        # Example from pass2 with spaces added at the end of the id lines.
+        pass2 = joinpath(pwd(), "data", "pass2.pir")
 
         @testset "Read" begin
 
@@ -437,6 +440,15 @@
                 GDVEG-K-G-I-FTMC-S-QC-H-VE-K-G-G-K-HFTGPNLHGLFGRK-TGQAVGYSYTAANK-NK-GIIWGDDTLMEY
                 LENPK-RYIPGTK-MVFTGLSK-YRERTNLIAYLK-EK-TAA*
                 """
+        end
+
+        @testset "Spaces at the end of the id line" begin
+            lines = readlines(pass2)
+            @test lines[1] == ">P1;1bbha- "
+            @test lines[5] == ">P1;1cpq-- "
+            @test lines[9] == ">P1;256bb- "
+            msa = read(pass2, PIR)
+            @test sequencenames(msa) == ["1bbha-", "1cpq--", "256bb-"]
         end
     end
 end
