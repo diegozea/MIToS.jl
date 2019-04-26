@@ -194,6 +194,6 @@
         @test length(aln_6BAB) == 3
         @test small_2WEL[2].atoms[1].coordinates ≉ aln_2WEL[2].atoms[1].coordinates
         @test small_6BAB[2].atoms[1].coordinates ≉ aln_6BAB[2].atoms[1].coordinates
-        @test RMSD ≈ 3.686375142005536e-15
+        @test RMSD < 1.0e-14 # e.g. 6.9e-15, 3.7e-15 & 1.6e-15
     end
 end
