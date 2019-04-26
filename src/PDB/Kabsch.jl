@@ -204,6 +204,32 @@ _iscentered(meanCα::AbstractVector{Float64}) = _iscentered(meanCα[1], meanCα[
 
 _iscentered(CA::AbstractMatrix{Float64}) = _iscentered(vec(mean(CA, dims=1)))
 
+
+"""
+Return the matching CA matrices after deleting the rows/residues where the CA
+is missing in at least one structure.
+"""
+function _get_matched_Cαs(A::AbstractVector{PDBResidue},
+                          B::AbstractVector{PDBResidue})
+    length_A = length(A)
+    if length_A != length(B)
+        throw(ArgumentError("PDBResidue vectors should have the same length."))
+    end
+    ACα = PDB.CAmatrix(A)
+    BCα = PDB.CAmatrix(B)
+    without_Cα = isnan.(ACα[:,1]) .| isnan.(BCα[:,1])
+    if any(without_Cα)
+        n_without_ca = sum(without_Cα)
+        @warn string("Using ", length_A - n_without_ca,
+            " residues for RMSD calculation because there are ", n_without_ca,
+            " residues without CA: ", findall(without_Cα))
+        with_Cα = .!without_Cα
+        return ACα[with_Cα, :], BCα[with_Cα, :]
+    end
+    ACα, BCα
+end
+
+
 """
 This function takes `A::AbstractVector{PDBResidue}` (reference) and
 `B::AbstractVector{PDBResidue}`. Translates `A` and `B` to the origin of coordinates,
@@ -212,10 +238,8 @@ and rotates `B` so that `rmsd(A,B)` is minimized with the Kabsch algorithm
 Returns the rotated and translated versions of `A` and `B`, and the RMSD value.
 """
 function superimpose(A::AbstractVector{PDBResidue}, B::AbstractVector{PDBResidue})
-    @assert length(A) == length(B)
+    ACα, BCα = _get_matched_Cαs(A, B)
     Bxyz = PDB.coordinatesmatrix(B)
-    ACα = PDB.CAmatrix(A)
-    BCα = PDB.CAmatrix(B)
     meanACα = vec(mean(ACα, dims=1))
     meanBCα = vec(mean(BCα, dims=1))
     if !_iscentered(meanBCα)
