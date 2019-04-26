@@ -220,6 +220,9 @@ function _get_matched_Cαs(A::AbstractVector{PDBResidue},
     without_Cα = isnan.(ACα[:,1]) .| isnan.(BCα[:,1])
     if any(without_Cα)
         n_without_ca = sum(without_Cα)
+        if length_A - n_without_ca == 0
+            throw(ArgumentError("There are not alpha-carbons to align."))
+        end
         @warn string("Using ", length_A - n_without_ca,
             " residues for RMSD calculation because there are ", n_without_ca,
             " residues without CA: ", findall(without_Cα))

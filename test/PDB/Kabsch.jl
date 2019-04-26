@@ -195,5 +195,12 @@
         @test small_2WEL[2].atoms[1].coordinates ≉ aln_2WEL[2].atoms[1].coordinates
         @test small_6BAB[2].atoms[1].coordinates ≉ aln_6BAB[2].atoms[1].coordinates
         @test RMSD < 1.0e-14 # e.g. 6.9e-15, 3.7e-15 & 1.6e-15
+
+        @testset "PDB without CA" begin
+
+            filter!(atom -> atom.atom != "CA", small_2WEL[1].atoms)
+            filter!(atom -> atom.atom != "CA", small_6BAB[3].atoms)
+            @test_throws ArgumentError superimpose(small_2WEL, small_6BAB)
+        end
     end
 end
