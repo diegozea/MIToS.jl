@@ -100,6 +100,7 @@
         path_file   = joinpath(mitos_folder, "test", "data", "PF09645_full.stockholm")
         output = read(`$julia $path_script $path_file -o STDOUT`, String)
 
-        @test occursin(r"110,4,29.5,15.21,14.13,19.75,26.31,33.78,56.38", output)
+        @test occursin(
+            r"110,4,29.5,15.21,14.13,19.75[0-9]*,26.3[0-9]+,33.78[0-9]*,56.38", output)
     end
 end
