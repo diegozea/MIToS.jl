@@ -18,3 +18,7 @@
 # Documenter
 docs/build/
 docs/site/
+
+# Manifest
+Manifest.toml
+JuliaManifest.toml
