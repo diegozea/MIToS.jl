@@ -218,3 +218,21 @@ end
     # filename = downloadsifts(pdb, filename=tempname()*".xml.gz")
     # @test length(read(filename, SIFTSXML)) == length(mapping)
 end
+
+@testset "Ensembl" begin
+# 18GS has multiple Ensembl annotations for each residue
+# 18GS also has EC and GO annotations
+
+    mapping = read(joinpath(pwd(), "data", "18gs.xml.gz"), SIFTSXML)
+
+    last_res = mapping[end]
+    @test length(last_res.Ensembl) == 2
+    @test last_res.Ensembl[1].id == last_res.Ensembl[2].id
+    @test last_res.Ensembl[2].transcript == "ENST00000642444"
+    @test last_res.Ensembl[1].transcript == "ENST00000398606"
+    @test last_res.Ensembl[2].transcript == "ENST00000642444"
+    @test last_res.Ensembl[1].translation == "ENSP00000381607"
+    @test last_res.Ensembl[2].translation == "ENSP00000493538"
+    @test last_res.Ensembl[1].exon == "ENSE00001921020"
+    @test last_res.Ensembl[2].exon == "ENSE00003822108"
+end

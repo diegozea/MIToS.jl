@@ -55,7 +55,7 @@
                 for msa in msa_objects
                     @test size(msa, 1) == 4
                     @test size(msa, 2) == sum(F112_SSV1 .!= Ref('.')) # without inserts
-                    @test view(msa,4,:) == map(Residue, F112_SSV1[It is faster in the latest Julia version:  F112_SSV1 .!= Ref('.') ])
+                    @test view(msa,4,:) == map(Residue, F112_SSV1[F112_SSV1 .!= Ref('.') ])
                 end
             end
         end

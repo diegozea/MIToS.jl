@@ -18,6 +18,20 @@ end
     evidence::String
 end
 
+"""
+`dbEnsembl` stores the residue (gene) accession `id`, the `transcript`,
+`translation` and `exon` ids in Ensembl as strings, together with the residue
+`number` and `name` using the UniProt coordinates.
+"""
+@auto_hash_equals struct dbEnsembl <: DataBase
+    id::String # (gene) accession id
+    number::String # Cross referenced residue number
+    name::String # Cross referenced residue name
+    transcript::String
+    translation::String
+    exon::String
+end
+
 for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
     @eval begin
 
@@ -115,6 +129,19 @@ for ref_type in [:dbUniProt, :dbPfam, :dbNCBI]
     end
 end
 
+
+function dbEnsembl(map::LightXML.XMLElement)
+    dbEnsembl(
+        _get_attribute(map, "dbAccessionId"),
+        _get_attribute(map, "dbResNum"),
+        _get_attribute(map, "dbResName"),
+        _get_attribute(map, "dbTranscriptId"),
+        _get_attribute(map, "dbTranslationId"),
+        _get_attribute(map, "dbExonId")
+    )
+end
+
+
 function dbInterPro(map::LightXML.XMLElement)
     dbInterPro(
         _get_attribute(map, "dbAccessionId"),
@@ -139,10 +166,11 @@ following fields that you can access at any moment for query purposes:
     - `UniProt` : A `dbUniProt` object or `missing`.
     - `Pfam` : A `dbPfam` object or `missing`.
     - `NCBI` : A `dbNCBI` object or `missing`.
-    - `InterPro` : A `dbInterPro` object or `missing`.
+    - `InterPro` : An array of `dbInterPro` objects.
     - `PDB` : A `dbPDB` object or `missing`.
     - `SCOP` : A `dbSCOP` object or `missing`.
     - `CATH` : A `dbCATH` object or `missing`.
+    - `Ensembl` : An array of `dbEnsembl` objects.
     - `missing` : It's `true` if the residue is missing, i.e. not observed, in the structure.
     - `sscode` : A string with the secondary structure code of the residue.
     - `ssname` : A string with the secondary structure name of the residue.
@@ -157,6 +185,7 @@ following fields that you can access at any moment for query purposes:
     PDB::Union{dbPDB, Missing}
     SCOP::Union{dbSCOP, Missing}
     CATH::Union{dbCATH, Missing}
+    Ensembl::Array{dbEnsembl, 1}
     # residueDetail
     missing::Bool  # XML: <residueDetail dbSource="PDBe" property="Annotation" ...
     sscode::String # XML: <residueDetail dbSource="PDBe" property="codeSecondaryStructure"...
@@ -175,6 +204,7 @@ end
 @inline _name(::Type{dbPDB})     = "PDB"
 @inline _name(::Type{dbSCOP})    = "SCOP"
 @inline _name(::Type{dbCATH})    = "CATH"
+@inline _name(::Type{dbEnsembl}) = "Ensembl"
 
 @inline Base.get(res::SIFTSResidue, db::Type{dbPDBe})    = res.PDBe
 @inline Base.get(res::SIFTSResidue, db::Type{dbUniProt}) = res.UniProt
@@ -184,6 +214,7 @@ end
 @inline Base.get(res::SIFTSResidue, db::Type{dbPDB})     = res.PDB
 @inline Base.get(res::SIFTSResidue, db::Type{dbSCOP})    = res.SCOP
 @inline Base.get(res::SIFTSResidue, db::Type{dbCATH})    = res.CATH
+@inline Base.get(res::SIFTSResidue, db::Type{dbEnsembl}) = res.Ensembl
 
 function Base.get(res::SIFTSResidue,
                   db::Type{T},
@@ -218,6 +249,7 @@ function Base.show(io::IO, res::SIFTSResidue)
         end
     end
     println(io, "  InterPro: ",  res.InterPro)
+    println(io, "  Ensembl: ",  res.Ensembl)
 end
 
 # Creation
@@ -233,6 +265,7 @@ function SIFTSResidue(residue::LightXML.XMLElement, missing_residue::Bool,
     PDB = missing
     SCOP = missing
     CATH = missing
+    Ensembl = dbEnsembl[]
     for crossref in get_elements_by_tagname(residue, "crossRefDb")
         db = attribute(crossref, "dbSource")
         if db == "UniProt"
@@ -249,11 +282,10 @@ function SIFTSResidue(residue::LightXML.XMLElement, missing_residue::Bool,
             SCOP = dbSCOP(crossref)
         elseif db == "CATH"
             CATH = dbCATH(crossref)
+        elseif db == "Ensembl"
+            push!(Ensembl, dbEnsembl(crossref))
         else
-            # "Ensembl is not in the MIToS' DataBases." makes docs to fail:
-            # https://github.com/JuliaDocs/Documenter.jl/issues/903
-
-            # @warn(string(db, " is not in the MIToS' DataBases."))
+            @warn(string(db, " is not in the MIToS' DataBases."))
         end
     end
     SIFTSResidue(PDBe,
@@ -264,6 +296,7 @@ function SIFTSResidue(residue::LightXML.XMLElement, missing_residue::Bool,
                  PDB,
                  SCOP,
                  CATH,
+                 Ensembl,
                  missing_residue,
                  sscode,
                  ssname)
