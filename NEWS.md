@@ -1,5 +1,11 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.3.0 to v2.4.0
+
+MIToS v2.4 uses `Project.toml` and includes several bug fixes.
+
+* The `SIFTS` module includes the `dbEnsembl` database and `warn`s again about unused databases.
+
 ### Changes from v2.2.0 to v2.3.0
 
 MIToS v2.3 requires Julia v0.7 or v1.0. This release drops Julia 0.6 support.
@@ -8,7 +14,7 @@ MIToS v2.3 requires Julia v0.7 or v1.0. This release drops Julia 0.6 support.
 
 * `SIFTS.get` returns the desired object or `missing` instead of `Nullable`s.
 
-* `SIFTS` function doesn't `warn` about unused databases. 
+* `SIFTS` function doesn't `warn` about unused databases.
 
 #### Julia 0.7/1.0 deprecations
 
