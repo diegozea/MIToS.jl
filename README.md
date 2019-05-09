@@ -11,11 +11,11 @@ Windows:
 Code Coverage:
 [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/diegozea/MIToS.jl?branch=master) [![codecov.io](http://codecov.io/github/diegozea/MIToS.jl/coverage.svg?branch=master)](http://codecov.io/github/diegozea/MIToS.jl?branch=master)
 
-**NOTE:** [Julia has reached a stable 1.0 version](https://julialang.org/blog/2018/08/one-point-zero) and **MIToS v2.3** supports it. You need to do `using Pkg; Pkg.add("MIToS")` to **install** MIToS on Julia 1.0 or `using Pkg; Pkg.update()` to update your installed version.  
+**NOTE:** [Julia has reached a stable 1.0 version](https://julialang.org/blog/2018/08/one-point-zero) and **MIToS v2.4** supports it. You need to do `using Pkg; Pkg.add("MIToS")` to **install** MIToS on Julia 1.0 or `using Pkg; Pkg.update()` to update your installed version.  
 
 Some breaking changes were introduced in MIToS v2.3. See the [NEWS.md](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
 file and the [documentation](https://diegozea.github.io/MIToS.jl/stable) to migrate code from an old version
-of MIToS. If you need more help to migrate code from MIToS 1.0 in Julia 0.4 to MIToS 2.3 in Julia 1.0, you can
+of MIToS. If you need more help to migrate code from MIToS 1.0 in Julia 0.4 to MIToS 2.4 in Julia 1.0, you can
 write a mail to diegozea at gmail dot com asking for assistance.  
 
 **DOCUMENTATION**:  
