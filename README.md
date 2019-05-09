@@ -1,13 +1,7 @@
 [![MIToS](http://diegozea.github.io/MIToS.jl/latest/assets/MIToS_logo.png)](http://diegozea.github.io/MIToS.jl/)
 ### Mutual Information Tools for protein Sequence analysis
 
-Julia 0.4:
-[![MIToS](http://pkg.julialang.org/badges/MIToS_0.4.svg)](http://pkg.julialang.org/?pkg=MIToS)  
-Julia 0.5:
-[![MIToS](http://pkg.julialang.org/badges/MIToS_0.5.svg)](http://pkg.julialang.org/?pkg=MIToS)  
-Julia 0.6:
-[![MIToS](http://pkg.julialang.org/badges/MIToS_0.6.svg)](http://pkg.julialang.org/?pkg=MIToS)  
-Julia 0.7 & 1.0: **MIToS 2.3.1**  
+Julia 0.7 & 1.0: **MIToS 2.4.0**  
 
 Linux, OSX:
 [![Build Status](https://travis-ci.org/diegozea/MIToS.jl.svg?branch=master)](https://travis-ci.org/diegozea/MIToS.jl)  
