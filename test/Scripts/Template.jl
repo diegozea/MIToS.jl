@@ -44,10 +44,10 @@ end
     two_out = joinpath(tempdir(), "two.mitos.tmp")
 
     @testset "STDIN -> STDOUT" begin
-        out = read(pipeline(`$julia -e 'print(trues(2,2))'`, `$julia $template`), String)
+        out = read(pipeline(`$julia -e 'print("Hello hello")'`, `$julia $template`), String)
 
         @test occursin(r"RUN : 0", out)
-        @test length(collect((m.match for m = eachmatch(r"true", out)))) == 4
+        @test length(collect((m.match for m = eachmatch(r"[Hh]ello", out)))) == 2
 
         @static if Sys.isunix()
 

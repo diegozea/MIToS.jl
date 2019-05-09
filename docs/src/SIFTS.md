@@ -45,13 +45,14 @@ types will be depend on the residue number type in that database.
 | Type `db...`  | Database | Residue number type |
 |---------------|----------|---------------------|
 | `dbPDBe`		| **PDBe** (Protein Data Bank in Europe) | `Int` |
-| `dbInterPro`	| **InterPro** | `ASCIIString` |
+| `dbInterPro`	| **InterPro** | `String` |
 | `dbUniProt`	| **UniProt** | `Int` |
 | `dbPfam`		| **Pfam** (Protein families database) | `Int` |
 | `dbNCBI`		| **NCBI** (National Center for Biotechnology Information) | `Int` |
-| `dbPDB`		| **PDB** (Protein Data Bank) | `ASCIIString` |
-| `dbCATH`		| **CATH** | `ASCIIString` |
-| `dbSCOP` 		| **SCOP** (Structural Classification of Proteins) | `ASCIIString` |
+| `dbPDB`		| **PDB** (Protein Data Bank) | `String` |
+| `dbCATH`		| **CATH** | `String` |
+| `dbSCOP` 		| **SCOP** (Structural Classification of Proteins) | `String` |
+| `dbEnsembl` 		| **Ensembl** | `String` |
 
 To download the XML SIFTS file of a determined PDB use the `downloadsifts` function.  
 
