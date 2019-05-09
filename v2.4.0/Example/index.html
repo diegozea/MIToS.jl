@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Example · MIToS</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>MIToS</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li><a class="toctext" href="../Installation/">Installation</a></li><li class="current"><a class="toctext" href>Example</a><ul class="internal"><li><a class="toctext" href="#juliarepl-1">MIToS in the Julia REPL</a></li><li><a class="toctext" href="#commandline-1">MIToS in system command line</a></li></ul></li><li><span class="toctext">Modules</span><ul><li><a class="toctext" href="../MSA/">MSA</a></li><li><a class="toctext" href="../Information/">Information</a></li><li><a class="toctext" href="../SIFTS/">SIFTS</a></li><li><a class="toctext" href="../PDB/">PDB</a></li><li><a class="toctext" href="../Pfam/">Pfam</a></li></ul></li><li><a class="toctext" href="../Scripts/">Scripts</a></li><li><span class="toctext">API</span><ul><li><a class="toctext" href="../MSA_API/">MSA</a></li><li><a class="toctext" href="../Information_API/">Information</a></li><li><a class="toctext" href="../SIFTS_API/">SIFTS</a></li><li><a class="toctext" href="../PDB_API/">PDB</a></li><li><a class="toctext" href="../Pfam_API/">Pfam</a></li><li><a class="toctext" href="../Utils_API/">Utils</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Example</a></li></ul><a class="edit-page" href="https://github.com/diegozea/MIToS.jl/blob/master/docs/src/Example.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Example</span><a class="fa fa-bars" href="#"></a></div></header><div></div><h1><a class="nav-anchor" id="Example-1" href="#Example-1">Example</a></h1><p>In this simple demonstration, you will see how to calculate <strong>ZBLMIp</strong> (<strong>Z</strong> score of the corrected <strong>MIp</strong> using BLOSUM62 pseudo frequencies) for a <a href="http://pfam.xfam.org/">Pfam<img src="../assets/external-link.png" alt/></a> MSA from the <a href="#juliarepl-1">Julia REPL</a> or using a <a href="#commandline-1">MIToS script in the system command line</a>.  </p><h2><a class="nav-anchor" id="juliarepl-1" href="#juliarepl-1">MIToS in the Julia REPL</a></h2><p>If you load the <code>Pfam</code> module from <code>MIToS</code>, you will get access to a set of functions that work with Pfam MSAs. In this case, we are going to use it for download a <a href="https://en.wikipedia.org/wiki/Stockholm_format">Stockholm<img src="../assets/external-link.png" alt/></a> MSA from the Pfam website and read it into Julia.  </p><div></div><pre><code class="language-julia">using MIToS.Pfam
+pfam_file = downloadpfam(&quot;PF10660&quot;)
+msa = read(pfam_file, Stockholm, generatemapping=true, useidcoordinates=true)</code></pre><pre><code class="language-none">AnnotatedMultipleSequenceAlignment with 775 annotations : 374×64 Named Array{MIToS.MSA.Residue,2}
+               Seq ╲ Col │  32   35   36   37   38  …  103  104  105  106  107
+─────────────────────────┼────────────────────────────────────────────────────
+A0A1L8HM45_XENLA/102-167 │   M    E    S    L    A  …    K    K    K    Q    Q
+A0A1U7SL63_ALLSI/2-36    │   -    -    -    -    -       K    D    K    C    -
+A0A2I2Y8P5_GORGO/9-41    │   -    -    -    -    -       K    D    H    R    N
+W5UKX1_ICTPU/1-66        │   -    E    T    I    S       K    R    K    K    -
+A0A182JXL2_9DIPT/1-64    │   M    Q    L    L    S       E    A    R    -    -
+F6TSD5_XENTR/1-66        │   M    E    S    I    A       K    K    K    Q    Q
+A0A158NWR3_ATTCE/11-73   │   M    E    P    I    A       R    -    -    -    -
+A0A1J1J3N7_9DIPT/1-64    │   M    E    L    I    S       A    S    -    -    -
+A0A2I3LDM8_PAPAN/42-76   │   -    -    -    -    -       K    K    K    Q    Q
+⋮                            ⋮    ⋮    ⋮    ⋮    ⋮  ⋱    ⋮    ⋮    ⋮    ⋮    ⋮
+G1MRN1_MELGA/16-53       │   -    -    -    -    -       K    D    K    C    -
+K7FIY0_PELSI/2-67        │   M    E    S    L    A       K    K    K    Q    Q
+G3H4L8_CRIGR/2-34        │   -    -    -    -    -       K    E    N    R    -
+G3SVU7_LOXAF/8-41        │   -    -    -    -    -       K    D    H    R    -
+A0A1S3IS31_LINUN/1-64    │   M    E    T    V    S       S    K    K    K    -
+A0A194RSG1_PAPMA/1-63    │   M    Y    F    V    S       -    -    -    -    -
+A0A218UPM6_9PASE/1-66    │   -    E    T    L    A       K    K    K    Q    Q
+H0VMN3_CAVPO/8-41        │   -    -    -    -    -       K    D    H    R    N
+A0A1A6GRS4_NEOLE/34-94   │   -    -    -    -    -  …    K    D    N    R    -</code></pre><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p><strong>Generation of sequence and column mappings</strong>   The keyword argument <code>generatemapping</code> of <code>read</code> allows to generate sequence and column mappings for the MSA. <em>Column mapping</em> is the map between of each column on the MSA object and the column number in the file. <em>Sequence mappings</em> will use the start and end coordinates in the sequence ids for enumerate each residue in the sequence if <code>useidcoordinates</code> is <code>true</code>.  </p></div></div><p>You can plot this MSA and other MIToS’ objects using the <a href="https://juliaplots.github.io/">Plots<img src="../assets/external-link.png" alt/></a> package. The installation of <em>Plots</em> is described in the <em>Installation</em> section of this site:</p><pre><code class="language-julia">using Plots
+gr()
+plot(msa)</code></pre><pre><code class="language-none">/home/travis/.julia/packages/GR/KGODl/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+Did you start &#39;gksqt&#39;?
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre><p><img src="../msa.png" alt/>  </p><p>The <code>Information</code> module of <code>MIToS</code> has functions to calculate measures from the <a href="https://en.wikipedia.org/wiki/Information_theory">Information Theory<img src="../assets/external-link.png" alt/></a>, such as Entropy and Mutual Information (MI), on a MSA. In this example, we will estimate covariation between columns of the MSA with a corrected <strong>MI</strong> that use the BLOSUM62 matrix for calculate pseudo frequencies (<code>BLMI</code>).  </p><pre><code class="language-julia">using MIToS.Information
+ZBLMIp, BLMIp = BLMI(msa)
+ZBLMIp # shows ZBLMIp scores</code></pre><pre><code class="language-none">62×62 Named PairwiseListMatrices.PairwiseListMatrix{Float64,false,Array{Float64,1}}
+Col1 ╲ Col2 │           35            36  …           105           106
+────────────┼──────────────────────────────────────────────────────────
+35          │          NaN      0.033982  …       0.17656    -0.0625586
+36          │     0.033982           NaN        0.0610301    -0.0844072
+37          │   -0.0148921     0.0260339        0.0677671     -0.202049
+38          │    0.0469206   -0.00465322        -0.074898     -0.139066
+39          │    -0.105104     0.0621128       -0.0407143     -0.101803
+40          │    0.0500429     0.0403362        -0.136159     -0.113605
+41          │   -0.0131055    -0.0586416       -0.0855867     0.0546386
+42          │     0.106349     -0.120882         0.176136     0.0390367
+43          │   -0.0928302    -0.0236048        -0.251418     -0.185704
+⋮                        ⋮             ⋮  ⋱             ⋮             ⋮
+98          │     0.156346      0.204803         0.106572     -0.115258
+99          │    0.0395525     0.0542566        0.0175123      0.239329
+100         │     0.145884     0.0717013     -0.000523584     -0.114771
+101         │   -0.0756336      0.151434        0.0622087    -0.0228497
+102         │   -0.0134567     -0.125872         0.156037      0.208451
+103         │    0.0928886     0.0376379         0.148312   -0.00905081
+104         │   -0.0692767   -0.00746978        -0.117661     -0.074702
+105         │      0.17656     0.0610301              NaN     -0.087107
+106         │   -0.0625586    -0.0844072  …     -0.087107           NaN</code></pre><p>Once the <em>Plots</em> package is installed and loaded, you can use its capabilities to visualize this results:</p><pre><code class="language-julia">heatmap(ZBLMIp, yflip=true, c=:grays)</code></pre><pre><code class="language-none">/home/travis/.julia/packages/GR/KGODl/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+Did you start &#39;gksqt&#39;?
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre><p><img src="../blmi.png" alt/>  </p><div></div><h2><a class="nav-anchor" id="commandline-1" href="#commandline-1">MIToS in system command line</a></h2><p>Calculate ZBLMIp on the system shell is easy using the MIToS script called <code>BLMI.jl</code>. This script reads a MSA file, and writes a file with the same base name of the input but with the <code>.BLMI.csv</code> extension.  </p><pre><code class="language-none">BLMI.jl PF14972.stockholm.gz</code></pre><footer><hr/><a class="previous" href="../Installation/"><span class="direction">Previous</span><span class="title">Installation</span></a><a class="next" href="../MSA/"><span class="direction">Next</span><span class="title">MSA</span></a></footer></article></body></html>
