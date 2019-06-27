@@ -1,9 +1,12 @@
 using Documenter, MIToS
 
+include("literate.jl")
+
 makedocs(
     doctest = true,
     format = :html,
     sitename = "MIToS",
+    authors = "Diego Javier Zea",
     modules = [MIToS],
     pages = [
         "Home" => "index.md",
@@ -20,7 +23,8 @@ makedocs(
                     "SIFTS_API.md",
                     "PDB_API.md",
                     "Pfam_API.md",
-                    "Utils_API.md"          ]
+                    "Utils_API.md"          ],
+        "Cookbook" => [ "01_Change_B_factors.md" ]
     ]
 )
 
