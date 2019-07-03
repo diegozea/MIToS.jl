@@ -630,7 +630,7 @@ Hobohm I algorithm at 62% identity.
 ```@setup msa_clusters
 @info "MSA: Clusters"
 using Plots
-using StatPlots
+using StatsPlots
 using DataFrames
 gr() # Hide possible warnings
 ```
@@ -678,7 +678,7 @@ It is possible to use this `DataFrame` and `Plots` to plot the sequence coverage
 and also an histogram of the number of sequences in each cluster:  
 
 ```@example msa_clusters
-using StatPlots # Plotting DataFrames
+using StatsPlots # Plotting DataFrames
 h = @df df histogram(:cluster, ylabel="nseq")
 p = @df df plot(:cluster, :coverage, linetype=:scatter)
 plot(p, h, nc=1, xlim=(0, nclusters(clusters)+1 ), legend=false)
