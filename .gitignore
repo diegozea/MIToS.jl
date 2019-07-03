@@ -19,6 +19,13 @@
 docs/build/
 docs/site/
 
+# Literate
+docs/src/cookbook/notebooks/
+docs/src/0*.md
+
+# Local Cookbook
+docs/seq.fasta
+
 # Manifest
 Manifest.toml
 JuliaManifest.toml

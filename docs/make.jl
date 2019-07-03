@@ -24,7 +24,8 @@ makedocs(
                     "PDB_API.md",
                     "Pfam_API.md",
                     "Utils_API.md"          ],
-        "Cookbook" => [ "01_Change_B_factors.md" ]
+        "Cookbook" => [ "01_Change_B_factors.md",
+                        "02_Linking_structural_and_evolutionary_information.md"]
     ]
 )
 
