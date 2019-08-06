@@ -7,7 +7,6 @@ using MIToS.PDB
 using MIToS.SIFTS
 using MIToS.Pfam
 using LinearAlgebra
-using Statistics
 using Random
 using Statistics            # mean
 using DelimitedFiles        # readdlm
