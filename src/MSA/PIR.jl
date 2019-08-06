@@ -42,7 +42,7 @@ function _pre_readpir(io::Union{IO, AbstractString})
                 push!(IDS, seq_id)
                 push!(GS, (seq_id, "Type") => seq_type)
                 if seq_type in nucleic_types
-                    warn("Type $seq_type indicates that $seq_id is a nucleic acid.")
+                    @warn("Type $seq_type indicates that $seq_id is a nucleic acid.")
                 end
             else
                 throw(ErrorException("Identifier doesn't match the PIR format: $line"))
@@ -148,13 +148,13 @@ function Base.print(io::IO, msa::AnnotatedMultipleSequenceAlignment,
         if haskey(seqann, (seq_id, "Type"))
             seq_type = seqann[(seq_id, "Type")]
         else
-            warn("There is not sequence Type annotation for $seq_id, using XX (Unknown).")
+            @warn("There is not sequence Type annotation for $seq_id, using XX (Unknown).")
             seq_type = "XX"
         end
         if haskey(seqann, (seq_id, "Title"))
             seq_title = seqann[(seq_id, "Title")]
         else
-            warn("There is not sequence Title annotation for $seq_id.")
+            @warn("There is not sequence Title annotation for $seq_id.")
             seq_title = ""
         end
         seq = stringsequence(msa, i)

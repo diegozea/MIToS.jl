@@ -167,7 +167,7 @@ function msaresidues(msa::AnnotatedMultipleSequenceAlignment,
             if haskey(residues, resnum)
                 msares[col] = residues[resnum]
             else
-                warn("MSA column $col : The residue number $resnum isn't in the residues Dict.")
+                @warn("MSA column $col : The residue number $resnum isn't in the residues Dict.")
             end
         end
     end

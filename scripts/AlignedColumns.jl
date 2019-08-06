@@ -32,7 +32,7 @@ set_parallel(Args["parallel"])
             aln = readorparse(input, Stockholm, generatemapping=true, useidcoordinates=true, deletefullgaps=true)
             print(fh_out, aln, Stockholm)
         catch err
-            warn(string("ERROR for ", input, ": ", err))
+            @warn(string("ERROR for ", input, ": ", err))
         end
 
     end
