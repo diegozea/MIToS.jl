@@ -1,9 +1,5 @@
 #!/usr/bin/env julia
-
-using Pkg
-using Dates
 using Distributed
-using Statistics
 using MIToS.Utils.Scripts
 
 Args = parse_commandline(
@@ -35,6 +31,10 @@ set_parallel(Args["parallel"])
     import MIToS.Utils.Scripts: script
 
     # TO DO ----------------------------------------------------------------------
+    using Pkg
+    using Dates
+    using Statistics
+    using MIToS.Utils.Scripts
     using MIToS.MSA
 
     function _describe(fh_out, input, format)

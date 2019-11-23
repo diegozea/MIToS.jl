@@ -57,11 +57,11 @@ function main(input)
             id = get_n_words(String(chomp(line)), 3)[3]
         end
         push!(lines, line)
-        if line == "//\n"
-            filename = joinpath(Args["path"], string(id, ".gz"))
+        if startswith(line, "//")
+            filename = abspath(joinpath(Args["path"], string(id, ".gz")))
             outfh = GzipCompressorStream(open(filename, "w"))
             for l in lines
-                write(outfh, string(l))
+                println(outfh, chomp(string(l)))
             end
             close(outfh)
             id = "no_accessionumber"
@@ -79,4 +79,4 @@ function main(input)
     end
 end
 
-main(check_file(Args["file"]))
+main(check_file(abspath(Args["file"])))

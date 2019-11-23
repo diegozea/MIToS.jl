@@ -1,5 +1,19 @@
 @testset "GeneralParserMethods" begin
 
+    @testset "Test input lengths" begin
+        # NOTE: _pre_read... functions should call _check_seq_len
+        # if _convert_to_matrix_residues is used
+
+        ids = ["A", "B", "C"]
+        seqs_equal = ["MSRSKRDNEIGDSTF", "MSRSKRDNNFGDSTF", "MSRSFYSVEIGDSTF"]
+        seqs_diffs = ["MSRSKRDNEIGDSTF", "MSRSKRDNNFGDSTF", "MSRSFYSVEIGD"]
+        seqs_less = ["MSRSKRDNEIGDSTF", "MSRSKRDNNFGDSTF"]
+
+        @test MSA._check_seq_len(ids, seqs_equal) === nothing
+        @test_throws ErrorException  MSA._check_seq_len(ids, seqs_diffs)
+        @test_throws ErrorException  MSA._check_seq_len(ids, seqs_less)
+    end
+
     @testset "To parse MSA & mapping" begin
 
         sequences = ["ADEIMSY","RCGLFTV","NQHKPW-"]

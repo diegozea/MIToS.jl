@@ -62,6 +62,8 @@ function _pre_readpir(io::Union{IO, AbstractString})
         end
     end
 
+    _check_seq_len(IDS, SEQS)
+
     (IDS, SEQS, GS)
 end
 
