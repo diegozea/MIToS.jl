@@ -103,7 +103,7 @@ function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
                              " : MSA sequence residue at ", i, " (", seq[i],
                              ") != SIFTS residue (UniProt/Pfam: ", up_res, ", PDB: ",
                              pdb_resnum, ")")
-                strict ? throw(ErrorException(msg)) : warn(msg)
+                strict ? throw(ErrorException(msg)) : @warn(msg)
             end
             if ( checkpdbname && (seq[i] != pdb_res) )
                 msg = string(pfamid, " ", seqid, " ", pdbid, " ", chain,
@@ -167,7 +167,7 @@ function msaresidues(msa::AnnotatedMultipleSequenceAlignment,
             if haskey(residues, resnum)
                 msares[col] = residues[resnum]
             else
-                warn("MSA column $col : The residue number $resnum isn't in the residues Dict.")
+                @warn("MSA column $col : The residue number $resnum isn't in the residues Dict.")
             end
         end
     end
