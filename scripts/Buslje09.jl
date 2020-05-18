@@ -5,6 +5,7 @@ using Dates
 using DelimitedFiles
 using Distributed
 using MIToS.Utils.Scripts
+using MIToS
 
 Args = parse_commandline(
     # TO DO ----------------------------------------------------------------------
@@ -66,7 +67,8 @@ Args = parse_commandline(
     Correction for phylogeny, small number of observations and data redundancy improves the identification of coevolving amino acid pairs using mutual information.
     Bioinformatics, 25(9), 1125-1131.
     """,
-    output=".busjle09.csv"
+    output=".busjle09.csv",
+	mitos_version=loadedversion(MIToS)
     # ----------------------------------------------------------------------------
     )
 
@@ -88,7 +90,7 @@ set_parallel(Args["parallel"])
                     args,
                     fh_out::Union{Base.LibuvStream, IO})
         # TO DO ------------------------------------------------------------------
-        println(fh_out, "# MIToS ", Pkg.installed()["MIToS"], " Buslje09.jl ", now())
+		println(fh_out, "# MIToS ", loadedversion(MIToS), " Buslje09.jl ", now())
         println(fh_out, "# \tBuslje, C. M., Santos, J., Delfino, J. M., & Nielsen, M. (2009).")
         println(fh_out, "# \tCorrection for phylogeny, small number of observations and data redundancy improves the identification of coevolving amino acid pairs using mutual information.")
         println(fh_out, "# \tBioinformatics, 25(9), 1125-1131.")

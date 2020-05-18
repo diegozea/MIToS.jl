@@ -5,6 +5,7 @@ using Dates
 using DelimitedFiles
 using Distributed
 using MIToS.Utils.Scripts
+using MIToS
 
 Args = parse_commandline(
     # TO DO ----------------------------------------------------------------------
@@ -54,7 +55,8 @@ Args = parse_commandline(
     Calculates and saves on *.BLMI.csv a Z score and a corrected MI/MIp.
     The script uses BLOSUM62 based pseudo frequencies and sequences clustering (Hobohm I).
     """,
-    output=".BLMI.csv"
+    output=".BLMI.csv",
+	mitos_version=loadedversion(MIToS)
     # ----------------------------------------------------------------------------
     )
 
@@ -76,7 +78,7 @@ set_parallel(Args["parallel"])
                     args,
                     fh_out::Union{Base.LibuvStream, IO})
         # TO DO ------------------------------------------------------------------
-        println(fh_out, "# MIToS ", Pkg.installed()["MIToS"], " BLMI.jl ", now())
+		println(fh_out, "# MIToS ", loadedversion(MIToS), " BLMI.jl ", now())
         println(fh_out, "# used arguments:")
         for (key, value) in args
             println(fh_out, "# \t", key, "\t\t", value)

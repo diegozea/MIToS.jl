@@ -1,8 +1,14 @@
+"""
+Return the version of the loaded module.
+
+Source: https://stackoverflow.com/questions/60587041/julia-getting-the-version-number-of-my-module
+"""
+loadedversion(m::Module) =  VersionNumber(Pkg.TOML.parsefile(abspath(string(first(methods(m.eval)).file), "..", "..", "Project.toml"))["version"])
+
 "Parse MIToS scripts command line arguments."
 function parse_commandline(args...; description::AbstractString="Made with MIToS",
                                     output::AbstractString=".mitos.",
-                                    stdout::Bool=true)
-    mitos_version  = Pkg.installed()["MIToS"]
+                                    stdout::Bool=true, mitos_version="")
     settings = ArgParseSettings(description = description,
                                 version = "MIToS $mitos_version",
                                 add_version = true,
@@ -16,7 +22,7 @@ function parse_commandline(args...; description::AbstractString="Made with MIToS
                                             """
                                 )
 
-    add_arg_table(settings,
+    add_arg_table!(settings,
                   "FILE",
                   Dict(
                       :help => "File name. If it is not used, the script reads from STDIN.",

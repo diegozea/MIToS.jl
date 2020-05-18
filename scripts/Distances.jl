@@ -4,6 +4,7 @@ using Pkg
 using Dates
 using Distributed
 using MIToS.Utils.Scripts
+using MIToS
 
 Args = parse_commandline(
     # TO DO ----------------------------------------------------------------------
@@ -46,7 +47,8 @@ Args = parse_commandline(
     description="""
     Calculates residues distance and writes them into a *.distances.csv.gz gzipped file.
     """,
-    output=".distances.csv.gz"
+    output=".distances.csv.gz",
+	mitos_version=loadedversion(MIToS)
     # ----------------------------------------------------------------------------
     )
 
@@ -66,7 +68,7 @@ set_parallel(Args["parallel"])
                     args,
                     fh_out::Union{Base.LibuvStream, IO})
         # TO DO ------------------------------------------------------------------
-        println(fh_out, "# MIToS ", Pkg.installed()["MIToS"], " Distances.jl ", now())
+		println(fh_out, "# MIToS ", loadedversion(MIToS), " Distances.jl ", now())
         println(fh_out, "# used arguments:")
         for (key, value) in args
             println(fh_out, "# \t", key, "\t\t", value)

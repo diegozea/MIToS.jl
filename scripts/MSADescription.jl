@@ -1,6 +1,7 @@
 #!/usr/bin/env julia
 using Distributed
 using MIToS.Utils.Scripts
+using MIToS
 
 Args = parse_commandline(
     ["--format", "-f"],
@@ -18,7 +19,8 @@ Args = parse_commandline(
     Creates an *.description.csv from a Stockholm file with: the number of columns, sequences, clusters after Hobohm clustering at 62% identity and mean percent identity.
     Also the mean, standard deviation and quantiles of: sequence coverage of the MSA, gap percentage.
     """,
-    output=".description.csv"
+    output=".description.csv",
+	mitos_version=loadedversion(MIToS)
     # ----------------------------------------------------------------------------
     )
 
@@ -46,7 +48,7 @@ set_parallel(Args["parallel"])
                     args,
                     fh_out::Union{Base.LibuvStream, IO})
         # TO DO ------------------------------------------------------------------
-        println(fh_out, "# MIToS ", Pkg.installed()["MIToS"], " MSADescription.jl ", now())
+		println(fh_out, "# MIToS ", loadedversion(MIToS), " MSADescription.jl ", now())
         println(fh_out, "# used arguments:")
 
         for (key, value) in args

@@ -5,6 +5,7 @@ using Dates
 using DelimitedFiles
 using Distributed
 using MIToS.Utils.Scripts
+using MIToS
 
 Args = parse_commandline(
     # TO DO ----------------------------------------------------------------------
@@ -29,7 +30,8 @@ Args = parse_commandline(
     description="""
     Calculates and saves on *.pairwisegaps.csv the percentage of gaps on columns pairs (union and intersection) using sequence clustering (Hobohm I).
     """,
-    output=".pairwisegaps.csv"
+    output=".pairwisegaps.csv",
+	mitos_version=loadedversion(MIToS)
     # ----------------------------------------------------------------------------
     )
 
@@ -51,7 +53,7 @@ set_parallel(Args["parallel"])
                     args,
                     fh_out::Union{Base.LibuvStream, IO})
         # TO DO ------------------------------------------------------------------
-        println(fh_out, "# MIToS ", Pkg.installed()["MIToS"], " PairwiseGapPercentage.jl ", now())
+		println(fh_out, "# MIToS ", loadedversion(MIToS), " PairwiseGapPercentage.jl ", now())
         println(fh_out, "# used arguments:")
         for (key, value) in args
             println(fh_out, "# \t", key, "\t\t", value)

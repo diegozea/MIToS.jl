@@ -47,7 +47,8 @@ export  parse_commandline,
         script,
         set_parallel,
         open_output, close_output,
-        readorparse
+        readorparse,
+		loadedversion
 
 using Pkg
 using Distributed

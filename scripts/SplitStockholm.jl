@@ -5,13 +5,16 @@ using ArgParse
 using CodecZlib
 using MIToS.Utils # get_n_words, check_file
 using ProgressMeter
+using MIToS
+using MIToS.Utils.Scripts
 
 function parse_commandline()
+	mitos_version=loadedversion(MIToS)
     s = ArgParseSettings(description = "Splits a file with multiple sequence alignments in Stockholm format, creating one compressed file per MSA in Stockholm format: accessionumber.gz",
-                         version = "MIToS $(Pkg.installed()["MIToS"])",
+						 version = "MIToS $(mitos_version)",
                          add_version = true)
 
-    @add_arg_table s begin
+    @add_arg_table! s begin
         "file"
             help = "Input file"
             required = true
@@ -27,7 +30,7 @@ function parse_commandline()
     s.epilog = """
 
     \n
-    MIToS $(Pkg.installed()["MIToS"])\n
+	MIToS $(mitos_version)\n
     \n
     Bioinformatics Unit\n
     Leloir Institute Foundation\n

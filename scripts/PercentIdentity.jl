@@ -6,6 +6,7 @@ using DelimitedFiles
 using Distributed
 using Statistics
 using MIToS.Utils.Scripts
+using MIToS
 
 Args = parse_commandline(
     # TO DO ----------------------------------------------------------------------
@@ -26,7 +27,8 @@ Args = parse_commandline(
     The number of columns and sequences. The mean, standard deviation, median, minimum and maximum values and first and third quantiles of the percentage identity.
     It could also create and pidlist.csv file with the percentage identity for each pairwise comparison.
     """,
-    output=".pidstats.csv"
+    output=".pidstats.csv",
+	mitos_version=loadedversion(MIToS)
     # ----------------------------------------------------------------------------
     )
 
@@ -47,7 +49,7 @@ set_parallel(Args["parallel"])
                     args,
                     fh_out::Union{Base.LibuvStream, IO})
         # TO DO ------------------------------------------------------------------
-        println(fh_out, "# MIToS ", Pkg.installed()["MIToS"], " PercentIdentity.jl ", now())
+		println(fh_out, "# MIToS ", loadedversion(MIToS), " PercentIdentity.jl ", now())
         println(fh_out, "# used arguments:")
         for (key, value) in args
             println(fh_out, "# \t", key, "\t\t", value)
@@ -64,6 +66,12 @@ set_parallel(Args["parallel"])
         end
         savelist = args["savelist"]
         println(fh_out, "ncol,nseq,mean,std,min,firstq,median,thirdq,max")
+
+		nseqs = nsequences(msa)
+		if nseqs < 2
+			return nothing
+		end
+
         plm = percentidentity(msa, Float16)
         mean_pid = mean(getlist(plm))
         min_pid, max_pid = extrema(getlist(plm))
@@ -71,7 +79,8 @@ set_parallel(Args["parallel"])
         println(fh_out, size(msa, 2), ",", size(msa, 1), ",", mean_pid, ",", stdm(getlist(plm), mean_pid), ",", min_pid, ",", first, ",", med, ",", third, ",", max_pid)
         flush(fh_out)
         if savelist
-            writedlm("pidlist.csv", to_table(plm, diagonal=false), ',')
+			filename = isa(input, AbstractString) ? "$input.pidlist.csv" : "pidlist.csv"
+            writedlm(filename, to_table(plm, diagonal=false), ',')
         end
         # ------------------------------------------------------------------------
     end

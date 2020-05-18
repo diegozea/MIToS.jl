@@ -7,12 +7,15 @@ using ArgParse
 import MIToS
 @everywhere using MIToS
 
-function parse_commandline()
-    s = ArgParseSettings(description = "Download gzipped files from PDB.",
-                        version = "MIToS $(Pkg.installed()["MIToS"])",
-                        add_version = true)
+using MIToS.Utils.Scripts
 
-    @add_arg_table s begin
+function parse_commandline()
+	mitos_version = loadedversion(MIToS)
+    s = ArgParseSettings(description = "Download gzipped files from PDB.",
+						 version = "MIToS $(mitos_version)",
+						 add_version = true)
+
+    @add_arg_table! s begin
         "--code", "-c"
             help = "PDB code"
         "--list", "-l"
@@ -25,7 +28,7 @@ function parse_commandline()
 
     s.epilog = """
     \n
-    MIToS $(Pkg.installed()["MIToS"])\n
+    MIToS $(mitos_version)\n
     \n
     Bioinformatics Unit\n
     Leloir Institute Foundation\n
