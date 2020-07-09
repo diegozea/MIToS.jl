@@ -24,7 +24,7 @@ function _parse_pdbatom(line::String, atom_name, element)
     occupancy = parse(Float64, SubString(line, 55, 60))
     B = String(strip(SubString(line, 61, 66), ' '))
 
-    PDBAtom(Coordinates(x,y,z), atom_name, element, occupancy, B)
+    PDBAtom(Coordinates(x, y, z), atom_name, element, occupancy, B)
 end
 
 """
@@ -38,11 +38,11 @@ or `"HETATM"`. If not set, all residues are returned.
 If the keyword argument `occupancyfilter` (default: `false`) is `true`,
 only the atoms with the best occupancy are returned.
 """
-function Base.parse(io::Union{IO, String}, ::Type{PDBFile};
-                    chain::Union{String,Type{All}} = All,
-                    model::Union{String,Type{All}} = All,
-                    group::Union{String,Type{All}} = All,
-                    atomname::Union{String,Type{All}} = All,
+function Base.parse(io::Union{IO,String}, ::Type{PDBFile};
+                    chain::Union{String,Type{All}}=All,
+                    model::Union{String,Type{All}}=All,
+                    group::Union{String,Type{All}}=All,
+                    atomname::Union{String,Type{All}}=All,
                     onlyheavy::Bool=false,
                     occupancyfilter::Bool=false)
     residues = Vector{PDBResidue}()
@@ -60,12 +60,12 @@ function Base.parse(io::Union{IO, String}, ::Type{PDBFile};
             is_model = _is(actual_model, model)
         end
 
-        if (group === All && (line_id=="ATOM" || line_id=="HETATM")) || (line_id == group)
+        if (group === All && (line_id == "ATOM" || line_id == "HETATM")) || (line_id == group)
             atom_chain = string(line[22])
             atom_name = String(strip(SubString(line, 13, 16), ' '))
             element = String(strip(SubString(line, 77, 78), ' '))
-            if  is_model && _is(atom_chain, chain) &&
-                    _is(atom_name, atomname) && (!onlyheavy || element!="H")
+            if is_model && _is(atom_chain, chain) &&
+                    _is(atom_name, atomname) && (!onlyheavy || element != "H")
 
                 if (previous_used_line == "") ||
                         (residue_id.group != line_id) ||
@@ -203,7 +203,7 @@ const _Format_PDB_TER = FormatExpr(
     )
 
 function Base.print(io::IO, res::PDBResidue, format::Type{PDBFile}, atom_index::Int, serial_number::Int)
-    number = match(r"(\d+)(\D?)", res.id.number)
+    number = match(r"(-?\d+)(\D?)", res.id.number)
     atomname = res.atoms[atom_index].atom
     printfmt(io, _Format_PDB_ATOM,
              res.id.group,
@@ -233,10 +233,10 @@ function Base.print(io::IO, res::PDBResidue, format::Type{PDBFile}, start::Int=1
     nothing
 end
 
-function Base.print(io::IO,reslist::AbstractVector{PDBResidue},format::Type{PDBFile},start::Int=1)
+function Base.print(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PDBFile}, start::Int=1)
     next = start
 
-    use_model = length(unique(map(res->res.id.model, reslist))) > 1
+    use_model = length(unique(map(res -> res.id.model, reslist))) > 1
     if use_model
         model = "START"
     end
@@ -248,7 +248,7 @@ function Base.print(io::IO,reslist::AbstractVector{PDBResidue},format::Type{PDBF
         if use_model
             if model != res.id.model
                 if model != "START"
-                   println(io, "ENDMDL")
+                    println(io, "ENDMDL")
                 end
                 printfmt(io, _Format_PDB_MODEL, res.id.model)
             end
@@ -290,7 +290,7 @@ function Base.print(io::IO,reslist::AbstractVector{PDBResidue},format::Type{PDBF
     nothing
 end
 
-Base.print(reslist::AbstractVector{PDBResidue},format::Type{PDBFile}) = print(stdout,reslist,format)
+Base.print(reslist::AbstractVector{PDBResidue},format::Type{PDBFile}) = print(stdout, reslist, format)
 Base.print(res::PDBResidue, format::Type{PDBFile}) = print(stdout, res, format)
 
 @doc """
