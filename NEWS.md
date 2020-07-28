@@ -1,5 +1,9 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.4.0 to v2.5.0
+
+MIToS v2.3 requires Julia v1.0 or higher. This release drops Julia 0.7 support.
+
 ### Changes from v2.3.0 to v2.4.0
 
 MIToS v2.4 uses `Project.toml` and includes several bug fixes.
