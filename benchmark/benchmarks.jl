@@ -4,10 +4,10 @@ using MIToS.Utils
 using MIToS.MSA
 
 @benchgroup "Utils" begin
-    include(joinpath("Utils", "GeneralUtils.jl"))
+    include("Utils/GeneralUtils.jl")
 end
 
 @benchgroup "MSA" begin
-    include(joinpath("MSA", "Residues.jl"))
-    include(joinpath("MSA", "Annotations.jl"))
+    include("MSA/Residues.jl")
+    include("MSA/Annotations.jl")
 end
