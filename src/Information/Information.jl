@@ -32,6 +32,10 @@ using StatsBase             # entropy
 using LinearAlgebra         # normalize
 using PairwiseListMatrices
 
+if isdefined(Base, :count!)
+	import Base: count!
+end
+
 export  # MIToS.MSA
         GappedAlphabet,
         UngappedAlphabet,
