@@ -4,7 +4,7 @@ include("literate.jl")
 
 makedocs(
     doctest = true,
-    format = :html,
+    format = Documenter.HTML,
     sitename = "MIToS",
     authors = "Diego Javier Zea",
     modules = [MIToS],
