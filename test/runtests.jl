@@ -17,7 +17,7 @@ using NamedArrays           # array
 using StatsBase             # WeightVec
 using PairwiseListMatrices  # getlist
 
-const DATA = pwd(), "data")
+const DATA = "data"
 
 # Utils
 @testset "Utils" begin
