@@ -18,15 +18,16 @@ makedocs(
                         "PDB.md",
                         "Pfam.md"    ],
         "Scripts.md",
+        "Cookbook" => [ "01_Change_B_factors.md",
+                        "02_Linking_structural_and_evolutionary_information.md",
+						"03_RMSF.md"],
         "API" => [  "MSA_API.md",
                     "Information_API.md",
                     "SIFTS_API.md",
                     "PDB_API.md",
                     "Pfam_API.md",
-                    "Utils_API.md"          ],
-        "Cookbook" => [ "01_Change_B_factors.md",
-                        "02_Linking_structural_and_evolutionary_information.md"]
-    ]
+                    "Utils_API.md"          ]
+    	]
 )
 
 deploydocs(
