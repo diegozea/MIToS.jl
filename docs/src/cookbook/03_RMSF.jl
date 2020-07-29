@@ -60,7 +60,7 @@ end
 # of the `Dict`, to get the vector of `PDBResidues` vectors required 
 # to calculate the RMSF.
 
-pdb_models = collect(values(superimposed_models))
+pdb_models = collect(values(models))
 
 # And, finally, call the `rmsf` function on the list of structures:
 
