@@ -1,6 +1,3 @@
-[compat]
-Documenter = ">= 0.21.0"
-
 [deps]
 BioAlignments = "00701ae9-d1dc-5365-b64a-a3a3ebf5695e"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
@@ -9,10 +6,12 @@ FastaIO = "a0c94c4b-ebed-5953-b5fc-82fe598ac79f"
 Formatting = "59287772-0a20-5a39-b81b-1366585eb4c0"
 GR = "28b8d3ca-fb5f-59d9-8090-bfdbd6d07a71"
 Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
-MIToS = "51bafb47-8a16-5ded-8b04-24ef4eede0b5"
 PairwiseListMatrices = "f9da4da7-9382-5435-b973-175f5d8dfb32"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 ROCAnalysis = "f535d66d-59bb-5153-8d2b-ef0a426c6aff"
 Setfield = "efcf1570-3423-57d1-acb7-fd33fddbac46"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
+
+[compat]
+Documenter = ">= 0.21.0"
