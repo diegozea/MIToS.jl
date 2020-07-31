@@ -19,79 +19,79 @@ Depth = 4
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.JULIA_HOME, "julia")
+julia_path = joinpath(Base.Sys.BINDIR, "julia")
 script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "Buslje09.jl")
-run(`$julia_path $script_path -h`)
+read(`$julia_path $script_path -h`, String) |> println
 ```  
 
 ## BLMI.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.JULIA_HOME, "julia")
+julia_path = joinpath(Base.Sys.BINDIR, "julia")
 script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "BLMI.jl")
-run(`$julia_path $script_path -h`)
+read(`$julia_path $script_path -h`, String) |> println
 ```  
 
 ## Conservation.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.JULIA_HOME, "julia")
+julia_path = joinpath(Base.Sys.BINDIR, "julia")
 script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "Conservation.jl")
-run(`$julia_path $script_path -h`)
+read(`$julia_path $script_path -h`, String) |> println
 ```  
 
 ## DownloadPDB.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.JULIA_HOME, "julia")
+julia_path = joinpath(Base.Sys.BINDIR, "julia")
 script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "DownloadPDB.jl")
-run(`$julia_path $script_path -h`)
+read(`$julia_path $script_path -h`, String) |> println
 ```  
 
 ## Distances.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.JULIA_HOME, "julia")
+julia_path = joinpath(Base.Sys.BINDIR, "julia")
 script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "Distances.jl")
-run(`$julia_path $script_path -h`)
+read(`$julia_path $script_path -h`, String) |> println
 ```  
 
 ## MSADescription.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.JULIA_HOME, "julia")
+julia_path = joinpath(Base.Sys.BINDIR, "julia")
 script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "MSADescription.jl")
-run(`$julia_path $script_path -h`)
+read(`$julia_path $script_path -h`, String) |> println
 ```  
 
 ## PercentIdentity.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.JULIA_HOME, "julia")
+julia_path = joinpath(Base.Sys.BINDIR, "julia")
 script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "PercentIdentity.jl")
-run(`$julia_path $script_path -h`)
+read(`$julia_path $script_path -h`, String) |> println
 ```  
 
 ## AlignedColumns.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.JULIA_HOME, "julia")
+julia_path = joinpath(Base.Sys.BINDIR, "julia")
 script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "AlignedColumns.jl")
-run(`$julia_path $script_path -h`)
+read(`$julia_path $script_path -h`, String) |> println
 ```  
 
 ## SplitStockholm.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.JULIA_HOME, "julia")
+julia_path = joinpath(Base.Sys.BINDIR, "julia")
 script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "SplitStockholm.jl")
-run(`$julia_path $script_path -h`)
+read(`$julia_path $script_path -h`, String) |> println
 ```  
