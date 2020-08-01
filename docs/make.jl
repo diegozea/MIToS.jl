@@ -4,7 +4,9 @@ include("literate.jl")
 
 makedocs(
     doctest=true,
-	format=Documenter.HTML(),
+	format=Documenter.HTML(
+        prettyurls=get(ENV, "CI", nothing) == "true"
+    ),
     sitename="MIToS",
     authors="Diego Javier Zea",
     modules=[MIToS],
@@ -29,7 +31,7 @@ makedocs(
                     "Utils_API.md"          ]
         ]
 )
- 
+
 deploydocs(
     repo="github.com/diegozea/MIToS.jl.git",
     target="build",

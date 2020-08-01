@@ -94,4 +94,5 @@ using MIToS
 julia_path = joinpath(Base.Sys.BINDIR, "julia")
 script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "SplitStockholm.jl")
 read(`$julia_path $script_path -h`, String) |> println
-```  
+```
+

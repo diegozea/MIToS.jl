@@ -1,7 +1,11 @@
-# # Linking structural and evolutionary information
+# # Root Mean Squared Fluctuation (RMSF)
 #
-#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__cookbook/notebooks/03_RMSF.ipynb)
-#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__cookbook/notebooks/03_RMSF.ipynb)
+# md ```@setup log
+# md @info Cookbook: RMSF
+# md ```
+#
+# md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__cookbook/notebooks/03_RMSF.ipynb)
+# md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__cookbook/notebooks/03_RMSF.ipynb)
 #
 #
 # ## Problem description
@@ -51,7 +55,7 @@ scatter(pdb_res, legend=false)
 # superimposed. Now, we are going to separate each model into different 
 # vectors, storing each vector into a `Dict`:
 
-models = Dict{String, Vector{PDBResidue}}()
+models = Dict{String,Vector{PDBResidue}}()
 for res in pdb_res
 	push!(get!(models, res.id.model, []), res) 
 end

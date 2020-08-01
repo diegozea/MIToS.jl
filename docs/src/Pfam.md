@@ -9,7 +9,7 @@ modules in the context of Pfam MSAs, where it’s possible to us determine how s
 sequence information should be mapped. This module defines functions that go from a Pfam
 MSA to the protein contact prediction performance of pairwise scores estimated from that MSA.
 
-```julia
+```@example pfam_example
 using MIToS.Pfam # to load the Pfam module
 ```  
 
@@ -30,14 +30,25 @@ Depth = 4
 ## [Getting a Pfam MSA](@id Getting-a-Pfam-MSA)
 
 The function `downloadpfam` takes a Pfam accession and downloads a Pfam MSA in Stockholm
-format. Use `read` function and the `Stockholm` `FileFormat` to get a
+format. In that way, you can do
+
+```julia
+pfamfile = downloadpfam("PF18883")
+```
+
+to get the MSA. But, we are going to use an already downloaded file in this case:
+
+```@example pfam_example
+using MIToS
+pfamfile = joinpath(dirname(pathof(MIToS)), "..", "docs", "data", "PF18883.stockholm.gz");
+```
+
+Use `read` function and the `Stockholm` `FileFormat` to get a
 `AnnotatedMultipleSequenceAlignment` object with the MSA and its Pfam annotations.
 You must set `generatemapping` and `useidcoordinates` to `true` the first time you read
 the downloaded MSA. This is necessary to some of the methods in the `Pfam` module.  
 
 ```@example pfam_example
-using MIToS.Pfam
-pfamfile = downloadpfam("PF12464")
 msa = read(pfamfile, Stockholm, generatemapping=true, useidcoordinates=true)
 ```
 
@@ -56,7 +67,7 @@ number that correspond to each MSA column for given a determined sequence and PD
 That function downloads information from SIFTS to generate the mapping.  
 
 ```@example pfam_example
-col2res = msacolumn2pdbresidue(msa, "MAA_ECOLI/7-58", "1OCX", "C")
+col2res = msacolumn2pdbresidue(msa, "ICSA_SHIFL/611-720", "3ML3", "A")
 ```
 
 The returned dictionary can be used to get the PDB residue associated to each column
@@ -64,9 +75,9 @@ The returned dictionary can be used to get the PDB residue associated to each co
 
 ```@example pfam_example
 using MIToS.PDB
-pdbfile = downloadpdb("1OCX")
+pdbfile = downloadpdb("3ML3")
 pdb = read(pdbfile, PDBML)
-resdict = @residuesdict pdb model "1" chain "C" group "ATOM" residue All
+resdict = @residuesdict pdb model "1" chain "A" group "ATOM" residue All
 
 msaresidues(msa, resdict, col2res)
 ```

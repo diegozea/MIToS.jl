@@ -11,7 +11,7 @@ const _residue_labels = map(string, reverse!(res"ARNDCQEGHILKMFPSTWYV-"))
     nseq = nsequences(msa)
     names = sequencenames(msa)
     if nseq > 20
-        step = div(nseq,20)
+        step = div(nseq, 20)
         yticks --> (1:step:nseq, names)
         html_output_format :=  :png
     end
