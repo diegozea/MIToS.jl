@@ -1,7 +1,11 @@
 # # Change B-factors
 #
-#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__cookbook/notebooks/01_Change_B_factors.ipynb)
-#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__cookbook/notebooks/01_Change_B_factors.ipynb)
+# md ```@setup log
+# md @info Cookbook: Change B-factors
+# md ```
+#
+# md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__cookbook/notebooks/01_Change_B_factors.ipynb)
+# md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__cookbook/notebooks/01_Change_B_factors.ipynb)
 #
 #
 # ## Problem description
@@ -30,13 +34,13 @@
 
 using MIToS
 pdbfile = abspath(pathof(MIToS), "..", "..", "docs", "data", "4zj9.pdb")
-#md nothing # hide
+# md nothing # hide
 
 # First, we need to read the PDB file using the `MIToS.PDB` module:
 
 using MIToS.PDB
 pdb_residues = read(pdbfile, PDBFile)
-#md nothing # hide
+# md nothing # hide
 
 # For this example, we are going to replace the B-factor of the alpha-carbons
 # by the residue hydrophobicity according to the hydrophobicity scale of
@@ -64,7 +68,7 @@ hydrophobicity = Dict(
 	"ASN" => -3.5,
 	"LYS" => -3.9,
 	"ARG" => -4.5 )
-#md nothing # hide
+# md nothing # hide
 
 # First, we define a helper function using `Formatting` to create a proper
 # B-factor string with the PDB format; 6 characters and 2 digits after the
@@ -81,7 +85,7 @@ using Formatting
 
 "Return value as a string with the B factor format described in PDB."
 format_b_factor(value) = fmt(FormatSpec("6.2f"), value) # e.g. 1.5 -> "  1.50"
-#md nothing # hide
+# md nothing # hide
 
 # Then, where are using that helper function to define a function that returns
 # a new `PDBAtom` by changing the `B` factor field using the `Setfield` package.
@@ -97,7 +101,7 @@ function change_b_factor(atom::PDBAtom, value)
 	end
 	@set atom.B = b_factor_string
 end
-#md nothing # hide
+# md nothing # hide
 
 # Now, we can use the `change_b_factor` function to change the B-factor of each
 # `"CA"` atom:
