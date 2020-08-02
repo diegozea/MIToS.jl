@@ -1,9 +1,5 @@
 # # Root Mean Squared Fluctuation (RMSF)
 #
-#md ```@setup log
-#md @info Cookbook: RMSF
-#md ```
-#
 #md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__cookbook/notebooks/03_RMSF.ipynb)
 #md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__cookbook/notebooks/03_RMSF.ipynb)
 #

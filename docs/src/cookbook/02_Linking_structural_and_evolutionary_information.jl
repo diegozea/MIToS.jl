@@ -1,9 +1,5 @@
 # # Linking structural and evolutionary information
 #
-#md ```@setup log
-#md @info Cookbook: Linking structural and evolutionary information
-#md ```
-#
 #md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__cookbook/notebooks/02_Linking_structural_and_evolutionary_information.ipynb)
 #md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__cookbook/notebooks/02_Linking_structural_and_evolutionary_information.ipynb)
 #
