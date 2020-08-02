@@ -197,7 +197,18 @@ MIToS 2.5.0
 
 Bioinformatics Unit
 Leloir Institute Foundation
-Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h2 id="DownloadPDB.jl"><a class="docs-heading-anchor" href="#DownloadPDB.jl">DownloadPDB.jl</a><a id="DownloadPDB.jl-1"></a><a class="docs-heading-anchor-permalink" href="#DownloadPDB.jl" title="Permalink"></a></h2><pre><code class="language-julia-repl">julia&gt; using MIToS
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h2 id="DownloadPDB.jl"><a class="docs-heading-anchor" href="#DownloadPDB.jl">DownloadPDB.jl</a><a id="DownloadPDB.jl-1"></a><a class="docs-heading-anchor-permalink" href="#DownloadPDB.jl" title="Permalink"></a></h2><pre><code class="language-julia-repl">julia&gt; import Pkg
+
+julia&gt; Pkg.add(&quot;ArgParse&quot;)
+   Updating registry at `~/.julia/registries/General`
+   Updating git-repo `https://github.com/JuliaRegistries/General.git`
+[?25l[2K[?25h  Resolving package versions...
+   Updating `~/build/diegozea/MIToS.jl/docs/Project.toml`
+  [c7e460c6] + ArgParse v1.1.0
+   Updating `~/build/diegozea/MIToS.jl/docs/Manifest.toml`
+ [no changes]
+
+julia&gt; using MIToS
 
 julia&gt; julia_path = joinpath(Base.Sys.BINDIR, &quot;julia&quot;)
 &quot;/home/travis/julia/bin/julia&quot;
@@ -206,16 +217,24 @@ julia&gt; script_path = joinpath(dirname(pathof(MIToS)), &quot;..&quot;, &quot;s
 &quot;/home/travis/build/diegozea/MIToS.jl/src/../scripts/DownloadPDB.jl&quot;
 
 julia&gt; read(`$julia_path $script_path -h`, String) |&gt; println
-ERROR: LoadError: ArgumentError: Package ArgParse not found in current path:
-- Run `import Pkg; Pkg.add(&quot;ArgParse&quot;)` to install the ArgParse package.
+usage: DownloadPDB.jl [-c CODE] [-l LIST] [-f FORMAT] [--version] [-h]
 
-Stacktrace:
- [1] require(::Module, ::Symbol) at ./loading.jl:892
- [2] include(::Module, ::String) at ./Base.jl:377
- [3] exec_options(::Base.JLOptions) at ./client.jl:288
- [4] _start() at ./client.jl:484
-in expression starting at /home/travis/build/diegozea/MIToS.jl/scripts/DownloadPDB.jl:6
-ERROR: failed process: Process(`/home/travis/julia/bin/julia /home/travis/build/diegozea/MIToS.jl/src/../scripts/DownloadPDB.jl -h`, ProcessExited(1)) [1]</code></pre><h2 id="Distances.jl"><a class="docs-heading-anchor" href="#Distances.jl">Distances.jl</a><a id="Distances.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Distances.jl" title="Permalink"></a></h2><pre><code class="language-julia-repl">julia&gt; using MIToS
+Download gzipped files from PDB.
+
+optional arguments:
+  -c, --code CODE      PDB code
+  -l, --list LIST      File with a list of PDB codes (one per line)
+  -f, --format FORMAT  Format. It should be PDBFile (pdb) or PDBML
+                       (xml) (default: &quot;PDBML&quot;)
+  --version            show version information and exit
+  -h, --help           show this help message and exit
+
+
+MIToS 2.5.0
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h2 id="Distances.jl"><a class="docs-heading-anchor" href="#Distances.jl">Distances.jl</a><a id="Distances.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Distances.jl" title="Permalink"></a></h2><pre><code class="language-julia-repl">julia&gt; using MIToS
 
 julia&gt; julia_path = joinpath(Base.Sys.BINDIR, &quot;julia&quot;)
 &quot;/home/travis/julia/bin/julia&quot;
@@ -426,7 +445,16 @@ MIToS
 
 Bioinformatics Unit
 Leloir Institute Foundation
-Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h2 id="SplitStockholm.jl"><a class="docs-heading-anchor" href="#SplitStockholm.jl">SplitStockholm.jl</a><a id="SplitStockholm.jl-1"></a><a class="docs-heading-anchor-permalink" href="#SplitStockholm.jl" title="Permalink"></a></h2><pre><code class="language-julia-repl">julia&gt; using MIToS
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h2 id="SplitStockholm.jl"><a class="docs-heading-anchor" href="#SplitStockholm.jl">SplitStockholm.jl</a><a id="SplitStockholm.jl-1"></a><a class="docs-heading-anchor-permalink" href="#SplitStockholm.jl" title="Permalink"></a></h2><pre><code class="language-julia-repl">julia&gt; import Pkg
+
+julia&gt; Pkg.add(&quot;ArgParse&quot;)
+  Resolving package versions...
+   Updating `~/build/diegozea/MIToS.jl/docs/Project.toml`
+ [no changes]
+   Updating `~/build/diegozea/MIToS.jl/docs/Manifest.toml`
+ [no changes]
+
+julia&gt; using MIToS
 
 julia&gt; julia_path = joinpath(Base.Sys.BINDIR, &quot;julia&quot;)
 &quot;/home/travis/julia/bin/julia&quot;
@@ -435,13 +463,13 @@ julia&gt; script_path = joinpath(dirname(pathof(MIToS)), &quot;..&quot;, &quot;s
 &quot;/home/travis/build/diegozea/MIToS.jl/src/../scripts/SplitStockholm.jl&quot;
 
 julia&gt; read(`$julia_path $script_path -h`, String) |&gt; println
-ERROR: LoadError: ArgumentError: Package ArgParse not found in current path:
-- Run `import Pkg; Pkg.add(&quot;ArgParse&quot;)` to install the ArgParse package.
+ERROR: LoadError: ArgumentError: Package CodecZlib not found in current path:
+- Run `import Pkg; Pkg.add(&quot;CodecZlib&quot;)` to install the CodecZlib package.
 
 Stacktrace:
  [1] require(::Module, ::Symbol) at ./loading.jl:892
  [2] include(::Module, ::String) at ./Base.jl:377
  [3] exec_options(::Base.JLOptions) at ./client.jl:288
  [4] _start() at ./client.jl:484
-in expression starting at /home/travis/build/diegozea/MIToS.jl/scripts/SplitStockholm.jl:4
-ERROR: failed process: Process(`/home/travis/julia/bin/julia /home/travis/build/diegozea/MIToS.jl/src/../scripts/SplitStockholm.jl -h`, ProcessExited(1)) [1]</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../PDB/">« PDB</a><a class="docs-footer-nextpage" href="../01_Change_B_factors/">Change B-factors »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Saturday 1 August 2020 19:35">Saturday 1 August 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+in expression starting at /home/travis/build/diegozea/MIToS.jl/scripts/SplitStockholm.jl:5
+ERROR: failed process: Process(`/home/travis/julia/bin/julia /home/travis/build/diegozea/MIToS.jl/src/../scripts/SplitStockholm.jl -h`, ProcessExited(1)) [1]</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../PDB/">« PDB</a><a class="docs-footer-nextpage" href="../01_Change_B_factors/">Change B-factors »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 2 August 2020 19:48">Sunday 2 August 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

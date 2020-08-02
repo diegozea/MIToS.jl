@@ -1,11 +1,11 @@
 # # Root Mean Squared Fluctuation (RMSF)
 #
-# md ```@setup log
-# md @info Cookbook: RMSF
-# md ```
+#md ```@setup log
+#md @info Cookbook: RMSF
+#md ```
 #
-# md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__cookbook/notebooks/03_RMSF.ipynb)
-# md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__cookbook/notebooks/03_RMSF.ipynb)
+#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__cookbook/notebooks/03_RMSF.ipynb)
+#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__cookbook/notebooks/03_RMSF.ipynb)
 #
 #
 # ## Problem description
@@ -46,6 +46,7 @@ using Plots
 
 pdb_file   = abspath(pathof(MIToS), "..", "..", "test", "data", "1AS5.pdb")
 pdb_res = read(pdb_file, PDBFile)
+#md nothing # hide
 
 # We can get an idea of the alpha carbon positions by plotting these residues:
 
@@ -65,6 +66,7 @@ end
 # to calculate the RMSF.
 
 pdb_models = collect(values(models))
+#md nothing # hide
 
 # And, finally, call the `rmsf` function on the list of structures:
 
