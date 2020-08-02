@@ -1,11 +1,11 @@
 # # Linking structural and evolutionary information
 #
-# md ```@setup log
-# md @info Cookbook: Linking structural and evolutionary information
-# md ```
+#md ```@setup log
+#md @info Cookbook: Linking structural and evolutionary information
+#md ```
 #
-# md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__cookbook/notebooks/02_Linking_structural_and_evolutionary_information.ipynb)
-# md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__cookbook/notebooks/02_Linking_structural_and_evolutionary_information.ipynb)
+#md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__cookbook/notebooks/02_Linking_structural_and_evolutionary_information.ipynb)
+#md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__cookbook/notebooks/02_Linking_structural_and_evolutionary_information.ipynb)
 #
 #
 # ## Problem description
@@ -53,7 +53,7 @@ using MIToS
 pdb_file   = abspath(pathof(MIToS), "..", "..", "test", "data", "2VQC.pdb")
 pfam_file  = abspath(pathof(MIToS), "..", "..", "test", "data", "PF09645_full.stockholm")
 sifts_file = abspath(pathof(MIToS), "..", "..", "test", "data", "2vqc.xml.gz")
-# md nothing # hide
+#md nothing # hide
 
 # You can also use `downloadpdb` from `MIToS.PDB`, `downloadpfam` from
 # `MIToS.Pfam` and `downloadsifts` from `MIToS.SIFTS` to get the corresponding
@@ -148,7 +148,7 @@ pdb_file   = abspath(pathof(MIToS), "..", "..", "docs", "data", "1dur.pdb")
 msa_file   = abspath(pathof(MIToS), "..", "..", "docs", "data", "blast_alignment.fa")
 sifts_file = abspath(pathof(MIToS), "..", "..", "docs", "data", "1dur.xml.gz")
 uniprot_file = abspath(pathof(MIToS), "..", "..", "docs", "data", "P00193.fasta")
-# md nothing # hide
+#md nothing # hide
 
 # First, we are going to read the MSA file. In this case, we can not use
 # `useidcoordinates=true` because the sequence names don't have the sequence

@@ -45,6 +45,8 @@ read(`$julia_path $script_path -h`, String) |> println
 ## DownloadPDB.jl
 
 ```@repl
+import Pkg
+Pkg.add("ArgParse")
 using MIToS
 julia_path = joinpath(Base.Sys.BINDIR, "julia")
 script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "DownloadPDB.jl")
@@ -90,6 +92,8 @@ read(`$julia_path $script_path -h`, String) |> println
 ## SplitStockholm.jl
 
 ```@repl
+import Pkg
+Pkg.add("ArgParse")
 using MIToS
 julia_path = joinpath(Base.Sys.BINDIR, "julia")
 script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "SplitStockholm.jl")

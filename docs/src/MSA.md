@@ -672,6 +672,8 @@ df = DataFrame( seqnum = 1:nsequences(msa),
                 seqname = sequencenames(msa),
                 cluster = assignments(clusters), # the cluster number/index of each sequence
                 coverage = vec(coverage(msa)))
+
+first(df, 5)
 ```
 
 It is possible to use this `DataFrame` and `Plots` to plot the sequence coverage of the MSA
@@ -694,6 +696,8 @@ package, to select the sequence of highest coverage for each cluster.
 ```@example msa_clusters
 maxcoverage = by(df, :cluster, cl -> cl[ findmax(cl[:coverage])[2] ,
                  [:seqnum, :seqname, :coverage]])
+
+first(maxcoverage, 5)
 ```
 
 ```@example msa_clusters
