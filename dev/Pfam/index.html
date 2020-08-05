@@ -22,26 +22,26 @@ A0A1A9RWJ5_9NEIS/1004-1099 │   S    T    V    T    N       -    -    -    -   
 A6T0K2_JANMA/343-459       │   -    -    -    -    -       Y    A    Y    T    L
 Q2KVL9_BORA1/480-598       │   S    R    I    T    R       Y    E    Y    R    L
 A0A2W4CX06_9RHIZ/331-444   │   -    -    -    -    N  …    Y    E    Y    L    L</pre><h2 id="Getting-PDB-information-from-an-MSA"><a class="docs-heading-anchor" href="#Getting-PDB-information-from-an-MSA">Getting PDB information from an MSA</a><a id="Getting-PDB-information-from-an-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-PDB-information-from-an-MSA" title="Permalink"></a></h2><p>The function <code>getseq2pdb</code> parses the MSA annotations to return a <code>Dict</code> from the sequence identifier in the MSA to PDB and chain codes.  </p><pre><code class="language-julia">getseq2pdb(msa)</code></pre><pre class="documenter-example-output">Dict{String,Array{Tuple{String,String},1}} with 1 entry:
-  &quot;ICSA_SHIFL/611-720&quot; =&gt; [(&quot;5KE1&quot;, &quot;B&quot;), (&quot;3ML3&quot;, &quot;A&quot;), (&quot;5KE1&quot;, &quot;A&quot;)]</pre><p>Once you know the association between PDB chains and sequences, you can use that information together with the <code>msacolumn2pdbresidue</code> function to get the PDB residue number that correspond to each MSA column for given a determined sequence and PDB chain. That function downloads information from SIFTS to generate the mapping.  </p><pre><code class="language-julia">col2res = msacolumn2pdbresidue(msa, &quot;ICSA_SHIFL/611-720&quot;, &quot;3ML3&quot;, &quot;A&quot;)</code></pre><pre class="documenter-example-output">Dict{Int64,String} with 103 entries:
-  288 =&gt; &quot;681&quot;
-  160 =&gt; &quot;646&quot;
-  151 =&gt; &quot;645&quot;
-  365 =&gt; &quot;694&quot;
-  391 =&gt; &quot;701&quot;
-  300 =&gt; &quot;686&quot;
-  201 =&gt; &quot;659&quot;
-  176 =&gt; &quot;651&quot;
-  78  =&gt; &quot;627&quot;
-  106 =&gt; &quot;636&quot;
-  165 =&gt; &quot;649&quot;
-  109 =&gt; &quot;639&quot;
-  96  =&gt; &quot;630&quot;
-  133 =&gt; &quot;642&quot;
-  368 =&gt; &quot;697&quot;
-  387 =&gt; &quot;699&quot;
-  230 =&gt; &quot;668&quot;
+  &quot;ICSA_SHIFL/611-720&quot; =&gt; [(&quot;5KE1&quot;, &quot;B&quot;), (&quot;3ML3&quot;, &quot;A&quot;), (&quot;5KE1&quot;, &quot;A&quot;)]</pre><p>Once you know the association between PDB chains and sequences, you can use that information together with the <code>msacolumn2pdbresidue</code> function to get the PDB residue number that correspond to each MSA column for given a determined sequence and PDB chain. That function downloads information from SIFTS to generate the mapping.  </p><pre><code class="language-julia">col2res = msacolumn2pdbresidue(msa, &quot;ICSA_SHIFL/611-720&quot;, &quot;3ML3&quot;, &quot;A&quot;)</code></pre><pre class="documenter-example-output">OrderedCollections.OrderedDict{Int64,String} with 103 entries:
+  61  =&gt; &quot;618&quot;
+  62  =&gt; &quot;619&quot;
+  64  =&gt; &quot;620&quot;
+  65  =&gt; &quot;621&quot;
+  66  =&gt; &quot;622&quot;
+  67  =&gt; &quot;623&quot;
+  68  =&gt; &quot;624&quot;
+  76  =&gt; &quot;625&quot;
   77  =&gt; &quot;626&quot;
+  78  =&gt; &quot;627&quot;
+  79  =&gt; &quot;628&quot;
   80  =&gt; &quot;629&quot;
+  96  =&gt; &quot;630&quot;
+  97  =&gt; &quot;631&quot;
+  98  =&gt; &quot;632&quot;
+  101 =&gt; &quot;633&quot;
+  102 =&gt; &quot;634&quot;
+  103 =&gt; &quot;635&quot;
+  106 =&gt; &quot;636&quot;
   ⋮   =&gt; ⋮</pre><p>The returned dictionary can be used to get the PDB residue associated to each column (using the <code>msaresidues</code> function)...  </p><pre><code class="language-julia">using MIToS.PDB
 pdbfile = downloadpdb(&quot;3ML3&quot;)
 pdb = read(pdbfile, PDBML)
@@ -115,4 +115,4 @@ ZMIp, MIp = buslje09(msa)
 
 using ROCAnalysis # You need to load ROCAnalysis to use the AUC function
 
-AUC(ZMIp, cmap)</code></pre><pre class="documenter-example-output">0.7520083759384434</pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../PDB/">« PDB</a><a class="docs-footer-nextpage" href="../01_Change_B_factors/">Change B-factors »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 5 August 2020 15:30">Wednesday 5 August 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+AUC(ZMIp, cmap)</code></pre><pre class="documenter-example-output">0.7505855492561011</pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../PDB/">« PDB</a><a class="docs-footer-nextpage" href="../01_Change_B_factors/">Change B-factors »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 5 August 2020 18:20">Wednesday 5 August 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

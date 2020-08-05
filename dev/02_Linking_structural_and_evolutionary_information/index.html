@@ -14,27 +14,27 @@ F112_SSV1/3-112    │   Q    T    L    N    S  …    I    K    A    K    Q</pr
 pdb_chain = &quot;A&quot;
 seq_ids = [ seq for (seq, pdbs) in seq2pdbs if (pdb_code, pdb_chain) in pdbs ]</code></pre><pre class="documenter-example-output">1-element Array{String,1}:
  &quot;F112_SSV1/3-112&quot;</pre><p>In this example, we are going to use the only sequence we found for the <em>A</em> of <em>2VQC</em>.</p><pre><code class="language-julia">seq_id = seq_ids[1]</code></pre><pre class="documenter-example-output">&quot;F112_SSV1/3-112&quot;</pre><p>Finally, we can use the <code>msacolumn2pdbresidue</code> function from the Pfam module to get a dictionary from the MSA column index to the <em>PDB</em> residue number:</p><pre><code class="language-julia">pfam_id = &quot;PF09645&quot;
-msacol2pdbres = msacolumn2pdbresidue(msa, seq_id, pdb_code, pdb_chain, pfam_id, sifts_file)</code></pre><pre class="documenter-example-output">Dict{Int64,String} with 110 entries:
-  89  =&gt; &quot;&quot;
-  11  =&gt; &quot;8&quot;
-  29  =&gt; &quot;26&quot;
-  74  =&gt; &quot;71&quot;
-  57  =&gt; &quot;54&quot;
-  31  =&gt; &quot;28&quot;
-  78  =&gt; &quot;&quot;
-  112 =&gt; &quot;&quot;
-  70  =&gt; &quot;67&quot;
-  106 =&gt; &quot;&quot;
-  33  =&gt; &quot;30&quot;
-  114 =&gt; &quot;&quot;
-  109 =&gt; &quot;&quot;
-  96  =&gt; &quot;&quot;
-  26  =&gt; &quot;23&quot;
-  49  =&gt; &quot;46&quot;
-  84  =&gt; &quot;&quot;
-  93  =&gt; &quot;&quot;
-  94  =&gt; &quot;&quot;
-  ⋮   =&gt; ⋮</pre><p>This dictionary has the mapping between MSA column and PDB residue that allows the mapping between evolutionary and structural information. For example, to measure the correlation between entropy (related to residue variation in an MSA column) and the mean B factor of the residue:</p><pre><code class="language-julia">using MIToS.Information
+msacol2pdbres = msacolumn2pdbresidue(msa, seq_id, pdb_code, pdb_chain, pfam_id, sifts_file)</code></pre><pre class="documenter-example-output">OrderedCollections.OrderedDict{Int64,String} with 110 entries:
+  6  =&gt; &quot;&quot;
+  7  =&gt; &quot;4&quot;
+  8  =&gt; &quot;5&quot;
+  9  =&gt; &quot;6&quot;
+  10 =&gt; &quot;7&quot;
+  11 =&gt; &quot;8&quot;
+  12 =&gt; &quot;9&quot;
+  13 =&gt; &quot;10&quot;
+  14 =&gt; &quot;11&quot;
+  15 =&gt; &quot;12&quot;
+  16 =&gt; &quot;13&quot;
+  17 =&gt; &quot;14&quot;
+  18 =&gt; &quot;15&quot;
+  19 =&gt; &quot;16&quot;
+  20 =&gt; &quot;17&quot;
+  21 =&gt; &quot;18&quot;
+  22 =&gt; &quot;19&quot;
+  23 =&gt; &quot;20&quot;
+  24 =&gt; &quot;21&quot;
+  ⋮  =&gt; ⋮</pre><p>This dictionary has the mapping between MSA column and PDB residue that allows the mapping between evolutionary and structural information. For example, to measure the correlation between entropy (related to residue variation in an MSA column) and the mean B factor of the residue:</p><pre><code class="language-julia">using MIToS.Information
 Hx = mapcolfreq!(entropy,
 				 msa,
 				 Counts(ContingencyTable(Int, Val{1}, UngappedAlphabet())))</code></pre><pre class="documenter-example-output">1×110 Named Array{Float64,2}
@@ -73,7 +73,7 @@ for (col_index, res_number) in msacol2pdbres
 	end
 end
 
-cor(x, y)</code></pre><pre class="documenter-example-output">0.05991148923529445</pre><h2 id="Unknown-sequence-coordinates"><a class="docs-heading-anchor" href="#Unknown-sequence-coordinates">Unknown sequence coordinates</a><a id="Unknown-sequence-coordinates-1"></a><a class="docs-heading-anchor-permalink" href="#Unknown-sequence-coordinates" title="Permalink"></a></h2><p>While <em>Pfam</em> alignments have the start and end of the aligned region indicated in the sequence name, other multiple sequence alignments don&#39;t give any hint about that. In those cases, we should use pairwise alignments. However, instead of aligning the sequence coming from the MSA and the <em>PDB</em> sequence, we can align the MSA sequence to the <em>UniProt</em> sequence to reduce the possibility of mapping errors. Once we have the mapping of the MSA sequence to the <em>UniProt</em> sequence, we can use <em>SIFTS</em> to map the <em>PDB</em> sequence to the MSA sequence using the <em>UniProt</em> numeration.</p><p>For this example, we are going to use the following files included in MIToS documentation:</p><pre><code class="language-julia">using MIToS
+cor(x, y)</code></pre><pre class="documenter-example-output">0.05991148923529446</pre><h2 id="Unknown-sequence-coordinates"><a class="docs-heading-anchor" href="#Unknown-sequence-coordinates">Unknown sequence coordinates</a><a id="Unknown-sequence-coordinates-1"></a><a class="docs-heading-anchor-permalink" href="#Unknown-sequence-coordinates" title="Permalink"></a></h2><p>While <em>Pfam</em> alignments have the start and end of the aligned region indicated in the sequence name, other multiple sequence alignments don&#39;t give any hint about that. In those cases, we should use pairwise alignments. However, instead of aligning the sequence coming from the MSA and the <em>PDB</em> sequence, we can align the MSA sequence to the <em>UniProt</em> sequence to reduce the possibility of mapping errors. Once we have the mapping of the MSA sequence to the <em>UniProt</em> sequence, we can use <em>SIFTS</em> to map the <em>PDB</em> sequence to the MSA sequence using the <em>UniProt</em> numeration.</p><p>For this example, we are going to use the following files included in MIToS documentation:</p><pre><code class="language-julia">using MIToS
 pdb_file   = abspath(pathof(MIToS), &quot;..&quot;, &quot;..&quot;, &quot;docs&quot;, &quot;data&quot;, &quot;1dur.pdb&quot;)
 msa_file   = abspath(pathof(MIToS), &quot;..&quot;, &quot;..&quot;, &quot;docs&quot;, &quot;data&quot;, &quot;blast_alignment.fa&quot;)
 sifts_file = abspath(pathof(MIToS), &quot;..&quot;, &quot;..&quot;, &quot;docs&quot;, &quot;data&quot;, &quot;1dur.xml.gz&quot;)
@@ -203,26 +203,26 @@ uniprotnum2pdbnum = siftsmapping(sifts_file,
     dbPDB,
     &quot;1dur&quot;, # SIFTS stores PDB identifiers in lowercase
     chain=&quot;A&quot;,
-    missings=false) # residues without coordinates aren&#39;t used in the mapping</code></pre><pre class="documenter-example-output">Dict{String,String} with 54 entries:
-  &quot;32&quot; =&gt; &quot;33&quot;
-  &quot;29&quot; =&gt; &quot;30&quot;
+    missings=false) # residues without coordinates aren&#39;t used in the mapping</code></pre><pre class="documenter-example-output">OrderedCollections.OrderedDict{String,String} with 54 entries:
   &quot;1&quot;  =&gt; &quot;1&quot;
-  &quot;54&quot; =&gt; &quot;55&quot;
   &quot;2&quot;  =&gt; &quot;2&quot;
-  &quot;41&quot; =&gt; &quot;42&quot;
-  &quot;51&quot; =&gt; &quot;52&quot;
-  &quot;53&quot; =&gt; &quot;54&quot;
-  &quot;27&quot; =&gt; &quot;28&quot;
-  &quot;42&quot; =&gt; &quot;43&quot;
-  &quot;33&quot; =&gt; &quot;34&quot;
-  &quot;28&quot; =&gt; &quot;29&quot;
-  &quot;50&quot; =&gt; &quot;51&quot;
-  &quot;52&quot; =&gt; &quot;53&quot;
-  &quot;26&quot; =&gt; &quot;27&quot;
+  &quot;3&quot;  =&gt; &quot;3&quot;
+  &quot;4&quot;  =&gt; &quot;4&quot;
+  &quot;5&quot;  =&gt; &quot;5&quot;
+  &quot;6&quot;  =&gt; &quot;6&quot;
+  &quot;7&quot;  =&gt; &quot;7&quot;
+  &quot;8&quot;  =&gt; &quot;8&quot;
+  &quot;9&quot;  =&gt; &quot;9&quot;
   &quot;10&quot; =&gt; &quot;10&quot;
-  &quot;24&quot; =&gt; &quot;25&quot;
-  &quot;25&quot; =&gt; &quot;26&quot;
-  &quot;23&quot; =&gt; &quot;24&quot;
+  &quot;11&quot; =&gt; &quot;11&quot;
+  &quot;12&quot; =&gt; &quot;12&quot;
+  &quot;13&quot; =&gt; &quot;13&quot;
+  &quot;14&quot; =&gt; &quot;14&quot;
+  &quot;15&quot; =&gt; &quot;15&quot;
+  &quot;16&quot; =&gt; &quot;16&quot;
+  &quot;17&quot; =&gt; &quot;17&quot;
+  &quot;18&quot; =&gt; &quot;18&quot;
+  &quot;19&quot; =&gt; &quot;19&quot;
   ⋮    =&gt; ⋮</pre><p>To finally get the dictionary from MSA column index to PDB residue number</p><pre><code class="language-julia">colnum2pdbnum = Dict{Int,String}()
 for (colnum, uniprotnum) in colnum2uniprotnum
 	pdbresnum = get(uniprotnum2pdbnum, string(uniprotnum), &quot;&quot;)
@@ -251,4 +251,4 @@ colnum2pdbnum</code></pre><pre class="documenter-example-output">Dict{Int64,Stri
   51 =&gt; &quot;44&quot;
   44 =&gt; &quot;37&quot;
   37 =&gt; &quot;30&quot;
-  ⋮  =&gt; ⋮</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../01_Change_B_factors/">« Change B-factors</a><a class="docs-footer-nextpage" href="../03_RMSF/">Root Mean Squared Fluctuation (RMSF) »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 5 August 2020 15:30">Wednesday 5 August 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  ⋮  =&gt; ⋮</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../01_Change_B_factors/">« Change B-factors</a><a class="docs-footer-nextpage" href="../03_RMSF/">Root Mean Squared Fluctuation (RMSF) »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 5 August 2020 18:20">Wednesday 5 August 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
