@@ -1,9 +1,5 @@
 # # Change B-factors
 #
-#md ```@setup log
-#md @info Cookbook: Change B-factors
-#md ```
-#
 #md # [![](https://mybinder.org/badge_logo.svg)](@__BINDER_ROOT_URL__cookbook/notebooks/01_Change_B_factors.ipynb)
 #md # [![](https://img.shields.io/badge/show-nbviewer-579ACA.svg)](@__NBVIEWER_ROOT_URL__cookbook/notebooks/01_Change_B_factors.ipynb)
 #
