@@ -1,8 +1,13 @@
 ## MIToS.jl Release Notes
 
-### Changes from v2.4.0 to v2.5.0
+### Changes from v2.4.0 to v2.4.1
 
-MIToS v2.3 requires Julia v1.0 or higher. This release drops Julia 0.7 support.
+MIToS v2.4.1 requires Julia v1.0 or higher. This release drops *Julia 0.7* 
+support and adds support for **Julia 1.5**. 
+
+* Several bug fixes.
+
+* `Cookbook` section added to the docs using [Literate](https://github.com/fredrikekre/Literate.jl)
 
 ### Changes from v2.3.0 to v2.4.0
 
