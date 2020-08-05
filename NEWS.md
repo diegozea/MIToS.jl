@@ -1,13 +1,17 @@
 ## MIToS.jl Release Notes
 
-### Changes from v2.4.0 to v2.4.1
+### Changes from v2.4.0 to v2.5.0
 
-MIToS v2.4.1 requires Julia v1.0 or higher. This release drops *Julia 0.7* 
-support and adds support for **Julia 1.5**. 
-
-* Several bug fixes.
+MIToS v2.5.0 drops support for *Julia 0.7* and adds support for *Julia 1.5* and 
+includes several bug fixes.
 
 * `Cookbook` section added to the docs using [Literate](https://github.com/fredrikekre/Literate.jl)
+
+* The `SIFTS` module now includes the `dbSCOP2` and `dbSCOP2B` databases.
+
+* `siftsmapping` now returns an `OrderedDict` instead of a `Dict`.
+
+* `msacolumn2pdbresidue` now return an `OrderedDict` instead of a `Dict`.
 
 ### Changes from v2.3.0 to v2.4.0
 

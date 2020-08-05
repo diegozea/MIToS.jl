@@ -10,7 +10,7 @@ SIFTS offers  more reliable association between sequence and structure residue n
 
 - Download and parse SIFTS XML files
 - Store residue-level mapping in Julia
-- Easy generation of `Dict`s between residues numbers
+- Easy generation of `OrderedDict`s between residues numbers
 
 ```julia
 using MIToS.SIFTS
@@ -20,9 +20,10 @@ module SIFTS
 
 using LightXML
 using AutoHashEquals
+using DataStructures
 using MIToS.Utils
 
-export  DataBase,
+export DataBase,
         dbPDBe,
         dbInterPro,
         dbUniProt,
@@ -31,6 +32,8 @@ export  DataBase,
         dbPDB,
         dbCATH,
         dbSCOP,
+        dbSCOP2,
+        dbSCOP2B,
         dbEnsembl,
         SIFTSResidue,
         downloadsifts,

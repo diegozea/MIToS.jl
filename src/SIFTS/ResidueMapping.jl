@@ -56,7 +56,7 @@ end
 `dbNCBI` stores the residue `id`, `number` and `name` in NCBI as strings.
 """ dbNCBI
 
-for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
+for ref_type in [:dbPDB, :dbCATH, :dbSCOP, :dbSCOP2, :dbSCOP2B]
     @eval begin
 
         @auto_hash_equals struct $(ref_type) <: DataBase
@@ -74,12 +74,26 @@ end
 """ dbPDB
 
 @doc """
-`dbCATH` stores the residue `id`, `number`, `name` and `chain` in CATH as strings.
+`dbCATH` stores the residue `id`, `number`, `name` and `chain` in CATH as 
+strings.
 """ dbCATH
 
 @doc """
-`dbSCOP` stores the residue `id`, `number`, `name` and `chain` in SCOP as strings.
+`dbSCOP` stores the residue `id`, `number`, `name` and `chain` in SCOP as 
+strings.
 """ dbSCOP
+
+@doc """
+`dbSCOP2` stores the residue `id`, `number`, `name` and `chain` in SCOP2 as 
+strings.
+""" dbSCOP2
+
+@doc """
+`dbSCOP2B` stores the residue `id`, `number`, `name` and `chain` in SCOP2B as 
+strings. *SCOP2B* is expansion of *SCOP2* domain annotations at superfamily 
+level to every *PDB* with same *UniProt* accession having at least 80% *SCOP2* 
+domain coverage.
+""" dbSCOP2B
 
 """
 Returns "" if the attributte is missing
@@ -97,12 +111,12 @@ end
 Returns `missing` if the attributte is missing
 """
 function _get_nullable_attribute(elem::LightXML.XMLElement,
-                                 attr::String)::Union{String, Missing}
+                                 attr::String)::Union{String,Missing}
     text = attribute(elem, attr)
     (text === nothing || text == "None") ? missing : text
 end
 
-for ref_type in [:dbPDB, :dbCATH, :dbSCOP]
+for ref_type in [:dbPDB, :dbCATH, :dbSCOP, :dbSCOP2, :dbSCOP2B]
     @eval begin
 
         function $(ref_type)(map::LightXML.XMLElement)
@@ -152,7 +166,7 @@ function dbInterPro(map::LightXML.XMLElement)
 end
 
 function dbPDBe(map::LightXML.XMLElement)
-      dbPDBe(
+    dbPDBe(
         _get_attribute(map, "dbResNum"),
         _get_attribute(map, "dbResName")
       )
@@ -169,6 +183,8 @@ following fields that you can access at any moment for query purposes:
     - `InterPro` : An array of `dbInterPro` objects.
     - `PDB` : A `dbPDB` object or `missing`.
     - `SCOP` : A `dbSCOP` object or `missing`.
+    - `SCOP2` : An array of `dbSCOP2` objects.
+    - `SCOP2B` : A `dbSCOP2B` object or `missing`.
     - `CATH` : A `dbCATH` object or `missing`.
     - `Ensembl` : An array of `dbEnsembl` objects.
     - `missing` : It's `true` if the residue is missing, i.e. not observed, in the structure.
@@ -178,14 +194,16 @@ following fields that you can access at any moment for query purposes:
 @auto_hash_equals struct SIFTSResidue
     PDBe::dbPDBe
     # crossRefDb
-    UniProt::Union{dbUniProt, Missing}
-    Pfam::Union{dbPfam, Missing}
-    NCBI::Union{dbNCBI, Missing}
-    InterPro::Array{dbInterPro, 1}
-    PDB::Union{dbPDB, Missing}
-    SCOP::Union{dbSCOP, Missing}
-    CATH::Union{dbCATH, Missing}
-    Ensembl::Array{dbEnsembl, 1}
+    UniProt::Union{dbUniProt,Missing}
+    Pfam::Union{dbPfam,Missing}
+    NCBI::Union{dbNCBI,Missing}
+    InterPro::Array{dbInterPro,1}
+    PDB::Union{dbPDB,Missing}
+    SCOP::Union{dbSCOP,Missing}
+    SCOP2::Array{dbSCOP2,1}
+    SCOP2B::Union{dbSCOP2B,Missing}
+    CATH::Union{dbCATH,Missing}
+    Ensembl::Array{dbEnsembl,1}
     # residueDetail
     missing::Bool  # XML: <residueDetail dbSource="PDBe" property="Annotation" ...
     sscode::String # XML: <residueDetail dbSource="PDBe" property="codeSecondaryStructure"...
@@ -200,9 +218,11 @@ end
 @inline _name(::Type{dbUniProt}) = "UniProt"
 @inline _name(::Type{dbPfam})    = "Pfam"
 @inline _name(::Type{dbNCBI})    = "NCBI"
-@inline _name(::Type{dbInterPro})= "InterPro"
+@inline _name(::Type{dbInterPro}) = "InterPro"
 @inline _name(::Type{dbPDB})     = "PDB"
 @inline _name(::Type{dbSCOP})    = "SCOP"
+@inline _name(::Type{dbSCOP2})   = "SCOP2"
+@inline _name(::Type{dbSCOP2B})  = "SCOP2B"
 @inline _name(::Type{dbCATH})    = "CATH"
 @inline _name(::Type{dbEnsembl}) = "Ensembl"
 
@@ -210,18 +230,18 @@ end
 @inline Base.get(res::SIFTSResidue, db::Type{dbUniProt}) = res.UniProt
 @inline Base.get(res::SIFTSResidue, db::Type{dbPfam})    = res.Pfam
 @inline Base.get(res::SIFTSResidue, db::Type{dbNCBI})    = res.NCBI
-@inline Base.get(res::SIFTSResidue, db::Type{dbInterPro})= res.InterPro
+@inline Base.get(res::SIFTSResidue, db::Type{dbInterPro}) = res.InterPro
 @inline Base.get(res::SIFTSResidue, db::Type{dbPDB})     = res.PDB
 @inline Base.get(res::SIFTSResidue, db::Type{dbSCOP})    = res.SCOP
+@inline Base.get(res::SIFTSResidue, db::Type{dbSCOP2})   = res.SCOP2
+@inline Base.get(res::SIFTSResidue, db::Type{dbSCOP2B})  = res.SCOP2B
 @inline Base.get(res::SIFTSResidue, db::Type{dbCATH})    = res.CATH
 @inline Base.get(res::SIFTSResidue, db::Type{dbEnsembl}) = res.Ensembl
 
 function Base.get(res::SIFTSResidue,
                   db::Type{T},
                   field::Symbol,
-                  default::Union{String, Missing}=missing) where T <: Union{
-                        dbUniProt, dbPfam, dbNCBI, dbPDB, dbSCOP, dbCATH
-                    }
+                  default::Union{String,Missing}=missing) where T <: Union{dbUniProt,dbPfam,dbNCBI,dbPDB,dbSCOP,dbSCOP2B,dbCATH}
     database = get(res, db)
     ismissing(database) ? default : getfield(database, field)
 end
@@ -239,7 +259,7 @@ function Base.show(io::IO, res::SIFTSResidue)
     println(io, "  PDBe:")
     println(io, "    number: ", res.PDBe.number)
     println(io, "    name: ", res.PDBe.name)
-    for dbname in [:UniProt, :Pfam, :NCBI, :PDB, :SCOP, :CATH]
+    for dbname in [:UniProt, :Pfam, :NCBI, :PDB, :SCOP, :SCOP2B, :CATH]
         dbfield = getfield(res, dbname)
         if !ismissing(dbfield)
             println(io, "  ", dbname, " :")
@@ -248,8 +268,9 @@ function Base.show(io::IO, res::SIFTSResidue)
             end
         end
     end
-    println(io, "  InterPro: ",  res.InterPro)
-    println(io, "  Ensembl: ",  res.Ensembl)
+    length(res.SCOP2) > 0 && println(io, "  SCOP2: ", res.SCOP2)
+    length(res.InterPro) > 0 && println(io, "  InterPro: ",  res.InterPro)
+    length(res.Ensembl) > 0 && println(io, "  Ensembl: ",  res.Ensembl)
 end
 
 # Creation
@@ -264,6 +285,8 @@ function SIFTSResidue(residue::LightXML.XMLElement, missing_residue::Bool,
     InterPro = dbInterPro[]
     PDB = missing
     SCOP = missing
+    SCOP2 = dbSCOP2[]
+    SCOP2B = missing
     CATH = missing
     Ensembl = dbEnsembl[]
     for crossref in get_elements_by_tagname(residue, "crossRefDb")
@@ -280,6 +303,10 @@ function SIFTSResidue(residue::LightXML.XMLElement, missing_residue::Bool,
             PDB = dbPDB(crossref)
         elseif db == "SCOP"
             SCOP = dbSCOP(crossref)
+        elseif db == "SCOP2"
+            push!(SCOP2, dbSCOP2(crossref))
+        elseif db == "SCOP2B"
+            SCOP2B = dbSCOP2B(crossref)
         elseif db == "CATH"
             CATH = dbCATH(crossref)
         elseif db == "Ensembl"
@@ -295,6 +322,8 @@ function SIFTSResidue(residue::LightXML.XMLElement, missing_residue::Bool,
                  InterPro,
                  PDB,
                  SCOP,
+                 SCOP2,
+                 SCOP2B,
                  CATH,
                  Ensembl,
                  missing_residue,
@@ -313,19 +342,19 @@ _is_All(::Any) = false
 _is_All(::Type{All}) = true
 
 """
-Parses a SIFTS XML file and returns a `Dict` between residue numbers of two `DataBase`s
-with the given identifiers. A `chain` could be specified (`All` by default). If `missings`
-is `true` (default) all the residues are used, even if they haven’t coordinates in the
-PDB file.
+Parses a SIFTS XML file and returns a `OrderedDict` between residue numbers of 
+two `DataBase`s with the given identifiers. A `chain` could be specified 
+(`All` by default). If `missings` is `true` (default) all the residues are 
+used, even if they haven’t coordinates in the PDB file.
 """
 function siftsmapping(filename::String,
                       db_from::Type{F},
                       id_from::String,
                       db_to::Type{T},
                       id_to::String;
-                      chain::Union{Type{All},String} = All,
-                      missings::Bool = true) where {F, T}
-    mapping = Dict{String,String}()
+                      chain::Union{Type{All},String}=All,
+                      missings::Bool=true) where {F,T}
+    mapping = OrderedDict{String,String}()
     xdoc = parse_file(filename)
     try
         for entity in _get_entities(xdoc)
@@ -334,17 +363,17 @@ function siftsmapping(filename::String,
                 residues = _get_residues(segment)
                 for residue in residues
                     in_chain = _is_All(chain)
-                    key_data = _name(db_from) == "PDBe" ? attribute(residue,"dbResNum") : missing
-                    value_data = _name(db_to) == "PDBe" ? attribute(residue,"dbResNum") : missing
+                    key_data = _name(db_from) == "PDBe" ? attribute(residue, "dbResNum") : missing
+                    value_data = _name(db_to) == "PDBe" ? attribute(residue, "dbResNum") : missing
                     if missings || !_is_missing(residue)
                         crossref = get_elements_by_tagname(residue, "crossRefDb")
                         for ref in crossref
                             source = attribute(ref, "dbSource")
                             if source == _name(db_from) && attribute(ref, "dbAccessionId") == id_from
-                                key_data = _get_nullable_attribute(ref,"dbResNum")
+                                key_data = _get_nullable_attribute(ref, "dbResNum")
                             end
                             if source == _name(db_to) && attribute(ref, "dbAccessionId") == id_to
-                                value_data = _get_nullable_attribute(ref,"dbResNum")
+                                value_data = _get_nullable_attribute(ref, "dbResNum")
                             end
                             if !in_chain && source == "PDB" # XML: <crossRefDb dbSource="PDB" ... dbChainId="E"/>
                                 in_chain = attribute(ref, "dbChainId") == chain
@@ -376,7 +405,7 @@ Returns a `Vector{SIFTSResidue}` parsed from a `SIFTSXML` file.
 By default, parses all the `chain`s and includes missing residues.
 """
 function Base.parse(document::LightXML.XMLDocument, ::Type{SIFTSXML};
-                    chain::Union{Type{All},String}=All, missings::Bool = true)
+                    chain::Union{Type{All},String}=All, missings::Bool=true)
     vector = SIFTSResidue[]
     for entity in _get_entities(document)
         for segment in _get_segments(entity)
@@ -400,7 +429,7 @@ end
 
 for F in (:findall, :filter!, :filter)
     @eval begin
-        function Base.$(F)(f::Function,list::AbstractVector{SIFTSResidue},db::Type{T}) where T<:DataBase
+        function Base.$(F)(f::Function, list::AbstractVector{SIFTSResidue}, db::Type{T}) where T <: DataBase
             $(F)(list) do res
                 database = get(res, db)
                 if !ismissing(database)

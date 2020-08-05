@@ -38,7 +38,7 @@ end
 """
 `msacolumn2pdbresidue(msa, seqid, pdbid, chain, pfamid, siftsfile; strict=false, checkpdbname=false, missings=true)`
 
-This function returns a `Dict{Int,String}` with **MSA column numbers on the input file**
+This function returns a `OrderedDict{Int,String}` with **MSA column numbers on the input file**
 as keys and PDB residue numbers (`""` for missings) as values. The mapping is performed
 using SIFTS. This function needs correct *ColMap* and *SeqMap* annotations. This checks
 correspondence of the residues between the MSA sequence and SIFTS
@@ -65,7 +65,7 @@ function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
 
     siftsres = read(siftsfile, SIFTSXML, chain=chain, missings=missings)
 
-    up2res = Dict{String,Tuple{String,String,Char}}()
+    up2res = OrderedDict{String,Tuple{String,String,Char}}()
     for res in siftsres
         if !ismissing(res.Pfam) && res.Pfam.id == uppercase(pfamid)
             pfnum  = res.Pfam.number
@@ -90,7 +90,7 @@ function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
     colmap   = getcolumnmapping(msa)
     N        = ncolumns(msa)
 
-    m = Dict{Int,String}()
+    m = OrderedDict{Int,String}()
     sizehint!(m, N)
     for i in 1:N
         up_number = string(seqmap[i])
@@ -131,7 +131,7 @@ end
 
 "Returns a `BitVector` where there is a `true` for each column with PDB residue."
 function hasresidues(msa::AnnotatedMultipleSequenceAlignment,
-                    column2residues::Dict{Int,String})
+                    column2residues::AbstractDict{Int,String})
     colmap = getcolumnmapping(msa)
     ncol = length(colmap)
     mask = falses(ncol)
@@ -157,8 +157,8 @@ annotations and two dicts:
 to `PDBResidue`. Residues on inserts are not included.
 """
 function msaresidues(msa::AnnotatedMultipleSequenceAlignment,
-                     residues::OrderedDict{String,PDBResidue},
-                     column2residues::Dict{Int,String})
+                     residues::AbstractDict{String,PDBResidue},
+                     column2residues::AbstractDict{Int,String})
     colmap = getcolumnmapping(msa)
     msares = sizehint!(OrderedDict{Int,PDBResidue}(), length(colmap))
     for col in colmap
@@ -190,8 +190,8 @@ equal to `distance_limit` (default to `6.05`) angstroms between any heavy atom. 
 indicates a missing value.
 """
 function msacontacts(msa::AnnotatedMultipleSequenceAlignment,
-                     residues::OrderedDict{String,PDBResidue},
-                     column2residues::Dict{Int,String},
+                     residues::AbstractDict{String,PDBResidue},
+                     column2residues::AbstractDict{Int,String},
                      distance_limit::Float64=6.05)
     colmap   = getcolumnmapping(msa)
     contacts = columnpairsmatrix(msa)

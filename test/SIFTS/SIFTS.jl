@@ -6,9 +6,9 @@
 
         dbs = [(dbUniProt, "P20220"), (dbPfam, "PF09645"), (dbNCBI, "244589"),
                (dbPDB, "2vqc"), (dbSCOP, "153426"), (dbPDBe, "2vqc")]
-        for (to,toid) in dbs, (from, fromid) in dbs
+        for (to, toid) in dbs, (from, fromid) in dbs
             map = siftsmapping(sifts_file, from, fromid, to, toid)
-            for (k,v) in map
+            for (k, v) in map
                 to == from && @test k == v
             end
         end
@@ -16,7 +16,7 @@
 
     @testset "missings = false" begin
 
-        map = siftsmapping(sifts_file,dbPDBe,"2vqc",dbPDB,"2vqc",chain="A",missings=false)
+        map = siftsmapping(sifts_file, dbPDBe, "2vqc", dbPDB, "2vqc", chain="A", missings=false)
         @test_throws KeyError map["9"]  # Missing
         @test_throws KeyError map["80"] # Missing
         @test_throws KeyError map["1"]  # Missing
@@ -56,7 +56,7 @@
     @testset "Multiple InterProt annotations" begin
     # 1CBN : Multiple InterProt annotations, the last is used.
     # Identical PDBe ResNum for Residue 22:
-    #
+    # 
     #         <residue dbSource="PDBe" dbCoordSys="PDBe" dbResNum="22" dbResName="SER">
     #           <crossRefDb dbSource="PDB" dbCoordSys="PDBresnum" dbAccessionId="1cbn" dbResNum="22" dbResName="SER" dbChainId="A"/>
     #           <crossRefDb dbSource="UniProt" dbCoordSys="UniProt" dbAccessionId="P01542" dbResNum="22" dbResName="P"/>
@@ -105,12 +105,12 @@
 
         _1as5_file = joinpath(pwd(), "data", "1as5.xml.gz")
 
-        map = siftsmapping(_1as5_file, dbPDBe,"1as5", dbUniProt, "P56529", chain="A")
+        map = siftsmapping(_1as5_file, dbPDBe, "1as5", dbUniProt, "P56529", chain="A")
                           # missings=true : NMR there are not missing residues
         @test map["23"] == "73"
         @test_throws KeyError map["24"] # Without UniProt
 
-        mapII = siftsmapping(_1as5_file, dbPDBe,"1as5", dbPDB, "1as5", chain="A")
+        mapII = siftsmapping(_1as5_file, dbPDBe, "1as5", dbPDB, "1as5", chain="A")
         @test mapII["24"] == "24"
     end
 
@@ -168,9 +168,9 @@ end
 
     @testset "findall & read" begin
 
-        four = findall(db -> db.id == "1nsa" && db.number == "4" , mapping, dbPDB)[1]
-        @test findall(db -> db.id == "1nsa" && db.number == "95A", mapping, dbPDB)[1]+1 == four
-        @test mapping[findall(db -> db.id == "1nsa" && db.number == "95A",mapping,dbPDB)][1].PDB.number == "95A"
+        four = findall(db -> db.id == "1nsa" && db.number == "4", mapping, dbPDB)[1]
+        @test findall(db -> db.id == "1nsa" && db.number == "95A", mapping, dbPDB)[1] + 1 == four
+        @test mapping[findall(db -> db.id == "1nsa" && db.number == "95A", mapping, dbPDB)][1].PDB.number == "95A"
     end
 
     @testset "capture fields" begin
@@ -194,9 +194,9 @@ end
 
     @test filter(db -> db.id == "1iao" && db.number == "1S" && db.chain == "B", mapp, dbPDB)[1].PDBe.number == "1"
     i = findall(db -> db.id == "1iao" && db.number == "1S" && db.chain == "B", mapp, dbPDB)[1]
-    res = mapp[i+2]
-    @test get(res,dbPDB,:id,"") == "1iao" &&  get(res,dbPDB,:chain,"") == "B" &&
-          get(res,dbPDB,:number,"") == "323P"
+    res = mapp[i + 2]
+    @test get(res, dbPDB, :id, "") == "1iao" &&  get(res, dbPDB, :chain, "") == "B" &&
+          get(res, dbPDB, :number, "") == "323P"
 end
 
 @testset "MIToS 1.0 error" begin
@@ -235,4 +235,42 @@ end
     @test last_res.Ensembl[2].translation == "ENSP00000493538"
     @test last_res.Ensembl[1].exon == "ENSE00001921020"
     @test last_res.Ensembl[2].exon == "ENSE00003822108"
+end
+
+@testset "SCOP2B" begin
+    # 1IVO has residues mapped into SCOP2B (05/08/2020)
+    mapping = read(joinpath(pwd(), "data", "1ivo.xml.gz"), SIFTSXML)
+
+    # First residue with SCOP2B annotation: 
+    # <crossRefDb dbSource="SCOP2B" dbCoordSys="PDBresnum" dbAccessionId="SF-DOMID:8038760" dbResNum="312" dbResName="VAL" dbChainId="A"/>
+    pos = findfirst(res -> !ismissing(res.SCOP2B), mapping)
+    first = mapping[pos]
+    @test length(first.SCOP2) == 0
+    @test first.SCOP2B.id == "SF-DOMID:8038760"
+    @test first.SCOP2B.number == "312"
+    @test first.SCOP2B.name == "VAL"
+    @test first.SCOP2B.chain == "A"
+end
+
+@testset "SCOP2" begin
+    # 1XYZ has residues mapped to two different SCOP2 domains (05/08/2020)
+    mapping = read(joinpath(pwd(), "data", "1xyz.xml.gz"), SIFTSXML)
+
+    # First residue with SCOP2 annotations: 
+    # <crossRefDb dbAccessionId="FA-DOMID:8030967" dbCoordSys="PDBresnum" dbSource="SCOP2" dbResName="ASN" dbResNum="516" dbChainId="A"/>
+    # <crossRefDb dbAccessionId="SF-DOMID:8043346" dbCoordSys="PDBresnum" dbSource="SCOP2" dbResName="ASN" dbResNum="516" dbChainId="A"/>
+    pos = findfirst(res -> length(res.SCOP2) > 0, mapping)
+    first = mapping[pos]
+    @test ismissing(first.SCOP2B)
+    @test length(first.SCOP2) == 2
+    
+    @test first.SCOP2[1].id == "FA-DOMID:8030967"
+    @test first.SCOP2[1].number == "516"
+    @test first.SCOP2[1].name == "ASN"
+    @test first.SCOP2[1].chain == "A"
+
+    @test first.SCOP2[2].id == "SF-DOMID:8043346"
+    @test first.SCOP2[2].number == "516"
+    @test first.SCOP2[2].name == "ASN"
+    @test first.SCOP2[2].chain == "A"
 end
