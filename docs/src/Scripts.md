@@ -94,6 +94,8 @@ read(`$julia_path $script_path -h`, String) |> println
 ```@repl
 import Pkg
 Pkg.add("ArgParse")
+Pkg.add("CodecZlib")
+Pkg.add("ProgressMeter")
 using MIToS
 julia_path = joinpath(Base.Sys.BINDIR, "julia")
 script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "SplitStockholm.jl")
