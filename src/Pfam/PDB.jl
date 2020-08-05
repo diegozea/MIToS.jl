@@ -75,12 +75,12 @@ function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
             pfname = res.Pfam.name
             if !ismissing(res.PDB) && (res.PDB.id == lowercase(pdbid)) && !res.missing
                 up2res[pfnum] = checkpdbname ?
-                    (pfname,res.PDB.number,three2residue(res.PDB.name)) :
-                    (pfname,res.PDB.number,'-')
+                    (pfname, res.PDB.number, three2residue(res.PDB.name)) :
+                    (pfname, res.PDB.number, '-')
             else
                 up2res[pfnum] = checkpdbname ?
-                    (pfname,"",ismissing(res.PDB) ? "" : three2residue(res.PDB.name)) :
-                    (pfname,"",'-')
+                    (pfname, "", ismissing(res.PDB) ? "" : three2residue(res.PDB.name)) :
+                    (pfname, "", '-')
             end
         end
     end
@@ -95,7 +95,7 @@ function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
     for i in 1:N
         up_number = string(seqmap[i])
         if up_number != "0"
-            up_res, pdb_resnum, pdb_res = get(up2res, up_number, ("","",'-'))
+            up_res, pdb_resnum, pdb_res = get(up2res, up_number, ("", "", '-'))
             if string(seq[i]) == up_res
                 m[colmap[i]] = pdb_resnum
             else
@@ -125,7 +125,7 @@ end
 function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
                               seqid::String, pdbid::String, chain::String; kargs...)
     msacolumn2pdbresidue(msa,seqid,pdbid,chain,
-                         String(split(getannotfile(msa,"AC"),'.')[1]),
+                         String(split(getannotfile(msa, "AC"), '.')[1]),
                          kargs...)
 end
 
@@ -192,7 +192,7 @@ indicates a missing value.
 function msacontacts(msa::AnnotatedMultipleSequenceAlignment,
                      residues::OrderedDict{String,PDBResidue},
                      column2residues::Dict{Int,String},
-                     distance_limit::Float64 = 6.05)
+                     distance_limit::Float64=6.05)
     colmap   = getcolumnmapping(msa)
     contacts = columnpairsmatrix(msa)
     plm = getarray(contacts)
@@ -200,8 +200,8 @@ function msacontacts(msa::AnnotatedMultipleSequenceAlignment,
 
         resi = get(:($column2residues), :($colmap)[i], "")
         resj = get(:($column2residues), :($colmap)[j], "")
-        if resi != "" && resj != "" && haskey(:($residues),resi) && haskey(:($residues),resj)
-            list[k] = Float64(:($contact)(:($residues)[resi],:($residues)[resj],:($distance_limit)))
+        if resi != "" && resj != "" && haskey(:($residues), resi) && haskey(:($residues), resj)
+            list[k] = Float64(:($contact)(:($residues)[resi], :($residues)[resj], :($distance_limit)))
         else
             list[k] = NaN
         end

@@ -70,7 +70,7 @@ function select_element(vector::Array{T,1}, element_name::String="element") wher
     if len == 0
         throw(ErrorException("There is not $element_name"))
     elseif len != 1
-        warn("There are more than one ($len) $element_name using the first.")
+        @warn("There are more than one ($len) $element_name using the first.")
     end
     @inbounds return(vector[1])
 end

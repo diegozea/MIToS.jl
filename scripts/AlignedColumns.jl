@@ -18,21 +18,21 @@ set_parallel(Args["parallel"])
 
 @everywhere begin
 
-    const args = remotecall_fetch(()->Args,1)
+    const args = remotecall_fetch(() -> Args, 1)
 
     import MIToS.Utils.Scripts: script
 
     # TO DO -----------------------------------------------------------------------
     using MIToS.MSA
 
-    function script(input::Union{Base.LibuvStream,  AbstractString},
+    function script(input::Union{Base.LibuvStream,AbstractString},
                     args,
-                    fh_out::Union{Base.LibuvStream, IO})
+                    fh_out::Union{Base.LibuvStream,IO})
         try
             aln = readorparse(input, Stockholm, generatemapping=true, useidcoordinates=true, deletefullgaps=true)
             print(fh_out, aln, Stockholm)
         catch err
-            warn(string("ERROR for ", input, ": ", err))
+            @warn(string("ERROR for ", input, ": ", err))
         end
 
     end
