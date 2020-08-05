@@ -1,6 +1,6 @@
 name = "MIToS"
 uuid = "51bafb47-8a16-5ded-8b04-24ef4eede0b5"
-version = "2.5.0"
+version = "2.4.1"
 
 [deps]
 ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
@@ -46,7 +46,7 @@ ProgressMeter = "1"
 RecipesBase = "1"
 Requires = "1"
 StaticArrays = "0.12"
-StatsBase = "0.33"
+StatsBase = "0.32, 0.33"
 TranscodingStreams = "0.9"
 
 [extras]
