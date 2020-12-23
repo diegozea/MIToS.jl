@@ -10,7 +10,7 @@ struct NoClustering <: ClusteringResult end
 @auto_hash_equals struct Clusters <: ClusteringResult
     clustersize::Vector{Int}
     clusters::Vector{Int}
-    weights::StatsBase.Weights{Float64, Float64, Array{Float64,1}}
+    weights::StatsBase.Weights{Float64, Float64, Vector{Float64}}
 end
 
 nelements(cl::Clusters) = length(cl.clusters)

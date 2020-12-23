@@ -197,13 +197,13 @@ following fields that you can access at any moment for query purposes:
     UniProt::Union{dbUniProt,Missing}
     Pfam::Union{dbPfam,Missing}
     NCBI::Union{dbNCBI,Missing}
-    InterPro::Array{dbInterPro,1}
+    InterPro::Vector{dbInterPro}
     PDB::Union{dbPDB,Missing}
     SCOP::Union{dbSCOP,Missing}
-    SCOP2::Array{dbSCOP2,1}
+    SCOP2::Vector{dbSCOP2}
     SCOP2B::Union{dbSCOP2B,Missing}
     CATH::Union{dbCATH,Missing}
-    Ensembl::Array{dbEnsembl,1}
+    Ensembl::Vector{dbEnsembl}
     # residueDetail
     missing::Bool  # XML: <residueDetail dbSource="PDBe" property="Annotation" ...
     sscode::String # XML: <residueDetail dbSource="PDBe" property="codeSecondaryStructure"...

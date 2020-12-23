@@ -23,7 +23,7 @@ function _fill_aln_seq_ann!(aln, seq_ann::Vector{String}, seq::String,
     join(seq_ann, ','), init - 1
 end
 
-function _to_msa_mapping(sequences::Array{String,1})
+function _to_msa_mapping(sequences::Vector{String})
     nseq = size(sequences,1)
     nres = length(sequences[1])
     aln = Array{Residue}(undef, nres, nseq)
@@ -39,7 +39,7 @@ function _to_msa_mapping(sequences::Array{String,1})
     (msa, mapp)
 end
 
-function _to_msa_mapping(sequences::Array{String,1}, ids)
+function _to_msa_mapping(sequences::Vector{String}, ids)
     nseq = size(sequences,1)
     nres = length(sequences[1])
     aln = Array{Residue}(undef, nres, nseq)

@@ -43,8 +43,8 @@ julia> ab[Residue('K')]
 ```
 """
 struct ReducedAlphabet <: ResidueAlphabet
-    mapping::Array{Int,1} # Residue -> Int
-    named::NamedArray{Int,1,Array{Int,1},Tuple{OrderedDict{String,Int}}}
+    mapping::Vector{Int} # Residue -> Int
+    named::NamedArray{Int,1,Vector{Int},Tuple{OrderedDict{String,Int}}}
     len::Int
 end
 
@@ -186,7 +186,7 @@ Base.names(alphabet::ResidueAlphabet) = String[ string(Residue(i)) for i in alph
 # Dict of names to indexes
 # ------------------------
 
-@inline _getdict(n::NamedArray{Int,1,Array{Int,1},Tuple{OrderedDict{String,Int}}}) = n.dicts[1]
+@inline _getdict(n::NamedArray{Int,1,Vector{Int},Tuple{OrderedDict{String,Int}}}) = n.dicts[1]
 
 const _UngappedAlphabet_Names = OrderedDict{String,Int}(string(Residue(i))=>i for i in 1:20)
 const _GappedAlphabet_Names = OrderedDict{String,Int}(string(Residue(i))=>i for i in 1:21)
