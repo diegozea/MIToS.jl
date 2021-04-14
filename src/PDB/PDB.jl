@@ -26,6 +26,8 @@ using LinearAlgebra
 using Statistics            # mean
 using MIToS.Utils
 using Formatting
+using JSON
+using HTTP
 
 export  # PDBResidues
         PDBResidueIdentifier,
@@ -78,7 +80,6 @@ export  # PDBResidues
         # PDBMLParser
         PDBML,
         downloadpdb,
-        PDBMLHeader,
         downloadpdbheader,
         getpdbdescription,
         # Kabsch

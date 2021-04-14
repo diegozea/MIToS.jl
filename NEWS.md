@@ -1,5 +1,11 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.5.0 to v2.6.0
+
+* The RESTful API of PDB has changed, and the Legacy Fetch API Web Service was shut down on 
+December 9th, 2020. To adapt to the new changes, `PDBMLHeader` has been deprecated, and the 
+`downloadpdbheader` and `getpdbdescription` functions now return different objects.
+
 ### Changes from v2.4.0 to v2.5.0
 
 MIToS v2.5.0 drops support for *Julia 0.7* and adds support for *Julia 1.5* and 

@@ -240,36 +240,65 @@ end
 # RESTful PDB interface
 # =====================
 
-function downloadpdbheader(pdbcode::String; filename::String=tempname()*".xml", kargs...)
-    pdbcode = lowercase(pdbcode)
-    @assert endswith(filename,".xml") "filename must end with the xml extension: .xml"
+function _graphql_query(pdbcode::String)
+    """
+    {
+      entry(entry_id: "$pdbcode") {
+        entry {
+          id
+        }
+        rcsb_entry_info {
+          experimental_method
+          assembly_count
+          resolution_combined
+        }
+        rcsb_accession_info {
+          initial_release_date
+        }
+        polymer_entities {
+          rcsb_polymer_entity_container_identifiers {
+            entity_id
+            auth_asym_ids
+          }
+          entity_poly {
+            rcsb_entity_polymer_type
+          }
+        }
+      }
+    }
+    """
+end
+
+function _pdbheader(pdbcode::String; kargs...)
+    pdbcode = uppercase(pdbcode)
     if check_pdbcode(pdbcode)
-        query = "http://www.rcsb.org/pdb/rest/describePDB?structureId=" * pdbcode
-        download_file(query, filename; kargs...)
+        String(
+            HTTP.request(
+                "GET", 
+                "https://data.rcsb.org/graphql";
+                query = ["query" => _graphql_query(pdbcode)],
+                kargs...
+                ).body
+            )
     else
         throw(ErrorException("$pdbcode is not a correct PDB code"))
+    end
+end
+
+"""
+It downloads a JSON file containing the PDB header information.
+"""
+function downloadpdbheader(pdbcode::String; filename::String=tempname(), kargs...)
+    open(filename, "w") do fh
+        write(fh, _pdbheader(pdbcode; kargs...))
     end
     filename
 end
 
-struct PDBMLHeader <: FileFormat end
-
-function Base.parse(document::LightXML.XMLDocument, ::Type{PDBMLHeader})
-    xmlroot = root(document)
-    description = get_elements_by_tagname(xmlroot, "PDB")[1]
-    attributes_dict(description)
-end
-
 """
 Access general information about a PDB entry (e.g., Header information) using the
-RESTful interface of the PDB database (describePDB). Returns a Dict for the four
-character `pdbcode`.
+GraphQL interface of the PDB database. It parses the JSON answer into a Dict.
 """
 function getpdbdescription(pdbcode::String; kargs...)
-    filename = downloadpdbheader(pdbcode)
-    try
-        read(filename, PDBMLHeader)
-    finally
-        rm(filename)
-    end
+    JSON.parse(_pdbheader(pdbcode; kargs...))["data"]["entry"]
 end

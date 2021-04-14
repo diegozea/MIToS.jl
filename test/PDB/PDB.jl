@@ -272,8 +272,8 @@ end
 
 @testset "RESTful PDB Interface" begin
 
-    @test getpdbdescription("4HHB")["resolution"] == "1.74"
-    @test_throws KeyError getpdbdescription("104D")["resolution"] # NMR
+    @test getpdbdescription("4HHB")["rcsb_entry_info"]["resolution_combined"][1] == 1.74
+    @test getpdbdescription("104D")["rcsb_entry_info"]["resolution_combined"] === nothing
 end
 
 @testset "Write PDB files" begin
