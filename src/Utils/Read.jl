@@ -25,6 +25,7 @@ julia> download_file("http://www.uniprot.org/uniprot/P69905.fasta","seq.fasta",
 function download_file(url::AbstractString, filename::AbstractString;
                        headers::Dict{String,String}=Dict{String,String}(),
                        kargs...)
+    kargs = _modify_kargs_for_proxy(url; kargs...)
     HTTP.open("GET", url, headers; kargs...) do stream
         open(filename, "w") do fh
            write(fh, stream)
@@ -37,6 +38,30 @@ function download_file(url::AbstractString;
                        headers::Dict{String,String}=Dict{String,String}(),
                        kargs...)
     download_file(url, tempname(); headers=headers, kargs...)
+end
+
+"""
+Helper function that modifies keyword argument to include a proxy,
+    the proxy url is taken from the https_proxy and http_proxy enviromental
+    variables.
+"""
+function _modify_kargs_for_proxy(url; kargs...)
+    if startswith(lowercase(url), "http://")
+        proxy_env_var = "http_proxy"
+    elseif startswith(lowercase(url),"https://")
+        proxy_env_var = "https_proxy"
+    else
+        return kargs
+    end
+    if !(:proxy in keys(kargs)) && proxy_env_var in keys(ENV)
+        kw = Dict()
+        for (k,v) in kargs
+            kw[k] = v
+        end
+        kw[:proxy] = ENV[proxy_env_var]
+        kargs = pairs(kw)
+    end
+    kargs
 end
 
 "Create an iterable object that will yield each line from a stream **or string**."
