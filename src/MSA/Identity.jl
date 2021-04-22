@@ -242,7 +242,7 @@ function percentsimilarity(msa::AbstractMatrix{Residue}, A...; out::Type=Float64
     M = getresiduesequences(msa)
     P = sequencepairsmatrix(msa, out, Val{false}, out(100.0))
     @inbounds @iterateupper getarray(P) false begin
-        list[k]=:($percentsimilarity)(:($M)[i],:($M)[j],:($A)...)
+        list[k] = percentsimilarity(M[i], M[j], A...)
     end
     P
 end

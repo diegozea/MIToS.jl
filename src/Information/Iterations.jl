@@ -101,9 +101,9 @@ pseudocounts::Pseudocount = NoPseudocount(),
 pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
 diagonalvalue::T = zero(T)) where {T,D,TV,A,V<:AbstractArray{Residue}} # diagonalvalue used by mapcolpairfreq! ...
     @inbounds @iterateupper plm D begin
-        list[k] = :($_mapfreq_kernel!)(:($f), :($table), :($weights),
-                                       :($pseudocounts), :($pseudofrequencies),
-                                       :($res_list)[i], :($res_list)[j])
+        list[k] = _mapfreq_kernel!(f, table, weights,
+                                   pseudocounts, pseudofrequencies,
+                                   res_list[i], res_list[j])
     end
     plm
 end
@@ -178,9 +178,9 @@ function cumulative(plm::PairwiseListMatrix{T,D,VT}, threshold::T) where {T,D,VT
     out = zeros(T, N)
     @iterateupper plm false begin
         elem = list[k]
-        if !isnan(elem) && elem >= :($threshold)
-            :($out)[i] += elem
-            :($out)[j] += elem
+        if !isnan(elem) && elem >= threshold
+            out[i] += elem
+            out[j] += elem
         end
     end
     reshape(out, (1,N))

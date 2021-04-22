@@ -198,10 +198,10 @@ function msacontacts(msa::AnnotatedMultipleSequenceAlignment,
     plm = getarray(contacts)
     @inbounds @iterateupper plm false begin
 
-        resi = get(:($column2residues), :($colmap)[i], "")
-        resj = get(:($column2residues), :($colmap)[j], "")
-        if resi != "" && resj != "" && haskey(:($residues), resi) && haskey(:($residues), resj)
-            list[k] = Float64(:($contact)(:($residues)[resi], :($residues)[resj], :($distance_limit)))
+        resi = get(column2residues, colmap[i], "")
+        resj = get(column2residues, colmap[j], "")
+        if resi != "" && resj != "" && haskey(residues, resi) && haskey(residues, resj)
+            list[k] = Float64(contact(residues[resi], residues[resj], distance_limit))
         else
             list[k] = NaN
         end
