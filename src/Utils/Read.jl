@@ -9,7 +9,8 @@ from the web. It takes the file url as first argument and, optionally, a path to
 Keyword arguments (ie. `redirect`, `retry`, `readtimeout`)
 are are directly passed to to `HTTP.open` (`HTTP.request`).
 Use the `headers` keyword argument to pass a `Dict{String,String}` with the
-header information.
+header information. Set the `HTTPS_PROXY` and `HTTPS_PROXY` `ENV`iromental variables
+if you are behind a proxy.
 
 ```jldoctest
 julia> using MIToS.Utils
@@ -42,14 +43,14 @@ end
 
 """
 Helper function that modifies keyword argument to include a proxy,
-    the proxy url is taken from the https_proxy and http_proxy enviromental
-    variables.
+the proxy URL is taken from the HTTPS_PROXY and HTTPS_PROXY enviromental
+variables.
 """
 function _modify_kargs_for_proxy(url; kargs...)
     if startswith(lowercase(url), "http://")
-        proxy_env_var = "http_proxy"
+        proxy_env_var = "HTTPS_PROXY"
     elseif startswith(lowercase(url),"https://")
-        proxy_env_var = "https_proxy"
+        proxy_env_var = "HTTPS_PROXY"
     else
         return kargs
     end

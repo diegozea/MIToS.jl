@@ -1,20 +1,31 @@
 # Quick dev guide
 
-    If you are not very familiar with development in Julia, you can start with
-    this simple approach.
+If you are not very familiar with development in *Julia*, you can start with 
+this simple approach.
 
-1. Clone the repo from github and change to the repo directory
-1. Start Julia REPL
-1. Change to pkg mode in julia (press ']') and activate the enviroment for the repo.
-    - pkg> activate .
-1. Go back to normal REPL mode (press backspace) and load Revise
+1. Clone the repo from *GitHub* and enter the repo directory
+2. Start *Julia REPL*
+3. Change to *Pkg* mode in *Julia* (press `]`) and activate the environment for 
+   the repo:
+    ```julia
+    pkg> activate .
+    ```
+4. Go back to normal REPL mode (press backspace) and load 
+   [*Revise*](https://github.com/timholy/Revise.jl)
+    ```julia
     julia> using Revise
-1. Load MIToS
+    ```
+5. Load *MIToS*
+    ```julia
     julia> using MIToS
-1. Check that Revise is tracking the correct files (optional)
+    ```
+6. (optional) Check that *Revise* is tracking the correct files
+    ```julia
     julia> Revise.watched_files
+    ```
 
-Edit the code and changes should be automatically loaded into the current session.
+Edit the code, and the changes should be automatically loaded into the current 
+session.
 
 
-Happy coding.
+Happy coding!
