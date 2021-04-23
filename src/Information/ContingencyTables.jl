@@ -103,7 +103,7 @@ Base.sum(table::ContingencyTable) = gettotal(table)
 `_marginal(1,:A,:i,:value)` generates the expression: `A[i_1, 1] += value`
 """
 function _marginal(N::Int, marginal::Symbol, index::Symbol, value::Symbol)
-    aexprs = [Expr(:escape, Expr(:(+=), Expr(:ref, marginal, Symbol(index,'_',i), i), :($value))) for i = 1:N]
+    aexprs = [Expr(:escape, Expr(:(+=), Expr(:ref, marginal, Symbol(index,'_',i), i), value)) for i = 1:N]
     Expr(:block, aexprs...)
 end
 
@@ -115,7 +115,17 @@ end
 `_test_index(1, i, continue)` generates the expression: `i_1 >= 22 && continue`
 """
 function _test_index(N::Int, index::Symbol, expr::Expr)
-    aexprs = [Expr(:escape, :($(Symbol(index,"_",i)) >= 22 && $expr)) for i = 1:N]
+    aexprs = Expr[]
+    for i = 1:N
+        push!(aexprs, 
+            Expr(:escape,
+                Expr(:&&,
+                    Expr(:call, :>=, Symbol(index, "_", i), 22),
+                    expr
+                )
+            )
+        )
+    end
     Expr(:block, aexprs...)
 end
 
