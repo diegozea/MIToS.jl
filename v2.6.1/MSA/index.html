@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>MSA · MIToS</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">MIToS</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../Installation/">Installation</a></li><li><a class="tocitem" href="../Example/">Example</a></li><li><span class="tocitem">Modules</span><ul><li class="is-active"><a class="tocitem" href>MSA</a><ul class="internal"><li><a class="tocitem" href="#Features"><span>Features</span></a></li><li><a class="tocitem" href="#Contents"><span>Contents</span></a></li><li><a class="tocitem" href="#MSA-IO"><span>MSA IO</span></a></li><li><a class="tocitem" href="#MSA-Annotations"><span>MSA Annotations</span></a></li><li><a class="tocitem" href="#Editing-your-MSA"><span>Editing your MSA</span></a></li><li><a class="tocitem" href="#Column-and-sequence-mappings"><span>Column and sequence mappings</span></a></li><li><a class="tocitem" href="#Get-sequences-from-a-MSA"><span>Get sequences from a MSA</span></a></li><li><a class="tocitem" href="#Describing-your-MSA"><span>Describing your MSA</span></a></li><li><a class="tocitem" href="#Sequence-clustering"><span>Sequence clustering</span></a></li></ul></li><li><a class="tocitem" href="../Information/">Information</a></li><li><a class="tocitem" href="../SIFTS/">SIFTS</a></li><li><a class="tocitem" href="../PDB/">PDB</a></li><li><a class="tocitem" href="../Pfam/">Pfam</a></li></ul></li><li><span class="tocitem">Cookbook</span><ul><li><a class="tocitem" href="../01_Change_B_factors/">Change B-factors</a></li><li><a class="tocitem" href="../02_Linking_structural_and_evolutionary_information/">Linking structural and evolutionary information</a></li><li><a class="tocitem" href="../03_RMSF/">Root Mean Squared Fluctuation (RMSF)</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../MSA_API/">MSA</a></li><li><a class="tocitem" href="../Information_API/">Information</a></li><li><a class="tocitem" href="../SIFTS_API/">SIFTS</a></li><li><a class="tocitem" href="../PDB_API/">PDB</a></li><li><a class="tocitem" href="../Pfam_API/">Pfam</a></li><li><a class="tocitem" href="../Utils_API/">Utils</a></li></ul></li><li><a class="tocitem" href="../Scripts/">Scripts</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Modules</a></li><li class="is-active"><a href>MSA</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>MSA</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/diegozea/MIToS.jl/blob/master/docs/src/MSA.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Module-MSA"><a class="docs-heading-anchor" href="#Module-MSA">MSA</a><a id="Module-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Module-MSA" title="Permalink"></a></h1><p>The MSA module of MIToS has utilities for working with Multiple Sequence Alignments of protein Sequences (MSA).  </p><pre><code class="language-julia">using MIToS.MSA # to load the MSA module</code></pre><h2 id="Features"><a class="docs-heading-anchor" href="#Features">Features</a><a id="Features-1"></a><a class="docs-heading-anchor-permalink" href="#Features" title="Permalink"></a></h2><ul><li><a href="#Reading-MSA-files"><strong>Read</strong></a> and <a href="#Writing-MSA-files"><strong>write</strong></a> MSAs in <code>Stockholm</code>, <code>FASTA</code>, <code>PIR</code> or <code>Raw</code> format.</li><li>Handle <a href="#MSA-Annotations"><strong>MSA annotations</strong></a>.</li><li><a href="#Editing-your-MSA"><strong>Edit the MSA</strong></a>, e.g. delete columns or sequences, change sequence order, shuffling...</li><li><a href="#Column-and-sequence-mappings"><strong>Keep track of positions</strong></a> and annotations after modifications on the MSA.</li><li><a href="#Describing-your-MSA"><strong>Describe an MSA</strong></a>, e.g. mean percent identity, sequence coverage, gap percentage...</li><li><a href="#Sequence-clustering"><strong>Sequence clustering</strong></a> with Hobohm I.</li></ul><h2 id="Contents"><a class="docs-heading-anchor" href="#Contents">Contents</a><a id="Contents-1"></a><a class="docs-heading-anchor-permalink" href="#Contents" title="Permalink"></a></h2><ul><li><a href="#Module-MSA">MSA</a></li><ul><li><a href="#Features">Features</a></li><li><a href="#Contents">Contents</a></li><li><a href="#MSA-IO">MSA IO</a></li><ul><li><a href="#Reading-MSA-files">Reading MSA files</a></li><li><a href="#Writing-MSA-files">Writing MSA files</a></li></ul><li><a href="#MSA-Annotations">MSA Annotations</a></li><li><a href="#Editing-your-MSA">Editing your MSA</a></li><ul><ul><li><a href="#Example:-Deleting-sequences">Example: Deleting sequences</a></li><li><a href="#Example:-Exporting-a-MSA-for-freecontact-(part-I)">Example: Exporting a MSA for freecontact (part I)</a></li></ul></ul><li><a href="#Column-and-sequence-mappings">Column and sequence mappings</a></li><ul><ul><li><a href="#Example:-Exporting-a-MSA-for-freecontact-(part-II)">Example: Exporting a MSA for freecontact (part II)</a></li></ul></ul><li><a href="#Get-sequences-from-a-MSA">Get sequences from a MSA</a></li><li><a href="#Describing-your-MSA">Describing your MSA</a></li><ul><ul><li><a href="#Example:-Plotting-gap-percentage-per-column-and-coverage-per-sequence">Example: Plotting gap percentage per column and coverage per sequence</a></li><li><a href="#Example:-Filter-sequences-per-coverage-and-columns-per-gap-fraction">Example: Filter sequences per coverage and columns per gap fraction</a></li><li><a href="#Example:-Plotting-the-percentage-of-identity-between-sequences">Example: Plotting the percentage of identity between sequences</a></li></ul></ul><li><a href="#Sequence-clustering">Sequence clustering</a></li><ul><ul><li><a href="#Example:-Reducing-redundancy-of-a-MSA">Example: Reducing redundancy of a MSA</a></li></ul></ul></ul></ul><h2 id="MSA-IO"><a class="docs-heading-anchor" href="#MSA-IO">MSA IO</a><a id="MSA-IO-1"></a><a class="docs-heading-anchor-permalink" href="#MSA-IO" title="Permalink"></a></h2><h3 id="Reading-MSA-files"><a class="docs-heading-anchor" href="#Reading-MSA-files">Reading MSA files</a><a id="Reading-MSA-files-1"></a><a class="docs-heading-anchor-permalink" href="#Reading-MSA-files" title="Permalink"></a></h3><p>The main function for reading MSA files in MIToS is <code>read</code> and it is defined in the <code>Utils</code> module. This function takes a filename/path as a first argument followed by other arguments. It opens the file and uses the arguments to call the <code>parse</code> function. <code>read</code> decides how to open the file, using the prefixes (e.g. https) and suffixes (i.e. extensions) of the file name, while <code>parse</code> does the actual parsing of the file. You can <code>read</code> <strong>gzipped files</strong> if they have the <code>.gz</code> extension and also urls pointing to a <strong>web file</strong>.   The second argument of <code>read</code> and <code>parse</code> is the file <code>FileFormat</code>. The supported MSA formats at the moment are <code>Stockholm</code>, <code>FASTA</code>, <code>PIR</code> (NBRF) and <code>Raw</code>.   For example, reading with MIToS the full Stockholm MSA of the family PF07388 using the Pfam RESTful interface will be:  </p><pre><code class="language-julia">using MIToS.MSA
+
+read(&quot;http://pfam.xfam.org/family/PF07388/alignment/full&quot;, Stockholm)</code></pre><pre class="documenter-example-output">AnnotatedMultipleSequenceAlignment with 632 annotations : 610×310 Named Array{MIToS.MSA.Residue,2}
+                Seq ╲ Col │  232   233   234   235  …  1150  1151  1152  1153
+──────────────────────────┼──────────────────────────────────────────────────
+A0A4R4NVL5_9ACTN/20-355   │    Q     I     F     E  …     -     -     -     -
+A0A1G9EU47_9GAMM/4-312    │    N     L     F     V        L     -     -     -
+A0A2T0MTV3_9ACTN/2-311    │    -     V     F     Y        S     Y     -     -
+A0A561TEV1_9ACTN/6-327    │    Q     I     F     Q        -     -     -     -
+A0A2S8WMS7_9MICC/3-321    │    -     L     I     A        -     -     -     -
+A0A1Y4FDM4_9FIRM/15-307   │    -     -     -     -        -     -     -     -
+A1ATF7_PELPD/200-311      │    -     -     -     -        -     -     -     -
+A0A2S4XWD6_9ACTN/16-332   │    Q     I     F     F        -     -     -     -
+A0A099Y4C6_9FLAO/4-292    │    N     I     F     I        E     C     L     -
+⋮                              ⋮     ⋮     ⋮     ⋮  ⋱     ⋮     ⋮     ⋮     ⋮
+A0A657AKB5_9GAMM/3-322    │    -     -     Y     F        E     T     L     -
+A0A2S4YZT7_9ACTN/8-320    │    -     I     F     C        -     -     -     -
+A0A2S5T452_9BURK/210-312  │    -     -     -     -        -     -     -     -
+A0A0N0TTD0_9ACTN/1-308    │    -     -     -     -        -     -     -     -
+A0A657AJS7_9GAMM/5-300    │    -     -     -     -        -     -     -     -
+K9TZG0_CHRTP/9-325        │    -     L     V     A        -     -     -     -
+A0A0L0K2N6_9ACTN/6-319    │    Q     I     Y     V        -     -     -     -
+A0A0F7N7H1_9ACTN/7-329    │    Q     I     F     E        -     -     -     -
+A0A2P2GGG4_9ACTN/8-328    │    Q     I     F     Q  …     -     -     -     -</pre><p>The third (and optional) argument of <code>read</code> and <code>parse</code> is the output MSA type:  </p><ul><li><code>Matrix{Residue}</code> : It only contains the aligned sequences.  </li><li><code>MultipleSequenceAlignment</code> : It contains the aligned sequences and their</li></ul><p>names/identifiers.  </p><ul><li><code>AnnotatedMultipleSequenceAlignment</code> : It&#39;s the richest MIToS&#39; MSA format and it&#39;s the</li></ul><p>default. It includes the aligned sequences, their names and the MSA annotations.  </p><p>Example of <code>Matrix{Residue}</code> output using a <code>Stockholm</code> file as input:</p><pre><code class="language-julia">read(&quot;http://pfam.xfam.org/family/PF07388/alignment/full&quot;, Stockholm, Matrix{Residue})</code></pre><pre class="documenter-example-output">610×310 Array{MIToS.MSA.Residue,2}:
+ Q  I  F  E  V  S  T  L  Y  G  A  A  T  …  A  Y  Y  S  I  P  -  -  -  -  -  -
+ N  L  F  V  V  E  S  P  L  Q  A  L  S     V  M  F  D  C  F  S  I  L  -  -  -
+ -  V  F  Y  A  S  T  L  F  G  V  M  S     R  Y  F  G  L  P  V  A  S  Y  -  -
+ Q  I  F  Q  V  S  T  L  Y  G  A  A  T     A  Y  Y  D  V  P  V  A  -  -  -  -
+ -  L  I  A  A  S  T  A  Y  Q  V  A  S     Q  L  F  D  M  P  -  -  -  -  -  -
+ -  -  -  -  -  -  -  -  -  -  -  -  -  …  -  -  -  -  -  -  -  -  -  -  -  -
+ -  -  -  -  -  -  -  -  -  -  -  -  -     Q  I  Y  P  Q  -  -  -  -  -  -  -
+ Q  I  F  F  A  S  T  L  Y  G  A  A  T     A  F  Y  G  L  P  A  -  -  -  -  -
+ N  I  F  I  F  S  S  P  L  Q  F  L  F     S  L  L  K  I  T  S  Y  E  C  L  -
+ -  -  -  -  -  -  -  -  -  -  -  -  -     -  -  -  -  -  -  -  -  -  -  -  -
+ ⋮              ⋮              ⋮        ⋱        ⋮              ⋮           
+ -  -  Y  F  I  S  S  P  L  H  F  F  I     W  L  R  P  D  I  R  V  E  T  L  -
+ -  I  F  C  A  S  T  L  Y  G  A  A  T     A  L  Y  G  L  P  V  A  -  -  -  -
+ -  -  -  -  -  -  -  -  -  -  -  -  -     Q  L  Y  G  E  G  T  -  -  -  -  -
+ -  -  -  -  -  -  -  -  -  -  -  -  -     V  Y  Y  G  V  P  V  A  -  -  -  -
+ -  -  -  -  -  -  -  -  -  -  -  -  -  …  L  I  F  G  D  -  -  -  -  -  -  -
+ -  L  V  A  C  Q  G  S  I  Q  L  I  T     -  -  -  -  -  -  -  -  -  -  -  -
+ Q  I  Y  V  A  S  T  L  Y  G  V  A  T     E  F  Y  G  I  P  V  A  -  -  -  -
+ Q  I  F  E  V  S  T  L  Y  G  A  A  T     T  L  Y  G  I  P  V  A  -  -  -  -
+ Q  I  F  Q  V  S  T  L  Y  G  A  A  T     V  Y  Y  G  V  P  V  A  -  -  -  -</pre><p>Because <code>read</code> calls <code>parse</code>, you should look into the documentation of <code>parse</code> to know the available keyword arguments. The optional keyword arguments of those functions are:  </p><ul><li><code>generatemapping</code> : If <code>generatemapping</code> is <code>true</code> (default: <code>false</code>), sequences and</li></ul><p>columns mappings are generated and saved in the MSA annotations. <strong>The default is <code>false</code> to not overwrite mappings by mistake when you read an annotated MSA file saved with MIToS.</strong>  </p><ul><li><code>useidcoordinates</code> : If <code>useidcoordinates</code> is <code>true</code> (default: <code>false</code>) and the names</li></ul><p>have the form <em>seqname/start-end</em>, MIToS uses this coordinates to generate sequence mappings. This is safe and useful with unmodified Pfam MSAs. <strong>Do not use it when reading an MSA saved with MIToS. MIToS deletes unaligned insert columns, therefore disrupts sequences that have them.</strong>  </p><ul><li><code>deletefullgaps</code> : Given that lowercase characters and dots are converted to gaps,</li></ul><p>unaligned insert columns in the MSA (derived from a HMM profile) are converted into full gap columns. <code>deletefullgaps</code> is <code>true</code> by default, deleting full gaps columns and therefore insert columns.  </p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p><strong>If you want to keep the insert columns...</strong>  Use the keyword argument <code>keepinserts</code> to <code>true</code> in <code>read</code>/<code>parse</code>. This only works with an <code>AnnotatedMultipleSequenceAlignment</code> output. A column annotation (<code>&quot;Aligned&quot;</code>) is stored in the annotations, where insert columns are marked with <code>0</code> and aligned columns with <code>1</code>.  </p></div></div><p>When <code>read</code> returns an <code>AnnotatedMultipleSequenceAlignment</code>, it uses the MSA <code>Annotations</code> to keep track of performed modifications. To access these notes, use <code>printmodifications</code>:  </p><pre><code class="language-julia">msa = read(&quot;http://pfam.xfam.org/family/PF01565/alignment/full&quot;, Stockholm)
+
+printmodifications(msa)</code></pre><pre class="documenter-example-output">-------------------
+2021-04-23T13:35:43.129
+
+deletefullgaps!  :  Deletes 898 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
+-------------------
+2021-04-23T13:35:43.189
+
+filtercolumns! : 898 columns have been deleted.</pre><h3 id="Writing-MSA-files"><a class="docs-heading-anchor" href="#Writing-MSA-files">Writing MSA files</a><a id="Writing-MSA-files-1"></a><a class="docs-heading-anchor-permalink" href="#Writing-MSA-files" title="Permalink"></a></h3><p>Julia REPL shows MSAs as Matrices. If you want to print them in another format, you should use the <code>print</code> function with an MSA object as first argument and the <code>FileFormat</code> <code>FASTA</code>, <code>Stockholm</code>, <code>PIR</code> or <code>Raw</code> as second argument.  </p><pre><code class="language-julia">using MIToS.MSA
+
+msa = read(&quot;http://pfam.xfam.org/family/PF16996/alignment/full&quot;, Stockholm) # reads a Stockholm MSA file
+
+print(msa, FASTA) # prints msa in FASTA format</code></pre><pre class="documenter-example-output">&gt;A0A139NMD7_9STRE/5-59
+KDDIFYKDIEGRMDELKRKPPKKEKKTRAERISTFFSVSLGLVILIGLLFTLFRI
+&gt;A0A139NPI6_9STRE/5-59
+NEDLFYKEVEGRMADLQQKAPEKEKKTGAERLNTLFSLALGLVILLGLLFTLLRM
+&gt;A0A0F3HAA3_STRPA/8-62
+KKDLFYKEVEGRMESLKRRPAEKEKTTRSEKINVTFNVIIGLVILLGVIFTLFRV
+&gt;A0A4Q0VKA2_9LACO/6-62
+KKDMLTHDISSRMKQEKRKVPARENETGGKALNITISVAIAIIVLAGILYPLV--
+&gt;A0A139NTT2_9STRE/3-57
+KKDLFYKDVEQKLDSLKQGQPKKEKASLGEKLNKAFVIALGLVILIGLIFTLIG-
+&gt;A8AWV6_STRGC/3-57
+KKDLFYKDIEGRLDELKHGRPKKEKASLGEKFNKAFVIALGLMILIGLIFTLIGV
+&gt;F9Q2V2_STROR/1-43
+------------MEELKQGALKKEKPTRGEKISKTFSILLGMLILLTLIFTLLGI
+&gt;A3CM62_STRSV/3-57
+KKDLFYKDIEGRLDELKHGKPKKEKASLGENLNKAFVIVLGLMILIGLIFTLIG-</pre><p>To save an MSA object to a file, use the <code>write</code> function. This function takes a filename as a first argument. If the filename ends with <code>.gz</code>, the output will be a compressed (gzipped) file. The next two arguments of <code>write</code> are passed to <code>print</code>, so <code>write</code> behaves as <code>print</code>.  </p><pre><code class="language-julia">write(&quot;msa.gz&quot;, msa, FASTA) # writes msa in FASTA format in a gzipped file</code></pre><h2 id="MSA-Annotations"><a class="docs-heading-anchor" href="#MSA-Annotations">MSA Annotations</a><a id="MSA-Annotations-1"></a><a class="docs-heading-anchor-permalink" href="#MSA-Annotations" title="Permalink"></a></h2><p>MSA annotations are based on the Stockholm format mark-ups. There are four types of annotations stored as dictionaries. All the annotations have a feature name as part of the key, which should be a single &quot;word&quot; (without spaces) and less than 50 characters long.  </p><ul><li><strong>File annotations</strong> : The annotations can contain either file or MSA information. They</li></ul><p>have feature names as keys and the values are strings (free text). Lines starting with <code>#=GF</code> in Stockholm format.  </p><ul><li><strong>Column annotations</strong> : They have feature names as keys and strings with exactly 1 char</li></ul><p>per column as values. Lines starting with <code>#=GC</code> in Stockholm format.  </p><ul><li><strong>Sequence annotations</strong> : The keys are tuples with the sequence name and the feature</li></ul><p>name. The values are free text (strings). Lines starting with <code>#=GS</code> in Stockholm format. Annotations in the <code>PIR</code>/NBRF format are also stored as sequence annotations. In particular, we use the names <code>&quot;Type&quot;</code> and <code>&quot;Title&quot;</code> to name the sequence type in the identifier line and the first comment line before the sequence in PIR files, respectively.  </p><ul><li><strong>Residue annotations</strong> : The keys are tuples with the sequence name and the feature</li></ul><p>name. The values are strings with exactly 1 char per column/residues. <code>#=GR</code> lines in Stockholm format.  </p><p>Julia REPL shows the <code>Annotations</code> type as they are represented in the <a href="https://en.wikipedia.org/wiki/Stockholm_format">Stockholm format<img src="../assets/external-link.png" alt/></a>. You can get the <code>Annotations</code> inside an annotated MSA or sequence using the <code>annotations</code> function.  </p><pre><code class="language-julia">annotations(msa)</code></pre><pre class="documenter-example-output">#=GF ID	Asp4
+#=GF AC	PF16996.7
+#=GF DE	Accessory secretory protein Sec Asp4
+#=GF AU	Coggill P;0000-0001-5731-1588
+#=GF SE	Pfam-B_7603 (release 27.0)
+#=GF GA	27.70 27.70;
+#=GF TC	29.00 28.80;
+#=GF NC	25.50 25.40;
+#=GF BM	hmmbuild HMM.ann SEED.ann
+#=GF SM	hmmsearch -Z 57096847 -E 1000 --cpu 4 HMM pfamseq
+#=GF TP	Family
+#=GF RN	[1]
+#=GF RM	23000954
+#=GF RT	Emerging themes in SecA2-mediated protein export.
+#=GF RA	Feltcher ME, Braunstein M;
+#=GF RL	Nat Rev Microbiol. 2012;10:779-789.
+#=GF DR	INTERPRO; IPR031551;
+#=GF DR	SO; 0100021; polypeptide_conserved_region;
+#=GF CC	Asp4 and Asp5 are putative accessory components of the SecY2
+#=GF CC	channel of the SecA2-SecY2 mediated export system, but they are
+#=GF CC	not present in all SecA2-SecY2 systems. This family of Asp4 is
+#=GF CC	found in Firmicutes [1].
+#=GF SQ	8
+#=GF MIToS_2021-04-23T13:35:43.611	deletefullgaps!  :  Deletes 4 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
+#=GF MIToS_2021-04-23T13:35:43.611	filtercolumns! : 4 columns have been deleted.
+#=GS A3CM62_STRSV/3-57	AC	A3CM62.1
+#=GS A0A139NTT2_9STRE/3-57	AC	A0A139NTT2.1
+#=GS A0A139NMD7_9STRE/5-59	AC	A0A139NMD7.1
+#=GS F9Q2V2_STROR/1-43	AC	F9Q2V2.1
+#=GS A0A4Q0VKA2_9LACO/6-62	AC	A0A4Q0VKA2.1
+#=GS A0A139NPI6_9STRE/5-59	AC	A0A139NPI6.1
+#=GS A0A0F3HAA3_STRPA/8-62	AC	A0A0F3HAA3.1
+#=GS A8AWV6_STRGC/3-57	AC	A8AWV6.1
+#=GC seq_cons			KKDLFYKDlEGRM--LK+tsPKKEKsTtGE+lNpsFsluLGLlILlGLIFTLlth
+</pre><p>Particular annotations can be accessed using the functions <code>getannot...</code>. These functions take the MSA/sequence as first argument and the feature name of the desired annotation as the last. In the case of <code>getannotsequence</code> and <code>getannotresidue</code>, the second argument should be the sequence name.  </p><pre><code class="language-julia">getannotsequence(msa, &quot;A0A139NPI6_9STRE/5-59&quot;, &quot;AC&quot;) # (&quot;A0A139NPI6_9STRE/5-59&quot;, &quot;AC&quot;) is the key in the dictionary</code></pre><pre class="documenter-example-output">&quot;A0A139NPI6.1&quot;</pre><p>If you want to add new annotations, you should use the <code>setannot…!</code> functions. These functions have the same arguments that <code>getannot...</code> functions except for an extra argument used to indicate the new annotation value.  </p><pre><code class="language-julia">setannotsequence!(msa, &quot;A0A139NPI6_9STRE/5-59&quot;, &quot;New_Feature_Name&quot;, &quot;New_Annotation&quot;)</code></pre><pre class="documenter-example-output">&quot;New_Annotation&quot;</pre><p>A <code>getannot...</code> function without the key (last arguments), returns the particular annotation dictionary. As you can see, the new sequence annotation is now part of our MSA annotations.  </p><pre><code class="language-julia">getannotsequence(msa)</code></pre><pre class="documenter-example-output">Dict{Tuple{String,String},String} with 9 entries:
+  (&quot;A3CM62_STRSV/3-57&quot;, &quot;AC&quot;)                   =&gt; &quot;A3CM62.1&quot;
+  (&quot;A0A139NTT2_9STRE/3-57&quot;, &quot;AC&quot;)               =&gt; &quot;A0A139NTT2.1&quot;
+  (&quot;A0A139NMD7_9STRE/5-59&quot;, &quot;AC&quot;)               =&gt; &quot;A0A139NMD7.1&quot;
+  (&quot;F9Q2V2_STROR/1-43&quot;, &quot;AC&quot;)                   =&gt; &quot;F9Q2V2.1&quot;
+  (&quot;A0A4Q0VKA2_9LACO/6-62&quot;, &quot;AC&quot;)               =&gt; &quot;A0A4Q0VKA2.1&quot;
+  (&quot;A0A139NPI6_9STRE/5-59&quot;, &quot;AC&quot;)               =&gt; &quot;A0A139NPI6.1&quot;
+  (&quot;A0A0F3HAA3_STRPA/8-62&quot;, &quot;AC&quot;)               =&gt; &quot;A0A0F3HAA3.1&quot;
+  (&quot;A8AWV6_STRGC/3-57&quot;, &quot;AC&quot;)                   =&gt; &quot;A8AWV6.1&quot;
+  (&quot;A0A139NPI6_9STRE/5-59&quot;, &quot;New_Feature_Name&quot;) =&gt; &quot;New_Annotation&quot;</pre><h2 id="Editing-your-MSA"><a class="docs-heading-anchor" href="#Editing-your-MSA">Editing your MSA</a><a id="Editing-your-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Editing-your-MSA" title="Permalink"></a></h2><p>MIToS offers functions to edit your MSA. Because these functions modify the msa, their names end with a bang <code>!</code>, following the Julia convention. Some of these functions have an <code>annotate</code> keyword argument (in general, it&#39;s <code>true</code> by default) to indicate if the modification should be recorded in the MSA/sequence annotations.  </p><p>One common task is to delete sequences or columns of the MSA. This could be done using the functions <code>filtersequences!</code> and <code>filtercolumns!</code>. These functions take the MSA or sequence (if it&#39;s possible) as first argument and a <code>BitVector</code> or <code>Vector{Bool}</code> mask as second argument. It deletes all the sequences or columns where the mask is <code>false</code>. These functions are also defined for <code>Annotations</code>, this allows to automatically update (modify) the annotations (and therefore, sequence and column mappings) in the MSA.  </p><p>This two deleting operations are used in the second and third mutating functions of the following list:  </p><ul><li><code>setreference!</code> : Sets one of the sequences as the first sequence of the MSA (query or</li></ul><p>reference sequence).  </p><ul><li><code>adjustreference!</code> : Deletes columns with gaps in the first sequence of the MSA</li></ul><p>(reference).  </p><ul><li><code>gapstrip!</code> : This function first calls <code>adjustreference!</code>, then deletes sequences with</li></ul><p>low (user defined) MSA coverage and finally, columns with user defined % of gaps.  </p><p>Also, there are several available funtions <code>shuffle_…!</code>. These functions are useful to generate random alignments. The <code>Information</code> module of <code>MIToS</code> uses them to calculate the Z scores of MI values.  </p><h4 id="Example:-Deleting-sequences"><a class="docs-heading-anchor" href="#Example:-Deleting-sequences">Example: Deleting sequences</a><a id="Example:-Deleting-sequences-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Deleting-sequences" title="Permalink"></a></h4><p>For example, if you want to keep only the proteins from <em>Actinobacteria</em> you can delete all the sequences that don&#39;t have <code>_9ACTN</code> in their UniProt entry names:  </p><pre><code class="language-julia">using MIToS.MSA
+
+msa = read(&quot;http://pfam.xfam.org/family/PF07388/alignment/full&quot;, Stockholm)
+
+sequencenames(msa) # the function sequencenames returns the sequence names in the MSA</code></pre><pre class="documenter-example-output">610-element Array{String,1}:
+ &quot;A0A4R4NVL5_9ACTN/20-355&quot;
+ &quot;A0A1G9EU47_9GAMM/4-312&quot;
+ &quot;A0A2T0MTV3_9ACTN/2-311&quot;
+ &quot;A0A561TEV1_9ACTN/6-327&quot;
+ &quot;A0A2S8WMS7_9MICC/3-321&quot;
+ &quot;A0A1Y4FDM4_9FIRM/15-307&quot;
+ &quot;A1ATF7_PELPD/200-311&quot;
+ &quot;A0A2S4XWD6_9ACTN/16-332&quot;
+ &quot;A0A099Y4C6_9FLAO/4-292&quot;
+ &quot;K9TTY0_CHRTP/9-335&quot;
+ ⋮
+ &quot;A0A657AKB5_9GAMM/3-322&quot;
+ &quot;A0A2S4YZT7_9ACTN/8-320&quot;
+ &quot;A0A2S5T452_9BURK/210-312&quot;
+ &quot;A0A0N0TTD0_9ACTN/1-308&quot;
+ &quot;A0A657AJS7_9GAMM/5-300&quot;
+ &quot;K9TZG0_CHRTP/9-325&quot;
+ &quot;A0A0L0K2N6_9ACTN/6-319&quot;
+ &quot;A0A0F7N7H1_9ACTN/7-329&quot;
+ &quot;A0A2P2GGG4_9ACTN/8-328&quot;</pre><pre><code class="language-julia">mask = map(x -&gt; occursin(r&quot;_9ACTN&quot;, x), sequencenames(msa)) # an element of mask is true if &quot;_9ACTN&quot; is in the name</code></pre><pre class="documenter-example-output">610-element Array{Bool,1}:
+ 1
+ 0
+ 1
+ 1
+ 0
+ 0
+ 0
+ 1
+ 0
+ 0
+ ⋮
+ 0
+ 1
+ 0
+ 1
+ 0
+ 0
+ 1
+ 1
+ 1</pre><pre><code class="language-julia">filtersequences!(msa, mask) # deletes all the sequences where mask is false
+
+sequencenames(msa)</code></pre><pre class="documenter-example-output">308-element Array{String,1}:
+ &quot;A0A4R4NVL5_9ACTN/20-355&quot;
+ &quot;A0A2T0MTV3_9ACTN/2-311&quot;
+ &quot;A0A561TEV1_9ACTN/6-327&quot;
+ &quot;A0A2S4XWD6_9ACTN/16-332&quot;
+ &quot;A0A0N0N9N0_9ACTN/3-323&quot;
+ &quot;A0A0B5DET6_9ACTN/6-318&quot;
+ &quot;A0A2T7SMV9_9ACTN/17-330&quot;
+ &quot;A0A327WAZ1_9ACTN/6-318&quot;
+ &quot;A0A1H6EY13_9ACTN/2-310&quot;
+ &quot;A0A371PTE8_9ACTN/8-320&quot;
+ ⋮
+ &quot;A0A384IRZ7_9ACTN/75-335&quot;
+ &quot;A0A3N6EG16_9ACTN/8-323&quot;
+ &quot;A0A5P0YVM1_9ACTN/6-329&quot;
+ &quot;A0A6G4X6U8_9ACTN/10-325&quot;
+ &quot;A0A2S4YZT7_9ACTN/8-320&quot;
+ &quot;A0A0N0TTD0_9ACTN/1-308&quot;
+ &quot;A0A0L0K2N6_9ACTN/6-319&quot;
+ &quot;A0A0F7N7H1_9ACTN/7-329&quot;
+ &quot;A0A2P2GGG4_9ACTN/8-328&quot;</pre><h4 id="Example:-Exporting-a-MSA-for-freecontact-(part-I)"><a class="docs-heading-anchor" href="#Example:-Exporting-a-MSA-for-freecontact-(part-I)">Example: Exporting a MSA for freecontact (part I)</a><a id="Example:-Exporting-a-MSA-for-freecontact-(part-I)-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Exporting-a-MSA-for-freecontact-(part-I)" title="Permalink"></a></h4><p>The most simple input for the command line tool <a href="https://rostlab.org/owiki/index.php/FreeContact">freecontact<img src="../assets/external-link.png" alt/></a> (if you don&#39;t want to set <code>--mincontsep</code>) is a <code>Raw</code> MSA file with a reference sequence without insertions or gaps. This is easy to get with MIToS using <code>read</code> (deletes the insert columns), <code>setreference!</code> (to choose a reference), <code>adjustreference!</code> (to delete columns with gaps in the reference) and <code>write</code> (to save it in <code>Raw</code> format) functions.  </p><pre><code class="language-julia-repl">julia&gt; using MIToS.MSA
+
+julia&gt; msa = read(&quot;http://pfam.xfam.org/family/PF02476/alignment/full&quot;, Stockholm)
+AnnotatedMultipleSequenceAlignment with 46 annotations : 25×126 Named Array{MIToS.MSA.Residue,2}
+               Seq ╲ Col │   9   10   11   12   13  …  195  196  197  198  199
+─────────────────────────┼────────────────────────────────────────────────────
+US02_GAHVM/120-237       │   M    L    E    S    E  …    F    C    C    -    -
+Q782M7_9ALPH/120-237     │   M    L    E    S    D       F    C    C    W    -
+A0A1R3T8S2_9ALPH/119-225 │   -    -    -    -    -       -    -    -    -    -
+B1A4T1_9ALPH/119-238     │   H    L    S    S    G       A    C    C    I    -
+A0A286MM82_9ALPH/107-180 │   -    L    H    T    D       -    -    -    -    -
+Q8V727_CHV1/110-256      │   -    L    C    E    P       P    C    V    A    C
+E2IUH4_SHV1/110-233      │   -    -    -    -    -       -    -    -    -    -
+A0A060Q503_9ALPH/110-250 │   -    L    H    G    P       S    C    P    A    -
+A0A089N806_BHV1K/1-103   │   -    -    -    -    -       -    -    -    -    -
+⋮                            ⋮    ⋮    ⋮    ⋮    ⋮  ⋱    ⋮    ⋮    ⋮    ⋮    ⋮
+US02_HHV2H/110-246       │   L    L    H    Q    E       P    C    F    T    C
+J9R0A8_9ALPH/178-313     │   -    -    -    -    -       -    -    -    -    -
+A0A1V0M8M6_9ALPH/120-239 │   Y    L    E    S    G       L    C    C    -    -
+Q67639_ILTV/100-201      │   H    L    S    S    G       -    -    -    -    -
+Q5PP72_9ALPH/135-256     │   Y    L    N    S    G       R    C    T    I    -
+Q6R5Q3_9ALPH/120-237     │   M    L    E    S    E       F    C    C    -    -
+H9E969_HHV1/110-247      │   -    L    H    R    D       P    C    C    A    C
+US02_EHV1B/111-262       │   H    L    N    S    S       -    -    -    -    -
+A0A455JKG4_9ALPH/102-211 │   L    L    N    R    G  …    -    -    -    -    -
+
+julia&gt; msa_coverage = coverage(msa)
+25×1 Named Array{Float64,2}
+          Seq ╲ Function │ coverage
+─────────────────────────┼─────────
+US02_GAHVM/120-237       │ 0.904762
+Q782M7_9ALPH/120-237     │ 0.928571
+A0A1R3T8S2_9ALPH/119-225 │  0.65873
+B1A4T1_9ALPH/119-238     │ 0.912698
+A0A286MM82_9ALPH/107-180 │ 0.515873
+Q8V727_CHV1/110-256      │ 0.992063
+E2IUH4_SHV1/110-233      │ 0.801587
+A0A060Q503_9ALPH/110-250 │ 0.984127
+A0A089N806_BHV1K/1-103   │ 0.738095
+⋮                                 ⋮
+US02_HHV2H/110-246       │ 0.984127
+J9R0A8_9ALPH/178-313     │ 0.761905
+A0A1V0M8M6_9ALPH/120-239 │ 0.928571
+Q67639_ILTV/100-201      │ 0.325397
+Q5PP72_9ALPH/135-256     │ 0.880952
+Q6R5Q3_9ALPH/120-237     │ 0.904762
+H9E969_HHV1/110-247      │  0.97619
+US02_EHV1B/111-262       │ 0.873016
+A0A455JKG4_9ALPH/102-211 │ 0.738095
+
+julia&gt; maxcoverage, maxindex = findmax(msa_coverage) # chooses the sequence with more coverage of the MSA
+(0.9920634920634921, CartesianIndex(6, 1))
+
+julia&gt; setreference!(msa, maxindex[1])
+AnnotatedMultipleSequenceAlignment with 47 annotations : 25×126 Named Array{MIToS.MSA.Residue,2}
+               Seq ╲ Col │   9   10   11   12   13  …  195  196  197  198  199
+─────────────────────────┼────────────────────────────────────────────────────
+Q8V727_CHV1/110-256      │   -    L    C    E    P  …    P    C    V    A    C
+Q782M7_9ALPH/120-237     │   M    L    E    S    D       F    C    C    W    -
+A0A1R3T8S2_9ALPH/119-225 │   -    -    -    -    -       -    -    -    -    -
+B1A4T1_9ALPH/119-238     │   H    L    S    S    G       A    C    C    I    -
+A0A286MM82_9ALPH/107-180 │   -    L    H    T    D       -    -    -    -    -
+US02_GAHVM/120-237       │   M    L    E    S    E       F    C    C    -    -
+E2IUH4_SHV1/110-233      │   -    -    -    -    -       -    -    -    -    -
+A0A060Q503_9ALPH/110-250 │   -    L    H    G    P       S    C    P    A    -
+A0A089N806_BHV1K/1-103   │   -    -    -    -    -       -    -    -    -    -
+⋮                            ⋮    ⋮    ⋮    ⋮    ⋮  ⋱    ⋮    ⋮    ⋮    ⋮    ⋮
+US02_HHV2H/110-246       │   L    L    H    Q    E       P    C    F    T    C
+J9R0A8_9ALPH/178-313     │   -    -    -    -    -       -    -    -    -    -
+A0A1V0M8M6_9ALPH/120-239 │   Y    L    E    S    G       L    C    C    -    -
+Q67639_ILTV/100-201      │   H    L    S    S    G       -    -    -    -    -
+Q5PP72_9ALPH/135-256     │   Y    L    N    S    G       R    C    T    I    -
+Q6R5Q3_9ALPH/120-237     │   M    L    E    S    E       F    C    C    -    -
+H9E969_HHV1/110-247      │   -    L    H    R    D       P    C    C    A    C
+US02_EHV1B/111-262       │   H    L    N    S    S       -    -    -    -    -
+A0A455JKG4_9ALPH/102-211 │   L    L    N    R    G  …    -    -    -    -    -
+
+julia&gt; adjustreference!(msa)
+AnnotatedMultipleSequenceAlignment with 48 annotations : 25×125 Named Array{MIToS.MSA.Residue,2}
+               Seq ╲ Col │  10   11   12   13   14  …  195  196  197  198  199
+─────────────────────────┼────────────────────────────────────────────────────
+Q8V727_CHV1/110-256      │   L    C    E    P    R  …    P    C    V    A    C
+Q782M7_9ALPH/120-237     │   L    E    S    D    V       F    C    C    W    -
+A0A1R3T8S2_9ALPH/119-225 │   -    -    -    -    -       -    -    -    -    -
+B1A4T1_9ALPH/119-238     │   L    S    S    G    I       A    C    C    I    -
+A0A286MM82_9ALPH/107-180 │   L    H    T    D    D       -    -    -    -    -
+US02_GAHVM/120-237       │   L    E    S    E    V       F    C    C    -    -
+E2IUH4_SHV1/110-233      │   -    -    -    -    -       -    -    -    -    -
+A0A060Q503_9ALPH/110-250 │   L    H    G    P    R       S    C    P    A    -
+A0A089N806_BHV1K/1-103   │   -    -    -    -    -       -    -    -    -    -
+⋮                            ⋮    ⋮    ⋮    ⋮    ⋮  ⋱    ⋮    ⋮    ⋮    ⋮    ⋮
+US02_HHV2H/110-246       │   L    H    Q    E    R       P    C    F    T    C
+J9R0A8_9ALPH/178-313     │   -    -    -    -    -       -    -    -    -    -
+A0A1V0M8M6_9ALPH/120-239 │   L    E    S    G    I       L    C    C    -    -
+Q67639_ILTV/100-201      │   L    S    S    G    A       -    -    -    -    -
+Q5PP72_9ALPH/135-256     │   L    N    S    G    A       R    C    T    I    -
+Q6R5Q3_9ALPH/120-237     │   L    E    S    E    V       F    C    C    -    -
+H9E969_HHV1/110-247      │   L    H    R    D    Q       P    C    C    A    C
+US02_EHV1B/111-262       │   L    N    S    S    L       -    -    -    -    -
+A0A455JKG4_9ALPH/102-211 │   L    N    R    G    G  …    -    -    -    -    -
+
+julia&gt; write(&quot;tofreecontact.msa&quot;, msa, Raw)
+
+julia&gt; print(read(&quot;tofreecontact.msa&quot;, String)) # It displays the contents of the output file
+LCEPRPRPRLYHLWVVGAADLCVPFLEHLRRARRLVTIRVTDAWAGGSWPLPDGLAVGETVPWTPFPTAHNHPLAALFGGYEYRYGVVRPGWLRETVPRLWPGSESAAAEAAKTPHPARRPCVAC
+LESDVSENTSYSLWIVGAADLCRAALEYIPLPKRLLAVKVAGTWSGMPWALPDTIPTLLTSTWEPTFETAEDKEHFRDNGMTCVYKIIGS-------PPDPPKPPRTEPSRASSR-SDKVFCCW-
+------QTDRFRLWIIGAADICQQALSSFPKNMRRITVKVNGEWPGNPCFLDTNLEPVLISSWKPVSWPEK-ENNIDTSKLLCRYELLIP-----------------------------------
+LSSGILGNHTFDMWIIGAADICKPAIEQLPNSKRFITIKVPGTWSGLTWEKPDGLSPLTVTEWDPCDDETMSKIEKKLVGIKCCYDLIGQ----------PAAAKHNSELDDSKDCCNGPACCI-
+LHTDDPEGGPYHLWLFGAADLCAPAFTSIPAARRLVYARLNSFVGGSPWRPPVCGQARILVPWNP------------------------------------------------------------
+LESEVSGNAPHSLWIVGAADICRIALECIPLPKRLLAIKVSGTWSGMPWAIPDNIQTLLTSTWEPKFDTPEDRAHFCDSDMVCVYKILGS----------PPNPLKPPEIEPPQMTPGRLFCC--
+------DQRLFHVWIVGAADLCEPLLACLSTGARCVVIEIGGLWGGRSWLPPAYARSGASTSWTPLPPPTGSAAESALEGCEYRYAIIPG----VEARRRPASRDENDERS--------------
+LHGPRDRPRLYHMWVVGAADLCAPFLESLWRMRRLITIKIPDGWVGASWHLPEPFLPATSVAWTPFPAPPNHPLESLLQNYEYRYGILSPRWLRNLVNKWKNMGGRPTLPPATSEHITQNSCPA-
+------------MWVFGAADLYAPIFAHIAATTRLVYAQLDCTFAGAAWRLP-RRGPAIASPWPPYDTPTLPELVAGGVLLRLVYEVVDR-----SAAPRPAKREPPCPGG--------------
+LESEASDNVSYSLWILGAADICRTAIESIPLPKRLFAIKVPGTWAGMPWAIPCEIQTLLTSTWEPKFENIEDKAYFNDSNMACVYQIIGS----------PPDVPQLQGLGIESTPPKRNLCCC-
+LHRDQPSPRLYHLWVVGAADLCVPFLEYAQKIRRFIAIKTPDAWVGEPWAVPTRFLPEWTVAWTPFPAAPNHPLETLLSRYEYQYGVVLPRWLRSLIALHKPHPATPGPLTTSHP--VRRPCCAC
+LCGPRPRPRLYHLWVVGAADLCAPFLEHLRDARRLVAVRVPDAWAGGSWPLPDGLALGETVPWTPFPTAHNHPLAALFGAYEYRYGVLRPGRLREAASRLWAGPPPRPPWAAETEHPARRPCAAC
+LNSGIFGNYPLNLWVFGAADLCEPVISNIPGPKRLIYAYVSCEWPEPSW-KPENVKHIDDSGWVPVLDTFLSSFKVPPMLSDIFYGTTFNTPFNFESSPRCPSISSSSSSSSSSS----SSC---
+--------KLYHMWVIGAADICDPFLSCLQQKARFITIKMDFIWEGAAWLPPPRMCPKKTVPWVPCPISQDPALEQLLSNCSYEYGVVGPR----------------------------------
+LNSSVMGNRPYHLWVFGAADICRPVFDLLPGPKRLVYAELSEEWPGPSW-QPPP-----AVPWTAPERGTPADLEVPPRVARMVYAVVNRSWLRSRPLRHVPGRATPATPSVSTP-SGRGRC---
+LHQERPGPRLYHLWVVGAADLCVPFLEYAQKTRRFIAMKTNDAWVGEPWPLPDRFLPERTVSWTPFPAAPNHPLENLLSRYEYQYGVVVPRWLRSLVAPHKPRPASSRPHPATHP--TQRPCFTC
+LHQERPGPRLYHLWVVGAADLCVPFFEYAQKTRRFIATKTNDAWVGEPWPLPDRFLPERTVSWTPFPAAPNHPLENLLSRYEYQYGVVVPRWLRSLVAPHKPRPASSRPHPATHP--TQRPCFTC
+--------ELFAVWVVGGADICAPAMEAMMALGRVVAIAGAHSLTGSSWPISARLLPAVWHSWEPYPAAPTNPLKNTFAACTFVAGTVNARWLGALTSHTRPQV---------------------
+LESGIMSGGPFSLWIIGAADLCKEAIEHIPTPKRMFALQVKGTWSGMPWAIPEAIPVLLESSWSPQFTHPLDQRGFLESGMRGVYKVIGR-------ASDPPRNNSEPETRKPRGRLLKYLCC--
+LSSGAYAAKEFHLWVLGTADICMAALN-LPAPKTFLITETG------------------------------------------------------------------------------------
+LNSGARGTAPIHLWILGAADLCDQVLLAAS---RSTAAGAPGAPTGARLT---RRRPGLTDA------DALDVIVAGIPATRAMFARVHNEALHAQIVTRGDVRRRRGGRGNGRE--RAPRCTI-
+LESEVSGNAPHSLWIVGAADICRIALECIPLPKRLLAIKVSGTWSGMPWAIPDNIQTLLTSTWEPKFDTPEDRAHFCDSDMVCVYKILGS----------PPNPLKPPEIEPPQMTPGRLFCC--
+LHRDQPSPRLYHLWVVGAADLCVPFLEYAQKIRRFIAIKTPDAWVGEPWAVPTRFLPEWTVAWTPFPAAPNHPLETLLSRYEYQYGVVLPRWLRSLIALHKPHPATSHPLTTSHS--VRRPCCAC
+LNSSLIINQPYHLWVLGAADLCKPVFDLIPGPKRMVYAEIADEF-HKSW-QPPETIPWTTVEHNGFSKHSSNSLVRPPTVKRVIYAVVDPARLREIPAPGRPLPRRRPSEG--------------
+LNRGGAGARPFHLWVLGAADLFAPVLAHVAAKTRLVYAQLDCAFAGAAWPLP-RRGPAVAGAWPPYETPALAELRAAGAFVRMVYEVVEP-RGE-------------------------------</code></pre><h2 id="Column-and-sequence-mappings"><a class="docs-heading-anchor" href="#Column-and-sequence-mappings">Column and sequence mappings</a><a id="Column-and-sequence-mappings-1"></a><a class="docs-heading-anchor-permalink" href="#Column-and-sequence-mappings" title="Permalink"></a></h2><p>Inserts in a Stockholm MSA allow to access the full fragment of the aligned sequences. Using this, combined with the sequence names that contain coordinates used in Pfam, you can know what is the UniProt residue number of each residue in the MSA.   </p><pre><code class="language-julia">&quot;PROT_SPECI/3-15 .....insertALIGNED&quot;
+#                     3456789111111
+#                            012345</code></pre><p>MIToS <code>read</code> and <code>parse</code> functions delete the insert columns, but they do the mapping between each residue and its residue number before deleting insert columns when <code>generatemapping</code> is <code>true</code>. If you don&#39;t set <code>useidcoordinates</code> to <code>true</code>, the residue first <code>i</code> residue will be 1 instead of 3 in the previous example.  </p><pre><code class="language-julia">using MIToS.MSA
+
+msa = parse(&quot;PROT_SPECI/3-15 .....insertALIGNED&quot;, Stockholm, generatemapping=true, useidcoordinates=true)</code></pre><pre class="documenter-example-output">AnnotatedMultipleSequenceAlignment with 4 annotations : 1×7 Named Array{MIToS.MSA.Residue,2}
+      Seq ╲ Col │ 12  13  14  15  16  17  18
+────────────────┼───────────────────────────
+PROT_SPECI/3-15 │  A   L   I   G   N   E   D</pre><p>MIToS also keeps the column number of the input MSA and its total number of columns. All this data is stored in the MSA annotations using the <code>SeqMap</code>, <code>ColMap</code> and <code>NCol</code> feature names.  </p><pre><code class="language-julia">annotations(msa)</code></pre><pre class="documenter-example-output">#=GF NCol	18
+#=GF ColMap	12,13,14,15,16,17,18
+#=GF MIToS_2021-04-23T13:35:49.951	deletefullgaps!  :  Deletes 11 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
+#=GF MIToS_2021-04-23T13:35:49.951	filtercolumns! : 11 columns have been deleted.
+#=GS PROT_SPECI/3-15	SeqMap	9,10,11,12,13,14,15
+</pre><p>To have an easy access to mapping data, MIToS provides the <code>getsequencemapping</code> and <code>getcolumnmapping</code> functions.  </p><pre><code class="language-julia">getsequencemapping(msa, &quot;PROT_SPECI/3-15&quot;)</code></pre><pre class="documenter-example-output">7-element Array{Int64,1}:
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15</pre><pre><code class="language-julia">getcolumnmapping(msa)</code></pre><pre class="documenter-example-output">7-element Array{Int64,1}:
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18</pre><h4 id="Example:-Exporting-a-MSA-for-freecontact-(part-II)"><a class="docs-heading-anchor" href="#Example:-Exporting-a-MSA-for-freecontact-(part-II)">Example: Exporting a MSA for freecontact (part II)</a><a id="Example:-Exporting-a-MSA-for-freecontact-(part-II)-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Exporting-a-MSA-for-freecontact-(part-II)" title="Permalink"></a></h4><p>If we want to use the <code>--mincontsep</code> argument of <code>freecontact</code> to calculate scores between distant residues, we will need to add a header to the MSA. This header should contains the residue number of the first residue of the sequence and the full fragment of that sequence (with the inserts). This data is used by FreeContact to calculate the residue number of each residue in the reference sequence.   We are going to use MIToS mapping data to create this header, so we read the MSA with <code>generatemapping</code> and <code>useidcoordinates</code> set to <code>true</code>.  </p><pre><code class="language-julia">using MIToS.MSA
+
+msa = read( &quot;http://pfam.xfam.org/family/PF02476/alignment/full&quot;, Stockholm,
+            generatemapping=true, useidcoordinates=true)</code></pre><pre class="documenter-example-output">AnnotatedMultipleSequenceAlignment with 74 annotations : 25×126 Named Array{MIToS.MSA.Residue,2}
+               Seq ╲ Col │   9   10   11   12   13  …  195  196  197  198  199
+─────────────────────────┼────────────────────────────────────────────────────
+US02_GAHVM/120-237       │   M    L    E    S    E  …    F    C    C    -    -
+Q782M7_9ALPH/120-237     │   M    L    E    S    D       F    C    C    W    -
+A0A1R3T8S2_9ALPH/119-225 │   -    -    -    -    -       -    -    -    -    -
+B1A4T1_9ALPH/119-238     │   H    L    S    S    G       A    C    C    I    -
+A0A286MM82_9ALPH/107-180 │   -    L    H    T    D       -    -    -    -    -
+Q8V727_CHV1/110-256      │   -    L    C    E    P       P    C    V    A    C
+E2IUH4_SHV1/110-233      │   -    -    -    -    -       -    -    -    -    -
+A0A060Q503_9ALPH/110-250 │   -    L    H    G    P       S    C    P    A    -
+A0A089N806_BHV1K/1-103   │   -    -    -    -    -       -    -    -    -    -
+⋮                            ⋮    ⋮    ⋮    ⋮    ⋮  ⋱    ⋮    ⋮    ⋮    ⋮    ⋮
+US02_HHV2H/110-246       │   L    L    H    Q    E       P    C    F    T    C
+J9R0A8_9ALPH/178-313     │   -    -    -    -    -       -    -    -    -    -
+A0A1V0M8M6_9ALPH/120-239 │   Y    L    E    S    G       L    C    C    -    -
+Q67639_ILTV/100-201      │   H    L    S    S    G       -    -    -    -    -
+Q5PP72_9ALPH/135-256     │   Y    L    N    S    G       R    C    T    I    -
+Q6R5Q3_9ALPH/120-237     │   M    L    E    S    E       F    C    C    -    -
+H9E969_HHV1/110-247      │   -    L    H    R    D       P    C    C    A    C
+US02_EHV1B/111-262       │   H    L    N    S    S       -    -    -    -    -
+A0A455JKG4_9ALPH/102-211 │   L    L    N    R    G  …    -    -    -    -    -</pre><p>Here, we are going to choose the sequence with more coverage of the MSA as our reference sequence.  </p><pre><code class="language-julia">msa_coverage = coverage(msa)
+maxcoverage, maxindex = findmax(msa_coverage)
+setreference!(msa, maxindex[1])
+adjustreference!(msa)</code></pre><pre class="documenter-example-output">AnnotatedMultipleSequenceAlignment with 76 annotations : 25×125 Named Array{MIToS.MSA.Residue,2}
+               Seq ╲ Col │  10   11   12   13   14  …  195  196  197  198  199
+─────────────────────────┼────────────────────────────────────────────────────
+Q8V727_CHV1/110-256      │   L    C    E    P    R  …    P    C    V    A    C
+Q782M7_9ALPH/120-237     │   L    E    S    D    V       F    C    C    W    -
+A0A1R3T8S2_9ALPH/119-225 │   -    -    -    -    -       -    -    -    -    -
+B1A4T1_9ALPH/119-238     │   L    S    S    G    I       A    C    C    I    -
+A0A286MM82_9ALPH/107-180 │   L    H    T    D    D       -    -    -    -    -
+US02_GAHVM/120-237       │   L    E    S    E    V       F    C    C    -    -
+E2IUH4_SHV1/110-233      │   -    -    -    -    -       -    -    -    -    -
+A0A060Q503_9ALPH/110-250 │   L    H    G    P    R       S    C    P    A    -
+A0A089N806_BHV1K/1-103   │   -    -    -    -    -       -    -    -    -    -
+⋮                            ⋮    ⋮    ⋮    ⋮    ⋮  ⋱    ⋮    ⋮    ⋮    ⋮    ⋮
+US02_HHV2H/110-246       │   L    H    Q    E    R       P    C    F    T    C
+J9R0A8_9ALPH/178-313     │   -    -    -    -    -       -    -    -    -    -
+A0A1V0M8M6_9ALPH/120-239 │   L    E    S    G    I       L    C    C    -    -
+Q67639_ILTV/100-201      │   L    S    S    G    A       -    -    -    -    -
+Q5PP72_9ALPH/135-256     │   L    N    S    G    A       R    C    T    I    -
+Q6R5Q3_9ALPH/120-237     │   L    E    S    E    V       F    C    C    -    -
+H9E969_HHV1/110-247      │   L    H    R    D    Q       P    C    C    A    C
+US02_EHV1B/111-262       │   L    N    S    S    L       -    -    -    -    -
+A0A455JKG4_9ALPH/102-211 │   L    N    R    G    G  …    -    -    -    -    -</pre><p>MIToS deletes the residues in insert columns, so we are going to use the sequence mapping to generate the whole fragment of the reference sequence (filling the missing regions with <code>&#39;x&#39;</code>).  </p><pre><code class="language-julia">seqmap = getsequencemapping(msa, 1) # seqmap will be a vector with the residue numbers of the first sequence (reference)
+
+seq = collect( stringsequence(msa, 1) ) # seq will be a Vector of Chars with the reference sequence
+
+sequence = map(seqmap[1]:seqmap[end]) do seqpos # for each position in the whole fragment
+    if seqpos in seqmap                         # if that position is in the MSA
+        popfirst!(seq)                          # the residue is taken from seq
+    else                                        # otherwise
+        &#39;x&#39;                                     # &#39;x&#39; is included
+    end
+end
+
+sequence = join(sequence) # join the Chars on the Vector to create a string</code></pre><pre class="documenter-example-output">&quot;LCEPRPRPRLYHLWVVGAADLCVPFLEHLRRARxxxRLVTIRVTDAWAxGGSWPLPDGLAVGETVPWTPFPTAHNHPLAALFGGYEYRYGVVRPxxxxxxxxxxxxxxGWLRETVPRLWPGSESAAAEAAKTPxxxHPARRPCVAC&quot;</pre><p>Once we have the whole fragment of the sequence, we create the file and write the header in the required format (as in the man page of freecontact).  </p><pre><code class="language-julia">open(&quot;tofreecontact.msa&quot;, &quot;w&quot;) do fh
+
+    println(fh, &quot;# querystart=&quot;, seqmap[1])
+
+    println(fh, &quot;# query=&quot;, sequence )
+
+end</code></pre><p>As last (optional) argument, <code>write</code> takes the mode in which is opened the file. We use <code>&quot;a&quot;</code> here to append the MSA to the header.  </p><pre><code class="language-julia">write(&quot;tofreecontact.msa&quot;, msa, Raw, &quot;a&quot;)</code></pre><pre><code class="language-julia">print(read(&quot;tofreecontact.msa&quot;, String)) # It displays the contents of the output file</code></pre><pre class="documenter-example-output"># querystart=111
+# query=LCEPRPRPRLYHLWVVGAADLCVPFLEHLRRARxxxRLVTIRVTDAWAxGGSWPLPDGLAVGETVPWTPFPTAHNHPLAALFGGYEYRYGVVRPxxxxxxxxxxxxxxGWLRETVPRLWPGSESAAAEAAKTPxxxHPARRPCVAC
+LCEPRPRPRLYHLWVVGAADLCVPFLEHLRRARRLVTIRVTDAWAGGSWPLPDGLAVGETVPWTPFPTAHNHPLAALFGGYEYRYGVVRPGWLRETVPRLWPGSESAAAEAAKTPHPARRPCVAC
+LESDVSENTSYSLWIVGAADLCRAALEYIPLPKRLLAVKVAGTWSGMPWALPDTIPTLLTSTWEPTFETAEDKEHFRDNGMTCVYKIIGS-------PPDPPKPPRTEPSRASSR-SDKVFCCW-
+------QTDRFRLWIIGAADICQQALSSFPKNMRRITVKVNGEWPGNPCFLDTNLEPVLISSWKPVSWPEK-ENNIDTSKLLCRYELLIP-----------------------------------
+LSSGILGNHTFDMWIIGAADICKPAIEQLPNSKRFITIKVPGTWSGLTWEKPDGLSPLTVTEWDPCDDETMSKIEKKLVGIKCCYDLIGQ----------PAAAKHNSELDDSKDCCNGPACCI-
+LHTDDPEGGPYHLWLFGAADLCAPAFTSIPAARRLVYARLNSFVGGSPWRPPVCGQARILVPWNP------------------------------------------------------------
+LESEVSGNAPHSLWIVGAADICRIALECIPLPKRLLAIKVSGTWSGMPWAIPDNIQTLLTSTWEPKFDTPEDRAHFCDSDMVCVYKILGS----------PPNPLKPPEIEPPQMTPGRLFCC--
+------DQRLFHVWIVGAADLCEPLLACLSTGARCVVIEIGGLWGGRSWLPPAYARSGASTSWTPLPPPTGSAAESALEGCEYRYAIIPG----VEARRRPASRDENDERS--------------
+LHGPRDRPRLYHMWVVGAADLCAPFLESLWRMRRLITIKIPDGWVGASWHLPEPFLPATSVAWTPFPAPPNHPLESLLQNYEYRYGILSPRWLRNLVNKWKNMGGRPTLPPATSEHITQNSCPA-
+------------MWVFGAADLYAPIFAHIAATTRLVYAQLDCTFAGAAWRLP-RRGPAIASPWPPYDTPTLPELVAGGVLLRLVYEVVDR-----SAAPRPAKREPPCPGG--------------
+LESEASDNVSYSLWILGAADICRTAIESIPLPKRLFAIKVPGTWAGMPWAIPCEIQTLLTSTWEPKFENIEDKAYFNDSNMACVYQIIGS----------PPDVPQLQGLGIESTPPKRNLCCC-
+LHRDQPSPRLYHLWVVGAADLCVPFLEYAQKIRRFIAIKTPDAWVGEPWAVPTRFLPEWTVAWTPFPAAPNHPLETLLSRYEYQYGVVLPRWLRSLIALHKPHPATPGPLTTSHP--VRRPCCAC
+LCGPRPRPRLYHLWVVGAADLCAPFLEHLRDARRLVAVRVPDAWAGGSWPLPDGLALGETVPWTPFPTAHNHPLAALFGAYEYRYGVLRPGRLREAASRLWAGPPPRPPWAAETEHPARRPCAAC
+LNSGIFGNYPLNLWVFGAADLCEPVISNIPGPKRLIYAYVSCEWPEPSW-KPENVKHIDDSGWVPVLDTFLSSFKVPPMLSDIFYGTTFNTPFNFESSPRCPSISSSSSSSSSSS----SSC---
+--------KLYHMWVIGAADICDPFLSCLQQKARFITIKMDFIWEGAAWLPPPRMCPKKTVPWVPCPISQDPALEQLLSNCSYEYGVVGPR----------------------------------
+LNSSVMGNRPYHLWVFGAADICRPVFDLLPGPKRLVYAELSEEWPGPSW-QPPP-----AVPWTAPERGTPADLEVPPRVARMVYAVVNRSWLRSRPLRHVPGRATPATPSVSTP-SGRGRC---
+LHQERPGPRLYHLWVVGAADLCVPFLEYAQKTRRFIAMKTNDAWVGEPWPLPDRFLPERTVSWTPFPAAPNHPLENLLSRYEYQYGVVVPRWLRSLVAPHKPRPASSRPHPATHP--TQRPCFTC
+LHQERPGPRLYHLWVVGAADLCVPFFEYAQKTRRFIATKTNDAWVGEPWPLPDRFLPERTVSWTPFPAAPNHPLENLLSRYEYQYGVVVPRWLRSLVAPHKPRPASSRPHPATHP--TQRPCFTC
+--------ELFAVWVVGGADICAPAMEAMMALGRVVAIAGAHSLTGSSWPISARLLPAVWHSWEPYPAAPTNPLKNTFAACTFVAGTVNARWLGALTSHTRPQV---------------------
+LESGIMSGGPFSLWIIGAADLCKEAIEHIPTPKRMFALQVKGTWSGMPWAIPEAIPVLLESSWSPQFTHPLDQRGFLESGMRGVYKVIGR-------ASDPPRNNSEPETRKPRGRLLKYLCC--
+LSSGAYAAKEFHLWVLGTADICMAALN-LPAPKTFLITETG------------------------------------------------------------------------------------
+LNSGARGTAPIHLWILGAADLCDQVLLAAS---RSTAAGAPGAPTGARLT---RRRPGLTDA------DALDVIVAGIPATRAMFARVHNEALHAQIVTRGDVRRRRGGRGNGRE--RAPRCTI-
+LESEVSGNAPHSLWIVGAADICRIALECIPLPKRLLAIKVSGTWSGMPWAIPDNIQTLLTSTWEPKFDTPEDRAHFCDSDMVCVYKILGS----------PPNPLKPPEIEPPQMTPGRLFCC--
+LHRDQPSPRLYHLWVVGAADLCVPFLEYAQKIRRFIAIKTPDAWVGEPWAVPTRFLPEWTVAWTPFPAAPNHPLETLLSRYEYQYGVVLPRWLRSLIALHKPHPATSHPLTTSHS--VRRPCCAC
+LNSSLIINQPYHLWVLGAADLCKPVFDLIPGPKRMVYAEIADEF-HKSW-QPPETIPWTTVEHNGFSKHSSNSLVRPPTVKRVIYAVVDPARLREIPAPGRPLPRRRPSEG--------------
+LNRGGAGARPFHLWVLGAADLFAPVLAHVAAKTRLVYAQLDCAFAGAAWPLP-RRGPAVAGAWPPYETPALAELRAAGAFVRMVYEVVEP-RGE-------------------------------</pre><h2 id="Get-sequences-from-a-MSA"><a class="docs-heading-anchor" href="#Get-sequences-from-a-MSA">Get sequences from a MSA</a><a id="Get-sequences-from-a-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Get-sequences-from-a-MSA" title="Permalink"></a></h2><p>It&#39;s possible to index the MSA as any other matrix to get an aligned sequence. This will be return a <code>Array</code> of <code>Residue</code>s without annotations but keeping names/identifiers.  </p><pre><code class="language-julia">using MIToS.MSA
+
+msa = read( &quot;http://pfam.xfam.org/family/PF16996/alignment/full&quot;, Stockholm,
+            generatemapping=true, useidcoordinates=true)</code></pre><pre class="documenter-example-output">AnnotatedMultipleSequenceAlignment with 39 annotations : 8×55 Named Array{MIToS.MSA.Residue,2}
+            Seq ╲ Col │  1   2   3   4   5   6  …  52  53  54  55  56  57
+──────────────────────┼──────────────────────────────────────────────────
+A0A139NMD7_9STRE/5-59 │  K   D   D   I   F   Y  …   F   T   L   F   R   I
+A0A139NPI6_9STRE/5-59 │  N   E   D   L   F   Y      F   T   L   L   R   M
+A0A0F3HAA3_STRPA/8-62 │  K   K   D   L   F   Y      F   T   L   F   R   V
+A0A4Q0VKA2_9LACO/6-62 │  K   K   D   M   L   T      Y   P   L   V   -   -
+A0A139NTT2_9STRE/3-57 │  K   K   D   L   F   Y      F   T   L   I   G   -
+A8AWV6_STRGC/3-57     │  K   K   D   L   F   Y      F   T   L   I   G   V
+F9Q2V2_STROR/1-43     │  -   -   -   -   -   -      F   T   L   L   G   I
+A3CM62_STRSV/3-57     │  K   K   D   L   F   Y  …   F   T   L   I   G   -</pre><pre><code class="language-julia">msa[2,:] # second sequence of the MSA, it keeps column names</code></pre><pre class="documenter-example-output">55-element Named Array{MIToS.MSA.Residue,1}
+Col  │ 
+─────┼──
+1    │ N
+2    │ E
+3    │ D
+4    │ L
+5    │ F
+6    │ Y
+7    │ K
+8    │ E
+9    │ V
+⋮      ⋮
+49   │ G
+50   │ L
+51   │ L
+52   │ F
+53   │ T
+54   │ L
+55   │ L
+56   │ R
+57   │ M</pre><pre><code class="language-julia">msa[2:2,:] # Using the range 2:2 to select the second sequence, keeping also the sequence name</code></pre><pre class="documenter-example-output">1×55 Named Array{MIToS.MSA.Residue,2}
+            Seq ╲ Col │  1   2   3   4   5   6  …  52  53  54  55  56  57
+──────────────────────┼──────────────────────────────────────────────────
+A0A139NPI6_9STRE/5-59 │  N   E   D   L   F   Y  …   F   T   L   L   R   M</pre><p>If you want to obtain the aligned sequence with its name and annotations (and therefore sequence and column mappings), you should use the function <code>getsequence</code>. This function returns an <code>AlignedSequence</code> with the sequence name from a <code>MultipleSequenceAlignment</code> or an <code>AnnotatedAlignedSequence</code>, that also contains annotations, from an <code>AnnotatedMultipleSequenceAlignment</code>.  </p><pre><code class="language-julia">secondsequence = getsequence(msa, 2)</code></pre><pre class="documenter-example-output">AnnotatedAlignedSequence with 25 annotations : 1×55 Named Array{MIToS.MSA.Residue,2}
+            Seq ╲ Col │  1   2   3   4   5   6  …  52  53  54  55  56  57
+──────────────────────┼──────────────────────────────────────────────────
+A0A139NPI6_9STRE/5-59 │  N   E   D   L   F   Y  …   F   T   L   L   R   M</pre><pre><code class="language-julia">annotations(secondsequence)</code></pre><pre class="documenter-example-output">#=GF ID	Asp4
+#=GF AC	PF16996.7
+#=GF DE	Accessory secretory protein Sec Asp4
+#=GF AU	Coggill P;0000-0001-5731-1588
+#=GF SE	Pfam-B_7603 (release 27.0)
+#=GF GA	27.70 27.70;
+#=GF TC	29.00 28.80;
+#=GF NC	25.50 25.40;
+#=GF BM	hmmbuild HMM.ann SEED.ann
+#=GF SM	hmmsearch -Z 57096847 -E 1000 --cpu 4 HMM pfamseq
+#=GF TP	Family
+#=GF RN	[1]
+#=GF RM	23000954
+#=GF RT	Emerging themes in SecA2-mediated protein export.
+#=GF RA	Feltcher ME, Braunstein M;
+#=GF RL	Nat Rev Microbiol. 2012;10:779-789.
+#=GF DR	INTERPRO; IPR031551;
+#=GF DR	SO; 0100021; polypeptide_conserved_region;
+#=GF CC	Asp4 and Asp5 are putative accessory components of the SecY2
+#=GF CC	channel of the SecA2-SecY2 mediated export system, but they are
+#=GF CC	not present in all SecA2-SecY2 systems. This family of Asp4 is
+#=GF CC	found in Firmicutes [1].
+#=GF SQ	8
+#=GF NCol	59
+#=GF ColMap	1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57
+#=GF MIToS_2021-04-23T13:35:50.822	deletefullgaps!  :  Deletes 4 columns full of gaps (inserts generate full gap columns on MIToS because lowercase and dots are not allowed)
+#=GF MIToS_2021-04-23T13:35:50.822	filtercolumns! : 4 columns have been deleted.
+#=GS A0A139NPI6_9STRE/5-59	SeqMap	5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59
+#=GS A0A139NPI6_9STRE/5-59	AC	A0A139NPI6.1
+#=GC seq_cons			KKDLFYKDlEGRM--LK+tsPKKEKsTtGE+lNpsFsluLGLlILlGLIFTLlth
+</pre><p>Use <code>stringsequence</code> if you want to get the sequence as a string.  </p><pre><code class="language-julia">stringsequence(msa, 2)</code></pre><pre class="documenter-example-output">&quot;NEDLFYKEVEGRMADLQQKAPEKEKKTGAERLNTLFSLALGLVILLGLLFTLLRM&quot;</pre><p>Because matrices are stored columnwise in Julia, you will find useful the <code>getresiduesequences</code> function when you need to heavily operate over sequences.  </p><pre><code class="language-julia">getresiduesequences(msa)</code></pre><pre class="documenter-example-output">8-element Array{Array{MIToS.MSA.Residue,1},1}:
+ [K, D, D, I, F, Y, K, D, I, E  …  I, G, L, L, F, T, L, F, R, I]
+ [N, E, D, L, F, Y, K, E, V, E  …  L, G, L, L, F, T, L, L, R, M]
+ [K, K, D, L, F, Y, K, E, V, E  …  L, G, V, I, F, T, L, F, R, V]
+ [K, K, D, M, L, T, H, D, I, S  …  A, G, I, L, Y, P, L, V, -, -]
+ [K, K, D, L, F, Y, K, D, V, E  …  I, G, L, I, F, T, L, I, G, -]
+ [K, K, D, L, F, Y, K, D, I, E  …  I, G, L, I, F, T, L, I, G, V]
+ [-, -, -, -, -, -, -, -, -, -  …  L, T, L, I, F, T, L, L, G, I]
+ [K, K, D, L, F, Y, K, D, I, E  …  I, G, L, I, F, T, L, I, G, -]</pre><h2 id="Describing-your-MSA"><a class="docs-heading-anchor" href="#Describing-your-MSA">Describing your MSA</a><a id="Describing-your-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Describing-your-MSA" title="Permalink"></a></h2><p>The MSA module has a number of functions to gain insight about your MSA. Using <code>MIToS.MSA</code>, one can easily ask for...  </p><ul><li>The <strong>number of columns and sequences</strong> with the <code>ncolumns</code> and <code>nsequences</code> functions.  </li><li>The fraction of columns with residues (<strong>coverage</strong>) for each sequence making use of the</li></ul><p><code>coverage</code> method.  </p><ul><li>The <strong>fraction or percentage of gaps/residues</strong> using with the functions <code>gapfraction</code>,</li></ul><p><code>residuefraction</code> and <code>columngapfraction</code>.  </p><ul><li>The <strong>percentage of identity</strong> (PID) between each sequence of the MSA or its mean value</li></ul><p>with <code>percentidentity</code> and <code>meanpercentidentity</code>.  </p><p>The percentage identity between two aligned sequences is a common measure of sequence similarity and is used by the <code>hobohmI</code> method to estimate and reduce MSA redundancy. <strong>MIToS functions to calculate percent identity don&#39;t align the sequences, they need already aligned sequences.</strong> Full gaps columns don&#39;t count to the alignment length.  </p><pre><code class="language-julia">using MIToS.MSA
+
+msa = permutedims(
+        hcat(   res&quot;--GGG-&quot;,      # res&quot;...&quot; uses the @res_str macro to create a (column) Vector{Residue}
+                res&quot;---GGG&quot; ), (2,1))
+#        identities 000110 sum 2
+#  aligned residues 001111 sum 4</code></pre><pre><code class="language-julia">percentidentity(msa[1,:], msa[2,:]) # 2 / 4</code></pre><pre class="documenter-example-output">50.0</pre><p>To quickly calculate if the percentage of identity is greater than a determined value, use that threshold as third argument. <code>percentidentity(seqa, seqb, pid)</code> is a lot more faster than <code>percentidentity(seqa, seqb) &gt;= pid</code>.  </p><pre><code class="language-julia">percentidentity(msa[1,:], msa[2,:], 62) # 50% &gt;= 62%</code></pre><pre class="documenter-example-output">false</pre><h4 id="Example:-Plotting-gap-percentage-per-column-and-coverage-per-sequence"><a class="docs-heading-anchor" href="#Example:-Plotting-gap-percentage-per-column-and-coverage-per-sequence">Example: Plotting gap percentage per column and coverage per sequence</a><a id="Example:-Plotting-gap-percentage-per-column-and-coverage-per-sequence-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Plotting-gap-percentage-per-column-and-coverage-per-sequence" title="Permalink"></a></h4><p>The <code>gapfraction</code> and <code>coverage</code> functions return a vector of numbers between <code>0.0</code> and <code>1.0</code> (fraction of...). Sometime it&#39;s useful to plot this data to quickly understand the MSA structure. In this example, we are going to use the <a href="http://plots.readthedocs.org/en/latest/">Plots<img src="../assets/external-link.png" alt/></a> package for plotting, with the <a href="https://github.com/jheinen/GR.jl">GR<img src="../assets/external-link.png" alt/></a> backend, but you are free to use any of the Julia plotting libraries.  </p><pre><code class="language-julia">using MIToS.MSA
+
+msa = read(&quot;http://pfam.xfam.org/family/PF09776/alignment/full&quot;, Stockholm)
+
+using Plots
+
+gr(size=(600,300))
+
+plot(   1:ncolumns(msa), # x is a range from 1 to the number of columns
+        vec(columngapfraction(msa)) .* 100.0, # y is a Vector{Float64} with the percentage of gaps of each column
+        linetype = :line,
+        ylabel = &quot;gaps [%]&quot;,
+        xlabel = &quot;columns&quot;,
+        legend=false)</code></pre><p><img src="../msa_gaps.png" alt/>  </p><pre><code class="language-julia">plot(   1:nsequences(msa), # x is a range from 1 to the number of sequences
+        vec(coverage(msa)) .* 100, # y is a Vector{Float64} with the coverage of each sequence
+        linetype = :line,
+        ylabel = &quot;coverage [%]&quot;,
+        xlabel = &quot;sequences&quot;,
+        legend=false)</code></pre><p><img src="../msa_coverage.png" alt/>  </p><pre><code class="language-julia">plot(msa)</code></pre><p><img src="../msa_msa.png" alt/>  </p><h4 id="Example:-Filter-sequences-per-coverage-and-columns-per-gap-fraction"><a class="docs-heading-anchor" href="#Example:-Filter-sequences-per-coverage-and-columns-per-gap-fraction">Example: Filter sequences per coverage and columns per gap fraction</a><a id="Example:-Filter-sequences-per-coverage-and-columns-per-gap-fraction-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Filter-sequences-per-coverage-and-columns-per-gap-fraction" title="Permalink"></a></h4><p>Taking advantage of the <code>filter...!</code> functions and the <code>coverage</code> and <code>columngapfraction</code> functions, it&#39;s possible to delete short sequences or columns with a lot of gaps.  </p><pre><code class="language-julia">println(&quot;\tsequences\tcolumns&quot;)
+println( &quot;Before:\t&quot;, nsequences(msa), &quot;\t\t&quot;, ncolumns(msa)  )
+# delete sequences with less than 90% coverage of the MSA length:
+filtersequences!(msa, coverage(msa) .&gt;= 0.9)
+# delete columns with more than 10% of gaps:
+filtercolumns!(msa, columngapfraction(msa) .&lt;= 0.1)
+println( &quot;After:\t&quot;, nsequences(msa), &quot;\t\t&quot;,  ncolumns(msa)  )</code></pre><pre class="documenter-example-output">	sequences	columns
+Before:	386		116
+After:	167		107</pre><pre><code class="language-julia">histogram(  vec(columngapfraction(msa)),
+            # Using vec() to get a Vector{Float64} with the fraction of gaps of each column
+            xlabel = &quot;gap fraction in [0,1]&quot;, bins = 20, legend = false)</code></pre><p><img src="../msa_hist_gaps.png" alt/>  </p><pre><code class="language-julia">histogram(  vec(coverage(msa) .* 100.0), #  Column with the coverage of each sequence
+            xlabel = &quot;coverage [%]&quot;, legend=false)</code></pre><p><img src="../msa_hist_coverage.png" alt/>  </p><h4 id="Example:-Plotting-the-percentage-of-identity-between-sequences"><a class="docs-heading-anchor" href="#Example:-Plotting-the-percentage-of-identity-between-sequences">Example: Plotting the percentage of identity between sequences</a><a id="Example:-Plotting-the-percentage-of-identity-between-sequences-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Plotting-the-percentage-of-identity-between-sequences" title="Permalink"></a></h4><p>The distribution of the percentage of identity between every pair of sequences in an MSA, gives an idea of the MSA diversity. In this example, we are  using <code>percentidentity</code> over an MSA to get those identity values.  </p><pre><code class="language-julia">using MIToS.MSA
+msa = read(&quot;http://pfam.xfam.org/family/PF09776/alignment/full&quot;, Stockholm)
+pid = percentidentity(msa)</code></pre><p>MIToS stores the matrix of percentage of identity between the aligned sequences as a PairwiseListMatrix from the <a href="http://diegozea.github.io/PairwiseListMatrices.jl/">PairwiseListMatrices<img src="../assets/external-link.png" alt/></a> package. This matrix type saves RAM, allowing the storage of  big matrices. In this example, we use the <code>to_table</code> function of <em>PairwiseListMatrices</em> to convert the matrix into a table with indices.  </p><pre><code class="language-julia">using PairwiseListMatrices
+
+pidtable = to_table(pid, diagonal=false)</code></pre><pre class="documenter-example-output">74305×3 Array{Any,2}:
+ &quot;A0A553R1G6_9TELE/549-644&quot;  &quot;A0A2K6AF64_MANLE/10-125&quot;   36.5217
+ &quot;A0A553R1G6_9TELE/549-644&quot;  &quot;G1RVK4_NOMLE/46-161&quot;       34.7826
+ &quot;A0A553R1G6_9TELE/549-644&quot;  &quot;A0A6A4ILB2_APOLU/2-111&quot;    33.6634
+ &quot;A0A553R1G6_9TELE/549-644&quot;  &quot;A0A672YV19_9TELE/15-130&quot;   47.1154
+ &quot;A0A553R1G6_9TELE/549-644&quot;  &quot;A0A444U283_ACIRT/1-75&quot;     37.5
+ &quot;A0A553R1G6_9TELE/549-644&quot;  &quot;A0A0V0S2G9_9BILA/731-840&quot;  30.7692
+ &quot;A0A553R1G6_9TELE/549-644&quot;  &quot;A0A6A5D6Z0_SCHHA/3-104&quot;    30.3922
+ &quot;A0A553R1G6_9TELE/549-644&quot;  &quot;A0A194PY65_PAPXU/4-116&quot;    32.6923
+ &quot;A0A553R1G6_9TELE/549-644&quot;  &quot;A0A1V4KDS6_PATFA/159-270&quot;  36.8932
+ &quot;A0A553R1G6_9TELE/549-644&quot;  &quot;M4A0G1_XIPMA/29-139&quot;       42.7184
+ ⋮                                                       
+ &quot;A0A3P6PBE0_ANISI/14-103&quot;   &quot;M3XPJ7_MUSPF/10-125&quot;       24.3478
+ &quot;A0A3P6PBE0_ANISI/14-103&quot;   &quot;A0A2K6LYH7_RHIBE/10-125&quot;   24.3478
+ &quot;A0A3P6PBE0_ANISI/14-103&quot;   &quot;F4WNV6_ACREC/302-415&quot;      32.6316
+ &quot;G3WPK1_SARHA/11-126&quot;       &quot;M3XPJ7_MUSPF/10-125&quot;       62.6087
+ &quot;G3WPK1_SARHA/11-126&quot;       &quot;A0A2K6LYH7_RHIBE/10-125&quot;   61.2069
+ &quot;G3WPK1_SARHA/11-126&quot;       &quot;F4WNV6_ACREC/302-415&quot;      29.5652
+ &quot;M3XPJ7_MUSPF/10-125&quot;       &quot;A0A2K6LYH7_RHIBE/10-125&quot;   71.5517
+ &quot;M3XPJ7_MUSPF/10-125&quot;       &quot;F4WNV6_ACREC/302-415&quot;      28.6957
+ &quot;A0A2K6LYH7_RHIBE/10-125&quot;   &quot;F4WNV6_ACREC/302-415&quot;      26.9565</pre><p>The function <code>quantile</code> gives a quick idea of the percentage identity distribution of the MSA.  </p><pre><code class="language-julia">using Statistics
+
+quantile(convert(Vector{Float64}, pidtable[:,3]), [0.00, 0.25, 0.50, 0.75, 1.00])</code></pre><pre class="documenter-example-output">5-element Array{Float64,1}:
+   0.0
+  27.82608695652174
+  33.333333333333336
+  41.904761904761905
+ 100.0</pre><p>The function <code>meanpercentidentity</code> gives the mean value of the percent identity distribution for MSA with less than 300 sequences, or a quick estimate (mean PID in a random sample of sequence pairs) otherwise unless you set <code>exact</code> to <code>true</code>.  </p><pre><code class="language-julia">meanpercentidentity(msa)</code></pre><pre class="documenter-example-output">36.418256103335544</pre><p>One can easily plot that matrix and its distribution using the <code>heatmap</code> and <code>histogram</code> functions of the <a href="https://github.com/tbreloff/Plots.jl">Plots<img src="../assets/external-link.png" alt/></a> package.  </p><pre><code class="language-julia">using Plots
+gr()
+heatmap(convert(Matrix, pid), yflip=true, ratio=:equal)</code></pre><p><img src="../msa_heatmap_pid.png" alt/>  </p><pre><code class="language-julia">histogram(pidtable[:,3], xlabel =&quot;Percentage of identity&quot;, legend=false)</code></pre><p><img src="../msa_hist_pid.png" alt/>  </p><h2 id="Sequence-clustering"><a class="docs-heading-anchor" href="#Sequence-clustering">Sequence clustering</a><a id="Sequence-clustering-1"></a><a class="docs-heading-anchor-permalink" href="#Sequence-clustering" title="Permalink"></a></h2><p>The <code>MSA</code> module allows to clusterize sequences in an MSA. The <code>hobohmI</code> function takes as input an MSA followed by an identity threshold value, and returns a <code>Clusters</code> type with the result of a <a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2142204/">Hobohm I<img src="../assets/external-link.png" alt/></a> sequence clustering. The Hobohm I algorithm will add a sequence to an existing cluster, if the percentage of identity is equal or greater than the threshold.   The <code>Clusters</code> is sub-type of <code>ClusteringResult</code> from the <a href="http://clusteringjl.readthedocs.org/en/latest/index.html">Clustering.jl<img src="../assets/external-link.png" alt/></a> package. One advantage of use a sub-type of <code>ClusteringResult</code>is that you are able to use any method defined on <code>Clustering.jl</code> like <code>varinfo</code> (Variation of Information) for example. Also, you can use any clustering algorithm included in <em>Clustering.jl</em>, and convert its result to an <code>Clusters</code> object to use it with MIToS.   <code>MSA</code> defines the functions <code>nclusters</code> to get the resulting number of clusters, <code>counts</code> to get the number of sequences on each cluster and <code>assignments</code> to get the cluster number of each sequence. The most important method is <code>getweight</code>, which returns the weight of each sequence. This method is used in the <code>Information</code> module of MIToS to reduce redundancy.  </p><h4 id="Example:-Reducing-redundancy-of-a-MSA"><a class="docs-heading-anchor" href="#Example:-Reducing-redundancy-of-a-MSA">Example: Reducing redundancy of a MSA</a><a id="Example:-Reducing-redundancy-of-a-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Reducing-redundancy-of-a-MSA" title="Permalink"></a></h4><p>MSAs can suffer from an unnatural sequence redundancy and a high number of protein fragments. In this example, we are using a sequence clustering to make a non-redundant set of representative sequences. We are going to use the function <code>hobohmI</code> to perform the clustering with the Hobohm I algorithm at 62% identity.  </p><pre><code class="language-julia">using MIToS.MSA
+
+msa = read(&quot;http://pfam.xfam.org/family/PF09776/alignment/full&quot;, Stockholm)
+
+println(&quot;This MSA has &quot;, nsequences(msa), &quot; sequences...&quot;)</code></pre><pre class="documenter-example-output">This MSA has 386 sequences...</pre><pre><code class="language-julia">clusters = hobohmI(msa, 62)</code></pre><pre class="documenter-example-output">MIToS.MSA.Clusters([1, 102, 1, 32, 2, 2, 5, 26, 10, 1  …  1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 2, 2, 3, 4, 5, 6, 7, 8, 9  …  2, 107, 108, 33, 12, 80, 21, 2, 2, 15], [1.0, 0.00980392156862745, 0.00980392156862745, 1.0, 0.03125, 0.5, 0.5, 0.2, 0.038461538461538464, 0.1  …  0.00980392156862745, 1.0, 1.0, 0.3333333333333333, 0.05555555555555555, 0.5, 0.16666666666666666, 0.00980392156862745, 0.00980392156862745, 0.09090909090909091])</pre><pre><code class="language-julia">println(&quot;...but has only &quot;, nclusters(clusters), &quot; sequence clusters after a clustering at 62% identity.&quot;)</code></pre><pre class="documenter-example-output">...but has only 108 sequence clusters after a clustering at 62% identity.</pre><pre><code class="language-julia">using Plots
+gr()
+
+plot(msa)</code></pre><p><img src="../msa_clusters_i.png" alt/>  </p><p>We are going to use the <a href="http://dataframesjl.readthedocs.org/en/latest/">DataFrames<img src="../assets/external-link.png" alt/></a> package to easily select the sequence with the highest coverage of each cluster.  </p><pre><code class="language-julia">using DataFrames
+
+df = DataFrame( seqnum = 1:nsequences(msa),
+                seqname = sequencenames(msa),
+                cluster = assignments(clusters), # the cluster number/index of each sequence
+                coverage = vec(coverage(msa)))
+
+first(df, 5)</code></pre><table class="data-frame"><thead><tr><th></th><th>seqnum</th><th>seqname</th><th>cluster</th><th>coverage</th></tr><tr><th></th><th>Int64</th><th>String</th><th>Int64</th><th>Float64</th></tr></thead><tbody><p>5 rows × 4 columns</p><tr><th>1</th><td>1</td><td>A0A553R1G6_9TELE/549-644</td><td>1</td><td>0.689655</td></tr><tr><th>2</th><td>2</td><td>A0A2K6AF64_MANLE/10-125</td><td>2</td><td>0.991379</td></tr><tr><th>3</th><td>3</td><td>G1RVK4_NOMLE/46-161</td><td>2</td><td>0.991379</td></tr><tr><th>4</th><td>4</td><td>A0A6A4ILB2_APOLU/2-111</td><td>3</td><td>0.775862</td></tr><tr><th>5</th><td>5</td><td>A0A672YV19_9TELE/15-130</td><td>4</td><td>0.896552</td></tr></tbody></table><p>It is possible to use this <code>DataFrame</code> and <code>Plots</code> to plot the sequence coverage of the MSA and also an histogram of the number of sequences in each cluster:  </p><pre><code class="language-julia">using StatsPlots # Plotting DataFrames
+h = @df df histogram(:cluster, ylabel=&quot;nseq&quot;)
+p = @df df plot(:cluster, :coverage, linetype=:scatter)
+plot(p, h, nc=1, xlim=(0, nclusters(clusters)+1 ), legend=false)</code></pre><p><img src="../msa_clusters_ii.png" alt/>  </p><p>We use the <em>Split-Apply-Combine</em> strategy, though the <code>by</code> function of the <code>DataFrames</code> package, to select the sequence of highest coverage for each cluster.  </p><pre><code class="language-">maxcoverage = by(df, :cluster, cl -&gt; cl[ findmax(cl[:coverage])[2] ,
+                 [:seqnum, :seqname, :coverage]])
+
+first(maxcoverage, 5)</code></pre><pre><code class="language-">p = @df maxcoverage plot(:cluster, :coverage, linetype=:scatter)
+h = @df maxcoverage histogram(:cluster, ylabel=&quot;nseq&quot;)
+plot(p, h, nc=1, xlim=(0, nclusters(clusters)+1 ), legend=false)
+png(&quot;msa_clusters_iii.png&quot;) # hide
+nothing # hide</code></pre><p><img src="msa_clusters_iii.png" alt/>  </p><p>We can easily generate a mask using list comprehension, to select only the representative sequences of the MSA (deleting the rest of the sequences with <code>filtersequences!</code>).  </p><pre><code class="language-">cluster_references = Bool[ seqnum in maxcoverage[:seqnum] for seqnum in 1:nsequences(msa) ]</code></pre><pre><code class="language-">filtersequences!(msa, cluster_references)</code></pre><pre><code class="language-julia">plot(msa)</code></pre><p><img src="../msa_clusters_iv.png" alt/>  </p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../Example/">« Example</a><a class="docs-footer-nextpage" href="../Information/">Information »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 23 April 2021 13:42">Friday 23 April 2021</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
