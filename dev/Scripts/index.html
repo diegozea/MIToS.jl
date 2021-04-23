@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Scripts · MIToS</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">MIToS</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../Installation/">Installation</a></li><li><a class="tocitem" href="../Example/">Example</a></li><li><span class="tocitem">Modules</span><ul><li><a class="tocitem" href="../MSA/">MSA</a></li><li><a class="tocitem" href="../Information/">Information</a></li><li><a class="tocitem" href="../SIFTS/">SIFTS</a></li><li><a class="tocitem" href="../PDB/">PDB</a></li><li><a class="tocitem" href="../Pfam/">Pfam</a></li></ul></li><li><span class="tocitem">Cookbook</span><ul><li><a class="tocitem" href="../01_Change_B_factors/">Change B-factors</a></li><li><a class="tocitem" href="../02_Linking_structural_and_evolutionary_information/">Linking structural and evolutionary information</a></li><li><a class="tocitem" href="../03_RMSF/">Root Mean Squared Fluctuation (RMSF)</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../MSA_API/">MSA</a></li><li><a class="tocitem" href="../Information_API/">Information</a></li><li><a class="tocitem" href="../SIFTS_API/">SIFTS</a></li><li><a class="tocitem" href="../PDB_API/">PDB</a></li><li><a class="tocitem" href="../Pfam_API/">Pfam</a></li><li><a class="tocitem" href="../Utils_API/">Utils</a></li></ul></li><li class="is-active"><a class="tocitem" href>Scripts</a><ul class="internal"><li><a class="tocitem" href="#Buslje09.jl"><span>Buslje09.jl</span></a></li><li><a class="tocitem" href="#BLMI.jl"><span>BLMI.jl</span></a></li><li><a class="tocitem" href="#Conservation.jl"><span>Conservation.jl</span></a></li><li><a class="tocitem" href="#DownloadPDB.jl"><span>DownloadPDB.jl</span></a></li><li><a class="tocitem" href="#Distances.jl"><span>Distances.jl</span></a></li><li><a class="tocitem" href="#MSADescription.jl"><span>MSADescription.jl</span></a></li><li><a class="tocitem" href="#PercentIdentity.jl"><span>PercentIdentity.jl</span></a></li><li><a class="tocitem" href="#AlignedColumns.jl"><span>AlignedColumns.jl</span></a></li><li><a class="tocitem" href="#SplitStockholm.jl"><span>SplitStockholm.jl</span></a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Scripts</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Scripts</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/diegozea/MIToS.jl/blob/master/docs/src/Scripts.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Scripts"><a class="docs-heading-anchor" href="#Scripts">Scripts</a><a id="Scripts-1"></a><a class="docs-heading-anchor-permalink" href="#Scripts" title="Permalink"></a></h1><p>MIToS implements several useful scripts to <strong>command line execution (without requiring Julia coding)</strong>. All this scripts are located in the <code>scripts</code> folder of the MIToS directory. You can copy them to your working directory, use the path to their folder or put them in the path (look into the <strong>Installation</strong> section of this manual).  </p><ul><li><a href="#Scripts">Scripts</a></li><ul><li><a href="#Buslje09.jl">Buslje09.jl</a></li><li><a href="#BLMI.jl">BLMI.jl</a></li><li><a href="#Conservation.jl">Conservation.jl</a></li><li><a href="#DownloadPDB.jl">DownloadPDB.jl</a></li><li><a href="#Distances.jl">Distances.jl</a></li><li><a href="#MSADescription.jl">MSADescription.jl</a></li><li><a href="#PercentIdentity.jl">PercentIdentity.jl</a></li><li><a href="#AlignedColumns.jl">AlignedColumns.jl</a></li><li><a href="#SplitStockholm.jl">SplitStockholm.jl</a></li></ul></ul><h2 id="Buslje09.jl"><a class="docs-heading-anchor" href="#Buslje09.jl">Buslje09.jl</a><a id="Buslje09.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Buslje09.jl" title="Permalink"></a></h2><pre><code class="language-julia-repl">julia&gt; using MIToS
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Scripts · MIToS</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">MIToS</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../Installation/">Installation</a></li><li><a class="tocitem" href="../Example/">Example</a></li><li><span class="tocitem">Modules</span><ul><li><a class="tocitem" href="../MSA/">MSA</a></li><li><a class="tocitem" href="../Information/">Information</a></li><li><a class="tocitem" href="../SIFTS/">SIFTS</a></li><li><a class="tocitem" href="../PDB/">PDB</a></li><li><a class="tocitem" href="../Pfam/">Pfam</a></li></ul></li><li><span class="tocitem">Cookbook</span><ul><li><a class="tocitem" href="../01_Change_B_factors/">Change B-factors</a></li><li><a class="tocitem" href="../02_Linking_structural_and_evolutionary_information/">Linking structural and evolutionary information</a></li><li><a class="tocitem" href="../03_RMSF/">Root Mean Squared Fluctuation (RMSF)</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../MSA_API/">MSA</a></li><li><a class="tocitem" href="../Information_API/">Information</a></li><li><a class="tocitem" href="../SIFTS_API/">SIFTS</a></li><li><a class="tocitem" href="../PDB_API/">PDB</a></li><li><a class="tocitem" href="../Pfam_API/">Pfam</a></li><li><a class="tocitem" href="../Utils_API/">Utils</a></li></ul></li><li class="is-active"><a class="tocitem" href>Scripts</a><ul class="internal"><li><a class="tocitem" href="#Buslje09.jl"><span>Buslje09.jl</span></a></li><li><a class="tocitem" href="#BLMI.jl"><span>BLMI.jl</span></a></li><li><a class="tocitem" href="#Conservation.jl"><span>Conservation.jl</span></a></li><li><a class="tocitem" href="#DownloadPDB.jl"><span>DownloadPDB.jl</span></a></li><li><a class="tocitem" href="#Distances.jl"><span>Distances.jl</span></a></li><li><a class="tocitem" href="#MSADescription.jl"><span>MSADescription.jl</span></a></li><li><a class="tocitem" href="#PercentIdentity.jl"><span>PercentIdentity.jl</span></a></li><li><a class="tocitem" href="#AlignedColumns.jl"><span>AlignedColumns.jl</span></a></li><li><a class="tocitem" href="#SplitStockholm.jl"><span>SplitStockholm.jl</span></a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Scripts</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Scripts</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/diegozea/MIToS.jl/blob/master/docs/src/Scripts.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Scripts"><a class="docs-heading-anchor" href="#Scripts">Scripts</a><a id="Scripts-1"></a><a class="docs-heading-anchor-permalink" href="#Scripts" title="Permalink"></a></h1><p>MIToS implements several useful scripts to <strong>command line execution (without requiring Julia coding)</strong>. All this scripts are located in the <code>scripts</code> folder of the MIToS directory. You can copy them to your working directory, use the path to their folder or put them in the path (look into the <strong>Installation</strong> section of this manual).  </p><ul><li><a href="#Scripts">Scripts</a></li><ul><li><a href="#Buslje09.jl">Buslje09.jl</a></li><li><a href="#BLMI.jl">BLMI.jl</a></li><li><a href="#Conservation.jl">Conservation.jl</a></li><li><a href="#DownloadPDB.jl">DownloadPDB.jl</a></li><li><a href="#Distances.jl">Distances.jl</a></li><li><a href="#MSADescription.jl">MSADescription.jl</a></li><li><a href="#PercentIdentity.jl">PercentIdentity.jl</a></li><li><a href="#AlignedColumns.jl">AlignedColumns.jl</a></li><li><a href="#SplitStockholm.jl">SplitStockholm.jl</a></li></ul></ul><h2 id="Buslje09.jl"><a class="docs-heading-anchor" href="#Buslje09.jl">Buslje09.jl</a><a id="Buslje09.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Buslje09.jl" title="Permalink"></a></h2><pre><code class="language-julia-repl">julia&gt; using MIToS
 
 julia&gt; julia_path = joinpath(Base.Sys.BINDIR, &quot;julia&quot;)
 &quot;/home/travis/julia/bin/julia&quot;
@@ -61,7 +61,7 @@ optional arguments:
   -h, --help            show this help message and exit
 
 
-MIToS 2.5.0
+MIToS 2.6.0
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -123,7 +123,7 @@ optional arguments:
   -h, --help            show this help message and exit
 
 
-MIToS 2.5.0
+MIToS 2.6.0
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -193,7 +193,7 @@ optional arguments:
   -h, --help            show this help message and exit
 
 
-MIToS 2.5.0
+MIToS 2.6.0
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -204,7 +204,7 @@ julia&gt; Pkg.add(&quot;ArgParse&quot;)
    Updating git-repo `https://github.com/JuliaRegistries/General.git`
 [?25l[2K[?25h  Resolving package versions...
    Updating `~/build/diegozea/MIToS.jl/docs/Project.toml`
-  [c7e460c6] + ArgParse v1.1.0
+  [c7e460c6] + ArgParse v1.1.4
    Updating `~/build/diegozea/MIToS.jl/docs/Manifest.toml`
  [no changes]
 
@@ -230,7 +230,7 @@ optional arguments:
   -h, --help           show this help message and exit
 
 
-MIToS 2.5.0
+MIToS 2.6.0
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -289,7 +289,7 @@ optional arguments:
   -h, --help            show this help message and exit
 
 
-MIToS 2.5.0
+MIToS 2.6.0
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -340,7 +340,7 @@ optional arguments:
   -h, --help            show this help message and exit
 
 
-MIToS 2.5.0
+MIToS 2.6.0
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -394,7 +394,7 @@ optional arguments:
   -h, --help            show this help message and exit
 
 
-MIToS 2.5.0
+MIToS 2.6.0
 
 Bioinformatics Unit
 Leloir Institute Foundation
@@ -464,7 +464,7 @@ julia&gt; Pkg.add(&quot;CodecZlib&quot;)
 julia&gt; Pkg.add(&quot;ProgressMeter&quot;)
   Resolving package versions...
    Updating `~/build/diegozea/MIToS.jl/docs/Project.toml`
-  [92933f4c] + ProgressMeter v1.3.2
+  [92933f4c] + ProgressMeter v1.5.0
    Updating `~/build/diegozea/MIToS.jl/docs/Manifest.toml`
  [no changes]
 
@@ -495,8 +495,8 @@ optional arguments:
   -h, --help       show this help message and exit
 
 
-MIToS 2.5.0
+MIToS 2.6.0
 
 Bioinformatics Unit
 Leloir Institute Foundation
-Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../Utils_API/">« Utils</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 5 August 2020 18:19">Wednesday 5 August 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../Utils_API/">« Utils</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 23 April 2021 11:33">Friday 23 April 2021</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
