@@ -1,5 +1,10 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.6.0 to v2.6.1
+
+* `download_file` and other `download...` functions now use the proxy settings 
+declared with the `HTTP_PROXY` and `HTTP_PROXY` environment variables.
+
 ### Changes from v2.5.0 to v2.6.0
 
 * The RESTful API of PDB has changed, and the Legacy Fetch API Web Service was shut down on 
