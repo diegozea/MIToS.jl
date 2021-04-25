@@ -58,7 +58,7 @@ filtersequences(msa::AbstractMatrix{Residue}, mask) = msa[_sequence_mask(mask, m
 `filtersequences!(msa, mask[, annotate::Bool=true])`
 
 It allows to filter `msa` sequences using a `AbstractVector{Bool}` `mask`
-(It removes sequnces with `false` values). `AnnotatedMultipleSequenceAlignment` annotations
+(It removes sequences with `false` values). `AnnotatedMultipleSequenceAlignment` annotations
 are updated if `annotate` is `true` (default).
 """
 function filtersequences!(msa::AnnotatedMultipleSequenceAlignment,

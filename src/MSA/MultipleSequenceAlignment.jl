@@ -20,11 +20,7 @@ abstract type AbstractAlignedSequence <: AbstractAlignedObject end
 # Multiple Sequence Alignment
 # ===========================
 
-const NamedResidueMatrix{AT} = NamedArray{Residue,
-                                         2,
-                                         AT,
-                                         Tuple{OrderedDict{String,Int},
-                                               OrderedDict{String,Int}}}
+const NamedResidueMatrix{AT} = NamedArray{Residue,2,AT,Tuple{OrderedDict{String,Int},OrderedDict{String,Int}}}
 
 """
 This MSA type include a `NamedArray` wrapping a `Matrix` of `Residue`s. The use of
@@ -35,7 +31,7 @@ mutable struct MultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
     matrix::NamedResidueMatrix{Array{Residue,2}}
 
     function (::Type{MultipleSequenceAlignment})(matrix::NamedResidueMatrix{Array{Residue,2}})
-        setdimnames!(matrix,("Seq","Col"))
+        setdimnames!(matrix, ("Seq", "Col"))
         new(matrix)
     end
 end
@@ -46,14 +42,12 @@ This type represent an MSA, similar to `MultipleSequenceAlignment`, but It also 
 to UniProt residue numbers).
 """
 mutable struct AnnotatedMultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
-    matrix::NamedArray{ Residue, 2, Array{Residue, 2},
-                        Tuple{OrderedDict{String, Int},
-                        OrderedDict{String, Int}} }
+    matrix::NamedArray{Residue,2,Array{Residue,2},Tuple{OrderedDict{String,Int},OrderedDict{String,Int}}}
     annotations::Annotations
 
     function (::Type{AnnotatedMultipleSequenceAlignment})(matrix::NamedResidueMatrix{Array{Residue,2}},
                                                           annotations::Annotations)
-        setdimnames!(matrix,("Seq","Col"))
+        setdimnames!(matrix, ("Seq", "Col"))
         new(matrix, annotations)
     end
 end
@@ -69,8 +63,8 @@ mutable struct AlignedSequence <: AbstractAlignedSequence
     matrix::NamedResidueMatrix{Array{Residue,2}}
 
     function (::Type{AlignedSequence})(matrix::NamedResidueMatrix{Array{Residue,2}})
-        @assert size(matrix,1) == 1 "There are more than one sequence."
-        setdimnames!(matrix,("Seq","Col"))
+        @assert size(matrix, 1) == 1 "There are more than one sequence."
+        setdimnames!(matrix, ("Seq", "Col"))
         new(matrix)
     end
 end
@@ -85,8 +79,8 @@ mutable struct AnnotatedAlignedSequence <: AbstractAlignedSequence
 
     function (::Type{AnnotatedAlignedSequence})(matrix::NamedResidueMatrix{Array{Residue,2}},
                                                 annotations::Annotations)
-        @assert size(matrix,1) == 1 "There are more than one sequence."
-        setdimnames!(matrix,("Seq","Col"))
+        @assert size(matrix, 1) == 1 "There are more than one sequence."
+        setdimnames!(matrix, ("Seq", "Col"))
         new(matrix, annotations)
     end
 end
@@ -137,16 +131,14 @@ end
 # AnnotatedAlignedObject
 # ----------------------
 
-const AnnotatedAlignedObject = Union{ AnnotatedMultipleSequenceAlignment,
-                                      AnnotatedAlignedSequence    }
+const AnnotatedAlignedObject = Union{AnnotatedMultipleSequenceAlignment,AnnotatedAlignedSequence}
 
-const UnannotatedAlignedObject = Union{ MultipleSequenceAlignment,
-                                        AlignedSequence    }
+const UnannotatedAlignedObject = Union{MultipleSequenceAlignment,AlignedSequence}
 
 # Matrices
 # --------
 
-const MSAMatrix = Union{ Matrix{Residue}, NamedResidueMatrix{Array{Residue,2}} }
+const MSAMatrix = Union{Matrix{Residue},NamedResidueMatrix{Array{Residue,2}}}
 
 # Getters
 # -------
@@ -186,10 +178,10 @@ for f in (:size, :length)
     @eval Base.$(f)(x::AbstractAlignedObject) = $(f)(namedmatrix(x))
 end
 
-for T in (  :(AlignedSequence),
+for T in (:(AlignedSequence),
             :(AnnotatedAlignedSequence),
             :(MultipleSequenceAlignment),
-            :(AnnotatedMultipleSequenceAlignment)  )
+            :(AnnotatedMultipleSequenceAlignment))
     @eval Base.IndexStyle(::Type{$(T)}) = Base.IndexLinear()
 end
 
@@ -203,28 +195,100 @@ end
 # Special getindex/setindex! for sequences to avoid `seq["seqname","colname"]`
 
 @inline function Base.getindex(x::AbstractAlignedSequence,
-                               i::Union{Int, AbstractString})
+                               i::Union{Int,AbstractString})
     getindex(namedmatrix(x), 1, i)
 end
 
 @inline function Base.setindex!(x::AbstractAlignedSequence, value,
-                                i::Union{Int, AbstractString})
+                                i::Union{Int,AbstractString})
     setindex!(namedmatrix(x), value, 1, i)
+end
+
+# ## Special getindex to conserve annotations and types
+
+# ### Helper functions to create sequence and column boolean masks
+
+function _get_selected_sequences(msa, selector)
+    type = eltype(selector)
+    if type == Bool
+        return selector
+    else
+        to_select = Set(selector)
+        if type  <: Number
+            Bool[i in to_select for i in 1:nsequences(msa)]
+        elseif type <: AbstractString
+            Bool[i in to_select for i in sequencenames(msa)]
+        end
+    end
+end
+
+function _get_selected_columns(msa, selector)
+    type = eltype(selector)
+    if type == Bool
+        return selector
+    else
+        to_select = Set(selector)
+        if type  <: Number
+            Bool[i in to_select for i in 1:ncolumns(msa)]
+        elseif type <: AbstractString
+            Bool[i in to_select for i in columnnames(msa)]
+        end
+    end
+end
+
+function Base.getindex(msa::AnnotatedMultipleSequenceAlignment, 
+                       seqs::AbstractArray, cols::AbstractArray)
+    msa_copy = copy(msa)
+    filtersequences!(msa_copy, _get_selected_sequences(msa, seqs))
+    filtercolumns!(msa_copy, _get_selected_columns(msa, cols))
+    msa_copy
+end
+
+function Base.getindex(msa::AnnotatedMultipleSequenceAlignment, 
+                       seqs::AbstractArray, cols::Colon)
+    msa_copy = copy(msa)
+    filtersequences!(msa_copy, _get_selected_sequences(msa, seqs))
+    msa_copy
+end
+
+function Base.getindex(msa::AnnotatedMultipleSequenceAlignment, 
+                       seqs::Colon, cols::AbstractArray)
+    msa_copy = copy(msa)
+    filtercolumns!(msa_copy, _get_selected_columns(msa, cols))
+    msa_copy
+end
+
+Base.getindex(msa::AnnotatedMultipleSequenceAlignment, seqs::Colon, cols::Colon) = copy(msa)
+
+function Base.getindex(msa::MultipleSequenceAlignment, 
+        seqs::Union{AbstractArray, Colon}, 
+        cols::Union{AbstractArray, Colon})
+    MultipleSequenceAlignment(msa.matrix[seqs, cols])
+end
+
+function Base.getindex(seq::AnnotatedAlignedSequence, cols::AbstractArray)
+    seq_copy = copy(seq)
+    filtercolumns!(seq_copy, _get_selected_columns(seq, cols))
+    seq_copy
+end
+
+function Base.getindex(seq::AlignedSequence, cols::Union{AbstractArray, Colon})
+    AlignedSequence(seq.matrix[cols])
 end
 
 # Show
 # ----
 
-for T in (  :(AlignedSequence),
+for T in (:(AlignedSequence),
             :(AnnotatedAlignedSequence),
             :(MultipleSequenceAlignment),
-            :(AnnotatedMultipleSequenceAlignment)  )
+            :(AnnotatedMultipleSequenceAlignment))
     @eval begin
 
         Base.show(io::IO, ::MIME"text/plain", x::$(T)) = show(io, x)
 
         function Base.show(io::IO, x::$(T))
-            type_name = split(string($T),'.')[end]
+            type_name = split(string($T), '.')[end]
             if isa(x, AnnotatedAlignedObject)
                 print(io, type_name, " with ", length(annotations(x)), " annotations : ")
             else
@@ -345,10 +409,10 @@ end
 It returns a `Vector{String}` with the sequence names/identifiers.
 """
 function sequencenames(x::NamedResidueMatrix{AT})::Vector{String} where AT <: AbstractArray
-    names(x,1)
+    names(x, 1)
 end
 sequencenames(x::AbstractAlignedObject)::Vector{String} = sequencenames(namedmatrix(x))
-sequencenames(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(msa,1))
+sequencenames(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(msa, 1))
 
 """
 `columnnames(msa)`
@@ -358,10 +422,10 @@ It returns a `Vector{String}` with the sequence names/identifiers. If the `msa` 
 returns the column number of the original MSA through the wrapped `NamedArray` column names.
 """
 function columnnames(x::NamedResidueMatrix{AT})::Vector{String} where AT
-    names(x,2)
+    names(x, 2)
 end
 columnnames(x::AbstractAlignedObject)::Vector{String} = columnnames(namedmatrix(x))
-columnnames(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(msa,2))
+columnnames(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(msa, 2))
 
 # Copy, deepcopy
 # --------------
@@ -385,17 +449,17 @@ end
 # Get annotations
 # ---------------
 
-for getter in ( :getannotcolumn, :getannotfile, :getannotresidue, :getannotsequence )
+for getter in (:getannotcolumn, :getannotfile, :getannotresidue, :getannotsequence)
     @eval $(getter)(x::AnnotatedAlignedObject, args...) = $(getter)(annotations(x), args...)
 end
 
 # Set annotations
 # ---------------
 
-for setter in ( :setannotcolumn!, :setannotfile!, :setannotresidue!, :setannotsequence!,
+for setter in (:setannotcolumn!, :setannotfile!, :setannotresidue!, :setannotsequence!,
                 :annotate_modification!,
                 :delete_annotated_modifications!,
-                :printmodifications )
+                :printmodifications)
     @eval $(setter)(x::AnnotatedAlignedObject, args...) = $(setter)(annotations(x), args...)
 end
 
@@ -452,7 +516,7 @@ function getcolumnmapping(msa::AnnotatedMultipleSequenceAlignment)
 end
 
 function getcolumnmapping(msa::NamedResidueMatrix{AT}) where AT <: AbstractMatrix
-    Int[ parse(Int,pos) for pos in names(msa,2) ]
+    Int[ parse(Int, pos) for pos in names(msa, 2) ]
 end
 
 getcolumnmapping(msa::MultipleSequenceAlignment) = getcolumnmapping(namedmatrix(msa))
@@ -489,7 +553,7 @@ function stringsequence(msa::AbstractMultipleSequenceAlignment, i)
 end
 
 function stringsequence(seq::AbstractMatrix{Residue})
-    @assert size(seq,1) == 1 "There are more than one sequence/row."
+    @assert size(seq, 1) == 1 "There are more than one sequence/row."
     String(vec(seq))
 end
 

@@ -22,9 +22,17 @@
                                     res"DAYCMT",
                                     res"DAYCMT"), [2,1])
 
-        for index in [ 2, (2,:), (:,2), (2,2), (2:4, 2:4), (2,[3,4,5]),
-                      (:, [1,2,3,4,5,6] .< 4 ), ([1,2,3,4,5,6] .< 4, :),
-                      (:,:), ([1,2,3,4,5,6] .< 4, [1,2,3,4,5,6] .< 4) ]
+        for index in [ (2:4, 2:4), (:, [1,2,3,4,5,6] .< 4 ), ([1,2,3,4,5,6] .< 4, :),
+                    (:,:), ([1,2,3,4,5,6] .< 4, [1,2,3,4,5,6] .< 4) ]
+
+            for msa in gaoetal_msas
+                selection = msa[index...]
+                @test selection == residues[index...]
+                @test selection isa typeof(msa)
+            end
+        end
+
+        for index in [ 2, (2,:), (:,2), (2,2), (2,[3,4,5])]
 
             for msa in gaoetal_msas
                 @test msa[index...] == residues[index...]
