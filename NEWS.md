@@ -1,5 +1,11 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.6.1 to v2.7.0
+
+* *[breaking change]* MSA `getindex` with `:` or arrays now return an object of 
+the same type. The annotations of an `AnnotatedMultipleSequenceAlignment` are 
+modified according to the selection.
+
 ### Changes from v2.6.0 to v2.6.1
 
 * `download_file` and other `download...` functions now use the proxy settings 
