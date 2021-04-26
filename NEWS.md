@@ -6,6 +6,11 @@
 the same type. The annotations of an `AnnotatedMultipleSequenceAlignment` are 
 modified according to the selection.
 
+* *[breaking change]* MSA `getindex` can now change the order of the sequences 
+in an `AnnotatedMultipleSequenceAlignment`.
+
+* It adds `hcat` support for MSA objects, taking care of the MSA annotations.
+
 ### Changes from v2.6.0 to v2.6.1
 
 * `download_file` and other `download...` functions now use the proxy settings 

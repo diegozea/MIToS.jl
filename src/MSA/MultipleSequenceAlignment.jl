@@ -239,16 +239,24 @@ end
 function Base.getindex(msa::AnnotatedMultipleSequenceAlignment, 
                        seqs::AbstractArray, cols::AbstractArray)
     msa_copy = copy(msa)
-    filtersequences!(msa_copy, _get_selected_sequences(msa, seqs))
+    filtersequences!(
+        annotations(msa_copy), 
+        sequencenames(msa_copy), 
+        _get_selected_sequences(msa, seqs))
     filtercolumns!(msa_copy, _get_selected_columns(msa, cols))
-    msa_copy
+    # To allow changing the order of sequences but not the order of the columns
+    # until we have a way to change the order of column and residue annotations
+    AnnotatedMultipleSequenceAlignment(msa_copy.matrix[seqs, :], annotations(msa_copy))
 end
 
 function Base.getindex(msa::AnnotatedMultipleSequenceAlignment, 
                        seqs::AbstractArray, cols::Colon)
-    msa_copy = copy(msa)
-    filtersequences!(msa_copy, _get_selected_sequences(msa, seqs))
-    msa_copy
+    new_annot = copy(annotations(msa))
+    filtersequences!(
+        new_annot, 
+        sequencenames(msa), 
+        _get_selected_sequences(msa, seqs))
+    AnnotatedMultipleSequenceAlignment(msa.matrix[seqs, cols], new_annot)
 end
 
 function Base.getindex(msa::AnnotatedMultipleSequenceAlignment, 

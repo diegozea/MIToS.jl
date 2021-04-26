@@ -122,5 +122,6 @@ include("Identity.jl")
 include("Clusters.jl")
 include("Hobohm.jl")
 include("Plots.jl")
+include("Concatenation.jl")
 
 end
