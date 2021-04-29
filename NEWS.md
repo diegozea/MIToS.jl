@@ -1,5 +1,17 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.7.0 to v2.8.0
+
+Multiple bug fixes and improvements related to `getindex` and `hcat`.
+
+* *[breaking change]* MSA `getindex` can now change the order of the columns
+in an `AnnotatedMultipleSequenceAlignment`.
+
+* *[breaking change]* `convert` to MSA and sequence objects is now deprecated; 
+use the corresponding constructor.
+
+* `gethcatmapping` to get the mapping to the concatenated MSAs.
+
 ### Changes from v2.6.1 to v2.7.0
 
 * *[breaking change]* MSA `getindex` with `:` or arrays now return an object of 

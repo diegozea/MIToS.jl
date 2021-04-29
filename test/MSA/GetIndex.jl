@@ -1,7 +1,7 @@
 @testset "getindex" begin
     simple = joinpath(pwd(), "data", "simple.fasta")
 
-    @testset "AnnotatedMultipleSequenceAlignment" begin
+    @testset "MSA" begin
         msa = read(simple, FASTA, generatemapping=true)
 
         matrix = Residue['A'  'R'

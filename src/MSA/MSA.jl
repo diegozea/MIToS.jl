@@ -102,7 +102,9 @@ export  # Residue
         isvalid,
         rand,
         shuffle,
-        shuffle!
+        shuffle!,
+        # Concatenation
+        gethcatmapping
 
 include("Residues.jl")
 include("Alphabet.jl")

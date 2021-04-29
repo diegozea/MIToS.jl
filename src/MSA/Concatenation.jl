@@ -21,6 +21,12 @@ function _concatenated_col_names(msas...)
 	colnames
 end
 
+_get_seq_lengths(msas...) = [ncolumns(msa) for msa in msas]
+
+function _get_annot_types(fun, index, data::Annotations...)
+	union(Set(k[index] for k in keys(fun(annot))) for annot in data)
+end
+
 function _concatenate_annotfile(data::Annotations...)
 	annotfile = copy(getannotfile(data[1]))
 	for ann in data[2:end]
@@ -53,54 +59,78 @@ function _concatenate_annotsequence(seqname_mapping, data::Annotations...)
 	annotsequence = Dict{Tuple{String,String},String}()
 	for (i, ann) in enumerate(data)
 		for ((seqname, annot_name), value) in getannotsequence(ann)
-			if haskey(seqname_mapping, (i, seqname))
-				concatenated_seqname = seqname_mapping[(i, seqname)]
-				new_key = (concatenated_seqname, annot_name)
-				if haskey(annotsequence, new_key)
-					if annot_name == "SeqMap"
-						annotsequence[new_key] *= ',' * value
-					else
-						annotsequence[new_key] *= "_&_" * value
-					end
+			concatenated_seqname = get(seqname_mapping, (i, seqname), seqname)
+			new_key = (concatenated_seqname, annot_name)
+			if haskey(annotsequence, new_key)
+				if annot_name == "SeqMap"
+					annotsequence[new_key] *= ',' * value
 				else
-					push!(annotsequence, new_key => value)
+					annotsequence[new_key] *= "_&_" * value
 				end
+			else
+				push!(annotsequence, new_key => value)
 			end
 		end
 	end
 	annotsequence
 end
 
-function _concatenate_annotcolumn(data::Annotations...)
-	annotcolumn = copy(getannotcolumn(data[1]))
-	for ann in data[2:end]
-		for (k, v) in getannotcolumn(ann)
-			if haskey(annotcolumn, k)
-				annotcolumn[k] *= v
-			else
-				push!(annotcolumn, k => v)
-			end
+function _fill_and_update!(dict, last, key, i, value, seq_lengths)
+	if haskey(dict, key)
+		if last[key] == i - 1
+			dict[key] *= value
+		else
+			previous = sum(seq_lengths[(last[key]+1):(i-1)])
+			dict[key] *= " "^previous * value
 		end
+		last[key] = i
+	else
+		if i == 1
+			push!(dict, key => value)
+		else
+			previous = sum(seq_lengths[1:(i-1)])
+			push!(dict, key => " "^previous * value)
+		end
+		push!(last, key => i)
 	end
-	annotcolumn
 end
 
-function _concatenate_annotresidue(seqname_mapping, data::Annotations...)
-	annotresidue = Dict{Tuple{String,String},String}()
-	for (i, ann) in enumerate(data)
-		for ((seqname, annot_name), value) in getannotresidue(ann)
-			if haskey(seqname_mapping, (i, seqname))
-				concatenated_seqname = seqname_mapping[(i, seqname)]
-				new_key = (concatenated_seqname, annot_name)
-				if haskey(annotresidue, new_key)
-					annotresidue[new_key] *= value
-				else
-					push!(annotresidue, new_key => value)
-				end
-			end
+function _fill_end!(dict, seq_lengths, entity)
+	total_length = sum(seq_lengths)
+	for (key, value) in dict
+		current_length = length(value)
+		if current_length < total_length
+			dict[key] *= " "^(total_length - current_length)
+		elseif current_length > total_length
+			throw(ErrorException(
+				"There are $current_length $entity annotated instead of $total_length."))
 		end
 	end
-	annotresidue
+	dict
+end
+
+function _concatenate_annotcolumn(seq_lengths, data::Annotations...)
+	annotcolumn = Dict{String,String}()
+	last = Dict{String,Int}()
+	for (i, ann) in enumerate(data)
+		for (annot_name, value) in getannotcolumn(ann)
+			_fill_and_update!(annotcolumn, last, annot_name, i, value, seq_lengths)
+		end
+	end
+	_fill_end!(annotcolumn, seq_lengths, "columns")
+end
+
+function _concatenate_annotresidue(seq_lengths, seqname_mapping, data::Annotations...)
+	annotresidue = Dict{Tuple{String,String},String}()
+	last = Dict{Tuple{String,String},Int}()
+	for (i, ann) in enumerate(data)
+		for ((seqname, annot_name), value) in getannotresidue(ann)
+			concatenated_seqname = get(seqname_mapping, (i, seqname), seqname)
+			new_key = (concatenated_seqname, annot_name)
+			_fill_and_update!(annotresidue, last, new_key, i, value, seq_lengths)
+		end
+	end
+	_fill_end!(annotresidue, seq_lengths, "residues")
 end
 
 function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
@@ -110,17 +140,18 @@ function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 	setnames!(concatenated_msa, seqnames, 1)
 	setnames!(concatenated_msa, colnames, 2)
 	seqname_mapping = _get_seqname_mapping(seqnames)
+	seq_lengths = _get_seq_lengths(msa...)
 	old_annot = annotations.([msa...])
 	new_annot = Annotations(
 		_concatenate_annotfile(old_annot...),
 		_concatenate_annotsequence(seqname_mapping, old_annot...),
-		_concatenate_annotcolumn(old_annot...),
-		_concatenate_annotresidue(seqname_mapping, old_annot...)
+		_concatenate_annotcolumn(seq_lengths, old_annot...),
+		_concatenate_annotresidue(seq_lengths, seqname_mapping, old_annot...)
 	)
-	setannotcolumn!(
+	setannotfile!(
 		new_annot, 
 		"HCat", 
-		join(replace(col, r"_[0-9]+$" => "") for col in colnames)
+		join((replace(col, r"_[0-9]+$" => "") for col in colnames), ',')
 	)
 	T(concatenated_msa, new_annot)
 end
@@ -133,3 +164,35 @@ function Base.hcat(msa::T...) where T <: UnannotatedAlignedObject
 	setnames!(concatenated_msa, colnames, 2)
 	T(concatenated_msa)
 end
+
+
+"""
+It returns a vector of numbers from `1` to N for each column that indicates the source MSA.
+The mapping is annotated in the `"HCat"` file annotation of an
+`AnnotatedMultipleSequenceAlignment` or in the column names of an `NamedArray` or
+`MultipleSequenceAlignment`.
+"""
+function gethcatmapping(msa::AnnotatedMultipleSequenceAlignment)
+    annot = getannotfile(msa)
+    if haskey(annot, "HCat")
+        return _str2int_mapping(annot["HCat"])
+    else
+        return gethcatmapping(namedmatrix(msa))
+    end
+end
+
+function gethcatmapping(msa::NamedResidueMatrix{AT}) where AT <: AbstractMatrix
+	colnames = names(msa, 2)
+	if !isempty(colnames)
+		if !occursin('_', colnames[1])
+			throw(ErrorException(
+				"The column names have not generated by `hcat` on an `AnnotatedMultipleSequenceAlignment` or `MultipleSequenceAlignment`."
+				))
+		end
+    	Int[ parse(Int, replace(col, r"_[0-9]+$" => "")) for col in colnames]
+	else
+		throw(ErrorException("There are not column names!"))
+	end
+end
+
+gethcatmapping(msa::MultipleSequenceAlignment) = gethcatmapping(namedmatrix(msa))

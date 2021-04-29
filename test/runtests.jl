@@ -40,6 +40,7 @@ end
     include("MSA/Hobohm.jl")
     include("MSA/MSAAnnotations.jl")
     include("MSA/GetIndex.jl")
+    include("MSA/Concatenation.jl")
 end
 
 # Information

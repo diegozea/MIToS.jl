@@ -440,7 +440,8 @@ function getcolumnmapping(msa::AnnotatedMultipleSequenceAlignment)
 end
 
 function getcolumnmapping(msa::NamedResidueMatrix{AT}) where AT <: AbstractMatrix
-    Int[ parse(Int, pos) for pos in names(msa, 2) ]
+    # replace to clean names from hcat
+    Int[ parse(Int, replace(col, r"^[0-9]+_" => "")) for col in names(msa, 2) ]
 end
 
 getcolumnmapping(msa::MultipleSequenceAlignment) = getcolumnmapping(namedmatrix(msa))
