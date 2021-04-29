@@ -83,6 +83,15 @@
 
     @testset "Filter" begin
 
+        @testset "Filter helpers" begin
+            str_col = "abcd"
+            str_map = "11,12,13,14"
+            selector = [4,3,1]
+
+            @test MSA._filter(str_col, selector) == "dca"
+            @test MSA._filter_mapping(str_map, selector) == "14,13,11"
+        end
+
         annot = Annotations()
         setannotresidue!(annot,"O31698/18-71","SS","CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH")
         setannotfile!(annot, "AC", "PF00571")

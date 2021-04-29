@@ -68,7 +68,7 @@ function filtersequences!(data::Annotations, ids::Vector{String},
                           mask::AbstractVector{Bool})
     @assert length(ids)==length(mask) "It's needed one sequence id per element in the mask."
     nresannot = length(data.residues)
-    nseqannot = length(data.residues)
+    nseqannot = length(data.sequences)
     if nresannot > 0 || nseqannot > 0
         del = Set(ids[ .!mask ])
     end

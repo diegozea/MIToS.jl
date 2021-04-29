@@ -88,6 +88,8 @@ end
 # Constructors
 # ------------
 
+# AnnotatedMultipleSequenceAlignment
+
 function AnnotatedMultipleSequenceAlignment(msa::NamedResidueMatrix{Array{Residue,2}})
     AnnotatedMultipleSequenceAlignment(msa, Annotations())
 end
@@ -97,16 +99,28 @@ function AnnotatedMultipleSequenceAlignment(msa::Matrix{Residue})
 end
 
 function AnnotatedMultipleSequenceAlignment(msa::AbstractMatrix{Residue})
-    AnnotatedMultipleSequenceAlignment(convert(Matrix{Residue}, msa))
+    AnnotatedMultipleSequenceAlignment(Matrix{Residue}(msa))
 end
+
+function AnnotatedMultipleSequenceAlignment(msa::MultipleSequenceAlignment)
+    AnnotatedMultipleSequenceAlignment(namedmatrix(msa), Annotations())
+end
+
+# MultipleSequenceAlignment
 
 function MultipleSequenceAlignment(msa::Matrix{Residue})
     MultipleSequenceAlignment(NamedArray(msa))
 end
 
 function MultipleSequenceAlignment(msa::AbstractMatrix{Residue})
-    MultipleSequenceAlignment(convert(Matrix{Residue}, msa))
+    MultipleSequenceAlignment(Matrix{Residue}(msa))
 end
+
+function MultipleSequenceAlignment(msa::AnnotatedMultipleSequenceAlignment)
+    MultipleSequenceAlignment(namedmatrix(msa))
+end
+
+# AnnotatedAlignedSequence
 
 function AnnotatedAlignedSequence(seq::NamedResidueMatrix{Array{Residue,2}})
     AnnotatedAlignedSequence(seq, Annotations())
@@ -117,16 +131,20 @@ function AnnotatedAlignedSequence(seq::Matrix{Residue})
 end
 
 function AnnotatedAlignedSequence(seq::AbstractMatrix{Residue})
-    AnnotatedAlignedSequence(convert(Matrix{Residue}, seq))
+    AnnotatedAlignedSequence(Matrix{Residue}(seq))
 end
 
-function AlignedSequence(seq::Matrix{Residue})
-    AlignedSequence(NamedArray(seq))
+function AnnotatedAlignedSequence(seq::AlignedSequence)
+    AnnotatedAlignedSequence(namedmatrix(seq), Annotations())
 end
 
-function AlignedSequence(seq::AbstractMatrix{Residue})
-    AlignedSequence(convert(Matrix{Residue}, seq))
-end
+# AlignedSequence
+
+AlignedSequence(seq::Matrix{Residue}) = AlignedSequence(NamedArray(seq))
+
+AlignedSequence(seq::AbstractMatrix{Residue}) = AlignedSequence(Matrix{Residue}(seq))
+
+AlignedSequence(seq::AnnotatedAlignedSequence) = AlignedSequence(namedmatrix(seq))
 
 # AnnotatedAlignedObject
 # ----------------------
@@ -155,19 +173,23 @@ const MSAMatrix = Union{Matrix{Residue},NamedResidueMatrix{Array{Residue,2}}}
 
 function Base.convert(::Type{MultipleSequenceAlignment},
                       msa::AnnotatedMultipleSequenceAlignment)
+    @warn "`convert(::Type{MultipleSequenceAlignment}, msa)` has been deprecated. Use `MultipleSequenceAlignment(msa)`"
     MultipleSequenceAlignment(namedmatrix(msa))
 end
 
 function Base.convert(::Type{AlignedSequence}, seq::AnnotatedAlignedSequence)
+    @warn "`convert(::Type{AlignedSequence}, seq)` has been deprecated. Use `AlignedSequence(seq)`"
     AlignedSequence(namedmatrix(seq))
 end
 
 function Base.convert(::Type{AnnotatedMultipleSequenceAlignment},
                       msa::MultipleSequenceAlignment)
+    @warn "`convert(::Type{AnnotatedMultipleSequenceAlignment}, msa)` has been deprecated. Use `AnnotatedMultipleSequenceAlignment(msa)`"
     AnnotatedMultipleSequenceAlignment(namedmatrix(msa), Annotations())
 end
 
 function Base.convert(::Type{AnnotatedAlignedSequence}, seq::AlignedSequence)
+    @warn "`convert(::Type{AnnotatedAlignedSequence}, seq)` has been deprecated. Use `AnnotatedAlignedSequence(seq)`"
     AnnotatedAlignedSequence(namedmatrix(seq), Annotations())
 end
 
@@ -176,112 +198,6 @@ end
 
 for f in (:size, :length)
     @eval Base.$(f)(x::AbstractAlignedObject) = $(f)(namedmatrix(x))
-end
-
-for T in (:(AlignedSequence),
-            :(AnnotatedAlignedSequence),
-            :(MultipleSequenceAlignment),
-            :(AnnotatedMultipleSequenceAlignment))
-    @eval Base.IndexStyle(::Type{$(T)}) = Base.IndexLinear()
-end
-
-@inline Base.getindex(x::AbstractAlignedObject,
-                      args...) = getindex(namedmatrix(x), args...)
-
-@inline function Base.setindex!(x::AbstractAlignedObject, value, args...)
-    setindex!(namedmatrix(x), value, args...)
-end
-
-# Special getindex/setindex! for sequences to avoid `seq["seqname","colname"]`
-
-@inline function Base.getindex(x::AbstractAlignedSequence,
-                               i::Union{Int,AbstractString})
-    getindex(namedmatrix(x), 1, i)
-end
-
-@inline function Base.setindex!(x::AbstractAlignedSequence, value,
-                                i::Union{Int,AbstractString})
-    setindex!(namedmatrix(x), value, 1, i)
-end
-
-# ## Special getindex to conserve annotations and types
-
-# ### Helper functions to create sequence and column boolean masks
-
-function _get_selected_sequences(msa, selector)
-    type = eltype(selector)
-    if type == Bool
-        return selector
-    else
-        to_select = Set(selector)
-        if type  <: Number
-            Bool[i in to_select for i in 1:nsequences(msa)]
-        elseif type <: AbstractString
-            Bool[i in to_select for i in sequencenames(msa)]
-        end
-    end
-end
-
-function _get_selected_columns(msa, selector)
-    type = eltype(selector)
-    if type == Bool
-        return selector
-    else
-        to_select = Set(selector)
-        if type  <: Number
-            Bool[i in to_select for i in 1:ncolumns(msa)]
-        elseif type <: AbstractString
-            Bool[i in to_select for i in columnnames(msa)]
-        end
-    end
-end
-
-function Base.getindex(msa::AnnotatedMultipleSequenceAlignment, 
-                       seqs::AbstractArray, cols::AbstractArray)
-    msa_copy = copy(msa)
-    filtersequences!(
-        annotations(msa_copy), 
-        sequencenames(msa_copy), 
-        _get_selected_sequences(msa, seqs))
-    filtercolumns!(msa_copy, _get_selected_columns(msa, cols))
-    # To allow changing the order of sequences but not the order of the columns
-    # until we have a way to change the order of column and residue annotations
-    AnnotatedMultipleSequenceAlignment(msa_copy.matrix[seqs, :], annotations(msa_copy))
-end
-
-function Base.getindex(msa::AnnotatedMultipleSequenceAlignment, 
-                       seqs::AbstractArray, cols::Colon)
-    new_annot = copy(annotations(msa))
-    filtersequences!(
-        new_annot, 
-        sequencenames(msa), 
-        _get_selected_sequences(msa, seqs))
-    AnnotatedMultipleSequenceAlignment(msa.matrix[seqs, cols], new_annot)
-end
-
-function Base.getindex(msa::AnnotatedMultipleSequenceAlignment, 
-                       seqs::Colon, cols::AbstractArray)
-    msa_copy = copy(msa)
-    filtercolumns!(msa_copy, _get_selected_columns(msa, cols))
-    msa_copy
-end
-
-Base.getindex(msa::AnnotatedMultipleSequenceAlignment, seqs::Colon, cols::Colon) = copy(msa)
-
-function Base.getindex(msa::MultipleSequenceAlignment, 
-        seqs::Union{AbstractArray, Colon}, 
-        cols::Union{AbstractArray, Colon})
-    MultipleSequenceAlignment(msa.matrix[seqs, cols])
-end
-
-function Base.getindex(seq::AnnotatedAlignedSequence, cols::AbstractArray)
-    seq_copy = copy(seq)
-    filtercolumns!(seq_copy, _get_selected_columns(seq, cols))
-    seq_copy
-end
-
-function Base.getindex(seq::AlignedSequence, cols::Union{AbstractArray, Colon})
-    AlignedSequence(seq.matrix[cols])
 end
 
 # Show

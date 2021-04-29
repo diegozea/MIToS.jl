@@ -48,6 +48,53 @@ function _sequence_mask(mask::AbstractVector{Bool}, msa)
     mask
 end
 
+# If the mask is list of indexes, return it without changes
+
+_column_mask(mask::Union{AbstractArray, Colon}, msa) = mask
+
+# Annotate modifications
+# ----------------------
+
+_annotate_modification!(x, selector::Colon, fun::String, column::Bool) = nothing
+
+function _annotate_modification!(x, selector::AbstractArray, fun::String, column::Bool)
+    entity = column ? "column" : "sequence"
+    verb = "has"
+    if eltype(selector) <: Bool
+        n_deleted = sum(.~selector)
+        if n_deleted > 0
+            if n_deleted > 1
+                entity = "s"
+                verb = "have"
+            end
+            str = string("$fun : $n_deleted $entity $verb been deleted.")
+            annotate_modification!(x, str)
+        end
+    else
+        cleaned_selector = unique(selector)
+        n_selected = length(cleaned_selector)
+        if n_selected > 0
+            if n_selected > 1
+                entity *= "s"
+                verb = "have"
+            end
+            str = string("$fun : $n_selected $entity $verb been selected.")
+            annotate_modification!(x, str)
+            if column && n_selected > 1 && !issorted(selector) # do not store sequence order changes
+                annotate_modification!(x, "$fun : column order has changed!")
+            end
+        end
+    end
+end
+
+function _annotate_col_modification!(x, selector)
+    _annotate_modification!(x, selector, "filtercolumns!", true)
+end
+
+function _annotate_seq_modification!(x, selector)
+    _annotate_modification!(x, selector, "filtersequences!", false)
+end
+
 # Filter sequences
 # ----------------
 
@@ -67,9 +114,9 @@ function filtersequences!(msa::AnnotatedMultipleSequenceAlignment,
     filtersequences!(annotations(msa), sequencenames(msa), boolean_vector)
     # Filter annotations first, names will be changed by filtersequences:
     msa.matrix = filtersequences(namedmatrix(msa), boolean_vector)
-    annotate && annotate_modification!(msa, string("filtersequences! : ",
-                                                    sum(.~boolean_vector),
-                                                    " sequences have been deleted."))
+    if annotate
+        _annotate_seq_modification!(msa, boolean_vector)
+    end
     msa
 end
 
@@ -101,11 +148,12 @@ It allows to filter MSA or aligned sequence columns/positions using a
 """
 function filtercolumns!(x::AnnotatedAlignedObject,
                         mask, annotate::Bool=true)
-    boolean_vector = _column_mask(mask, x)
-    filtercolumns!(annotations(x), boolean_vector)
-    x.matrix = filtercolumns(namedmatrix(x), boolean_vector)
-    annotate && annotate_modification!(x,string("filtercolumns! : ", sum(.~boolean_vector),
-                                                " columns have been deleted."))
+    selector = _column_mask(mask, x)
+    filtercolumns!(annotations(x), selector)
+    x.matrix = filtercolumns(namedmatrix(x), selector)
+    if annotate
+        _annotate_col_modification!(x, selector)
+    end
     x
 end
 

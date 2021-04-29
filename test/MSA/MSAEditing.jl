@@ -20,11 +20,15 @@
 
         matrix_mask = pfam[1:1,:] .== GAP
         @test size(matrix_mask) == (1,110)
-
+        
         @test size(MSA._column_mask(matrix_mask, pfam)) == (110,)
         @test MSA._column_mask(vec(matrix_mask), pfam) == vec(matrix_mask)
         @test MSA._column_mask(col -> col[1] == GAP, pfam) ==
               MSA._column_mask(matrix_mask, pfam)
+
+        int_mask = collect(1:length(matrix_mask))[vec(matrix_mask)] # i.e. index selection
+        @test MSA._column_mask(int_mask, pfam) == int_mask
+        @test MSA._column_mask(Colon(), pfam) == Colon()
 
         matrix_mask = pfam[:,1:1] .== Residue('-')
         @test size(matrix_mask) == (4,1)

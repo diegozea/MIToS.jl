@@ -39,6 +39,7 @@ end
     include("MSA/Identity.jl")
     include("MSA/Hobohm.jl")
     include("MSA/MSAAnnotations.jl")
+    include("MSA/GetIndex.jl")
 end
 
 # Information
