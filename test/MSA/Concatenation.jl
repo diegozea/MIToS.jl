@@ -73,4 +73,19 @@
         concatenated_msa = hcat(msa, msa_2, msa, msa_2, msa)
         @test getannotcolumn(concatenated_msa, "example") == "  HE  HE  "
     end
+
+    @testset "IO" begin
+        path = tempdir()
+        tmp_file = joinpath(path, ".tmp.stockholm")
+        try
+            write(tmp_file, annot_diff, Stockholm)
+            out_msa = read(tmp_file, Stockholm)
+            @test columnnames(out_msa) == columnnames(annot_diff)
+            @test out_msa == annot_diff
+        finally
+            if isfile(tmp_file)
+                rm(tmp_file)
+            end
+        end
+    end
 end

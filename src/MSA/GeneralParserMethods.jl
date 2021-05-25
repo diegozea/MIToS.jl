@@ -136,6 +136,7 @@ function _generate_annotated_msa(annot::Annotations, IDS::Vector{String},
     if keepinserts
         _keepinserts!(SEQS, annot)
     end
+    from_hcat = getannotfile(annot, "HCat", "") != ""
     if generatemapping
         if useidcoordinates && hascoordinates(IDS[1])
             MSA, MAP = _to_msa_mapping(SEQS, IDS)
@@ -143,11 +144,19 @@ function _generate_annotated_msa(annot::Annotations, IDS::Vector{String},
             MSA, MAP = _to_msa_mapping(SEQS)
             setnames!(MSA, IDS, 1)
         end
-        if getannotfile(annot,"ColMap","") != ""
-            @warn("""
-            The file already has column annotations. ColMap will be replaced.
-            You can use generatemapping=false to keep the file mapping annotations.
-            """)
+        if getannotfile(annot, "ColMap", "") != ""
+            mssg = if from_hcat
+                """
+                The file came from an MSA concatenation and has column annotations.
+                The information about the column numbers before concatenation will be lost 
+                because of the generatemapping keyword argument.
+                """ 
+            else 
+                "The file already has column annotations. ColMap will be replaced."
+            end
+            @warn """
+            $mssg You can use generatemapping=false to keep the file mapping annotations.
+            """
         end
         setannotfile!(annot, "NCol", string(size(MSA,2)))
         setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
@@ -164,8 +173,18 @@ function _generate_annotated_msa(annot::Annotations, IDS::Vector{String},
     else
         MSA = _generate_named_array(SEQS, IDS)
         colmap = getannotfile(annot,"ColMap","")
-        if colmap != ""
-            setnames!(MSA, map(String,split(colmap,',')), 2)
+        cols = if colmap != ""
+            map(String, split(colmap, ','))
+        else
+            String[]
+        end
+        if !isempty(cols)
+            if from_hcat
+                msas = map(String, split(getannotfile(annot, "HCat"), ','))
+                setnames!(MSA, String["$(m)_$c" for (m, c) in zip(msas, cols)], 2)
+            else
+                setnames!(MSA, cols, 2)
+            end
         end
     end
     msa = AnnotatedMultipleSequenceAlignment(MSA, annot)
