@@ -1,6 +1,6 @@
 name = "MIToS"
 uuid = "51bafb47-8a16-5ded-8b04-24ef4eede0b5"
-version = "2.8.1"
+version = "2.8.2"
 
 [deps]
 ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
@@ -42,7 +42,7 @@ HTTP = "0.8, 0.9"
 JSON = "0.21"
 LightXML = "0.8, 0.9"
 NamedArrays = "0.9"
-PairwiseListMatrices = "0.10"
+PairwiseListMatrices = "0.11"
 ProgressMeter = "1"
 ROCAnalysis = "0.3"
 RecipesBase = "1"
