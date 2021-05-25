@@ -1,5 +1,9 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.8.0 to v2.8.1
+
+Fix bug when `read`ing `hcat` generated MSA in `Stockholm` format.
+
 ### Changes from v2.7.0 to v2.8.0
 
 Multiple bug fixes and improvements related to `getindex` and `hcat`.
