@@ -1,5 +1,11 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.8.1 to v2.8.3
+
+* Increase `PairwiseListMatrices` required version.
+
+* Fix bug when concatenating concatenated MSAs using `hcat`.
+
 ### Changes from v2.8.0 to v2.8.1
 
 Fix bug when `read`ing `hcat` generated MSA in `Stockholm` format.

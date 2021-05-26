@@ -88,4 +88,56 @@
             end
         end
     end
+
+    @testset "Inception" begin
+        concatenated_in = hcat(msa, msa_2)
+
+        @testset "concatenated concatenated" begin
+            concatenated_out = hcat(concatenated_in, concatenated_in)
+
+            @test size(concatenated_out) == (2, 8)
+            @test sequencenames(concatenated_out) == ["ONE", "TWO"]
+            @test columnnames(concatenated_out) == [
+                "1_1", "1_2", "2_1", "2_2", "3_1", "3_2", "4_1", "4_2"
+                ]
+            @test getcolumnmapping(concatenated_out) == [1, 2, 1, 2, 1, 2, 1, 2]
+            @test getsequencemapping(concatenated_out, "ONE") == [1, 2, 1, 2, 1, 2, 1, 2]
+            @test getsequencemapping(concatenated_out, "TWO") == [1, 2, 1, 2, 1, 2, 1, 2]
+            @test getsequencemapping(concatenated_out, "ONE") == [1, 2, 1, 2, 1, 2, 1, 2]
+            @test getsequencemapping(concatenated_out, "TWO") == [1, 2, 1, 2, 1, 2, 1, 2]
+            @test getannotresidue(concatenated_out, "ONE", "example") == "abababab"
+            @test getannotresidue(concatenated_out, "TWO", "example") == "cdcdcdcd"
+            @test getannotresidue(concatenated_out, "ONE", "OnlyONE") == "xxxxxxxx"
+            @test getannotresidue(concatenated_out, "TWO", "OnlyTWO") == "yyyyyyyy"
+            @test getannotcolumn(concatenated_out, "example") == "  HE  HE"
+            @test gethcatmapping(concatenated_out) == [1, 1, 2, 2, 3, 3, 4, 4]
+        end
+
+        @testset "concatenated non_concatenated" begin
+            concatenated_msas = [
+                hcat(concatenated_in, msa),
+                hcat(msa, concatenated_in)
+            ]
+            for (i, concatenated_out) in enumerate(concatenated_msas)
+                @test size(concatenated_out) == (2, 6)
+                @test sequencenames(concatenated_out) == ["ONE", "TWO"]
+                @test columnnames(concatenated_out) == ["1_1", "1_2", "2_1", "2_2", "3_1", "3_2"]
+                @test getcolumnmapping(concatenated_out) == [1, 2, 1, 2, 1, 2]
+                @test getsequencemapping(concatenated_out, "ONE") == [1, 2, 1, 2, 1, 2]
+                @test getsequencemapping(concatenated_out, "TWO") == [1, 2, 1, 2, 1, 2]
+                @test getsequencemapping(concatenated_out, "ONE") == [1, 2, 1, 2, 1, 2]
+                @test getsequencemapping(concatenated_out, "TWO") == [1, 2, 1, 2, 1, 2]
+                @test getannotresidue(concatenated_out, "ONE", "example") == "ababab"
+                @test getannotresidue(concatenated_out, "TWO", "example") == "cdcdcd"
+                @test getannotresidue(concatenated_out, "ONE", "OnlyONE") == "xxxxxx"
+                @test getannotresidue(concatenated_out, "TWO", "OnlyTWO") == "yyyyyy"
+                if i == 1
+                    @test getannotcolumn(concatenated_out, "example") == "  HE  "
+                else
+                    @test getannotcolumn(concatenated_out, "example") == "    HE"
+                end
+                @test gethcatmapping(concatenated_out) == [1, 1, 2, 2, 3, 3]
+            end
+        end
+    end
 end

@@ -13,9 +13,26 @@ end
 
 function _concatenated_col_names(msas...)
 	colnames = String[]
-	for (i, msa) in enumerate(msas)
-		for col in columnnames(msa)
-			push!(colnames, "$(i)_$col")
+	msa_number = 0
+	for msa in msas
+		columns = columnnames(msa)
+		first_col = first(columns)
+		check_msa_change = '_' in first_col
+		previous = ""
+		msa_number += 1
+		for col in columns
+			if check_msa_change
+				fields = split(col, '_')
+				current = first(fields)
+				if current != previous
+					if previous != ""
+						msa_number += 1
+					end
+					previous = string(current)
+				end
+				col = last(fields)
+			end
+			push!(colnames, "$(msa_number)_$col")
 		end
 	end
 	colnames
@@ -148,6 +165,9 @@ function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 		_concatenate_annotcolumn(seq_lengths, old_annot...),
 		_concatenate_annotresidue(seq_lengths, seqname_mapping, old_annot...)
 	)
+	if haskey(new_annot.file, "HCat")
+		delete!(new_annot.file, "HCat")
+	end
 	setannotfile!(
 		new_annot, 
 		"HCat", 
