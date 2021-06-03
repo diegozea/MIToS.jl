@@ -62,11 +62,14 @@ function _concatenate_annotfile(data::Annotations...)
 	annotfile
 end
 
-function _get_seqname_mapping(concatenated_seqnames)
+function _get_seqname_mapping(concatenated_seqnames, msas...)
 	mapping = Dict{Tuple{Int, String}, String}()
-	for concatenated_seqname in concatenated_seqnames
-		for (i, seqname) in enumerate(split(concatenated_seqname, "_&_"))
-			mapping[(i, seqname)] = concatenated_seqname
+	seq_names = hcat([sequencenames(msa) for msa in msas]...)
+	nseq, nmsa = size(seq_names)
+	@assert nseq == length(concatenated_seqnames)
+	for i in 1:nseq
+		for j in 1:nmsa
+			mapping[(j, seq_names[i, j])] = concatenated_seqnames[i]
 		end
 	end
 	mapping
@@ -156,7 +159,7 @@ function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 	colnames = _concatenated_col_names(msa...)
 	setnames!(concatenated_msa, seqnames, 1)
 	setnames!(concatenated_msa, colnames, 2)
-	seqname_mapping = _get_seqname_mapping(seqnames)
+	seqname_mapping = _get_seqname_mapping(seqnames, msa...)
 	seq_lengths = _get_seq_lengths(msa...)
 	old_annot = annotations.([msa...])
 	new_annot = Annotations(

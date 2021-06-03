@@ -1,10 +1,18 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.8.1 to v2.8.5
+
+* Fix bugs when concatenating concatenated MSAs using `hcat`.
+
+### Changes from v2.8.1 to v2.8.4
+
+* Ensure that `gaussdca` use the correct project file.
+
 ### Changes from v2.8.1 to v2.8.3
 
 * Increase `PairwiseListMatrices` required version.
 
-* Fix bug when concatenating concatenated MSAs using `hcat`.
+* Fix bugs when concatenating concatenated MSAs using `hcat`.
 
 ### Changes from v2.8.0 to v2.8.1
 

@@ -91,9 +91,12 @@
 
     @testset "Inception" begin
         concatenated_in = hcat(msa, msa_2)
+        concatenated_diff_a = hcat(msa[[2, 1], :], msa_2)
+        concatenated_diff_b = hcat(msa_2, msa[[2, 1], :])
 
         @testset "concatenated concatenated" begin
             concatenated_out = hcat(concatenated_in, concatenated_in)
+            concat_ab = hcat(concatenated_diff_a, concatenated_diff_b)
 
             @test size(concatenated_out) == (2, 8)
             @test sequencenames(concatenated_out) == ["ONE", "TWO"]
@@ -111,6 +114,27 @@
             @test getannotresidue(concatenated_out, "TWO", "OnlyTWO") == "yyyyyyyy"
             @test getannotcolumn(concatenated_out, "example") == "  HE  HE"
             @test gethcatmapping(concatenated_out) == [1, 1, 2, 2, 3, 3, 4, 4]
+
+            @test size(concat_ab) == (2, 8)
+            @test sequencenames(concat_ab) == [
+                "TWO_&_ONE_&_ONE_&_TWO", "ONE_&_TWO_&_TWO_&_ONE"]
+            @test columnnames(concat_ab) == [
+                "1_1", "1_2", "2_1", "2_2", "3_1", "3_2", "4_1", "4_2"]
+            @test getcolumnmapping(concat_ab) == [1, 2, 1, 2, 1, 2, 1, 2]
+            @test getsequencemapping(concat_ab, 
+                "TWO_&_ONE_&_ONE_&_TWO") == [1, 2, 1, 2, 1, 2, 1, 2]
+            @test getsequencemapping(concat_ab, 
+                "ONE_&_TWO_&_TWO_&_ONE") == [1, 2, 1, 2, 1, 2, 1, 2]
+            @test getannotresidue(concat_ab, 
+                "TWO_&_ONE_&_ONE_&_TWO", "example") == "cdababcd"
+            @test getannotresidue(concat_ab, 
+                "ONE_&_TWO_&_TWO_&_ONE", "example") == "abcdcdab"
+            @test getannotresidue(concat_ab, 
+                "TWO_&_ONE_&_ONE_&_TWO", "OnlyONE") == "  xxxx  "
+            @test getannotresidue(concat_ab, 
+                "TWO_&_ONE_&_ONE_&_TWO", "OnlyTWO") == "yy    yy"
+            @test getannotcolumn(concat_ab, "example") == "  HEHE  "
+            @test gethcatmapping(concat_ab) == [1, 1, 2, 2, 3, 3, 4, 4]
         end
 
         @testset "concatenated non_concatenated" begin
@@ -138,6 +162,25 @@
                 end
                 @test gethcatmapping(concatenated_out) == [1, 1, 2, 2, 3, 3]
             end
+
+            concat_a = hcat(concatenated_diff_a, msa)
+
+            @test size(concat_a) == (2, 6)
+            @test sequencenames(concat_a) == [
+                "TWO_&_ONE_&_ONE", "ONE_&_TWO_&_TWO"]
+            @test columnnames(concat_a) == [
+                "1_1", "1_2", "2_1", "2_2", "3_1", "3_2"]
+            @test getcolumnmapping(concat_a) == [1, 2, 1, 2, 1, 2]
+            @test getsequencemapping(concat_a, "TWO_&_ONE_&_ONE") == [1, 2, 1, 2, 1, 2]
+            @test getsequencemapping(concat_a, "ONE_&_TWO_&_TWO") == [1, 2, 1, 2, 1, 2]
+            @test getannotresidue(concat_a, "TWO_&_ONE_&_ONE", "example") == "cdabab"
+            @test getannotresidue(concat_a, "ONE_&_TWO_&_TWO", "example") == "abcdcd"
+            @test getannotresidue(concat_a, 
+                "TWO_&_ONE_&_ONE", "OnlyONE") == "  xxxx"
+            @test getannotresidue(concat_a, 
+                "TWO_&_ONE_&_ONE", "OnlyTWO") == "yy    "
+            @test getannotcolumn(concat_a, "example") == "  HE  "
+            @test gethcatmapping(concat_a) == [1, 1, 2, 2, 3, 3]
         end
     end
 end
