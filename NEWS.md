@@ -1,5 +1,9 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.8.1 to v2.8.6
+
+* You can pass keyword arguments from `downloadsifts` to `download_file`.
+
 ### Changes from v2.8.1 to v2.8.5
 
 * Fix bugs when concatenating concatenated MSAs using `hcat`.
