@@ -116,6 +116,12 @@
 
         @test isapprox(rα, 0.230, atol=0.001) # Bio3D RMSD
 
+        _, _, rα2 = superimpose(α1, α2, zip(1:length(α1), 1:length(α2)))
+        @test rα2 == rα
+
+        _, _, rα2 = superimpose(α1, α2, zip(1:2, 1:2))
+        @test rα2 < rα/10  # aligning only 2 points is accurate
+
         b1, b2, rβ = superimpose(β1, β2)
 
         @test isapprox(rβ, 0.251, atol=0.001) # Bio3D & Chimera's MatchMaker RMSD
