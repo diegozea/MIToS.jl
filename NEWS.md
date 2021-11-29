@@ -1,5 +1,9 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.8.6 to v2.9.0
+
+* New `matches` keyword argument in the `superimpose` function to determine the residues to be aligned. Thanks, @timholy!
+
 ### Changes from v2.8.1 to v2.8.6
 
 * You can pass keyword arguments from `downloadsifts` to `download_file`.
