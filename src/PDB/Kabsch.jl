@@ -210,7 +210,8 @@ Return the matching CA matrices after deleting the rows/residues where the CA
 is missing in at least one structure.
 """
 function _get_matched_Cαs(A::AbstractVector{PDBResidue},
-                          B::AbstractVector{PDBResidue})
+                          B::AbstractVector{PDBResidue},
+                          ::Nothing)
     length_A = length(A)
     if length_A != length(B)
         throw(ArgumentError("PDBResidue vectors should have the same length."))
@@ -232,16 +233,41 @@ function _get_matched_Cαs(A::AbstractVector{PDBResidue},
     ACα, BCα
 end
 
+function _get_matched_Cαs(A::AbstractVector{PDBResidue},
+                          B::AbstractVector{PDBResidue},
+                          matches)
+    if Base.IteratorSize(typeof(matches)) == Base.SizeUnknown()
+        Asel, Bsel = PDBResidue[], PDBResidue[]
+        for (i, j) in matches
+            push!(Asel, A[i])
+            push!(Bsel, B[j])
+        end
+        return _get_matched_Cαs(Asel, Bsel, nothing)
+    end
+    Asel = Vector{PDBResidue}(undef, length(matches))
+    Bsel = similar(Asel)
+    for (k, (i, j)) in enumerate(matches)
+        Asel[k] = A[i]
+        Bsel[k] = B[j]
+    end
+    return _get_matched_Cαs(Asel, Bsel, nothing)
+end
 
 """
+    Asuper, Bsuper, RMSD = superimpose(A, B, matches=nothing)
+
 This function takes `A::AbstractVector{PDBResidue}` (reference) and
 `B::AbstractVector{PDBResidue}`. Translates `A` and `B` to the origin of coordinates,
 and rotates `B` so that `rmsd(A,B)` is minimized with the Kabsch algorithm
 (using only their α carbons).
 Returns the rotated and translated versions of `A` and `B`, and the RMSD value.
+
+Optionally provide `matches` which iterates over matched index pairs in `A` and `B`,
+e.g., `matches = [(3, 5), (4, 6), ...]`. The alignment will be constructed
+using just the matching residues.
 """
-function superimpose(A::AbstractVector{PDBResidue}, B::AbstractVector{PDBResidue})
-    ACα, BCα = _get_matched_Cαs(A, B)
+function superimpose(A::AbstractVector{PDBResidue}, B::AbstractVector{PDBResidue}, matches=nothing)
+    ACα, BCα = _get_matched_Cαs(A, B, matches)
     Bxyz = PDB.coordinatesmatrix(B)
     meanACα = vec(mean(ACα, dims=1))
     meanBCα = vec(mean(BCα, dims=1))
