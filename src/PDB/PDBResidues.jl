@@ -26,9 +26,10 @@ end
     x::Float64
     y::Float64
     z::Float64
-    function Coordinates(a::NTuple{3, Float64})
+    function Coordinates(a::NTuple{3, Real})
         new(a[1], a[2], a[3])
     end
+    Coordinates(x, y, z) = new(x, y, z)
 end
 
 """
