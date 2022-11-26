@@ -2,7 +2,7 @@
 
     pfam_code = "PF11591"
     @test_throws ErrorException downloadpfam("2vqc")
-    filename = downloadpfam(pfam_code, filename=tempname()*".gz")
+    filename = downloadpfam(pfam_code, filename=tempname()*".alignment.full.gz")
     try
         aln = read(filename, Stockholm)
         if size(aln) == (6,34)
