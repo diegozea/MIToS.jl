@@ -24,21 +24,16 @@ julia> download_file("http://www.uniprot.org/uniprot/P69905.fasta","seq.fasta",
 ```
 """
 function download_file(url::AbstractString, filename::AbstractString;
-                       headers::Dict{String,String}=Dict{String,String}(),
                        kargs...)
     kargs = _modify_kargs_for_proxy(url; kargs...)
-    HTTP.open("GET", url, headers; kargs...) do stream
-        open(filename, "w") do fh
-           write(fh, stream)
-        end
-    end
-    filename
+    kargs_dict = Dict(kargs...)
+    headers = pop!(kargs_dict, "headers", Dict{String,String}())
+    HTTP.download(url, filename, headers; kargs_dict...)
 end
 
 function download_file(url::AbstractString;
-                       headers::Dict{String,String}=Dict{String,String}(),
                        kargs...)
-    download_file(url, tempname(); headers=headers, kargs...)
+    download_file(url, tempname(); kargs...)
 end
 
 """
@@ -124,7 +119,7 @@ function read(completename::AbstractString,
         startswith(completename, "https://") ||
         startswith(completename, "ftp://")
 
-        filename = download_file(completename)
+        filename = download_file(completename, headers=Dict("Accept-Encoding" => "identity",))
         try
             _read(completename, filename, T, args...; kargs...)
         finally
