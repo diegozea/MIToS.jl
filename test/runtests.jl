@@ -51,7 +51,7 @@ end
     include("Information/Iterations.jl")
     include("Information/CorrectedMutualInformation.jl")
     include("Information/Gaps.jl")
-    include("Information/Externals.jl")
+    # include("Information/Externals.jl")   # FIXME uncomment this when Pkg bug is fixed
 end
 
 # PDB
