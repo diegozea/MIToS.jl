@@ -4,7 +4,7 @@
 Julia 1.0 or higher: **MIToS v2**  
 
 
-Linux, OSX & Windows: ![Status](https://github.com/diegozea/MIToS.jl/actions/workflows/CI.yml/badge.svg)  
+Linux, OSX & Windows: [![Status](https://github.com/diegozea/MIToS.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/diegozea/MIToS.jl/actions?query=workflow%3A%22CI%22+branch%3Amaster)
 
 
 Code Coverage:
