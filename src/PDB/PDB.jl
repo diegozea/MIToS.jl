@@ -28,6 +28,7 @@ using MIToS.Utils
 using Formatting
 using JSON
 using HTTP
+using Logging
 
 export  # PDBResidues
         PDBResidueIdentifier,

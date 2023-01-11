@@ -272,14 +272,16 @@ end
 function _pdbheader(pdbcode::String; kargs...)
     pdbcode = uppercase(pdbcode)
     if check_pdbcode(pdbcode)
-        String(
-            HTTP.request(
-                "GET", 
-                "https://data.rcsb.org/graphql";
-                query = ["query" => _graphql_query(pdbcode)],
-                kargs...
-                ).body
-            )
+        with_logger(ConsoleLogger(Logging.Warn)) do
+            String(
+                HTTP.request(
+                    "GET", 
+                    "https://data.rcsb.org/graphql";
+                    query = ["query" => _graphql_query(pdbcode)],
+                    kargs...
+                    ).body
+                )
+        end
     else
         throw(ErrorException("$pdbcode is not a correct PDB code"))
     end

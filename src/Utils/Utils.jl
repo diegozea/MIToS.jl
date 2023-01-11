@@ -11,6 +11,7 @@ using HTTP
 using CodecZlib
 using LightXML
 using NamedArrays
+using Logging
 
 export  # GeneralUtils.jl
         All,
