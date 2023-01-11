@@ -28,7 +28,7 @@ function download_file(url::AbstractString, filename::AbstractString;
     kargs = _modify_kargs_for_proxy(url; kargs...)
     kargs_dict = Dict(kargs...)
     headers = pop!(kargs_dict, "headers", Dict{String,String}())
-    with_logger(ConsoleLogger(Logging.Warn)) do
+    with_logger(ConsoleLogger(stderr, Logging.Warn)) do
         HTTP.download(url, filename, headers; kargs_dict...)
     end
 end

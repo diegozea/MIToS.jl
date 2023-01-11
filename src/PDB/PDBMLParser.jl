@@ -272,7 +272,7 @@ end
 function _pdbheader(pdbcode::String; kargs...)
     pdbcode = uppercase(pdbcode)
     if check_pdbcode(pdbcode)
-        with_logger(ConsoleLogger(Logging.Warn)) do
+        with_logger(ConsoleLogger(stderr, Logging.Warn)) do
             String(
                 HTTP.request(
                     "GET", 
