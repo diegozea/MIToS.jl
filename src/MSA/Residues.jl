@@ -317,14 +317,14 @@ julia> using Random
 julia> Random.seed!(1); # Reseed the random number generator.
 
 julia> rand(Residue)
-P
+R
 
 julia> rand(Residue, 4, 4)
 4×4 Matrix{Residue}:
- N  N  T  D
- G  Y  L  I
- R  V  F  L
- P  C  K  L
+ E  D  D  A
+ F  S  K  K
+ M  S  I  M
+ Y  F  E  D
 
 ```
 """
