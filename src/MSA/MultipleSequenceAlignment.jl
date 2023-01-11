@@ -403,7 +403,7 @@ Converts a string of mappings into a vector of `Int`s
 julia> using MIToS.MSA
 
 julia> MSA._str2int_mapping(",,2,,4,5")
-6-element Array{Int64,1}:
+6-element Vector{Int64}:
  0
  0
  2

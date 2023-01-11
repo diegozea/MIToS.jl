@@ -168,7 +168,7 @@ julia> ab = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
 ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
 
 julia> names(ab)
-8-element Array{String,1}:
+8-element Vector{String}:
  "AILMV"
  "RHK"
  "NQST"

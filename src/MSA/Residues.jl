@@ -282,7 +282,7 @@ The MIToS macro `@res_str` takes a string and returns a `Vector` of `Residues` (
 julia> using MIToS.MSA
 
 julia> res"MIToS"
-5-element Array{Residue,1}:
+5-element Vector{Residue}:
  M
  I
  T
@@ -320,7 +320,7 @@ julia> rand(Residue)
 P
 
 julia> rand(Residue, 4, 4)
-4×4 Array{Residue,2}:
+4×4 Matrix{Residue}:
  N  N  T  D
  G  Y  L  I
  R  V  F  L
