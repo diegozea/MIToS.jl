@@ -20,15 +20,93 @@ A0A1A9RWJ5_9NEIS/1004-1099 │   S    T    V    T    N       -    -    -    -   
 A6T0K2_JANMA/343-459       │   -    -    -    -    -       Y    A    Y    T    L
 Q2KVL9_BORA1/480-598       │   S    R    I    T    R       Y    E    Y    R    L
 A0A2W4CX06_9RHIZ/331-444   │   -    -    -    -    N  …    Y    E    Y    L    L</code></pre><h2 id="Getting-PDB-information-from-an-MSA"><a class="docs-heading-anchor" href="#Getting-PDB-information-from-an-MSA">Getting PDB information from an MSA</a><a id="Getting-PDB-information-from-an-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-PDB-information-from-an-MSA" title="Permalink"></a></h2><p>The function <code>getseq2pdb</code> parses the MSA annotations to return a <code>Dict</code> from the sequence identifier in the MSA to PDB and chain codes.  </p><pre><code class="language-julia hljs">getseq2pdb(msa)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{String, Vector{Tuple{String, String}}} with 1 entry:
-  &quot;ICSA_SHIFL/611-720&quot; =&gt; [(&quot;5KE1&quot;, &quot;B&quot;), (&quot;3ML3&quot;, &quot;A&quot;), (&quot;5KE1&quot;, &quot;A&quot;)]</code></pre><p>Once you know the association between PDB chains and sequences, you can use that information together with the <code>msacolumn2pdbresidue</code> function to get the PDB residue number that correspond to each MSA column for given a determined sequence and PDB chain. That function downloads information from SIFTS to generate the mapping.  </p><pre><code class="language- hljs">col2res = msacolumn2pdbresidue(msa, &quot;ICSA_SHIFL/611-720&quot;, &quot;3ML3&quot;, &quot;A&quot;)</code></pre><p>The returned dictionary can be used to get the PDB residue associated to each column (using the <code>msaresidues</code> function)...  </p><pre><code class="language- hljs">using MIToS.PDB
+  &quot;ICSA_SHIFL/611-720&quot; =&gt; [(&quot;5KE1&quot;, &quot;B&quot;), (&quot;3ML3&quot;, &quot;A&quot;), (&quot;5KE1&quot;, &quot;A&quot;)]</code></pre><p>Once you know the association between PDB chains and sequences, you can use that information together with the <code>msacolumn2pdbresidue</code> function to get the PDB residue number that correspond to each MSA column for given a determined sequence and PDB chain. That function downloads information from SIFTS to generate the mapping.  </p><pre><code class="language-julia hljs">col2res = msacolumn2pdbresidue(msa, &quot;ICSA_SHIFL/611-720&quot;, &quot;3ML3&quot;, &quot;A&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{Int64, String} with 103 entries:
+  61  =&gt; &quot;618&quot;
+  62  =&gt; &quot;619&quot;
+  64  =&gt; &quot;620&quot;
+  65  =&gt; &quot;621&quot;
+  66  =&gt; &quot;622&quot;
+  67  =&gt; &quot;623&quot;
+  68  =&gt; &quot;624&quot;
+  76  =&gt; &quot;625&quot;
+  77  =&gt; &quot;626&quot;
+  78  =&gt; &quot;627&quot;
+  79  =&gt; &quot;628&quot;
+  80  =&gt; &quot;629&quot;
+  96  =&gt; &quot;630&quot;
+  97  =&gt; &quot;631&quot;
+  98  =&gt; &quot;632&quot;
+  101 =&gt; &quot;633&quot;
+  102 =&gt; &quot;634&quot;
+  103 =&gt; &quot;635&quot;
+  106 =&gt; &quot;636&quot;
+  ⋮   =&gt; ⋮</code></pre><p>The returned dictionary can be used to get the PDB residue associated to each column (using the <code>msaresidues</code> function)...  </p><pre><code class="language-julia hljs">using MIToS.PDB
 pdbfile = downloadpdb(&quot;3ML3&quot;)
 pdb = read(pdbfile, PDBML)
 resdict = @residuesdict pdb model &quot;1&quot; chain &quot;A&quot; group &quot;ATOM&quot; residue All
 
-msaresidues(msa, resdict, col2res)</code></pre><p>...or to delete the columns without PDB residues (using the <code>hasresidues</code> function):  </p><pre><code class="language- hljs">using MIToS.MSA
-filtercolumns!(msa, hasresidues(msa, col2res))</code></pre><h3 id="PDB-contacts-and-AUC"><a class="docs-heading-anchor" href="#PDB-contacts-and-AUC">PDB contacts and AUC</a><a id="PDB-contacts-and-AUC-1"></a><a class="docs-heading-anchor-permalink" href="#PDB-contacts-and-AUC" title="Permalink"></a></h3><p>The <code>Dict</code> between MSA columns and PDB residue number also can be used to generate a protein contact map associated to the MSA.  </p><pre><code class="language- hljs">cmap = msacontacts(msa, resdict, col2res)</code></pre><p>That protein contact map can be used to calculate the Area Under the ROC Curve for a given score with the <code>AUC</code> function.  </p><pre><code class="language- hljs">using MIToS.Information
+msaresidues(msa, resdict, col2res)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{Int64, MIToS.PDB.PDBResidue} with 103 entries:
+  61  =&gt; PDBResidue:…
+  62  =&gt; PDBResidue:…
+  64  =&gt; PDBResidue:…
+  65  =&gt; PDBResidue:…
+  66  =&gt; PDBResidue:…
+  67  =&gt; PDBResidue:…
+  68  =&gt; PDBResidue:…
+  76  =&gt; PDBResidue:…
+  77  =&gt; PDBResidue:…
+  78  =&gt; PDBResidue:…
+  79  =&gt; PDBResidue:…
+  80  =&gt; PDBResidue:…
+  96  =&gt; PDBResidue:…
+  97  =&gt; PDBResidue:…
+  98  =&gt; PDBResidue:…
+  101 =&gt; PDBResidue:…
+  102 =&gt; PDBResidue:…
+  103 =&gt; PDBResidue:…
+  106 =&gt; PDBResidue:…
+  ⋮   =&gt; ⋮</code></pre><p>...or to delete the columns without PDB residues (using the <code>hasresidues</code> function):  </p><pre><code class="language-julia hljs">using MIToS.MSA
+filtercolumns!(msa, hasresidues(msa, col2res))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">AnnotatedMultipleSequenceAlignment with 1650 annotations : 811×103 Named Matrix{MIToS.MSA.Residue}
+                 Seq ╲ Col │  61   62   64   65   66  …  428  429  430  431  432
+───────────────────────────┼────────────────────────────────────────────────────
+A0A370X5B3_9GAMM/1736-1853 │   S    -    G    T    I  …    Y    A    Y    R    L
+D1AVB4_STRM9/461-568       │   N    K    G    L    I       Y    R    Y    R    L
+A0A2T5HR93_9PSED/761-875   │   D    H    S    L    I       Y    Q    Y    T    L
+A0A427CBK0_9GAMM/418-540   │   R    -    G    V    I       F    R    Y    R    L
+A0A1I1MWW5_9BURK/779-907   │   -    -    -    -    -       Y    E    Y    R    L
+C6JIE8_FUSVA/367-481       │   L    N    G    T    T       Y    E    Y    F    L
+A0A017H8U7_9FUSO/691-802   │   E    D    S    T    L       Y    E    Y    T    L
+A0A085VLZ6_PSESX/333-446   │   A    -    G    T    L       Y    E    Y    Y    L
+⋮                              ⋮    ⋮    ⋮    ⋮    ⋮  ⋱    ⋮    ⋮    ⋮    ⋮    ⋮
+A0A318T6N3_9RHIZ/636-751   │   A    -    G    N    V       Y    V    Y    Q    L
+A0A388SGN0_9BURK/625-739   │   N    S    G    T    I       Y    L    Y    E    L
+A0A443IAD3_9GAMM/1863-1969 │   S    -    G    N    I       Y    D    Y    S    L
+A0A2S8VQP6_9CAUL/182-287   │   D    G    G    L    I       V    R    Y    R    -
+A0A1A9RWJ5_9NEIS/1004-1099 │   A    -    G    T    V       -    -    -    -    -
+A6T0K2_JANMA/343-459       │   D    N    G    T    I       Y    A    Y    T    L
+Q2KVL9_BORA1/480-598       │   R    D    S    S    V       Y    E    Y    R    L
+A0A2W4CX06_9RHIZ/331-444   │   S    -    G    T    I  …    Y    E    Y    L    L</code></pre><h3 id="PDB-contacts-and-AUC"><a class="docs-heading-anchor" href="#PDB-contacts-and-AUC">PDB contacts and AUC</a><a id="PDB-contacts-and-AUC-1"></a><a class="docs-heading-anchor-permalink" href="#PDB-contacts-and-AUC" title="Permalink"></a></h3><p>The <code>Dict</code> between MSA columns and PDB residue number also can be used to generate a protein contact map associated to the MSA.  </p><pre><code class="language-julia hljs">cmap = msacontacts(msa, resdict, col2res)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">103×103 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
+Col1 ╲ Col2 │  61   62   64   65   66   67  …  427  428  429  430  431  432
+────────────┼──────────────────────────────────────────────────────────────
+61          │ NaN  1.0  1.0  1.0  0.0  0.0  …  0.0  0.0  0.0  0.0  0.0  0.0
+62          │ 1.0  NaN  1.0  1.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0
+64          │ 1.0  1.0  NaN  1.0  1.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0
+65          │ 1.0  1.0  1.0  NaN  1.0  1.0     0.0  0.0  0.0  0.0  0.0  0.0
+66          │ 0.0  0.0  1.0  1.0  NaN  1.0     0.0  0.0  0.0  0.0  0.0  0.0
+67          │ 0.0  0.0  0.0  1.0  1.0  NaN     0.0  0.0  0.0  0.0  0.0  0.0
+68          │ 0.0  0.0  0.0  0.0  1.0  1.0     0.0  0.0  0.0  0.0  0.0  0.0
+76          │ 0.0  0.0  0.0  0.0  0.0  1.0     0.0  0.0  0.0  0.0  0.0  0.0
+⋮               ⋮    ⋮    ⋮    ⋮    ⋮    ⋮  ⋱    ⋮    ⋮    ⋮    ⋮    ⋮    ⋮
+423         │ 0.0  0.0  0.0  0.0  0.0  0.0     1.0  1.0  1.0  1.0  0.0  0.0
+424         │ 0.0  0.0  0.0  0.0  0.0  0.0     1.0  1.0  0.0  0.0  0.0  0.0
+427         │ 0.0  0.0  0.0  0.0  0.0  0.0     NaN  1.0  1.0  0.0  0.0  0.0
+428         │ 0.0  0.0  0.0  0.0  0.0  0.0     1.0  NaN  1.0  1.0  0.0  0.0
+429         │ 0.0  0.0  0.0  0.0  0.0  0.0     1.0  1.0  NaN  1.0  1.0  0.0
+430         │ 0.0  0.0  0.0  0.0  0.0  0.0     0.0  1.0  1.0  NaN  1.0  1.0
+431         │ 0.0  0.0  0.0  0.0  0.0  0.0     0.0  0.0  1.0  1.0  NaN  1.0
+432         │ 0.0  0.0  0.0  0.0  0.0  0.0  …  0.0  0.0  0.0  1.0  1.0  NaN</code></pre><p>That protein contact map can be used to calculate the Area Under the ROC Curve for a given score with the <code>AUC</code> function.  </p><pre><code class="language-julia hljs">using MIToS.Information
 ZMIp, MIp = buslje09(msa)
 
 using ROCAnalysis # You need to load ROCAnalysis to use the AUC function
 
-AUC(ZMIp, cmap)</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../PDB/">« PDB</a><a class="docs-footer-nextpage" href="../01_Change_B_factors/">Change B-factors »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.23 on <span class="colophon-date" title="Thursday 12 January 2023 10:19">Thursday 12 January 2023</span>. Using Julia version 1.8.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+AUC(ZMIp, cmap)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">0.751096740260827</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../PDB/">« PDB</a><a class="docs-footer-nextpage" href="../01_Change_B_factors/">Change B-factors »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.23 on <span class="colophon-date" title="Thursday 12 January 2023 10:42">Thursday 12 January 2023</span>. Using Julia version 1.8.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
