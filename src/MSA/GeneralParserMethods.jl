@@ -53,8 +53,10 @@ function _to_msa_mapping(sequences::Array{String,1}, ids)
         if length(fields) == 3
             end_coordinate = parse(Int, fields[3])
             if last != end_coordinate
-                throw(ErrorException(string("The last residue number ", last,
-                    " in sequence ", i, " isn't the end coordinate ", end_coordinate)))
+                throw(ErrorException(string("The last residue in sequence ", i, 
+                " (residue number ", last, 
+                ") doesn't match the sequence coordinate indicated on sequence name (", 
+                end_coordinate, ").")))
             end
         end
     end
@@ -138,7 +140,17 @@ function _generate_annotated_msa(annot::Annotations, IDS::Vector{String},
     end
     from_hcat = getannotfile(annot, "HCat", "") != ""
     if generatemapping
-        if useidcoordinates && hascoordinates(IDS[1])
+        N = length(IDS)
+        N > 0 || throw(ErrorException("There are no sequence in the alingment!"))
+        first_seq_name = IDS[1]
+        if getannotsequence(annot, first_seq_name, "SeqMap", "") != ""
+            @warn("""
+            The file already has sequence mappings annotations. 
+            MIToS will replace those annotations as you have set generatemapping to true. 
+            Set generatemapping to false to use the mapping annotations of the file.
+            """)
+        end
+        if useidcoordinates && hascoordinates(first_seq_name)
             MSA, MAP = _to_msa_mapping(SEQS, IDS)
         else
             MSA, MAP = _to_msa_mapping(SEQS)
@@ -160,13 +172,6 @@ function _generate_annotated_msa(annot::Annotations, IDS::Vector{String},
         end
         setannotfile!(annot, "NCol", string(size(MSA,2)))
         setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
-        N = length(IDS)
-        if N > 0 && getannotsequence(annot,IDS[1],"SeqMap","") != ""
-            @warn("""
-            The file already has sequence mappings for some sequences. SeqMap will be replaced.
-            You can use generatemapping=false to keep the file sequence mapping annotations.
-            """)
-        end
         for i in 1:N
             setannotsequence!(annot, IDS[i], "SeqMap", MAP[i])
         end
