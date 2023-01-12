@@ -20,7 +20,7 @@ julia> Random.seed!(42);
 julia> shuffle(msa, 1, true)
 3×3 Matrix{Residue}:
  G  D  R
- D  R  -
+ R  D  -
  E  K  -
 
 julia> Random.seed!(42);
@@ -28,8 +28,8 @@ julia> Random.seed!(42);
 julia> shuffle(msa, 1, false)
 3×3 Matrix{Residue}:
  G  D  R
- D  -  R
- -  E  K
+ R  -  D
+ E  K  -
 
 ```
 """
