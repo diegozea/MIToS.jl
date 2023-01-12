@@ -29,3 +29,6 @@ docs/seq.fasta
 # Manifest
 Manifest.toml
 JuliaManifest.toml
+
+# Visual Studio Code
+.vscode

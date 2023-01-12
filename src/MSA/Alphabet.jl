@@ -204,7 +204,7 @@ julia> ab = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
 ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
 
 julia> getnamedict(ab)
-OrderedCollections.OrderedDict{String,Int64} with 8 entries:
+OrderedCollections.OrderedDict{String, Int64} with 8 entries:
   "AILMV" => 1
   "RHK"   => 2
   "NQST"  => 3
