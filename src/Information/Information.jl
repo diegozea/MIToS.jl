@@ -107,6 +107,6 @@ include("InformationMeasures.jl")
 include("Corrections.jl")
 include("CorrectedMutualInformation.jl")
 include("Gaps.jl")
-# include("Externals.jl")    # FIXME uncomment this when Pkg bug is fixed
+include("Externals.jl")
 
 end
