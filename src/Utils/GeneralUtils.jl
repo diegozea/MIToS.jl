@@ -17,7 +17,7 @@ This is used for parsing the Stockholm format.
 julia> using MIToS.Utils
 
 julia> get_n_words("#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH", 3)
-3-element Array{String,1}:
+3-element Vector{String}:
  "#=GR"
  "O31698/18-71"
  "SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH"
