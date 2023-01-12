@@ -4,10 +4,9 @@ import Base: read
 abstract type FileFormat end
 
 """
-`download_file` uses **HTTP.jl** instead of system calls to download files
-from the web. It takes the file url as first argument and, optionally, a path to save it.
-Keyword arguments (ie. `redirect`, `retry`, `readtimeout`)
-are are directly passed to to `HTTP.open` (`HTTP.request`).
+`download_file` uses **HTTP.jl** to download files from the web. It takes the file url as 
+first argument and, optionally, a path to save it.
+Keyword arguments are are directly passed to to `HTTP.download` (`HTTP.request`).
 Use the `headers` keyword argument to pass a `Dict{String,String}` with the
 header information. Set the `HTTPS_PROXY` and `HTTPS_PROXY` `ENV`iromental variables
 if you are behind a proxy.
@@ -17,8 +16,7 @@ julia> using MIToS.Utils
 
 julia> download_file("http://www.uniprot.org/uniprot/P69905.fasta","seq.fasta",
        headers = Dict("User-Agent" =>
-                      "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)"),
-       redirect=true)
+                      "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)"))
 "seq.fasta"
 
 ```

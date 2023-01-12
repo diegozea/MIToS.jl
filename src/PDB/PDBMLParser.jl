@@ -211,13 +211,13 @@ _file_extension(format::Type{PDBFile}) = ".pdb.gz"
 """
 It downloads a gzipped PDB file from PDB database.
 It requires a four character `pdbcode`.
-Its default `format` is `PDBML` (PDB XML) and It uses the
-`baseurl` "http://www.rcsb.org/pdb/files/".
+Its default `format` is `PDBML` (PDB XML) and It uses the `baseurl` 
+"http://www.rcsb.org/pdb/files/".
 `filename` is the path/name of the output file.
-This function calls `MIToS.Utils.download_file` that calls `HTTP.open`.
-You can use keyword arguments from `HTTP.request` (e.g. `redirect`).
-Use the `headers` keyword argument to pass a `Dict{String, String}`
-with the header information.
+This function calls `MIToS.Utils.download_file` that calls `download` from the *HTTP.jl* 
+package. You can use keyword arguments from `HTTP.request`.
+Use the `headers` keyword argument to pass a `Dict{String, String}` with the 
+header information.
 """
 function downloadpdb(pdbcode::String;
                      format::Type{T} = PDBML,
