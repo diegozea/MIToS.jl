@@ -7,15 +7,15 @@ struct SIFTSXML <: FileFormat end
 Download the gzipped SIFTS xml  for the `pdbcode`.
 The extension of the downloaded file is `.xml.gz` by default.
 The `filename` can be changed, but the `.xml.gz` at the end is mandatory.
-Extra keyword arguments are passed to `download_file`.
 """
 function downloadsifts(pdbcode::String; 
-    filename::String="$(lowercase(pdbcode)).xml.gz", kargs...)
+    filename::String="$(lowercase(pdbcode)).xml.gz")
     @assert endswith(filename, ".xml.gz") "filename must end with .xml.gz"
     if check_pdbcode(pdbcode)
-        download_file(string("ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/",
-                lowercase(pdbcode[2:3]), "/", lowercase(pdbcode), ".xml.gz"), filename; 
-                kargs...)
+        # We are using Base.download to keep supporting Julia 1.0
+        # HTTP.jl version 1.7, and therefore download_file, doesn't support FTP
+        Base.download(string("ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/",
+                lowercase(pdbcode[2:3]), "/", lowercase(pdbcode), ".xml.gz"), filename)
     else
         throw(ErrorException("$pdbcode is not a correct PDB"))
     end

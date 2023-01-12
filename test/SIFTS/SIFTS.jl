@@ -214,9 +214,9 @@ end
 
     @test_throws AssertionError downloadsifts(pdb, filename="bad_name.txt")
     @test_throws ErrorException downloadsifts("2vqc_A")
-    # FTP causes problem with Travis-CI
-    # filename = downloadsifts(pdb, filename=tempname()*".xml.gz")
-    # @test length(read(filename, SIFTSXML)) == length(mapping)
+    
+    filename = downloadsifts(pdb, filename=tempname()*".xml.gz")
+    @test length(read(filename, SIFTSXML)) == length(mapping)
 end
 
 @testset "Ensembl" begin

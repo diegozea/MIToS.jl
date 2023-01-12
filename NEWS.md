@@ -2,6 +2,8 @@
 
 ### Changes from v2.9.0 to v2.10.0
 
+* *[breaking change]* `downloadsifts` now uses `Base.download` instead of `download_file` as HTTP (1.7 or lower) doesn't support FTP. Because of that, it doesn't accept keywords argument as `download_file` besides `filename`.
+
 * MIToS now supports HTTP 1.0 and has migrated from using `HTTP.request` to using `HTTP.download` for `MIToS.Utils.download_file` dropping support on HTTP 0.8. Thanks, @kool7d!
 
 * The `downloadpfam` function now uses the InterPro API, as the [Pfam website has been discontinued](https://xfam.wordpress.com/2022/08/04/pfam-website-decommission/). Thanks, @timholy!
