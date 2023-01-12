@@ -1,5 +1,15 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.9.0 to v2.10.0
+
+* MIToS now supports HTTP 1.0 and has migrated from using `HTTP.request` to using `HTTP.download` for `MIToS.Utils.download_file` dropping support on HTTP 0.8. Thanks, @kool7d!
+
+* The `downloadpfam` function now uses the InterPro API, as the [Pfam website has been discontinued](https://xfam.wordpress.com/2022/08/04/pfam-website-decommission/). Thanks, @timholy!
+
+* The `downloadpfam` function now has an `alignment` keyword argument for choosing which Pfam alignment download. The options are `"full"` (the default), `"seed"` and `"uniprot"`.
+
+* MIToS switched to GitHub Actions for CI. Thanks, @timholy!
+
 ### Changes from v2.8.6 to v2.9.0
 
 * New `matches` keyword argument in the `superimpose` function to determine the residues to be aligned. Thanks, @timholy!
