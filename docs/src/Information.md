@@ -202,7 +202,7 @@ of the Mutual Information. The Information module has available two low-count co
 ```@example inf_msa
 using MIToS.MSA
 
-msa = read("http://pfam.xfam.org/family/PF09776/alignment/full", Stockholm)
+msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 
 filtercolumns!(msa, columngapfraction(msa) .< 0.5) # delete columns with 50% gaps or more
 
@@ -367,7 +367,7 @@ gr()
 ```@example inf_entropy
 using MIToS.MSA
 
-msa = read("http://pfam.xfam.org/family/PF09776/alignment/full", Stockholm)
+msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 ```
 
 We are going to count residues to estimate the entropy. The `entropy` estimation is
@@ -452,7 +452,7 @@ gr()
 using MIToS.MSA
 using MIToS.Information
 
-msa = read("http://pfam.xfam.org/family/PF16078/alignment/full", Stockholm)
+msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 ZMIp, MIp  = buslje09(msa)
 ZMIp
 ```
@@ -466,7 +466,7 @@ ZBLMIp
 
 You can use the function of the `Plots` package to visualize the Mutual Information (MI)
 network between residues. As an example, we are going to visualize the MI between residues
-of the Pfam domain *PF16078*. The `heatmap` is the simplest way to visualize the values of
+of the Pfam domain *PF18883*. The `heatmap` is the simplest way to visualize the values of
 the Mutual Information matrix.  
 
 ```@example inf_buslje09

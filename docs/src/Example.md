@@ -5,7 +5,8 @@
 # Example
 
 In this simple demonstration, you will see how to calculate **ZBLMIp** (**Z** score of the
-corrected **MIp** using BLOSUM62 pseudo frequencies) for a [Pfam![](./assets/external-link.png)](http://pfam.xfam.org/)
+corrected **MIp** using BLOSUM62 pseudo frequencies) for a 
+[Pfam![](./assets/external-link.png)](https://www.ebi.ac.uk/interpro/entry/pfam/#table)
 MSA from the [Julia REPL](@ref juliarepl) or using a
 [MIToS script in the system command line](@ref commandline).  
 
