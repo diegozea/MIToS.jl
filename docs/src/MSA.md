@@ -338,7 +338,7 @@ write("tofreecontact.msa", msa, Raw, "a")
 ```  
 
 ```@example freecontact_ii
-print(read("tofreecontact.msa", String)) # It displays the contents of the output file
+print(join(first(readlines("tofreecontact.msa"), 5), '\n')) # It displays the first five lines
 ```
 
 ## [Get sequences from a MSA](@id Get-sequences-from-a-MSA)
