@@ -52,10 +52,8 @@ read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF096
 The third (and optional) argument of `read` and `parse` is the output MSA type:  
 
 - `Matrix{Residue}` : It only contains the aligned sequences.  
-- `MultipleSequenceAlignment` : It contains the aligned sequences and their
-names/identifiers.  
-- `AnnotatedMultipleSequenceAlignment` : It's the richest MIToS' MSA format and it's the
-default. It includes the aligned sequences, their names and the MSA annotations.  
+- `MultipleSequenceAlignment` : It contains the aligned sequences and their names/identifiers.  
+- `AnnotatedMultipleSequenceAlignment` : It's the richest MIToS' MSA format and it's the default. It includes the aligned sequences, their names and the MSA annotations.  
 
 Example of `Matrix{Residue}` output using a `Stockholm` file as input:
 
@@ -67,18 +65,11 @@ Because `read` calls `parse`, you should look into the documentation of `parse`
 to know the available keyword arguments. The optional keyword arguments of
 those functions are:  
 
-- `generatemapping` : If `generatemapping` is `true` (default: `false`), sequences and
-columns mappings are generated and saved in the MSA annotations. **The default is `false` to
-not overwrite mappings by mistake when you read an annotated MSA file saved with MIToS.**  
-- `useidcoordinates` : If `useidcoordinates` is `true` (default: `false`) and the names
-have the form *seqname/start-end*, MIToS uses this coordinates to generate sequence
-mappings. This is safe and useful with unmodified Pfam MSAs. **Do not use it when reading an
-MSA saved with MIToS. MIToS deletes unaligned insert columns, therefore disrupts sequences
-that have them.**  
-- `deletefullgaps` : Given that lowercase characters and dots are converted to gaps,
-unaligned insert columns in the MSA (derived from a HMM profile) are converted into full
-gap columns. `deletefullgaps` is `true` by default, deleting full gaps columns and
-therefore insert columns.  
+- `generatemapping` : If `generatemapping` is `true` (default: `false`), sequences and columns mappings are generated and saved in the MSA annotations. **The default is `false` to not overwrite mappings by mistake when you read an annotated MSA file saved with MIToS.**  
+- `useidcoordinates` : If `useidcoordinates` is `true` (default: `false`) and the names have the form *seqname/start-end*, MIToS uses this coordinates to generate sequence
+mappings. This is safe and useful with unmodified Pfam MSAs. **Do not use it when reading an MSA saved with MIToS. MIToS deletes unaligned insert columns, therefore disrupts sequences that have them.**  
+- `deletefullgaps` : Given that lowercase characters and dots are converted to gaps, unaligned insert columns in the MSA (derived from a HMM profile) are converted into full
+gap columns. `deletefullgaps` is `true` by default, deleting full gaps columns and therefore insert columns.  
 
 !!! note  
     **If you want to keep the insert columns...**  Use the keyword argument `keepinserts`
@@ -124,19 +115,13 @@ MSA annotations are based on the Stockholm format mark-ups. There are four types
 annotations stored as dictionaries. All the annotations have a feature name as part of the
 key, which should be a single "word" (without spaces) and less than 50 characters long.  
 
-- **File annotations** : The annotations can contain either file or MSA information. They
-have feature names as keys and the values are strings (free text). Lines starting with
+- **File annotations** : The annotations can contain either file or MSA information. They have feature names as keys and the values are strings (free text). Lines starting with
 `#=GF` in Stockholm format.  
-- **Column annotations** : They have feature names as keys and strings with exactly 1 char
-per column as values. Lines starting with `#=GC` in Stockholm format.  
-- **Sequence annotations** : The keys are tuples with the sequence name and the feature
-name. The values are free text (strings). Lines starting with `#=GS` in Stockholm format.
-Annotations in the `PIR`/NBRF format are also stored as sequence annotations. In
-particular, we use the names `"Type"` and `"Title"` to name the sequence type in the
+- **Column annotations** : They have feature names as keys and strings with exactly 1 char per column as values. Lines starting with `#=GC` in Stockholm format.  
+- **Sequence annotations** : The keys are tuples with the sequence name and the feature name. The values are free text (strings). Lines starting with `#=GS` in Stockholm format.
+Annotations in the `PIR`/NBRF format are also stored as sequence annotations. In particular, we use the names `"Type"` and `"Title"` to name the sequence type in the
 identifier line and the first comment line before the sequence in PIR files, respectively.  
-- **Residue annotations** : The keys are tuples with the sequence name and the feature
-name. The values are strings with exactly 1 char per column/residues. `#=GR` lines in
-Stockholm format.  
+- **Residue annotations** : The keys are tuples with the sequence name and the feature name. The values are strings with exactly 1 char per column/residues. `#=GR` lines in Stockholm format.  
 
 Julia REPL shows the `Annotations` type as they are represented in the [Stockholm format![](./assets/external-link.png)](https://en.wikipedia.org/wiki/Stockholm_format).
 You can get the `Annotations` inside an annotated MSA or sequence using the `annotations`
@@ -192,12 +177,9 @@ annotations (and therefore, sequence and column mappings) in the MSA.
 This two deleting operations are used in the second and third mutating
 functions of the following list:  
 
-- `setreference!` : Sets one of the sequences as the first sequence of the MSA (query or
-reference sequence).  
-- `adjustreference!` : Deletes columns with gaps in the first sequence of the MSA
-(reference).  
-- `gapstrip!` : This function first calls `adjustreference!`, then deletes sequences with
-low (user defined) MSA coverage and finally, columns with user defined % of gaps.  
+- `setreference!` : Sets one of the sequences as the first sequence of the MSA (query or reference sequence).  
+- `adjustreference!` : Deletes columns with gaps in the first sequence of the MSA (reference).  
+- `gapstrip!` : This function first calls `adjustreference!`, then deletes sequences with low (user defined) MSA coverage and finally, columns with user defined % of gaps.  
 
 Also, there are several available funtions `shuffle_…!`. These functions are useful to
 generate random alignments. The `Information` module of `MIToS` uses them to calculate the
@@ -412,12 +394,9 @@ The MSA module has a number of functions to gain insight about your MSA. Using `
 one can easily ask for...  
 
 - The **number of columns and sequences** with the `ncolumns` and `nsequences` functions.  
-- The fraction of columns with residues (**coverage**) for each sequence making use of the
-`coverage` method.  
-- The **fraction or percentage of gaps/residues** using with the functions `gapfraction`,
-`residuefraction` and `columngapfraction`.  
-- The **percentage of identity** (PID) between each sequence of the MSA or its mean value
-with `percentidentity` and `meanpercentidentity`.  
+- The fraction of columns with residues (**coverage**) for each sequence making use of the `coverage` method.  
+- The **fraction or percentage of gaps/residues** using with the functions `gapfraction`, `residuefraction` and `columngapfraction`.  
+- The **percentage of identity** (PID) between each sequence of the MSA or its mean value with `percentidentity` and `meanpercentidentity`.  
 
 The percentage identity between two aligned sequences is a common measure of sequence
 similarity and is used by the `hobohmI` method to estimate and reduce MSA redundancy.

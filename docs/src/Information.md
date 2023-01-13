@@ -43,11 +43,9 @@ wrapping it, `Counts` and `Probabilities`, to store occurrences or probabilities
 The `ContingencyTable` type stores the contingency matrix, its marginal values and total.
 These types are parametric, taking three ordered parameters:
 
-- `T` : The type used for storing the counts or probabilities, e.g. `Float64`. It's
-possible to use `BigFloat` if more precision it's needed.
+- `T` : The type used for storing the counts or probabilities, e.g. `Float64`. It's possible to use `BigFloat` if more precision it's needed.
 - `N` : It's the dimension of the table and should be an `Int`.
-- `A` : This should be a type, subtype of `ResidueAlphabet`, i.e.: `UngappedAlphabet`,
-`GappedAlphabet` or `ReducedAlphabet`.
+- `A` : This should be a type, subtype of `ResidueAlphabet`, i.e.: `UngappedAlphabet`, `GappedAlphabet` or `ReducedAlphabet`.
 
 !!! note
     `ContingencyTable` can be used for storing probabilities or counts. The wrapper types
@@ -343,8 +341,7 @@ After that, this function takes some keyword arguments:
 
 - `weights` (default: `NoClustering()`) : Weights to be used for table counting.
 - `pseudocounts` (default: `NoPseudocount()`) : `Pseudocount` object to be applied to table.
-- `pseudofrequencies` (default: `NoPseudofrequencies()`) : `Pseudofrequencies` to be
-applied to the normalized (probabilities) table.  
+- `pseudofrequencies` (default: `NoPseudofrequencies()`) : `Pseudofrequencies` to be applied to the normalized (probabilities) table.  
 
 `mapcolpairfreq!` and `mapseqpairfreq!` also have a fourth positional argument `usediagonal`
 that indicates if the function should be applied to identical element pairs
