@@ -40,13 +40,13 @@ the file. You can `read` **gzipped files** if they have the `.gz` extension and
 also urls pointing to a **web file**.  
 The second argument of `read` and `parse` is the file `FileFormat`. The supported MSA formats
 at the moment are `Stockholm`, `FASTA`, `PIR` (NBRF) and `Raw`.  
-For example, reading with MIToS the full Stockholm MSA of the family PF07388 using the Pfam
-RESTful interface will be:  
+For example, reading with MIToS the full Stockholm MSA of the Pfam family *PF09645* from 
+the MIToS test data will be:  
 
 ```@example msa_read
 using MIToS.MSA
 
-read("http://pfam.xfam.org/family/PF07388/alignment/full", Stockholm)
+read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm)
 ```
 
 The third (and optional) argument of `read` and `parse` is the output MSA type:  
@@ -60,7 +60,7 @@ default. It includes the aligned sequences, their names and the MSA annotations.
 Example of `Matrix{Residue}` output using a `Stockholm` file as input:
 
 ```@example msa_read
-read("http://pfam.xfam.org/family/PF07388/alignment/full", Stockholm, Matrix{Residue})
+read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm, Matrix{Residue})
 ```
 
 Because `read` calls `parse`, you should look into the documentation of `parse`
@@ -90,7 +90,7 @@ When `read` returns an `AnnotatedMultipleSequenceAlignment`, it uses the MSA `An
 to keep track of performed modifications. To access these notes, use `printmodifications`:  
 
 ```@example msa_read
-msa = read("http://pfam.xfam.org/family/PF01565/alignment/full", Stockholm)
+msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm)
 
 printmodifications(msa)
 ```  
@@ -104,7 +104,7 @@ use the `print` function with an MSA object as first argument and the `FileForma
 ```@example msa_write
 using MIToS.MSA
 
-msa = read("http://pfam.xfam.org/family/PF16996/alignment/full", Stockholm) # reads a Stockholm MSA file
+msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm) # reads a Stockholm MSA file
 
 print(msa, FASTA) # prints msa in FASTA format
 ```  
@@ -142,7 +142,11 @@ Julia REPL shows the `Annotations` type as they are represented in the [Stockhol
 You can get the `Annotations` inside an annotated MSA or sequence using the `annotations`
 function.  
 
-```@example msa_write
+```@example msa_annot
+using MIToS.MSA
+
+msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF16996.alignment.full", Stockholm)
+
 annotations(msa)
 ```  
 
@@ -151,23 +155,23 @@ take the MSA/sequence as first argument and the feature name of the desired anno
 the last. In the case of `getannotsequence` and `getannotresidue`, the second argument
 should be the sequence name.  
 
-```@example msa_write
-getannotsequence(msa, "A0A139NPI6_9STRE/5-59", "AC") # ("A0A139NPI6_9STRE/5-59", "AC") is the key in the dictionary
+```@example msa_annot
+getannotsequence(msa, "A8AWV6_STRGC/3-57", "AC") # ("A8AWV6_STRGC/3-57", "AC") is the key in the dictionary
 ```  
 
 If you want to add new annotations, you should use the `setannot…!` functions. These
 functions have the same arguments that `getannot...` functions except for an
 extra argument used to indicate the new annotation value.  
 
-```@example msa_write
-setannotsequence!(msa, "A0A139NPI6_9STRE/5-59", "New_Feature_Name", "New_Annotation")
+```@example msa_annot
+setannotsequence!(msa, "A8AWV6_STRGC/3-57", "New_Feature_Name", "New_Annotation")
 ```  
 
 A `getannot...` function without the key (last arguments), returns the particular
 annotation dictionary. As you can see, the new sequence annotation is now part of our
 MSA annotations.  
 
-```@example msa_write
+```@example msa_annot
 getannotsequence(msa)
 ```
 
@@ -201,19 +205,20 @@ Z scores of MI values.
 
 #### [Example: Deleting sequences](@id Example:-Deleting-sequences)
 
-For example, if you want to keep only the proteins from *Actinobacteria* you can delete
-all the sequences that don't have `_9ACTN` in their UniProt entry names:  
+For example, if you want to delete all proteins from *Sulfolobus islandicus* in the 
+*PF09645* MSA, you can delete all the sequences that have `_SULIY` in their 
+UniProt entry names:  
 
 ```@example msa_edit
 using MIToS.MSA
 
-msa = read("http://pfam.xfam.org/family/PF07388/alignment/full", Stockholm)
+msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm)
 
 sequencenames(msa) # the function sequencenames returns the sequence names in the MSA
 ```  
 
 ```@example msa_edit
-mask = map(x -> occursin(r"_9ACTN", x), sequencenames(msa)) # an element of mask is true if "_9ACTN" is in the name
+mask = map(x -> !occursin(r"_SULIY", x), sequencenames(msa)) # an element of mask is true if "_SULIY" is not in the name
 ```  
 
 ```@example msa_edit
@@ -232,7 +237,7 @@ with gaps in the reference) and `write` (to save it in `Raw` format) functions.
 
 ```@repl
 using MIToS.MSA
-msa = read("http://pfam.xfam.org/family/PF02476/alignment/full", Stockholm)
+msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm)
 msa_coverage = coverage(msa)
 maxcoverage, maxindex = findmax(msa_coverage) # chooses the sequence with more coverage of the MSA
 setreference!(msa, maxindex[1])
@@ -296,7 +301,7 @@ We are going to use MIToS mapping data to create this header, so we read the MSA
 ```@example freecontact_ii
 using MIToS.MSA
 
-msa = read( "http://pfam.xfam.org/family/PF02476/alignment/full", Stockholm,
+msa = read( "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm,
             generatemapping=true, useidcoordinates=true)
 ```  
 
@@ -362,8 +367,8 @@ return a `Array` of `Residue`s without annotations but keeping names/identifiers
 ```@example msa_indexing
 using MIToS.MSA
 
-msa = read( "http://pfam.xfam.org/family/PF16996/alignment/full", Stockholm,
-            generatemapping=true, useidcoordinates=true)
+msa = read( "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", 
+            Stockholm, generatemapping=true, useidcoordinates=true)
 ```  
 
 ```@example msa_indexing
@@ -458,7 +463,7 @@ gr() # Hide possible warnings
 ```@example msa_plots
 using MIToS.MSA
 
-msa = read("http://pfam.xfam.org/family/PF09776/alignment/full", Stockholm)
+msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 
 using Plots
 
@@ -542,7 +547,7 @@ over an MSA to get those identity values.
 
 ```@example msa_pid
 using MIToS.MSA
-msa = read("http://pfam.xfam.org/family/PF09776/alignment/full", Stockholm)
+msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 pid = percentidentity(msa)
 nothing # hide
 ```
@@ -638,7 +643,7 @@ gr() # Hide possible warnings
 ```@example msa_clusters
 using MIToS.MSA
 
-msa = read("http://pfam.xfam.org/family/PF09776/alignment/full", Stockholm)
+msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 
 println("This MSA has ", nsequences(msa), " sequences...")
 ```

@@ -1,0 +1,38 @@
+# STOCKHOLM 1.0
+#=GF ID   Asp4
+#=GF AC   PF16996.8
+#=GF DE   Accessory secretory protein Sec Asp4
+#=GF AU   Coggill P;0000-0001-5731-1588
+#=GF SE   Pfam-B_7603 (release 27.0)
+#=GF GA   27.70 27.70;
+#=GF TC   29.00 28.80;
+#=GF NC   25.50 25.40;
+#=GF BM   hmmbuild HMM.ann SEED.ann
+#=GF SM   hmmsearch -Z 61295632 -E 1000 --cpu 4 HMM pfamseq
+#=GF TP   Family
+#=GF RN   [1]
+#=GF RM   23000954
+#=GF RT   Emerging themes in SecA2-mediated protein export.
+#=GF RA   Feltcher ME, Braunstein M;
+#=GF RL   Nat Rev Microbiol. 2012;10:779-789.
+#=GF DR   INTERPRO; IPR031551;
+#=GF DR   SO; 0100021; polypeptide_conserved_region;
+#=GF CC   Asp4 and Asp5 are putative accessory components of the SecY2
+#=GF CC   channel of the SecA2-SecY2 mediated export system, but they are
+#=GF CC   not present in all SecA2-SecY2 systems. This family of Asp4 is
+#=GF CC   found in Firmicutes [1].
+#=GF SQ   6
+#=GS A8AWV6_STRGC/3-57      AC A8AWV6.1
+#=GS A0A139NMD7_9STRE/5-59  AC A0A139NMD7.1
+#=GS A0A139NPI6_9STRE/5-59  AC A0A139NPI6.1
+#=GS J0UVX5_STREE/3-41      AC J0UVX5.1
+#=GS A0A4Q0VKA2_9LACO/6-62  AC A0A4Q0VKA2.1
+#=GS A3CM62_STRSV/3-57      AC A3CM62.1
+A8AWV6_STRGC/3-57                 .KKDLFYKDIEGRLDELKH..GRPKKEKASLGEKFNKAFVIALGLMILIGLIFTLIGV..
+A0A139NMD7_9STRE/5-59             .KDDIFYKDIEGRMDELKR..KPPKKEKKTRAERISTFFSVSLGLVILIGLLFTLFRI..
+A0A139NPI6_9STRE/5-59             .NEDLFYKEVEGRMADLQQ..KAPEKEKKTGAERLNTLFSLALGLVILLGLLFTLLRM..
+J0UVX5_STREE/3-41                 e-EDLFYKDVEGRMEELKQ..KPIKKEKKPEGKRLVRLFH------------------fy
+A0A4Q0VKA2_9LACO/6-62             .KKDMLTHDISSRMKQEKRyvKVPARENETGGKALNITISVAIAIIVLAGILYPLV--sl
+A3CM62_STRSV/3-57                 .KKDLFYKDIEGRLDELKH..GKPKKEKASLGENLNKAFVIVLGLMILIGLIFTLIG-a.
+#=GC seq_cons                     .KcDLFYKDIEGRM-ELK+..KsPKKEKcotGE+LNphFsluLGLhILlGLlFTLlt...
+//

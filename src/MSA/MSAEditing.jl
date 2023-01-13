@@ -64,7 +64,7 @@ function _annotate_modification!(x, selector::AbstractArray, fun::String, column
         n_deleted = sum(.~selector)
         if n_deleted > 0
             if n_deleted > 1
-                entity = "s"
+                entity *= "s"
                 verb = "have"
             end
             str = string("$fun : $n_deleted $entity $verb been deleted.")
