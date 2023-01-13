@@ -80,7 +80,7 @@ function kullback_leibler(probabilities::Probabilities{T,N,A},
     p = getcontingencytable(probabilities)
     @assert size(background)==size(p) "probabilities and background must have the same size."
     KL = zero(T)
-    @inbounds for i in 1:length(p)
+    @inbounds for i in eachindex(p)
         pi = p[i]
         if pi > zero(T)
             KL += pi * log(pi/background[i])

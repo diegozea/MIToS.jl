@@ -227,7 +227,7 @@ end
 
 function Base.print(io::IO, res::PDBResidue, format::Type{PDBFile}, start::Int=1)
     next = start
-    for i in 1:length(res.atoms)
+    for i in eachindex(res.atoms)
         next = print(io, res, format, i, next)
     end
     nothing
@@ -241,7 +241,7 @@ function Base.print(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PD
         model = "START"
     end
 
-    for resindex in 1:length(reslist)
+    for resindex in eachindex(reslist)
         res = reslist[resindex]
 
         # MODEL
@@ -276,7 +276,7 @@ function Base.print(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PD
         end
 
         # ATOM/HETATM
-        for i in 1:length(res.atoms)
+        for i in eachindex(res.atoms)
             next = print(io, res, format, i, next)
         end
 

@@ -26,7 +26,7 @@
         @test MSA._column_mask(col -> col[1] == GAP, pfam) ==
               MSA._column_mask(matrix_mask, pfam)
 
-        int_mask = collect(1:length(matrix_mask))[vec(matrix_mask)] # i.e. index selection
+        int_mask = collect(eachindex(matrix_mask))[vec(matrix_mask)] # i.e. index selection
         @test MSA._column_mask(int_mask, pfam) == int_mask
         @test MSA._column_mask(Colon(), pfam) == Colon()
 

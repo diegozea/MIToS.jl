@@ -116,7 +116,7 @@
 
         @test isapprox(rα, 0.230, atol=0.001) # Bio3D RMSD
 
-        _, _, rα2 = superimpose(α1, α2, zip(1:length(α1), 1:length(α2)))
+        _, _, rα2 = superimpose(α1, α2, zip(eachindex(α1), eachindex(α2)))
         @test rα2 == rα
 
         _, _, rα2 = superimpose(α1, α2, zip(1:2, 1:2))

@@ -16,7 +16,7 @@
 
             for res in pdb
                 heavy = findheavy(res)
-                for i in 1:length(res.atoms)
+                for i in eachindex(res.atoms)
                     if i in heavy
                         @test res.atoms[i].element != "H"
                     else

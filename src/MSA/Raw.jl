@@ -34,7 +34,7 @@ function Base.parse(io::Union{IO, AbstractString},
         MSA, MAP = _to_msa_mapping(SEQS) # It checks sequence lengths
         setannotfile!(annot, "NCol", string(size(MSA,2)))
         setannotfile!(annot, "ColMap", join(vcat(1:size(MSA,2)), ','))
-        for i in 1:length(SEQS)
+        for i in eachindex(SEQS)
             setannotsequence!(annot, string(i), "SeqMap", MAP[i])
         end
     else

@@ -96,7 +96,7 @@
                             AlignedSequence,
                             AnnotatedAlignedSequence    )
 
-            for i in 1:length(msa_types)
+            for i in eachindex(msa_types)
                 M = msa_types[i]
                 S = seq_types[i]
                 msa = pfam_msas[i]

@@ -12,7 +12,7 @@
 
         @test minimum(getsequencemapping(pfam, 4)) == 3
         @test maximum(getsequencemapping(pfam, "F112_SSV1/3-112")) == 112
-        @test getcolumnmapping(pfam) == filter(i->F112_SSV1[i] !== '.', 1:length(F112_SSV1))
+        @test getcolumnmapping(pfam) == filter(i->F112_SSV1[i] !== '.', eachindex(F112_SSV1))
         @test length(pfam.annotations.sequences) == 9
 
         @test getsequencemapping(fasta, 1) == [1, 2, 3, 4, 5, 6]

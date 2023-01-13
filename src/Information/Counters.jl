@@ -17,7 +17,7 @@
         end
         _cleanup_temporal!(counts)
         temporal = counts.temporal
-        @inbounds @simd for index in 1:length(seq_1)
+        @inbounds @simd for index in eachindex(seq_1)
             # temporal[Int(seq_1[index]), Int(seq_2... += getweight(weights, index)
             @nref($N, temporal, d -> Int(seq_d[index])) += getweight(weights, index)
         end

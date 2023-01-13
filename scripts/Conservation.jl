@@ -97,7 +97,7 @@ set_parallel(Args["parallel"])
 
         col_names = names(KL,2)
         println(fh_out, "i,H,KL")
-        for i in 1:length(col_names)
+        for i in eachindex(col_names)
             println(fh_out, col_names[i], ",", H[i], ",", KL[i])
         end
         # ------------------------------------------------------------------------
