@@ -1,6 +1,6 @@
 name = "MIToS"
 uuid = "51bafb47-8a16-5ded-8b04-24ef4eede0b5"
-version = "2.10.1"
+version = "2.10.2"
 
 [deps]
 ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
@@ -56,6 +56,7 @@ julia = "1"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 ROCAnalysis = "f535d66d-59bb-5153-8d2b-ef0a426c6aff"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 
 [targets]
-test = ["DelimitedFiles", "Test", "ROCAnalysis"]
+test = ["DelimitedFiles", "Test", "ROCAnalysis", "Documenter"]

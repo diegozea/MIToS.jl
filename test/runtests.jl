@@ -1,5 +1,7 @@
 using Test
+using Documenter
 
+using MIToS
 using MIToS.Utils
 using MIToS.MSA
 using MIToS.Information
@@ -77,6 +79,9 @@ end
     include("Scripts/Template.jl")
     include("Scripts/Scripts.jl")
 end
+
+# Doctests
+doctest(MIToS)
 
 print("""
 
