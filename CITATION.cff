@@ -12,10 +12,10 @@ authors:
 - family-names: Marino-Buslje
   given-names: Cristina
 journal: Bioinformatics
-volume: '33'
-issue: '4'
-year: '2016'
-month: '11'
+volume: 33
+issue: 4
+year: 2016
+month: 11
 abstract: 'MIToS is an environment for mutual information analysis and a framework
   for protein multiple sequence alignments (MSAs) and protein structures (PDB) management
   in Julia language. It integrates sequence and structural information through SIFTS,
