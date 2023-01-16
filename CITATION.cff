@@ -4,7 +4,7 @@ title: 'MIToS.jl: mutual information tools for protein sequence analysis in the 
 authors:
 - family-names: Zea
   given-names: Diego Javier
-  orcid: https://orcid.org/0000-0002-4254-9320
+  orcid: 'https://orcid.org/0000-0002-4254-9320'
 - family-names: Anfossi
   given-names: Diego
 - family-names: Nielsen
@@ -28,5 +28,5 @@ abstract: 'MIToS is an environment for mutual information analysis and a framewo
   data are available at Bioinformatics online.'
 issn: 1367-4803
 doi: 10.1093/bioinformatics/btw646
-url: https://doi.org/10.1093/bioinformatics/btw646
+url: 'https://doi.org/10.1093/bioinformatics/btw646'
 start: 564-565
