@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: article
+title: 'MIToS.jl: mutual information tools for protein sequence analysis in the Julia
+  language'
+authors:
+- family-names: Zea
+  given-names: Diego Javier
+  orcid: https://orcid.org/0000-0002-4254-9320
+- family-names: Anfossi
+  given-names: Diego
+- family-names: Nielsen
+  given-names: Morten
+- family-names: Marino-Buslje
+  given-names: Cristina
+journal: Bioinformatics
+volume: '33'
+issue: '4'
+year: '2016'
+month: '11'
+abstract: 'MIToS is an environment for mutual information analysis and a framework
+  for protein multiple sequence alignments (MSAs) and protein structures (PDB) management
+  in Julia language. It integrates sequence and structural information through SIFTS,
+  making Pfam MSAs analysis straightforward. MIToS streamlines the implementation
+  of any measure calculated from residue contingency tables and its optimization and
+  testing in terms of protein contact prediction. As an example, we implemented and
+  tested a BLOSUM62-based pseudo-count strategy in mutual information analysis.The
+  software is totally implemented in Julia and supported for Linux, OS X and Windows.
+  It’s freely available on GitHub under MIT license: http://mitos.leloir.org.ar. Supplementary
+  data are available at Bioinformatics online.'
+issn: 1367-4803
+doi: 10.1093/bioinformatics/btw646
+url: https://doi.org/10.1093/bioinformatics/btw646
+start: 564-565
