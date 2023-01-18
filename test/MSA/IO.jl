@@ -19,6 +19,7 @@
     @testset "Stockholm" begin
 
         pf09645_sto = joinpath(pwd(), "data", "PF09645_full.stockholm")
+        rna_sto = joinpath(pwd(), "data", "upsk_rna.sto")
 
         @testset "Read" begin
 
@@ -31,6 +32,13 @@
 
             for T in msa_types
                 @test read(pf09645_sto, Stockholm, T) == read(pf09645_sto, Stockholm)
+            end
+
+            @testset "Empty lines" begin
+                # This Rfam alignment has an empty line between the file annotations and the sequences
+                for T in msa_types # NOTE: nucleotides as Residue objects
+                    @test isa(read(rna_sto, Stockholm, T), T)
+                end
             end
         end
 
