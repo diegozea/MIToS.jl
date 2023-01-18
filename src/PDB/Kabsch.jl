@@ -67,13 +67,25 @@ end
 # Kabsch for Vector{PDBResidues}
 # ==============================
 
-"Returns the Cα with best occupancy in the `PDBResidue`."
+"""
+Returns the Cα with best occupancy in the `PDBResidue`. 
+If the `PDBResidue` has no Cα, `missing` is returned.
+"""
 function getCA(res::PDBResidue)
-    @assert length(res) != 0 "There is no atoms in the residue."
+    if length(res) == 0 
+        @warn """There are no atoms in residue
+        $(res.id)"""
+        return missing
+    end
     CAs = findatoms(res, "CA")
-    @assert length(CAs) != 0 "There is no alpha carbons in the residue."
-    CAindex = selectbestoccupancy(res, CAs)
-    res.atoms[CAindex]
+    if length(CAs) == 0
+        @warn """There is no alpha carbon in residue 
+        $(res.id)"""
+        missing
+    else
+        CAindex = selectbestoccupancy(res, CAs)
+        res.atoms[CAindex]
+    end
 end
 
 """

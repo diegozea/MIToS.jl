@@ -1,5 +1,10 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.10.0 to v2.11.0
+
+* *[breaking change]* `getCA` returns `missing` if a `PDBResidue` has no CA atom
+  (before it was an `AssertionError`).
+
 ### Changes from v2.9.0 to v2.10.0
 
 * *[breaking change]* `downloadsifts` now uses `Base.download` instead of `download_file` as HTTP (1.7 or lower) doesn't support FTP. Because of that, it doesn't accept keywords argument as `download_file` besides `filename`.

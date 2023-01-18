@@ -268,6 +268,23 @@
             @test B[findall(r -> r.id.number == "1T", B)[1]   + 1].id.number == "2T"
         end
     end
+
+    @testset "3BTT" begin 
+        # ASN 115 from chain E has no CA
+
+        code = "3BTT"
+        pdb = read(txt(code), PDBFile)
+        pdbml = read(xml(code), PDBML)
+
+        res   = pdb[97]
+        res_ml = pdbml[97]
+
+        res.id.name == "ASN"
+        res_ml.id.name == "ASN"
+
+        @test getCA(res) === missing
+        @test getCA(res_ml) === missing
+    end
 end
 
 @testset "RESTful PDB Interface" begin
