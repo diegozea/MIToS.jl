@@ -1,5 +1,13 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.11.0 to v2.11.1
+
+* MIToS now checks the magic number of gzip files immediately after download. If
+  the gzip file does not have the correct header, MIToS will attempt to download
+  it again. In Julia versions below 1.2, it will retry the download once. In
+  Julia 1.2 or higher, it will retry the download five times, using an 
+  ExponentialBackOff.
+
 ### Changes from v2.10.0 to v2.11.0
 
 * *[breaking change]* `getCA` returns `missing` if a `PDBResidue` has no CA atom

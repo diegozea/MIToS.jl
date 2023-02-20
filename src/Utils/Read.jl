@@ -3,6 +3,33 @@ import Base: read
 "`FileFormat` is used for write special `parse` (and `read`) methods on it."
 abstract type FileFormat end
 
+"This function raises an error if a GZip file doesn't have the 0x1f8b magic number."
+function _check_gzip_file(filename)
+    if endswith(filename, ".gz")
+        open(filename, "r") do fh
+            magic = read(fh, UInt16)
+            # 0x1f8b is the magic number for GZip files
+            # However, some files use 0x8b1f.
+            # For example, the file test/data/18gs.xml.gz uses 0x8b1f.
+            if magic != 0x1f8b && magic != 0x8b1f
+                throw(ErrorException("$filename is not a GZip file!"))
+            end
+        end
+    end
+    filename
+end
+
+function _download_file(url::AbstractString, filename::AbstractString;
+    kargs...)
+    kargs = _modify_kargs_for_proxy(url; kargs...)
+    kargs_dict = Dict(kargs...)
+    headers = pop!(kargs_dict, "headers", Dict{String,String}())
+    with_logger(ConsoleLogger(stderr, Logging.Warn)) do
+        HTTP.download(url, filename, headers; kargs_dict...)
+    end
+    _check_gzip_file(filename)
+end
+
 """
 `download_file` uses **HTTP.jl** to download files from the web. It takes the file url as 
 first argument and, optionally, a path to save it.
@@ -22,18 +49,21 @@ julia> download_file("http://www.uniprot.org/uniprot/P69905.fasta","seq.fasta",
 ```
 """
 function download_file(url::AbstractString, filename::AbstractString;
-                       kargs...)
-    kargs = _modify_kargs_for_proxy(url; kargs...)
-    kargs_dict = Dict(kargs...)
-    headers = pop!(kargs_dict, "headers", Dict{String,String}())
-    with_logger(ConsoleLogger(stderr, Logging.Warn)) do
-        HTTP.download(url, filename, headers; kargs_dict...)
+    kargs...)
+    if VERSION >= v"1.2.0"
+        retry(_download_file, delays=ExponentialBackOff(n=5))(url, filename; kargs...)
+    else
+        retry(_download_file)(url, filename; kargs...)
     end
 end
 
 function download_file(url::AbstractString;
-                       kargs...)
-    download_file(url, tempname(); kargs...)
+    kargs...)
+    name = tempname()
+    if endswith(url, ".gz")
+        name *= ".gz"
+    end
+    download_file(url, name; kargs...)
 end
 
 """
@@ -44,14 +74,14 @@ variables.
 function _modify_kargs_for_proxy(url; kargs...)
     if startswith(lowercase(url), "http://")
         proxy_env_var = "HTTPS_PROXY"
-    elseif startswith(lowercase(url),"https://")
+    elseif startswith(lowercase(url), "https://")
         proxy_env_var = "HTTPS_PROXY"
     else
         return kargs
     end
     if !(:proxy in keys(kargs)) && proxy_env_var in keys(ENV)
         kw = Dict()
-        for (k,v) in kargs
+        for (k, v) in kargs
             kw[k] = v
         end
         kw[:proxy] = ENV[proxy_env_var]
@@ -62,7 +92,7 @@ end
 
 "Create an iterable object that will yield each line from a stream **or string**."
 lineiterator(string::String) = eachline(IOBuffer(string))
-lineiterator(stream::IO)     = eachline(stream)
+lineiterator(stream::IO) = eachline(stream)
 
 """
 Returns the `filename`.
@@ -82,9 +112,9 @@ isnotemptyfile(filename) = isfile(filename) && filesize(filename) > 0
 
 # for using with download, since filename doesn't have file extension
 function _read(completename::AbstractString,
-               filename::AbstractString,
-               format::Type{T},
-               args...; kargs...) where T <: FileFormat
+    filename::AbstractString,
+    format::Type{T},
+    args...; kargs...) where {T<:FileFormat}
     check_file(filename)
     if endswith(completename, ".xml.gz") || endswith(completename, ".xml")
         document = parse_file(filename)
@@ -113,11 +143,11 @@ the file is downloaded with `download` in a temporal file.
 Gzipped files should end on `.gz`.
 """
 function read(completename::AbstractString,
-              format::Type{T},
-              args...; kargs...) where T <: FileFormat
-    if  startswith(completename, "http://")  ||
-        startswith(completename, "https://") ||
-        startswith(completename, "ftp://")
+    format::Type{T},
+    args...; kargs...) where {T<:FileFormat}
+    if startswith(completename, "http://") ||
+       startswith(completename, "https://") ||
+       startswith(completename, "ftp://")
 
         filename = download_file(completename, headers=Dict("Accept-Encoding" => "identity",))
         try

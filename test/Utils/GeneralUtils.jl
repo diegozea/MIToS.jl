@@ -101,4 +101,34 @@ end
             end
         end
     end
+
+    @testset "Test _check_gzip_file" begin
+        for file in readdir(DATA)
+            filename = joinpath(DATA, file)
+            if file != "2vqc.xml.gz" # is a decompressed file that has a wrong .gz extension
+                @test MIToS.Utils._check_gzip_file(filename) == filename
+            else
+                @test_throws ErrorException MIToS.Utils._check_gzip_file(filename)
+            end
+        end
+    end
+
+    @testset "Download a gz file" begin
+        # Use https://www.rcsb.org/pdb/files/3NIR.pdb.gz to test downloading a gz file
+        # without a filename
+        filename = ""
+        try
+            filename = download_file("https://www.rcsb.org/pdb/files/3NIR.pdb.gz")
+            @test endswith(filename, ".gz")
+            @test MIToS.Utils._check_gzip_file(filename) == filename
+        finally
+            if isfile(filename)
+                rm(filename)
+            end
+        end
+    end
 end
+
+
+
+
