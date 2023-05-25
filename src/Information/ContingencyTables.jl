@@ -185,25 +185,20 @@ end
 # Show
 # ====
 
-function Base.show(io::IO, ::MIME"text/plain",
-                   table::Union{ContingencyTable{T,N,A},Probabilities{T,N,A},Counts{T,N,A}}) where {T,N,A}
-    show(io, table)
-end
-
-function Base.show(io::IO, table::ContingencyTable{T,N,A}) where {T,N,A}
+function Base.show(io::IO, ::MIME"text/plain", table::ContingencyTable{T,N,A}) where {T,N,A}
     println(io, typeof(table), " : ")
     print(io, "\ntable : ")
-    show(io, gettable(table))
+    show(io, MIME"text/plain"(), gettable(table))
     if length(size(table)) != 1
         print(io, "\n\nmarginals : ")
-        show(io, getmarginals(table))
+        show(io, MIME"text/plain"(), getmarginals(table))
     end
     print(io, "\n\ntotal : $(gettotal(table))")
 end
 
-function Base.show(io::IO, table::Union{Probabilities{T,N,A},Counts{T,N,A}}) where {T,N,A}
+function Base.show(io::IO, ::MIME"text/plain", table::Union{Probabilities{T,N,A},Counts{T,N,A}}) where {T,N,A}
     print(io, typeof(table), " wrapping a ")
-    show(io, getcontingencytable(table))
+    show(io, MIME"text/plain"(), getcontingencytable(table))
 end
 
 # Creation

@@ -122,28 +122,28 @@
 
             out = IOBuffer()
 
-            show(out, msa)
+            show(out, MIME"text/plain"(), msa)
             str = String(take!(out))
             @test startswith(str,"MultipleSequenceAlignment : ")
             @test occursin("Seq", str)
             @test occursin("Col", str)
             @test length(split(str,'\n')) == 6
 
-            show(out, annotated_msa)
+            show(out, MIME"text/plain"(), annotated_msa)
             str = String(take!(out))
             @test startswith(str,"AnnotatedMultipleSequenceAlignment with 0 annotations : ")
             @test occursin("Seq", str)
             @test occursin("Col", str)
             @test length(split(str,'\n')) == 6
 
-            show(out, sequence)
+            show(out, MIME"text/plain"(), sequence)
             str = String(take!(out))
             @test startswith(str,"AlignedSequence : ")
             @test occursin("Seq", str)
             @test occursin("Col", str)
             @test length(split(str,'\n')) == 4
 
-            show(out, annotated_sequence)
+            show(out, MIME"text/plain"(), annotated_sequence)
             str = String(take!(out))
             @test startswith(str,"AnnotatedAlignedSequence with 0 annotations : ")
             @test occursin("Seq", str)

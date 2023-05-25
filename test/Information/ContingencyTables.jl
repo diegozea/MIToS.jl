@@ -40,6 +40,34 @@
         end
     end
 
+    @testset "Show" begin
+        
+        out = IOBuffer()
+
+        d1 = ContingencyTable(Float64, Val{1}, UngappedAlphabet())
+        d2 = ContingencyTable(Float64, Val{2}, UngappedAlphabet())
+
+        show(out, MIME"text/plain"(), d1)
+        d1_str = String(take!(out))
+
+        show(out, MIME"text/plain"(), d2)
+        d2_str = String(take!(out))
+
+        @test startswith(d1_str, "ContingencyTable{Float64, 1, UngappedAlphabet} :")
+        @test occursin("table :", d1_str)
+        @test occursin("Dim_1", d1_str)
+        @test !occursin("Dim_2", d1_str)
+        @test !occursin("marginals :", d1_str)
+        @test occursin("total :", d1_str)
+
+        @test startswith(d2_str, "ContingencyTable{Float64, 2, UngappedAlphabet} :")
+        @test occursin("table :", d2_str)
+        @test occursin("Dim_1", d2_str)
+        @test occursin("Dim_2", d2_str)
+        @test occursin("marginals :", d2_str)
+        @test occursin("total :", d2_str)
+    end
+
     @testset "Indexing" begin
 
         for alphabet in (UngappedAlphabet(),

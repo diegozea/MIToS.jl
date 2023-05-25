@@ -208,17 +208,15 @@ for T in (:(AlignedSequence),
             :(MultipleSequenceAlignment),
             :(AnnotatedMultipleSequenceAlignment))
     @eval begin
-
-        Base.show(io::IO, ::MIME"text/plain", x::$(T)) = show(io, x)
-
-        function Base.show(io::IO, x::$(T))
+        
+        function Base.show(io::IO, ::MIME"text/plain", x::$(T))
             type_name = split(string($T), '.')[end]
             if isa(x, AnnotatedAlignedObject)
                 print(io, type_name, " with ", length(annotations(x)), " annotations : ")
             else
                 print(io, type_name, " : ")
             end
-            show(io, namedmatrix(x))
+            show(io, MIME"text/plain"(), namedmatrix(x))
         end
 
     end
