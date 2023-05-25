@@ -212,11 +212,15 @@ end
     pdb = "2vqc"
     mapping = read(joinpath(pwd(), "data", "$(pdb).xml.gz"), SIFTSXML)
 
+    @test_throws AssertionError downloadsifts(pdb, source="http")
     @test_throws AssertionError downloadsifts(pdb, filename="bad_name.txt")
     @test_throws ErrorException downloadsifts("2vqc_A")
     
-    filename = downloadsifts(pdb, filename=tempname()*".xml.gz")
-    @test length(read(filename, SIFTSXML)) == length(mapping)
+    filename_https = downloadsifts(pdb, filename=tempname()*".xml.gz")
+    @test length(read(filename_https, SIFTSXML)) == length(mapping)
+
+    filename_ftp = downloadsifts(pdb, filename=tempname()*".xml.gz", source="ftp")
+    @test length(read(filename_ftp, SIFTSXML)) == length(mapping)
 end
 
 @testset "Ensembl" begin
