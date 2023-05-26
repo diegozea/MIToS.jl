@@ -1,5 +1,18 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.11.1 to v2.12.0
+
+* The `downloadsifts` function now downloads the SIFTS files from the PDBe HTTPS server 
+  instead of the previous FTP server. This improves error handling during the download 
+  process, making it more robust by relying on the `download_file` function. If you prefer 
+  the previous behavior, you can set the new keyword argument `source` to `"ftp"`.
+
+* It resolves an issue with the representation of Multiple Sequence Alignments and 
+  ContingencyTables in the `show` methods by always using explicit MIME types.
+
+* *[Breaking change]* The `show` methods that accept only two elements without an explicit 
+  MIME type are now deprecated.
+
 ### Changes from v2.11.0 to v2.11.1
 
 * MIToS now checks the magic number of gzip files immediately after download. If
