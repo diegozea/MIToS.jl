@@ -53,14 +53,14 @@
         show(out, MIME"text/plain"(), d2)
         d2_str = String(take!(out))
 
-        @test startswith(d1_str, "ContingencyTable{Float64, 1, UngappedAlphabet} :")
+        @test startswith(d1_str, r"ContingencyTable{Float64,\s?1,\s?UngappedAlphabet} :")
         @test occursin("table :", d1_str)
         @test occursin("Dim_1", d1_str)
         @test !occursin("Dim_2", d1_str)
         @test !occursin("marginals :", d1_str)
         @test occursin("total :", d1_str)
 
-        @test startswith(d2_str, "ContingencyTable{Float64, 2, UngappedAlphabet} :")
+        @test startswith(d2_str, r"ContingencyTable{Float64,\s?2,\s?UngappedAlphabet} :")
         @test occursin("table :", d2_str)
         @test occursin("Dim_1", d2_str)
         @test occursin("Dim_2", d2_str)
