@@ -30,11 +30,14 @@ export  # GeneralUtils.jl
         Commandline,
         # Imported from Base (and exported for docs)
         read,
-        write
+        write,
+        # ThreeLetterResidues.jl
+        THREE2ONE
 
 include("GeneralUtils.jl")
 include("Read.jl")
 include("Write.jl")
+include("ThreeLetterResidues.jl")
 
 @deprecate deleteitems!(vector::Vector, items) filter!(x -> x ∉ items, vector)
 
@@ -49,7 +52,7 @@ export  parse_commandline,
         set_parallel,
         open_output, close_output,
         readorparse,
-		loadedversion
+	loadedversion
 
 using Pkg
 using Distributed

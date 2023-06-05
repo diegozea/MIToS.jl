@@ -1,5 +1,10 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.12.0 to master
+
+* The `Utils` module now exports the `THREE2ONE` constant, which is a dictionary mapping 
+three-letter amino acid residue codes to their corresponding one-letter codes.
+
 ### Changes from v2.11.1 to v2.12.0
 
 * The `downloadsifts` function now downloads the SIFTS files from the PDBe HTTPS server 
