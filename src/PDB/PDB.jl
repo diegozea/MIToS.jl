@@ -98,14 +98,16 @@ export  # PDBResidues
         rmsf,
         # MIToS.Utils
         All,
+        # Sequences
+        chainsequences,
         # Imported from Base (and exported for docs)
         any,
         parse,
         print,
         angle
 
-
 include("PDBResidues.jl")
+include("Sequences.jl")
 include("AtomsData.jl")
 include("Interaction.jl")
 include("PDBParser.jl")

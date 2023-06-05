@@ -28,11 +28,12 @@ export  # GeneralUtils.jl
         download_file,
         # Write.jl
         Commandline,
+        # ThreeLetterResidues.jl
+        THREE2ONE,
         # Imported from Base (and exported for docs)
         read,
-        write,
-        # ThreeLetterResidues.jl
-        THREE2ONE
+        write
+
 
 include("GeneralUtils.jl")
 include("Read.jl")

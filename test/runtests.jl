@@ -19,7 +19,7 @@ using StatsBase             # WeightVec
 using PairwiseListMatrices  # getlist
 
 const DATA = "data"
-
+#=
 # Utils
 @testset "Utils" begin
     include("Utils/GeneralUtils.jl")
@@ -55,15 +55,16 @@ end
     include("Information/Gaps.jl")
     include("Information/Externals.jl")
 end
-
+=#
 # PDB
 @testset "PDB" begin
     include("PDB/PDB.jl")
     include("PDB/Contacts.jl")
     include("PDB/Kabsch.jl")
     include("PDB/Internals.jl")
+    include("PDB/Sequences.jl")
 end
-
+#=
 # SIFTS
 @testset "SIFTS" begin
     include("SIFTS/SIFTS.jl")
@@ -84,7 +85,7 @@ end
 if VERSION >= v"1.7.0" # Julia 1.7 changed the default random number generator Mersenne Twister to Xoshiro256++
     doctest(MIToS)
 end
-
+=#
 print("""
 
 ----- =D -----

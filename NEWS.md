@@ -2,6 +2,9 @@
 
 ### Changes from v2.12.0 to master
 
+* The `PDB` module now includes the `chainsequences` function, allowing extraction of 
+protein sequences from a specified structure.
+
 * The `Utils` module now exports the `THREE2ONE` constant, which is a dictionary mapping 
 three-letter amino acid residue codes to their corresponding one-letter codes.
 
