@@ -99,7 +99,7 @@ export  # PDBResidues
         # MIToS.Utils
         All,
         # Sequences
-        chainsequences,
+        modelled_sequences,
         # Imported from Base (and exported for docs)
         any,
         parse,

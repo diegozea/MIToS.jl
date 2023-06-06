@@ -11,7 +11,7 @@ function _add_sequence!(buf, chains, key)
 end
 
 """
-    chainsequences(residue_list::AbstractArray{PDBResidue,N}; 
+    modelled_sequences(residue_list::AbstractArray{PDBResidue,N}; 
         model::Union{String,Type{All}}=All, chain::Union{String,Type{All}}=All, 
         group::Union{String,Regex,Type{All}}=All) where N
 
@@ -21,9 +21,9 @@ All residues are included by default, but those that don't satisfy specified cri
 based on `model`, `chain`, and `group` keyword arguments are excluded. If a residue name 
 isn't located in the `MIToS.Utils.THREE2ONE` dictionary, the function triggers a warning.
 """
-function chainsequences(residue_list::AbstractArray{PDBResidue,N}; 
+function modelled_sequences(residue_list::AbstractArray{PDBResidue,N}; 
         model::Union{String,Type{All}}=All, chain::Union{String,Type{All}}=All, group::Union{String,Type{All}}=All) where N
-    chains = Dict{NamedTuple{(:model, :chain), Tuple{String, String}}, String}()
+    chains = OrderedDict{NamedTuple{(:model, :chain), Tuple{String, String}}, String}()
     buf = IOBuffer()
     first_residue = first(residue_list)
     key = (model=first_residue.id.model, chain=first_residue.id.chain)

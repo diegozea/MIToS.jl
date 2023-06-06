@@ -2,7 +2,7 @@
 
 ### Changes from v2.12.0 to master
 
-* The `PDB` module now includes the `chainsequences` function, allowing extraction of 
+* The `PDB` module now includes the `modelled_sequences` function, allowing extraction of 
 protein sequences from a specified structure.
 
 * The `Utils` module now exports the `THREE2ONE` constant, which is a dictionary mapping 
