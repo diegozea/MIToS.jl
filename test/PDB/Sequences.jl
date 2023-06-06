@@ -1,3 +1,14 @@
+@testset "Check amino acid residues" begin
+    @test PDB._is_aminoacid("MET")  # methionine
+    @test PDB._is_aminoacid("MSE")  # selenomethionine
+    @test !PDB._is_aminoacid("HOH") # water
+    @test !PDB._is_aminoacid("SO4") # sulfate
+    @test !PDB._is_aminoacid("MG")  # magnesium
+    @test !PDB._is_aminoacid("CA")  # calcium
+    @test !PDB._is_aminoacid("A")   # adenine
+    @test PDB._is_aminoacid("ALA")  # alanine
+end
+
 @testset "Extract protein sequences from PDB" begin
 
     file(code) = joinpath(pwd(), "data", string(uppercase(code), ".pdb"))

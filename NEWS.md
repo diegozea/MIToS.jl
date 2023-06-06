@@ -5,6 +5,10 @@
 * The `PDB` module now includes the `modelled_sequences` function, allowing extraction of 
 protein sequences from a specified structure.
 
+* The `PDB` module exports the `is_aminoacid` function to determine whether 
+a `PDBResidue` represents an amino acid residue. This function is utilized by 
+the `modelled_sequences` function.
+
 * The `Utils` module now exports the `THREE2ONE` constant, which is a dictionary mapping 
 three-letter amino acid residue codes to their corresponding one-letter codes.
 

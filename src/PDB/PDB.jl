@@ -99,6 +99,7 @@ export  # PDBResidues
         # MIToS.Utils
         All,
         # Sequences
+        is_aminoacid,
         modelled_sequences,
         # Imported from Base (and exported for docs)
         any,
