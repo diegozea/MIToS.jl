@@ -1,6 +1,6 @@
 ## MIToS.jl Release Notes
 
-### Changes from v2.12.0 to master
+### Changes from v2.12.0 to v2.13.0
 
 * The `PDB` module now includes the `modelled_sequences` function, allowing extraction of 
 protein sequences from a specified structure.
