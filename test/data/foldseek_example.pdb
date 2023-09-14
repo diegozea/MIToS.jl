@@ -1,0 +1,11 @@
+MODEL
+REMARK 2HBB.pdb AF-W5STS2-F1-model_v4
+ATOM      1   CA MET A   1      11.229  20.946   9.292  1.00  0.00
+ATOM      2   CA ARG A   2       8.388  20.325   6.815  1.00  0.00
+ATOM      3   CA VAL A   3       6.983  16.800   6.336  1.00  0.00
+ATOM      4   CA ILE A   4       3.945  15.175   4.675  1.00  0.00
+ATOM      5   CA LEU A   5       1.894  13.036   7.091  1.00  0.00
+ATOM      6   CA LYS A   6       1.097   9.420   6.129  1.00  0.00
+ATOM      7   CA GLU A   7      -1.302   8.899   9.071  1.00  0.00
+ATOM      8   CA ASP A   8      -3.878  10.953  10.992  1.00  0.00
+ENDMDL
