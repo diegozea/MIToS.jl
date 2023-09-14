@@ -1,8 +1,6 @@
 if VERSION >= v"1.5.0"
     using Pkg
 
-    Pkg.add("Statistics")
-    Pkg.add("DelimitedFiles")
     Pkg.add(PackageSpec(url="https://github.com/carlobaldassi/GaussDCA.jl", rev="master"))
 
     msa = map(Residue, rand(1:21,100,20))
