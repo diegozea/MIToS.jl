@@ -1,12 +1,19 @@
 if VERSION >= v"1.5.0"
-    using Pkg
+    installed = false
+    try
+        using Pkg
+        Pkg.add(PackageSpec(url="https://github.com/carlobaldassi/GaussDCA.jl", rev="master"))
+        installed = true
+    catch err
+        @warn "GaussDCA.jl not installed: $err"
+    end
 
-    Pkg.add(PackageSpec(url="https://github.com/carlobaldassi/GaussDCA.jl", rev="master"))
+    if installed
+        msa = map(Residue, rand(1:21,100,20))
+        dca = gaussdca(msa, min_separation=2)
 
-    msa = map(Residue, rand(1:21,100,20))
-    dca = gaussdca(msa, min_separation=2)
-
-    @test  isnan(dca[1,1])
-    @test  isnan(dca[1,2])
-    @test !isnan(dca[1,3])
+        @test  isnan(dca[1,1])
+        @test  isnan(dca[1,2])
+        @test !isnan(dca[1,3])
+    end
 end
