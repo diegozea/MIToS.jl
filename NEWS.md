@@ -1,5 +1,12 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.13.0 to v2.13.1
+
+* The `PDB` module can now parse the 66-character width columns of the PDB files created 
+by *Foldseek*. These structures contain only the alpha carbons and do not have the column 
+determining the element symbol.
+
+
 ### Changes from v2.12.0 to v2.13.0
 
 * The `PDB` module now includes the `modelled_sequences` function, allowing extraction of 
