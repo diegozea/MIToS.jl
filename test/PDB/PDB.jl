@@ -297,11 +297,13 @@
             @test res.id.group == "ATOM"
             @test res.id.number == string(i)
             @test res.id.chain == "A"
-            @test only(res.atoms).atom == "CA"
-            @test isempty(only(res.atoms).element) # ""
+            @test length(res.atoms) == 1
+            atom = res.atoms[1]
+            @test atom.atom == "CA"
+            @test isempty(atom.element) # ""
             # All residues in the example have 1.0 occupancy and 0.00 temperature factor
-            @test only(res.atoms).occupancy == 1.0
-            @test only(res.atoms).B == "0.00"
+            @test atom.occupancy == 1.0
+            @test atom.B == "0.00"
         end
     end
 end
