@@ -1,14 +1,14 @@
 if VERSION >= v"1.5.0"
-    installed = false
+    gaussdca_installed = false
     try
         using Pkg
         Pkg.add(PackageSpec(url="https://github.com/carlobaldassi/GaussDCA.jl", rev="master"))
-        installed = true
+        gaussdca_installed = true
     catch err
-        @warn "GaussDCA.jl not installed: $err"
+        @warn "GaussDCA.jl not gaussdca_installed: $err"
     end
 
-    if installed
+    if gaussdca_installed
         msa = map(Residue, rand(1:21,100,20))
         dca = gaussdca(msa, min_separation=2)
 
