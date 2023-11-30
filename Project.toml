@@ -32,8 +32,8 @@ TranscodingStreams = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
 
 [compat]
 ArgParse = "1"
-AutoHashEquals = "0.2"
-Clustering = "0.14"
+AutoHashEquals = "0.2 - 2.1"
+Clustering = "0.14, 0.15"
 CodecZlib = "0.6, 0.7"
 DataStructures = "0.17, 0.18"
 FastaIO = "1"
@@ -48,8 +48,8 @@ ROCAnalysis = "0.3"
 RecipesBase = "1"
 Requires = "1"
 StaticArrays = "0.12, 1.0"
-StatsBase = "0.32, 0.33"
-TranscodingStreams = "0.9"
+StatsBase = "0.32, 0.33, 0.34"
+TranscodingStreams = "0.9, 0.10"
 julia = "1"
 
 [extras]
