@@ -41,7 +41,7 @@ using Plots
 
 pdb_file   = abspath(pathof(MIToS), "..", "..", "test", "data", "1AS5.pdb")
 pdb_res = read(pdb_file, PDBFile, occupancyfilter=true)
-# md nothing # hide
+#md nothing # hide
 
 # We set `occupancyfilter` to `true` to ensure that we have one single set of 
 # coordinates for each atom. That filter isn't essential for NMR structures, 
@@ -65,7 +65,7 @@ end
 # to calculate the RMSF.
 
 pdb_models = collect(values(models))
-# md nothing # hide
+#md nothing # hide
 
 # And, finally, call the `rmsf` function on the list of structures. It is 
 # important that all the vectors has the same number of `PDBResidue`s. This 
