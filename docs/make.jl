@@ -30,7 +30,8 @@ makedocs(
                     "Pfam_API.md",
                     "Utils_API.md"          ],
         "Scripts.md",
-        ]
+        ],
+    warnonly = :missing_docs,
 )
 
 deploydocs(
