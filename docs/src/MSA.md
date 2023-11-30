@@ -674,12 +674,16 @@ nothing # hide
 
 ![](msa_clusters_ii.png)  
 
-We use the *Split-Apply-Combine* strategy, though the `by` function of the `DataFrames`
-package, to select the sequence of highest coverage for each cluster.  
+We use the *Split-Apply-Combine* strategy, though the `groupby` and `combine` function of 
+the `DataFrames` package, to select the sequence of highest coverage for each cluster.  
 
 ```@example msa_clusters
-maxcoverage = by(df, :cluster, cl -> cl[ findmax(cl[:coverage])[2] ,
-                 [:seqnum, :seqname, :coverage]])
+grouped_df = groupby(df, :cluster)
+
+maxcoverage = combine(grouped_df) do cl
+    row_index = findmax(cl.coverage)[2]
+    cl[row_index, [:seqnum, :seqname, :coverage]]
+end
 
 first(maxcoverage, 5)
 ```
@@ -698,7 +702,7 @@ We can easily generate a mask using list comprehension, to select only the repre
 sequences of the MSA (deleting the rest of the sequences with `filtersequences!`).  
 
 ```@example msa_clusters
-cluster_references = Bool[ seqnum in maxcoverage[:seqnum] for seqnum in 1:nsequences(msa) ]
+cluster_references = Bool[ seqnum in maxcoverage.seqnum for seqnum in 1:nsequences(msa) ]
 ```
 
 ```@example msa_clusters
