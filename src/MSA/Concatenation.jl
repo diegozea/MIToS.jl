@@ -1,4 +1,6 @@
-function _concatenated_seq_names(msas...; delim::String="_&_")
+## hcat (horizontal concatenation)
+
+function _h_concatenated_seq_names(msas...; delim::String="_&_")
 	concatenated_names = sequencenames(msas[1])
 	for msa in msas[2:end]
 		for (i, seq) in enumerate(sequencenames(msa))
@@ -11,7 +13,7 @@ function _concatenated_seq_names(msas...; delim::String="_&_")
 	concatenated_names
 end
 
-function _concatenated_col_names(msas...)
+function _h_concatenated_col_names(msas...)
 	colnames = String[]
 	msa_number = 0
 	for msa in msas
@@ -44,7 +46,7 @@ function _get_annot_types(fun, index, data::Annotations...)
 	union(Set(k[index] for k in keys(fun(annot))) for annot in data)
 end
 
-function _concatenate_annotfile(data::Annotations...)
+function _h_concatenate_annotfile(data::Annotations...)
 	annotfile = copy(getannotfile(data[1]))
 	for ann in data[2:end]
 		for (k, v) in getannotfile(ann)
@@ -75,7 +77,7 @@ function _get_seqname_mapping(concatenated_seqnames, msas...)
 	mapping
 end
 
-function _concatenate_annotsequence(seqname_mapping, data::Annotations...)
+function _h_concatenate_annotsequence(seqname_mapping, data::Annotations...)
 	annotsequence = Dict{Tuple{String,String},String}()
 	for (i, ann) in enumerate(data)
 		for ((seqname, annot_name), value) in getannotsequence(ann)
@@ -129,7 +131,7 @@ function _fill_end!(dict, seq_lengths, entity)
 	dict
 end
 
-function _concatenate_annotcolumn(seq_lengths, data::Annotations...)
+function _h_concatenate_annotcolumn(seq_lengths, data::Annotations...)
 	annotcolumn = Dict{String,String}()
 	last = Dict{String,Int}()
 	for (i, ann) in enumerate(data)
@@ -140,7 +142,7 @@ function _concatenate_annotcolumn(seq_lengths, data::Annotations...)
 	_fill_end!(annotcolumn, seq_lengths, "columns")
 end
 
-function _concatenate_annotresidue(seq_lengths, seqname_mapping, data::Annotations...)
+function _h_concatenate_annotresidue(seq_lengths, seqname_mapping, data::Annotations...)
 	annotresidue = Dict{Tuple{String,String},String}()
 	last = Dict{Tuple{String,String},Int}()
 	for (i, ann) in enumerate(data)
@@ -155,18 +157,18 @@ end
 
 function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 	concatenated_msa = NamedArray(hcat(getresidues.(msa)...))
-	seqnames = _concatenated_seq_names(msa...)
-	colnames = _concatenated_col_names(msa...)
+	seqnames = _h_concatenated_seq_names(msa...)
+	colnames = _h_concatenated_col_names(msa...)
 	setnames!(concatenated_msa, seqnames, 1)
 	setnames!(concatenated_msa, colnames, 2)
 	seqname_mapping = _get_seqname_mapping(seqnames, msa...)
 	seq_lengths = _get_seq_lengths(msa...)
 	old_annot = annotations.([msa...])
 	new_annot = Annotations(
-		_concatenate_annotfile(old_annot...),
-		_concatenate_annotsequence(seqname_mapping, old_annot...),
-		_concatenate_annotcolumn(seq_lengths, old_annot...),
-		_concatenate_annotresidue(seq_lengths, seqname_mapping, old_annot...)
+		_h_concatenate_annotfile(old_annot...),
+		_h_concatenate_annotsequence(seqname_mapping, old_annot...),
+		_h_concatenate_annotcolumn(seq_lengths, old_annot...),
+		_h_concatenate_annotresidue(seq_lengths, seqname_mapping, old_annot...)
 	)
 	if haskey(new_annot.file, "HCat")
 		delete!(new_annot.file, "HCat")
@@ -181,8 +183,8 @@ end
 
 function Base.hcat(msa::T...) where T <: UnannotatedAlignedObject
 	concatenated_msa = NamedArray(hcat(getresidues.(msa)...))
-	seqnames = _concatenated_seq_names(msa...)
-	colnames = _concatenated_col_names(msa...)
+	seqnames = _h_concatenated_seq_names(msa...)
+	colnames = _h_concatenated_col_names(msa...)
 	setnames!(concatenated_msa, seqnames, 1)
 	setnames!(concatenated_msa, colnames, 2)
 	T(concatenated_msa)
@@ -219,3 +221,14 @@ function gethcatmapping(msa::NamedResidueMatrix{AT}) where AT <: AbstractMatrix
 end
 
 gethcatmapping(msa::MultipleSequenceAlignment) = gethcatmapping(namedmatrix(msa))
+
+## vcat (vertical concatenation)
+
+
+
+
+
+## join
+
+
+
