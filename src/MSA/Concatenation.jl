@@ -55,8 +55,10 @@ end
 
 function _concatenate_annotfile(data::Annotations...; mode::Symbol=:hcat)
 	check_mode(mode)
+	N = length(data)
 	annotfile = copy(getannotfile(data[1]))
-	for ann in data[2:end]
+	for i in 2:N
+		ann = data[i]
 		for (k, v) in getannotfile(ann)
 			if haskey(annotfile, k)
 				if k == "ColMap"
@@ -82,12 +84,13 @@ concatenated sequence name.
 """
 function _get_seqname_mapping_hcat(concatenated_seqnames, msas...)
 	mapping = Dict{Tuple{Int, String}, String}()
-	seq_names = hcat([sequencenames(msa) for msa in msas]...)
-	nseq, nmsa = size(seq_names)
-	@assert nseq == length(concatenated_seqnames)
-	for i in 1:nseq
-		for j in 1:nmsa
-			mapping[(j, seq_names[i, j])] = concatenated_seqnames[i]
+	nmsa = length(msas)
+	nseq = length(concatenated_seqnames)
+	for j in 1:nmsa
+		seq_names = sequencenames(msas[j])
+		@assert nseq == length(seq_names)
+		for i in 1:nseq
+			mapping[(j, seq_names[i])] = concatenated_seqnames[i]
 		end
 	end
 	mapping
