@@ -18,8 +18,8 @@
     # > Pfam version 28.0, based on UniProt release 2014_07
     @testset "Stockholm" begin
 
-        pf09645_sto = joinpath(pwd(), "data", "PF09645_full.stockholm")
-        rna_sto = joinpath(pwd(), "data", "upsk_rna.sto")
+        pf09645_sto = joinpath(DATA, "PF09645_full.stockholm")
+        rna_sto = joinpath(DATA, "upsk_rna.sto")
 
         @testset "Read" begin
 
@@ -139,8 +139,8 @@
 
     @testset "FASTA" begin
 
-        pf09645_fas = joinpath(pwd(), "data", "PF09645_full.fasta.gz")
-        gaoetal2011 = joinpath(pwd(), "data", "Gaoetal2011.fasta")
+        pf09645_fas = joinpath(DATA, "PF09645_full.fasta.gz")
+        gaoetal2011 = joinpath(DATA, "Gaoetal2011.fasta")
 
         @testset "Read" begin
 
@@ -278,7 +278,7 @@
 
         @testset "Non standard residues and mapping" begin
 
-            seqs = read(joinpath(pwd(), "data", "alphabet.fasta"), FASTA,
+            seqs = read(joinpath(DATA, "alphabet.fasta"), FASTA,
                         generatemapping=true)
 
             @test vec(seqs[1,:]) == res"ARNDCQEGHILKMFPSTWYV"
@@ -292,7 +292,7 @@
     @testset "Raw" begin
 
         # AnnotatedMultipleSequenceAlignment
-        raw = read(joinpath(pwd(), "data", "gaps.txt"), Raw)
+        raw = read(joinpath(DATA, "gaps.txt"), Raw)
         mat = getresidues(raw)
         raw_string = """THAYQAIHQV
                         THAYQAIHQ-
@@ -360,16 +360,16 @@
 
         # Example NBRF file: http://iubio.bio.indiana.edu/soft/molbio/readseq/classic/src/Formats
         # "The sequence is free format and may be interrupted by blanks for ease of reading"
-        example = joinpath(pwd(), "data", "example.nbrf")
+        example = joinpath(DATA, "example.nbrf")
         # Alignment file (PIR) from https://salilab.org/modeller/9v7/manual/node445.html
-        modeller = joinpath(pwd(), "data", "modeller.pir.gz")
+        modeller = joinpath(DATA, "modeller.pir.gz")
         # http://emboss.sourceforge.net/docs/themes/seqformats/NbrfFormat.html
         # "sequence may contain punctuation symbols to indicate various degrees of
         # reliability of the data"
-        emboss = joinpath(pwd(), "data", "emboss.pir")
+        emboss = joinpath(DATA, "emboss.pir")
         # http://caps.ncbs.res.in/pass2v3/pir.html
         # Example from pass2 with spaces added at the end of the id lines.
-        pass2 = joinpath(pwd(), "data", "pass2.pir")
+        pass2 = joinpath(DATA, "pass2.pir")
 
         @testset "Read" begin
 
@@ -461,7 +461,7 @@
 
         @testset "Duplicated identifiers" begin
 
-            duplicated_ids_file = joinpath(pwd(), "data", "duplicated_ids.pir")
+            duplicated_ids_file = joinpath(DATA, "duplicated_ids.pir")
             @test_throws ArgumentError read(duplicated_ids_file, PIR)
         end
     end

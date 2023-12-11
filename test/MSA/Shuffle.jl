@@ -9,7 +9,7 @@
 
     N = length(msa_types)
 
-    pf09645_sto = joinpath(pwd(), "data", "PF09645_full.stockholm")
+    pf09645_sto = joinpath(DATA, "PF09645_full.stockholm")
 
     msas = [ read(pf09645_sto, Stockholm, T) for T in msa_types ]
     gaps = [ msa .== GAP for msa in msas ]

@@ -1,12 +1,12 @@
 @testset "MSA Annotations" begin
 
-    pfam = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm,
+    pfam = read(joinpath(DATA, "PF09645_full.stockholm"), Stockholm,
         generatemapping=true, useidcoordinates=true)
 
     F112_SSV1 = collect(string(".....QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAIC",
         "ERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ....."))
 
-    fasta = read(joinpath(pwd(), "data", "Gaoetal2011.fasta"), FASTA, generatemapping=true)
+    fasta = read(joinpath(DATA, "Gaoetal2011.fasta"), FASTA, generatemapping=true)
 
     @testset "Mapping" begin
 

@@ -11,7 +11,7 @@ end
 
 @testset "Extract protein sequences from PDB" begin
 
-    file(code) = joinpath(pwd(), "data", string(uppercase(code), ".pdb"))
+    file(code) = joinpath(DATA, string(uppercase(code), ".pdb"))
 
     @testset "2VQC: Missings & selenomethionines" begin
         res = read(file("2VQC"), PDBFile)

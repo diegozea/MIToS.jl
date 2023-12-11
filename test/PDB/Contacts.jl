@@ -1,6 +1,6 @@
 @testset "Contacts" begin
 
-    txt(code) = joinpath(pwd(), "data", string(uppercase(code), ".pdb"))
+    txt(code) = joinpath(DATA, string(uppercase(code), ".pdb"))
 
     @testset "Piccolo" begin
     # Using data from http://www-cryst.bioc.cam.ac.uk/~richard/piccolo/piccolo.php?PDB=1IGY (28/Sep/2015)
@@ -97,7 +97,7 @@
 
     @testset "1AKS" begin
 
-        pdb = read(joinpath(pwd(), "data", "1AKS.xml.gz"), PDBML)
+        pdb = read(joinpath(DATA, "1AKS.xml.gz"), PDBML)
 
         CA = @residuesdict pdb model "1" chain "A" group "ATOM" residue All
         CB = @residuesdict pdb model "1" chain "B" group "ATOM" residue All

@@ -1,5 +1,5 @@
 @testset "getindex" begin
-    simple = joinpath(pwd(), "data", "simple.fasta")
+    simple = joinpath(DATA, "simple.fasta")
 
     @testset "MSA" begin
         msa = read(simple, FASTA, generatemapping=true)

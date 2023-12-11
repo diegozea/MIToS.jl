@@ -7,8 +7,8 @@
         AnnotatedMultipleSequenceAlignment
         )
 
-    pf09645_sto = joinpath(pwd(), "data", "PF09645_full.stockholm")
-    gaoetal2011 = joinpath(pwd(), "data", "Gaoetal2011.fasta")
+    pf09645_sto = joinpath(DATA, "PF09645_full.stockholm")
+    gaoetal2011 = joinpath(DATA, "Gaoetal2011.fasta")
 
     gaoetal_msas = [ read(gaoetal2011, FASTA, T) for T in msa_types ]
     pfam_msas    = [ read(pf09645_sto, Stockholm, T) for T in msa_types ]

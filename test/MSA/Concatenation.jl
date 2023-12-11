@@ -1,5 +1,5 @@
 @testset "hcat" begin
-    simple = joinpath(pwd(), "data", "simple.fasta")
+    simple = joinpath(DATA, "simple.fasta")
     msa = read(simple, FASTA, generatemapping=true)
     setannotresidue!(msa, "ONE", "example", "ab")
     setannotresidue!(msa, "TWO", "example", "cd")

@@ -1,7 +1,7 @@
 @testset "Pairwise Gap Percentage" begin
 
     @testset "Simple" begin
-        file = joinpath(pwd(), "data", "simple.fasta")
+        file = joinpath(DATA, "simple.fasta")
         mat = [ 0. 0.
                 0. 0. ]
 
@@ -12,7 +12,7 @@
 
     @testset "Gaps" begin
 
-        file = joinpath(pwd(), "data", "gaps.txt")
+        file = joinpath(DATA, "gaps.txt")
         cl = hobohmI(read(file, Raw), 62)
         gu, gi = pairwisegapfraction(file, Raw)
         ncl = nclusters(cl)

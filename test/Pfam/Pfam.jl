@@ -15,15 +15,15 @@ end
 
 @testset "PDB code" begin
 
-    msa = read(joinpath(pwd(), "data", "PF09645_full.stockholm"), Stockholm)
+    msa = read(joinpath(DATA, "PF09645_full.stockholm"), Stockholm)
     @test getseq2pdb(msa)["F112_SSV1/3-112"] == [("2VQC","A")]
 end
 
 @testset "Mapping PDB/Pfam" begin
 
-    msa_file   = joinpath(pwd(), "data", "PF09645_full.stockholm")
-    sifts_file = joinpath(pwd(), "data", "2vqc.xml.gz")
-    pdb_file   = joinpath(pwd(), "data", "2VQC.xml")
+    msa_file   = joinpath(DATA, "PF09645_full.stockholm")
+    sifts_file = joinpath(DATA, "2vqc.xml.gz")
+    pdb_file   = joinpath(DATA, "2VQC.xml")
     msa = read(msa_file, Stockholm, generatemapping=true, useidcoordinates=true)
     cmap = msacolumn2pdbresidue(msa, "F112_SSV1/3-112", "2VQC", "A", "PF09645", sifts_file)
     res = residuesdict(read(pdb_file, PDBML), "1", "A", "ATOM", All)

@@ -1,10 +1,10 @@
 @testset "CorrectedMutualInformation" begin
 
-    Gaoetal2011 = joinpath(pwd(), "data", "Gaoetal2011.fasta")
+    Gaoetal2011 = joinpath(DATA, "Gaoetal2011.fasta")
 
     function gao11_buslje09(measure)
         filename = string("data_Gaoetal2011_soft_Busljeetal2009_measure_", measure, ".txt")
-        joinpath(pwd(), "data", filename)
+        joinpath(DATA, filename)
     end
 
     ## Column numbers for the output of Buslje et. al. 2009
@@ -223,9 +223,9 @@
     @testset "Results from Buslje et. al. 2009" begin
 
         @testset "Simple" begin
-            data = readdlm(joinpath(pwd(), "data",
+            data = readdlm(joinpath(DATA,
                            "data_simple_soft_Busljeetal2009_measure_MI.txt"), comments=true)
-            results = buslje09(joinpath(pwd(), "data", "simple.fasta"), FASTA,
+            results = buslje09(joinpath(DATA, "simple.fasta"), FASTA,
                                lambda=0.0, clustering=false, apc=false)
 
             @test isapprox(Float64(data[1, SCORE]), results[MIToS_SCORE][1,2], atol=1e-6)
@@ -297,7 +297,7 @@
     @testset "BLMI" begin
 
         @testset "Simple" begin
-            file = joinpath(pwd(), "data", "simple.fasta")
+            file = joinpath(DATA, "simple.fasta")
             busl = buslje09(file, FASTA)
             blmi = BLMI(file, FASTA)
 

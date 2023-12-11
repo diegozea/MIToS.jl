@@ -55,7 +55,7 @@
 
     @testset "MSA" begin
 
-        fasta = read(joinpath(pwd(), "data", "Gaoetal2011.fasta"), FASTA)
+        fasta = read(joinpath(DATA, "Gaoetal2011.fasta"), FASTA)
         id = percentidentity(fasta)
 
         @test id[1,1] == 100.0
@@ -80,7 +80,7 @@
 
         @testset "Gaps" begin
 
-            aln = read(joinpath(pwd(), "data", "gaps.txt"), Raw)
+            aln = read(joinpath(DATA, "gaps.txt"), Raw)
             id = percentidentity(aln)
 
             @test id[1,1] == 100.0
@@ -110,7 +110,7 @@
 
     @testset "Percent Similarity" begin
 
-        fasta = read(joinpath(pwd(), "data", "Gaoetal2011.fasta"), FASTA)
+        fasta = read(joinpath(DATA, "Gaoetal2011.fasta"), FASTA)
 
         @testset "Gaps" begin
 

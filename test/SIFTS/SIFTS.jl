@@ -1,6 +1,6 @@
 @testset "SIFTS Mappings" begin
 
-    sifts_file = joinpath(pwd(), "data", "2vqc.xml.gz")
+    sifts_file = joinpath(DATA, "2vqc.xml.gz")
 
     @testset "parse" begin
 
@@ -37,7 +37,7 @@
     @testset "Insert codes" begin
     # 1SSX : Residues with insert codes: 15A 15B
 
-        _1ssx_file = joinpath(pwd(), "data", "1ssx.xml.gz")
+        _1ssx_file = joinpath(DATA, "1ssx.xml.gz")
 
         map = siftsmapping(_1ssx_file, dbPDBe, "1ssx", dbPDB, "1ssx", chain="A")
         residue_A = map["1"]
@@ -66,7 +66,7 @@
     #           <crossRefDb dbSource="UniProt" dbCoordSys="UniProt" dbAccessionId="P01542" dbResNum="22" dbResName="P"/>
     #           ...
 
-        _1cbn_file = joinpath(pwd(), "data", "1cbn.xml.gz")
+        _1cbn_file = joinpath(DATA, "1cbn.xml.gz")
 
         map = siftsmapping(_1cbn_file, dbPDBe, "1cbn", dbInterPro, "IPR001010", chain="A")
         @test_throws KeyError map["1"] # Without InterPro
@@ -89,7 +89,7 @@
     #   <residueDetail dbSource="PDBe" property="nameSecondaryStructure">loop</residueDetail>
     # </residue>
 
-        _4cpa_file = joinpath(pwd(), "data", "4cpa.xml.gz")
+        _4cpa_file = joinpath(DATA, "4cpa.xml.gz")
 
         map = read(_4cpa_file, SIFTSXML, chain="J")
         res = filter(r -> r.PDBe.number == "2", map)[1]
@@ -103,7 +103,7 @@
     @testset "NMR" begin
     # 1AS5 : NMR
 
-        _1as5_file = joinpath(pwd(), "data", "1as5.xml.gz")
+        _1as5_file = joinpath(DATA, "1as5.xml.gz")
 
         map = siftsmapping(_1as5_file, dbPDBe, "1as5", dbUniProt, "P56529", chain="A")
                           # missings=true : NMR there are not missing residues
@@ -119,7 +119,7 @@
     # Single unnamed chain in 1DPO contains insertions at postions 184 (Gly, Phe),
     # 188 (Gly, Lys), and 221 (Ala, Leu) but no insertion letters.
 
-        _1dpo_file = joinpath(pwd(), "data", "1dpo.xml.gz")
+        _1dpo_file = joinpath(DATA, "1dpo.xml.gz")
         map = siftsmapping(_1dpo_file, dbPDBe, "1dpo", dbPDB, "1dpo", chain="A")
         # Unnamed chain is "A" in SIFTS
         @test map["164"] == "184"
@@ -135,7 +135,7 @@
     # insertion block. For example, chain B in 1IGY contains a block of four residues
     # inserted at sequence position 82. The block contains Leu-Ser-Ser-Leu.
 
-        _1igy_file = joinpath(pwd(), "data", "1igy.xml.gz")
+        _1igy_file = joinpath(DATA, "1igy.xml.gz")
         map = siftsmapping(_1igy_file, dbPDBe, "1igy", dbCATH, "2.60.40.10", chain="B")
         @test map["82"] == "82"
         @test map["83"] == "82A"
@@ -146,7 +146,7 @@
     @testset "1HAG" begin
     # 1HAG : Chain E begins with 1H, 1G, 1F, ... 1A, then 1 (in reverse alphabetic order)
 
-        _1hag_file = joinpath(pwd(), "data", "1hag.xml.gz")
+        _1hag_file = joinpath(DATA, "1hag.xml.gz")
         map = siftsmapping(_1hag_file, dbPDBe, "1hag", dbPDB, "1hag", chain="E")
         @test map["1"] == "1H"
         @test map["2"] == "1G"
@@ -163,7 +163,7 @@ end
 @testset "1NSA" begin
 # 1NSA : Contains a single (unnamed) protein chain with sequence 7A-95A that continues 4-308.
 
-    _1nsa_file = joinpath(pwd(), "data", "1nsa.xml.gz")
+    _1nsa_file = joinpath(DATA, "1nsa.xml.gz")
     mapping = read(_1nsa_file, SIFTSXML)
 
     @testset "findall & read" begin
@@ -190,7 +190,7 @@ end
 @testset "find & filter" begin
 # 1IAO : Contains in chain B (in this order) 1S, 323P-334P, 6-94, 94A, 95-188, 1T, 2T
 
-    mapp = read(joinpath(pwd(), "data", "1iao.xml.gz"), SIFTSXML)
+    mapp = read(joinpath(DATA, "1iao.xml.gz"), SIFTSXML)
 
     @test filter(db -> db.id == "1iao" && db.number == "1S" && db.chain == "B", mapp, dbPDB)[1].PDBe.number == "1"
     i = findall(db -> db.id == "1iao" && db.number == "1S" && db.chain == "B", mapp, dbPDB)[1]
@@ -201,7 +201,7 @@ end
 
 @testset "MIToS 1.0 error" begin
 
-    sf = joinpath(pwd(), "data", "4gcr.xml.gz")
+    sf = joinpath(DATA, "4gcr.xml.gz")
 
     mapping = siftsmapping(sf, dbPfam, "PF00030", dbPDB, "4gcr")
     @test mapping["3"] == "2"
@@ -210,7 +210,7 @@ end
 @testset "download" begin
 
     pdb = "2vqc"
-    mapping = read(joinpath(pwd(), "data", "$(pdb).xml.gz"), SIFTSXML)
+    mapping = read(joinpath(DATA, "$(pdb).xml.gz"), SIFTSXML)
 
     @test_throws AssertionError downloadsifts(pdb, source="http")
     @test_throws AssertionError downloadsifts(pdb, filename="bad_name.txt")
@@ -227,7 +227,7 @@ end
 # 18GS has multiple Ensembl annotations for each residue
 # 18GS also has EC and GO annotations
 
-    mapping = read(joinpath(pwd(), "data", "18gs.xml.gz"), SIFTSXML)
+    mapping = read(joinpath(DATA, "18gs.xml.gz"), SIFTSXML)
 
     last_res = mapping[end]
     @test length(last_res.Ensembl) == 2
@@ -243,7 +243,7 @@ end
 
 @testset "SCOP2B" begin
     # 1IVO has residues mapped into SCOP2B (05/08/2020)
-    mapping = read(joinpath(pwd(), "data", "1ivo.xml.gz"), SIFTSXML)
+    mapping = read(joinpath(DATA, "1ivo.xml.gz"), SIFTSXML)
 
     # First residue with SCOP2B annotation: 
     # <crossRefDb dbSource="SCOP2B" dbCoordSys="PDBresnum" dbAccessionId="SF-DOMID:8038760" dbResNum="312" dbResName="VAL" dbChainId="A"/>
@@ -258,7 +258,7 @@ end
 
 @testset "SCOP2" begin
     # 1XYZ has residues mapped to two different SCOP2 domains (05/08/2020)
-    mapping = read(joinpath(pwd(), "data", "1xyz.xml.gz"), SIFTSXML)
+    mapping = read(joinpath(DATA, "1xyz.xml.gz"), SIFTSXML)
 
     # First residue with SCOP2 annotations: 
     # <crossRefDb dbAccessionId="FA-DOMID:8030967" dbCoordSys="PDBresnum" dbSource="SCOP2" dbResName="ASN" dbResNum="516" dbChainId="A"/>

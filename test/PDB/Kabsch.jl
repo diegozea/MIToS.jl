@@ -192,8 +192,8 @@
     end
 
     @testset "PDBResidue without alpha-carbon" begin
-        small_2WEL = read(joinpath(pwd(), "data", "2WEL_D_region.pdb"), PDBFile)
-        small_6BAB = read(joinpath(pwd(), "data", "6BAB_D_region.pdb"), PDBFile)
+        small_2WEL = read(joinpath(DATA, "2WEL_D_region.pdb"), PDBFile)
+        small_6BAB = read(joinpath(DATA, "6BAB_D_region.pdb"), PDBFile)
 
         aln_2WEL, aln_6BAB, RMSD = superimpose(small_2WEL, small_6BAB)
         @test length(aln_2WEL) == 3
