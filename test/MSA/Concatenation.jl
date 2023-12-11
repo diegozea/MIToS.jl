@@ -184,3 +184,19 @@
         end
     end
 end
+
+@testset "vcat" begin
+    msa = read(joinpath(DATA, "simple.fasta"), FASTA, generatemapping=true)
+    msa2 = read(joinpath(DATA, "Gaoetal2011.fasta"), FASTA, generatemapping=true)
+
+    @testset "seqnames" begin
+        seqnames = sequencenames(msa)
+        seqnames2 = sequencenames(msa2)
+        @test MIToS.MSA._v_concatenated_seq_names(msa, msa2) == vcat(seqnames, seqnames2)
+        @test MIToS.MSA._v_concatenated_seq_names(msa2, msa) == vcat(seqnames2, seqnames)
+        @test MIToS.MSA._v_concatenated_seq_names(msa, msa) == vcat(
+            seqnames, ["2_$name" for name in seqnames])
+        @test MIToS.MSA._v_concatenated_seq_names(msa, msa, msa) == vcat(
+            seqnames, ["2_$name" for name in seqnames], ["3_$name" for name in seqnames])
+    end
+end

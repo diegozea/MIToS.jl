@@ -46,20 +46,25 @@ function _get_annot_types(fun, index, data::Annotations...)
 	union(Set(k[index] for k in keys(fun(annot))) for annot in data)
 end
 
-function _concatenate_annotfile(data::Annotations...; mode::Symbol=:h)
+function check_mode(mode::Symbol)
+	if mode != :hcat && mode != :vcat
+		throw(ArgumentError("The mode must be :hcat or :vcat"))
+	end
+	mode
+end
+
+function _concatenate_annotfile(data::Annotations...; mode::Symbol=:hcat)
+	check_mode(mode)
 	annotfile = copy(getannotfile(data[1]))
 	for ann in data[2:end]
 		for (k, v) in getannotfile(ann)
 			if haskey(annotfile, k)
 				if k == "ColMap"
-					if mode == :h
+					if mode == :hcat
 						annotfile[k] *= ',' * v
-					else # mode == :v
-						# do nothing to keep the first ColMap
-						if annotfile[k] != v
-							@warn "Input alignments have different column mappings; the first is used."
-						end
 					end
+					# if the mode is :vcat, annotfile[k] is not modified, so that the first
+					# ColMap is kept
 				else
 					annotfile[k] *= "_&_" * v
 				end
@@ -71,6 +76,9 @@ function _concatenate_annotfile(data::Annotations...; mode::Symbol=:h)
 	annotfile
 end
 
+"""
+It returns a Dict mapping the MSA number and sequence name to the concatenated sequence name.
+"""
 function _get_seqname_mapping(concatenated_seqnames, msas...)
 	mapping = Dict{Tuple{Int, String}, String}()
 	seq_names = hcat([sequencenames(msa) for msa in msas]...)
@@ -172,7 +180,7 @@ function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 	seq_lengths = _get_seq_lengths(msa...)
 	old_annot = annotations.([msa...])
 	new_annot = Annotations(
-		_concatenate_annotfile(old_annot...; mode=:h),
+		_concatenate_annotfile(old_annot...; mode=:hcat),
 		_h_concatenate_annotsequence(seqname_mapping, old_annot...),
 		_h_concatenate_annotcolumn(seq_lengths, old_annot...),
 		_h_concatenate_annotresidue(seq_lengths, seqname_mapping, old_annot...)
@@ -231,7 +239,26 @@ gethcatmapping(msa::MultipleSequenceAlignment) = gethcatmapping(namedmatrix(msa)
 
 ## vcat (vertical concatenation)
 
-
+"""
+If returns a vector of sequence names for the vertically concatenated MSA. The names are
+kept the same if no sequence name is repeated. If there are repeated sequence names, a 
+disambiguation prefix is added to the sequence names. The prefix is the number associated
+to the source MSA.
+"""
+function _v_concatenated_seq_names(msas...)
+	seqnames = sequencenames(msas[1])
+	msa_number = 1
+	for msa in msas[2:end]
+		msa_number += 1
+		for seq in sequencenames(msa)
+			if seq in seqnames
+				seq = "$(msa_number)_$seq"
+			end
+			push!(seqnames, seq)
+		end
+	end
+	seqnames
+end
 
 
 
