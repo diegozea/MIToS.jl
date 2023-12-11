@@ -1,8 +1,22 @@
 """
-You need to `include` this file (and module) into your Julia session to run the tests using 
-`ReTest`. `ReTest` is not a dependency of `MIToS`, so you need to install it manually.
-Then, you can do `MIToSTests.retest()` to setup the tests. After that, you can use 
-regular expressions to filter the tests you want to run, e.g. `MIToSTests.retest(r"MSA")`.
+You need to `include` this file or load this module in your Julia session to run the tests
+using `ReTest`. As `ReTest` is not a `MIToS` dependency, so you need to install it manually.
+It is also recommended to install `Revise`. The main advantage of `ReTest` is that it 
+allows you to run only selected tests. An example of usage if you want to run the `hcat`
+tests from the `MSA` module:
+
+```julia
+push!(LOAD_PATH, joinpath(homedir(), ".julia", "dev", "MIToS", "test"))
+using Revise, MIToSTests
+MIToSTests.retest("MSA")
+MIToSTests.retest("hcat")
+```
+
+Note that we need to fisrt run the most general test and then the specific one. Otherwise, 
+`ReTest` will not be able to find the `hcat` test.
+
+NOTE: For some reason, after modifying the tests, `Revise` does not detect the changes 
+automatically. However, runing `retest` again for the whole module looks to do the trick.
 """
 module MIToSTests
     using ReTest
