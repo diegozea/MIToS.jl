@@ -497,38 +497,38 @@ histogram( [Time_Pab Time_Nab],
   - samples     Int       100     Number of samples for Z-score
   - fixedgaps   Bool      true    Fix gaps positions for the random samples
   - alphabet    ResidueAlphabet UngappedAlphabet()  Residue alphabet to be used</code></pre><p>This function returns:</p><pre><code class="nohighlight hljs">  - Z score
-  - MI or MIp</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/diegozea/MIToS.jl/blob/2b1262d4eb8a1fdb107ed2f3b303453103a28ecb/src/Information/CorrectedMutualInformation.jl#L19-L42">source</a></section></article><p>The second, implemented in the <code>BLMI</code> function, has the same corrections that the above algorithm, but use BLOSUM62 pseudo frequencies. This function is <strong>slower</strong> than <code>buslje09</code> (at the same number of samples), but gives <strong>better performance</strong> (for structural contact prediction) when the MSA has <strong>less than 400 clusters</strong> after a Hobohm I at 62% identity.  </p><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MIToS.Information.BLMI" href="#MIToS.Information.BLMI"><code>MIToS.Information.BLMI</code></a> — <span class="docstring-category">Function</span></header><section><div><p><code>BLMI</code> takes a MSA or a file and a <code>FileFormat</code> as first arguments. It calculates a Z score (ZBLMI) and a corrected MI/MIp as described on <strong>Busjle et. al. 2009</strong> but using using BLOSUM62 pseudo frequencies instead of a fixed pseudocount.</p><p>Keyword argument, type, default value and descriptions:</p><pre><code class="nohighlight hljs">  - beta        Float64   8.512   β for BLOSUM62 pseudo frequencies
+  - MI or MIp</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/diegozea/MIToS.jl/blob/55cbc994882e7ba0d23972e05b4205aaad227aee/src/Information/CorrectedMutualInformation.jl#L19-L42">source</a></section></article><p>The second, implemented in the <code>BLMI</code> function, has the same corrections that the above algorithm, but use BLOSUM62 pseudo frequencies. This function is <strong>slower</strong> than <code>buslje09</code> (at the same number of samples), but gives <strong>better performance</strong> (for structural contact prediction) when the MSA has <strong>less than 400 clusters</strong> after a Hobohm I at 62% identity.  </p><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MIToS.Information.BLMI" href="#MIToS.Information.BLMI"><code>MIToS.Information.BLMI</code></a> — <span class="docstring-category">Function</span></header><section><div><p><code>BLMI</code> takes a MSA or a file and a <code>FileFormat</code> as first arguments. It calculates a Z score (ZBLMI) and a corrected MI/MIp as described on <strong>Busjle et. al. 2009</strong> but using using BLOSUM62 pseudo frequencies instead of a fixed pseudocount.</p><p>Keyword argument, type, default value and descriptions:</p><pre><code class="nohighlight hljs">  - beta        Float64   8.512   β for BLOSUM62 pseudo frequencies
   - lambda      Float64   0.0     Low count value
   - threshold             62      Percent identity threshold for sequence clustering (Hobohm I)
   - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation
   - apc         Bool      true    Use APC correction (MIp)
   - samples     Int       50      Number of samples for Z-score
   - fixedgaps   Bool      true    Fix gaps positions for the random samples</code></pre><p>This function returns:</p><pre><code class="nohighlight hljs">  - Z score (ZBLMI)
-  - MI or MIp using BLOSUM62 pseudo frequencies (BLMI/BLMIp)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/diegozea/MIToS.jl/blob/2b1262d4eb8a1fdb107ed2f3b303453103a28ecb/src/Information/CorrectedMutualInformation.jl#L94-L117">source</a></section></article><h4 id="Example:-Estimating-corrected-MI-from-an-MSA"><a class="docs-heading-anchor" href="#Example:-Estimating-corrected-MI-from-an-MSA">Example: Estimating corrected MI from an MSA</a><a id="Example:-Estimating-corrected-MI-from-an-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Estimating-corrected-MI-from-an-MSA" title="Permalink"></a></h4><pre><code class="language-julia hljs">using MIToS.MSA
+  - MI or MIp using BLOSUM62 pseudo frequencies (BLMI/BLMIp)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/diegozea/MIToS.jl/blob/55cbc994882e7ba0d23972e05b4205aaad227aee/src/Information/CorrectedMutualInformation.jl#L94-L117">source</a></section></article><h4 id="Example:-Estimating-corrected-MI-from-an-MSA"><a class="docs-heading-anchor" href="#Example:-Estimating-corrected-MI-from-an-MSA">Example: Estimating corrected MI from an MSA</a><a id="Example:-Estimating-corrected-MI-from-an-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Estimating-corrected-MI-from-an-MSA" title="Permalink"></a></h4><pre><code class="language-julia hljs">using MIToS.MSA
 using MIToS.Information
 
 msa = read(&quot;https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz&quot;, Stockholm)
 ZMIp, MIp  = buslje09(msa)
 ZMIp</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">107×107 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
-Col1 ╲ Col2 │         57          58  …         431         432
-────────────┼──────────────────────────────────────────────────
-57          │        NaN     3.46764  …     1.43658    -1.38588
-58          │    3.46764         NaN       -2.56879     4.80619
-59          │    4.67786     3.08498         3.1322    -2.72966
-60          │    1.48212     3.46159       -2.83154     1.21907
-61          │    3.14833     1.07385       0.595632    -1.37215
-64          │    1.19636     4.20648       -3.14549     4.62333
-65          │  0.0562127    -1.04353       0.862479    -2.46306
-66          │    0.43856     4.69738       -3.17428     2.96795
-⋮                      ⋮           ⋮  ⋱           ⋮           ⋮
-423         │   0.524191    -1.93965      -0.120378    -0.54106
-424         │    1.55338     1.44002       -2.51113     5.10899
-427         │    1.22703   -0.412758         1.6828    0.216808
-428         │   -1.61842     2.15269       -1.32385     3.81397
-429         │   0.169285     -1.2992        6.70174   -0.855271
-430         │   -1.42186      2.5777       -2.92709      6.5078
-431         │    1.43658    -2.56879            NaN    -2.86503
-432         │   -1.38588     4.80619  …    -2.86503         NaN</code></pre><pre><code class="language-julia hljs">ZBLMIp, BLMIp  = BLMI(msa)
+Col1 ╲ Col2 │          57           58  …          431          432
+────────────┼──────────────────────────────────────────────────────
+57          │         NaN      3.79121  …      1.21533     -1.61472
+58          │     3.79121          NaN        -2.91267      4.31276
+59          │     4.20379      3.07944         3.29391     -2.34089
+60          │     1.22571       3.4903        -3.21266      1.39006
+61          │     3.36099      1.21128        0.767508     -1.19649
+64          │     1.16635      4.30296        -2.64412      4.91076
+65          │   0.0998482     -1.23167        0.866061     -2.36719
+66          │    0.289966      3.85879        -3.25263      2.72623
+⋮                       ⋮            ⋮  ⋱            ⋮            ⋮
+423         │    0.650851      -1.6213      -0.0869726    -0.746675
+424         │     1.41803      1.81792        -2.51164       4.3906
+427         │     1.25999    -0.613814         1.97332     0.233971
+428         │    -2.08257      2.28341         -1.4752      4.14426
+429         │    0.149498     -1.56529         6.37242     -1.05483
+430         │     -1.7005      2.72175        -2.86548      7.36751
+431         │     1.21533     -2.91267             NaN      -2.9045
+432         │    -1.61472      4.31276  …      -2.9045          NaN</code></pre><pre><code class="language-julia hljs">ZBLMIp, BLMIp  = BLMI(msa)
 ZBLMIp</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">107×107 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
 Col1 ╲ Col2 │           57            58  …           431           432
 ────────────┼──────────────────────────────────────────────────────────
@@ -554,8 +554,8 @@ gr()
 heatmap(ZMIp, yflip=true)</code></pre><p><img src="../inf_heatmap.png" alt/>   </p><p>ZMIp is a Z score of the corrected MIp against its distribution on a random MSA (shuffling the residues in each sequence), so pairs with highest values are more likely to co-evolve. Here, we are going to use the top 1% pairs of MSA columns.  </p><pre><code class="language-julia hljs">using PairwiseListMatrices # to use getlist
 using Statistics # to use quantile
 
-threshold = quantile(getlist(ZMIp), 0.99)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">7.058230012371511</code></pre><pre><code class="language-julia hljs">ZMIp[ ZMIp .&lt; threshold ] .= NaN
+threshold = quantile(getlist(ZMIp), 0.99)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">7.086483058652286</code></pre><pre><code class="language-julia hljs">ZMIp[ ZMIp .&lt; threshold ] .= NaN
 heatmap(ZMIp, yflip=true)</code></pre><p><img src="../inf_heatmap_top.png" alt/>   </p><p>We are going to calculate the cMI (cumulative mutual information) value of each node. Where cMI is a mutual information score per position that characterizes the extent of mutual information &quot;interactions&quot; in its neighbourhood. This score is calculated as the sum of MI values above a certain threshold for every amino acid pair where the particular residue appears. This value defines to what degree a given amino acid takes part in a mutual information network and we are going to indicate it using the node color. To calculate cMI we are going to use the <code>cumulative</code> function:   </p><pre><code class="language-julia hljs">cMI = cumulative(ZMIp, threshold)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1×107 Named Matrix{Float64}
 Function ╲ Col2 │      57       58       59  …      430      431      432
 ────────────────┼────────────────────────────────────────────────────────
-cumulative      │     0.0      0.0      0.0  …      0.0      0.0      0.0</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../MSA/">« MSA</a><a class="docs-footer-nextpage" href="../SIFTS/">SIFTS »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Monday 11 December 2023 11:47">Monday 11 December 2023</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+cumulative      │     0.0      0.0      0.0  …  7.36751      0.0  7.36751</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../MSA/">« MSA</a><a class="docs-footer-nextpage" href="../SIFTS/">SIFTS »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Monday 11 December 2023 12:48">Monday 11 December 2023</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
