@@ -194,9 +194,18 @@ end
         seqnames2 = sequencenames(msa2)
         @test MIToS.MSA._v_concatenated_seq_names(msa, msa2) == vcat(seqnames, seqnames2)
         @test MIToS.MSA._v_concatenated_seq_names(msa2, msa) == vcat(seqnames2, seqnames)
-        @test MIToS.MSA._v_concatenated_seq_names(msa, msa) == vcat(
-            seqnames, ["2_$name" for name in seqnames])
+        @test MIToS.MSA._v_concatenated_seq_names(msa, msa) == ["ONE", "TWO", "2_ONE", "2_TWO"]
         @test MIToS.MSA._v_concatenated_seq_names(msa, msa, msa) == vcat(
             seqnames, ["2_$name" for name in seqnames], ["3_$name" for name in seqnames])
+
+        @testset "sequence name mapping" begin
+            new_names = MIToS.MSA._v_concatenated_seq_names(msa, msa)
+            mapping = MIToS.MSA._get_seqname_mapping_vcat(new_names, msa, msa)
+            @test length(mapping) == 4
+            @test mapping[(1, "ONE")] == "ONE"
+            @test mapping[(1, "TWO")] == "TWO"
+            @test mapping[(2, "ONE")] == "2_ONE"
+            @test mapping[(2, "TWO")] == "2_TWO"
+        end
     end
 end

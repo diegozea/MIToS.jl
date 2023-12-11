@@ -77,9 +77,10 @@ function _concatenate_annotfile(data::Annotations...; mode::Symbol=:hcat)
 end
 
 """
-It returns a Dict mapping the MSA number and sequence name to the concatenated sequence name.
+It returns a Dict mapping the MSA number and sequence name to the horizontally 
+concatenated sequence name.
 """
-function _get_seqname_mapping(concatenated_seqnames, msas...)
+function _get_seqname_mapping_hcat(concatenated_seqnames, msas...)
 	mapping = Dict{Tuple{Int, String}, String}()
 	seq_names = hcat([sequencenames(msa) for msa in msas]...)
 	nseq, nmsa = size(seq_names)
@@ -176,7 +177,7 @@ function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 	colnames = _h_concatenated_col_names(msa...)
 	setnames!(concatenated_msa, seqnames, 1)
 	setnames!(concatenated_msa, colnames, 2)
-	seqname_mapping = _get_seqname_mapping(seqnames, msa...)
+	seqname_mapping = _get_seqname_mapping_hcat(seqnames, msa...)
 	seq_lengths = _get_seq_lengths(msa...)
 	old_annot = annotations.([msa...])
 	new_annot = Annotations(
@@ -260,6 +261,21 @@ function _v_concatenated_seq_names(msas...)
 	seqnames
 end
 
+"""
+It returns a Dict mapping the MSA number and sequence name to the vertically 
+concatenated sequence name.
+"""
+function _get_seqname_mapping_vcat(concatenated_seqnames, msas...)
+	mapping = Dict{Tuple{Int, String}, String}()
+	sequence_number = 0
+	for (i, msa) in enumerate(msas)
+		for seq in sequencenames(msa)
+			sequence_number += 1
+			mapping[(i, seq)] = concatenated_seqnames[sequence_number]
+		end
+	end
+	mapping
+end
 
 
 ## join
