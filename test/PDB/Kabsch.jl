@@ -105,7 +105,7 @@
 
     @testset "Superimpose PDBs" begin
 
-        hemoglobin = read(joinpath(pwd(),"data","2hhb.pdb.gz"),PDBFile,group="ATOM",model="1")
+        hemoglobin = read(joinpath(DATA, "2hhb.pdb.gz"),PDBFile,group="ATOM",model="1")
 
         α1 = @residues hemoglobin model "1" chain "A" group "ATOM" residue All
         α2 = @residues hemoglobin model "1" chain "C" group "ATOM" residue All

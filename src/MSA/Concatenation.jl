@@ -46,13 +46,20 @@ function _get_annot_types(fun, index, data::Annotations...)
 	union(Set(k[index] for k in keys(fun(annot))) for annot in data)
 end
 
-function _h_concatenate_annotfile(data::Annotations...)
+function _concatenate_annotfile(data::Annotations...; mode::Symbol=:h)
 	annotfile = copy(getannotfile(data[1]))
 	for ann in data[2:end]
 		for (k, v) in getannotfile(ann)
 			if haskey(annotfile, k)
 				if k == "ColMap"
-					annotfile[k] *= ',' * v
+					if mode == :h
+						annotfile[k] *= ',' * v
+					else # mode == :v
+						# do nothing to keep the first ColMap
+						if annotfile[k] != v
+							@warn "Input alignments have different column mappings; the first is used."
+						end
+					end
 				else
 					annotfile[k] *= "_&_" * v
 				end
@@ -165,7 +172,7 @@ function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 	seq_lengths = _get_seq_lengths(msa...)
 	old_annot = annotations.([msa...])
 	new_annot = Annotations(
-		_h_concatenate_annotfile(old_annot...),
+		_concatenate_annotfile(old_annot...; mode=:h),
 		_h_concatenate_annotsequence(seqname_mapping, old_annot...),
 		_h_concatenate_annotcolumn(seq_lengths, old_annot...),
 		_h_concatenate_annotresidue(seq_lengths, seqname_mapping, old_annot...)
