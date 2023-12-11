@@ -96,13 +96,16 @@ function _get_seqname_mapping_hcat(concatenated_seqnames, msas...)
 	mapping
 end
 
-function _h_concatenate_annotsequence(seqname_mapping, data::Annotations...)
+function _concatenate_annotsequence(seqname_mapping, data::Annotations...)
 	annotsequence = Dict{Tuple{String,String},String}()
 	for (i, ann) in enumerate(data)
 		for ((seqname, annot_name), value) in getannotsequence(ann)
 			concatenated_seqname = get(seqname_mapping, (i, seqname), seqname)
 			new_key = (concatenated_seqname, annot_name)
+			# if we used :vcat, new_key will not be present in the dict as the
+			# sequence names are disambiguated
 			if haskey(annotsequence, new_key)
+				# so, we execute the following code only if we used :hcat
 				if annot_name == "SeqMap"
 					annotsequence[new_key] *= ',' * value
 				else
@@ -185,7 +188,7 @@ function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 	old_annot = annotations.([msa...])
 	new_annot = Annotations(
 		_concatenate_annotfile(old_annot...; mode=:hcat),
-		_h_concatenate_annotsequence(seqname_mapping, old_annot...),
+		_concatenate_annotsequence(seqname_mapping, old_annot...),
 		_h_concatenate_annotcolumn(seq_lengths, old_annot...),
 		_h_concatenate_annotresidue(seq_lengths, seqname_mapping, old_annot...)
 	)
