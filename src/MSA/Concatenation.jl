@@ -40,7 +40,7 @@ function _h_concatenated_col_names(msas...)
 	colnames
 end
 
-_get_seq_lengths(msas...) = [ncolumns(msa) for msa in msas]
+_get_seq_lengths(msas...) = Int[ncolumns(msa) for msa in msas]
 
 function _get_annot_types(fun, index, data::Annotations...)
 	union(Set(k[index] for k in keys(fun(annot))) for annot in data)
@@ -58,17 +58,17 @@ function _concatenate_annotfile(data::Annotations...; mode::Symbol=:hcat)
 	N = length(data)
 	annotfile = copy(getannotfile(data[1]))
 	for i in 2:N
-		ann = data[i]
+		ann = data[i]::Annotations
 		for (k, v) in getannotfile(ann)
 			if haskey(annotfile, k)
 				if k == "ColMap"
 					if mode == :hcat
-						annotfile[k] *= ',' * v
+						annotfile[k] = string(annotfile[k], ",", v)
 					end
 					# if the mode is :vcat, annotfile[k] is not modified, so that the first
 					# ColMap is kept
 				else
-					annotfile[k] *= "_&_" * v
+					annotfile[k] = string(annotfile[k], "_&_", v)
 				end
 			else
 				push!(annotfile, k => v)
@@ -98,7 +98,7 @@ end
 
 function _concatenate_annotsequence(seqname_mapping, data::Annotations...)
 	annotsequence = Dict{Tuple{String,String},String}()
-	for (i, ann) in enumerate(data)
+	for (i, ann::Annotations) in enumerate(data)
 		for ((seqname, annot_name), value) in getannotsequence(ann)
 			concatenated_seqname = get(seqname_mapping, (i, seqname), seqname)
 			new_key = (concatenated_seqname, annot_name)
@@ -106,11 +106,8 @@ function _concatenate_annotsequence(seqname_mapping, data::Annotations...)
 			# sequence names are disambiguated
 			if haskey(annotsequence, new_key)
 				# so, we execute the following code only if we used :hcat
-				if annot_name == "SeqMap"
-					annotsequence[new_key] *= ',' * value
-				else
-					annotsequence[new_key] *= "_&_" * value
-				end
+				sep = annot_name == "SeqMap" ? "," : "_&_"
+				annotsequence[new_key] = string(annotsequence[new_key], sep, value)
 			else
 				push!(annotsequence, new_key => value)
 			end
@@ -122,10 +119,10 @@ end
 function _fill_and_update!(dict, last, key, i, value, seq_lengths)
 	if haskey(dict, key)
 		if last[key] == i - 1
-			dict[key] *= value
+			dict[key] = string(dict[key], value)
 		else
 			previous = sum(seq_lengths[(last[key]+1):(i-1)])
-			dict[key] *= " "^previous * value
+			dict[key] = string(dict[key], repeat(" ", previous), value)
 		end
 		last[key] = i
 	else
@@ -133,7 +130,7 @@ function _fill_and_update!(dict, last, key, i, value, seq_lengths)
 			push!(dict, key => value)
 		else
 			previous = sum(seq_lengths[1:(i-1)])
-			push!(dict, key => " "^previous * value)
+			push!(dict, key => string(repeat(" ", previous), value))
 		end
 		push!(last, key => i)
 	end
@@ -153,10 +150,11 @@ function _fill_end!(dict, seq_lengths, entity)
 	dict
 end
 
-function _h_concatenate_annotcolumn(seq_lengths, data::Annotations...)
+function _h_concatenate_annotcolumn(seq_lengths::Vector{Int}, 
+		data::Annotations...)::Dict{String,String}
 	annotcolumn = Dict{String,String}()
 	last = Dict{String,Int}()
-	for (i, ann) in enumerate(data)
+	for (i, ann::Annotations) in enumerate(data)
 		for (annot_name, value) in getannotcolumn(ann)
 			_fill_and_update!(annotcolumn, last, annot_name, i, value, seq_lengths)
 		end
