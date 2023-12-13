@@ -207,6 +207,10 @@
 
             for object in (M, NamedArray(M), msa, annotated_msa)
                 @test sequencenames(object) == ["1","2","3"]
+                # Iterators
+                iterator = sequencename_iterator(object)
+                @test collect(iterator) == ["1","2","3"]
+                @test_throws MethodError iterator[1] # no getindex defined for iterators
             end
         end
 
@@ -214,6 +218,10 @@
 
             for object in (M, NamedArray(M), msa, annotated_msa)
                 @test columnnames(object) == ["1","2","3","4","5","6","7"]
+                # Iterators
+                iterator = columnname_iterator(object)
+                @test collect(iterator) == ["1","2","3","4","5","6","7"]
+                @test_throws MethodError iterator[1] # no getindex defined for iterators
             end
         end
 

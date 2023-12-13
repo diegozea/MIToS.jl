@@ -349,6 +349,36 @@ end
 columnnames(x::AbstractAlignedObject)::Vector{String} = columnnames(namedmatrix(x))
 columnnames(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(msa, 2))
 
+# Name Iterators
+# --------------
+# These function relies on the internal implementation of NamedArrays
+# to return the key iterator of the OrderedDict containing the row or column names.
+# That should help reduce allocations in places where a vector of names is not needed.
+
+"""
+`sequencename_iterator(msa)`
+
+It returns an iterator that returns the sequence names/identifiers of the `msa`.
+"""
+function sequencename_iterator(x::NamedResidueMatrix{AT}) where AT
+    keys(x.dicts[1])
+end
+sequencename_iterator(x::AbstractAlignedObject) = sequencename_iterator(namedmatrix(x))
+sequencename_iterator(msa::AbstractMatrix{Residue}) = (string(i) for i in 1:size(msa, 1))
+
+"""
+`columnname_iterator(msa)`
+
+It returns an iterator that returns the column names of the `msa`. If the `msa` is a
+`Matrix{Residue}` this function returns the actual column numbers as strings. Otherwise it
+returns the column number of the original MSA through the wrapped `NamedArray` column names.
+"""
+function columnname_iterator(x::NamedResidueMatrix{AT}) where AT
+    keys(x.dicts[2])
+end
+columnname_iterator(x::AbstractAlignedObject) = columnname_iterator(namedmatrix(x))
+columnname_iterator(msa::AbstractMatrix{Residue}) = (string(i) for i in 1:size(msa, 2))
+
 # Copy, deepcopy
 # --------------
 

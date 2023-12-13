@@ -63,6 +63,7 @@ export  # Residue
         stringsequence,
         getcolumnmapping, getsequencemapping,
         sequencenames, columnnames, # TO DO: sequencenames!(...)
+        sequencename_iterator, columnname_iterator,
         # MSAStats
         gapfraction,
         residuefraction,
