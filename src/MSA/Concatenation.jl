@@ -176,11 +176,10 @@ function _h_concatenate_annotresidue(seq_lengths, seqname_mapping, data::Annotat
 end
 
 function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
-	concatenated_msa = NamedArray(hcat(getresidues.(msa)...))
 	seqnames = _h_concatenated_seq_names(msa...)
 	colnames = _h_concatenated_col_names(msa...)
-	setnames!(concatenated_msa, seqnames, 1)
-	setnames!(concatenated_msa, colnames, 2)
+	concatenated_matrix = hcat(getresidues.(msa)...)
+	concatenated_msa = NamedArray(concatenated_matrix, (seqnames, colnames), ("Seq","Col"))
 	seqname_mapping = _get_seqname_mapping_hcat(seqnames, msa...)
 	seq_lengths = _get_seq_lengths(msa...)
 	old_annot = annotations.([msa...])
@@ -202,11 +201,10 @@ function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 end
 
 function Base.hcat(msa::T...) where T <: UnannotatedAlignedObject
-	concatenated_msa = NamedArray(hcat(getresidues.(msa)...))
+	concatenated_matrix = hcat(getresidues.(msa)...)
 	seqnames = _h_concatenated_seq_names(msa...)
 	colnames = _h_concatenated_col_names(msa...)
-	setnames!(concatenated_msa, seqnames, 1)
-	setnames!(concatenated_msa, colnames, 2)
+	concatenated_msa = NamedArray(concatenated_matrix, (seqnames, colnames), ("Seq","Col"))
 	T(concatenated_msa)
 end
 
