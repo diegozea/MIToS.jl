@@ -52,6 +52,16 @@ mutable struct AnnotatedMultipleSequenceAlignment <: AbstractMultipleSequenceAli
     end
 end
 
+# Helper constructor for NamedResidueMatrix{Array{Residue,2}}
+function _namedresiduematrix(matrix::Matrix{Residue}, 
+        seqnames::Vector{String}, 
+        colnames::Vector{String})::NamedResidueMatrix{Array{Residue,2}}
+	NamedArray(matrix, (
+		OrderedDict{String,Int}(k => i for (i, k) in enumerate(seqnames)),
+		OrderedDict{String,Int}(k => i for (i, k) in enumerate(colnames))
+	),	("Seq","Col"))
+end
+
 # Aligned Sequences
 # -----------------
 
@@ -361,7 +371,7 @@ columnnames(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(m
 It returns an iterator that returns the sequence names/identifiers of the `msa`.
 """
 function sequencename_iterator(x::NamedResidueMatrix{AT}) where AT
-    keys(x.dicts[1])
+    keys(x.dicts[1])::Base.KeySet{String, OrderedDict{String, Int64}}
 end
 sequencename_iterator(x::AbstractAlignedObject) = sequencename_iterator(namedmatrix(x))
 sequencename_iterator(msa::AbstractMatrix{Residue}) = (string(i) for i in 1:size(msa, 1))

@@ -1,16 +1,43 @@
 ## hcat (horizontal concatenation)
 
+function _hcat_seqnames_kernel!(concatenated_names, msa, delim)
+	for (i, seq) in enumerate(sequencename_iterator(msa))
+		if seq == concatenated_names[i]
+			continue
+		end
+		concatenated_names[i] *= delim * seq
+	end
+	concatenated_names
+end
+
 function _h_concatenated_seq_names(msas...; delim::String="_&_")
 	concatenated_names = sequencenames(msas[1])
 	for msa in msas[2:end]
-		for (i, seq) in enumerate(sequencename_iterator(msa))
-			if seq == concatenated_names[i]
-				continue
-			end
-			concatenated_names[i] *= delim * seq
-		end
+		_hcat_seqnames_kernel!(concatenated_names, msa, delim)
 	end
 	concatenated_names
+end
+
+function _hcat_colnames_kernel!(colnames, columns, msa_number::Int)::Int
+	first_col = first(columns)
+	check_msa_change = '_' in first_col
+	previous = ""
+	msa_number += 1
+	for col in columns
+		if check_msa_change
+			fields = split(col, '_')
+			current = first(fields)
+			if current != previous
+				if previous != ""
+					msa_number += 1
+				end
+				previous = string(current)
+			end
+			col = last(fields)
+		end
+		push!(colnames, "$(msa_number)_$col")
+	end
+	msa_number
 end
 
 function _h_concatenated_col_names(msas...)
@@ -18,24 +45,7 @@ function _h_concatenated_col_names(msas...)
 	msa_number = 0
 	for msa in msas
 		columns = columnname_iterator(msa)
-		first_col = first(columns)
-		check_msa_change = '_' in first_col
-		previous = ""
-		msa_number += 1
-		for col in columns
-			if check_msa_change
-				fields = split(col, '_')
-				current = first(fields)
-				if current != previous
-					if previous != ""
-						msa_number += 1
-					end
-					previous = string(current)
-				end
-				col = last(fields)
-			end
-			push!(colnames, "$(msa_number)_$col")
-		end
+		msa_number = _hcat_colnames_kernel!(colnames, columns, msa_number)
 	end
 	colnames
 end
@@ -179,7 +189,7 @@ function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 	seqnames = _h_concatenated_seq_names(msa...)
 	colnames = _h_concatenated_col_names(msa...)
 	concatenated_matrix = hcat(getresidues.(msa)...)
-	concatenated_msa = NamedArray(concatenated_matrix, (seqnames, colnames), ("Seq","Col"))
+	concatenated_msa = _namedresiduematrix(concatenated_matrix, seqnames, colnames)
 	seqname_mapping = _get_seqname_mapping_hcat(seqnames, msa...)
 	seq_lengths = _get_seq_lengths(msa...)
 	old_annot = annotations.([msa...])
@@ -204,7 +214,7 @@ function Base.hcat(msa::T...) where T <: UnannotatedAlignedObject
 	concatenated_matrix = hcat(getresidues.(msa)...)
 	seqnames = _h_concatenated_seq_names(msa...)
 	colnames = _h_concatenated_col_names(msa...)
-	concatenated_msa = NamedArray(concatenated_matrix, (seqnames, colnames), ("Seq","Col"))
+	concatenated_msa = _namedresiduematrix(concatenated_matrix, seqnames, colnames)
 	T(concatenated_msa)
 end
 
