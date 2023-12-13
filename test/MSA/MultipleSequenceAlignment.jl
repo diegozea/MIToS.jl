@@ -209,6 +209,9 @@
                 @test sequencenames(object) == ["1","2","3"]
                 # Iterators
                 iterator = sequencename_iterator(object)
+                @test first(iterator) == "1"
+                @test length(iterator) == 3
+                @test !isempty(iterator)
                 @test collect(iterator) == ["1","2","3"]
                 @test_throws MethodError iterator[1] # no getindex defined for iterators
             end
@@ -220,6 +223,9 @@
                 @test columnnames(object) == ["1","2","3","4","5","6","7"]
                 # Iterators
                 iterator = columnname_iterator(object)
+                @test first(iterator) == "1"
+                @test length(iterator) == 7
+                @test !isempty(iterator)
                 @test collect(iterator) == ["1","2","3","4","5","6","7"]
                 @test_throws MethodError iterator[1] # no getindex defined for iterators
             end
