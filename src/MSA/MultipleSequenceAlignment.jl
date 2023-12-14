@@ -487,7 +487,7 @@ function getcolumnmapping(msa::AnnotatedMultipleSequenceAlignment)
             annotations from the sub-MSAs are not returned. Instead, the column numbers 
             referenced in the column names are provided. To access the original 
             annotations, utilize the getannotfile function. For example:
-            getannotfile(msa, "1_ColMap")
+            `getannotfile(msa, "1_ColMap")`
             """
         end
         return getcolumnmapping(namedmatrix(msa))

@@ -217,6 +217,11 @@ It returns a vector of numbers from `1` to N for each column that indicates the 
 The mapping is annotated in the `"HCat"` file annotation of an
 `AnnotatedMultipleSequenceAlignment` or in the column names of an `NamedArray` or
 `MultipleSequenceAlignment`.
+
+NOTE: When the MSA results from vertically concatenating MSAs using `vcat`, 
+the `"HCat"` annotations from the constituent MSAs are renamed as `"1_HCat"`, `"2_HCat"`, 
+etc. In that case, the MSA numbers referenced in the column names are provided. 
+To access the original annotations, utilize the `getannotfile` function.
 """
 function gethcatmapping(msa::AnnotatedMultipleSequenceAlignment)
     annot = getannotfile(msa)
