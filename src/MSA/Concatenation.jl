@@ -63,12 +63,17 @@ function _h_concatenate_annotfile(data::Annotations...)
 		ann = data[i]::Annotations
 		for (k, v) in getannotfile(ann)
 			if haskey(annotfile, k)
-				if k == "ColMap"
+				if endswith(k, "ColMap") # to also use ColMap annotations from vcat
 					annotfile[k] = string(annotfile[k], ",", v)
 				else
 					annotfile[k] = string(annotfile[k], "_&_", v)
 				end
 			else
+				if endswith(k, "ColMap")
+					# that means that the ColMap annotation probably comes from vcat
+					# in one of the source MSAs and there is no match between keys.
+					@warn "There was no possible to match the ColMap annotations."
+				end
 				push!(annotfile, k => v)
 			end
 		end

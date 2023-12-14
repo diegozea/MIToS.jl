@@ -114,9 +114,10 @@ function filtercolumns!(data::Annotations, mask)
             end
         end
     end
-    filecolumnmapping = get(data.file, "ColMap", "")
-    if filecolumnmapping != ""
-        data.file["ColMap"] = _filter_mapping(filecolumnmapping, mask)
+    # vcat can create multiple ColMap annotations in a single MSA; update all of them
+    colmap_keys = filter(endswith("ColMap"), keys(data.file))
+    for key in colmap_keys
+        data.file[key] = _filter_mapping(data.file[key], mask)
     end
     data
 end

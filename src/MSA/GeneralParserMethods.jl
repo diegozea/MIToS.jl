@@ -156,6 +156,7 @@ function _generate_annotated_msa(annot::Annotations, IDS::Vector{String},
             MSA, MAP = _to_msa_mapping(SEQS)
             setnames!(MSA, IDS, 1)
         end
+        # vcat prefixed ColMap annotations won't cause problems here
         if getannotfile(annot, "ColMap", "") != ""
             mssg = if from_hcat
                 """
@@ -177,6 +178,8 @@ function _generate_annotated_msa(annot::Annotations, IDS::Vector{String},
         end
     else
         MSA = _generate_named_array(SEQS, IDS)
+        # we do not deal with vcat prefixed ColMap or HCat annotations to avoid that 
+        # the column names reflect only one of the concatenated alignments
         colmap = getannotfile(annot,"ColMap","")
         cols = if colmap != ""
             map(String, split(colmap, ','))

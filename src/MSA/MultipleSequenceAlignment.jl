@@ -467,15 +467,29 @@ end
 
 """
 It returns a `Vector{Int}` with the original column number of each column on the actual MSA.
-The mapping is annotated in the "ColMap" file annotation of an
+The mapping is annotated in the `ColMap` file annotation of an
 `AnnotatedMultipleSequenceAlignment` or in the column names of an `NamedArray` or
-`MultipleSequenceAlignment`.
+`MultipleSequenceAlignment`. 
+
+NOTE: When the MSA results from vertically concatenating MSAs using `vcat`, 
+the column map annotations from the constituent MSAs (such as `1_ColMap`, `2_ColMap`, etc.) 
+are not returned. Instead, the column numbers referenced in the column names are provided. 
+To access the original annotations, utilize the `getannotfile` function.
 """
 function getcolumnmapping(msa::AnnotatedMultipleSequenceAlignment)
     annot = getannotfile(msa)
     if haskey(annot, "ColMap")
         return _str2int_mapping(annot["ColMap"])
     else
+        if haskey(annot, "1_ColMap")
+            @warn """
+            The MSA is the result of a vertical concatenation of MSAs. The column mapping 
+            annotations from the sub-MSAs are not returned. Instead, the column numbers 
+            referenced in the column names are provided. To access the original 
+            annotations, utilize the getannotfile function. For example:
+            getannotfile(msa, "1_ColMap")
+            """
+        end
         return getcolumnmapping(namedmatrix(msa))
     end
 end
