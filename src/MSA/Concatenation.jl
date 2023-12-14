@@ -272,7 +272,7 @@ function _v_concatenated_seq_names(msas...)
 					end
 					msa_label = current_msa_label
 					push!(label_mapping, msa_label => msa_number)
-					new_seqname = "$(msa_number)_$seqname"
+					new_seqname = "$(msa_number)_$(m.captures[2])"
 				end
 			end
 			previous_msa_number = msa_number
@@ -300,10 +300,14 @@ end
 
 function _update_annotation_name(annot_name, msa_number, label_mapping)
 	m = match(r"^([0-9]+)_(.*)$", annot_name)
-	if m !== nothing && haskey(label_mapping, m.captures[1])
+	if m !== nothing
 		# The annotation name has already a number as prefix, so we use the mapping
 		# to determine the corresponding MSA number
-		msa_number = label_mapping[m.captures[1]]
+		if haskey(label_mapping, m.captures[1]) 
+			# we avoid taking the MSA number from the name if it is not in the mapping
+			# to avoid taking a prefix that was alredy there but related to vcat
+			msa_number = label_mapping[m.captures[1]]
+		end
 		new_annot_name = "$(msa_number)_$(m.captures[2])"
 	else
 		new_annot_name = "$(msa_number)_$annot_name"

@@ -219,10 +219,11 @@ end
     end
 
     @testset "vcat examples" begin
-        setannotfile!(msa, "file_example", "file annotation")
-        setannotsequence!(msa, "ONE", "seq_example", "seq annotation")
         setannotresidue!(msa, "ONE", "res_example", "ab")
         setannotcolumn!(msa, "example", "HE")
+        concatenated_11 = vcat(msa, msa)
+        setannotfile!(msa, "file_example", "file annotation")
+        setannotsequence!(msa, "ONE", "seq_example", "seq annotation")
         msa_2 = copy(msa)
         setannotfile!(msa_2, "file_example_msa2", "file annotation msa2")
         setannotsequence!(msa_2, "ONE", "seq_example_msa2", "seq annotation msa2")
@@ -257,9 +258,39 @@ end
             @test getannotcolumn(concatenated, "1_example") == "HE"
             @test getannotcolumn(concatenated, "2_example") == "HE"
             @test getannotcolumn(concatenated, "2_example_msa2") == "he"
-            
-            @show concatenated
-            @show annotations(concatenated)
+        end
+
+        @testset "Inception" begin
+            concatenated_111 = vcat(msa, concatenated_11)
+
+            @test size(concatenated_111) == (6, 2)
+            @test concatenated_111 == Residue[
+                'A' 'R'
+                'R' 'A'
+                'A' 'R'
+                'R' 'A'
+                'A' 'R'
+                'R' 'A'
+            ]
+            @test sequencenames(concatenated_111) == [
+                "1_ONE", "1_TWO", "2_ONE", "2_TWO", "3_ONE", "3_TWO"]
+            @test columnnames(concatenated_111) == ["1", "2"]
+            # sequence annotations: disambiguated by msa number (prefix)
+            @test getannotsequence(concatenated_111, "1_ONE", "SeqMap") == "1,2"
+            @test getannotsequence(concatenated_111, "2_ONE", "SeqMap") == "1,2"
+            @test getannotsequence(concatenated_111, "3_ONE", "SeqMap") == "1,2"
+            # residue annotations: disambiguated by sequence name
+            @test getannotresidue(concatenated_111, "1_ONE", "res_example") == "ab"
+            @test getannotresidue(concatenated_111, "2_ONE", "res_example") == "ab"
+            @test getannotresidue(concatenated_111, "3_ONE", "res_example") == "ab"
+            # file annotations: disambiguated by msa number (prefix)
+            @test getannotfile(concatenated_111, "1_NCol") == "2"
+            @test getannotfile(concatenated_111, "2_NCol") == "2"
+            @test getannotfile(concatenated_111, "3_NCol") == "2"
+            # column annotations: disambiguated by msa number (prefix)
+            @test getannotcolumn(concatenated_111, "1_example") == "HE"
+            @test getannotcolumn(concatenated_111, "2_example") == "HE"
+            @test getannotcolumn(concatenated_111, "3_example") == "HE"
         end
     end
 end
