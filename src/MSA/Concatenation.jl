@@ -245,7 +245,7 @@ If returns a vector of sequence names for the vertically concatenated MSA. The p
 is the number associated to the source MSA. If the sequence name has already a number
 as prefix, the MSA number is increased accordingly.
 """
-function _v_concatenated_seq_names(msas...)
+function _v_concatenated_seq_names(msas...; fill_mapping::Bool=false)
 	label_mapping = Dict{String,Int}()
 	concatenated_names = String[]
 	msa_number = 0
@@ -271,7 +271,7 @@ function _v_concatenated_seq_names(msas...)
 						msa_number += 1
 					end
 					msa_label = current_msa_label
-					push!(label_mapping, msa_label => msa_number)
+					fill_mapping && push!(label_mapping, msa_label => msa_number)
 					new_seqname = "$(msa_number)_$(m.captures[2])"
 				end
 			end
@@ -362,7 +362,7 @@ function _v_concatenate_annotresidue(concatenated_seqnames, data::Annotations...
 end
 
 function Base.vcat(msa::T...) where T <: AnnotatedAlignedObject
-	seqnames, label_mapping = _v_concatenated_seq_names(msa...)
+	seqnames, label_mapping = _v_concatenated_seq_names(msa...; fill_mapping=true)
 	colnames = columnname_iterator(msa[1])
 	concatenated_matrix = vcat(getresidues.(msa)...)
 	concatenated_msa = _namedresiduematrix(concatenated_matrix, seqnames, colnames)
@@ -374,22 +374,14 @@ function Base.vcat(msa::T...) where T <: AnnotatedAlignedObject
 		_v_concatenate_annotcolumn(label_mapping, old_annot...),
 		_v_concatenate_annotresidue(seqname_mapping, old_annot...)
 	)
-	#=
-	if haskey(new_annot.file, "VCat")
-		delete!(new_annot.file, "VCat")
-	end
-	setannotfile!(
-		new_annot, 
-		"VCat", 
-		join((replace(seq, r"_[0-9]+$" => "") for seq in seqnames), ',')
-	)
-	=#
+	# There is no need for a VCat annotation as the source MSA number is already
+	# annotated as a prefix in the sequence names
 	T(concatenated_msa, new_annot)
 end
 
 function Base.vcat(msa::T...) where T <: UnannotatedAlignedObject
 	concatenated_matrix = vcat(getresidues.(msa)...)
-	seqnames, label_mapping = _v_concatenated_seq_names(msa...)
+	seqnames, _ = _v_concatenated_seq_names(msa...)
 	colnames = columnname_iterator(msa[1])
 	concatenated_msa = _namedresiduematrix(concatenated_matrix, seqnames, colnames)
 	T(concatenated_msa)

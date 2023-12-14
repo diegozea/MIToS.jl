@@ -244,6 +244,20 @@ end
         @test sequencenames(concatenated) == ["1_ONE", "1_TWO", "2_ONE", "2_TWO"]
         @test columnnames(concatenated) == ["1", "2"]
 
+        @testset "unannotated aligned objects" begin
+           msa_unannot = MultipleSequenceAlignment(msa)
+           vcat_unannot = vcat(msa_unannot, msa_unannot)
+           @test size(vcat_unannot) == (4, 2)
+            @test vcat_unannot == Residue[
+                'A' 'R'
+                'R' 'A'
+                'A' 'R'
+                'R' 'A'
+            ]
+            @test sequencenames(vcat_unannot) == ["1_ONE", "1_TWO", "2_ONE", "2_TWO"]
+            @test columnnames(vcat_unannot) == ["1", "2"]
+        end
+
         @testset "vcat annotations" begin
             # sequence annotations: disambiguated by msa number (prefix)
             @test getannotsequence(concatenated, "1_ONE", "seq_example") == "seq annotation"
