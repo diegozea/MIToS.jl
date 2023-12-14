@@ -54,12 +54,15 @@ end
 
 # Helper constructor for NamedResidueMatrix{Array{Residue,2}}
 function _namedresiduematrix(matrix::Matrix{Residue}, 
-        seqnames::Vector{String}, 
-        colnames::Vector{String})::NamedResidueMatrix{Array{Residue,2}}
-	NamedArray(matrix, (
-		OrderedDict{String,Int}(k => i for (i, k) in enumerate(seqnames)),
-		OrderedDict{String,Int}(k => i for (i, k) in enumerate(colnames))
-	),	("Seq","Col"))
+        seqnames::OrderedDict{String,Int}, 
+        colnames::OrderedDict{String,Int})::NamedResidueMatrix{Array{Residue,2}}
+    NamedArray(matrix, (seqnames, colnames), ("Seq","Col"))
+end
+
+function _namedresiduematrix(matrix::Matrix{Residue}, seqnames, colnames)
+    _namedresiduematrix(matrix, 
+        OrderedDict{String,Int}(k => i for (i, k) in enumerate(seqnames)),
+		OrderedDict{String,Int}(k => i for (i, k) in enumerate(colnames)))
 end
 
 # Aligned Sequences

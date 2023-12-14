@@ -56,15 +56,7 @@ function _get_annot_types(fun, index, data::Annotations...)
 	union(Set(k[index] for k in keys(fun(annot))) for annot in data)
 end
 
-function check_mode(mode::Symbol)
-	if mode != :hcat && mode != :vcat
-		throw(ArgumentError("The mode must be :hcat or :vcat"))
-	end
-	mode
-end
-
-function _concatenate_annotfile(data::Annotations...; mode::Symbol=:hcat)
-	check_mode(mode)
+function _h_concatenate_annotfile(data::Annotations...)
 	N = length(data)
 	annotfile = copy(getannotfile(data[1]))
 	for i in 2:N
@@ -72,11 +64,7 @@ function _concatenate_annotfile(data::Annotations...; mode::Symbol=:hcat)
 		for (k, v) in getannotfile(ann)
 			if haskey(annotfile, k)
 				if k == "ColMap"
-					if mode == :hcat
-						annotfile[k] = string(annotfile[k], ",", v)
-					end
-					# if the mode is :vcat, annotfile[k] is not modified, so that the first
-					# ColMap is kept
+					annotfile[k] = string(annotfile[k], ",", v)
 				else
 					annotfile[k] = string(annotfile[k], "_&_", v)
 				end
@@ -113,7 +101,7 @@ function _concatenate_annotsequence(seqname_mapping, data::Annotations...)
 			concatenated_seqname = get(seqname_mapping, (i, seqname), seqname)
 			new_key = (concatenated_seqname, annot_name)
 			# if we used :vcat, new_key will not be present in the dict as the
-			# sequence names are disambiguated
+			# sequence names are disambiguated first
 			if haskey(annotsequence, new_key)
 				# so, we execute the following code only if we used :hcat
 				sep = annot_name == "SeqMap" ? "," : "_&_"
@@ -194,7 +182,7 @@ function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 	seq_lengths = _get_seq_lengths(msa...)
 	old_annot = annotations.([msa...])
 	new_annot = Annotations(
-		_concatenate_annotfile(old_annot...; mode=:hcat),
+		_h_concatenate_annotfile(old_annot...),
 		_concatenate_annotsequence(seqname_mapping, old_annot...),
 		_h_concatenate_annotcolumn(seq_lengths, old_annot...),
 		_h_concatenate_annotresidue(seq_lengths, seqname_mapping, old_annot...)
@@ -253,24 +241,45 @@ gethcatmapping(msa::MultipleSequenceAlignment) = gethcatmapping(namedmatrix(msa)
 ## vcat (vertical concatenation)
 
 """
-If returns a vector of sequence names for the vertically concatenated MSA. The names are
-kept the same if no sequence name is repeated. If there are repeated sequence names, a 
-disambiguation prefix is added to the sequence names. The prefix is the number associated
-to the source MSA.
+If returns a vector of sequence names for the vertically concatenated MSA. The prefix 
+is the number associated to the source MSA. If the sequence name has already a number
+as prefix, the MSA number is increased accordingly.
 """
 function _v_concatenated_seq_names(msas...)
-	seqnames = sequencenames(msas[1])
-	msa_number = 1
-	for msa in msas[2:end]
+	label_mapping = Dict{String,Int}()
+	concatenated_names = String[]
+	msa_number = 0
+	previous_msa_number = 0
+	for msa in msas
+		msa_label = ""
 		msa_number += 1
-		for seq in sequencename_iterator(msa)
-			if seq in seqnames
-				seq = "$(msa_number)_$seq"
+		for seqname in sequencename_iterator(msa)
+			m = match(r"^([0-9]+)_(.*)$", seqname)
+			if m === nothing
+				msa_label = ""
+				new_seqname = "$(msa_number)_$seqname"
+			else
+				# if the sequence name has already a number as prefix, we increase the
+				# MSA number every time the prefix number changes
+				current_msa_label = string(m.captures[1])
+				if current_msa_label == msa_label
+					new_seqname = "$(msa_number)_$(m.captures[2])"
+				else
+					# avoid increasing the MSA number two times in a row the first time 
+					# we find a sequence name with a number as prefix
+					if msa_label != ""
+						msa_number += 1
+					end
+					msa_label = current_msa_label
+					push!(label_mapping, msa_label => msa_number)
+					new_seqname = "$(msa_number)_$seqname"
+				end
 			end
-			push!(seqnames, seq)
+			previous_msa_number = msa_number
+			push!(concatenated_names, new_seqname)
 		end
 	end
-	seqnames
+	concatenated_names, label_mapping
 end
 
 """
@@ -289,6 +298,98 @@ function _get_seqname_mapping_vcat(concatenated_seqnames, msas...)
 	mapping
 end
 
+function _update_annotation_name(annot_name, msa_number, label_mapping)
+	m = match(r"^([0-9]+)_(.*)$", annot_name)
+	if m !== nothing && haskey(label_mapping, m.captures[1])
+		# The annotation name has already a number as prefix, so we use the mapping
+		# to determine the corresponding MSA number
+		msa_number = label_mapping[m.captures[1]]
+		new_annot_name = "$(msa_number)_$(m.captures[2])"
+	else
+		new_annot_name = "$(msa_number)_$annot_name"
+	end
+	msa_number, new_annot_name
+end
+
+function _v_concatenate_annotfile(label_mapping::Dict{String,Int}, data::Annotations...)
+	annotfile = OrderedDict{String,String}()
+	msa_number = 0
+	for ann::Annotations in data
+		msa_number += 1
+		for (name, annotation) in getannotfile(ann)
+			msa_number, new_name = _update_annotation_name(name, msa_number, label_mapping)
+			push!(annotfile, new_name => annotation)
+		end
+	end
+	annotfile
+end
+
+"""
+Column annotations are disambiguated by adding a prefix to the annotation name as
+we do for the sequence names.
+"""
+function _v_concatenate_annotcolumn(label_mapping::Dict{String,Int}, data::Annotations...)
+	annotcolumn = Dict{String,String}()
+	msa_number = 0
+	for ann::Annotations in data
+		msa_number += 1
+		for (name, annotation) in getannotcolumn(ann)
+			msa_number, new_name = _update_annotation_name(name, msa_number, label_mapping)
+			push!(annotcolumn, new_name => annotation)
+		end
+	end
+	annotcolumn
+end
+
+"""
+Residue annotations are disambiguated by adding a prefix to the sequence name holding
+the annotation as we do for the sequence names.
+"""
+function _v_concatenate_annotresidue(concatenated_seqnames, data::Annotations...)
+	annotresidue = Dict{Tuple{String,String},String}()
+	for (i, ann::Annotations) in enumerate(data)
+		for ((seqname, annot_name), value) in getannotresidue(ann)
+			concatenated_seqname = get(concatenated_seqnames, (i, seqname), seqname)
+			new_key = (concatenated_seqname, annot_name)
+			push!(annotresidue, new_key => value)
+		end
+	end
+	annotresidue
+end
+
+function Base.vcat(msa::T...) where T <: AnnotatedAlignedObject
+	seqnames, label_mapping = _v_concatenated_seq_names(msa...)
+	colnames = columnname_iterator(msa[1])
+	concatenated_matrix = vcat(getresidues.(msa)...)
+	concatenated_msa = _namedresiduematrix(concatenated_matrix, seqnames, colnames)
+	seqname_mapping = _get_seqname_mapping_vcat(seqnames, msa...)
+	old_annot = annotations.([msa...])
+	new_annot = Annotations(
+		_v_concatenate_annotfile(label_mapping, old_annot...),
+		_concatenate_annotsequence(seqname_mapping, old_annot...),
+		_v_concatenate_annotcolumn(label_mapping, old_annot...),
+		_v_concatenate_annotresidue(seqname_mapping, old_annot...)
+	)
+	#=
+	if haskey(new_annot.file, "VCat")
+		delete!(new_annot.file, "VCat")
+	end
+	setannotfile!(
+		new_annot, 
+		"VCat", 
+		join((replace(seq, r"_[0-9]+$" => "") for seq in seqnames), ',')
+	)
+	=#
+	T(concatenated_msa, new_annot)
+end
+
+function Base.vcat(msa::T...) where T <: UnannotatedAlignedObject
+	concatenated_matrix = vcat(getresidues.(msa)...)
+	seqnames, label_mapping = _v_concatenated_seq_names(msa...)
+	colnames = columnname_iterator(msa[1])
+	concatenated_msa = _namedresiduematrix(concatenated_matrix, seqnames, colnames)
+	T(concatenated_msa)
+end
 
 ## join
 

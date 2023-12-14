@@ -192,20 +192,74 @@ end
     @testset "seqnames" begin
         seqnames = sequencenames(msa)
         seqnames2 = sequencenames(msa2)
-        @test MIToS.MSA._v_concatenated_seq_names(msa, msa2) == vcat(seqnames, seqnames2)
-        @test MIToS.MSA._v_concatenated_seq_names(msa2, msa) == vcat(seqnames2, seqnames)
-        @test MIToS.MSA._v_concatenated_seq_names(msa, msa) == ["ONE", "TWO", "2_ONE", "2_TWO"]
-        @test MIToS.MSA._v_concatenated_seq_names(msa, msa, msa) == vcat(
-            seqnames, ["2_$name" for name in seqnames], ["3_$name" for name in seqnames])
 
-        @testset "sequence name mapping" begin
-            new_names = MIToS.MSA._v_concatenated_seq_names(msa, msa)
+        new_names, label_map = MIToS.MSA._v_concatenated_seq_names(msa, msa)
+        @test new_names == ["1_ONE", "1_TWO", "2_ONE", "2_TWO"]
+        @test isempty(label_map) # the are no previous prefixes/labels
+        new_names, label_map = MIToS.MSA._v_concatenated_seq_names(msa, msa, msa)
+        @test new_names == ["1_ONE", "1_TWO", "2_ONE", "2_TWO", "3_ONE", "3_TWO"]
+        @test isempty(label_map)
+        new_names, label_map = MIToS.MSA._v_concatenated_seq_names(msa, msa2)
+        @test new_names == vcat(["1_$n" for n in seqnames], ["2_$n" for n in seqnames2])
+        @test isempty(label_map)
+        new_names, label_map = MIToS.MSA._v_concatenated_seq_names(msa2, msa)
+        @test new_names == vcat(["1_$n" for n in seqnames2], ["2_$n" for n in seqnames])
+        @test isempty(label_map)
+        
+        @testset "Sequence name mapping" begin
+            new_names, label_mapping = MIToS.MSA._v_concatenated_seq_names(msa, msa)
             mapping = MIToS.MSA._get_seqname_mapping_vcat(new_names, msa, msa)
+            @test isempty(label_mapping) # the are no previous prefixes/labels
             @test length(mapping) == 4
-            @test mapping[(1, "ONE")] == "ONE"
-            @test mapping[(1, "TWO")] == "TWO"
+            @test mapping[(1, "ONE")] == "1_ONE"
+            @test mapping[(1, "TWO")] == "1_TWO"
             @test mapping[(2, "ONE")] == "2_ONE"
             @test mapping[(2, "TWO")] == "2_TWO"
+        end
+    end
+
+    @testset "vcat examples" begin
+        setannotfile!(msa, "file_example", "file annotation")
+        setannotsequence!(msa, "ONE", "seq_example", "seq annotation")
+        setannotresidue!(msa, "ONE", "res_example", "ab")
+        setannotcolumn!(msa, "example", "HE")
+        msa_2 = copy(msa)
+        setannotfile!(msa_2, "file_example_msa2", "file annotation msa2")
+        setannotsequence!(msa_2, "ONE", "seq_example_msa2", "seq annotation msa2")
+        setannotresidue!(msa_2, "ONE", "res_example_msa2", "AB")
+        setannotcolumn!(msa_2, "example_msa2", "he")
+        concatenated = vcat(msa, msa_2)
+
+        # matrix
+        @test size(concatenated) == (4, 2)
+        @test concatenated == Residue[
+            'A' 'R'
+            'R' 'A'
+            'A' 'R'
+            'R' 'A'
+        ]
+
+        # names
+        @test sequencenames(concatenated) == ["1_ONE", "1_TWO", "2_ONE", "2_TWO"]
+        @test columnnames(concatenated) == ["1", "2"]
+
+        @testset "vcat annotations" begin
+            # sequence annotations: disambiguated by msa number (prefix)
+            @test getannotsequence(concatenated, "1_ONE", "seq_example") == "seq annotation"
+            @test getannotsequence(concatenated, "2_ONE", "seq_example_msa2") == "seq annotation msa2"
+            @test getsequencemapping(concatenated, "1_ONE") == [1, 2]
+            @test getsequencemapping(concatenated, "2_ONE") == [1, 2]
+            # residue annotations: disambiguated by sequence name
+            @test getannotresidue(concatenated, "1_ONE", "res_example") == "ab"
+            @test getannotresidue(concatenated, "2_ONE", "res_example") == "ab"
+            @test getannotresidue(concatenated, "2_ONE", "res_example_msa2") == "AB"
+            # column annotations: disambiguated by msa number (prefix)
+            @test getannotcolumn(concatenated, "1_example") == "HE"
+            @test getannotcolumn(concatenated, "2_example") == "HE"
+            @test getannotcolumn(concatenated, "2_example_msa2") == "he"
+            
+            @show concatenated
+            @show annotations(concatenated)
         end
     end
 end
