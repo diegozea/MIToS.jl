@@ -308,3 +308,41 @@ end
         end
     end
 end
+
+@testset "fuse" begin
+    msa = read(joinpath(DATA, "simple.fasta"), FASTA, generatemapping=true)
+    msa2 = read(joinpath(DATA, "Gaoetal2011.fasta"), FASTA, generatemapping=true)
+
+    @testset "column gaps" begin
+        h_gaps = MIToS.MSA._gap_columns(msa, 3)
+        @test all(==(GAP), h_gaps)
+        @test size(h_gaps) == (2, 3)
+        h_concatenated = hcat(msa[:, 1:1], h_gaps, msa[:, 2:2])
+        @test size(h_concatenated) == (2, 5)
+        @test h_concatenated == Residue[
+            'A' '-' '-' '-' 'R'
+            'R' '-' '-' '-' 'A'
+        ]
+        @test sequencenames(h_concatenated) == ["ONE", "TWO"]
+        @test getcolumnmapping(h_concatenated) == [1, 0, 0, 0, 2]
+    end
+
+    @testset "sequence gaps" begin
+        v_gaps = MIToS.MSA._gap_sequences(msa, ["SEQ1", "SEQ2", "SEQ3"])
+        @test all(==(GAP), v_gaps)
+        @test size(v_gaps) == (3, 2)
+        v_concatenated = vcat(msa[1:1, :], v_gaps, msa[2:2, :])
+        @test size(v_concatenated) == (5, 2)
+        @test v_concatenated == Residue[
+            'A' 'R'
+            '-' '-'
+            '-' '-'
+            '-' '-'
+            'R' 'A'
+        ]
+        vcat_seqnames = sequencenames(v_concatenated)
+        @test vcat_seqnames == ["1_ONE", "2_SEQ1", "2_SEQ2", "2_SEQ3", "3_TWO"]
+        @test getsequencemapping(v_concatenated, "1_ONE") == [1, 2]
+        @test getsequencemapping(v_concatenated, "2_SEQ1") == [0, 0]
+    end
+end

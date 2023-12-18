@@ -19,7 +19,7 @@ using DataStructures        # OrderedDicts for Annotations
 using AutoHashEquals        # Annotations, Clusters
 using NamedArrays           # Col and Seq names, basic sequence/MSA object
 using FastaIO               # FastaReader (fast)
-using Random                # GLOBAL_RNG, shuffle!, rand, Sampler
+using Random                # GLOBAL_RNG, shuffle!, rand, Sampler, randstring
 using Dates                 # Dates.now()
 using PairwiseListMatrices  # Percent Identity Matrices
 using Clustering            # Used for sequence clustering: ClusteringResult

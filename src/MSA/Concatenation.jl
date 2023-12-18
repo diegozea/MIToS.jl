@@ -99,6 +99,31 @@ function _get_seqname_mapping_hcat(concatenated_seqnames, msas...)
 	mapping
 end
 
+"""
+At this moment, the _concatenate_annotsequence function does no check for SeqMap 
+annotations. Therefore, if an MSA does not have a SeqMap annotation, the concatenated
+SeqMap annotation is corrupted. To avoid this, we will delete the SeqMap annotation
+whose length is not equal to the length of the concatenated MSA.
+"""
+function _clean_sequence_mapping!(msa::AnnotatedAlignedObject)
+	N = ncolumns(msa)
+	to_delete = Tuple{String,String}[]
+	annotsequence = getannotsequence(msa)
+	for (key, value) in annotsequence
+		if key[2] == "SeqMap"
+			n_delim = count(==(','), value)
+			if n_delim != N - 1
+				push!(to_delete, key)
+			end
+		end
+	end
+	for key in to_delete
+		delete!(annotsequence, key)
+	end
+	msa
+end
+
+
 function _concatenate_annotsequence(seqname_mapping, data::Annotations...)
 	annotsequence = Dict{Tuple{String,String},String}()
 	for (i, ann::Annotations) in enumerate(data)
@@ -109,7 +134,11 @@ function _concatenate_annotsequence(seqname_mapping, data::Annotations...)
 			# sequence names are disambiguated first
 			if haskey(annotsequence, new_key)
 				# so, we execute the following code only if we used :hcat
-				sep = annot_name == "SeqMap" ? "," : "_&_"
+				if annot_name == "SeqMap"
+					sep = ","
+				else
+					sep = "_&_"
+				end
 				annotsequence[new_key] = string(annotsequence[new_key], sep, value)
 			else
 				push!(annotsequence, new_key => value)
@@ -200,7 +229,8 @@ function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 		"HCat", 
 		join((replace(col, r"_[0-9]+$" => "") for col in colnames), ',')
 	)
-	T(concatenated_msa, new_annot)
+	new_msa = T(concatenated_msa, new_annot)
+	_clean_sequence_mapping!(new_msa)
 end
 
 function Base.hcat(msa::T...) where T <: UnannotatedAlignedObject
@@ -397,7 +427,50 @@ function Base.vcat(msa::T...) where T <: UnannotatedAlignedObject
 	T(concatenated_msa)
 end
 
-## join
+#
+# Functions to join, merge or pair MSAs
+#
+# Currently, these functions will utilize hcat and vcat functions as much as possible.
+# If this approach proves to be too slow, we may consider preallocating the result matrices.
+
+
+# Since gaps are used for padding, the following function creates an MSA that contains
+# only gaps but the proper annotations and names to be used in hcat and vcat.
+function _gap_columns(msa, ncol)
+	nseq = nsequences(msa)
+	empty_mapping = repeat(",", ncol - 1)
+	matrix = fill(GAP, nseq, ncol)
+	seqnames = sequencenames(msa)
+	colnames = ["padding:$(randstring('A':'Z',6))" for i in 1:ncol]
+	named_matrix = _namedresiduematrix(matrix, seqnames, colnames)
+	block = AnnotatedMultipleSequenceAlignment(named_matrix)
+	for seq in 1:nseq
+		setannotsequence!(block, string(seq), "SeqMap", empty_mapping)
+	end
+	setannotfile!(block, "ColMap", empty_mapping)
+	setannotfile!(block, "NCol", string(ncol))
+	block
+end
+
+function _gap_sequences(msa, seqnames)
+	nseq = length(seqnames)
+	ncol = ncolumns(msa)
+	empty_mapping = repeat(",", ncol - 1)
+	matrix = fill(GAP, nseq, ncol)
+	colnames = columnname_iterator(msa)
+	named_matrix = _namedresiduematrix(matrix, seqnames, colnames)
+	block = AnnotatedMultipleSequenceAlignment(named_matrix)
+	for seq in seqnames
+		setannotsequence!(block, seq, "SeqMap", empty_mapping)
+	end
+	block
+end
 
 
 
+
+# """
+# """
+# function join(msa_a, msa_b, mapping, axis::Int; kind::Symbol=:outer)
+# 	nothing	
+# end
