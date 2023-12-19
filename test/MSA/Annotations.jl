@@ -138,4 +138,88 @@
         show(io, annot)
         @test String(take!(io)) == output_string
     end
+
+    @testset "merge" begin
+        @testset "different sources" begin
+            original = Annotations(OrderedDict("key1" => "value1"), Dict(), Dict(), Dict())
+            source1 = Annotations(OrderedDict("key2" => "value2"), Dict(), Dict(), Dict())
+            source2 = Annotations(OrderedDict("key3" => "value3"), Dict(), Dict(), Dict())
+
+            # Test merge without modifying the original
+            merged = merge(original, source1, source2)
+            @test length(merged.file) == 3
+            @test merged.file["key1"] == "value1"
+            @test merged.file["key2"] == "value2"
+            @test merged.file["key3"] == "value3"
+
+            # Original should not be altered by merge
+            @test length(original.file) == 1
+            @test original.file["key1"] == "value1"
+
+            # Test merge!
+            merge!(original, source1, source2)
+            @test original == merged
+        end
+
+        @testset "overlapping keys" begin
+            original = Annotations(OrderedDict("key" => "targetValue"), Dict(), Dict(), Dict())
+            source1 = Annotations(OrderedDict("key" => "source1Value"), Dict(), Dict(), Dict())
+            source2 = Annotations(OrderedDict("key" => "source2Value"), Dict(), Dict(), Dict())
+
+            # Test merge without modifying the original
+            merged = merge(original, source1, source2)
+            @test length(merged.file) == 1
+            @test merged.file["key"] == "source2Value"
+
+            # Original should not be altered by merge
+            @test length(original.file) == 1
+            @test original.file["key"] == "targetValue"
+
+            # Test merge!
+            merge!(original, source1, source2)
+            @test original == merged
+        end
+
+        @testset "empty Annotations" begin
+            target = Annotations(OrderedDict("file_key1" => "file_value1"), Dict(), Dict(), Dict())
+            empty_source = Annotations()
+
+            merge!(target, empty_source)
+
+            @test length(target.file) == 1
+            @test target.file["file_key1"] == "file_value1"
+            @test isempty(target.sequences)
+            @test isempty(target.columns)
+            @test isempty(target.residues)
+        end
+    
+        @testset "partial overlap" begin
+            target = Annotations(OrderedDict("key1" => "value1"), Dict(), Dict(), Dict())
+            source = Annotations(OrderedDict("key1" => "new_value1", "key2" => "value2"), Dict(), Dict(), Dict())
+    
+            merge!(target, source)
+    
+            @test length(target.file) == 2
+            @test target.file["key1"] == "new_value1"
+            @test target.file["key2"] == "value2"
+        end
+    
+        @testset "all annotation fields" begin
+            target = Annotations(OrderedDict("file_key" => "file_value"), 
+                                 Dict(("sequence_name", "annot_name") => "sequence_value"), 
+                                 Dict("column_key" => "column_value"), 
+                                 Dict(("residue_name", "residue_annot") => "residue_value"))
+            source = Annotations(OrderedDict("file_key" => "new_file_value"), 
+                                 Dict(("sequence_name", "annot_name") => "new_sequence_value"), 
+                                 Dict("column_key" => "new_column_value"), 
+                                 Dict(("residue_name", "residue_annot") => "new_residue_value"))
+    
+            merge!(target, source)
+    
+            @test target.file["file_key"] == "new_file_value"
+            @test target.sequences[("sequence_name", "annot_name")] == "new_sequence_value"
+            @test target.columns["column_key"] == "new_column_value"
+            @test target.residues[("residue_name", "residue_annot")] == "new_residue_value"
+        end
+    end
 end

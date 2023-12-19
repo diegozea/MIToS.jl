@@ -345,4 +345,17 @@ end
         @test getsequencemapping(v_concatenated, "1_ONE") == [1, 2]
         @test getsequencemapping(v_concatenated, "2_SEQ1") == [0, 0]
     end
+
+    @testset "insert gap sequences" begin 
+
+        at_the_start = MIToS.MSA._insert_gap_sequences(msa, ["SEQ1", "SEQ2", "SEQ3"], 0)
+        in_the_middle = MIToS.MSA._insert_gap_sequences(msa, ["SEQ1", "SEQ2", "SEQ3"], 1)
+        at_the_end = MIToS.MSA._insert_gap_sequences(msa, ["SEQ1", "SEQ2", "SEQ3"], 3)
+        @show at_the_start
+        println(at_the_start)
+        @show in_the_middle
+        println(in_the_middle)
+        @show at_the_end
+        println(at_the_end)
+    end
 end

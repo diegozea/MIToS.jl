@@ -15,7 +15,7 @@ using MIToS.MSA
 """
 module MSA
 
-using DataStructures        # OrderedDicts for Annotations
+using OrderedCollections        # OrderedDicts for Annotations
 using AutoHashEquals        # Annotations, Clusters
 using NamedArrays           # Col and Seq names, basic sequence/MSA object
 using FastaIO               # FastaReader (fast)
@@ -29,6 +29,7 @@ using TranscodingStreams    # To solve MethodError seek(::TranscodingStream, ::I
 using MIToS.Utils
 
 import Clustering: ClusteringResult, nclusters, counts, assignments
+import Markdown: @md_str # for docstrings
 
 export  # Residue
         Residue,

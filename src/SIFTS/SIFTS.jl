@@ -20,7 +20,7 @@ module SIFTS
 
 using LightXML
 using AutoHashEquals
-using DataStructures
+using OrderedCollections
 using MIToS.Utils
 
 export DataBase,

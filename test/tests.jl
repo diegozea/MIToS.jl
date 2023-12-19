@@ -9,6 +9,7 @@ using MIToS.SIFTS
 using MIToS.Pfam
 using LinearAlgebra
 using Random
+using OrderedCollections    # OrderedDict
 using Statistics            # mean
 using DelimitedFiles        # readdlm
 using ROCAnalysis           # AUC

@@ -27,7 +27,7 @@ using MIToS.MSA
 using Serialization         # GaussDCA
 using Base.Cartesian        # nloops for ContingencyTables
 using NamedArrays           # ContingencyTables have NamedArrays
-using DataStructures        # OrderedDicts for NamedArrays
+using OrderedCollections        # OrderedDicts for NamedArrays
 using StatsBase             # entropy
 using LinearAlgebra         # normalize
 using PairwiseListMatrices

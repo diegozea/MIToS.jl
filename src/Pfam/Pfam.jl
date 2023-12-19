@@ -21,7 +21,7 @@ using MIToS.PDB
 using MIToS.Information
 using PairwiseListMatrices
 using NamedArrays
-using DataStructures
+using OrderedCollections
 using Requires
 
 export  # Download

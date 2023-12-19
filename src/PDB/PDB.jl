@@ -18,7 +18,7 @@ module PDB
 using RecipesBase           # Plots for PDB Residues
 using AutoHashEquals
 using StaticArrays
-using DataStructures
+using OrderedCollections
 using PairwiseListMatrices
 using NamedArrays
 using LightXML
