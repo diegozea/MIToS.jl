@@ -466,33 +466,12 @@ function _gap_sequences(msa, seqnames)
 	block
 end
 
-function _get_position(msa, position::Symbol)
-	if position == :begin
-		int_position = 0 # before start
-	elseif position == :end
-		int_position = nsequences(msa) + 1 # after end
-	else
-		throw(ArgumentError("If position is a Symbol, it must be :begin or :end."))
-	end
-	int_position
-end
-
-function _get_position(msa, position::String)
-	# TODO: This can be done faster by using the internal OrderedDict of the NamedArray
-	# and by dispatching on the MSA type.
-	int_position = findfirst(==(position), sequencenames(msa))
-	if int_position === nothing
-		throw(ArgumentError("The sequence name $position is not present in the MSA."))
-	end
-	int_position
-end
-
 function _get_position(msa, position::Int)
 	nseq = nsequences(msa)
 	if position < 1
-		0 # before start
+		throw(ArgumentError("The gap block position must be equal or greater than 1."))
 	elseif position > nseq
-		nseq + 1 # after end
+		nseq + 1 # to insert the gap block at the end
 	else
 		position # in the MSA
 	end
@@ -508,18 +487,16 @@ function _vcat_gap_block(msa_a, msa_b)
 	seqnames = vcat(seqnames_a, seqnames_b)
 	colnames = columnnames(msa_a)
 	named_matrix = _namedresiduematrix(concatenated_matrix, seqnames, colnames)
-	annot_a = annotations(msa_a)
-	annot_b = annotations(msa_b)
-	# TODO : implement merge! for annotations
-	AnnotatedMultipleSequenceAlignment(named_matrix)
+	annot = merge(annotations(msa_a), annotations(msa_b))
+	AnnotatedMultipleSequenceAlignment(named_matrix, annot)
 end
 
 function _insert_gap_sequences(msa, seqnames, position)
 	gap_block = _gap_sequences(msa, seqnames)
 	int_position = _get_position(msa, position)
-	if int_position == 0
+	if int_position == 1 # at start
 		_vcat_gap_block(gap_block, msa)
-	elseif int_position == nsequences(msa) + 1
+	elseif int_position == nsequences(msa) + 1 # after end
 		_vcat_gap_block(msa, gap_block)
 	else
 		_vcat_gap_block(_vcat_gap_block(msa[1:(int_position-1), :], gap_block), 

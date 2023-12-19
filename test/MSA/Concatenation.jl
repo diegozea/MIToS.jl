@@ -347,15 +347,26 @@ end
     end
 
     @testset "insert gap sequences" begin 
-
-        at_the_start = MIToS.MSA._insert_gap_sequences(msa, ["SEQ1", "SEQ2", "SEQ3"], 0)
-        in_the_middle = MIToS.MSA._insert_gap_sequences(msa, ["SEQ1", "SEQ2", "SEQ3"], 1)
+        at_the_start = MIToS.MSA._insert_gap_sequences(msa, ["SEQ1", "SEQ2", "SEQ3"], 1)
+        in_the_middle = MIToS.MSA._insert_gap_sequences(msa, ["SEQ1", "SEQ2", "SEQ3"], 2)
         at_the_end = MIToS.MSA._insert_gap_sequences(msa, ["SEQ1", "SEQ2", "SEQ3"], 3)
-        @show at_the_start
-        println(at_the_start)
-        @show in_the_middle
-        println(in_the_middle)
-        @show at_the_end
-        println(at_the_end)
+        
+        for gapped_msa in [at_the_start, in_the_middle, at_the_end]
+            @test size(gapped_msa) == (5, 2)
+            @test sum(gapped_msa .== GAP) == 6 # 3 x 2
+            @test sort(sequencenames(gapped_msa)) == ["ONE", "SEQ1", "SEQ2", "SEQ3", "TWO"]
+        end
+
+        # check that the annotations are the same
+        delete_annotated_modifications!(at_the_start)
+        delete_annotated_modifications!(in_the_middle)
+        delete_annotated_modifications!(at_the_end)
+        @test annotations(at_the_start) == annotations(at_the_end)
+        @test annotations(at_the_start) == annotations(in_the_middle)
+
+        # check the position of the gap blocks
+        @test sum(at_the_start[1:3, :] .== GAP) == 6
+        @test sum(in_the_middle[2:4, :] .== GAP) == 6
+        @test sum(at_the_end[3:5, :] .== GAP) == 6
     end
 end
