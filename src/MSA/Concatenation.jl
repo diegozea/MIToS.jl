@@ -466,12 +466,11 @@ function _gap_sequences(msa, seqnames)
 	block
 end
 
-function _get_position(msa, position::Int)
-	nseq = nsequences(msa)
+function _get_position(max_pos, position::Int)
 	if position < 1
 		throw(ArgumentError("The gap block position must be equal or greater than 1."))
-	elseif position > nseq
-		nseq + 1 # to insert the gap block at the end
+	elseif position > max_pos
+		max_pos + 1 # to insert the gap block at the end
 	else
 		position # in the MSA
 	end
@@ -493,10 +492,11 @@ end
 
 function _insert_gap_sequences(msa, seqnames, position)
 	gap_block = _gap_sequences(msa, seqnames)
-	int_position = _get_position(msa, position)
+	nseq = nsequences(msa)
+	int_position = _get_position(nseq, position)
 	if int_position == 1 # at start
 		_vcat_gap_block(gap_block, msa)
-	elseif int_position == nsequences(msa) + 1 # after end
+	elseif int_position == nseq + 1 # after end
 		_vcat_gap_block(msa, gap_block)
 	else
 		_vcat_gap_block(_vcat_gap_block(msa[1:(int_position-1), :], gap_block), 
