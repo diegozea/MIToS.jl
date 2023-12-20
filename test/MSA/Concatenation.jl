@@ -473,4 +473,17 @@ end
         @test size(gapped_col_seq) == (3, 1)
         @test gapped_col_seq == Residue['A'; '-'; 'R';;]
     end
+
+    using Test
+
+    @testset "_compress_array!" begin
+        @test MIToS.MSA._compress_array!([1, 2, 3, 6, 7, 8, 10, 20, 21, 22]) == [
+            1:3, 6:8, 10:10, 20:22]
+        @test MIToS.MSA._compress_array!(Int[]) == UnitRange{Int}[]
+        @test MIToS.MSA._compress_array!([5]) == [5:5]
+        @test MIToS.MSA._compress_array!([2, 1, 3, 4, 5]) == [2:2, 1:1, 3:5]
+        @test MIToS.MSA._compress_array!([1, 3, 5, 7, 9]) == [1:1, 3:3, 5:5, 7:7, 9:9]
+        @test MIToS.MSA._compress_array!([4, 4, 4, 4]) == [4:4]
+    end
+
 end

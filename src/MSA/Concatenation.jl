@@ -599,3 +599,69 @@ function _insert_gap_columns(input_msa, gap_block_columns, position)
 	end
 	_fix_msa_numbers(msa, int_position, gap_block_columns, gapped_msa)
 end
+
+# join for MSAs
+
+"""
+	_compress_array(positions::Vector{Int})
+
+Compresses an vector of integers into a vector of ranges. For example, the vector
+`[1, 2, 3, 6, 7, 8, 10, 20, 21, 22]` is compressed into `[1:3, 6:8, 10:10, 20:22]`.
+That ease the process of joining MSAs, as we can use this function to find the boundaries 
+when adding gap blocks. Note that this function does not check if the input vector is
+sorted. Therefore, a vector like `[2, 1, 3, 4, 5]` is compressed into `[2:2, 1:1, 3:5]`.
+"""
+function _compress_array!(positions::Vector{Int})
+	compressed = Vector{UnitRange{Int}}()
+	isempty(positions) && return compressed
+	first_positon = first(positions)
+	start = first_positon
+    prev = first_positon
+	# if positions has a single element, the loop is not executed (no error is thrown)
+    for current in positions[2:end]
+		# current != prev avoids to add a range for repeated positions
+        if current != prev + 1 && current != prev
+            push!(compressed, start:prev)
+            start = current	
+		end
+        prev = current
+    end
+    push!(compressed, start:prev)
+    return compressed
+end
+
+function _find_pairing_positions(msa_a, msa_b, pairing, axis::Int)
+	positions_a = Int[]
+	positions_b = Int[]
+	if axis == 1
+		names_a = sequencenames(msa_a)
+		names_b = sequencenames(msa_b)
+	else
+		names_a = columnnames(msa_a)
+		names_b = columnnames(msa_b)
+	end
+	for (a, b) in pairing
+		push!(positions_a, isa(a, Int) ? a : findfirst(isequal(a), names_a))
+		push!(positions_b, isa(b, Int) ? b : findfirst(isequal(b), names_b))
+	end
+	positions_a, positions_b
+end
+
+function Base.join(msa_a, msa_b, axis::Int, pairing=nothing; kind::Symbol=:outer)
+	positions_a, positions_b = _find_pairing_positions(msa_a, msa_b, pairing, axis)
+	if kind == :inner
+		if axis == 1
+			return vcat(msa_a[positions_a, :], msa_b[positions_b, :])
+		else
+			return hcat(msa_a[:, positions_a], msa_b[:, positions_b])
+		end
+	elseif kind == :outer
+		nothing
+	elseif kind == :left
+		nothing
+	elseif kind == :right
+		nothing
+	else
+		throw(ArgumentError("The kind of join must be one of :inner, :outer, :left or :right."))
+	end
+end
