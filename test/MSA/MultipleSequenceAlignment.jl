@@ -51,10 +51,15 @@
         annotated_sequence = AnnotatedAlignedSequence(S)
 
         @testset "Getters" begin
-
             @test isa(annotations(annotated_msa), Annotations)
             @test isa(annotations(annotated_sequence), Annotations)
-
+            
+            # unannotated objects return empty annotations
+            for unannotated_object in (Matrix{Residue}(M), msa, Matrix{Residue}(S), sequence)
+                @test isempty(annotations(unannotated_object))
+                @test isa(annotations(unannotated_object), Annotations)
+            end
+            
             for object in (msa, annotated_msa, sequence, annotated_sequence)
                 @test isa(namedmatrix(object), NamedResidueMatrix{Array{Residue,2}})
             end
@@ -78,8 +83,11 @@
             @test isa(annotations(msa2annot), Annotations)
             @test isa(annotations(seq2annot), Annotations)
 
-            @test_throws MethodError annotations(annot2msa)
-            @test_throws MethodError annotations(annot2seq)
+            # unannotated objects return empty annotations
+            for unannotated_object in (annot2msa, annot2seq)
+                @test isempty(annotations(unannotated_object))
+                @test isa(annotations(unannotated_object), Annotations)
+            end
 
             @test namedmatrix(msa2annot) == namedmatrix(msa)
             @test namedmatrix(annot2msa) == namedmatrix(annotated_msa)

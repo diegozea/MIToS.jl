@@ -207,6 +207,20 @@ function _h_concatenate_annotresidue(seq_lengths, seqname_mapping, data::Annotat
 	_fill_end!(annotresidue, seq_lengths, "residues")
 end
 
+function _delete_hcat_annotfile!(annot::Annotations)
+	if haskey(annot.file, "HCat")
+		delete!(annot.file, "HCat")
+	end
+	annot
+end
+
+function _set_hcat_annotfile!(annot::Annotations, colnames)
+	_delete_hcat_annotfile!(annot)
+	setannotfile!(annot, "HCat", 
+		join((replace(col, r"_[0-9]+$" => "") for col in colnames), ','))
+	annot
+end
+
 function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 	seqnames = _h_concatenated_seq_names(msa...)
 	colnames = _h_concatenated_col_names(msa...)
@@ -221,14 +235,7 @@ function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 		_h_concatenate_annotcolumn(seq_lengths, old_annot...),
 		_h_concatenate_annotresidue(seq_lengths, seqname_mapping, old_annot...)
 	)
-	if haskey(new_annot.file, "HCat")
-		delete!(new_annot.file, "HCat")
-	end
-	setannotfile!(
-		new_annot, 
-		"HCat", 
-		join((replace(col, r"_[0-9]+$" => "") for col in colnames), ',')
-	)
+	_set_hcat_annotfile!(new_annot, colnames)
 	new_msa = T(concatenated_msa, new_annot)
 	_clean_sequence_mapping!(new_msa)
 end
@@ -444,11 +451,10 @@ function _gap_columns(msa, ncol)
 	colnames = ["padding:$(randstring('A':'Z',6))" for i in 1:ncol]
 	named_matrix = _namedresiduematrix(matrix, seqnames, colnames)
 	block = AnnotatedMultipleSequenceAlignment(named_matrix)
-	for seq in 1:nseq
-		setannotsequence!(block, string(seq), "SeqMap", empty_mapping)
+	for seq in seqnames
+		setannotsequence!(block, seq, "SeqMap", empty_mapping)
 	end
 	setannotfile!(block, "ColMap", empty_mapping)
-	setannotfile!(block, "NCol", string(ncol))
 	block
 end
 
@@ -465,6 +471,12 @@ function _gap_sequences(msa, seqnames)
 	end
 	block
 end
+
+# This functions are used to insert a gap block in a given position in the MSA
+# without altering the annotations too much. The idea is the gap blocks are
+# no real MSAs, but things inserted into a previously existing MSA.
+
+# Insert gap sequences.
 
 function _get_position(max_pos, position::Int)
 	if position < 1
@@ -502,4 +514,88 @@ function _insert_gap_sequences(msa, seqnames, position)
 		_vcat_gap_block(_vcat_gap_block(msa[1:(int_position-1), :], gap_block), 
 			msa[int_position:end, :])
 	end	
+end
+
+# Insert gap columns.
+
+function _get_msa_number(colnames, position)
+	fields = split(colnames[position], '_')
+	if length(fields) == 1
+		0 # the column does not have a MSA number as prefix
+	else
+		parse(Int, first(fields))
+	end
+end
+
+# rely on hcat to do the job, then correct the annotations
+# to avoid changing the MSA index number.
+function _fix_msa_numbers(original_msa, int_position, gap_block_columns, gapped_msa)
+	# 1. get the MSA number that will be used for the gap block
+	original_msa_column_names = columnnames(original_msa)
+	ncol = length(original_msa_column_names)
+	msa_number = if int_position == 1 # at start
+		_get_msa_number(original_msa_column_names, int_position)
+	elseif int_position == ncol + 1 # after end
+		_get_msa_number(original_msa_column_names, ncol)
+	else
+		# the block will keep the MSA number of the column before it
+		_get_msa_number(original_msa_column_names, int_position - 1)
+	end
+	# 2. update the column names of the gap block
+	gap_block_colnames = if msa_number != 0
+		String[
+			replace(col, r"^[0-9]+_padding:" => "$(msa_number)_padding:") for col in 
+			columnname_iterator(gapped_msa) if occursin("_padding:", col)
+		]
+	else # there are no MSA numbers in the column names
+		String[
+			replace(col, r"^[0-9]+_padding:" => "padding:") for col in 
+			columnname_iterator(gapped_msa) if occursin("_padding:", col)
+		]
+	end
+	# 3. conserve the annotations outside the gap block
+	new_colnames = if int_position == 1 # at start
+		vcat(gap_block_colnames, original_msa_column_names)
+	elseif int_position == ncol + 1 # after end
+		vcat(original_msa_column_names, gap_block_colnames)
+	else
+		vcat(original_msa_column_names[1:(int_position-1)], gap_block_colnames, 
+			original_msa_column_names[int_position:end])
+	end
+	# 4. update the names and annotations
+	setnames!(namedmatrix(gapped_msa), new_colnames, 2)
+	prev_file_annotations = annotations(original_msa).file
+	new_file_annotations = annotations(gapped_msa).file
+	if haskey(prev_file_annotations, "HCat")
+		_set_hcat_annotfile!(new_file_annotations, new_colnames)
+	else
+		# do not add the HCat annotation if it was not present in the original MSA
+		delete!(new_file_annotations, "HCat")
+	end
+	for key in keys(new_file_annotations)
+		if startswith(key, "MIToS_") && !haskey(prev_file_annotations, key)
+			# delete new MIToS annotated modifications
+			delete!(new_file_annotations, key)
+		end
+	end
+	if haskey(prev_file_annotations, "NCol")
+		# do not change the NCol annotation
+		new_file_annotations["NCol"] = prev_file_annotations["NCol"]
+	end
+	gapped_msa
+end
+
+function _insert_gap_columns(input_msa, gap_block_columns, position)
+	msa = AnnotatedMultipleSequenceAlignment(input_msa)
+	gap_block = _gap_columns(msa, gap_block_columns)
+	ncol = ncolumns(msa)
+	int_position = _get_position(ncol, position)
+	gapped_msa = if int_position == 1 # at start
+		hcat(gap_block, msa)
+	elseif int_position == ncol + 1 # after end
+		hcat(msa, gap_block)
+	else
+		hcat(msa[:, 1:(int_position -1)], gap_block, msa[:, int_position:end])
+	end
+	_fix_msa_numbers(msa, int_position, gap_block_columns, gapped_msa)
 end

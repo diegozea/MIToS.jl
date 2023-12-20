@@ -309,7 +309,7 @@ end
     end
 end
 
-@testset "fuse" begin
+@testset "join MSAs" begin
     msa = read(joinpath(DATA, "simple.fasta"), FASTA, generatemapping=true)
     msa2 = read(joinpath(DATA, "Gaoetal2011.fasta"), FASTA, generatemapping=true)
 
@@ -368,5 +368,109 @@ end
         @test sum(at_the_start[1:3, :] .== GAP) == 6
         @test sum(in_the_middle[2:4, :] .== GAP) == 6
         @test sum(at_the_end[3:5, :] .== GAP) == 6
+    end
+
+    @testset "insert gap columns" begin
+        at_the_start = MIToS.MSA._insert_gap_columns(msa, 3, 1)
+        in_the_middle = MIToS.MSA._insert_gap_columns(msa, 3, 2)
+        at_the_end = MIToS.MSA._insert_gap_columns(msa, 3, 3)
+
+        for gapped_msa in [at_the_start, in_the_middle, at_the_end]
+            @test size(gapped_msa) == (2, 5) # (2 , 2 + 3)
+            @test sum(gapped_msa .== GAP) == 6 # 2 x 3
+            @test sort(columnnames(gapped_msa))[1:2] == ["1", "2"] # the original columns
+            @test sum(startswith.(columnnames(gapped_msa), "padding:")) == 3 # the gap columns
+        end
+
+        # Check the position of the gap columns
+        @test sum(at_the_start[:, 1:3] .== GAP) == 6 # gap columns at start
+        @test sum(in_the_middle[:, 2:4] .== GAP) == 6 # gap columns in the middle
+        @test sum(at_the_end[:, 3:5] .== GAP) == 6 # gap columns at end
+
+        # Check if original columns are preserved correctly
+        @test at_the_start[:, [4, 5]] == msa
+        @test in_the_middle[:, [1, 5]] == msa
+        @test at_the_end[:, [1, 2]] == msa
+
+        # Check for correct column mapping after inserting gaps
+        @test getcolumnmapping(at_the_start) == [0, 0, 0, 1, 2]
+        @test getcolumnmapping(in_the_middle) == [1, 0, 0, 0, 2]
+        @test getcolumnmapping(at_the_end) == [1, 2, 0, 0, 0]
+
+        # Check for correct sequence mapping after inserting gaps
+        @test getsequencemapping(at_the_start, "ONE") == [0, 0, 0, 1, 2]
+        @test getsequencemapping(in_the_middle, "ONE") == [1, 0, 0, 0, 2]
+        @test getsequencemapping(at_the_end, "ONE") == [1, 2, 0, 0, 0]
+
+        # Check annotations are preserved correctly; this operation should not add or 
+        # delete annotations
+        @test length(annotations(at_the_start)) == length(annotations(msa))
+        @test length(annotations(in_the_middle)) == length(annotations(msa))
+        @test length(annotations(at_the_end)) == length(annotations(msa))
+
+        @testset "MSA without NCol annotation" begin
+            msa_no_NCol = deepcopy(msa)
+            annotfile = getannotfile(msa_no_NCol)
+            delete!(annotfile, "NCol")
+            @test getannotfile(msa_no_NCol, "NCol", "") == ""
+    
+            # test that no NCol annotation is added
+            gapped_msa = MIToS.MSA._insert_gap_columns(msa_no_NCol, 3, 1)
+            @test !haskey(annotations(gapped_msa).file, "NCol")
+        end
+    end
+
+    @testset "Insert gaps: Unannotated MSAs" begin
+        ref_gapped_msa_seq = MIToS.MSA._insert_gap_sequences(msa, ["SEQ1", "SEQ2"], 3)
+        ref_gapped_msa_col = MIToS.MSA._insert_gap_columns(msa, 3, 3)
+
+        for msa_unannot in [MultipleSequenceAlignment(msa), namedmatrix(msa)]
+            gapped_msa_seq = MIToS.MSA._insert_gap_sequences(msa_unannot, ["SEQ1", "SEQ2"], 3)
+            gapped_msa_col = MIToS.MSA._insert_gap_columns(msa_unannot, 3, 3)
+
+            # tests to ensure sequences and columns are inserted correctly
+            @test gapped_msa_seq == ref_gapped_msa_seq
+            @test gapped_msa_col == ref_gapped_msa_col
+
+            # test for equal sequence and column names
+            @test sequencenames(gapped_msa_seq) == sequencenames(ref_gapped_msa_seq)
+            @test columnnames(gapped_msa_seq) == columnnames(ref_gapped_msa_seq)
+            @test sequencenames(gapped_msa_col) == sequencenames(ref_gapped_msa_col)
+            @test columnnames(gapped_msa_col)[1:2] == columnnames(ref_gapped_msa_col)[1:2]
+        end
+    end
+
+    @testset "Insert gaps: Invalid gap positions" begin
+        # Position less than 1
+        @test_throws ArgumentError MIToS.MSA._insert_gap_sequences(msa, ["SEQ1", "SEQ2"], 0)
+        @test_throws ArgumentError MIToS.MSA._insert_gap_columns(msa, 3, 0)
+
+        # Position greater than the number of sequences/columns are valid and used to 
+        # insert gaps at the end of the MSA
+    end
+
+    @testset "Insert gaps: Single sequence/column MSAs" begin
+        single_seq_msa = msa[1:1, :]
+        single_col_msa = msa[:, 1:1]
+
+        # Test for a single sequence
+        gapped_seq_seq = MIToS.MSA._insert_gap_sequences(single_seq_msa, ["SEQ1"], 2) # at the end
+        @test size(gapped_seq_seq) == (2, ncolumns(msa))
+        @test gapped_seq_seq == Residue['A' 'R'; '-' '-']
+        
+        gapped_seq_col = MIToS.MSA._insert_gap_columns(single_seq_msa, 1, 2) # at the middle
+        @test size(gapped_seq_col) == (1, 3)
+        @test gapped_seq_col == Residue[
+                'A' '-' 'R'
+            ]
+
+        # Test for a single column
+        gapped_col_col = MIToS.MSA._insert_gap_columns(single_col_msa, 1, 2) # at the end
+        @test size(gapped_col_col) == (nsequences(msa), 2)
+        @test gapped_col_col == Residue['A' '-'; 'R' '-']
+
+        gapped_col_seq = MIToS.MSA._insert_gap_sequences(single_col_msa, ["SEQ1"], 2) # at the middle
+        @test size(gapped_col_seq) == (3, 1)
+        @test gapped_col_seq == Residue['A'; '-'; 'R';;]
     end
 end

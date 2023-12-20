@@ -119,6 +119,8 @@ function AnnotatedMultipleSequenceAlignment(msa::MultipleSequenceAlignment)
     AnnotatedMultipleSequenceAlignment(namedmatrix(msa), Annotations())
 end
 
+AnnotatedMultipleSequenceAlignment(msa::AnnotatedMultipleSequenceAlignment) = msa
+
 # MultipleSequenceAlignment
 
 function MultipleSequenceAlignment(msa::Matrix{Residue})
@@ -132,6 +134,8 @@ end
 function MultipleSequenceAlignment(msa::AnnotatedMultipleSequenceAlignment)
     MultipleSequenceAlignment(namedmatrix(msa))
 end
+
+MultipleSequenceAlignment(msa::MultipleSequenceAlignment) = msa
 
 # AnnotatedAlignedSequence
 
@@ -151,6 +155,8 @@ function AnnotatedAlignedSequence(seq::AlignedSequence)
     AnnotatedAlignedSequence(namedmatrix(seq), Annotations())
 end
 
+AnnotatedAlignedSequence(seq::AnnotatedAlignedSequence) = seq
+
 # AlignedSequence
 
 AlignedSequence(seq::Matrix{Residue}) = AlignedSequence(NamedArray(seq))
@@ -158,6 +164,8 @@ AlignedSequence(seq::Matrix{Residue}) = AlignedSequence(NamedArray(seq))
 AlignedSequence(seq::AbstractMatrix{Residue}) = AlignedSequence(Matrix{Residue}(seq))
 
 AlignedSequence(seq::AnnotatedAlignedSequence) = AlignedSequence(namedmatrix(seq))
+
+AlignedSequence(seq::AlignedSequence) = seq
 
 # AnnotatedAlignedObject
 # ----------------------
@@ -174,11 +182,19 @@ const MSAMatrix = Union{Matrix{Residue},NamedResidueMatrix{Array{Residue,2}}}
 # Getters
 # -------
 
-"`annotations` returns the `Annotations` of an MSA or aligned sequence."
+"""
+The `annotations` function returns the `Annotations` of an annotated MSA or aligned 
+sequence. If the object is not annotated, it returns an empty `Annotations` object.
+"""
 @inline annotations(msa::AnnotatedMultipleSequenceAlignment) = msa.annotations
 @inline annotations(seq::AnnotatedAlignedSequence) = seq.annotations
+@inline annotations(x::UnannotatedAlignedObject) = Annotations()
+@inline annotations(x::MSAMatrix) = Annotations()
 
-"`namedmatrix` returns the `NamedResidueMatrix{Array{Residue,2}}` stored in an MSA or aligned sequence."
+"""
+The `namedmatrix` function returns the `NamedResidueMatrix{Array{Residue,2}}` stored in an 
+MSA or aligned sequence.
+"""
 @inline namedmatrix(x::AbstractAlignedObject) = x.matrix
 
 # Convert
