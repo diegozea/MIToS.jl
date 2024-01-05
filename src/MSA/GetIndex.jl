@@ -13,18 +13,18 @@ end
 """
     sequence_index(msa, seq_name)
 
-Return the index (integer position) of the sequence with name `seq_name` in the MSA `msa`. 
-If `seq_name` is an integer, the same integer is returned. A `KeyError` is thrown if the 
-sequence name does not exist.
+Return the index (integer position) of the sequence with name `seq_name` in the MSA `msa`.  
+A `KeyError` is thrown if the sequence name does not exist. If `seq_name` is an integer, 
+the same integer is returned without checking if it is a valid index.
 """
 sequence_index(msa::NamedResidueMatrix, seq_name::AbstractString) = msa.dicts[1][seq_name]
 
 """
     column_index(msa, col_name)
 
-Return the index (integer position) of the column with name `col_name` in the MSA `msa`.
-If `col_name` is an integer, the same integer is returned. A `KeyError` is thrown if the
-column name does not exist.
+Return the index (integer position) of the column with name `col_name` in the MSA `msa`. 
+A `KeyError` is thrown if the column name does not exist. If `col_name` is an integer,
+the same integer is returned without checking if it is a valid index.
 """
 column_index(msa::NamedResidueMatrix, col_name::AbstractString) = msa.dicts[2][col_name]
 
