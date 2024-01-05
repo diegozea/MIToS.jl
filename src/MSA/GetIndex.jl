@@ -93,16 +93,9 @@ function _get_selected_sequences(msa, selector)
     end
 end
 
-_get_names_to_index(msa::AbstractAlignedObject) = NamedArrays.names(msa.matrix, 2)
-_get_names_to_index(msa::NamedResidueMatrix{T}) where T = NamedArrays.names(msa, 2)
-function _get_names_to_index(msa::Matrix{Residue})
-    throw(ErrorException("`Matrix{Residue}` cannot be indexed with `AbstractString`s."))
-end
-
 function _column_indices(msa, selector)
     if eltype(selector) <: AbstractString
-        colnames = _get_names_to_index(msa)
-        return Int[findfirst(==(i), colnames) for i in selector]
+        return Int[column_index(msa, i) for i in selector]
     end
     selector
 end
