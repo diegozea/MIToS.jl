@@ -630,7 +630,8 @@ function _compress_array!(positions::Vector{Int})
     return compressed
 end
 
-# Performance: NamedArrays should lookup the names dictionary instead of using findfirst
+# TODO : 
+# Rewrite this function to use sequence_index and column_index ! 
 function _find_pairing_positions(msa_a, msa_b, pairing, axis::Int)
 	positions_a = Int[]
 	positions_b = Int[]
