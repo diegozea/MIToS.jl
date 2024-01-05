@@ -474,8 +474,6 @@ end
         @test gapped_col_seq == Residue['A'; '-'; 'R';;]
     end
 
-    using Test
-
     @testset "_compress_array!" begin
         @test MIToS.MSA._compress_array!([1, 2, 3, 6, 7, 8, 10, 20, 21, 22]) == [
             1:3, 6:8, 10:10, 20:22]

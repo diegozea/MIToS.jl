@@ -630,6 +630,7 @@ function _compress_array!(positions::Vector{Int})
     return compressed
 end
 
+# Performance: NamedArrays should lookup the names dictionary instead of using findfirst
 function _find_pairing_positions(msa_a, msa_b, pairing, axis::Int)
 	positions_a = Int[]
 	positions_b = Int[]
@@ -647,9 +648,9 @@ function _find_pairing_positions(msa_a, msa_b, pairing, axis::Int)
 	positions_a, positions_b
 end
 
-function Base.join(msa_a, msa_b, axis::Int, pairing=nothing; kind::Symbol=:outer)
-	positions_a, positions_b = _find_pairing_positions(msa_a, msa_b, pairing, axis)
+function Base.join(msa_a, msa_b, axis::Int, pairing; kind::Symbol=:outer)
 	if kind == :inner
+		positions_a, positions_b = _find_pairing_positions(msa_a, msa_b, pairing, axis)
 		if axis == 1
 			return vcat(msa_a[positions_a, :], msa_b[positions_b, :])
 		else
