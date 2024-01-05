@@ -1,6 +1,37 @@
 @testset "getindex" begin
     simple = joinpath(DATA, "simple.fasta")
 
+    @testset "get index" begin
+        msa = read(simple, FASTA, generatemapping=true)
+        matrix_msa = convert(Matrix{Residue}, msa)
+
+        @testset "sequence_index" begin
+            @test sequence_index(msa, "ONE") == 1
+            @test sequence_index(msa, "TWO") == 2
+            @test_throws KeyError sequence_index(msa, "THREE")  # non-existent sequence
+
+            # Matrix{Residue}
+            @test_throws ErrorException sequence_index(matrix_msa, "ONE")
+
+            # Test returning the same index when an integer is passed
+            @test sequence_index(msa, 1) == 1
+            @test sequence_index(msa, 2) == 2
+        end
+
+        @testset "column_index" begin
+            @test column_index(msa, "1") == 1
+            @test column_index(msa, "2") == 2
+            @test_throws KeyError column_index(msa, "3")  # non-existent column
+
+            # Matrix{Residue}
+            @test_throws ErrorException column_index(matrix_msa, "1")
+
+            # Test returning the same index when an integer is passed
+            @test column_index(msa, 1) == 1
+            @test column_index(msa, 2) == 2
+        end
+    end
+
     @testset "MSA" begin
         msa = read(simple, FASTA, generatemapping=true)
 

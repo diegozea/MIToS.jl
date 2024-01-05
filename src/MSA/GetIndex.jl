@@ -5,6 +5,64 @@ for T in (:(AlignedSequence),
     @eval Base.IndexStyle(::Type{$(T)}) = Base.IndexLinear()
 end
 
+# ---
+# Performant lookup of the sequence and column positions.
+# CAUTION: This relies on the NamedArrays internal representation.
+
+# This is a bit hacky, but it's the fastest way to get the index.
+"""
+    sequence_index(msa, seq_name)
+
+Return the index (integer position) of the sequence with name `seq_name` in the MSA `msa`. 
+If `seq_name` is an integer, the same integer is returned. A `KeyError` is thrown if the 
+sequence name does not exist.
+"""
+sequence_index(msa::NamedResidueMatrix, seq_name::AbstractString) = msa.dicts[1][seq_name]
+
+"""
+    column_index(msa, col_name)
+
+Return the index (integer position) of the column with name `col_name` in the MSA `msa`.
+If `col_name` is an integer, the same integer is returned. A `KeyError` is thrown if the
+column name does not exist.
+"""
+column_index(msa::NamedResidueMatrix, col_name::AbstractString) = msa.dicts[2][col_name]
+
+function sequence_index(msa::AbstractMultipleSequenceAlignment, seq_name::AbstractString)
+    sequence_index(msa.matrix, seq_name)
+end
+
+function sequence_index(msa::AbstractAlignedSequence, seq_name::AbstractString)
+    sequence_index(msa.matrix, seq_name)
+end
+
+function column_index(msa::AbstractMultipleSequenceAlignment, column_name::AbstractString)
+    column_index(msa.matrix, column_name)
+end
+
+function column_index(msa::AbstractAlignedSequence, column_name::AbstractString)
+    column_index(msa.matrix, column_name)
+end
+
+# Do not allow indexing Matrix{Residue} with AbstractString
+
+function sequence_index(msa::Matrix{Residue}, seq_name::AbstractString)
+    throw(ErrorException(
+        "There are no sequence names in a Matrix{Residue} object, use an integer index instead."))
+end
+
+function column_index(msa::Matrix{Residue}, column_name::AbstractString)
+    throw(ErrorException(
+        "There are no column names in a Matrix{Residue} object, use an integer index instead."))
+end
+
+# If the user already gives a position, return the same position.
+
+sequence_index(msa, sequence_index::Int) = sequence_index
+column_index(msa, column_index::Int) = column_index
+
+# ---
+
 @inline Base.getindex(x::AbstractAlignedObject,
               args...) = getindex(namedmatrix(x), args...)
 

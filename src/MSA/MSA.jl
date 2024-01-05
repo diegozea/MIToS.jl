@@ -77,6 +77,8 @@ export  # Residue
         setreference!,
         adjustreference, adjustreference!,
         gapstrip, gapstrip!,
+        # GetIndex
+        sequence_index, column_index,
         # GeneralParserMethods
         deletefullgapcolumns, deletefullgapcolumns!,
         # Raw
