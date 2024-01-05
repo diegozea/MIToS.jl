@@ -28,19 +28,11 @@ the same integer is returned without checking if it is a valid index.
 """
 column_index(msa::NamedResidueMatrix, col_name::AbstractString) = msa.dicts[2][col_name]
 
-function sequence_index(msa::AbstractMultipleSequenceAlignment, seq_name::AbstractString)
+function sequence_index(msa::AbstractAlignedObject, seq_name::AbstractString)
     sequence_index(msa.matrix, seq_name)
 end
 
-function sequence_index(msa::AbstractAlignedSequence, seq_name::AbstractString)
-    sequence_index(msa.matrix, seq_name)
-end
-
-function column_index(msa::AbstractMultipleSequenceAlignment, column_name::AbstractString)
-    column_index(msa.matrix, column_name)
-end
-
-function column_index(msa::AbstractAlignedSequence, column_name::AbstractString)
+function column_index(msa::AbstractAlignedObject, column_name::AbstractString)
     column_index(msa.matrix, column_name)
 end
 

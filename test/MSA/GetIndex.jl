@@ -3,6 +3,7 @@
 
     @testset "get index" begin
         msa = read(simple, FASTA, generatemapping=true)
+        first_seq = getsequence(msa, 1)
         matrix_msa = convert(Matrix{Residue}, msa)
 
         @testset "sequence_index" begin
@@ -12,6 +13,11 @@
 
             # Matrix{Residue}
             @test_throws ErrorException sequence_index(matrix_msa, "ONE")
+
+            # AlignedSequence
+            @test first_seq isa AbstractAlignedSequence
+            @test sequence_index(first_seq, "ONE") == 1
+            @test_throws KeyError sequence_index(first_seq, "TWO")  # non-existent sequence
 
             # Test returning the same index when an integer is passed
             @test sequence_index(msa, 1) == 1
@@ -25,6 +31,12 @@
 
             # Matrix{Residue}
             @test_throws ErrorException column_index(matrix_msa, "1")
+
+            # AlignedSequence
+            @test first_seq isa AbstractAlignedSequence
+            @test column_index(first_seq, "1") == 1
+            @test column_index(first_seq, "2") == 2
+            @test_throws KeyError column_index(first_seq, "3")  # non-existent column
 
             # Test returning the same index when an integer is passed
             @test column_index(msa, 1) == 1
