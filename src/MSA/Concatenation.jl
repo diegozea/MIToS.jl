@@ -630,28 +630,26 @@ function _compress_array!(positions::Vector{Int})
     return compressed
 end
 
-# TODO : 
-# Rewrite this function to use sequence_index and column_index ! 
-function _find_pairing_positions(msa_a, msa_b, pairing, axis::Int)
-	positions_a = Int[]
-	positions_b = Int[]
-	if axis == 1
-		names_a = sequencenames(msa_a)
-		names_b = sequencenames(msa_b)
-	else
-		names_a = columnnames(msa_a)
-		names_b = columnnames(msa_b)
-	end
-	for (a, b) in pairing
-		push!(positions_a, isa(a, Int) ? a : findfirst(isequal(a), names_a))
-		push!(positions_b, isa(b, Int) ? b : findfirst(isequal(b), names_b))
+function _find_pairing_positions(index_function::Function, msa_a, msa_b, pairing)
+	n = length(pairing)
+	positions_a = Vector{Int}(undef, n)
+	positions_b = Vector{Int}(undef, n)
+	for (i, (a, b)) in enumerate(pairing)
+		positions_a[i] = index_function(msa_a, a)
+		positions_b[i] = index_function(msa_b, b)
 	end
 	positions_a, positions_b
 end
 
+function _find_pairing_positions(axis::Int, msa_a, msa_b, pairing)
+	@assert axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
+	index_function = axis == 1 ? sequence_index : column_index
+	_find_pairing_positions(index_function, msa_a, msa_b, pairing)
+end
+
 function Base.join(msa_a, msa_b, axis::Int, pairing; kind::Symbol=:outer)
 	if kind == :inner
-		positions_a, positions_b = _find_pairing_positions(msa_a, msa_b, pairing, axis)
+		positions_a, positions_b = _find_pairing_positions(axis, msa_a, msa_b, pairing)
 		if axis == 1
 			return vcat(msa_a[positions_a, :], msa_b[positions_b, :])
 		else
