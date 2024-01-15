@@ -61,8 +61,8 @@ end
 
 function _namedresiduematrix(matrix::Matrix{Residue}, seqnames, colnames)
     _namedresiduematrix(matrix, 
-        OrderedDict{String,Int}(k => i for (i, k) in enumerate(seqnames)),
-		OrderedDict{String,Int}(k => i for (i, k) in enumerate(colnames)))
+        OrderedDict{String,Int}(string(k) => i for (i, k) in enumerate(seqnames)),
+		OrderedDict{String,Int}(string(k) => i for (i, k) in enumerate(colnames)))
 end
 
 # Aligned Sequences

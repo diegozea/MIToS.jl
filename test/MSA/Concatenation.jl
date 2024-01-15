@@ -379,7 +379,7 @@ end
             @test size(gapped_msa) == (2, 5) # (2 , 2 + 3)
             @test sum(gapped_msa .== GAP) == 6 # 2 x 3
             @test sort(columnnames(gapped_msa))[1:2] == ["1", "2"] # the original columns
-            @test sum(startswith.(columnnames(gapped_msa), "padding:")) == 3 # the gap columns
+            @test sum(startswith.(columnnames(gapped_msa), "gap:")) == 3 # the gap columns
         end
 
         # Check the position of the gap columns

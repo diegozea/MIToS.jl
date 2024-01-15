@@ -440,6 +440,17 @@ end
 # Currently, these functions will utilize hcat and vcat functions as much as possible.
 # If this approach proves to be too slow, we may consider preallocating the result matrices.
 
+# helper functions to name columns in gap blocks
+function _get_last_gap_number(name_iterator)
+	maximum(parse(Int, replace(name, "gap:" => "")) 
+		for name in name_iterator if startswith(name, "gap:"); init=0)
+		# if no gaps are present, the init value is returned
+end
+
+function _gapblock_columnnames(msa, ncol)
+	last_gap_number = _get_last_gap_number(columnname_iterator(msa))
+	["gap:$(i)" for i in (last_gap_number+1):(last_gap_number+ncol)]
+end
 
 # Since gaps are used for padding, the following function creates an MSA that contains
 # only gaps but the proper annotations and names to be used in hcat and vcat.
@@ -448,7 +459,7 @@ function _gap_columns(msa, ncol)
 	empty_mapping = repeat(",", ncol - 1)
 	matrix = fill(GAP, nseq, ncol)
 	seqnames = sequencenames(msa)
-	colnames = ["padding:$(randstring('A':'Z',6))" for i in 1:ncol]
+	colnames = _gapblock_columnnames(msa, ncol)
 	named_matrix = _namedresiduematrix(matrix, seqnames, colnames)
 	block = AnnotatedMultipleSequenceAlignment(named_matrix)
 	for seq in seqnames
@@ -458,16 +469,41 @@ function _gap_columns(msa, ncol)
 	block
 end
 
+function _disambiguate_sequence_names(msa, seqnames)
+    disambiguous_seqnames = deepcopy(seqnames)
+    last_gap_number = 0
+
+    for (i, seqname) in enumerate(seqnames)
+        # Check and update for gap-formatted names
+        if startswith(seqname, "gap:")
+            gap_num = parse(Int, replace(seqname, "gap:" => ""))
+            last_gap_number = max(last_gap_number, gap_num)
+        end
+
+        # Check for redundancy and rename if necessary
+        if seqname in sequencename_iterator(msa)
+            last_gap_number += 1
+            disambiguous_seqnames[i] = "gap:$(last_gap_number)"
+        end
+    end
+
+    disambiguous_seqnames
+end
+
 function _gap_sequences(msa, seqnames)
 	nseq = length(seqnames)
 	ncol = ncolumns(msa)
 	empty_mapping = repeat(",", ncol - 1)
 	matrix = fill(GAP, nseq, ncol)
 	colnames = columnname_iterator(msa)
-	named_matrix = _namedresiduematrix(matrix, seqnames, colnames)
+	# Names are disambiguated to prevent the "Inconsistent dictionary sizes" error during 
+	# vcat. This error arises when the same sequence name appears in different MSAs,
+	# as sequence names are utilised as keys in a dictionary.
+	disambiguous_seqnames = _disambiguate_sequence_names(msa, seqnames)
+	named_matrix = _namedresiduematrix(matrix, disambiguous_seqnames, colnames)
 	block = AnnotatedMultipleSequenceAlignment(named_matrix)
-	for seq in seqnames
-		setannotsequence!(block, seq, "SeqMap", empty_mapping)
+	for seq in disambiguous_seqnames
+		setannotsequence!(block, string(seq), "SeqMap", empty_mapping)
 	end
 	block
 end
@@ -513,7 +549,7 @@ function _insert_gap_sequences(msa, seqnames, position)
 	else
 		_vcat_gap_block(_vcat_gap_block(msa[1:(int_position-1), :], gap_block), 
 			msa[int_position:end, :])
-	end	
+	end
 end
 
 # Insert gap columns.
@@ -544,13 +580,13 @@ function _fix_msa_numbers(original_msa, int_position, gap_block_columns, gapped_
 	# 2. update the column names of the gap block
 	gap_block_colnames = if msa_number != 0
 		String[
-			replace(col, r"^[0-9]+_padding:" => "$(msa_number)_padding:") for col in 
-			columnname_iterator(gapped_msa) if occursin("_padding:", col)
+			replace(col, r"^[0-9]+_gap:" => "$(msa_number)_gap:") for col in 
+			columnname_iterator(gapped_msa) if occursin("_gap:", col)
 		]
 	else # there are no MSA numbers in the column names
 		String[
-			replace(col, r"^[0-9]+_padding:" => "padding:") for col in 
-			columnname_iterator(gapped_msa) if occursin("_padding:", col)
+			replace(col, r"^[0-9]+_gap:" => "gap:") for col in 
+			columnname_iterator(gapped_msa) if occursin("_gap:", col)
 		]
 	end
 	# 3. conserve the annotations outside the gap block
@@ -648,15 +684,57 @@ function _find_pairing_positions(axis::Int, msa_a, msa_b, pairing)
 end
 
 function Base.join(msa_a, msa_b, axis::Int, pairing; kind::Symbol=:outer)
+	positions_a, positions_b = _find_pairing_positions(axis, msa_a, msa_b, pairing)
 	if kind == :inner
-		positions_a, positions_b = _find_pairing_positions(axis, msa_a, msa_b, pairing)
 		if axis == 1
-			return vcat(msa_a[positions_a, :], msa_b[positions_b, :])
+			return hcat(msa_a[positions_a, :], msa_b[positions_b, :])
 		else
-			return hcat(msa_a[:, positions_a], msa_b[:, positions_b])
+			return vcat(msa_a[:, positions_a], msa_b[:, positions_b])
 		end
 	elseif kind == :outer
-		nothing
+		if issorted(positions_a) && issorted(positions_b)
+			nothing
+		else
+			# do as the inner join for the matching positions, and add the unmatched
+			# positions at the end, using gap blocks
+			if axis == 1
+				unmatched_positions_a = setdiff(1:nsequences(msa_a), positions_a)
+				reodered_a = msa_a[vcat(positions_a, unmatched_positions_a), :]
+				sequencenames_a = sequencenames(reodered_a)
+				unmatched_seqnames_a = sequencenames_a[length(positions_a)+1:end]
+
+				unmatched_positions_b = setdiff(1:nsequences(msa_b), positions_b)
+				reodered_b = msa_b[vcat(positions_b, unmatched_positions_b), :]
+				sequencenames_b = sequencenames(reodered_b)
+				unmatched_seqnames_b = sequencenames_b[length(positions_b)+1:end]
+
+				a_block = _insert_gap_sequences(reodered_a, unmatched_seqnames_b, 
+					nsequences(reodered_a) + 1)
+
+				b_block = _insert_gap_sequences(reodered_b, unmatched_seqnames_a,
+					length(positions_b) + 1)
+
+				return hcat(a_block, b_block)
+			else
+				unmatched_positions_a = setdiff(1:ncolumns(msa_a), positions_a)
+				reodered_a = msa_a[:, vcat(positions_a, unmatched_positions_a)]
+				columnnames_a = columnnames(reodered_a)
+				unmatched_colnames_a = columnnames_a[length(positions_a)+1:end]
+
+				unmatched_positions_b = setdiff(1:ncolumns(msa_b), positions_b)
+				reodered_b = msa_b[:, vcat(positions_b, unmatched_positions_b)]
+				columnnames_b = columnnames(reodered_b)
+				unmatched_colnames_b = columnnames_b[length(positions_b)+1:end]
+
+				a_block = _insert_gap_columns(reodered_a, length(unmatched_colnames_b), 
+					ncolumns(reodered_a) + 1)
+
+				b_block = _insert_gap_columns(reodered_b, length(unmatched_colnames_a),
+					length(positions_b) + 1)
+
+				return vcat(a_block, b_block)
+			end
+		end
 	elseif kind == :left
 		nothing
 	elseif kind == :right
@@ -665,3 +743,4 @@ function Base.join(msa_a, msa_b, axis::Int, pairing; kind::Symbol=:outer)
 		throw(ArgumentError("The kind of join must be one of :inner, :outer, :left or :right."))
 	end
 end
+
