@@ -621,8 +621,10 @@ function _fix_msa_numbers(original_msa, int_position, gap_block_columns, gapped_
 	gapped_msa
 end
 
-function _insert_gap_columns(input_msa, gap_block_columns, position)
+function _insert_gap_columns(input_msa, gap_block_columns::Int, position)
+	@assert gap_block_columns ≥ 0 "The number of gap columns must be greater than 0."
 	msa = AnnotatedMultipleSequenceAlignment(input_msa)
+	gap_block_columns == 0 && return msa
 	gap_block = _gap_columns(msa, gap_block_columns)
 	ncol = ncolumns(msa)
 	int_position = _get_position(ncol, position)
