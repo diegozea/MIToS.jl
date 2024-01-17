@@ -470,24 +470,16 @@ function _gap_columns(msa, ncol)
 end
 
 function _disambiguate_sequence_names(msa, seqnames)
-    disambiguous_seqnames = deepcopy(seqnames)
-    last_gap_number = 0
-
-    for (i, seqname) in enumerate(seqnames)
-        # Check and update for gap-formatted names
-        if startswith(seqname, "gap:")
-            gap_num = parse(Int, replace(seqname, "gap:" => ""))
-            last_gap_number = max(last_gap_number, gap_num)
-        end
-
-        # Check for redundancy and rename if necessary
-        if seqname in sequencename_iterator(msa)
-            last_gap_number += 1
-            disambiguous_seqnames[i] = "gap:$(last_gap_number)"
-        end
-    end
-
-    disambiguous_seqnames
+	disambiguous_seqnames = deepcopy(seqnames)
+	last_gap_number = _get_last_gap_number(sequencename_iterator(msa))
+	for (i, seqname) in enumerate(seqnames)
+		# Check for redundancy and rename if necessary
+		if seqname in sequencename_iterator(msa)
+			last_gap_number += 1
+			disambiguous_seqnames[i] = "gap:$(last_gap_number)"
+		end
+	end
+	disambiguous_seqnames
 end
 
 function _gap_sequences(msa, seqnames)
@@ -684,6 +676,86 @@ function _find_pairing_positions(axis::Int, msa_a, msa_b, pairing)
 	index_function = axis == 1 ? sequence_index : column_index
 	_find_pairing_positions(index_function, msa_a, msa_b, pairing)
 end
+
+"""
+	_find_gaps(positions, n)
+
+Calculate gaps in a sorted sequence of positions given also a maximum value `n` that would
+be added at the end as `n+1` if `n` it is not already present.
+
+This function returns a list of tuples, where each tuple represents a gap in the sequence. 
+The first element of the tuple indicates the position after which the gap will be inserted, 
+and the second element is the position that comes just after the gap. The function accounts 
+for gaps at both the beginning and end of the sequence. A gap is identified as a difference 
+greater than 1 between consecutive positions. To account for gaps at the end, the end 
+position of a gap matching the last position of the sequence is set to `n+1`.
+
+# Examples
+```jldoctest
+julia> _find_gaps([2, 5, 6, 7, 8], 10)
+3-element Vector{Tuple{Int64, Int64}}:
+ (2, 0)
+ (5, 2)
+ (11, 8)
+```
+"""
+function _find_gaps(positions, n)
+	_positions = if positions[end] == n
+		((0,), positions)
+	else
+		((0,), positions, (n + 1,))
+	end
+	pos_iterator =  Iterators.flatten(_positions)
+	[ (x, y) for (x, y) in zip(Iterators.drop(pos_iterator, 1), pos_iterator) if x - y > 1 ]
+end
+
+"""
+    _insert_sequence_gaps(msa_target, msa_reference, positions_target, positions_reference)
+
+Inserts gap blocks into `msa_target` to match the alignment pattern of `msa_reference`. 
+This function is utilized for aligning two MSAs based on specific alignment positions. The 
+`positions_target` and `positions_reference` parameters dictate the corresponding 
+positions in both MSAs for accurate gap insertion.
+
+The function returns the modified `msa_target` with inserted gaps, aligned according 
+to `msa_reference`.
+
+# Example
+```julia
+gapped_msa_a = _insert_sequence_gaps(msa_a, msa_b, positions_a, positions_b)
+```
+"""
+function _insert_sequence_gaps(msa_target, msa_reference, positions_target, positions_reference)
+    # Obtain the positions that will be aligned to gaps in the reference
+    gaps_reference = _find_gaps(positions_reference, nsequences(msa_reference))
+    # We need the sequence names from the reference that will be aligned to gaps
+    sequencenames_reference = sequencenames(msa_reference)
+    # Create a dictionary to find the matching position in `msa_target` for adding the gap blocks
+    reference2target = Dict{Int,Int}(positions_reference .=> positions_target)
+    # Add the gap blocks to `msa_target` as found when looking at `positions_reference`
+    blocks_target = Tuple{Int,Vector{String}}[]
+    for (stop, start) in gaps_reference
+        # Found the matching position in `msa_target`
+        start_target = start == 0 ? 1 : reference2target[start] + 1
+        # This should work fine, even if `start` is 0 and `stop` is n+1
+        sequence_names = sequencenames_reference[start+1:stop-1]
+        push!(blocks_target, (start_target, sequence_names))
+    end
+	@show blocks_target
+    gapped_msa_target = AnnotatedMultipleSequenceAlignment(msa_target)
+    for (position, seqnames) in Iterators.reverse(blocks_target)
+        gapped_msa_target = _insert_gap_sequences(gapped_msa_target, seqnames, position)
+    end
+    gapped_msa_target
+end
+
+# TODO: FIX THIS FUNCTION:
+# hcat(MSA._insert_sequence_gaps(msa2, msa2, [1,2], [2, 5]), MSA._insert_sequence_gaps(msa2, msa2, [2,5], [1,2]))
+# and the delete the @show
+# the problem is with SEQ6
+# probably because the sequence names are not disambiguated
+# or maybe it is because that sequence is matched to a gap block in both
+# or maybe simply because is the last one
 
 function Base.join(msa_a, msa_b, axis::Int, pairing; kind::Symbol=:outer)
 	positions_a, positions_b = _find_pairing_positions(axis, msa_a, msa_b, pairing)
