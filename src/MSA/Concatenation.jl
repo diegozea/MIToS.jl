@@ -725,9 +725,12 @@ to `msa_reference`.
 gapped_msa_a = _insert_sequence_gaps(msa_a, msa_b, positions_a, positions_b)
 ```
 """
-function _insert_sequence_gaps(msa_target, msa_reference, positions_target, positions_reference)
+function _insert_sequence_gaps(msa_target, msa_reference, positions_target, 
+		positions_reference, block_position::Symbol=:before)
+	@assert block_position == :before || block_position == :after
     # Obtain the positions that will be aligned to gaps in the reference
-    gaps_reference = _find_gaps(positions_reference, nsequences(msa_reference))
+	N_reference = nsequences(msa_reference)
+    gaps_reference = _find_gaps(positions_reference, N_reference)
     # We need the sequence names from the reference that will be aligned to gaps
     sequencenames_reference = sequencenames(msa_reference)
     # Create a dictionary to find the matching position in `msa_target` for adding the gap blocks
@@ -737,25 +740,22 @@ function _insert_sequence_gaps(msa_target, msa_reference, positions_target, posi
     for (stop, start) in gaps_reference
         # Found the matching position in `msa_target`
         start_target = start == 0 ? 1 : reference2target[start] + 1
+		stop_target = stop > N_reference ? nsequences(msa_target) + 1 : reference2target[stop]
         # This should work fine, even if `start` is 0 and `stop` is n+1
         sequence_names = sequencenames_reference[start+1:stop-1]
-        push!(blocks_target, (start_target, sequence_names))
-    end
-	@show blocks_target
+		# Determine whether the gap block should be inserted before or after the sequences
+		if block_position == :before
+        	push!(blocks_target, (start_target, sequence_names))
+		else
+			push!(blocks_target, (stop_target, sequence_names))
+		end
+	end
     gapped_msa_target = AnnotatedMultipleSequenceAlignment(msa_target)
     for (position, seqnames) in Iterators.reverse(blocks_target)
         gapped_msa_target = _insert_gap_sequences(gapped_msa_target, seqnames, position)
     end
     gapped_msa_target
 end
-
-# TODO: FIX THIS FUNCTION:
-# hcat(MSA._insert_sequence_gaps(msa2, msa2, [1,2], [2, 5]), MSA._insert_sequence_gaps(msa2, msa2, [2,5], [1,2]))
-# and the delete the @show
-# the problem is with SEQ6
-# probably because the sequence names are not disambiguated
-# or maybe it is because that sequence is matched to a gap block in both
-# or maybe simply because is the last one
 
 function Base.join(msa_a, msa_b, axis::Int, pairing; kind::Symbol=:outer)
 	positions_a, positions_b = _find_pairing_positions(axis, msa_a, msa_b, pairing)
