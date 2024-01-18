@@ -632,32 +632,54 @@ end
 
 # join for MSAs
 
-"""
-	_compress_array(positions::Vector{Int})
-
-Compresses an vector of integers into a vector of ranges. For example, the vector
-`[1, 2, 3, 6, 7, 8, 10, 20, 21, 22]` is compressed into `[1:3, 6:8, 10:10, 20:22]`.
-That ease the process of joining MSAs, as we can use this function to find the boundaries 
-when adding gap blocks. Note that this function does not check if the input vector is
-sorted. Therefore, a vector like `[2, 1, 3, 4, 5]` is compressed into `[2:2, 1:1, 3:5]`.
-"""
-function _compress_array!(positions::Vector{Int})
-	compressed = Vector{UnitRange{Int}}()
-	isempty(positions) && return compressed
-	first_positon = first(positions)
-	start = first_positon
-    prev = first_positon
-	# if positions has a single element, the loop is not executed (no error is thrown)
-    for current in positions[2:end]
-		# current != prev avoids to add a range for repeated positions
-        if current != prev + 1 && current != prev
-            push!(compressed, start:prev)
-            start = current	
+function _number_and_count(positions::Vector{Int})
+	number2count = OrderedDict{Int,Int}()
+	for pos in positions
+		if haskey(number2count, pos)
+			number2count[pos] += 1
+		else
+			number2count[pos] = 0
 		end
-        prev = current
-    end
-    push!(compressed, start:prev)
-    return compressed
+	end
+	UnitRange{Int}[ k:(k+v) for (k,v) in number2count ]
+end
+
+function _add_gaps_in_b(msa_a, msa_b, positions_a, positions_b, axis::Int=1)
+	@assert axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
+	# sort the positions to keep the order in msa_a
+	order_a = sortperm(positions_a)
+	sorted_b = positions_b[order_a]
+	# keep only the matching positions in msa_b
+	matching_b = if axis == 1
+		AnnotatedMultipleSequenceAlignment(msa_b[sorted_b, :])
+	else
+		AnnotatedMultipleSequenceAlignment(msa_b[:, sorted_b])
+	end
+	# find the positions were we need to add gaps in msa_b
+	N_a = axis == 1 ? nsequences(msa_a) : ncolumns(msa_a)
+	names_a = axis == 1 ? sequencenames(msa_a) : columnnames(msa_a)
+	positions_a_set = Set{Int}(positions_a)
+	last_b = 0
+	gap_positions = Int[]
+	gap_names = String[]
+	for i in 1:N_a
+		if i in positions_a_set # we have seen a matched position in msa_b
+			last_b += 1
+		else # if the msa_a position is not matched, add gaps in msa_b
+			push!(gap_positions, last_b)
+			push!(gap_names, names_a[i])
+		end
+	end
+	# compress the list of gap positions to later add full gap blocks
+	for pos in Iterators.reverse(unique(gap_positions))
+		block_names = gap_names[gap_positions .== pos]
+		if axis == 1
+			matching_b = _insert_gap_sequences(matching_b, block_names, pos+1)
+		else
+			matching_b = _insert_gap_columns(matching_b, length(block_names), pos+1)
+		end
+	end
+	matching_b
 end
 
 function _find_pairing_positions(index_function::Function, msa_a, msa_b, pairing)
@@ -824,9 +846,11 @@ function Base.join(msa_a, msa_b, axis::Int, pairing; kind::Symbol=:outer)
 			end
 		end
 	elseif kind == :left
-		nothing
+		gapped_b = _add_gaps_in_b(msa_a, msa_b, positions_a, positions_b, axis)
+		return axis == 1 ? hcat(msa_a, gapped_b) : vcat(msa_a, gapped_b)
 	elseif kind == :right
-		nothing
+		gapped_a = _add_gaps_in_b(msa_b, msa_a, positions_b, positions_a, axis)
+		return axis == 1 ? hcat(gapped_a, msa_b) : vcat(gapped_a, msa_b)
 	else
 		throw(ArgumentError("The kind of join must be one of :inner, :outer, :left or :right."))
 	end
