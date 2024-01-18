@@ -710,7 +710,8 @@ function _find_gaps(positions, n)
 end
 
 """
-    _insert_sequence_gaps(msa_target, msa_reference, positions_target, positions_reference)
+    _insert_sorted_gaps(msa_target, msa_reference, positions_target, positions_reference, 
+		block_position::Symbol=:before, axis::Int=1)
 
 Inserts gap blocks into `msa_target` to match the alignment pattern of `msa_reference`. 
 This function is utilized for aligning two MSAs based on specific alignment positions. The 
@@ -720,41 +721,70 @@ positions in both MSAs for accurate gap insertion.
 The function returns the modified `msa_target` with inserted gaps, aligned according 
 to `msa_reference`.
 
+The `block_position` keyword argument determines whether the gap blocks are inserted
+`:before` (the default) or `:after` the unmatched sequences or columns. The `axis` keyword 
+argument determines whether the gap blocks are inserted as sequences (`1`, the default) or 
+columns (`2`).
+
 # Example
 ```julia
-gapped_msa_a = _insert_sequence_gaps(msa_a, msa_b, positions_a, positions_b)
+gapped_msa_a = _insert_sorted_gaps(msa_a, msa_b, positions_a, positions_b)
 ```
 """
-function _insert_sequence_gaps(msa_target, msa_reference, positions_target, 
-		positions_reference, block_position::Symbol=:before)
-	@assert block_position == :before || block_position == :after
+function _insert_sorted_gaps(msa_target, msa_reference, positions_target, 
+		positions_reference; block_position::Symbol=:before, axis::Int=1)
+	@assert block_position in [:before, :after] "block_position must be :before or :after."
+	@assert axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
     # Obtain the positions that will be aligned to gaps in the reference
-	N_reference = nsequences(msa_reference)
+	N_reference = axis == 1 ? nsequences(msa_reference) : ncolumns(msa_reference)
     gaps_reference = _find_gaps(positions_reference, N_reference)
     # We need the sequence names from the reference that will be aligned to gaps
-    sequencenames_reference = sequencenames(msa_reference)
+    names_reference = axis == 1 ? sequencenames(msa_reference) : columnnames(msa_reference)
     # Create a dictionary to find the matching position in `msa_target` for adding the gap blocks
     reference2target = Dict{Int,Int}(positions_reference .=> positions_target)
+	N_target = axis == 1 ? nsequences(msa_target) : ncolumns(msa_target)
     # Add the gap blocks to `msa_target` as found when looking at `positions_reference`
     blocks_target = Tuple{Int,Vector{String}}[]
     for (stop, start) in gaps_reference
         # Found the matching position in `msa_target`
         start_target = start == 0 ? 1 : reference2target[start] + 1
-		stop_target = stop > N_reference ? nsequences(msa_target) + 1 : reference2target[stop]
+		stop_target = stop > N_reference ? N_target + 1 : reference2target[stop]
         # This should work fine, even if `start` is 0 and `stop` is n+1
-        sequence_names = sequencenames_reference[start+1:stop-1]
+        unmatched_names = names_reference[start+1:stop-1]
 		# Determine whether the gap block should be inserted before or after the sequences
 		if block_position == :before
-        	push!(blocks_target, (start_target, sequence_names))
+        	push!(blocks_target, (start_target, unmatched_names))
 		else
-			push!(blocks_target, (stop_target, sequence_names))
+			push!(blocks_target, (stop_target, unmatched_names))
 		end
 	end
     gapped_msa_target = AnnotatedMultipleSequenceAlignment(msa_target)
-    for (position, seqnames) in Iterators.reverse(blocks_target)
-        gapped_msa_target = _insert_gap_sequences(gapped_msa_target, seqnames, position)
-    end
+	if axis == 1
+    	for (position, seqnames) in Iterators.reverse(blocks_target)
+        	gapped_msa_target = _insert_gap_sequences(gapped_msa_target, seqnames, position)
+    	end
+	else
+		for (position, colnames) in Iterators.reverse(blocks_target)
+			gapped_msa_target = _insert_gap_columns(gapped_msa_target, length(colnames), 
+				position)
+		end
+	end
     gapped_msa_target
+end
+
+function _reorder_and_extract_unmatched_names(msa, positions, axis::Int)
+    N = size(msa, axis)
+    unmatched_positions = setdiff(1:N, positions)
+    if axis == 1
+		reordered_msa = msa[vcat(positions, unmatched_positions), :]
+		reordered_names = sequencenames(reordered_msa)
+	else
+		reordered_msa = msa[:, vcat(positions, unmatched_positions)]
+		reordered_names = columnnames(reordered_msa)
+	end
+    unmatched_names = reordered_names[length(positions)+1:end]
+
+    return reordered_msa, unmatched_names
 end
 
 function Base.join(msa_a, msa_b, axis::Int, pairing; kind::Symbol=:outer)
@@ -767,45 +797,29 @@ function Base.join(msa_a, msa_b, axis::Int, pairing; kind::Symbol=:outer)
 		end
 	elseif kind == :outer
 		if issorted(positions_a) && issorted(positions_b)
-			nothing
+			gapped_a = _insert_sorted_gaps(msa_a, msa_b, positions_a, positions_b, 
+				block_position=:after, axis=axis)
+			gapped_b = _insert_sorted_gaps(msa_b, msa_a, positions_b, positions_a, 
+				axis=axis)
+			return axis == 1 ? hcat(gapped_a, gapped_b) : vcat(gapped_a, gapped_b)
 		else
 			# do as the inner join for the matching positions, and add the unmatched
 			# positions at the end, using gap blocks
+			reordered_a, unmatched_names_a = _reorder_and_extract_unmatched_names(msa_a, 
+				positions_a, axis)
+			reordered_b, unmatched_names_b = _reorder_and_extract_unmatched_names(msa_b, 
+				positions_b, axis)
 			if axis == 1
-				unmatched_positions_a = setdiff(1:nsequences(msa_a), positions_a)
-				reodered_a = msa_a[vcat(positions_a, unmatched_positions_a), :]
-				sequencenames_a = sequencenames(reodered_a)
-				unmatched_seqnames_a = sequencenames_a[length(positions_a)+1:end]
-
-				unmatched_positions_b = setdiff(1:nsequences(msa_b), positions_b)
-				reodered_b = msa_b[vcat(positions_b, unmatched_positions_b), :]
-				sequencenames_b = sequencenames(reodered_b)
-				unmatched_seqnames_b = sequencenames_b[length(positions_b)+1:end]
-
-				a_block = _insert_gap_sequences(reodered_a, unmatched_seqnames_b, 
-					nsequences(reodered_a) + 1)
-
-				b_block = _insert_gap_sequences(reodered_b, unmatched_seqnames_a,
+				a_block = _insert_gap_sequences(reordered_a, unmatched_names_b, 
+					nsequences(reordered_a) + 1)
+				b_block = _insert_gap_sequences(reordered_b, unmatched_names_a,
 					length(positions_b) + 1)
-
 				return hcat(a_block, b_block)
 			else
-				unmatched_positions_a = setdiff(1:ncolumns(msa_a), positions_a)
-				reodered_a = msa_a[:, vcat(positions_a, unmatched_positions_a)]
-				columnnames_a = columnnames(reodered_a)
-				unmatched_colnames_a = columnnames_a[length(positions_a)+1:end]
-
-				unmatched_positions_b = setdiff(1:ncolumns(msa_b), positions_b)
-				reodered_b = msa_b[:, vcat(positions_b, unmatched_positions_b)]
-				columnnames_b = columnnames(reodered_b)
-				unmatched_colnames_b = columnnames_b[length(positions_b)+1:end]
-
-				a_block = _insert_gap_columns(reodered_a, length(unmatched_colnames_b), 
-					ncolumns(reodered_a) + 1)
-
-				b_block = _insert_gap_columns(reodered_b, length(unmatched_colnames_a),
+				a_block = _insert_gap_columns(reordered_a, length(unmatched_names_b), 
+					ncolumns(reordered_a) + 1)
+				b_block = _insert_gap_columns(reordered_b, length(unmatched_names_a),
 					length(positions_b) + 1)
-
 				return vcat(a_block, b_block)
 			end
 		end
