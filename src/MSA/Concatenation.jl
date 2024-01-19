@@ -832,16 +832,15 @@ function _insert_sorted_gaps(msa_target, msa_reference, positions_target,
     gapped_msa_target = AnnotatedMultipleSequenceAlignment(msa_target)
 	if axis == 1
     	for (position, seqnames) in Iterators.reverse(blocks_target)
-        	gapped_msa_target = _renumber_sequence_gaps(
-				_insert_gap_sequences(gapped_msa_target, seqnames, position))
+        	gapped_msa_target = _insert_gap_sequences(gapped_msa_target, seqnames, position)
     	end
+		_renumber_sequence_gaps(gapped_msa_target)
 	else
 		for (position, colnames) in Iterators.reverse(blocks_target)
-			gapped_msa_target = _renumber_column_gaps(
-				_insert_gap_columns(gapped_msa_target, length(colnames), position))
+			gapped_msa_target = _insert_gap_columns(gapped_msa_target, length(colnames), position)
 		end
+		_renumber_column_gaps(gapped_msa_target)
 	end
-    gapped_msa_target
 end
 
 function _reorder_and_extract_unmatched_names(msa, positions, axis::Int)
