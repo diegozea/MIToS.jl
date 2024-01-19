@@ -511,7 +511,7 @@ function _renumber_sequence_gaps(msa::AnnotatedMultipleSequenceAlignment)
 		end
 	end
 	annot = _rename_sequences(annotations(msa), old2new)
-	named_matrix = _namedresiduematrix(getresidues(msa), new_seqnames, columnnames(msa))
+	named_matrix = _namedresiduematrix(getresidues(msa), seqnames, columnnames(msa))
 	AnnotatedMultipleSequenceAlignment(named_matrix, annot)
 end
 
