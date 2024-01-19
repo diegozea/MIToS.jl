@@ -612,26 +612,7 @@ function _fix_msa_numbers(original_msa, int_position, gap_block_columns, gapped_
 	# 1. get the MSA number that will be used for the gap block
 	original_msa_column_names = columnnames(original_msa)
 	ncol = length(original_msa_column_names)
-	msa_number = if int_position == 1 # at start
-		_get_msa_number(original_msa_column_names, int_position)
-	elseif int_position == ncol + 1 # after end
-		_get_msa_number(original_msa_column_names, ncol)
-	else
-		# the block will keep the MSA number of the column before it
-		_get_msa_number(original_msa_column_names, int_position - 1)
-	end
-	# 2. update the column names of the gap block
-	gap_block_colnames = if msa_number != 0
-		String[
-			replace(col, r"^[0-9]+_gap:" => "$(msa_number)_gap:") for col in 
-			columnname_iterator(gapped_msa) if occursin("_gap:", col)
-		]
-	else # there are no MSA numbers in the column names
-		String[
-			replace(col, r"^[0-9]+_gap:" => "gap:") for col in 
-			columnname_iterator(gapped_msa) if occursin("_gap:", col)
-		]
-	end
+	gap_block_colnames = ["gap:$i" for i in 1:gap_block_columns]
 	# 3. conserve the annotations outside the gap block
 	new_colnames = if int_position == 1 # at start
 		vcat(gap_block_colnames, original_msa_column_names)
@@ -642,19 +623,14 @@ function _fix_msa_numbers(original_msa, int_position, gap_block_columns, gapped_
 			original_msa_column_names[int_position:end])
 	end
 	# 4. update the names and annotations
-	#=
 	# NOTE: We call _renumber_column_gaps to avoid the problem of duplicated names where
 	# more than one gap block is inserted
 	renamed_colnames = _renumber_column_gaps(new_colnames)
-	=#
-	@show original_msa_column_names
-	@show new_colnames
-	@show namedmatrix(gapped_msa)
-	setnames!(namedmatrix(gapped_msa), new_colnames, 2)
+	setnames!(namedmatrix(gapped_msa), renamed_colnames, 2)
 	prev_file_annotations = annotations(original_msa).file
 	new_file_annotations = annotations(gapped_msa).file
 	if haskey(prev_file_annotations, "HCat")
-		_set_hcat_annotfile!(new_file_annotations, new_colnames)
+		_set_hcat_annotfile!(new_file_annotations, renamed_colnames)
 	else
 		# do not add the HCat annotation if it was not present in the original MSA
 		delete!(new_file_annotations, "HCat")
