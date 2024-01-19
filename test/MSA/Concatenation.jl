@@ -484,4 +484,170 @@ end
         @test MIToS.MSA._compress_array!([4, 4, 4, 4]) == [4:4]
     end
 
+    @testset "_renumber_sequence_gaps" begin
+        # Create a mock MSA
+        M = rand(Residue, 5, 7)
+        seqnames = ["seq1", "gap:3", "seq2", "gap:1", "gap:2"]
+        column_names = ["col1", "col2", "col3", "col4", "col5", "col6", "col7"]
+        named_matrix = MSA._namedresiduematrix(M, seqnames, column_names)
+        annot = Annotations()
+        setannotsequence!(annot, "gap:1", "AnnotationType1", "AnnotationValue1")
+        setannotsequence!(annot, "seq1", "AnnotationType2", "AnnotationValue2")
+        msa = AnnotatedMultipleSequenceAlignment(named_matrix, annot)
+    
+        # Apply the _renumber_sequence_gaps function
+        new_msa = MSA._renumber_sequence_gaps(msa)
+    
+        # Test if the gap sequences are renumbered correctly
+        @test sequencenames(new_msa) == ["seq1", "gap:1", "seq2", "gap:2", "gap:3"]
+    
+        # Verify that annotations are correctly transferred
+        # "gap:1" in original becomes "gap:2" in new MSA
+        @test getannotsequence(new_msa, "gap:2", "AnnotationType1") == "AnnotationValue1"
+        # now, there is no annotations for "gap:1"
+        @test isempty(getannotsequence(new_msa, "gap:1", "AnnotationType1", ""))
+        # "seq1" remains unchanged
+        @test getannotsequence(new_msa, "seq1", "AnnotationType2") == "AnnotationValue2"
+    
+        # Verify that the rest remains the same
+        @test getresidues(new_msa) == getresidues(msa)
+        @test columnnames(new_msa) == columnnames(msa)
+    end
+
+    @testset "_renumber_column_gaps" begin
+        # Create a mock MSA
+        M = rand(Residue, 2, 5)
+        seqnames = ["seq1", "seq2"]
+        column_names = ["col1", "gap:3", "col2", "gap:1", "gap:2"]
+        named_matrix = MSA._namedresiduematrix(M, seqnames, column_names)
+        msa = AnnotatedMultipleSequenceAlignment(named_matrix, Annotations())
+
+        # Apply the _renumber_column_gaps function
+        new_msa = MSA._renumber_column_gaps(msa)
+
+        # Test if the gap columns are renumbered correctly
+        @test columnnames(new_msa) == ["col1", "gap:1", "col2", "gap:2", "gap:3"]
+    end
+
+    @testset "_insert_sorted_gaps" begin 
+        
+        # NOTE: The default block_position is :before and the default axis is 1
+
+        msa62 = msa2[:, 1:2]
+        msa26 = msa2[1:2, :]
+        
+        @testset "gap sequences at the beginning and at the end" begin
+            #
+            #  1 -
+            #  2 -
+            # (3,1)
+            # (4,2)
+            # (5,3)
+            # (6,4)
+            #  - 5
+            #  - 6
+            #
+            a = MSA._insert_sorted_gaps(msa62, msa62, [3, 4, 5, 6], [1, 2, 3, 4])
+            @test size(a) == (8, 2)
+            @test all(a[1:6, :] .!= GAP)
+            @test all(a[7:8, :] .== GAP)
+            b = MSA._insert_sorted_gaps(msa62, msa62, [1, 2, 3, 4], [3, 4, 5, 6])
+            @test size(b) == (8, 2)
+            @test all(b[1:2, :] .== GAP)
+            @test all(b[3:8, :] .!= GAP)
+        end
+
+        @testset "gap columns at the beginning and at the end" begin
+            a = MSA._insert_sorted_gaps(msa26, msa26, [3, 4, 5, 6], [1, 2, 3, 4], axis=2)
+            @test size(a) == (2, 8)
+            @test all(a[:, 1:6] .!= GAP)
+            @test all(a[:, 7:8] .== GAP)
+            b = MSA._insert_sorted_gaps(msa26, msa26, [1, 2, 3, 4], [3, 4, 5, 6], axis=2)
+            @test size(b) == (2, 8)
+            @test all(b[:, 1:2] .== GAP)
+            @test all(b[:, 3:8] .!= GAP)
+        end
+
+        @testset "the unique matches are between the first and the last sequence" begin
+            #
+            # (1,1)
+            #  2 -
+            #  3 -
+            #  4 -
+            #  5 -
+            #  - 2
+            #  - 3
+            #  - 4
+            #  - 5
+            # (6,6)
+            #
+            a = MSA._insert_sorted_gaps(msa62, msa62, [1, 6], [1, 6], block_position=:after)
+            @test size(a) == (10, 2)
+            @test all(a[1:5, :] .!= GAP)
+            @test all(a[6:9, :] .== GAP)
+            @test all(a[10:10, :] .!= GAP)
+            b = MSA._insert_sorted_gaps(msa62, msa62, [1, 6], [1, 6])
+            @test size(b) == (10, 2)
+            @test all(b[1:1, :] .!= GAP)
+            @test all(b[2:5, :] .== GAP)
+            @test all(b[6:10, :] .!= GAP)
+        end
+        
+        @testset "the unique matches are between the first and the last column" begin
+            a = MSA._insert_sorted_gaps(msa26, msa26, [1, 6], [1, 6], axis=2, 
+                block_position=:after)
+            @test size(a) == (2, 10)
+            @test all(a[:, 1:5] .!= GAP)
+            @test all(a[:, 6:9] .== GAP)
+            @test all(a[:, 10:10] .!= GAP)
+            b = MSA._insert_sorted_gaps(msa26, msa26, [1, 6], [1, 6], axis=2) # default block_position=:before
+            @test size(b) == (2, 10)
+            @test all(b[:, 1:1] .!= GAP)
+            @test all(b[:, 2:5] .== GAP)
+            @test all(b[:, 6:10] .!= GAP)
+        end
+
+        @testset "gap sequences, gap sequences everywhere" begin
+            #
+            #  - 1
+            # (1,2)
+            #  - 3
+            #  - 4
+            # (2,5)
+            #  3 -
+            #  4 -
+            #  5 -
+            #  6 -
+            #  - 6
+            #
+            a = MSA._insert_sorted_gaps(msa62, msa62, [1, 2], [2, 5], block_position=:after)
+            @test size(a) == (10, 2)
+            @test all(a[1:1, :] .== GAP)
+            @test all(a[2:2, :] .!= GAP)
+            @test all(a[3:4, :] .== GAP)
+            @test all(a[5:9, :] .!= GAP)
+            @test all(a[10:10, :] .== GAP)
+            b = MSA._insert_sorted_gaps(msa62, msa62, [2, 5], [1, 2])
+            @test size(b) == (10, 2)
+            @test all(b[1:5, :] .!= GAP)
+            @test all(b[6:9, :] .== GAP)
+            @test all(b[10:10, :] .!= GAP)
+        end
+
+        @testset "gap columns, gap columns everywhere" begin
+            a = MSA._insert_sorted_gaps(msa26, msa26, [1, 2], [2, 5], axis=2, 
+                block_position=:after)
+            @test size(a) == (2, 10)
+            @test all(a[:, 1:1] .== GAP)
+            @test all(a[:, 2:2] .!= GAP)
+            @test all(a[:, 3:4] .== GAP)
+            @test all(a[:, 5:9] .!= GAP)
+            @test all(a[:, 10:10] .== GAP)
+            b = MSA._insert_sorted_gaps(msa26, msa26, [2, 5], [1, 2], axis=2)
+            @test size(b) == (2, 10)
+            @test all(b[:, 1:5] .!= GAP)
+            @test all(b[:, 6:9] .== GAP)
+            @test all(b[:, 10:10] .!= GAP)
+        end
+    end
 end

@@ -477,6 +477,62 @@ function _disambiguate_sequence_names(msa, seqnames)
 	disambiguous_seqnames
 end
 
+
+
+"""
+    _renumber_sequence_gaps(msa::AnnotatedMultipleSequenceAlignment)
+
+Renumbers the gap sequences in a given multiple sequence alignment (MSA) object and 
+returns a new MSA object with updated sequence names.
+
+This function specifically targets sequences within the MSA that are named with the 
+prefix "gap:". It assigns a new sequential number to each gap sequence, ensuring a unique 
+and ordered naming convention (e.g., "gap:1", "gap:2", etc.). 
+
+Therefore, this function is useful for renumbering gap sequences in an MSA where gap 
+blocks have been inserted from the end to the beginning. This insertion order can lead to 
+non-sequential numbering of the gap sequences. For example, in the case of two gap blocks, 
+where one block contains a single sequence and the other contains two, the sequences 
+might originally be numbered as "gap:3", "gap:1", "gap:2". This function renumbers them 
+sequentially so that they are numbered as "gap:1", "gap:2", "gap:3".
+"""
+function _renumber_sequence_gaps(msa::AnnotatedMultipleSequenceAlignment)
+	seqnames = collect(sequencename_iterator(msa))
+	gap_number = 0
+	old2new = Dict{String,String}()
+	for (i, old_seqname) in enumerate(seqnames)
+		if startswith(old_seqname, "gap:")
+			gap_number += 1
+			new_seqname = "gap:$(gap_number)"
+			if old_seqname != new_seqname
+				old2new[old_seqname] = new_seqname
+				seqnames[i] = new_seqname
+			end
+		end
+	end
+	annot = _rename_sequences(annotations(msa), old2new)
+	named_matrix = _namedresiduematrix(getresidues(msa), new_seqnames, columnnames(msa))
+	AnnotatedMultipleSequenceAlignment(named_matrix, annot)
+end
+
+function _renumber_column_gaps(col_names::Vector{String})
+	new_colnames = copy(col_names)
+	gap_number = 0
+	for (i, old_colname) in enumerate(col_names)
+		if startswith(old_colname, "gap:")
+			gap_number += 1
+			new_colnames[i] = "gap:$(gap_number)"
+		end
+	end
+	new_colnames
+end
+
+function _renumber_column_gaps(msa::AnnotatedMultipleSequenceAlignment)
+	new_colnames = _renumber_column_gaps(columnnames(msa))
+	named_matrix = _namedresiduematrix(getresidues(msa), sequencenames(msa), new_colnames)
+	AnnotatedMultipleSequenceAlignment(named_matrix, annotations(msa))
+end
+
 function _gap_sequences(msa, seqnames)
 	nseq = length(seqnames)
 	ncol = ncolumns(msa)
@@ -586,6 +642,14 @@ function _fix_msa_numbers(original_msa, int_position, gap_block_columns, gapped_
 			original_msa_column_names[int_position:end])
 	end
 	# 4. update the names and annotations
+	#=
+	# NOTE: We call _renumber_column_gaps to avoid the problem of duplicated names where
+	# more than one gap block is inserted
+	renamed_colnames = _renumber_column_gaps(new_colnames)
+	=#
+	@show original_msa_column_names
+	@show new_colnames
+	@show namedmatrix(gapped_msa)
 	setnames!(namedmatrix(gapped_msa), new_colnames, 2)
 	prev_file_annotations = annotations(original_msa).file
 	new_file_annotations = annotations(gapped_msa).file
@@ -657,9 +721,11 @@ function _add_gaps_in_b(msa_a, msa_b, positions_a, positions_b, axis::Int=1)
 	for pos in Iterators.reverse(unique(gap_positions))
 		block_names = gap_names[gap_positions .== pos]
 		if axis == 1
-			matching_b = _insert_gap_sequences(matching_b, block_names, pos+1)
+			matching_b = _renumber_sequence_gaps(
+				_insert_gap_sequences(matching_b, block_names, pos+1))
 		else
-			matching_b = _insert_gap_columns(matching_b, length(block_names), pos+1)
+			matching_b = _renumber_column_gaps(
+				_insert_gap_columns(matching_b, length(block_names), pos+1))
 		end
 	end
 	matching_b
@@ -766,12 +832,13 @@ function _insert_sorted_gaps(msa_target, msa_reference, positions_target,
     gapped_msa_target = AnnotatedMultipleSequenceAlignment(msa_target)
 	if axis == 1
     	for (position, seqnames) in Iterators.reverse(blocks_target)
-        	gapped_msa_target = _insert_gap_sequences(gapped_msa_target, seqnames, position)
+        	gapped_msa_target = _renumber_sequence_gaps(
+				_insert_gap_sequences(gapped_msa_target, seqnames, position))
     	end
 	else
 		for (position, colnames) in Iterators.reverse(blocks_target)
-			gapped_msa_target = _insert_gap_columns(gapped_msa_target, length(colnames), 
-				position)
+			gapped_msa_target = _renumber_column_gaps(
+				_insert_gap_columns(gapped_msa_target, length(colnames), position))
 		end
 	end
     gapped_msa_target

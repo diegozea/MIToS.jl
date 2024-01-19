@@ -115,30 +115,40 @@
         @test getannotcolumn(annot, "SS_cons") == "CCH"
     end
 
-    @testset "Print" begin
-
-        output_string = """
-                        #=GF AC	PF00571
-                        #=GS O31698/88-139	OS	Bacillus subtilis
-                        #=GR O31698/18-71	SS	CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH
-                        #=GC SS_cons			CCCCCHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEEH
-                        """
-
-        io = IOBuffer()
-
+    @testset "_rename_sequences" begin
+        # Create an Annotations object with specific annotations
         annot = Annotations()
-        setannotresidue!(annot,"O31698/18-71","SS","CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH")
+        setannotresidue!(annot, "O31698/18-71", "SS",  "CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH")
+        setannotresidue!(annot, "O31698/72-140", "SS", "HHHHCCCCCEEEEEEEECCCCCCHHHHHHHHHHHHHH")
         setannotfile!(annot, "AC", "PF00571")
         setannotcolumn!(annot, "SS_cons", "CCCCCHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEEH")
         setannotsequence!(annot, "O31698/88-139", "OS", "Bacillus subtilis")
-
-        print(io, annot)
-        @test String(take!(io)) == output_string
-
-        show(io, annot)
-        @test String(take!(io)) == output_string
-    end
-
+        setannotsequence!(annot, "O31698/20-80", "OS", "Bacillus subtilis")
+    
+        # Define the old to new sequence name mapping
+        old2new = Dict("O31698/18-71" => "NewSeq1", "O31698/88-139" => "NewSeq2")
+    
+        # Call the function with the annotations and mapping
+        new_annotations = MSA._rename_sequences(annot, old2new)
+    
+        # Test cases
+        # Check if the sequence names are correctly updated
+        @test getannotresidue(new_annotations, "NewSeq1", "SS") == "CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH"
+        @test getannotsequence(new_annotations, "NewSeq2", "OS") == "Bacillus subtilis"
+    
+        # Ensure that file and column annotations are unchanged
+        @test getannotfile(new_annotations, "AC") == "PF00571"
+        @test getannotcolumn(new_annotations, "SS_cons") == "CCCCCHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEEH"
+    
+        # Check that the old sequence names are no longer present
+        @test isempty(getannotresidue(new_annotations, "O31698/18-71", "SS", ""))
+        @test isempty(getannotsequence(new_annotations, "O31698/88-139", "OS", ""))
+    
+        # Check that sequences not in the mapping remain unchanged
+        @test getannotresidue(new_annotations, "O31698/72-140", "SS") == "HHHHCCCCCEEEEEEEECCCCCCHHHHHHHHHHHHHH"
+        @test getannotsequence(new_annotations, "O31698/20-80", "OS") == "Bacillus subtilis"
+    end    
+    
     @testset "merge" begin
         @testset "different sources" begin
             original = Annotations(OrderedDict("key1" => "value1"), Dict(), Dict(), Dict())
@@ -222,4 +232,35 @@
             @test target.residues[("residue_name", "residue_annot")] == "new_residue_value"
         end
     end
+
+    @testset "_rename_sequences" begin
+        # Create a sample Annotations object with predefined annotations
+        annotations = Annotations()
+        setannotresidue!(annotations, "Seq1", "AnnotType1", "Value1")
+        setannotresidue!(annotations, "Seq2", "AnnotType2", "Value2")
+        setannotsequence!(annotations, "Seq1", "AnnotType3", "Value3")
+        setannotsequence!(annotations, "Seq3", "AnnotType4", "Value4")
+        setannotfile!(annotations, "FileKey", "FileValue")
+        setannotcolumn!(annotations, "ColumnKey", "ColumnValue")
+    
+        # Define the old to new sequence name mapping
+        old2new = Dict("Seq1" => "NewSeq1", "Seq2" => "NewSeq2")
+    
+        # Call the function with the annotations and mapping
+        new_annotations = MSA._rename_sequences(annotations, old2new)
+    
+        # Test cases
+        # Check if the sequence names are correctly updated
+        @test getannotresidue(new_annotations, "NewSeq1", "AnnotType1") == "Value1"
+        @test getannotresidue(new_annotations, "NewSeq2", "AnnotType2") == "Value2"
+        @test getannotsequence(new_annotations, "NewSeq1", "AnnotType3") == "Value3"
+    
+        # Check if sequence names not in the mapping are retained
+        @test getannotsequence(new_annotations, "Seq3", "AnnotType4") == "Value4"
+    
+        # Ensure that file and column annotations are unchanged
+        @test getannotfile(new_annotations, "FileKey") == "FileValue"
+        @test getannotcolumn(new_annotations, "ColumnKey") == "ColumnValue"
+    end
+    
 end

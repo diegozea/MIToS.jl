@@ -392,3 +392,40 @@ function Base.print(io::IO, ann::Annotations)
 end
 
 Base.show(io::IO, ann::Annotations) = print(io, ann)
+
+# Rename sequences
+# ================
+
+# This private function is used by rename sequences during MSA concatenation,
+# but it could be useful for other purposes
+
+"""
+    _rename_sequences(annotations::Annotations, old2new::Dict{String,String})
+
+Renames sequences in a given `Annotations` object based on a mapping provided in `old2new`.
+
+This function iterates through residue-level and sequence-level annotations in the 
+provided `Annotations` object. For each annotation, it checks if the sequence name exists 
+in the `old2new` dictionary. If so, the sequence name is updated to the new name from 
+`old2new`; otherwise, the original sequence name is retained.
+
+The function then returns a new `Annotations` object with updated sequence names.
+"""
+function _rename_sequences(annotations::Annotations, old2new::Dict{String,String})
+	res_annotations = Dict{Tuple{String,String},String}()
+	for ((seqname, annot_name), value) in getannotresidue(annotations)
+		seqname = get(old2new, seqname, seqname)
+		res_annotations[(seqname, annot_name)] = value
+	end
+	seq_annotations = Dict{Tuple{String,String},String}()
+	for ((seqname, annot_name), value) in getannotsequence(annotations)
+		seqname = get(old2new, seqname, seqname)
+		seq_annotations[(seqname, annot_name)] = value
+	end
+	Annotations(
+		copy(getannotfile(annotations)),
+		seq_annotations,
+		copy(getannotcolumn(annotations)),
+		res_annotations
+	)
+end
