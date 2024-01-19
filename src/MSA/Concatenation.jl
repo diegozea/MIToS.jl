@@ -52,10 +52,6 @@ end
 
 _get_seq_lengths(msas...) = Int[ncolumns(msa) for msa in msas]
 
-function _get_annot_types(fun, index, data::Annotations...)
-	union(Set(k[index] for k in keys(fun(annot))) for annot in data)
-end
-
 function _h_concatenate_annotfile(data::Annotations...)
 	N = length(data)
 	annotfile = copy(getannotfile(data[1]))
@@ -122,7 +118,6 @@ function _clean_sequence_mapping!(msa::AnnotatedAlignedObject)
 	end
 	msa
 end
-
 
 function _concatenate_annotsequence(seqname_mapping, data::Annotations...)
 	annotsequence = Dict{Tuple{String,String},String}()
@@ -631,18 +626,6 @@ function _insert_gap_columns(input_msa, gap_block_columns::Int, position)
 end
 
 # join for MSAs
-
-function _number_and_count(positions::Vector{Int})
-	number2count = OrderedDict{Int,Int}()
-	for pos in positions
-		if haskey(number2count, pos)
-			number2count[pos] += 1
-		else
-			number2count[pos] = 0
-		end
-	end
-	UnitRange{Int}[ k:(k+v) for (k,v) in number2count ]
-end
 
 function _add_gaps_in_b(msa_a, msa_b, positions_a, positions_b, axis::Int=1)
 	@assert axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
