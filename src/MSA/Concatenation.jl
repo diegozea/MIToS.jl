@@ -855,7 +855,8 @@ function _reorder_and_extract_unmatched_names(msa, positions, axis::Int)
     return reordered_msa, unmatched_names
 end
 
-function Base.join(msa_a, msa_b, axis::Int, pairing; kind::Symbol=:outer)
+function Base.join(msa_a::AnnotatedMultipleSequenceAlignment, 
+	msa_b::AnnotatedMultipleSequenceAlignment, pairing; kind::Symbol=:outer, axis::Int=1)
 	positions_a, positions_b = _find_pairing_positions(axis, msa_a, msa_b, pairing)
 	if kind == :inner
 		if axis == 1

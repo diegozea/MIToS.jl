@@ -752,6 +752,145 @@ end
             @test all(a_col[:, 6] .== GAP)
         end
     end
-    
-    
+
+    @testset "join MSAs" begin
+        msa62 = msa2[:, 1:2]  # msa62 for sequences test
+        msa26 = msa2[1:2, :]  # msa26 for columns test
+
+        @testset "gaps at the beginning and at the end" begin
+            # a: 1 2 3 4 5 6 - -
+            # b: - - 1 2 3 4 5 6
+
+            @testset "inner join" begin
+                # a: 3 4 5 6
+                # b: 1 2 3 4
+
+                @testset "sequences" begin
+                    ab = join(msa62, msa62, 3:6 .=> 1:4, kind=:inner, axis=1)
+                    @test size(ab) == (4, 2)
+                    @test all(ab .!= GAP)
+                    @test sequencenames(ab) == ["SEQ3_&_SEQ1", "SEQ4_&_SEQ2", "SEQ5_&_SEQ3", 
+                        "SEQ6_&_SEQ4"]
+                    @test columnnames(ab) == ["1_1", "1_2", "2_1", "2_2"]
+                end
+
+                @testset "columns" begin 
+                    ab = join(msa26, msa26, 3:6 .=> 1:4, kind=:inner, axis=2)
+                    @test size(ab) == (2, 4)
+                    @test all(ab .!= GAP)
+                    @test sequencenames(ab) == ["1_SEQ1", "1_SEQ2", "2_SEQ1", "2_SEQ2"]
+                    @test columnnames(ab) == ["3", "4", "5", "6"]
+                end
+            end
+
+            @testset "left join" begin
+                # a: 1 2 3 4 5 6
+                # b: - - 1 2 3 4
+
+                @testset "sequences" begin
+                    ab = join(msa62, msa62, 3:6 .=> 1:4, kind=:left, axis=1)
+                    @test size(ab) == (6, 4)
+                    @test sum(ab.==GAP, dims=1) == [0 0 2 2]
+                    @test vec(sum(ab.==GAP, dims=2)) == [2, 2, 0, 0, 0, 0]
+                    @test sequencenames(ab) == ["SEQ1_&_gap:1", "SEQ2_&_gap:2", 
+                        "SEQ3_&_SEQ1", "SEQ4_&_SEQ2", "SEQ5_&_SEQ3", "SEQ6_&_SEQ4"]
+                    @test columnnames(ab) == ["1_1", "1_2", "2_1", "2_2"]
+                end
+
+                @testset "columns" begin
+                    ab = join(msa26, msa26, 3:6 .=> 1:4, kind=:left, axis=2)
+                    @test size(ab) == (4, 6)
+                    @test vec(sum(ab.==GAP, dims=2)) == [0, 0, 2, 2]
+                    @test vec(sum(ab.==GAP, dims=1)) == [2, 2, 0, 0, 0, 0]
+                    @test sequencenames(ab) == ["1_SEQ1", "1_SEQ2", "2_SEQ1", "2_SEQ2"]
+                    @test columnnames(ab) == ["1", "2", "3", "4", "5", "6"]
+                end
+            end
+
+            @testset "right join" begin
+                # a: 3 4 5 6 - -
+                # b: 1 2 3 4 5 6
+
+                @testset "sequences" begin
+                    ab = join(msa62, msa62, 3:6 .=> 1:4, kind=:right, axis=1)
+                    @test size(ab) == (6, 4)
+                    @test sum(ab.==GAP, dims=1) == [2 2 0 0]
+                    @test vec(sum(ab.==GAP, dims=2)) == [0, 0, 0, 0, 2, 2]
+                    @test sequencenames(ab) == ["SEQ3_&_SEQ1", "SEQ4_&_SEQ2", 
+                        "SEQ5_&_SEQ3", "SEQ6_&_SEQ4", "gap:1_&_SEQ5", "gap:2_&_SEQ6"]
+                end
+
+                @testset "columns" begin
+                    ab = join(msa26, msa26, 3:6 .=> 1:4, kind=:right, axis=2)
+                    @test size(ab) == (4, 6)
+                    @test vec(sum(ab.==GAP, dims=2)) == [2, 2, 0, 0]
+                    @test vec(sum(ab.==GAP, dims=1)) == [0, 0, 0, 0, 2, 2]
+                    @test sequencenames(ab) == ["1_SEQ1", "1_SEQ2", "2_SEQ1", "2_SEQ2"]
+                    @test columnnames(ab) == ["3", "4", "5", "6", "gap:1", "gap:2"]
+                end
+            end
+        end
+
+        @testset "unique matches between first and last sequence/column" begin
+            # 1 2 3 4 5 - - - - 6
+            # 1 - - - - 2 3 4 5 6
+
+            @testset "outer join" begin
+                # a: 1 2 3 4 5 - - - - 6
+                # b: 1 - - - - 2 3 4 5 6
+
+                @testset "sequences" begin
+                    ab = join(msa62, msa62, [(1, 1), (6, 6)], kind=:outer, axis=1)
+                    @test size(ab) == (10, 4)
+                    @test sum(ab.==GAP, dims=1) == [4 4 4 4]
+                    @test vec(sum(ab.==GAP, dims=2)) == [0, 2, 2, 2, 2, 2, 2, 2, 2, 0]
+
+                    @test sequencenames(ab) == ["SEQ1", "SEQ2_&_gap:1", "SEQ3_&_gap:2", 
+                        "SEQ4_&_gap:3", "SEQ5_&_gap:4", "gap:1_&_SEQ2", "gap:2_&_SEQ3",
+                        "gap:3_&_SEQ4", "gap:4_&_SEQ5", "SEQ6"]
+                    @test columnnames(ab) == ["1_1", "1_2", "2_1", "2_2"]
+
+                    # kind=:outer and axis=1 are the default values
+                    @test ab == join(msa62, msa62, [(1, 1), (6, 6)])
+
+                    @testset "pairing types" begin
+                        # OrderedDict
+                        # NOTE: join change its behavior depending on whether the pairing
+                        # positions are sorted or not.
+                        # Here, OrderedDict ensures that the positions are sorted.
+                        @test ab == join(msa62, msa62, OrderedDict{Int, Int}(1 => 1, 6 => 6))
+                        # Vector of pairs
+                        @test ab == join(msa62, msa62, [1 => 1, 6 => 6])
+                        # Vector of tuples
+                        @test ab == join(msa62, msa62, [(1, 1), (6, 6)])
+                        # Vector of vectors
+                        @test ab == join(msa62, msa62, [[1, 1], [6, 6]])
+                        # Vector of named tuples
+                        @test ab == join(msa62, msa62, [(a=1, b=1), (a=6, b=6)])
+                        # Tuple of pairs
+                        @test ab == join(msa62, msa62, (1 => 1, 6 => 6))
+                        # Tuple of tuples
+                        @test ab == join(msa62, msa62, ((1, 1), (6, 6)))
+                        # Tuple of vectors
+                        @test ab == join(msa62, msa62, ([1, 1], [6, 6]))
+                        # Tuple of named tuples
+                        @test ab == join(msa62, msa62, ((a=1, b=1), (a=6, b=6)))
+                    end
+                end
+
+                @testset "columns" begin
+                    ab = join(msa26, msa26, [(1, 1), (6, 6)], kind=:outer, axis=2)
+                    @test size(ab) == (4, 10)
+                    @test vec(sum(ab.==GAP, dims=2)) == [4, 4, 4, 4]
+                    @test sum(ab.==GAP, dims=1) == [0 2 2 2 2 2 2 2 2 0]
+                    @test sequencenames(ab) == ["1_SEQ1", "1_SEQ2", "2_SEQ1", "2_SEQ2"]
+                    @test columnnames(ab) == ["1", "2", "3", "4", "5", "gap:1", "gap:2", 
+                        "gap:3", "gap:4", "6"]
+                end
+            end
+        end
+        # TODO: outer join test for the first example
+        # TODO: add test cases for unsorted positions
+        # TODO : check dimensions and give a better error if the positions are wrong
+    end
 end
