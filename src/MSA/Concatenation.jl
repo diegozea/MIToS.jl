@@ -667,6 +667,27 @@ end
 
 # join for MSAs
 
+"""
+	_add_gaps_in_b(msa_a, msa_b, positions_a, positions_b, axis::Int=1)
+
+This is an helper function for the `:left` and `:right` joins. It aligns `msa_b` with
+`msa_a` by adding gaps to `msa_b`. Only the sequences or columns in `msa_b` that match
+the positions in `msa_a` are kept. Gaps are inserted in `msa_b` at positions where `msa_a`
+has sequences or columns that are not matched in `msa_b`. Therefore, we can think of
+`msa_a` as the reference MSA and `msa_b` as the MSA to be aligned with the reference.
+
+The `positions_a` and `positions_b` arguments define corresponding positions in `msa_a` 
+and `msa_b`, respectively, for accurate gap insertion. The function returns a modified 
+`msa_b` with gaps inserted to align with `msa_a`.
+
+The axis argument (`1` for sequences, `2` for columns) determines whether gaps are 
+inserted as sequences or columns.
+
+# Example
+```julia
+aligned_msa_b = _add_gaps_in_b(msa_a, msa_b, [1, 2, 3], [2, 3, 4], 2) # axis = 2
+```
+"""
 function _add_gaps_in_b(msa_a, msa_b, positions_a, positions_b, axis::Int=1)
 	@assert axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
 	# sort the positions to keep the order in msa_a

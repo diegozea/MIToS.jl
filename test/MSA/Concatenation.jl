@@ -581,12 +581,12 @@ end
             #  - 5
             # (6,6)
             #
-            a = MSA._insert_sorted_gaps(msa62, msa62, [1, 6], [1, 6], block_position=:after)
+            a = MSA._insert_sorted_gaps(msa62, msa62, 1:6, 1:6, block_position=:after)
             @test size(a) == (10, 2)
             @test all(a[1:5, :] .!= GAP)
             @test all(a[6:9, :] .== GAP)
             @test all(a[10:10, :] .!= GAP)
-            b = MSA._insert_sorted_gaps(msa62, msa62, [1, 6], [1, 6])
+            b = MSA._insert_sorted_gaps(msa62, msa62, 1:6, 1:6)
             @test size(b) == (10, 2)
             @test all(b[1:1, :] .!= GAP)
             @test all(b[2:5, :] .== GAP)
@@ -594,13 +594,13 @@ end
         end
         
         @testset "the unique matches are between the first and the last column" begin
-            a = MSA._insert_sorted_gaps(msa26, msa26, [1, 6], [1, 6], axis=2, 
+            a = MSA._insert_sorted_gaps(msa26, msa26, 1:6, 1:6, axis=2, 
                 block_position=:after)
             @test size(a) == (2, 10)
             @test all(a[:, 1:5] .!= GAP)
             @test all(a[:, 6:9] .== GAP)
             @test all(a[:, 10:10] .!= GAP)
-            b = MSA._insert_sorted_gaps(msa26, msa26, [1, 6], [1, 6], axis=2) # default block_position=:before
+            b = MSA._insert_sorted_gaps(msa26, msa26, 1:6, 1:6, axis=2) # default block_position=:before
             @test size(b) == (2, 10)
             @test all(b[:, 1:1] .!= GAP)
             @test all(b[:, 2:5] .== GAP)
@@ -650,4 +650,108 @@ end
             @test all(b[:, 10:10] .!= GAP)
         end
     end
+
+    @testset "_add_gaps_in_b" begin
+        msa62 = msa2[:, 1:2]  # msa62 for sequences test
+        msa26 = msa2[1:2, :]  # msa26 for columns test
+    
+        @testset "gaps at the beginning and at the end" begin
+            # 1 2 3 4 5 6 - -
+            # - - 1 2 3 4 5 6
+
+            # a: 1 2 3 4 5 6 
+            # b: - - 1 2 3 4 
+
+            # sequences
+            b = MSA._add_gaps_in_b(msa62, msa62, 3:6, 1:4)
+            @test size(b) == (6, 2)
+            @test all(b[1:2, :] .== GAP)
+            @test all(b[3:6, :] .!= GAP)
+            # columns
+            b = MSA._add_gaps_in_b(msa26, msa26, 3:6, 1:4, 2)
+            @test size(b) == (2, 6)
+            @test all(b[:, 1:2] .== GAP)
+            @test all(b[:, 3:6] .!= GAP)
+
+            # a: 3 4 5 6 - -
+            # b: 1 2 3 4 5 6
+
+            # sequences
+            a = MSA._add_gaps_in_b(msa62, msa62, 1:4, 3:6)
+            @test size(a) == (6, 2)
+            @test all(a[1:4, :] .!= GAP)
+            @test all(a[5:6, :] .== GAP)
+
+            # columns
+            a = MSA._add_gaps_in_b(msa26, msa26, 1:4, 3:6, 2)
+            @test size(a) == (2, 6)
+            @test all(a[:, 1:4] .!= GAP)
+            @test all(a[:, 5:6] .== GAP)
+        end
+
+        @testset "unique matches between first and last sequence/column" begin
+            # 1 2 3 4 5 - - - - 6
+            # 1 - - - - 2 3 4 5 6
+    
+            # a: 1 2 3 4 5 6
+            # b: 1 - - - - 6
+
+            # sequences
+            b_seq = MSA._add_gaps_in_b(msa62, msa62, [1, 6], [1, 6])
+            @test size(b_seq) == (6, 2)
+            @test all(b_seq[1, :] .!= GAP)
+            @test all(b_seq[2:5, :] .== GAP)
+            @test all(b_seq[6, :] .!= GAP)
+    
+            # columns
+            b_col = MSA._add_gaps_in_b(msa26, msa26, [1, 6], [1, 6], 2)
+            @test size(b_col) == (2, 6)
+            @test all(b_col[:, 1] .!= GAP)
+            @test all(b_col[:, 2:5] .== GAP)
+            @test all(b_col[:, 6] .!= GAP)
+        end
+
+        @testset "gap sequences, gap sequences everywhere" begin
+            # - 1 - - 2 3 4 5 6 -
+            # 1 2 3 4 5 - - - - 6
+
+            # a: 1 2 3 4 5 6
+            # b: 2 5 - - - -
+            # sequences
+            b_seq = MSA._add_gaps_in_b(msa62, msa62, [1, 2], [2, 5])
+            @test size(b_seq) == (6, 2)
+            @show b_seq
+            @test all(b_seq[1:2, :] .!= GAP)
+            @test all(b_seq[3:6, :] .== GAP)
+
+            # columns
+            b_col = MSA._add_gaps_in_b(msa26, msa26, [1, 2], [2, 5], 2)
+            @test size(b_col) == (2, 6)
+            @test all(b_col[:, 1:2] .!= GAP)
+            @test all(b_col[:, 3:6] .== GAP)
+
+            # a: - 1 - - 2 -
+            # b: 1 2 3 4 5 6
+
+            # sequences
+            a_seq = MSA._add_gaps_in_b(msa62, msa62, [2, 5], [1, 2])
+            @test size(a_seq) == (6, 2)
+            @test all(a_seq[1, :] .== GAP)
+            @test all(a_seq[2, :] .!= GAP)
+            @test all(a_seq[3:4, :] .== GAP)
+            @test all(a_seq[5, :] .!= GAP)
+            @test all(a_seq[6, :] .== GAP)
+
+            # columns
+            a_col = MSA._add_gaps_in_b(msa26, msa26, [2, 5], [1, 2], 2)
+            @test size(a_col) == (2, 6)
+            @test all(a_col[:, 1] .== GAP)
+            @test all(a_col[:, 2] .!= GAP)
+            @test all(a_col[:, 3:4] .== GAP)
+            @test all(a_col[:, 5] .!= GAP)
+            @test all(a_col[:, 6] .== GAP)
+        end
+    end
+    
+    
 end
