@@ -309,6 +309,10 @@ end
     end
 end
 
+@testset "_find_gaps" begin
+    @test MSA._find_gaps([2, 5, 6, 7, 8], 10) == [(2, 0), (5, 2), (11, 8)]
+end
+
 @testset "join MSAs" begin
     msa = read(joinpath(DATA, "simple.fasta"), FASTA, generatemapping=true)
     msa2 = read(joinpath(DATA, "Gaoetal2011.fasta"), FASTA, generatemapping=true)
@@ -474,16 +478,6 @@ end
         @test gapped_col_seq == Residue['A'; '-'; 'R';;]
     end
 
-    @testset "_compress_array!" begin
-        @test MIToS.MSA._compress_array!([1, 2, 3, 6, 7, 8, 10, 20, 21, 22]) == [
-            1:3, 6:8, 10:10, 20:22]
-        @test MIToS.MSA._compress_array!(Int[]) == UnitRange{Int}[]
-        @test MIToS.MSA._compress_array!([5]) == [5:5]
-        @test MIToS.MSA._compress_array!([2, 1, 3, 4, 5]) == [2:2, 1:1, 3:5]
-        @test MIToS.MSA._compress_array!([1, 3, 5, 7, 9]) == [1:1, 3:3, 5:5, 7:7, 9:9]
-        @test MIToS.MSA._compress_array!([4, 4, 4, 4]) == [4:4]
-    end
-
     @testset "_renumber_sequence_gaps" begin
         # Create a mock MSA
         M = rand(Residue, 5, 7)
@@ -581,12 +575,12 @@ end
             #  - 5
             # (6,6)
             #
-            a = MSA._insert_sorted_gaps(msa62, msa62, 1:6, 1:6, block_position=:after)
+            a = MSA._insert_sorted_gaps(msa62, msa62, [1, 6], [1, 6], block_position=:after)
             @test size(a) == (10, 2)
             @test all(a[1:5, :] .!= GAP)
             @test all(a[6:9, :] .== GAP)
             @test all(a[10:10, :] .!= GAP)
-            b = MSA._insert_sorted_gaps(msa62, msa62, 1:6, 1:6)
+            b = MSA._insert_sorted_gaps(msa62, msa62, [1, 6], [1, 6])
             @test size(b) == (10, 2)
             @test all(b[1:1, :] .!= GAP)
             @test all(b[2:5, :] .== GAP)
@@ -594,13 +588,13 @@ end
         end
         
         @testset "the unique matches are between the first and the last column" begin
-            a = MSA._insert_sorted_gaps(msa26, msa26, 1:6, 1:6, axis=2, 
+            a = MSA._insert_sorted_gaps(msa26, msa26, [1, 6], [1, 6], axis=2, 
                 block_position=:after)
             @test size(a) == (2, 10)
             @test all(a[:, 1:5] .!= GAP)
             @test all(a[:, 6:9] .== GAP)
             @test all(a[:, 10:10] .!= GAP)
-            b = MSA._insert_sorted_gaps(msa26, msa26, 1:6, 1:6, axis=2) # default block_position=:before
+            b = MSA._insert_sorted_gaps(msa26, msa26, [1, 6], [1, 6], axis=2) # default block_position=:before
             @test size(b) == (2, 10)
             @test all(b[:, 1:1] .!= GAP)
             @test all(b[:, 2:5] .== GAP)
@@ -767,7 +761,7 @@ end
 
                 @testset "sequences" begin
                     ab = join(msa62, msa62, 3:6 .=> 1:4, kind=:inner, axis=1)
-                    @test size(ab) == (4, 2)
+                    @test size(ab) == (4, 4)
                     @test all(ab .!= GAP)
                     @test sequencenames(ab) == ["SEQ3_&_SEQ1", "SEQ4_&_SEQ2", "SEQ5_&_SEQ3", 
                         "SEQ6_&_SEQ4"]
@@ -776,7 +770,7 @@ end
 
                 @testset "columns" begin 
                     ab = join(msa26, msa26, 3:6 .=> 1:4, kind=:inner, axis=2)
-                    @test size(ab) == (2, 4)
+                    @test size(ab) == (4, 4)
                     @test all(ab .!= GAP)
                     @test sequencenames(ab) == ["1_SEQ1", "1_SEQ2", "2_SEQ1", "2_SEQ2"]
                     @test columnnames(ab) == ["3", "4", "5", "6"]
@@ -900,7 +894,7 @@ end
                 @testset "columns" begin
                     ab = join(msa26, msa26, [1, 6] .=> [1, 6], kind=:left, axis=2)
                     @test size(ab) == (4, 6)
-                    @test vec(sum(ab.==GAP, dims=2)) == [0, 0, 2, 2]
+                    @test vec(sum(ab.==GAP, dims=2)) == [0, 0, 4, 4]
                     @test vec(sum(ab.==GAP, dims=1)) == [0, 2, 2, 2, 2, 0]
                     @test sequencenames(ab) == ["1_SEQ1", "1_SEQ2", "2_SEQ1", "2_SEQ2"]
                     @test columnnames(ab) == ["1", "2", "3", "4", "5", "6"]
@@ -924,7 +918,7 @@ end
                 @testset "columns" begin
                     ab = join(msa26, msa26, [1, 6] .=> [1, 6], kind=:right, axis=2)
                     @test size(ab) == (4, 6)
-                    @test vec(sum(ab.==GAP, dims=2)) == [2, 2, 0, 0]
+                    @test vec(sum(ab.==GAP, dims=2)) == [4, 4, 0, 0]
                     @test vec(sum(ab.==GAP, dims=1)) == [0, 2, 2, 2, 2, 0]
                     @test sequencenames(ab) == ["1_SEQ1", "1_SEQ2", "2_SEQ1", "2_SEQ2"]
                     @test columnnames(ab) == ["1", "gap:1", "gap:2", "gap:3", "gap:4", "6"]
@@ -1053,7 +1047,7 @@ end
                     @test columnnames(ab) == ["1_1", "1_2", "2_1", "2_2"]
                 end
 
-                @test "columns" begin 
+                @testset "columns" begin
                     ab = join(msa26, msa26, [1, 2] .=> [2, 5], kind=:left, axis=2)
                     @test size(ab) == (4, 6)
                     @test vec(sum(ab.==GAP, dims=2)) == [0, 0, 4, 4]

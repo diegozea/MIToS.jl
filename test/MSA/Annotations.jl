@@ -241,7 +241,7 @@
         setannotsequence!(annotations, "Seq1", "AnnotType3", "Value3")
         setannotsequence!(annotations, "Seq3", "AnnotType4", "Value4")
         setannotfile!(annotations, "FileKey", "FileValue")
-        setannotcolumn!(annotations, "ColumnKey", "ColumnValue")
+        setannotcolumn!(annotations, "ColumnKey", "ValueX")
     
         # Define the old to new sequence name mapping
         old2new = Dict("Seq1" => "NewSeq1", "Seq2" => "NewSeq2")
@@ -260,7 +260,6 @@
     
         # Ensure that file and column annotations are unchanged
         @test getannotfile(new_annotations, "FileKey") == "FileValue"
-        @test getannotcolumn(new_annotations, "ColumnKey") == "ColumnValue"
+        @test getannotcolumn(new_annotations, "ColumnKey") == "ValueX"
     end
-    
 end

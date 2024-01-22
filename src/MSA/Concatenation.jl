@@ -757,15 +757,6 @@ and the second element is the position that comes just after the gap. The functi
 for gaps at both the beginning and end of the sequence. A gap is identified as a difference 
 greater than 1 between consecutive positions. To account for gaps at the end, the end 
 position of a gap matching the last position of the sequence is set to `n+1`.
-
-# Examples
-```jldoctest
-julia> _find_gaps([2, 5, 6, 7, 8], 10)
-3-element Vector{Tuple{Int64, Int64}}:
- (2, 0)
- (5, 2)
- (11, 8)
-```
 """
 function _find_gaps(positions, n)
 	_positions = if positions[end] == n
