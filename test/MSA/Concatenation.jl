@@ -475,7 +475,7 @@ end
 
         gapped_col_seq = MIToS.MSA._insert_gap_sequences(single_col_msa, ["SEQ1"], 2) # at the middle
         @test size(gapped_col_seq) == (3, 1)
-        @test gapped_col_seq == Residue['A'; '-'; 'R';;]
+        @test vec(gapped_col_seq) == Residue['A', '-', 'R']
     end
 
     @testset "_renumber_sequence_gaps" begin
