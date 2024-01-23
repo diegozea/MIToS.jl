@@ -437,8 +437,8 @@ end
 
 # helper functions to name columns in gap blocks
 function _get_last_gap_number(name_iterator)
-	numbers = parse(Int, replace(name, "gap:" => "")) 
-		for name in name_iterator if startswith(name, "gap:")
+	numbers = (parse(Int, replace(name, "gap:" => "")) 
+		for name in name_iterator if startswith(name, "gap:"))
 	# as `maximum(numbers, init=0)` doesn't work in Julia versions < 1.6
 	# we use `foldl` instead
 	foldl(max, numbers, init=0)
