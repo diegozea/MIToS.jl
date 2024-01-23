@@ -1262,6 +1262,27 @@ end
                 end
             end
         end
-        # TODO : check dimensions and give a better error if the positions are wrong
+
+        @testset "ArgumentErrors" begin
+            # axis is not 1 or 2
+            @test_throws ArgumentError join(msa62, msa62, [1, 2] .=> [3, 4], axis=3)
+            # kind is not :inner, :left, :right, or :outer
+            @test_throws ArgumentError join(msa62, msa62, [1, 2] .=> [3, 4], kind=:iner)
+            # pairing is empty
+            @test_throws ArgumentError join(msa62, msa62, [])
+            # each element of the pairing is not a pair
+            @test_throws ArgumentError join(msa62, msa62, [1, 2, 3])
+            # the list of positions are not of the same length
+            @test_throws ArgumentError join(msa62, msa62, [1, 2], [3, 4, 5])
+        end
+
+        @testset "Using two position lists instead of a list of pairs" begin
+            for axis in [1, 2]
+                for kind in [:inner, :left, :right, :outer]
+                    @test join(msa62, msa62, [1, 2], [2, 1], kind=kind, axis=axis) ==
+                        join(msa62, msa62, [(1, 2), (2, 1)], kind=kind, axis=axis)
+                end
+            end
+        end
     end
 end

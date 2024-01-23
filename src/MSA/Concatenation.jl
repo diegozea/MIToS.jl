@@ -850,6 +850,21 @@ end
 
 function Base.join(msa_a::AnnotatedMultipleSequenceAlignment, 
 	msa_b::AnnotatedMultipleSequenceAlignment, pairing; kind::Symbol=:outer, axis::Int=1)
+	# Check that input arguments and throw explicit ArgumentErrors if necessary
+	if isempty(pairing)
+		throw(ArgumentError("The pairing argument indicating the matching positions is empty."))
+	end
+	if length(first(pairing)) != 2
+		throw(ArgumentError(string("pairing must consist of pairs where the first element ",
+		"corresponds to a position in the first MSA and the second to the second MSA. ", 
+		"Otherwise, utilize two distinct position lists.")))
+	end
+	if kind != :inner && kind != :outer && kind != :left && kind != :right
+		throw(ArgumentError("The kind of join must be one of :inner, :outer, :left or :right."))
+	end
+	if axis != 1 && axis != 2
+		throw(ArgumentError("The axis must be 1 (sequences) or 2 (columns)."))
+	end
 	positions_a, positions_b = _find_pairing_positions(axis, msa_a, msa_b, pairing)
 	if kind == :inner
 		if axis == 1
@@ -896,3 +911,12 @@ function Base.join(msa_a::AnnotatedMultipleSequenceAlignment,
 	end
 end
 
+function Base.join(msa_a::AnnotatedMultipleSequenceAlignment, 
+		msa_b::AnnotatedMultipleSequenceAlignment, positions_a, positions_b; 
+		kind::Symbol=:outer, axis::Int=1)
+	if length(positions_a) != length(positions_b)
+		throw(ArgumentError("positions_a and positions_b must have the same length."))
+	end
+	pairing = zip(positions_a, positions_b)
+	join(msa_a, msa_b, pairing, kind=kind, axis=axis)
+end
