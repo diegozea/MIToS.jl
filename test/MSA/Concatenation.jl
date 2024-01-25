@@ -1021,6 +1021,13 @@ end
                     @test sequencenames(ab) == ["SEQ1_&_SEQ2", "SEQ2_&_SEQ5"]
                     @test columnnames(ab) == ["1_1", "1_2", "2_1", "2_2"]
                     @test ab == Residue['D' 'A' 'D' 'A'; 'D' 'A' 'D' 'A']
+                    @testset "annotations" begin
+                        @test getannotfile(ab, "NCol") == "6_&_6"
+                        @test gethcatmapping(ab) == [1, 1, 2, 2]
+                        for seq in 1:2
+                            @test getsequencemapping(ab, seq) == [1, 2, 1, 2]
+                        end
+                    end
                 end
 
                 @testset "columns" begin
@@ -1030,6 +1037,15 @@ end
                     @test sequencenames(ab) == ["1_SEQ1", "1_SEQ2", "2_SEQ1", "2_SEQ2"]
                     @test columnnames(ab) == ["1", "2"]
                     @test ab == Residue['D' 'A'; 'D' 'A'; 'A' 'E'; 'A' 'E']
+                    @testset "annotations" begin
+                        @test getannotfile(ab, "1_NCol") == "6"
+                        @test getannotfile(ab, "2_NCol") == "6"
+                        @test getannotfile(ab, "1_ColMap") == "1,2"
+                        @test getannotfile(ab, "2_ColMap") == "2,5"
+                        @test_throws ErrorException gethcatmapping(ab)    
+                        @test getsequencemapping(ab, 1) == [1, 2]
+                        @test getsequencemapping(ab, 3) == [2, 5]
+                    end
                 end
             end
 
@@ -1045,6 +1061,17 @@ end
                     @test sequencenames(ab) == ["SEQ1_&_SEQ2", "SEQ2_&_SEQ5", "SEQ3", 
                         "SEQ4", "SEQ5_&_gap:1", "SEQ6"]
                     @test columnnames(ab) == ["1_1", "1_2", "2_1", "2_2"]
+                    @testset "annotations" begin
+                        @test getannotfile(ab, "NCol") == "6_&_6"
+                        @test gethcatmapping(ab) == [1, 1, 2, 2]
+                        @test getannotfile(ab, "ColMap") == "1,2,1,2"
+                        for seq in 1:2
+                            @test getsequencemapping(ab, seq) == [1, 2, 1, 2]
+                        end
+                        for seq in 3:6
+                            @test getsequencemapping(ab, seq) == [1, 2, 0, 0]
+                        end
+                    end
                 end
 
                 @testset "columns" begin
@@ -1054,6 +1081,19 @@ end
                     @test vec(sum(ab.==GAP, dims=1)) == [0, 0, 2, 2, 2, 2]
                     @test sequencenames(ab) == ["1_SEQ1", "1_SEQ2", "2_SEQ1", "2_SEQ2"]
                     @test columnnames(ab) == ["1", "2", "3", "4", "5", "6"]
+                    @testset "annotations" begin
+                        @test getannotfile(ab, "1_NCol") == "6"
+                        @test getannotfile(ab, "2_NCol") == "6"
+                        @test getannotfile(ab, "1_ColMap") == "1,2,3,4,5,6"
+                        @test getannotfile(ab, "2_ColMap") == "2,5,,,,"
+                        @test_throws ErrorException gethcatmapping(ab)
+                        for seq in 1:2
+                            @test getsequencemapping(ab, seq) == [1, 2, 3, 4, 5, 6]
+                        end
+                        for seq in 3:4
+                            @test getsequencemapping(ab, seq) == [2, 5, 0, 0, 0, 0]
+                        end
+                    end
                 end
             end
 
@@ -1140,6 +1180,21 @@ end
                         @test ab == join(msa62, msa62, OrderedDict{Int, Int}(1 => 2, 2 => 5))
                         @test ab == join(msa62, msa62, OrderedDict{String, String}("SEQ1" => "SEQ2", "SEQ2" => "SEQ5"))
                     end
+
+                    @testset "annotations" begin
+                        @test getannotfile(ab, "NCol") == "6_&_6"
+                        @test gethcatmapping(ab) == [1, 1, 2, 2]
+                        @test getannotfile(ab, "ColMap") == "1,2,1,2"
+                        for seq in [2, 5]
+                            @test getsequencemapping(ab, seq) == [1, 2, 1, 2]
+                        end
+                        for seq in [1, 3, 4, 10]
+                            @test getsequencemapping(ab, seq) == [0, 0, 1, 2]
+                        end
+                        for seq in [6, 7, 8, 9]
+                            @test getsequencemapping(ab, seq) == [1, 2, 0, 0]
+                        end
+                    end
                 end
 
                 @testset "columns" begin
@@ -1150,6 +1205,15 @@ end
                     @test sequencenames(ab) == ["1_SEQ1", "1_SEQ2", "2_SEQ1", "2_SEQ2"]
                     @test columnnames(ab) == ["gap:1", "1", "gap:2", "gap:3", "2", "3", 
                         "4", "5", "6", "gap:4"]
+                    @testset "annotations" begin
+                        @test getannotfile(ab, "1_NCol") == "6"
+                        @test getannotfile(ab, "2_NCol") == "6"
+                        @test getannotfile(ab, "1_ColMap") == ",1,,,2,3,4,5,6,"
+                        @test getannotfile(ab, "2_ColMap") == "1,2,3,4,5,,,,,6"
+                        @test_throws ErrorException gethcatmapping(ab)
+                        @test getsequencemapping(ab, 1) == [0, 1, 0, 0, 2, 3, 4, 5, 6, 0]
+                        @test getsequencemapping(ab, 3) == [1, 2, 3, 4, 5, 0, 0, 0, 0, 6]
+                    end
                 end
             end
         end
@@ -1249,6 +1313,20 @@ end
                         "SEQ3_&_gap:1", "SEQ5_&_gap:2", "SEQ6_&_gap:3", "gap:1_&_SEQ1",
                         "gap:2_&_SEQ5", "gap:3_&_SEQ6"]
                     @test columnnames(ab) == ["1_1", "1_2", "2_1", "2_2"]
+                    @testset "annotations" begin
+                        @test getannotfile(ab, "NCol") == "6_&_6"
+                        @test gethcatmapping(ab) == [1, 1, 2, 2]
+                        @test getannotfile(ab, "ColMap") == "1,2,1,2"
+                        for seq in 1:3
+                            @test getsequencemapping(ab, seq) == [1, 2, 1, 2]
+                        end
+                        for seq in 4:6
+                            @test getsequencemapping(ab, seq) == [1, 2, 0, 0]
+                        end
+                        for seq in 7:9
+                            @test getsequencemapping(ab, seq) == [0, 0, 1, 2]
+                        end
+                    end
                 end
 
                 @testset "columns" begin
@@ -1259,6 +1337,19 @@ end
                     @test sequencenames(ab) == ["1_SEQ1", "1_SEQ2", "2_SEQ1", "2_SEQ2"]
                     @test columnnames(ab) == ["1", "4", "2", "3", "5", "6", "gap:1", 
                         "gap:2", "gap:3"]
+                    @testset "annotations" begin
+                        @test getannotfile(ab, "1_NCol") == "6"
+                        @test getannotfile(ab, "2_NCol") == "6"
+                        @test getannotfile(ab, "1_ColMap") == "1,4,2,3,5,6,,,"
+                        @test getannotfile(ab, "2_ColMap") == "3,4,2,,,,1,5,6"
+                        @test_throws ErrorException gethcatmapping(ab)
+                        for seq in 1:2
+                            @test getsequencemapping(ab, seq) == [1, 4, 2, 3, 5, 6, 0, 0, 0]
+                        end
+                        for seq in 3:4
+                            @test getsequencemapping(ab, seq) == [3, 4, 2, 0, 0, 0, 1, 5, 6]
+                        end
+                    end
                 end
             end
         end
