@@ -846,6 +846,69 @@ function _reorder_and_extract_unmatched_names(msa, positions, axis::Int)
     return reordered_msa, unmatched_names
 end
 
+"""
+    join(msa_a::AnnotatedMultipleSequenceAlignment, 
+         msa_b::AnnotatedMultipleSequenceAlignment, 
+         pairing; 
+         kind::Symbol=:outer, 
+         axis::Int=1)::AnnotatedMultipleSequenceAlignment
+
+    join(msa_a::AnnotatedMultipleSequenceAlignment, 
+         msa_b::AnnotatedMultipleSequenceAlignment, 
+         positions_a, 
+         positions_b; 
+         kind::Symbol=:outer, 
+         axis::Int=1)::AnnotatedMultipleSequenceAlignment
+
+Join two Multiple Sequence Alignments (MSAs), `msa_a` and `msa_b`, based on specified 
+matching positions or names. The function supports two formats: one takes a `pairing` 
+argument as a list of correspondences, and the other takes `positions_a` and 
+`positions_b` as separate lists indicating matching positions or names in each MSA. 
+This function allows for various types of join operations (`:inner`, `:outer`, `:left`, 
+`:right`) and can merge MSAs by sequences (`axis` `1`) or by columns (`axis` `2`).
+
+**Parameters:**
+
+- `msa_a::AnnotatedMultipleSequenceAlignment`: The first MSA.
+- `msa_b::AnnotatedMultipleSequenceAlignment`: The second MSA.
+- `pairing`: An iterable where each element is a pair of sequence or column 
+  positions (`Int`s) or names (`String`s) to match between `msa_a` and `msa_b`. For example,
+  it can be a list of two-element tuples or pairs, or and `OrderedDict`.
+- `positions_a`, `positions_b`: Separate lists of positions or names in `msa_a` and `msa_b`, 
+  respectively.
+- `kind::Symbol`: Type of join operation. Default is `:outer`.
+- `axis::Int`: The axis along which to join (`1` to match sequences, `2` to match columns).
+
+**Returns:**
+
+- `AnnotatedMultipleSequenceAlignment`: A new MSA resulting from the join operation.
+
+**Behavior and Sequence Ordering:**
+
+The order of sequences or columns in the resulting MSA depends on the `kind` of join 
+operation and the order of elements in the `pairing` or `positions_a` and `positions_b` lists.
+- For `:inner` joins, the function returns an MSA containing only those sequences/columns 
+  that are paired in both `msa_a` and `msa_b`. The order of elements in the output MSA 
+  follows the order in the `pairing` or position lists.
+- For `:outer` joins, the output MSA includes all sequences/columns from both `msa_a` and 
+  `msa_b`. Unpaired sequences/columns are filled with gaps as needed. The sequences/columns 
+  from `msa_a` are placed first. If the `pairing` or position lists are sorted, the output
+  MSA columns and sequences will keep the same order as in the inputs. That's nice for
+  situations such as profile alignments where the order of columns is important. If the 
+  `pairing` or position lists are not sorted, then the order of sequences/columns in the 
+  output MSA is not guaranteed to be the same as in the inputs. In particular, the matched 
+  sequences or columns will be placed first, followed by the unmatched ones.
+- For `:left` joins, all sequences/columns from `msa_a` are included in the output MSA 
+  keeping the same order as in `msa_a`. Sequences/columns from `msa_b` are added where 
+  matches are found, with gaps filling the unmatched positions.
+- For `:right` joins, the output MSA behaves like `:left` joins but with roles of 
+  `msa_a` and `msa_b` reversed.
+
+**Warning:** When using `Dict` for pairing, the order of elements might not be preserved as 
+expected. `Dict` in Julia does not maintain the order of its elements, which might lead to 
+unpredictable order of sequences/columns in the output MSA. To preserve order, it is 
+recommended to use an `OrderedDict` or a list of `Pair`s objects.
+"""
 function Base.join(msa_a::AnnotatedMultipleSequenceAlignment, 
 	msa_b::AnnotatedMultipleSequenceAlignment, pairing; kind::Symbol=:outer, axis::Int=1)
 	# Check that input arguments and throw explicit ArgumentErrors if necessary
@@ -863,7 +926,9 @@ function Base.join(msa_a::AnnotatedMultipleSequenceAlignment,
 	if axis != 1 && axis != 2
 		throw(ArgumentError("The axis must be 1 (sequences) or 2 (columns)."))
 	end
+	# Get the matching positions as integer vectors
 	positions_a, positions_b = _find_pairing_positions(axis, msa_a, msa_b, pairing)
+	# Perform the join
 	if kind == :inner
 		if axis == 1
 			return hcat(msa_a[positions_a, :], msa_b[positions_b, :])
@@ -885,12 +950,14 @@ function Base.join(msa_a::AnnotatedMultipleSequenceAlignment,
 			reordered_b, unmatched_names_b = _reorder_and_extract_unmatched_names(msa_b, 
 				positions_b, axis)
 			if axis == 1
+				@warn "Sequence order may not be preserved due to unsorted matching positions."
 				a_block = _insert_gap_sequences(reordered_a, unmatched_names_b, 
 					nsequences(reordered_a) + 1)
 				b_block = _insert_gap_sequences(reordered_b, unmatched_names_a,
 					length(positions_b) + 1)
 				return hcat(a_block, b_block)
 			else
+				@warn "Column order may not be preserved due to unsorted matching positions."
 				a_block = _insert_gap_columns(reordered_a, length(unmatched_names_b), 
 					ncolumns(reordered_a) + 1)
 				b_block = _insert_gap_columns(reordered_b, length(unmatched_names_a),
