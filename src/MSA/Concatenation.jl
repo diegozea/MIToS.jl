@@ -219,7 +219,7 @@ end
 function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 	seqnames = _h_concatenated_seq_names(msa...)
 	colnames = _h_concatenated_col_names(msa...)
-	concatenated_matrix = hcat(getresidues.(msa)...)
+	concatenated_matrix = reduce(hcat, getresidues.(msa))
 	concatenated_msa = _namedresiduematrix(concatenated_matrix, seqnames, colnames)
 	seqname_mapping = _get_seqname_mapping_hcat(seqnames, msa...)
 	seq_lengths = _get_seq_lengths(msa...)
@@ -236,7 +236,7 @@ function Base.hcat(msa::T...) where T <: AnnotatedAlignedObject
 end
 
 function Base.hcat(msa::T...) where T <: UnannotatedAlignedObject
-	concatenated_matrix = hcat(getresidues.(msa)...)
+	concatenated_matrix = reduce(hcat, getresidues.(msa))
 	seqnames = _h_concatenated_seq_names(msa...)
 	colnames = _h_concatenated_col_names(msa...)
 	concatenated_msa = _namedresiduematrix(concatenated_matrix, seqnames, colnames)
@@ -404,7 +404,7 @@ end
 function Base.vcat(msa::T...) where T <: AnnotatedAlignedObject
 	seqnames, label_mapping = _v_concatenated_seq_names(msa...; fill_mapping=true)
 	colnames = columnname_iterator(msa[1])
-	concatenated_matrix = vcat(getresidues.(msa)...)
+	concatenated_matrix = reduce(vcat, getresidues.(msa))
 	concatenated_msa = _namedresiduematrix(concatenated_matrix, seqnames, colnames)
 	seqname_mapping = _get_seqname_mapping_vcat(seqnames, msa...)
 	old_annot = annotations.([msa...])
@@ -420,7 +420,7 @@ function Base.vcat(msa::T...) where T <: AnnotatedAlignedObject
 end
 
 function Base.vcat(msa::T...) where T <: UnannotatedAlignedObject
-	concatenated_matrix = vcat(getresidues.(msa)...)
+	concatenated_matrix = reduce(vcat, getresidues.(msa))
 	seqnames, _ = _v_concatenated_seq_names(msa...)
 	colnames = columnname_iterator(msa[1])
 	concatenated_msa = _namedresiduematrix(concatenated_matrix, seqnames, colnames)

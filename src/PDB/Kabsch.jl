@@ -132,7 +132,9 @@ function coordinatesmatrix(res::PDBResidue)
     mat'
 end
 
-coordinatesmatrix(residues::AbstractVector{PDBResidue}) = vcat(map(coordinatesmatrix, residues)...)
+function coordinatesmatrix(residues::AbstractVector{PDBResidue})
+    reduce(vcat, map(coordinatesmatrix, residues))
+end
 
 """
 Returns a `Matrix{Float64}` with the centered coordinates of all the atoms in `residues`.

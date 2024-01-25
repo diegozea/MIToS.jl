@@ -714,7 +714,6 @@ end
             # sequences
             b_seq = MSA._add_gaps_in_b(msa62, msa62, [1, 2], [2, 5])
             @test size(b_seq) == (6, 2)
-            @show b_seq
             @test all(b_seq[1:2, :] .!= GAP)
             @test all(b_seq[3:6, :] .== GAP)
 
