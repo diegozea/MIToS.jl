@@ -1,5 +1,16 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.13.1 to v2.14.0
+
+* The `MSA` now defines `join` for MSA objects, allowing to join or merge two 
+  `AnnotationMultipleSequenceAlignment` objects based on a list of matching sequences or columns.
+
+* The `MSA` module now defines `hcat` and `vcat` for MSA objects, taking care of sequence 
+  and column names, and MSA annotations.
+
+* The `MSA` now exports the `sequencename_iterator` and `columnname_iterator` functions to 
+  return an iterator over the sequence or column names of an MSA. 
+
 ### Changes from v2.13.0 to v2.13.1
 
 * The `PDB` module can now parse the 66-character width columns of the PDB files created 
