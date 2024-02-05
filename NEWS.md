@@ -9,14 +9,18 @@
   and column names, and MSA annotations.
 
 * The `MSA` now exports the `sequencename_iterator` and `columnname_iterator` functions to 
-  return an iterator over the sequence or column names of an MSA. 
+  return an iterator over the sequence or column names of an MSA.
+
+* The `MSA` now exports the `sequence_index` and `column_index` functions to return the 
+  integer position of a sequence or column name in an MSA.
+
+* `merge` and `merge!` are now defined for `Annotations` objects in the `MSA` module.
 
 ### Changes from v2.13.0 to v2.13.1
 
 * The `PDB` module can now parse the 66-character width columns of the PDB files created 
 by *Foldseek*. These structures contain only the alpha carbons and do not have the column 
 determining the element symbol.
-
 
 ### Changes from v2.12.0 to v2.13.0
 
