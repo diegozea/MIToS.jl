@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Pfam · MIToS</title><meta name="title" content="Pfam · MIToS"/><meta property="og:title" content="Pfam · MIToS"/><meta property="twitter:title" content="Pfam · MIToS"/><meta name="description" content="Documentation for MIToS."/><meta property="og:description" content="Documentation for MIToS."/><meta property="twitter:description" content="Documentation for MIToS."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">MIToS</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../Installation/">Installation</a></li><li><a class="tocitem" href="../Example/">Example</a></li><li><span class="tocitem">Modules</span><ul><li><a class="tocitem" href="../MSA/">MSA</a></li><li><a class="tocitem" href="../Information/">Information</a></li><li><a class="tocitem" href="../SIFTS/">SIFTS</a></li><li><a class="tocitem" href="../PDB/">PDB</a></li><li class="is-active"><a class="tocitem" href>Pfam</a><ul class="internal"><li><a class="tocitem" href="#Features"><span>Features</span></a></li><li><a class="tocitem" href="#Contents"><span>Contents</span></a></li><li><a class="tocitem" href="#Getting-a-Pfam-MSA"><span>Getting a Pfam MSA</span></a></li><li><a class="tocitem" href="#Getting-PDB-information-from-an-MSA"><span>Getting PDB information from an MSA</span></a></li></ul></li></ul></li><li><span class="tocitem">Cookbook</span><ul><li><a class="tocitem" href="../01_Change_B_factors/">Change B-factors</a></li><li><a class="tocitem" href="../02_Linking_structural_and_evolutionary_information/">Linking structural and evolutionary information</a></li><li><a class="tocitem" href="../03_RMSF/">Root Mean Squared Fluctuation (RMSF)</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../MSA_API/">MSA</a></li><li><a class="tocitem" href="../Information_API/">Information</a></li><li><a class="tocitem" href="../SIFTS_API/">SIFTS</a></li><li><a class="tocitem" href="../PDB_API/">PDB</a></li><li><a class="tocitem" href="../Pfam_API/">Pfam</a></li><li><a class="tocitem" href="../Utils_API/">Utils</a></li></ul></li><li><a class="tocitem" href="../Scripts/">Scripts</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Modules</a></li><li class="is-active"><a href>Pfam</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Pfam</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/diegozea/MIToS.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/diegozea/MIToS.jl/blob/master/docs/src/Pfam.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Module-Pfam"><a class="docs-heading-anchor" href="#Module-Pfam">Pfam</a><a id="Module-Pfam-1"></a><a class="docs-heading-anchor-permalink" href="#Module-Pfam" title="Permalink"></a></h1><p>MIToS defines methods and types useful for any MSA. The <code>Pfam</code> module uses other MIToS modules in the context of Pfam MSAs, where it’s possible to us determine how structure and sequence information should be mapped. This module defines functions that go from a Pfam MSA to the protein contact prediction performance of pairwise scores estimated from that MSA.</p><pre><code class="language-julia hljs">using MIToS.Pfam # to load the Pfam module</code></pre><h2 id="Features"><a class="docs-heading-anchor" href="#Features">Features</a><a id="Features-1"></a><a class="docs-heading-anchor-permalink" href="#Features" title="Permalink"></a></h2><ul><li><a href="#Getting-a-Pfam-MSA"><strong>Download and read</strong></a> Pfam MSAs.</li><li>Obtain <a href="#Getting-PDB-information-from-an-MSA"><strong>PDB information</strong></a> from alignment annotations.</li><li><a href="#Getting-PDB-information-from-an-MSA"><strong>Map</strong></a> between sequence/alignment residues/columns and PDB structures.</li><li>Measure of <a href="#PDB-contacts-and-AUC"><strong>AUC</strong></a> (ROC curve) for <a href="#PDB-contacts-and-AUC"><strong>protein contact</strong></a> prediction of MI scores.</li></ul><h2 id="Contents"><a class="docs-heading-anchor" href="#Contents">Contents</a><a id="Contents-1"></a><a class="docs-heading-anchor-permalink" href="#Contents" title="Permalink"></a></h2><ul><li><a href="#Module-Pfam">Pfam</a></li><li class="no-marker"><ul><li><a href="#Features">Features</a></li><li><a href="#Contents">Contents</a></li><li><a href="#Getting-a-Pfam-MSA">Getting a Pfam MSA</a></li><li><a href="#Getting-PDB-information-from-an-MSA">Getting PDB information from an MSA</a></li><li class="no-marker"><ul><li><a href="#PDB-contacts-and-AUC">PDB contacts and AUC</a></li></ul></li></ul></li></ul><h2 id="Getting-a-Pfam-MSA"><a class="docs-heading-anchor" href="#Getting-a-Pfam-MSA">Getting a Pfam MSA</a><a id="Getting-a-Pfam-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-a-Pfam-MSA" title="Permalink"></a></h2><p>The function <code>downloadpfam</code> takes a Pfam accession and downloads a Pfam MSA in Stockholm format. In that way, you can do</p><pre><code class="language-julia hljs">pfamfile = downloadpfam(&quot;PF18883&quot;)</code></pre><p>to get the MSA. But, we are going to use an already downloaded file in this case:</p><pre><code class="language-julia hljs">using MIToS
+pfamfile = joinpath(dirname(pathof(MIToS)), &quot;..&quot;, &quot;docs&quot;, &quot;data&quot;, &quot;PF18883.stockholm.gz&quot;);</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;/home/runner/work/MIToS.jl/MIToS.jl/src/../docs/data/PF18883.stockholm.gz&quot;</code></pre><p>Use <code>read</code> function and the <code>Stockholm</code> <code>FileFormat</code> to get a <code>AnnotatedMultipleSequenceAlignment</code> object with the MSA and its Pfam annotations. You must set <code>generatemapping</code> and <code>useidcoordinates</code> to <code>true</code> the first time you read the downloaded MSA. This is necessary to some of the methods in the <code>Pfam</code> module.  </p><pre><code class="language-julia hljs">msa = read(pfamfile, Stockholm, generatemapping=true, useidcoordinates=true)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">AnnotatedMultipleSequenceAlignment with 1649 annotations : 811×113 Named Matrix{MIToS.MSA.Residue}
+                 Seq ╲ Col │  53   54   55   56   57  …  428  429  430  431  432
+───────────────────────────┼────────────────────────────────────────────────────
+A0A370X5B3_9GAMM/1736-1853 │   -    -    -    -    -  …    Y    A    Y    R    L
+D1AVB4_STRM9/461-568       │   -    -    -    -    -       Y    R    Y    R    L
+A0A2T5HR93_9PSED/761-875   │   S    N    L    T    S       Y    Q    Y    T    L
+A0A427CBK0_9GAMM/418-540   │   -    -    -    -    -       F    R    Y    R    L
+A0A1I1MWW5_9BURK/779-907   │   -    -    -    -    -       Y    E    Y    R    L
+C6JIE8_FUSVA/367-481       │   -    I    I    S    N       Y    E    Y    F    L
+A0A017H8U7_9FUSO/691-802   │   S    S    V    T    E       Y    E    Y    T    L
+A0A085VLZ6_PSESX/333-446   │   -    -    -    -    -       Y    E    Y    Y    L
+⋮                              ⋮    ⋮    ⋮    ⋮    ⋮  ⋱    ⋮    ⋮    ⋮    ⋮    ⋮
+A0A318T6N3_9RHIZ/636-751   │   -    -    -    K    T       Y    V    Y    Q    L
+A0A388SGN0_9BURK/625-739   │   S    E    L    T    T       Y    L    Y    E    L
+A0A443IAD3_9GAMM/1863-1969 │   -    -    -    -    -       Y    D    Y    S    L
+A0A2S8VQP6_9CAUL/182-287   │   -    -    -    -    R       V    R    Y    R    -
+A0A1A9RWJ5_9NEIS/1004-1099 │   S    T    V    T    N       -    -    -    -    -
+A6T0K2_JANMA/343-459       │   -    -    -    -    -       Y    A    Y    T    L
+Q2KVL9_BORA1/480-598       │   S    R    I    T    R       Y    E    Y    R    L
+A0A2W4CX06_9RHIZ/331-444   │   -    -    -    -    N  …    Y    E    Y    L    L</code></pre><h2 id="Getting-PDB-information-from-an-MSA"><a class="docs-heading-anchor" href="#Getting-PDB-information-from-an-MSA">Getting PDB information from an MSA</a><a id="Getting-PDB-information-from-an-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-PDB-information-from-an-MSA" title="Permalink"></a></h2><p>The function <code>getseq2pdb</code> parses the MSA annotations to return a <code>Dict</code> from the sequence identifier in the MSA to PDB and chain codes.  </p><pre><code class="language-julia hljs">getseq2pdb(msa)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{String, Vector{Tuple{String, String}}} with 1 entry:
+  &quot;ICSA_SHIFL/611-720&quot; =&gt; [(&quot;5KE1&quot;, &quot;B&quot;), (&quot;3ML3&quot;, &quot;A&quot;), (&quot;5KE1&quot;, &quot;A&quot;)]</code></pre><p>Once you know the association between PDB chains and sequences, you can use that information together with the <code>msacolumn2pdbresidue</code> function to get the PDB residue number that correspond to each MSA column for given a determined sequence and PDB chain. That function downloads information from SIFTS to generate the mapping.  </p><pre><code class="language-julia hljs">col2res = msacolumn2pdbresidue(msa, &quot;ICSA_SHIFL/611-720&quot;, &quot;3ML3&quot;, &quot;A&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{Int64, String} with 103 entries:
+  61  =&gt; &quot;618&quot;
+  62  =&gt; &quot;619&quot;
+  64  =&gt; &quot;620&quot;
+  65  =&gt; &quot;621&quot;
+  66  =&gt; &quot;622&quot;
+  67  =&gt; &quot;623&quot;
+  68  =&gt; &quot;624&quot;
+  76  =&gt; &quot;625&quot;
+  77  =&gt; &quot;626&quot;
+  78  =&gt; &quot;627&quot;
+  79  =&gt; &quot;628&quot;
+  80  =&gt; &quot;629&quot;
+  96  =&gt; &quot;630&quot;
+  97  =&gt; &quot;631&quot;
+  98  =&gt; &quot;632&quot;
+  101 =&gt; &quot;633&quot;
+  102 =&gt; &quot;634&quot;
+  103 =&gt; &quot;635&quot;
+  106 =&gt; &quot;636&quot;
+  ⋮   =&gt; ⋮</code></pre><p>The returned dictionary can be used to get the PDB residue associated to each column (using the <code>msaresidues</code> function)...  </p><pre><code class="language-julia hljs">using MIToS.PDB
+pdbfile = downloadpdb(&quot;3ML3&quot;)
+pdb = read(pdbfile, PDBML)
+resdict = @residuesdict pdb model &quot;1&quot; chain &quot;A&quot; group &quot;ATOM&quot; residue All
+
+msaresidues(msa, resdict, col2res)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{Int64, MIToS.PDB.PDBResidue} with 103 entries:
+  61  =&gt; PDBResidue:…
+  62  =&gt; PDBResidue:…
+  64  =&gt; PDBResidue:…
+  65  =&gt; PDBResidue:…
+  66  =&gt; PDBResidue:…
+  67  =&gt; PDBResidue:…
+  68  =&gt; PDBResidue:…
+  76  =&gt; PDBResidue:…
+  77  =&gt; PDBResidue:…
+  78  =&gt; PDBResidue:…
+  79  =&gt; PDBResidue:…
+  80  =&gt; PDBResidue:…
+  96  =&gt; PDBResidue:…
+  97  =&gt; PDBResidue:…
+  98  =&gt; PDBResidue:…
+  101 =&gt; PDBResidue:…
+  102 =&gt; PDBResidue:…
+  103 =&gt; PDBResidue:…
+  106 =&gt; PDBResidue:…
+  ⋮   =&gt; ⋮</code></pre><p>...or to delete the columns without PDB residues (using the <code>hasresidues</code> function):  </p><pre><code class="language-julia hljs">using MIToS.MSA
+filtercolumns!(msa, hasresidues(msa, col2res))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">AnnotatedMultipleSequenceAlignment with 1650 annotations : 811×103 Named Matrix{MIToS.MSA.Residue}
+                 Seq ╲ Col │  61   62   64   65   66  …  428  429  430  431  432
+───────────────────────────┼────────────────────────────────────────────────────
+A0A370X5B3_9GAMM/1736-1853 │   S    -    G    T    I  …    Y    A    Y    R    L
+D1AVB4_STRM9/461-568       │   N    K    G    L    I       Y    R    Y    R    L
+A0A2T5HR93_9PSED/761-875   │   D    H    S    L    I       Y    Q    Y    T    L
+A0A427CBK0_9GAMM/418-540   │   R    -    G    V    I       F    R    Y    R    L
+A0A1I1MWW5_9BURK/779-907   │   -    -    -    -    -       Y    E    Y    R    L
+C6JIE8_FUSVA/367-481       │   L    N    G    T    T       Y    E    Y    F    L
+A0A017H8U7_9FUSO/691-802   │   E    D    S    T    L       Y    E    Y    T    L
+A0A085VLZ6_PSESX/333-446   │   A    -    G    T    L       Y    E    Y    Y    L
+⋮                              ⋮    ⋮    ⋮    ⋮    ⋮  ⋱    ⋮    ⋮    ⋮    ⋮    ⋮
+A0A318T6N3_9RHIZ/636-751   │   A    -    G    N    V       Y    V    Y    Q    L
+A0A388SGN0_9BURK/625-739   │   N    S    G    T    I       Y    L    Y    E    L
+A0A443IAD3_9GAMM/1863-1969 │   S    -    G    N    I       Y    D    Y    S    L
+A0A2S8VQP6_9CAUL/182-287   │   D    G    G    L    I       V    R    Y    R    -
+A0A1A9RWJ5_9NEIS/1004-1099 │   A    -    G    T    V       -    -    -    -    -
+A6T0K2_JANMA/343-459       │   D    N    G    T    I       Y    A    Y    T    L
+Q2KVL9_BORA1/480-598       │   R    D    S    S    V       Y    E    Y    R    L
+A0A2W4CX06_9RHIZ/331-444   │   S    -    G    T    I  …    Y    E    Y    L    L</code></pre><h3 id="PDB-contacts-and-AUC"><a class="docs-heading-anchor" href="#PDB-contacts-and-AUC">PDB contacts and AUC</a><a id="PDB-contacts-and-AUC-1"></a><a class="docs-heading-anchor-permalink" href="#PDB-contacts-and-AUC" title="Permalink"></a></h3><p>The <code>Dict</code> between MSA columns and PDB residue number also can be used to generate a protein contact map associated to the MSA.  </p><pre><code class="language-julia hljs">cmap = msacontacts(msa, resdict, col2res)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">103×103 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
+Col1 ╲ Col2 │  61   62   64   65   66   67  …  427  428  429  430  431  432
+────────────┼──────────────────────────────────────────────────────────────
+61          │ NaN  1.0  1.0  1.0  0.0  0.0  …  0.0  0.0  0.0  0.0  0.0  0.0
+62          │ 1.0  NaN  1.0  1.0  0.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0
+64          │ 1.0  1.0  NaN  1.0  1.0  0.0     0.0  0.0  0.0  0.0  0.0  0.0
+65          │ 1.0  1.0  1.0  NaN  1.0  1.0     0.0  0.0  0.0  0.0  0.0  0.0
+66          │ 0.0  0.0  1.0  1.0  NaN  1.0     0.0  0.0  0.0  0.0  0.0  0.0
+67          │ 0.0  0.0  0.0  1.0  1.0  NaN     0.0  0.0  0.0  0.0  0.0  0.0
+68          │ 0.0  0.0  0.0  0.0  1.0  1.0     0.0  0.0  0.0  0.0  0.0  0.0
+76          │ 0.0  0.0  0.0  0.0  0.0  1.0     0.0  0.0  0.0  0.0  0.0  0.0
+⋮               ⋮    ⋮    ⋮    ⋮    ⋮    ⋮  ⋱    ⋮    ⋮    ⋮    ⋮    ⋮    ⋮
+423         │ 0.0  0.0  0.0  0.0  0.0  0.0     1.0  1.0  1.0  1.0  0.0  0.0
+424         │ 0.0  0.0  0.0  0.0  0.0  0.0     1.0  1.0  0.0  0.0  0.0  0.0
+427         │ 0.0  0.0  0.0  0.0  0.0  0.0     NaN  1.0  1.0  0.0  0.0  0.0
+428         │ 0.0  0.0  0.0  0.0  0.0  0.0     1.0  NaN  1.0  1.0  0.0  0.0
+429         │ 0.0  0.0  0.0  0.0  0.0  0.0     1.0  1.0  NaN  1.0  1.0  0.0
+430         │ 0.0  0.0  0.0  0.0  0.0  0.0     0.0  1.0  1.0  NaN  1.0  1.0
+431         │ 0.0  0.0  0.0  0.0  0.0  0.0     0.0  0.0  1.0  1.0  NaN  1.0
+432         │ 0.0  0.0  0.0  0.0  0.0  0.0  …  0.0  0.0  0.0  1.0  1.0  NaN</code></pre><p>That protein contact map can be used to calculate the Area Under the ROC Curve for a given score with the <code>AUC</code> function.  </p><pre><code class="language-julia hljs">using MIToS.Information
+ZMIp, MIp = buslje09(msa)
+
+using ROCAnalysis # You need to load ROCAnalysis to use the AUC function
+
+AUC(ZMIp, cmap)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">0.7513055762008594</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../PDB/">« PDB</a><a class="docs-footer-nextpage" href="../01_Change_B_factors/">Change B-factors »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Monday 5 February 2024 15:25">Monday 5 February 2024</span>. Using Julia version 1.10.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
