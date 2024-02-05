@@ -1,5 +1,10 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.14.0 to v2.14.1
+
+* The `modelled_sequences` function now returns only the selected chains, therefore avoid 
+  the inclusion of empty sequences in the output.
+
 ### Changes from v2.13.1 to v2.14.0
 
 * The `MSA` now defines `join` for MSA objects, allowing to join or merge two 
