@@ -61,6 +61,10 @@ end
         @test seqs[(model="1", chain="B")] == seqs[(model="1", chain="D")]
         # insertions in chain B
         seqs_chain_B = modelled_sequences(res, chain="B")
+        # do not include the chain A sequence when only chain B is demanded
+        @test !haskey(seqs_chain_B, (model="1", chain="A"))
+        # check the sequence of chain B
+        @test haskey(seqs_chain_B, (model="1", chain="B"))
         seq_B = seqs_chain_B[(model="1", chain="B")]
         @test seqs[(model="1", chain="B")] == seq_B
         @test occursin("LSSL", seq_B)

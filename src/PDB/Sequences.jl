@@ -14,12 +14,14 @@ is_aminoacid(residue::PDBResidue) = is_aminoacid(residue.id)
 is_aminoacid(residue_id::PDBResidueIdentifier) = _is_aminoacid(residue_id.name)
 _is_aminoacid(residue_name::String) = haskey(THREE2ONE, residue_name)
 
-function _add_sequence!(buf, chains, key)
+function _add_sequence!(chains, key, buf)
     seq = String(take!(buf))
-    if haskey(chains, key)
-        chains[key] *= seq
-    else
-        chains[key] = seq
+    if !isempty(seq) # do not add empty sequences, for example, if a chain is not selected
+        if haskey(chains, key)
+            chains[key] *= seq
+        else
+            chains[key] = seq
+        end
     end
 end
 
@@ -48,11 +50,11 @@ function modelled_sequences(residue_list::AbstractArray{PDBResidue,N};
         end
         current_key = (model=res.id.model, chain=res.id.chain)
         if current_key != key
-            _add_sequence!(buf, chains, key)
+            _add_sequence!(chains, key, buf)
             key = current_key
         end
         write(buf, THREE2ONE[res.id.name])
     end
-    _add_sequence!(buf, chains, key)
+    _add_sequence!(chains, key, buf)
     chains
 end
