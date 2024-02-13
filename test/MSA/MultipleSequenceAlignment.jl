@@ -225,6 +225,32 @@
             end
         end
 
+        @testset "Rename sequences" begin
+
+            # rename_sequences!
+            for object in (NamedArray(M), msa, annotated_msa)
+                copied_object = deepcopy(object)
+                if isa(copied_object, AnnotatedMultipleSequenceAlignment)
+                    setannotsequence!(copied_object, "1", "Name", "One")
+                    setannotresidue!(copied_object, "1", "SS", "HHHHHHH")
+                end
+                new_object = rename_sequences!(copied_object, ["I","II","III"])
+                @test new_object == copied_object
+                @test sequencenames(copied_object) == ["I","II","III"]
+                if isa(copied_object, AnnotatedMultipleSequenceAlignment)
+                    @test getannotsequence(copied_object, "I", "Name") == "One"
+                    @test getannotresidue(copied_object, "I", "SS") == "HHHHHHH"
+                end
+            end
+
+            # rename_sequences
+            for object in (NamedArray(M), msa, annotated_msa)
+                new_object = rename_sequences(object, ["I","II","III"])
+                @test sequencenames(object) == ["1","2","3"]
+                @test sequencenames(new_object) == ["I","II","III"]
+            end
+        end
+
         @testset "Column names" begin
 
             for object in (M, NamedArray(M), msa, annotated_msa)

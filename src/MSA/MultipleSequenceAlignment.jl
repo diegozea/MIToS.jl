@@ -554,3 +554,28 @@ function stringsequence(seq::AbstractMatrix{Residue})
 end
 
 stringsequence(seq::AbstractAlignedSequence) = stringsequence(namedmatrix(seq))
+
+# Rename sequences
+# ----------------
+
+function rename_sequences!(msa::NamedResidueMatrix{AT}, newnames) where AT
+    setnames!(msa, newnames, 1)
+    msa
+end
+
+function rename_sequences!(msa::MultipleSequenceAlignment, newnames)
+    rename_sequences!(namedmatrix(msa), newnames)
+    msa
+end
+
+function rename_sequences!(msa::AnnotatedMultipleSequenceAlignment, newnames)
+    name_mapping = Dict{String, String}(sequencenames(msa) .=> newnames)
+    new_annotations = _rename_sequences(annotations(msa), name_mapping)
+    rename_sequences!(namedmatrix(msa), newnames)
+    msa.annotations = new_annotations
+    msa
+end
+
+
+
+rename_sequences(msa, newnames) = rename_sequences!(deepcopy(msa), newnames)
