@@ -558,6 +558,19 @@ stringsequence(seq::AbstractAlignedSequence) = stringsequence(namedmatrix(seq))
 # Rename sequences
 # ----------------
 
+const RENAME_SEQUENCES_DOC = md"""
+Rename the sequences of an MSA given a vector of new names, a dictionary mapping old names 
+to new names, or one or more pairs going from old to new names. If the `msa` is an 
+`AnnotatedMultipleSequenceAlignment`, the annotations are also updated.
+"""
+
+"""
+    rename_sequences!(msa, newnames)
+    rename_sequences!(msa, old2new::AbstractDict)
+    rename_sequences!(msa, old2new::Pair...)
+    
+$RENAME_SEQUENCES_DOC The function modifies the `msa` in place and returns it.
+"""
 function rename_sequences!(msa::NamedResidueMatrix{AT}, newnames) where AT
     setnames!(msa, newnames, 1)
     msa
@@ -577,6 +590,14 @@ function rename_sequences!(msa::AnnotatedMultipleSequenceAlignment, newnames)
     msa
 end
 
+"""
+    rename_sequences(msa, newnames)
+    rename_sequences(msa, old2new::AbstractDict)
+    rename_sequences(msa, old2new::Pair...)
+
+$RENAME_SEQUENCES_DOC The function returns a new MSA with the sequences renamed without 
+modifying the original MSA.
+"""
 rename_sequences(msa, newnames) = rename_sequences!(deepcopy(msa), newnames)
 
 # Rename a single sequence or a set of sequences

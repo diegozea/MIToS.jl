@@ -1,5 +1,10 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.14.1 to v2.15.0
+
+* The `MSA` module now exports the `rename_sequences!` and `rename_sequences` functions to
+  rename the sequences of an MSA object.
+
 ### Changes from v2.14.0 to v2.14.1
 
 * The `modelled_sequences` function now returns only the selected chains, therefore avoid 
