@@ -569,13 +569,30 @@ function rename_sequences!(msa::MultipleSequenceAlignment, newnames)
 end
 
 function rename_sequences!(msa::AnnotatedMultipleSequenceAlignment, newnames)
-    name_mapping = Dict{String, String}(sequencenames(msa) .=> newnames)
+    name_mapping = Dict{String, String}(old => new for (old, new) in 
+        zip(sequencename_iterator(msa), newnames) if old != new)
     new_annotations = _rename_sequences(annotations(msa), name_mapping)
     rename_sequences!(namedmatrix(msa), newnames)
     msa.annotations = new_annotations
     msa
 end
 
-
-
 rename_sequences(msa, newnames) = rename_sequences!(deepcopy(msa), newnames)
+
+# Rename a single sequence or a set of sequences
+
+function _newnames(msa, old2new::AbstractDict)
+    String[ get(old2new, name, name) for name in sequencename_iterator(msa) ]
+end
+
+_newnames(msa, old2new::Pair...) = _newnames(msa, Dict(old2new))
+
+function rename_sequences!(msa, old2new::AbstractDict)
+    rename_sequences!(msa, _newnames(msa, old2new))
+end
+
+function rename_sequences!(msa, old2new::Pair...)
+    rename_sequences!(msa, _newnames(msa, old2new...))
+end
+
+rename_sequences(msa, old2new::Pair...) = rename_sequences(msa, _newnames(msa, old2new...))

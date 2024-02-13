@@ -249,6 +249,25 @@
                 @test sequencenames(object) == ["1","2","3"]
                 @test sequencenames(new_object) == ["I","II","III"]
             end
+
+            # rename one or two sequences
+            for object in (NamedArray(M), msa, annotated_msa)
+                copied_object = deepcopy(object)
+                if isa(copied_object, AnnotatedMultipleSequenceAlignment)
+                    setannotsequence!(copied_object, "1", "Name", "One")
+                    setannotresidue!(copied_object, "1", "SS", "HHHHHHH")
+                end
+                # Testing only rename_sequences with Pairs
+                # as rename_sequences calls rename_sequences! and 
+                # Pairs are transformed to Dict and then to Vectors using _newnames
+                new_object = rename_sequences(copied_object, "1" => "I", "2" => "II")
+                @test sequencenames(copied_object) == ["1","2","3"]
+                @test sequencenames(new_object) == ["I","II","3"]
+                if isa(new_object, AnnotatedMultipleSequenceAlignment)
+                    @test getannotsequence(new_object, "I", "Name") == "One"
+                    @test getannotresidue(new_object, "I", "SS") == "HHHHHHH"
+                end
+            end
         end
 
         @testset "Column names" begin
