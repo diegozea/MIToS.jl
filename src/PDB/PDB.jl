@@ -25,7 +25,7 @@ using LightXML
 using LinearAlgebra
 using Statistics            # mean
 using MIToS.Utils
-using Formatting
+using Format
 using JSON
 using JSON3
 using HTTP
