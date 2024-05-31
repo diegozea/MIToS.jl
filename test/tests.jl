@@ -17,6 +17,7 @@ using Clustering            # test/MSA/Hobohm.jl
 using NamedArrays           # array
 using StatsBase             # WeightVec
 using PairwiseListMatrices  # getlist
+using HTTP                  # HTTP.Exceptions.StatusError
 
 const DATA = joinpath(@__DIR__, "data")
 
@@ -63,6 +64,7 @@ end
     include("PDB/Kabsch.jl")
     include("PDB/Internals.jl")
     include("PDB/Sequences.jl")
+    include("PDB/AlphaFoldDB.jl")
 end
 
 # SIFTS

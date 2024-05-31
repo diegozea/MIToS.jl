@@ -27,6 +27,7 @@ using Statistics            # mean
 using MIToS.Utils
 using Formatting
 using JSON
+using JSON3
 using HTTP
 using Logging
 
@@ -101,6 +102,9 @@ export  # PDBResidues
         # Sequences
         is_aminoacid,
         modelled_sequences,
+        # AlphaFoldDB
+        query_alphafolddb,
+        download_alphafold_structure,
         # Imported from Base (and exported for docs)
         any,
         parse,
@@ -115,5 +119,6 @@ include("PDBParser.jl")
 include("PDBMLParser.jl")
 include("Kabsch.jl")
 include("Plots.jl")
+include("AlphaFoldDB.jl")
 
 end
