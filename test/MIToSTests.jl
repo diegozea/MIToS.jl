@@ -1,9 +1,19 @@
 """
 You need to `include` this file or load this module in your Julia session to run the tests
-using `ReTest`. As `ReTest` is not a `MIToS` dependency, so you need to install it manually.
-It is also recommended to install `Revise`. The main advantage of `ReTest` is that it 
-allows you to run only selected tests. An example of usage if you want to run the `hcat`
-tests from the `MSA` module:
+using `ReTest`. The main advantage of `ReTest` is that it allows you to run only selected 
+tests. As `ReTest` is not a `MIToS` dependency, so you need to install it manually.
+It is also recommended to install `Revise`. Also, you will need to install the test 
+dependencies, `Documenter` and `ROCAnalysis`, outside the MIToS environment:
+
+```julia
+using Pkg
+Pkg.add("ReTest")
+Pkg.add("Revise")
+Pkg.add("Documenter")
+Pkg.add("ROCAnalysis")
+```
+
+An example of usage if you want to run the `hcat` tests from the `MSA` module:
 
 ```julia
 push!(LOAD_PATH, joinpath(homedir(), ".julia", "dev", "MIToS", "test"))
