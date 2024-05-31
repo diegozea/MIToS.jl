@@ -15,8 +15,9 @@ function query_alphafolddb(uniprot_id::String)
         # Read the JSON response body
         JSON3.read(String(response.body))
     else
+        error_type = response.status == 422 ? "Validation Error" : "Error"
         throw(ErrorException(
-            "Error fetching UniProt ID $uniprot_id from AlphaFoldDB. Status: $(response.status)"))
+            "$error_type ($(response.status)) fetching UniProt ID $uniprot_id from AlphaFoldDB."))
     end
 end
 
