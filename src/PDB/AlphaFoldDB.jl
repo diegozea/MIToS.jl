@@ -1,9 +1,3 @@
-using Downloads
-using JSON3
-using HTTP
-using MIToS.PDB
-using MIToS.Utils
-
 """
     query_alphafolddb(uniprot_id::String)
 
@@ -61,22 +55,3 @@ function download_alphafold_structure(uniprot_id::String;
         throw(ErrorException("Error downloading AlphaFold model for UniProt ID $uniprot_id"))
     end
 end
-
-# Example of using the function with a given UniProt ID
-uniprot_id = "Q5VSL9"
-download_alphafold_structure(uniprot_id)
-
-
-# ---
-
-#=
-f(x) = x
-f(x::Int) = "$x is an integer"
-f(x::AbstractFloat) = "$x is a float"
-f(x::Int, y::Int) = "$x and $y are integers"
-f(x::Int, y::AbstractFloat) = "$x is an integer and $y is a float"
-f(x::Int, y::String) = "$x is an integer and $y is a string"
-f(x, y) = nothing
-
-g(x::T) where T <: AbstractFloat = "$x is a $T"
-=#
