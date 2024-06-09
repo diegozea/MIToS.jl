@@ -36,7 +36,7 @@ function get_n_words(line::String, n::Int)
             @inbounds words[N] = line[(last(last_spaces)+1):end]
             break
         end
-        spaces = something(findnext(r"[ |\t]+", line, last(last_spaces)+1), 0:-1)
+        spaces = something(findnext(r"[ \t]+", line, last(last_spaces)+1), 0:-1)
         if first(spaces) == 0
             @inbounds words[N] = line[(last(last_spaces)+1):end]
             break
