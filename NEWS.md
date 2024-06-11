@@ -1,5 +1,26 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.15.0 to v2.16.0
+
+MIToS v2.16.0 drops support for *Julia 1.0*. This release requires *Julia 1.6* or higher.
+
+* *[Breaking change]* The `transpose` function is now deprecated for MSA and sequences 
+  (`AbstractAlignedObject`s). Use `permutedims` instead.
+
+* *[Breaking change]* MIToS is now using `JSON3.jl` instead of `JSON.jl`. That change the 
+  returned type of `getpdbdescription` from `Dict{String, Any}` to `JSON3.Object`. 
+  Since the `JSON3.Object` supports the `Dict` interface, the change should not cause any 
+  issues. If you want to convert the returned `JSON3.Object` to a `Dict{String, Any}` 
+  you can use the `MIToS.PDB.JSON3.copy` function.
+
+* The `PDB` module now defines the `query_alphafolddb` and `download_alphafold_structure`
+  functions to query the *AlphaFold Protein Structure Database* and download the 
+  predicted structures.
+
+* This version solves a bug when reading MSA files with `|` in the sequence names.
+
+* MIToS is now using `Format.jl` instead of `Formatting.jl`.
+
 ### Changes from v2.14.1 to v2.15.0
 
 * The `MSA` module now exports the `rename_sequences!` and `rename_sequences` functions to
