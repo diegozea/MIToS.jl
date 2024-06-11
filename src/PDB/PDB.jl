@@ -26,7 +26,6 @@ using LinearAlgebra
 using Statistics            # mean
 using MIToS.Utils
 using Format
-using JSON
 using JSON3
 using HTTP
 using Logging

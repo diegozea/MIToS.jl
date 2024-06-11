@@ -299,8 +299,9 @@ end
 
 """
 Access general information about a PDB entry (e.g., Header information) using the
-GraphQL interface of the PDB database. It parses the JSON answer into a Dict.
+GraphQL interface of the PDB database. It parses the JSON answer into a `JSON3.Object` that 
+can be used as a dictionary.
 """
 function getpdbdescription(pdbcode::String; kargs...)
-    JSON.parse(_pdbheader(pdbcode; kargs...))["data"]["entry"]
+    JSON3.read(_pdbheader(pdbcode; kargs...))["data"]["entry"]
 end
