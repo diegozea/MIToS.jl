@@ -161,6 +161,7 @@
 
         @testset "Transpose" begin
 
+            # deprecated, use permutedims instead
             @test transpose(msa) == permutedims(msa)
             @test size(transpose(msa)) == (7,3)
             @test size(transpose(annotated_msa)) == (7,3)

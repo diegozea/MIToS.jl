@@ -1,5 +1,5 @@
 # import Base: length, getindex, setindex!, size, copy, deepcopy, empty!,
-#              convert, transpose, ctranspose, names
+#              convert, transpose, names
 
 """
 MIToS MSA and aligned sequences (aligned objects) are subtypes of `AbstractMatrix{Residue}`,
@@ -251,10 +251,14 @@ for T in (:(AlignedSequence),
     end
 end
 
-# Transpose
-# ---------
+# Transpose (permutedims)
+# -----------------------
 
-Base.transpose(x::AbstractAlignedObject)  = transpose(namedmatrix(x))
+function Base.transpose(x::AbstractAlignedObject)
+    @warn "`transpose(x::AbstractAlignedObject)` has been deprecated, use `permutedims(x)` instead."
+    permutedims(namedmatrix(x))
+end
+
 Base.permutedims(x::AbstractAlignedObject, args...) = permutedims(namedmatrix(x), args...)
 
 # Selection without Mappings

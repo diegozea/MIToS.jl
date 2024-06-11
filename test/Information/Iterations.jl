@@ -21,7 +21,7 @@
         nmi_mat = convert(Matrix{Float64}, getarray(nmi))
         @test isapprox(nmi_mat, result, rtol=1e-4)
 
-        nmi_t = mapseqpairfreq!(normalized_mutual_information, transpose(aln),
+        nmi_t = mapseqpairfreq!(normalized_mutual_information, permutedims(aln),
                                 Counts(ContingencyTable(Float64,Val{2},UngappedAlphabet())),
                                 Val{false})
         @test nmi_mat == convert(Matrix{Float64},getarray(nmi_t))

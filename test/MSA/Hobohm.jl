@@ -34,7 +34,7 @@ end
         @test convert(Clusters, clusters) == clusters
 
         distance = convert(Matrix{Float64}, 100.0 .- percentidentity(fasta))
-        cr = Clustering.dbscan(distance, 38.0, 2)
+        cr = Clustering.dbscan(distance, 38.0, metric=nothing, min_neighbors = 2)
         @test convert(Clusters, cr) == clusters
     end
 end
