@@ -471,4 +471,17 @@
             @test_throws ArgumentError read(duplicated_ids_file, PIR)
         end
     end
+
+    @testset "A3M" begin
+         
+        @testset "Single insert column" begin
+            # A3M example from https://yanglab.qd.sdu.edu.cn/trRosetta/msa_format.html
+            msa = read(joinpath(DATA, "yanglab.a3m"), A3M)
+            @test ncolumns(msa) == 91 # 92 with the insert column
+            @test nsequences(msa) == 7
+            #                                 |insert
+            last_seq = "-----RTKRLREAVRVYLAENGrSHTVDIFDHLNDRFSWGATMNQVGNILAKDNRFEKVGHVRD-FFRGARYTVCVWDLAS-----------"
+            @test stringsequence(msa, "6") == replace(last_seq, "r" => "")
+        end
+    end
 end

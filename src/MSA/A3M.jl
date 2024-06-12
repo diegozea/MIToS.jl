@@ -1,6 +1,5 @@
 struct A3M <: FileFormat end
 
-
 function _add_inserts(SEQS)
     seq_len = length.(SEQS)
     ncol = maximum(seq_len)
@@ -49,31 +48,74 @@ function _pre_reada3m(io)
     return IDS, SEQS
 end
 
+# ----------------- the following functions are copied from FASTA.jl -----------------
 
-# exemple
+# TODO: refactor to use multiple dispatch to avoid code duplication
 
-function test_a3m_parser()
-    sequence_data = """
->example
-ETESMKTVRIREKIKKFLGDRPRNTAEILEHINSTMRHGTTSQQLGNVLSKDKDIVKVGYIKRSGILSGGYDICEWATRNWVAEHCPEWTE
->1
-----MRTTRLRQKIKKFLNERGeANTTEILEHVNSTMRHGTTPQQLGNVLSKDKDILKVATTKRGGALSGRYEICVWTLRP-----------
->2
-----MDSQNLRDLIRNYLSERPRNTIEISAWLASQMDPNSCPEDVTNILEADESIVRIGTVRKSGMRLTDLPISEWASSSWVRRHE-----
->3
-----MNSQNLRELIRNYLSERPRNTIEISTWLSSQIDPTNSPVDITSILEADDQIVRIGTVRKSGMRRSESPVSEWASNTWVKHHE-----
->4
---RDMDTEKVREIVRNYISERPRNTAEIAAWLNRH-DDGTGGSDVAAILESDGSFVRIGTVRTSGMTGNSPPLSEWATEKWIQHHER----
->5
------RTRRLREAVLVFLEEKGnANTVEVFDYLNERFRWGATMNQVGNILAKDTRFAKVGHQ-RGQFRGSVYTVCVWALS------------
->6
------RTKRLREAVRVYLAENGrSHTVDIFDHLNDRFSWGATMNQVGNILAKDNRFEKVGHVRD-FFRGARYTVCVWDLAS-----------
-"""
-    io = IOBuffer(sequence_data)
-    IDS, SEQS = _pre_reada3m(io)
-
-    println("IDS: ", IDS)
-    println("SEQS: ", SEQS)
+function Base.parse(io::Union{IO, AbstractString},
+    format::Type{A3M},
+    output::Type{AnnotatedMultipleSequenceAlignment};
+    generatemapping::Bool=false,
+    useidcoordinates::Bool=false,
+    deletefullgaps::Bool=true,
+    keepinserts::Bool=false)
+IDS, SEQS = _pre_reada3m(io)
+_check_seq_len(IDS, SEQS)
+annot = Annotations()
+_generate_annotated_msa(annot, IDS, SEQS, keepinserts, generatemapping,
+useidcoordinates, deletefullgaps)
 end
 
-test_a3m_parser()
+function Base.parse(io::Union{IO, AbstractString},
+    format::Type{A3M},
+    output::Type{NamedResidueMatrix{Array{Residue,2}}};
+    deletefullgaps::Bool=true)
+IDS, SEQS = _pre_reada3m(io)
+_check_seq_len(IDS, SEQS)
+msa = _generate_named_array(SEQS, IDS)
+if deletefullgaps
+return deletefullgapcolumns(msa)
+end
+msa
+end
+
+function Base.parse(io::Union{IO, AbstractString},
+   format::Type{A3M},
+   output::Type{MultipleSequenceAlignment};
+   deletefullgaps::Bool=true)
+msa = parse(io, format, NamedResidueMatrix{Array{Residue,2}},
+deletefullgaps=deletefullgaps)
+MultipleSequenceAlignment(msa)
+end
+
+function Base.parse(io::Union{IO, AbstractString},
+    format::Type{A3M},
+    output::Type{Matrix{Residue}};
+    deletefullgaps::Bool=true)
+IDS, SEQS = _pre_reada3m(io)
+_check_seq_len(IDS, SEQS)
+_strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
+end
+
+function Base.parse(io::Union{IO, AbstractString},
+    format::Type{A3M};
+    generatemapping::Bool=false,
+    useidcoordinates::Bool=false,
+    deletefullgaps::Bool=true,
+    keepinserts::Bool=false)
+parse(io, A3M, AnnotatedMultipleSequenceAlignment; generatemapping=generatemapping,
+useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps,
+keepinserts=keepinserts)
+end
+
+# Print A3M
+# =========
+
+function Base.print(io::IO, msa::AbstractMatrix{Residue}, format::Type{A3M})
+seqnames = sequencenames(msa)
+for i in 1:nsequences(msa)
+println(io, ">", seqnames[i], "\n", stringsequence(msa, i))
+end
+end
+
+Base.print(msa::AbstractMatrix{Residue}, format::Type{A3M}) = print(stdout, msa, A3M)

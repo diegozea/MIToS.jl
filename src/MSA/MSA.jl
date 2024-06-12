@@ -90,6 +90,8 @@ export  # Residue
         FASTA,
         # NBRF/PIR
         PIR,
+        # A3M
+        A3M,
         # PLM
         sequencepairsmatrix, columnpairsmatrix,
         # Identity
@@ -124,6 +126,7 @@ include("Raw.jl")
 include("Stockholm.jl")
 include("FASTA.jl")
 include("PIR.jl")
+include("A3M.jl")
 include("Shuffle.jl")
 include("PLM.jl")
 include("Identity.jl")
