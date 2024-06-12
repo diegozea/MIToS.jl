@@ -4,28 +4,6 @@ using MIToS.Utils
 
 struct A3M <: FileFormat end
 
-#=function _pre_reada3m(io::Union{IO,AbstractString})
-    IDS = String[]
-    SEQS = String[]
-
-    current_seq = ""
-    for line in lineiterator(io) 
-        if startswith(line, ">")
-            if current_seq != ""
-                push!(SEQS, current_seq)
-                current_seq = ""
-            end
-            push!(IDS, line[2:end])  
-        else
-            current_seq *= line
-        end
-    end
-    if current_seq != ""
-        push!(SEQS, current_seq)
-    end
-
-    return IDS, SEQS
-end=#
 
 function _add_inserts(SEQS)
     seq_len = length.(SEQS)
