@@ -19,8 +19,8 @@
 #
 # In a PDB file, B-factors are stored from the column 61 to 66. Therefore, new
 # B-factors should be a `String` with 6 or fewer characters, normally using two
-# characters for decimal values. We can use `fmt` and `FormatSpec` from the
-# [Formatting](https://github.com/JuliaIO/Formatting.jl) package to create a
+# characters for decimal values. We can use `pyfmt` and `FormatSpec` from the
+# [Format](https://github.com/JuliaString/Format.jl) package to create a
 # proper B-factor string.
 #
 # ## MIToS solution
@@ -66,7 +66,7 @@ hydrophobicity = Dict(
 	"ARG" => -4.5 )
 #md nothing # hide
 
-# First, we define a helper function using `Formatting` to create a proper
+# First, we define a helper function using `Format` to create a proper
 # B-factor string with the PDB format; 6 characters and 2 digits after the
 # decimal point.
 # The [PDB format description](https://www.wwpdb.org/documentation/file-format-content/format23/sect9.html)
@@ -77,10 +77,10 @@ hydrophobicity = Dict(
 # 61 - 66      Real(6.2)        tempFactor Temperature factor.
 # ```
 
-using Formatting
+using Format
 
 "Return value as a string with the B factor format described in PDB."
-format_b_factor(value) = fmt(FormatSpec("6.2f"), value) # e.g. 1.5 -> "  1.50"
+format_b_factor(value) = pyfmt(FormatSpec("6.2f"), value) # e.g. 1.5 -> "  1.50"
 #md nothing # hide
 
 # Then, where are using that helper function to define a function that returns
@@ -125,7 +125,7 @@ end
 # the PDB module of MIToS.
 #
 # MIToS atoms and residues generally stores the string present in the input
-# file without surrounding spaces. You can use the `Formatting` module to
+# file without surrounding spaces. You can use the `Format` module to
 # create these strings and `strip` to get rid of the spaces. You can see the
 # [PDB format description](https://www.wwpdb.org/documentation/file-format-content/format23/sect9.html)
 # to know what is the format of the expected string or see the

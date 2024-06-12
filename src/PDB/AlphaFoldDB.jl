@@ -3,7 +3,7 @@
 
 This function queries the AlphaFoldDB API to retrieve structure information for 
 a given `uniprot_id`. This function returns the structure information as a
-JSON object.
+`JSON3.Object`.
 """
 function query_alphafolddb(uniprot_id::String)
     # Construct the URL for the AlphaFoldDB API request
@@ -12,7 +12,6 @@ function query_alphafolddb(uniprot_id::String)
     response = HTTP.request("GET", url)
 
     if response.status == 200
-        # Read the JSON response body
         JSON3.read(String(response.body))
     else
         error_type = response.status == 422 ? "Validation Error" : "Error"

@@ -20,6 +20,7 @@
 
         pf09645_sto = joinpath(DATA, "PF09645_full.stockholm")
         rna_sto = joinpath(DATA, "upsk_rna.sto")
+        clustal_sto = joinpath(DATA, "clustalo-I20240512-trunc.aln-stockholm")
 
         @testset "Read" begin
 
@@ -65,6 +66,11 @@
                     @test size(msa, 2) == sum(F112_SSV1 .!= Ref('.')) # without inserts
                     @test view(msa,4,:) == map(Residue, F112_SSV1[F112_SSV1 .!= Ref('.') ])
                 end
+
+                msacl = read(clustal_sto, Stockholm, generatemapping=true, useidcoordinates=true)
+                @test size(msacl, 1) == 2
+                @test maximum(getsequencemapping(msacl, "Q8BX79|reviewed|Probable")) == 349
+                @test maximum(getsequencemapping(msacl, "Q923Y8|reviewed|Trace")) == 332
             end
         end
 

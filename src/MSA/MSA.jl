@@ -1,4 +1,3 @@
-
 """
 The MSA module of MIToS has utilities for working with Multiple Sequence Alignments of protein Sequences (MSA).
 
