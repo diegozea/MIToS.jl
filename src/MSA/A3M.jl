@@ -1,7 +1,3 @@
-using MIToS.MSA
-using MIToS.Utils
-
-
 struct A3M <: FileFormat end
 
 
@@ -43,16 +39,14 @@ function _add_inserts(SEQS)
 end
 
 function _pre_reada3m(io)
-    IDS, SEQS = MSA._pre_readfasta(io)
-    MSA._check_seq_and_id_number(IDS, SEQS)
+    IDS, SEQS = _pre_readfasta(io)
+    _check_seq_and_id_number(IDS, SEQS)
     try
-        MSA._check_seq_len(IDS, SEQS)
-   catch
+        _check_seq_len(IDS, SEQS)
+    catch
         SEQS = _add_inserts(SEQS)
-
-        
     end
-    return IDS, SEQS 
+    return IDS, SEQS
 end
 
 
@@ -76,7 +70,7 @@ ETESMKTVRIREKIKKFLGDRPRNTAEILEHINSTMRHGTTSQQLGNVLSKDKDIVKVGYIKRSGILSGGYDICEWATRN
 -----RTKRLREAVRVYLAENGrSHTVDIFDHLNDRFSWGATMNQVGNILAKDNRFEKVGHVRD-FFRGARYTVCVWDLAS-----------
 """
     io = IOBuffer(sequence_data)
-    IDS, SEQS =_pre_reada3m(io)
+    IDS, SEQS = _pre_reada3m(io)
 
     println("IDS: ", IDS)
     println("SEQS: ", SEQS)

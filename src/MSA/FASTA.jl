@@ -13,7 +13,6 @@ function _pre_readfasta(string::AbstractString)
         IDS[i] = fields[1]
         SEQS[i] = replace(join(fields[2:end]), r"\s+" => "")
     end
-    _check_seq_len(IDS, SEQS)
     (IDS, SEQS)
 end
 
@@ -27,7 +26,6 @@ function _pre_readfasta(io)
         push!(IDS,  name)
         push!(SEQS, seq )
     end
-    _check_seq_len(IDS, SEQS)
     (IDS, SEQS)
 end
 
@@ -39,6 +37,7 @@ function Base.parse(io::Union{IO, AbstractString},
                     deletefullgaps::Bool=true,
                     keepinserts::Bool=false)
     IDS, SEQS = _pre_readfasta(io)
+    _check_seq_len(IDS, SEQS)
     annot = Annotations()
     _generate_annotated_msa(annot, IDS, SEQS, keepinserts, generatemapping,
         useidcoordinates, deletefullgaps)
@@ -49,6 +48,7 @@ function Base.parse(io::Union{IO, AbstractString},
                     output::Type{NamedResidueMatrix{Array{Residue,2}}};
                     deletefullgaps::Bool=true)
     IDS, SEQS = _pre_readfasta(io)
+    _check_seq_len(IDS, SEQS)
     msa = _generate_named_array(SEQS, IDS)
     if deletefullgaps
         return deletefullgapcolumns(msa)
@@ -70,6 +70,7 @@ function Base.parse(io::Union{IO, AbstractString},
                     output::Type{Matrix{Residue}};
                     deletefullgaps::Bool=true)
     IDS, SEQS = _pre_readfasta(io)
+    _check_seq_len(IDS, SEQS)
     _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
 end
 
