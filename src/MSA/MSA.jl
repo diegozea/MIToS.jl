@@ -3,7 +3,7 @@ The MSA module of MIToS has utilities for working with Multiple Sequence Alignme
 
 **Features**
 
-- Read and write MSAs in `Stockholm`, `FASTA` or `Raw` format
+- Read and write MSAs in `Stockholm`, `FASTA`, `A3M`, `PIR`, or `Raw` format
 - Handle MSA annotations
 - Edit the MSA, e.g. delete columns or sequences, change sequence order, shuffling...
 - Keep track of positions and annotations after modifications on the MSA
