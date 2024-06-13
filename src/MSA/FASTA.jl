@@ -1,4 +1,4 @@
-struct FASTA <: FileFormat end
+struct FASTA <: SequenceFormat end
 
 # FASTA Parser
 # ============
@@ -29,60 +29,9 @@ function _pre_readfasta(io)
     (IDS, SEQS)
 end
 
-function Base.parse(io::Union{IO, AbstractString},
-                    format::Type{FASTA},
-                    output::Type{AnnotatedMultipleSequenceAlignment};
-                    generatemapping::Bool=false,
-                    useidcoordinates::Bool=false,
-                    deletefullgaps::Bool=true,
-                    keepinserts::Bool=false)
+function _load_sequences(io::Union{IO, AbstractString}, format::Type{FASTA}; create_annotations::Bool=false)
     IDS, SEQS = _pre_readfasta(io)
-    _check_seq_len(IDS, SEQS)
-    annot = Annotations()
-    _generate_annotated_msa(annot, IDS, SEQS, keepinserts, generatemapping,
-        useidcoordinates, deletefullgaps)
-end
-
-function Base.parse(io::Union{IO, AbstractString},
-                    format::Type{FASTA},
-                    output::Type{NamedResidueMatrix{Array{Residue,2}}};
-                    deletefullgaps::Bool=true)
-    IDS, SEQS = _pre_readfasta(io)
-    _check_seq_len(IDS, SEQS)
-    msa = _generate_named_array(SEQS, IDS)
-    if deletefullgaps
-        return deletefullgapcolumns(msa)
-    end
-    msa
-end
-
-function Base.parse(io::Union{IO, AbstractString},
-                   format::Type{FASTA},
-                   output::Type{MultipleSequenceAlignment};
-                   deletefullgaps::Bool=true)
-    msa = parse(io, format, NamedResidueMatrix{Array{Residue,2}},
-                deletefullgaps=deletefullgaps)
-    MultipleSequenceAlignment(msa)
-end
-
-function Base.parse(io::Union{IO, AbstractString},
-                    format::Type{FASTA},
-                    output::Type{Matrix{Residue}};
-                    deletefullgaps::Bool=true)
-    IDS, SEQS = _pre_readfasta(io)
-    _check_seq_len(IDS, SEQS)
-    _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
-end
-
-function Base.parse(io::Union{IO, AbstractString},
-                    format::Type{FASTA};
-                    generatemapping::Bool=false,
-                    useidcoordinates::Bool=false,
-                    deletefullgaps::Bool=true,
-                    keepinserts::Bool=false)
-    parse(io, FASTA, AnnotatedMultipleSequenceAlignment; generatemapping=generatemapping,
-        useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps,
-        keepinserts=keepinserts)
+    return IDS, SEQS, Annotations()
 end
 
 # Print FASTA

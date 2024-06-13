@@ -81,6 +81,7 @@ export  # Residue
         # GetIndex
         sequence_index, column_index,
         # GeneralParserMethods
+        SequenceFormat,
         deletefullgapcolumns, deletefullgapcolumns!,
         # Raw
         Raw,
