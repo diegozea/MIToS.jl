@@ -1,6 +1,6 @@
 struct A3M <: SequenceFormat end
 
-function _add_inserts(SEQS)
+function _add_insert_gaps!(SEQS)
     seq_len = length.(SEQS)
     ncol = maximum(seq_len)
     j = 1
@@ -43,7 +43,7 @@ function _load_sequences(io::Union{IO,AbstractString}, format::Type{A3M}; create
     try
         _check_seq_len(IDS, SEQS)
     catch
-        SEQS = _add_inserts(SEQS)
+        SEQS = _add_insert_gaps!(SEQS)
     end
     return IDS, SEQS, Annotations()
 end
