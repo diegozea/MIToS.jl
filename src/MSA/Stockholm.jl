@@ -103,31 +103,28 @@ function _to_sequence_dict(annotation::Dict{Tuple{String,String},String})
     sizehint!(seq_dict, length(seq_dict))
 end
 
-function Base.print(io::IO, msa::AnnotatedMultipleSequenceAlignment,
+function Base.print(io::IO, msa::AbstractMatrix{Residue},
                     format::Type{Stockholm})
-    _printfileannotations(io, msa.annotations)
-    _printsequencesannotations(io, msa.annotations)
-    res_annotations = _to_sequence_dict(msa.annotations.residues)
+    has_annotations = isa(msa, AnnotatedAlignedObject) && !isempty(msa.annotations)
+    if has_annotations
+        _printfileannotations(io, msa.annotations)
+        _printsequencesannotations(io, msa.annotations)
+        res_annotations = _to_sequence_dict(msa.annotations.residues)
+    end
     seqnames = sequencenames(msa)
+    aligned = _get_aligned_columns(msa)
     for i in 1:nsequences(msa)
         id = seqnames[i]
         seq = stringsequence(msa, i)
-        println(io, id, "\t\t\t", seq)
-        if id in keys(res_annotations)
+        formatted_seq = _format_inserts(seq, aligned)
+        println(io, id, "\t\t\t", formatted_seq)
+        if has_annotations && haskey(res_annotations, id)
             for line in res_annotations[id]
                 println(io, "#=GR ", line)
             end
         end
     end
-    _printcolumnsannotations(io, msa.annotations)
-    println(io, "//")
-end
-
-function Base.print(io::IO, msa::AbstractMatrix{Residue}, format::Type{Stockholm})
-    seqnames = sequencenames(msa)
-    for i in 1:nsequences(msa)
-        println(io, seqnames[i], "\t\t\t", stringsequence(msa, i))
-    end
+    has_annotations && _printcolumnsannotations(io, msa.annotations)
     println(io, "//")
 end
 

@@ -53,8 +53,12 @@ end
 
 function Base.print(io::IO, msa::AbstractMatrix{Residue}, format::Type{A3M})
     seqnames = sequencenames(msa)
+    aligned = _get_aligned_columns(msa)
     for i in 1:nsequences(msa)
-        println(io, ">", seqnames[i], "\n", stringsequence(msa, i))
+        seq = stringsequence(msa, i)
+        formatted_seq = _format_inserts(seq, aligned, false)
+        println(io, ">", seqnames[i])
+        println(io, formatted_seq)
     end
 end
 

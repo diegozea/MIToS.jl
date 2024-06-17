@@ -137,9 +137,16 @@
             msa = read(pf09645_sto, Stockholm, keepinserts=true)
             # Aligned columns
             @test (collect(getannotcolumn(msa, "Aligned")) .== Ref('1')) == (F112_SSV1 .!= Ref('.'))
-            @test stringsequence(msa, 1) == replace(uppercase(
-                    "...mp---NSYQMAEIMYKILQQKKEISLEDILAQFEISASTAYNVQRTLRMICEKHPDECEVQTKNRRTIFKWIKNEETTEEGQEE--QEIEKILNAQPAE-------------k...."
-                ), '.' => '-')
+            seq = "...mp---NSYQMAEIMYKILQQKKEISLEDILAQFEISASTAYNVQRTLRMICEKHPDECEVQTKNRRTIFKWIKNEETTEEGQEE--QEIEKILNAQPAE-------------k...."
+            @test stringsequence(msa, 1) == replace(uppercase(seq), '.' => '-')
+
+            @testset "Print inserts" begin
+
+                io = IOBuffer()
+                print(io, msa, Stockholm)
+                printed = String(take!(io))
+                @test occursin(seq, printed)
+            end
         end
     end
 
@@ -503,12 +510,39 @@
 
         @testset "Single insert column" begin
             # A3M example from https://yanglab.qd.sdu.edu.cn/trRosetta/msa_format.html
+            #                                 |insert
+            seq = "-----RTKRLREAVRVYLAENGrSHTVDIFDHLNDRFSWGATMNQVGNILAKDNRFEKVGHVRD-FFRGARYTVCVWDLAS-----------"
+            seq_without_insert = replace(seq, "r" => "")
+
             msa = read(joinpath(DATA, "yanglab.a3m"), A3M)
+            
             @test ncolumns(msa) == 91 # 92 with the insert column
             @test nsequences(msa) == 7
-            #                                 |insert
-            last_seq = "-----RTKRLREAVRVYLAENGrSHTVDIFDHLNDRFSWGATMNQVGNILAKDNRFEKVGHVRD-FFRGARYTVCVWDLAS-----------"
-            @test stringsequence(msa, "6") == replace(last_seq, "r" => "")
+            @test stringsequence(msa, "6") == seq_without_insert
+
+            @testset "Print inserts" begin
+
+                @testset "There are no inserts" begin
+                    io = IOBuffer()
+                    print(io, msa, A3M)
+                    printed = String(take!(io))
+                    # The insert column has been removed when reading the MSA
+                    @test occursin(seq_without_insert, printed)
+                end
+
+                @testset "Keep inserts" begin
+                    # Keeping the insert column when reading the MSA
+                    msa = read(joinpath(DATA, "yanglab.a3m"), A3M, keepinserts=true)
+                    @test ncolumns(msa) == 92
+
+                    io = IOBuffer()
+                    print(io, msa, A3M)
+                    printed = String(take!(io))
+                    @test occursin(seq, printed)
+                    # Test that gaps are not added to the insert column for A3M
+                    @test !occursin(".", printed)
+                end
+            end
         end
     end
 end

@@ -297,6 +297,31 @@ function _keepinserts!(SEQS, annot)
     map!(uppercase, SEQS, SEQS)
 end
 
+# Print inserts
+# =============
+
+_get_aligned_columns(msa::AnnotatedAlignedObject) = getannotcolumn(msa, "Aligned", "")
+_get_aligned_columns(msa::AbstractMatrix{Residue}) = ""
+
+function _format_inserts(seq::String, aligned::String, keep_insert_gaps::Bool=true)
+    if isempty(aligned)
+        return seq
+    end
+    formatted = Char[]
+    for (aln, res) in zip(aligned, seq)
+        if aln == '1'
+            push!(formatted, res)
+        else
+            if res == '-'
+                keep_insert_gaps && push!(formatted, '.')
+            else
+                push!(formatted, lowercase(res))
+            end
+        end
+    end
+    join(formatted)
+end
+
 # Parse for MSA formats
 # =====================
 
