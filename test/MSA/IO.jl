@@ -541,6 +541,18 @@
                     @test occursin(seq, printed)
                     # Test that gaps are not added to the insert column for A3M
                     @test !occursin(".", printed)
+
+                    @testset "Saving as A2M" begin
+                        io = IOBuffer()
+                        print(io, msa, A2M)
+                        printed = String(take!(io))
+                        # A2M keeps the insert column
+                        @test occursin(seq, printed)
+                        # and add explicit gaps for inserts
+                        @test occursin(".", printed)
+                        # Ensure the correct location of the gaps
+                        @test occursin("RP.RN", printed)
+                    end
                 end
             end
         end

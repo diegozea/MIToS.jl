@@ -92,7 +92,7 @@ export  # Residue
         # NBRF/PIR
         PIR,
         # A3M
-        A3M,
+        A3M, A2M,
         # PLM
         sequencepairsmatrix, columnpairsmatrix,
         # Identity

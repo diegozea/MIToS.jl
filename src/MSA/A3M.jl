@@ -1,4 +1,5 @@
 struct A3M <: SequenceFormat end
+struct A2M <: SequenceFormat end
 
 function _add_insert_gaps!(SEQS)
     seq_len = length.(SEQS)
@@ -48,18 +49,26 @@ function _load_sequences(io::Union{IO,AbstractString}, format::Type{A3M}; create
     return IDS, SEQS, Annotations()
 end
 
+# A2M is similar to FASTA but uses lowercase letters and dots for inserts. In the A2M 
+# format, all sequences have the same length. Since MIToS handles the inserts, we can load 
+# it as FASTA. However, I will use the A3M parser instead of the FASTA parser to ensure 
+# the file can be read correctly if the user confuses A2M with A3M.
+_load_sequences(io::Union{IO,AbstractString}, format::Type{A2M}) = _load_sequences(io, A3M)
+
 # Print A3M
 # =========
 
-function Base.print(io::IO, msa::AbstractMatrix{Residue}, format::Type{A3M})
+function Base.print(io::IO, msa::AbstractMatrix{Residue}, format::Union{Type{A3M},Type{A2M}})
     seqnames = sequencenames(msa)
     aligned = _get_aligned_columns(msa)
     for i in 1:nsequences(msa)
         seq = stringsequence(msa, i)
-        formatted_seq = _format_inserts(seq, aligned, false)
+        # A2M uses dots for gaps aligned to insertions, but A3M can avoid them
+        keep_insert_gaps = format === A2M
+        formatted_seq = _format_inserts(seq, aligned, keep_insert_gaps)
         println(io, ">", seqnames[i])
         println(io, formatted_seq)
     end
 end
 
-Base.print(msa::AbstractMatrix{Residue}, format::Type{A3M}) = print(stdout, msa, A3M)
+Base.print(msa::AbstractMatrix{Residue}, format::Union{Type{A3M},Type{A2M}}) = print(stdout, msa, format)
