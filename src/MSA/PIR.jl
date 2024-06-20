@@ -1,4 +1,4 @@
-struct PIR <: SequenceFormat end
+struct PIR <: MSAFormat end
 
 # PIR Parser
 # ==========

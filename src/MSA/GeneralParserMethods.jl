@@ -1,7 +1,14 @@
+# File Formats
+# ============
+
+abstract type AbstractSequenceFormat <: FileFormat end
+
+abstract type MSAFormat <: AbstractSequenceFormat end
+
+abstract type SequenceFormat <: AbstractSequenceFormat end
+
 # Mappings
 # ========
-
-abstract type SequenceFormat <: FileFormat end
 
 # It checks sequence lengths
 function _fill_aln_seq_ann!(aln, seq_ann::Vector{String}, seq::String,
@@ -331,7 +338,7 @@ function Base.parse(io::Union{IO,AbstractString},
     generatemapping::Bool=false,
     useidcoordinates::Bool=false,
     deletefullgaps::Bool=true,
-    keepinserts::Bool=false) where {T<:SequenceFormat}
+    keepinserts::Bool=false) where {T<:MSAFormat}
     IDS, SEQS, annot = _load_sequences(io, format; create_annotations=true)
     _check_seq_len(IDS, SEQS)
     _generate_annotated_msa(annot, IDS, SEQS, keepinserts, generatemapping,
@@ -341,7 +348,7 @@ end
 function Base.parse(io::Union{IO,AbstractString},
     format::Type{T},
     output::Type{NamedResidueMatrix{Array{Residue,2}}};
-    deletefullgaps::Bool=true) where {T<:SequenceFormat}
+    deletefullgaps::Bool=true) where {T<:MSAFormat}
     IDS, SEQS, _ = _load_sequences(io, format; create_annotations=false)
     _check_seq_len(IDS, SEQS)
     msa = _generate_named_array(SEQS, IDS)
@@ -354,7 +361,7 @@ end
 function Base.parse(io::Union{IO,AbstractString},
     format::Type{T},
     output::Type{MultipleSequenceAlignment};
-    deletefullgaps::Bool=true) where {T<:SequenceFormat}
+    deletefullgaps::Bool=true) where {T<:MSAFormat}
     msa = parse(io, format, NamedResidueMatrix{Array{Residue,2}},
         deletefullgaps=deletefullgaps)
     MultipleSequenceAlignment(msa)
@@ -363,7 +370,7 @@ end
 function Base.parse(io::Union{IO,AbstractString},
     format::Type{T},
     output::Type{Matrix{Residue}};
-    deletefullgaps::Bool=true) where {T<:SequenceFormat}
+    deletefullgaps::Bool=true) where {T<:MSAFormat}
     IDS, SEQS, _ = _load_sequences(io, format; create_annotations=false)
     _check_seq_len(IDS, SEQS)
     _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
@@ -374,7 +381,7 @@ function Base.parse(io::Union{IO,AbstractString},
     generatemapping::Bool=false,
     useidcoordinates::Bool=false,
     deletefullgaps::Bool=true,
-    keepinserts::Bool=false) where {T<:SequenceFormat}
+    keepinserts::Bool=false) where {T<:MSAFormat}
     parse(io, format, AnnotatedMultipleSequenceAlignment; generatemapping=generatemapping,
         useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps,
         keepinserts=keepinserts)

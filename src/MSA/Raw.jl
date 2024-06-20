@@ -1,4 +1,4 @@
-struct Raw <: SequenceFormat end
+struct Raw <: MSAFormat end
 
 # Raw Parser
 # ==========

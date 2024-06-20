@@ -1,4 +1,4 @@
-struct Stockholm <: SequenceFormat end
+struct Stockholm <: MSAFormat end
 
 @inline function _fill_with_sequence_line!(IDS, SEQS, line)
     if !startswith(line,'#') && !startswith(line,"//")

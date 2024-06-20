@@ -82,6 +82,7 @@ export  # Residue
         sequence_index, column_index,
         # GeneralParserMethods
         SequenceFormat,
+        MSAFormat,
         deletefullgapcolumns, deletefullgapcolumns!,
         # Raw
         Raw,

@@ -1,5 +1,5 @@
-struct A3M <: SequenceFormat end
-struct A2M <: SequenceFormat end
+struct A3M <: MSAFormat end
+struct A2M <: MSAFormat end
 
 function _add_insert_gaps!(SEQS)
     seq_len = length.(SEQS)

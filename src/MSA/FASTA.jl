@@ -1,4 +1,4 @@
-struct FASTA <: SequenceFormat end
+struct FASTA <: MSAFormat end
 
 # FASTA Parser
 # ============
