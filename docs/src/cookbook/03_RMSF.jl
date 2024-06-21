@@ -40,7 +40,7 @@ using Plots
 # Lets read the NMR ensemble:
 
 pdb_file   = abspath(pathof(MIToS), "..", "..", "test", "data", "1AS5.pdb")
-pdb_res = read(pdb_file, PDBFile, occupancyfilter=true)
+pdb_res = read_file(pdb_file, PDBFile, occupancyfilter=true)
 #md nothing # hide
 
 # We set `occupancyfilter` to `true` to ensure that we have one single set of 

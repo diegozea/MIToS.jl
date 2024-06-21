@@ -17,7 +17,7 @@
             outfile = download_alphafold_structure("A0A0C5B5G6", format=PDBFile)
             if isfile(outfile)
                 try
-                    res = read(outfile, PDBFile)
+                    res = read_file(outfile, PDBFile)
                     @test length(res) == 16
                 finally
                     rm(outfile)

@@ -11,7 +11,7 @@
 
     pf09645_sto = joinpath(DATA, "PF09645_full.stockholm")
 
-    msas = [ read(pf09645_sto, Stockholm, T) for T in msa_types ]
+    msas = [ read_file(pf09645_sto, Stockholm, T) for T in msa_types ]
     gaps = [ msa .== GAP for msa in msas ]
     lcol = [ mean(msa .== Residue('L'), dims=1) for msa in msas ]
     lseq = [ mean(msa .== Residue('L'), dims=2) for msa in msas ]

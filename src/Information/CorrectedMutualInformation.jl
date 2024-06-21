@@ -68,7 +68,7 @@ function buslje09(aln::AbstractMatrix{Residue};
 end
 
 function buslje09(filename::String, format::Type{T}; kargs...) where T <: FileFormat
-    aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
+    aln = read_file(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
     buslje09(aln; kargs...)
 end
 
@@ -143,6 +143,6 @@ function BLMI(aln::AbstractMatrix{Residue};
 end
 
 function BLMI(filename::String, format::Type{T}; kargs...) where T <: FileFormat
-    aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
+    aln = read_file(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
     BLMI(aln; kargs...)
 end

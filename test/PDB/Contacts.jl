@@ -6,7 +6,7 @@
     # Using data from http://www-cryst.bioc.cam.ac.uk/~richard/piccolo/piccolo.php?PDB=1IGY (28/Sep/2015)
 
         code = "1IGY"
-        pdb = read(txt(code), PDBFile)
+        pdb = read_file(txt(code), PDBFile)
 
         # Modify the next line if ligands are added to AtomsData.jl
         @test sum(check_atoms_for_interactions(r) for r in pdb) ==
@@ -97,7 +97,7 @@
 
     @testset "1AKS" begin
 
-        pdb = read(joinpath(DATA, "1AKS.xml.gz"), PDBML)
+        pdb = read_file(joinpath(DATA, "1AKS.xml.gz"), PDBML)
 
         CA = @residuesdict pdb model "1" chain "A" group "ATOM" residue All
         CB = @residuesdict pdb model "1" chain "B" group "ATOM" residue All
@@ -216,7 +216,7 @@
     @testset "Vectorized contact/distance" begin
 
         code = "2VQC"
-        pdb = read(txt(code), PDBFile)
+        pdb = read_file(txt(code), PDBFile)
 
         for criteria in ["All", "CA", "CB", "Heavy"]
             dist = distance(pdb, criteria=criteria)
@@ -235,7 +235,7 @@
     @testset "Proximity Mean" begin
 
         code = "2VQC"
-        pdb = read(txt(code), PDBFile)
+        pdb = read_file(txt(code), PDBFile)
         residues = @residues pdb model "1" chain "A" group "ATOM" residue x -> x in ["62","64","65"]
 
         @test contact(residues, 6.05) == ( [1 1 0

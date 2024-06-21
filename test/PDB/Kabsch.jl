@@ -105,7 +105,7 @@
 
     @testset "Superimpose PDBs" begin
 
-        hemoglobin = read(joinpath(DATA, "2hhb.pdb.gz"),PDBFile,group="ATOM",model="1")
+        hemoglobin = read_file(joinpath(DATA, "2hhb.pdb.gz"),PDBFile,group="ATOM",model="1")
 
         α1 = @residues hemoglobin model "1" chain "A" group "ATOM" residue All
         α2 = @residues hemoglobin model "1" chain "C" group "ATOM" residue All
@@ -192,8 +192,8 @@
     end
 
     @testset "PDBResidue without alpha-carbon" begin
-        small_2WEL = read(joinpath(DATA, "2WEL_D_region.pdb"), PDBFile)
-        small_6BAB = read(joinpath(DATA, "6BAB_D_region.pdb"), PDBFile)
+        small_2WEL = read_file(joinpath(DATA, "2WEL_D_region.pdb"), PDBFile)
+        small_6BAB = read_file(joinpath(DATA, "6BAB_D_region.pdb"), PDBFile)
 
         aln_2WEL, aln_6BAB, RMSD = superimpose(small_2WEL, small_6BAB)
         @test length(aln_2WEL) == 3

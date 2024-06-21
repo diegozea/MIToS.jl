@@ -31,7 +31,7 @@
         path_file   = joinpath(mitos_folder, "test", "data", "PF09645_full.stockholm")
         output = read(`$julia --project=$project $path_script $path_file -o STDOUT`, String)
 
-        @test read(path_file, Stockholm, generatemapping=true, useidcoordinates=true,
+        @test read_file(path_file, Stockholm, generatemapping=true, useidcoordinates=true,
             deletefullgaps=true) == parse(output, Stockholm)
     end
 

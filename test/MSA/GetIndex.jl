@@ -2,7 +2,7 @@
     simple = joinpath(DATA, "simple.fasta")
 
     @testset "get index" begin
-        msa = read(simple, FASTA, generatemapping=true)
+        msa = read_file(simple, FASTA, generatemapping=true)
         first_seq = getsequence(msa, 1)
         @test first_seq isa AbstractAlignedSequence
         matrix_msa = convert(Matrix{Residue}, msa)
@@ -44,7 +44,7 @@
     end
 
     @testset "MSA" begin
-        msa = read(simple, FASTA, generatemapping=true)
+        msa = read_file(simple, FASTA, generatemapping=true)
 
         matrix = Residue['A'  'R'
                          'R'  'A']

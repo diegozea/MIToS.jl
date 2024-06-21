@@ -4,7 +4,7 @@
     @test_throws ErrorException downloadpfam("2vqc")
     filename = downloadpfam(pfam_code, filename=tempname()*".gz")
     try
-        aln = read(filename, Stockholm)
+        aln = read_file(filename, Stockholm)
         if size(aln) == (6,34)
             @test getannotfile(aln, "ID") == "2Fe-2S_Ferredox"
         end
@@ -15,7 +15,7 @@ end
 
 @testset "PDB code" begin
 
-    msa = read(joinpath(DATA, "PF09645_full.stockholm"), Stockholm)
+    msa = read_file(joinpath(DATA, "PF09645_full.stockholm"), Stockholm)
     @test getseq2pdb(msa)["F112_SSV1/3-112"] == [("2VQC","A")]
 end
 
@@ -24,9 +24,9 @@ end
     msa_file   = joinpath(DATA, "PF09645_full.stockholm")
     sifts_file = joinpath(DATA, "2vqc.xml.gz")
     pdb_file   = joinpath(DATA, "2VQC.xml")
-    msa = read(msa_file, Stockholm, generatemapping=true, useidcoordinates=true)
+    msa = read_file(msa_file, Stockholm, generatemapping=true, useidcoordinates=true)
     cmap = msacolumn2pdbresidue(msa, "F112_SSV1/3-112", "2VQC", "A", "PF09645", sifts_file)
-    res = residuesdict(read(pdb_file, PDBML), "1", "A", "ATOM", All)
+    res = residuesdict(read_file(pdb_file, PDBML), "1", "A", "ATOM", All)
 
     #     -45              20 pdb
     #.....QTLNSYKMAEIMYKILEK  msa seq

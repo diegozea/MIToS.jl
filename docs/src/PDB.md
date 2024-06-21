@@ -47,7 +47,7 @@ getpdbdescription("1IVO")
 
 ## [Read and parse PDB files](@id Read-and-parse-PDB-files)  
 
-This is easy using the `read` and `parse` functions, indicating the filename and the
+This is easy using the `read_file` and `parse` functions, indicating the filename and the
 `FileFormat`: `PDBML` for PDB XML files or `PDBFile` for usual PDB files. These functions
 returns a `Vector` of `PDBResidue` objects with all the residues in the PDB.  
 To return only a specific subset of residues/atoms you can use any of the following
@@ -71,7 +71,7 @@ keyword arguments:
 
 ```@example pdb_io
 # Read α carbon of each residue from the 1ivo pdb file, in the model 1, chain A and in the ATOM group.
-CA_1ivo = read(pdbfile, PDBFile, model="1", chain="A", group="ATOM", atomname="CA")
+CA_1ivo = read_file(pdbfile, PDBFile, model="1", chain="A", group="ATOM", atomname="CA")
 
 CA_1ivo[1] # First residue. It has only the α carbon.
 ```
@@ -91,7 +91,7 @@ regular expressions or functions to make the selections.
 ```@example pdb_select
 using MIToS.PDB
 pdbfile = downloadpdb("1IVO", format=PDBFile)
-residues_1ivo = read(pdbfile, PDBFile)
+residues_1ivo = read_file(pdbfile, PDBFile)
 # Select residue number 9 from model 1 and chain B
 residues(residues_1ivo, "1", "B", All, "9")
 ```
@@ -200,7 +200,7 @@ using MIToS.PDB
 
 pdbfile = downloadpdb("1IVO", format=PDBFile)
 
-residues_1ivo = read(pdbfile, PDBFile)
+residues_1ivo = read_file(pdbfile, PDBFile)
 
 pdb = @residues residues_1ivo model "1" chain "A" group "ATOM" residue All
 
@@ -254,7 +254,7 @@ using MIToS.PDB
 
 pdbfile = downloadpdb("2HHB")
 
-res_2hhb = read(pdbfile, PDBML)
+res_2hhb = read_file(pdbfile, PDBML)
 
 chain_A = pdb = @residues res_2hhb model "1" chain "A" group "ATOM" residue All
 chain_C = pdb = @residues res_2hhb model "1" chain "C" group "ATOM" residue All

@@ -6,8 +6,8 @@
     @testset "2VQC: Missings" begin
 
         code = "2VQC"
-        pdb = read(txt(code), PDBFile)
-        pdbml = read(xml(code), PDBML)
+        pdb = read_file(txt(code), PDBFile)
+        pdbml = read_file(xml(code), PDBML)
 
         @test findfirst(x -> x.id.number == "4", pdb) == findfirst(x -> x.id.number == "4", pdbml)
         @test findfirst(x -> x.id.number == "73",pdb) == findfirst(x -> x.id.number == "73",pdbml)
@@ -16,10 +16,10 @@
     @testset "Test downloadpdb" begin
 
         code = "2VQC"
-        pdb = read(txt(code), PDBFile)
+        pdb = read_file(txt(code), PDBFile)
         filename = downloadpdb(code)
         try
-            pdbml = read(filename, PDBML)
+            pdbml = read_file(filename, PDBML)
 
             @test findfirst(x -> x.id.number == "4", pdb) == findfirst(x -> x.id.number == "4", pdbml)
             @test findfirst(x -> x.id.number == "73",pdb) == findfirst(x -> x.id.number == "73",pdbml)
@@ -31,7 +31,7 @@
             headers=Dict("User-Agent" => "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)"),
             format=PDBFile)
         try
-            d_pdb = read(filename, PDBFile)
+            d_pdb = read_file(filename, PDBFile)
 
             @test findfirst(x -> x.id.number == "4", pdb) == findfirst(x -> x.id.number == "4", d_pdb)
             @test findfirst(x -> x.id.number == "73",pdb) == findfirst(x -> x.id.number == "73",d_pdb)
@@ -43,8 +43,8 @@
     @testset "1H4A: Chain A (auth) == Chain X (label)" begin
 
         file = string(xml("1H4A"), ".gz")
-        auth = read(file, PDBML, label=false)
-        label = read(file, PDBML)
+        auth = read_file(file, PDBML, label=false)
+        label = read_file(file, PDBML)
 
         @test unique([ res.id.chain for res in auth ]) == ["X"]
         @test unique([ res.id.chain for res in label]) == ["A", "B"]
@@ -53,8 +53,8 @@
     @testset "1SSX: Residues with insert codes, 15A 15B" begin
 
         code = "1SSX"
-        pdb = read(txt(code), PDBFile)
-        pdbml = read(xml(code), PDBML)
+        pdb = read_file(txt(code), PDBFile)
+        pdbml = read_file(xml(code), PDBML)
 
         for residue_list in [pdb, pdbml]
 
@@ -117,12 +117,12 @@
         end
     end
 
-    @testset "read with occupancyfilter=true" begin
-        # `read` only atoms with the best occupancy
+    @testset "read_file with occupancyfilter=true" begin
+        # `read_file` only atoms with the best occupancy
 
         code = "1SSX"
-        pdb = read(txt(code), PDBFile, occupancyfilter=true)
-        pdbml = read(xml(code), PDBML, occupancyfilter=true)
+        pdb = read_file(txt(code), PDBFile, occupancyfilter=true)
+        pdbml = read_file(xml(code), PDBML, occupancyfilter=true)
 
         res_pdb   = @residues pdbml model "1" chain "A"  group All residue "141"
         res_pdbml = @residues pdbml model "1" chain "A"  group All residue "141"
@@ -148,8 +148,8 @@
     #   ...
 
         code = "1CBN"
-        pdb = read(txt(code), PDBFile)
-        pdbml = read(xml(code), PDBML)
+        pdb = read_file(txt(code), PDBFile)
+        pdbml = read_file(xml(code), PDBML)
 
         @test length( @residues pdb   model "1" chain "A" group All residue "22" ) == 2
         @test length( @residues pdbml model "1" chain "A" group All residue "22" ) == 2
@@ -161,8 +161,8 @@
     @testset "1AS5: NMR" begin
 
         code = "1AS5"
-        pdb = read(txt(code), PDBFile)
-        pdbml = read(xml(code), PDBML)
+        pdb = read_file(txt(code), PDBFile)
+        pdbml = read_file(xml(code), PDBML)
 
         @test length( @residues pdbml model "1"  chain "A" group All residue All ) == 25
         @test length( @residues pdbml model "14" chain "A" group All residue All ) == 25
@@ -175,8 +175,8 @@
     # 188 (Gly, Lys), and 221 (Ala, Leu) but no insertion letters.
 
         code = "1DPO"
-        pdb = read(txt(code), PDBFile)
-        pdbml = read(xml(code), PDBML)
+        pdb = read_file(txt(code), PDBFile)
+        pdbml = read_file(xml(code), PDBML)
 
         # Single "A" chain for PDB (auth_asym_id in PDBML)
         @test unique([r.id.chain for r in pdb  ]) == [ "A" ]
@@ -199,8 +199,8 @@
     # The block contains Leu-Ser-Ser-Leu.
 
         code = "1IGY"
-        pdb = read(txt(code), PDBFile)
-        pdbml = read(xml(code), PDBML)
+        pdb = read_file(txt(code), PDBFile)
+        pdbml = read_file(xml(code), PDBML)
 
         @test [r.id.name for r in @residues pdb   model "1" chain "B" group All residue r"^82[A-Z]?$" ] ==
                 ["LEU", "SER", "SER", "LEU"]
@@ -217,8 +217,8 @@
     # Chain E begins with 1H, 1G, 1F, ... 1A, then 1 (in reverse alphabetic order)
 
         code = "1HAG"
-        pdb = read(txt(code), PDBFile)
-        pdbml = read(xml(code), PDBML)
+        pdb = read_file(txt(code), PDBFile)
+        pdbml = read_file(xml(code), PDBML)
 
         @test unique([res.id.chain for res in pdb  ]) == ["E", "I"]
         @test unique([res.id.chain for res in pdbml]) == ["A", "B", "C", "D", "E"]
@@ -234,8 +234,8 @@
     # Contains a single (unnamed) protein chain with sequence 7A-95A that continues 4-308.
 
         code = "1NSA"
-        pdb = read(txt(code), PDBFile)
-        pdbml = read(xml(code), PDBML)
+        pdb = read_file(txt(code), PDBFile)
+        pdbml = read_file(xml(code), PDBML)
 
         # Single "A" chain for PDB (auth_asym_id in PDBML)
         @test unique([r.id.chain for r in pdb  ]) == ["A"]
@@ -253,8 +253,8 @@
     # Contains in chain B (in this order) 1S, 2S, 323P-334P, 6-94, 94A, 95-188, 1T, 2T
 
         code = "1IAO"
-        pdb = read(txt(code), PDBFile)
-        pdbml = read(xml(code), PDBML)
+        pdb = read_file(txt(code), PDBFile)
+        pdbml = read_file(xml(code), PDBML)
 
         pdb_B   = @residues pdb   model "1" chain "B" group All residue All
         pdbml_B = @residues pdbml model "1" chain "B" group All residue All
@@ -273,8 +273,8 @@
         # ASN 115 from chain E has no CA
 
         code = "3BTT"
-        pdb = read(txt(code), PDBFile)
-        pdbml = read(xml(code), PDBML)
+        pdb = read_file(txt(code), PDBFile)
+        pdbml = read_file(xml(code), PDBML)
 
         res   = pdb[97]
         res_ml = pdbml[97]
@@ -290,7 +290,7 @@
         # PDB files generated by Foldseek have only 66 columns; element identifiers 
         # are missing (represented as empty strings). Those files only contain CA atoms.
         pdb_file = joinpath(DATA, "foldseek_example.pdb")
-        pdb = read(pdb_file, PDBFile)
+        pdb = read_file(pdb_file, PDBFile)
 
         # The example file has only 8 residues and one chain (A)
         for (i, res) in zip(1:8, pdb)
@@ -330,7 +330,7 @@ end
     @testset "2VQC" begin
         code = "2VQC"
         io = IOBuffer()
-        pdb = read(txt(code), PDBFile)
+        pdb = read_file(txt(code), PDBFile)
         print(io, pdb, PDBFile)
         printed = split(String(take!(io)), '\n')
 
@@ -343,7 +343,7 @@ end
         code = "1AS5"
         io = IOBuffer()
 
-        pdb = read(txt(code), PDBFile)
+        pdb = read_file(txt(code), PDBFile)
         print(io, pdb, PDBFile)
         printed = split(String(take!(io)), '\n')
 
@@ -355,7 +355,7 @@ end
         code = "1IAO"
         io = IOBuffer()
 
-        pdb = read(txt(code), PDBFile)
+        pdb = read_file(txt(code), PDBFile)
         print(io, pdb, PDBFile)
         printed = split(String(take!(io)), '\n')
 
@@ -369,11 +369,11 @@ end
         @test filter!(s -> occursin(r"TER ", s), printed)[1] == "TER    1418      TRP A 178 "
     end
 
-    @testset "read/write consistency" begin
+    @testset "read_file/write consistency" begin
        io = IOBuffer()
        for code in ["2VQC", "1IAO", "1NSA", "1HAG", "1IGY", "1DPO", "1AS5", "1CBN", "1SSX"]
 
-           readed = read(txt(code), PDBFile)
+           readed = read_file(txt(code), PDBFile)
            print(io, readed, PDBFile)
            readed_writed_readed = parse(String(take!(io)), PDBFile)
 

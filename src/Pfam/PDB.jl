@@ -63,7 +63,7 @@ function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
                               checkpdbname::Bool=false,
                               missings::Bool=true)
 
-    siftsres = read(siftsfile, SIFTSXML, chain=chain, missings=missings)
+    siftsres = read_file(siftsfile, SIFTSXML, chain=chain, missings=missings)
 
     up2res = OrderedDict{String,Tuple{String,String,Char}}()
     for res in siftsres

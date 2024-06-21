@@ -144,7 +144,7 @@ use the `getsequence` function, from the `MSA` module, to get the sequence from 
 ```@repl
 using MIToS.Information # to use the probabilities function
 using MIToS.MSA # to use getsequence on the one sequence FASTA (canonical) from UniProt
-seq = read("http://www.uniprot.org/uniprot/P29374.fasta", FASTA) # Small hack: read the single sequence as a MSA
+seq = read_file("http://www.uniprot.org/uniprot/P29374.fasta", FASTA) # Small hack: read the single sequence as a MSA
 probabilities(seq[1,:]) # Select the single sequence and calculate the probabilities
 ```  
 
@@ -160,7 +160,7 @@ using Plots
 gr(size=(600,300))
 using MIToS.Information # to use the probabilities function
 using MIToS.MSA # to use getsequence on the one sequence FASTA (canonical) from UniProt
-seq = read("http://www.uniprot.org/uniprot/P29374.fasta", FASTA) # Small hack: read the single sequence as a MSA
+seq = read_file("http://www.uniprot.org/uniprot/P29374.fasta", FASTA) # Small hack: read the single sequence as a MSA
 frequencies = probabilities(seq[1,:]) # Select the single sequence and calculate the probabilities
 ```  
 
@@ -200,7 +200,7 @@ of the Mutual Information. The Information module has available two low-count co
 ```@example inf_msa
 using MIToS.MSA
 
-msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
+msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 
 filtercolumns!(msa, columngapfraction(msa) .< 0.5) # delete columns with 50% gaps or more
 
@@ -364,7 +364,7 @@ gr()
 ```@example inf_entropy
 using MIToS.MSA
 
-msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
+msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 ```
 
 We are going to count residues to estimate the entropy. The `entropy` estimation is
@@ -449,7 +449,7 @@ gr()
 using MIToS.MSA
 using MIToS.Information
 
-msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
+msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 ZMIp, MIp  = buslje09(msa)
 ZMIp
 ```

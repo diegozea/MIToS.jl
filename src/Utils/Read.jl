@@ -101,14 +101,14 @@ function _read(completename::AbstractString,
 end
 
 """
-`read(pathname, FileFormat [, Type [, … ] ] ) -> Type`
+`read_file(pathname, FileFormat [, Type [, … ] ] ) -> Type`
 
 This function opens a file in the `pathname` and calls `parse(io, ...)` for
 the given `FileFormat` and `Type` on it. If the  `pathname` is an HTTP or FTP URL,
 the file is downloaded with `download` in a temporal file.
 Gzipped files should end on `.gz`.
 """
-function read(completename::AbstractString,
+function read_file(completename::AbstractString,
     format::Type{T},
     args...; kargs...) where {T<:FileFormat}
     if startswith(completename, "http://") ||
@@ -125,4 +125,9 @@ function read(completename::AbstractString,
         # completename and filename are the same
         _read(completename, completename, T, args...; kargs...)
     end
+end
+
+function read(name::AbstractString, format::Type{T}, args...; kargs...) where {T<:FileFormat}
+    @warn "Using read with $format is deprecated, use read_file instead."
+    read_file(name, format, args...; kargs...)
 end

@@ -308,14 +308,14 @@
         end
 
         @testset "Gaoetal2011" begin
-            msa  = read(Gaoetal2011, FASTA)
+            msa  = read_file(Gaoetal2011, FASTA)
             busl = buslje09(Gaoetal2011, FASTA, lambda=0.0, samples=0)
             blmi = BLMI(msa, lambda=0.0, beta=0.0, samples=5)
             # BLMI should be equal to Buslje09 if beta is zero
 
             @test PairwiseListMatrices.getlist(busl[2]) ≈
                   PairwiseListMatrices.getlist(blmi[2]) # MIapc
-            @test msa == read(Gaoetal2011, FASTA)
+            @test msa == read_file(Gaoetal2011, FASTA)
         end
 
         @testset "Gaoetal2011, lambda 0.05" begin

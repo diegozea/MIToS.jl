@@ -43,6 +43,6 @@ function pairwisegapfraction(aln::AbstractMatrix{Residue}; clustering::Bool=true
 end
 
 function pairwisegapfraction(filename::String, format::Type{T}; kargs...) where T <: FileFormat
-    aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
+    aln = read_file(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
     pairwisegapfraction(aln; kargs...)
 end

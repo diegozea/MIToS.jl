@@ -24,28 +24,28 @@
 
         @testset "Read" begin
 
-            # TODO : @inferred read(pf09645_sto, Stockholm);
+            # TODO : @inferred read_file(pf09645_sto, Stockholm);
 
-            @test isa(read(pf09645_sto, Stockholm), AnnotatedMultipleSequenceAlignment)
+            @test isa(read_file(pf09645_sto, Stockholm), AnnotatedMultipleSequenceAlignment)
             for T in msa_types
-                @test isa(read(pf09645_sto, Stockholm, T), T)
+                @test isa(read_file(pf09645_sto, Stockholm, T), T)
             end
 
             for T in msa_types
-                @test read(pf09645_sto, Stockholm, T) == read(pf09645_sto, Stockholm)
+                @test read_file(pf09645_sto, Stockholm, T) == read_file(pf09645_sto, Stockholm)
             end
 
             @testset "Empty lines" begin
                 # This Rfam alignment has an empty line between the file annotations and the sequences
                 for T in msa_types # NOTE: nucleotides as Residue objects
-                    @test isa(read(rna_sto, Stockholm, T), T)
+                    @test isa(read_file(rna_sto, Stockholm, T), T)
                 end
             end
         end
 
         @testset "Output types" begin
 
-            msa_objects = [read(pf09645_sto, Stockholm, T) for T in msa_types]
+            msa_objects = [read_file(pf09645_sto, Stockholm, T) for T in msa_types]
 
             @testset "Sequence Names" begin
 
@@ -67,7 +67,7 @@
                     @test view(msa, 4, :) == map(Residue, F112_SSV1[F112_SSV1.!=Ref('.')])
                 end
 
-                msacl = read(clustal_sto, Stockholm, generatemapping=true, useidcoordinates=true)
+                msacl = read_file(clustal_sto, Stockholm, generatemapping=true, useidcoordinates=true)
                 @test size(msacl, 1) == 2
                 @test maximum(getsequencemapping(msacl, "Q8BX79|reviewed|Probable")) == 349
                 @test maximum(getsequencemapping(msacl, "Q923Y8|reviewed|Trace")) == 332
@@ -76,7 +76,7 @@
 
         @testset "Annotations" begin
 
-            msa = read(pf09645_sto, Stockholm)
+            msa = read_file(pf09645_sto, Stockholm)
 
             @test !isempty(msa)
             @test length(annotations(msa)) > 8 # 8 + modifications
@@ -108,7 +108,7 @@
                 //
                 """
 
-            @test parse(pfam_string, Stockholm) == read(pf09645_sto, Stockholm)
+            @test parse(pfam_string, Stockholm) == read_file(pf09645_sto, Stockholm)
 
             msa = parse(pfam_string, Stockholm)
             @test !isempty(msa)
@@ -122,9 +122,9 @@
             path = tempdir()
             tmp_file = joinpath(path, ".tmp.stockholm")
             try
-                msa = read(pf09645_sto, Stockholm, Matrix{Residue})
+                msa = read_file(pf09645_sto, Stockholm, Matrix{Residue})
                 write(tmp_file, msa, Stockholm)
-                @test read(tmp_file, Stockholm, Matrix{Residue}) == msa
+                @test read_file(tmp_file, Stockholm, Matrix{Residue}) == msa
             finally
                 if isfile(tmp_file)
                     rm(tmp_file)
@@ -134,7 +134,7 @@
 
         @testset "Keep insert columns" begin
 
-            msa = read(pf09645_sto, Stockholm, keepinserts=true)
+            msa = read_file(pf09645_sto, Stockholm, keepinserts=true)
             # Aligned columns
             @test (collect(getannotcolumn(msa, "Aligned")) .== Ref('1')) == (F112_SSV1 .!= Ref('.'))
             seq = "...mp---NSYQMAEIMYKILQQKKEISLEDILAQFEISASTAYNVQRTLRMICEKHPDECEVQTKNRRTIFKWIKNEETTEEGQEE--QEIEKILNAQPAE-------------k...."
@@ -157,30 +157,30 @@
 
         @testset "Read" begin
 
-            @test isa(read(pf09645_fas, FASTA), AnnotatedMultipleSequenceAlignment)
+            @test isa(read_file(pf09645_fas, FASTA), AnnotatedMultipleSequenceAlignment)
             for T in msa_types
-                @test isa(read(pf09645_fas, FASTA, T), T)
+                @test isa(read_file(pf09645_fas, FASTA, T), T)
             end
 
             for T in msa_types
-                @test read(pf09645_fas, FASTA, T) == read(pf09645_fas, FASTA)
+                @test read_file(pf09645_fas, FASTA, T) == read_file(pf09645_fas, FASTA)
             end
 
             @testset "Download" begin
 
-                @test read(gaoetal2011, FASTA) ==
-                      read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/Gaoetal2011.fasta",
+                @test read_file(gaoetal2011, FASTA) ==
+                      read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/Gaoetal2011.fasta",
                     FASTA)
-                @test read(pf09645_fas, FASTA) ==
-                      read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.fasta.gz",
+                @test read_file(pf09645_fas, FASTA) ==
+                      read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.fasta.gz",
                     FASTA)
             end
         end
 
         @testset "Output types" begin
 
-            gaoetal_msas = [read(gaoetal2011, FASTA, T) for T in msa_types]
-            pfam_msas = [read(pf09645_fas, FASTA, T) for T in msa_types]
+            gaoetal_msas = [read_file(gaoetal2011, FASTA, T) for T in msa_types]
+            pfam_msas = [read_file(pf09645_fas, FASTA, T) for T in msa_types]
 
             @testset "Sequence Names" begin
 
@@ -241,7 +241,7 @@
 
         @testset "String input/output" begin
 
-            msa = read(gaoetal2011, FASTA)
+            msa = read_file(gaoetal2011, FASTA)
             fasta_string = """
                 >SEQ1
                 DAWAEE
@@ -266,13 +266,13 @@
 
         @testset "File input/output" begin
 
-            msa = read(gaoetal2011, FASTA)
+            msa = read_file(gaoetal2011, FASTA)
 
             path = tempdir()
             uncompressed = joinpath(path, ".tmp.fasta")
             try
                 write(uncompressed, msa, FASTA)
-                @test read(uncompressed, FASTA) == msa
+                @test read_file(uncompressed, FASTA) == msa
             finally
                 if isfile(uncompressed)
                     rm(uncompressed)
@@ -281,7 +281,7 @@
             compressed = joinpath(path, ".tmp.fasta.gz")
             try
                 write(compressed, msa, FASTA)
-                @test read(compressed, FASTA) == msa
+                @test read_file(compressed, FASTA) == msa
             finally
                 if isfile(compressed)
                     rm(compressed)
@@ -291,7 +291,7 @@
 
         @testset "Non standard residues and mapping" begin
 
-            seqs = read(joinpath(DATA, "alphabet.fasta"), FASTA,
+            seqs = read_file(joinpath(DATA, "alphabet.fasta"), FASTA,
                 generatemapping=true)
 
             @test vec(seqs[1, :]) == res"ARNDCQEGHILKMFPSTWYV"
@@ -305,7 +305,7 @@
     @testset "Raw" begin
 
         # AnnotatedMultipleSequenceAlignment
-        raw = read(joinpath(DATA, "gaps.txt"), Raw)
+        raw = read_file(joinpath(DATA, "gaps.txt"), Raw)
         mat = getresidues(raw)
         raw_string = """THAYQAIHQV
                         THAYQAIHQ-
@@ -386,18 +386,18 @@
 
         @testset "Read" begin
 
-            @test isa(read(modeller, PIR), AnnotatedMultipleSequenceAlignment)
+            @test isa(read_file(modeller, PIR), AnnotatedMultipleSequenceAlignment)
             for T in msa_types
-                @test isa(read(modeller, PIR, T), T)
+                @test isa(read_file(modeller, PIR, T), T)
             end
 
-            msa = read(modeller, PIR)
+            msa = read_file(modeller, PIR)
             @test size(msa) == (2, 106)
         end
 
         @testset "Print" begin
 
-            msa = read(example, PIR)
+            msa = read_file(example, PIR)
 
             @test stringsequence(msa, 1) == "MTNIRKSHPLFKIINHSFIDLPAPSVTHICRDVNYGWLIRYTWIGGQPVEHPFIIIGQLASISYFSIILILMPISGIVEDKMLKWN"
 
@@ -432,7 +432,7 @@
 
         @testset "Gaps" begin
 
-            msa = read(modeller, PIR)
+            msa = read_file(modeller, PIR)
             @test gapfraction(msa, 2) ≈ [0.0, 0.49056603773584906]
             @test getannotsequence(msa, "5fd1", "Type") == "P1"
             @test getannotsequence(msa, "5fd1",
@@ -450,7 +450,7 @@
                 RTNLIAYLK.EK.TAA*
                 """
             # MIToS always reads . as -
-            msa = read(emboss, PIR, deletefullgaps=false)
+            msa = read_file(emboss, PIR, deletefullgaps=false)
             @test parse(emboss_string, PIR, deletefullgaps=false) == msa
 
             out = IOBuffer()
@@ -468,14 +468,14 @@
             @test lines[1] == ">P1;1bbha- "
             @test lines[5] == ">P1;1cpq-- "
             @test lines[9] == ">P1;256bb- "
-            msa = read(pass2, PIR)
+            msa = read_file(pass2, PIR)
             @test sequencenames(msa) == ["1bbha-", "1cpq--", "256bb-"]
         end
 
         @testset "Duplicated identifiers" begin
 
             duplicated_ids_file = joinpath(DATA, "duplicated_ids.pir")
-            @test_throws ArgumentError read(duplicated_ids_file, PIR)
+            @test_throws ArgumentError read_file(duplicated_ids_file, PIR)
         end
     end
 
@@ -514,7 +514,7 @@
             seq = "-----RTKRLREAVRVYLAENGrSHTVDIFDHLNDRFSWGATMNQVGNILAKDNRFEKVGHVRD-FFRGARYTVCVWDLAS-----------"
             seq_without_insert = replace(seq, "r" => "")
 
-            msa = read(joinpath(DATA, "yanglab.a3m"), A3M)
+            msa = read_file(joinpath(DATA, "yanglab.a3m"), A3M)
             
             @test ncolumns(msa) == 91 # 92 with the insert column
             @test nsequences(msa) == 7
@@ -532,7 +532,7 @@
 
                 @testset "Keep inserts" begin
                     # Keeping the insert column when reading the MSA
-                    msa = read(joinpath(DATA, "yanglab.a3m"), A3M, keepinserts=true)
+                    msa = read_file(joinpath(DATA, "yanglab.a3m"), A3M, keepinserts=true)
                     @test ncolumns(msa) == 92
 
                     io = IOBuffer()

@@ -26,6 +26,7 @@ export  # GeneralUtils.jl
         lineiterator,
         check_file, isnotemptyfile,
         download_file,
+        read_file,
         # Write.jl
         Commandline,
         # ThreeLetterResidues.jl
@@ -58,6 +59,7 @@ export  parse_commandline,
 using Pkg
 using Distributed
 using ArgParse, CodecZlib
+using MIToS.Utils # to use read_file
 
 include("Scripts.jl")
 

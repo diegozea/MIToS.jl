@@ -1,6 +1,6 @@
 @testset "hcat" begin
     simple = joinpath(DATA, "simple.fasta")
-    msa = read(simple, FASTA, generatemapping=true)
+    msa = read_file(simple, FASTA, generatemapping=true)
     setannotresidue!(msa, "ONE", "example", "ab")
     setannotresidue!(msa, "TWO", "example", "cd")
     setannotresidue!(msa, "ONE", "OnlyONE", "xx")
@@ -79,7 +79,7 @@
         tmp_file = joinpath(path, ".tmp.stockholm")
         try
             write(tmp_file, annot_diff, Stockholm)
-            out_msa = read(tmp_file, Stockholm)
+            out_msa = read_file(tmp_file, Stockholm)
             @test columnnames(out_msa) == columnnames(annot_diff)
             @test out_msa == annot_diff
         finally
@@ -186,8 +186,8 @@
 end
 
 @testset "vcat" begin
-    msa = read(joinpath(DATA, "simple.fasta"), FASTA, generatemapping=true)
-    msa2 = read(joinpath(DATA, "Gaoetal2011.fasta"), FASTA, generatemapping=true)
+    msa = read_file(joinpath(DATA, "simple.fasta"), FASTA, generatemapping=true)
+    msa2 = read_file(joinpath(DATA, "Gaoetal2011.fasta"), FASTA, generatemapping=true)
 
     @testset "seqnames" begin
         seqnames = sequencenames(msa)
@@ -314,8 +314,8 @@ end
 end
 
 @testset "join MSAs" begin
-    msa = read(joinpath(DATA, "simple.fasta"), FASTA, generatemapping=true)
-    msa2 = read(joinpath(DATA, "Gaoetal2011.fasta"), FASTA, generatemapping=true)
+    msa = read_file(joinpath(DATA, "simple.fasta"), FASTA, generatemapping=true)
+    msa2 = read_file(joinpath(DATA, "Gaoetal2011.fasta"), FASTA, generatemapping=true)
 
     @testset "column gaps" begin
         h_gaps = MIToS.MSA._gap_columns(msa, 3)
