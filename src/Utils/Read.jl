@@ -1,6 +1,6 @@
 import Base: read
 
-"`FileFormat` is used for write special `parse` (and `read`) methods on it."
+"`FileFormat` is used for write special `parse_file` (and `read_file`) methods on it."
 abstract type FileFormat end
 
 "This function raises an error if a GZip file doesn't have the 0x1f8b magic number."
@@ -83,17 +83,17 @@ function _read(completename::AbstractString,
     args...; kargs...) where {T<:FileFormat}
     check_file(filename)
     if endswith(completename, ".xml.gz") || endswith(completename, ".xml")
-        document = parse_file(filename)
+        document = LightXML.parse_file(filename)
         try
-            parse(document, T, args...; kargs...)
+            parse_file(document, T, args...; kargs...)
         finally
-            free(document)
+            LightXML.free(document)
         end
     else
         fh = open(filename, "r")
         try
             fh = endswith(completename, ".gz") ? GzipDecompressorStream(fh) : fh
-            parse(fh, T, args...; kargs...)
+            parse_file(fh, T, args...; kargs...)
         finally
             close(fh)
         end
@@ -103,7 +103,7 @@ end
 """
 `read_file(pathname, FileFormat [, Type [, … ] ] ) -> Type`
 
-This function opens a file in the `pathname` and calls `parse(io, ...)` for
+This function opens a file in the `pathname` and calls `parse_file(io, ...)` for
 the given `FileFormat` and `Type` on it. If the  `pathname` is an HTTP or FTP URL,
 the file is downloaded with `download` in a temporal file.
 Gzipped files should end on `.gz`.
@@ -131,3 +131,13 @@ function read(name::AbstractString, format::Type{T}, args...; kargs...) where {T
     @warn "Using read with $format is deprecated, use read_file instead."
     read_file(name, format, args...; kargs...)
 end
+
+# parse_file
+# ----------
+
+function Base.parse(io::Union{IO,AbstractString}, format::Type{T}, args...; kargs...) where {T<:FileFormat}
+    @warn "Using parse with $format is deprecated, use parse_file instead."
+    parse_file(io, format, args...; kargs...)
+end
+
+parse_file() = nothing

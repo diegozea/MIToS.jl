@@ -375,7 +375,7 @@ end
 
            readed = read_file(txt(code), PDBFile)
            print(io, readed, PDBFile)
-           readed_writed_readed = parse(String(take!(io)), PDBFile)
+           readed_writed_readed = parse_file(String(take!(io)), PDBFile)
 
            @test readed_writed_readed == readed
        end

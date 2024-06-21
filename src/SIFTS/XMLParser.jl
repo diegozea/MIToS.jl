@@ -54,15 +54,15 @@ WARNING: Sometimes there are more chains than entities!
 ```
 """
 function _get_entities(sifts)
-    siftsroot = root(sifts)
-    get_elements_by_tagname(siftsroot, "entity")
+    siftsroot = LightXML.root(sifts)
+    LightXML.get_elements_by_tagname(siftsroot, "entity")
 end
 
 """
 Gets an array of the segments, the continuous region of an entity.
 Chimeras and expression tags generates more than one segment for example.
 """
-_get_segments(entity) = get_elements_by_tagname(entity, "segment")
+_get_segments(entity) = LightXML.get_elements_by_tagname(entity, "segment")
 
 """
 Returns an Iterator of the residues on the listResidue
@@ -77,17 +77,18 @@ Returns an Iterator of the residues on the listResidue
 ```
 """
 function _get_residues(segment)
-    child_elements(select_element(get_elements_by_tagname(segment, "listResidue"), "listResidue"))
+    LightXML.child_elements(select_element(
+        LightXML.get_elements_by_tagname(segment, "listResidue"), "listResidue"))
 end
 
 """
 Returns `true` if the residue was annotated as *Not_Observed*.
 """
 function _is_missing(residue)
-    details = get_elements_by_tagname(residue, "residueDetail")
+    details = LightXML.get_elements_by_tagname(residue, "residueDetail")
     for det in details
         # XML: <residueDetail dbSource="PDBe" property="Annotation">Not_Observed</residueDetail>
-        if attribute(det, "property") == "Annotation" && content(det) == "Not_Observed"
+        if LightXML.attribute(det, "property") == "Annotation" && LightXML.content(det) == "Not_Observed"
             return (true)
         end
     end
@@ -95,22 +96,22 @@ function _is_missing(residue)
 end
 
 function _get_details(residue)::Tuple{Bool,String,String}
-    details = get_elements_by_tagname(residue, "residueDetail")
+    details = LightXML.get_elements_by_tagname(residue, "residueDetail")
     missing_residue = false
     sscode = " "
     ssname = " "
     for det in details
-        detail_property = attribute(det, "property")
+        detail_property = LightXML.attribute(det, "property")
         # XML: <residueDetail dbSource="PDBe" property="Annotation">Not_Observed</residueDetail>
-        if detail_property == "Annotation" && content(det) == "Not_Observed"
+        if detail_property == "Annotation" && LightXML.content(det) == "Not_Observed"
             missing_residue = true
             break
             # XML: <residueDetail dbSource="PDBe" property="codeSecondaryStructure"...
         elseif detail_property == "codeSecondaryStructure"
-            sscode = content(det)
+            sscode = LightXML.content(det)
             # XML: <residueDetail dbSource="PDBe" property="nameSecondaryStructure"...
         elseif detail_property == "nameSecondaryStructure"
-            ssname = content(det)
+            ssname = LightXML.content(det)
         end
     end
     (missing_residue, sscode, ssname)

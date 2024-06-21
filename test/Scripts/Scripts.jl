@@ -32,7 +32,7 @@
         output = read(`$julia --project=$project $path_script $path_file -o STDOUT`, String)
 
         @test read_file(path_file, Stockholm, generatemapping=true, useidcoordinates=true,
-            deletefullgaps=true) == parse(output, Stockholm)
+            deletefullgaps=true) == parse_file(output, Stockholm)
     end
 
     @testset "BLMI.jl" begin

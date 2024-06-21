@@ -108,9 +108,9 @@
                 //
                 """
 
-            @test parse(pfam_string, Stockholm) == read_file(pf09645_sto, Stockholm)
+            @test parse_file(pfam_string, Stockholm) == read_file(pf09645_sto, Stockholm)
 
-            msa = parse(pfam_string, Stockholm)
+            msa = parse_file(pfam_string, Stockholm)
             @test !isempty(msa)
             @test length(annotations(msa)) > 8 # 8 + modifications
             @test length(getannotcolumn(msa)) == 2
@@ -257,7 +257,7 @@
                 DAYCMT
                 """
 
-            @test parse(fasta_string, FASTA) == msa
+            @test parse_file(fasta_string, FASTA) == msa
 
             out = IOBuffer()
             print(out, msa, FASTA)
@@ -327,7 +327,7 @@
                 @test stringsequence(mat, i) == stringsequence(raw, i)
             end
 
-            @test parse(raw_string, Raw) == raw
+            @test parse_file(raw_string, Raw) == raw
         end
 
         @testset "Print" begin
@@ -451,7 +451,7 @@
                 """
             # MIToS always reads . as -
             msa = read_file(emboss, PIR, deletefullgaps=false)
-            @test parse(emboss_string, PIR, deletefullgaps=false) == msa
+            @test parse_file(emboss_string, PIR, deletefullgaps=false) == msa
 
             out = IOBuffer()
             print(out, msa, PIR)

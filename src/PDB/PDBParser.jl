@@ -28,7 +28,7 @@ function _parse_pdbatom(line::String, atom_name, element)
 end
 
 """
-`parse(io, ::Type{PDBFile}; chain=All, model=All, group=All, atomname=All, onlyheavy=false, occupancyfilter=false)`
+`parse_file(io, ::Type{PDBFile}; chain=All, model=All, group=All, atomname=All, onlyheavy=false, occupancyfilter=false)`
 
 Reads a text file of a PDB entry.
 Returns a list of `PDBResidue` (view `MIToS.PDB.PDBResidues`).
@@ -38,7 +38,7 @@ or `"HETATM"`. If not set, all residues are returned.
 If the keyword argument `occupancyfilter` (default: `false`) is `true`,
 only the atoms with the best occupancy are returned.
 """
-function Base.parse(io::Union{IO,String}, ::Type{PDBFile};
+function Utils.parse_file(io::Union{IO,String}, ::Type{PDBFile};
                     chain::Union{String,Type{All}}=All,
                     model::Union{String,Type{All}}=All,
                     group::Union{String,Type{All}}=All,

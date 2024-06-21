@@ -15,13 +15,14 @@ using MIToS.PDB
 """
 module PDB
 
+import LightXML
+
 using RecipesBase           # Plots for PDB Residues
 using AutoHashEquals
 using StaticArrays
 using OrderedCollections
 using PairwiseListMatrices
 using NamedArrays
-using LightXML
 using LinearAlgebra
 using Statistics            # mean
 using MIToS.Utils
@@ -104,6 +105,9 @@ export  # PDBResidues
         # AlphaFoldDB
         query_alphafolddb,
         download_alphafold_structure,
+        # Imported from Utils
+        read_file,
+        parse_file,
         # Imported from Base (and exported for docs)
         any,
         parse,

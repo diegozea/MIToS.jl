@@ -278,7 +278,7 @@ function deletefullgapcolumns(msa::AbstractMultipleSequenceAlignment, annotate::
 end
 
 @doc """
-`parse(io, format[, output; generatemapping, useidcoordinates, deletefullgaps])`
+`parse_file(io, format[, output; generatemapping, useidcoordinates, deletefullgaps])`
 
 The keyword argument `generatemapping` (`false` by default) indicates if the mapping of the
 sequences ("SeqMap") and columns ("ColMap") and the number of columns in the original MSA
@@ -287,13 +287,13 @@ sequences ("SeqMap") and columns ("ColMap") and the number of columns in the ori
 determining the start and end positions when the mappings are generated. `deletefullgaps`
 (`true` by default) indicates if columns 100% gaps (generally inserts from a HMM) must be
 removed from the MSA.
-""" parse
+""" parse_file
 
 # Keepinserts
 # ===========
 
 """
-Function to keep insert columns in `parse`. It uses the first sequence to generate the
+Function to keep insert columns in `parse_file`. It uses the first sequence to generate the
 "Aligned" annotation, and after that, convert all the characters to uppercase.
 """
 function _keepinserts!(SEQS, annot)
@@ -332,7 +332,7 @@ end
 # Parse for MSA formats
 # =====================
 
-function Base.parse(io::Union{IO,AbstractString},
+function Utils.parse_file(io::Union{IO,AbstractString},
     format::Type{T},
     output::Type{AnnotatedMultipleSequenceAlignment};
     generatemapping::Bool=false,
@@ -345,7 +345,7 @@ function Base.parse(io::Union{IO,AbstractString},
         useidcoordinates, deletefullgaps)
 end
 
-function Base.parse(io::Union{IO,AbstractString},
+function Utils.parse_file(io::Union{IO,AbstractString},
     format::Type{T},
     output::Type{NamedResidueMatrix{Array{Residue,2}}};
     deletefullgaps::Bool=true) where {T<:MSAFormat}
@@ -358,16 +358,16 @@ function Base.parse(io::Union{IO,AbstractString},
     msa
 end
 
-function Base.parse(io::Union{IO,AbstractString},
+function Utils.parse_file(io::Union{IO,AbstractString},
     format::Type{T},
     output::Type{MultipleSequenceAlignment};
     deletefullgaps::Bool=true) where {T<:MSAFormat}
-    msa = parse(io, format, NamedResidueMatrix{Array{Residue,2}},
+    msa = parse_file(io, format, NamedResidueMatrix{Array{Residue,2}},
         deletefullgaps=deletefullgaps)
     MultipleSequenceAlignment(msa)
 end
 
-function Base.parse(io::Union{IO,AbstractString},
+function Utils.parse_file(io::Union{IO,AbstractString},
     format::Type{T},
     output::Type{Matrix{Residue}};
     deletefullgaps::Bool=true) where {T<:MSAFormat}
@@ -376,13 +376,13 @@ function Base.parse(io::Union{IO,AbstractString},
     _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
 end
 
-function Base.parse(io::Union{IO,AbstractString},
+function Utils.parse_file(io::Union{IO,AbstractString},
     format::Type{T};
     generatemapping::Bool=false,
     useidcoordinates::Bool=false,
     deletefullgaps::Bool=true,
     keepinserts::Bool=false) where {T<:MSAFormat}
-    parse(io, format, AnnotatedMultipleSequenceAlignment; generatemapping=generatemapping,
-        useidcoordinates=useidcoordinates, deletefullgaps=deletefullgaps,
-        keepinserts=keepinserts)
+    parse_file(io, format, AnnotatedMultipleSequenceAlignment; 
+        generatemapping=generatemapping, useidcoordinates=useidcoordinates, 
+        deletefullgaps=deletefullgaps, keepinserts=keepinserts)
 end

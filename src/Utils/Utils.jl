@@ -9,9 +9,10 @@ module Utils
 
 using Downloads
 using CodecZlib
-using LightXML
 using NamedArrays
 using Logging
+
+import LightXML
 
 export  # GeneralUtils.jl
         All,
@@ -27,6 +28,7 @@ export  # GeneralUtils.jl
         check_file, isnotemptyfile,
         download_file,
         read_file,
+        parse_file,
         # Write.jl
         Commandline,
         # ThreeLetterResidues.jl

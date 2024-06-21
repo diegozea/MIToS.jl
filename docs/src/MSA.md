@@ -33,12 +33,12 @@ Depth = 4
 
 The main function for reading MSA files in MIToS is `read_file` and it is defined in the `Utils`
 module. This function takes a filename/path as a first argument followed by other
-arguments. It opens the file and uses the arguments to call the `parse` function.
+arguments. It opens the file and uses the arguments to call the `parse_file` function.
 `read_file` decides how to open the file, using the prefixes (e.g. https) and suffixes
-(i.e. extensions) of the file name, while `parse` does the actual parsing of
+(i.e. extensions) of the file name, while `parse_file` does the actual parsing of
 the file. You can `read_file` **gzipped files** if they have the `.gz` extension and
 also urls pointing to a **web file**.  
-The second argument of `read_file` and `parse` is the file `FileFormat`. The supported MSA formats
+The second argument of `read_file` and `parse_file` is the file `FileFormat`. The supported MSA formats
 at the moment are `Stockholm`, `FASTA`, `PIR` (NBRF) and `Raw`.  
 For example, reading with MIToS the full Stockholm MSA of the Pfam family *PF09645* from 
 the MIToS test data will be:  
@@ -49,7 +49,7 @@ using MIToS.MSA
 read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm)
 ```
 
-The third (and optional) argument of `read_file` and `parse` is the output MSA type:  
+The third (and optional) argument of `read_file` and `parse_file` is the output MSA type:  
 
 - `Matrix{Residue}` : It only contains the aligned sequences.  
 - `MultipleSequenceAlignment` : It contains the aligned sequences and their names/identifiers.  
@@ -61,7 +61,7 @@ Example of `Matrix{Residue}` output using a `Stockholm` file as input:
 read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm, Matrix{Residue})
 ```
 
-Because `read_file` calls `parse`, you should look into the documentation of `parse`
+Because `read_file` calls `parse_file`, you should look into the documentation of `parse_file`
 to know the available keyword arguments. The optional keyword arguments of
 those functions are:  
 
@@ -73,7 +73,7 @@ gap columns. `deletefullgaps` is `true` by default, deleting full gaps columns a
 
 !!! note  
     **If you want to keep the insert columns...**  Use the keyword argument `keepinserts`
-    to `true` in `read_file`/`parse`. This only works with an `AnnotatedMultipleSequenceAlignment`
+    to `true` in `read_file`/`parse_file`. This only works with an `AnnotatedMultipleSequenceAlignment`
     output. A column annotation (`"Aligned"`) is stored in the annotations, where insert
     columns are marked with `0` and aligned columns with `1`.  
 
@@ -240,7 +240,7 @@ can know what is the UniProt residue number of each residue in the MSA.
 #                            012345
 ```
 
-MIToS `read_file` and `parse` functions delete the insert columns, but they do the mapping
+MIToS `read_file` and `parse_file` functions delete the insert columns, but they do the mapping
 between each residue and its residue number before deleting insert columns when `generatemapping` is
 `true`. If you don't set `useidcoordinates` to `true`, the residue first `i` residue will
 be 1 instead of 3 in the previous example.  
@@ -248,7 +248,7 @@ be 1 instead of 3 in the previous example.
 ```@example msa_mapping
 using MIToS.MSA
 
-msa = parse("PROT_SPECI/3-15 .....insertALIGNED", Stockholm, generatemapping=true, useidcoordinates=true)
+msa = parse_file("PROT_SPECI/3-15 .....insertALIGNED", Stockholm, generatemapping=true, useidcoordinates=true)
 ```  
 
 MIToS also keeps the column number of the input MSA and its total number of columns. All

@@ -6,25 +6,25 @@ Protein Data Bank Markup Language (PDBML), a representation of PDB data in XML f
 struct PDBML <: FileFormat end
 
 function _get_text(elem, name)
-    sub = find_element(elem, name)
+    sub = LightXML.find_element(elem, name)
     if sub !== nothing
-        return(content(sub))
+        return(LightXML.content(sub))
     end
     throw(ErrorException("There is not $name for $elem"))
 end
 
 function _get_ins_code(elem)
-    sub = find_element(elem, "pdbx_PDB_ins_code")
+    sub = LightXML.find_element(elem, "pdbx_PDB_ins_code")
     if sub !== nothing
-        return(content(sub))
+        return(LightXML.content(sub))
     else
         return("")
     end
 end
 
 function _get_atom_iterator(document::LightXML.XMLDocument)
-    pdbroot = root(document)
-    child_elements(get_elements_by_tagname(pdbroot, "atom_siteCategory")[1])
+    pdbroot = LightXML.root(document)
+    LightXML.child_elements(LightXML.get_elements_by_tagname(pdbroot, "atom_siteCategory")[1])
 end
 
 "Used for parsing a PDB file into `Vector{PDBResidue}`"
@@ -38,7 +38,7 @@ function _generate_residues(residue_dict::OrderedDict{PDBResidueIdentifier, Vect
 end
 
 """
-`parse(pdbml, ::Type{PDBML}; chain=All, model=All, group=All, atomname=All, onlyheavy=false, label=true, occupancyfilter=false)`
+`parse_file(pdbml, ::Type{PDBML}; chain=All, model=All, group=All, atomname=All, onlyheavy=false, label=true, occupancyfilter=false)`
 
 Reads a `LightXML.XMLDocument` representing a pdb file.
 Returns a list of `PDBResidue`s (view `MIToS.PDB.PDBResidues`).
@@ -51,7 +51,7 @@ identification/values used in the publication that describes the structure. If t
 keyword argument `occupancyfilter` (default: `false`) is `true`, only the atoms with the
 best occupancy are returned.
 """
-function Base.parse(pdbml::LightXML.XMLDocument, ::Type{PDBML};
+function Utils.parse_file(pdbml::LightXML.XMLDocument, ::Type{PDBML};
                     chain::Union{String,Type{All}} = All,
                     model::Union{String,Type{All}} = All,
                     group::Union{String,Type{All}} = All,
@@ -143,57 +143,6 @@ function Base.parse(pdbml::LightXML.XMLDocument, ::Type{PDBML};
 
     residues
 end
-
-# function Base.parse(pdbml::LightXML.XMLDocument, ::Type{PDBML};
-#                     chain::Union{String,Type{All}} = All,
-#                     model::Union{String,Type{All}} = All,
-#                     group::Union{String,Type{All}} = All,
-#                     atomname::Union{String,Type{All}} = All,
-#                     onlyheavy::Bool=false,
-#                     label::Bool=true,
-#                     occupancyfilter::Bool=false)
-#
-#     residue_dict = OrderedDict{PDBResidueIdentifier, Vector{PDBAtom}}()
-#
-#     prefix = label ? "label" : "auth"
-#     chain_attribute = string(prefix, "_asym_id")
-#     atom_attribute = string(prefix, "_atom_id")
-#     comp_attribute = string(prefix, "_comp_id")
-#
-#     atoms = _get_atom_iterator(pdbml)
-#     for atom in atoms
-#
-#         atom_group = _get_text(atom, "group_PDB")
-#         atom_model = _get_text(atom, "pdbx_PDB_model_num")
-#         atom_chain = _get_text(atom, chain_attribute)
-#         atom_name = _get_text(atom, atom_attribute)
-#         element = _get_text(atom, "type_symbol")
-#
-#         if  _is(atom_group, group) && _is(atom_chain,chain) &&
-#                 _is(atom_model, model) && _is(atom_name,atomname) &&
-#                 (!onlyheavy || element!="H")
-#
-#             PDBe_number = _get_text(atom, "label_seq_id")
-#
-#             #  Residue_No  _atom_site.auth_seq_id
-#             #  Ins_Code    _atom_site.pdbx_PDB_ins_code
-#             PDB_number = string(_get_text(atom, "auth_seq_id"), _get_ins_code(atom))
-#             name = _get_text(atom, comp_attribute)
-#             x = parse(Float64, _get_text(atom, "Cartn_x"))
-#             y = parse(Float64, _get_text(atom, "Cartn_y"))
-#             z = parse(Float64, _get_text(atom, "Cartn_z"))
-#             occupancy = parse(Float64, _get_text(atom, "occupancy"))
-#             B = _get_text(atom, "B_iso_or_equiv")
-#
-#             residue_id = PDBResidueIdentifier(PDBe_number, PDB_number, name, atom_group, atom_model, atom_chain)
-#             atom_data  = PDBAtom(Coordinates(x,y,z), atom_name, element, occupancy, B)
-#
-#             value = get!(residue_dict, residue_id, PDBAtom[])
-#             push!(value, atom_data)
-#         end
-#     end
-#     _generate_residues(residue_dict, occupancyfilter)
-# end
 
 # Download PDB
 # ============

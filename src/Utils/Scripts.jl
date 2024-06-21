@@ -153,6 +153,6 @@ function runscript(args)
     end
 end
 
-"Decides if read or parse, uses parse with STDIN"
+"Decides if read_file or parse_file, uses parse_file with STDIN"
 readorparse(input::AbstractString, args...; kargs...) = read_file(input, args...; kargs...)
-readorparse(input::Base.LibuvStream, args...; kargs...) = parse(input, args...; kargs...)
+readorparse(input::Base.LibuvStream, args...; kargs...) = parse_file(input, args...; kargs...)
