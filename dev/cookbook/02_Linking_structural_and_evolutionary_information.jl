@@ -60,7 +60,7 @@ sifts_file = abspath(pathof(MIToS), "..", "..", "test", "data", "2vqc.xml.gz")
 # number using the MSA annotations.
 
 using MIToS.Pfam
-msa = read(pfam_file, Stockholm, generatemapping=true, useidcoordinates=true)
+msa = read_file(pfam_file, Stockholm, generatemapping=true, useidcoordinates=true)
 
 # First, we need to know what is the sequence in the MSA that correspond to the
 # PDB we want to link. Luckily, Pfam Stockholm files store the mapping between
@@ -102,11 +102,11 @@ Hx = mapcolfreq!(entropy,
 				 Counts(ContingencyTable(Int, Val{1}, UngappedAlphabet())))
 
 # To get quick access to each PDB residue based on its residue number, we can
-# read the PDB file into a dictionary using the `read` and `residuesdict`
+# read the PDB file into a dictionary using the `read_file` and `residuesdict`
 # functions from the MIToS `PDB` module:
 
 using MIToS.PDB
-res_dict = residuesdict(read(pdb_file, PDBFile, occupancyfilter=true), "1", "A") # model 1 chain A
+res_dict = residuesdict(read_file(pdb_file, PDBFile, occupancyfilter=true), "1", "A") # model 1 chain A
 
 # Then, we can iterate the mapping dictionary to link the MSA and PDB based
 # values:
@@ -153,7 +153,7 @@ uniprot_file = abspath(pathof(MIToS), "..", "..", "docs", "data", "P00193.fasta"
 # alignment (from `1` to the length of the aligned region):
 
 using MIToS.MSA
-msa = read(msa_file, FASTA, generatemapping=true)
+msa = read_file(msa_file, FASTA, generatemapping=true)
 
 # After that, we get the first sequence of the MSA, the one we know that
 # corresponds to the PDB of interest. We need the sequence as a `String`

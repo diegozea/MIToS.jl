@@ -35,7 +35,7 @@ pdbfile = abspath(pathof(MIToS), "..", "..", "docs", "data", "4zj9.pdb")
 # First, we need to read the PDB file using the `MIToS.PDB` module:
 
 using MIToS.PDB
-pdb_residues = read(pdbfile, PDBFile)
+pdb_residues = read_file(pdbfile, PDBFile)
 #md nothing # hide
 
 # For this example, we are going to replace the B-factor of the alpha-carbons
