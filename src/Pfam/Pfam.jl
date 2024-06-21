@@ -33,7 +33,10 @@ export  # Download
         hasresidues,
         msacontacts,
         msaresidues,
-        getcontactmasks
+        getcontactmasks,
+        # Utils
+        read_file,
+        parse_file
 
 include("Download.jl")
 include("PDB.jl")
