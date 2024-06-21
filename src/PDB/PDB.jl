@@ -27,7 +27,7 @@ using Statistics            # mean
 using MIToS.Utils
 using Format
 using JSON3
-using HTTP
+using Downloads
 using Logging
 
 export  # PDBResidues

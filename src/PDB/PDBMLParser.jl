@@ -214,22 +214,19 @@ It requires a four character `pdbcode`.
 Its default `format` is `PDBML` (PDB XML) and It uses the `baseurl` 
 "http://www.rcsb.org/pdb/files/".
 `filename` is the path/name of the output file.
-This function calls `MIToS.Utils.download_file` that calls `download` from the *HTTP.jl* 
-package. You can use keyword arguments from `HTTP.request`.
-Use the `headers` keyword argument to pass a `Dict{String, String}` with the 
-header information.
+This function calls `MIToS.Utils.download_file` that calls `Downloads.download`. So, you 
+can use keyword arguments, such as `headers`, from that function.
 """
 function downloadpdb(pdbcode::String;
                      format::Type{T} = PDBML,
                      filename::String= uppercase(pdbcode)*_file_extension(format),
                      baseurl::String = "http://www.rcsb.org/pdb/files/",
-                     headers::Dict{String, String} = Dict{String, String}(),
                      kargs...) where T <: FileFormat
     if check_pdbcode(pdbcode)
         pdbfilename = uppercase(pdbcode) * _file_extension(format)
         filename = _inputnameforgzip(filename)
         sepchar = endswith(baseurl,"/") ? "" : "/";
-        download_file(string(baseurl,sepchar,pdbfilename), filename; headers=headers, kargs...)
+        download_file(string(baseurl,sepchar,pdbfilename), filename; kargs...)
     else
         throw(ErrorException("$pdbcode is not a correct PDB code"))
     end
@@ -239,6 +236,31 @@ end
 
 # RESTful PDB interface
 # =====================
+
+"""
+    _escape_url_query_values(query_values::String)::String
+
+This function use the percent-encoding to escape the characters that are not allowed in a URL.
+
+```jldoctest
+julia> _escape_url_query_values("name=John Doe")
+"name=John%20Doe"
+"""
+function _escape_url_query_values(url::String)::String
+    # Characters that do not need to be percent-encoded
+    unreserved = Set{Char}("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~=")
+    
+    encoded_url = IOBuffer()
+    for char in url
+        if char in unreserved
+            print(encoded_url, char)
+        else
+            print(encoded_url, '%')
+            print(encoded_url, uppercase(string(Int(char), base=16, pad=2)))
+        end
+    end
+    String(take!(encoded_url))
+end
 
 function _graphql_query(pdbcode::String)
     """
@@ -266,21 +288,20 @@ function _graphql_query(pdbcode::String)
         }
       }
     }
-    """
+    """ |> _escape_url_query_values
 end
 
 function _pdbheader(pdbcode::String; kargs...)
     pdbcode = uppercase(pdbcode)
     if check_pdbcode(pdbcode)
         with_logger(ConsoleLogger(stderr, Logging.Warn)) do
-            String(
-                HTTP.request(
-                    "GET", 
-                    "https://data.rcsb.org/graphql";
-                    query = ["query" => _graphql_query(pdbcode)],
+            body = IOBuffer()
+            Downloads.request("https://data.rcsb.org/graphql?query=$(_graphql_query(pdbcode))";
+                    method = "GET",
+                    output = body,
                     kargs...
-                    ).body
-                )
+                    )
+            String(take!(body))
         end
     else
         throw(ErrorException("$pdbcode is not a correct PDB code"))

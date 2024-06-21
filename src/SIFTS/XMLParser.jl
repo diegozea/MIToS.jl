@@ -21,15 +21,13 @@ function downloadsifts(pdbcode::String;
     @assert endswith(filename, ".xml.gz") "filename must end with .xml.gz"
     @assert source == "ftp" || source == "https" "source must be ftp or https"
     if check_pdbcode(pdbcode)
-        if source == "ftp"
-            # We are using Base.download to keep supporting Julia 1.0
-            # HTTP.jl version 1.7, and therefore download_file, doesn't support FTP
-            Base.download(string("ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/",
-                    lowercase(pdbcode[2:3]), "/", lowercase(pdbcode), ".xml.gz"), filename)
+        url = if source == "ftp"
+            string("ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/",
+                    lowercase(pdbcode[2:3]), "/", lowercase(pdbcode), ".xml.gz")
         else
-            download_file(string("https://www.ebi.ac.uk/pdbe/files/sifts/", 
-                lowercase(pdbcode), ".xml.gz"), filename)
+            string("https://www.ebi.ac.uk/pdbe/files/sifts/", lowercase(pdbcode), ".xml.gz")
         end
+        download_file(url, filename)
     else
         throw(ErrorException("$pdbcode is not a correct PDB"))
     end

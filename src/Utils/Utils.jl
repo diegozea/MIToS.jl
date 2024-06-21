@@ -7,7 +7,7 @@ using MIToS.Utils
 """
 module Utils
 
-using HTTP
+using Downloads
 using CodecZlib
 using LightXML
 using NamedArrays

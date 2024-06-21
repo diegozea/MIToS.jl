@@ -312,6 +312,15 @@ end
 
     @test getpdbdescription("4HHB")["rcsb_entry_info"]["resolution_combined"][1] == 1.74
     @test getpdbdescription("104D")["rcsb_entry_info"]["resolution_combined"] === nothing
+    
+    mktemp() do path, io
+        filename = downloadpdbheader("4HHB", filename=path)
+        @test isfile(filename)
+        @test filename == path
+        file_content = read(filename, String)
+        @test occursin("resolution_combined", file_content)
+        @test occursin("1.74", file_content)
+    end
 end
 
 @testset "Write PDB files" begin

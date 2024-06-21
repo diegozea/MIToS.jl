@@ -1,5 +1,15 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.16.0 to v2.17.0
+
+* *[Breaking change]* The `download_file` now uses the `Downloads.jl` module instead of 
+  `HTTP.jl`. Therefore, the `download_file` function now accepts the `Downloads.download` 
+  keyword arguments. In particular, the `redirect` and `proxy` keyword arguments are no 
+  longer needed.
+
+* The `MSA` module now exports the `A2M` and `A3M` file formats, to allow reading and 
+  writing MSA files in these formats.
+
 ### Changes from v2.15.0 to v2.16.0
 
 MIToS v2.16.0 drops support for *Julia 1.0*. This release requires *Julia 1.6* or higher.

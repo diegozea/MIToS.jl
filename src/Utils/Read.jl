@@ -21,22 +21,16 @@ end
 
 function _download_file(url::AbstractString, filename::AbstractString;
     kargs...)
-    kargs = _modify_kargs_for_proxy(url; kargs...)
-    kargs_dict = Dict(kargs...)
-    headers = pop!(kargs_dict, "headers", Dict{String,String}())
     with_logger(ConsoleLogger(stderr, Logging.Warn)) do
-        HTTP.download(url, filename, headers; kargs_dict...)
+        Downloads.download(url, filename; kargs...)
     end
     _check_gzip_file(filename)
 end
 
 """
-`download_file` uses **HTTP.jl** to download files from the web. It takes the file url as 
-first argument and, optionally, a path to save it.
-Keyword arguments are are directly passed to to `HTTP.download` (`HTTP.request`).
-Use the `headers` keyword argument to pass a `Dict{String,String}` with the
-header information. Set the `HTTPS_PROXY` and `HTTPS_PROXY` `ENV`iromental variables
-if you are behind a proxy.
+`download_file` uses **Downloads.jl** to download files from the web. It takes the file 
+url as first argument and, optionally, a path to save it.
+Keyword arguments are are directly passed to to `Downloads.download`.
 
 ```jldoctest
 julia> using MIToS.Utils
@@ -50,11 +44,7 @@ julia> download_file("http://www.uniprot.org/uniprot/P69905.fasta","seq.fasta",
 """
 function download_file(url::AbstractString, filename::AbstractString;
     kargs...)
-    if VERSION >= v"1.2.0"
-        retry(_download_file, delays=ExponentialBackOff(n=5))(url, filename; kargs...)
-    else
-        retry(_download_file)(url, filename; kargs...)
-    end
+    retry(_download_file, delays=ExponentialBackOff(n=5))(url, filename; kargs...)
 end
 
 function download_file(url::AbstractString;
@@ -64,30 +54,6 @@ function download_file(url::AbstractString;
         name *= ".gz"
     end
     download_file(url, name; kargs...)
-end
-
-"""
-Helper function that modifies keyword argument to include a proxy,
-the proxy URL is taken from the HTTPS_PROXY and HTTPS_PROXY enviromental
-variables.
-"""
-function _modify_kargs_for_proxy(url; kargs...)
-    if startswith(lowercase(url), "http://")
-        proxy_env_var = "HTTPS_PROXY"
-    elseif startswith(lowercase(url), "https://")
-        proxy_env_var = "HTTPS_PROXY"
-    else
-        return kargs
-    end
-    if !(:proxy in keys(kargs)) && proxy_env_var in keys(ENV)
-        kw = Dict()
-        for (k, v) in kargs
-            kw[k] = v
-        end
-        kw[:proxy] = ENV[proxy_env_var]
-        kargs = pairs(kw)
-    end
-    kargs
 end
 
 "Create an iterable object that will yield each line from a stream **or string**."

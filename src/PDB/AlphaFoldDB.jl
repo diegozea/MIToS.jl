@@ -8,11 +8,12 @@ a given `uniprot_id`. This function returns the structure information as a
 function query_alphafolddb(uniprot_id::String)
     # Construct the URL for the AlphaFoldDB API request
     url = "https://alphafold.ebi.ac.uk/api/prediction/$uniprot_id"
-
-    response = HTTP.request("GET", url)
+    
+    body = IOBuffer()
+    response = Downloads.request(url, method="GET", output=body)
 
     if response.status == 200
-        JSON3.read(String(response.body))
+        JSON3.read(String(take!(body)))
     else
         error_type = response.status == 422 ? "Validation Error" : "Error"
         throw(ErrorException(
