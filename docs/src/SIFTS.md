@@ -89,8 +89,8 @@ siftsmap = siftsmapping(siftsfile,
 
 If you need more than the residue number mapping between two databases, you could access
 all the residue-level cross references using the function `read_file` in the `SIFTSXML``File.Format`
-file. The `parse` function (and therefore the `read_file` function) for the `SIFTSXML` format,
-also takes the keyword arguments `chain` and `missings`. The `read_file`/`parse` function
+file. The `parse_file` function (and therefore the `read_file` function) for the `SIFTSXML` format,
+also takes the keyword arguments `chain` and `missings`. The `read_file`/`parse_file` function
 returns a `Vector` of `SIFTSResidue`s objects that stores the cross references between
 residues in each database.  
 
