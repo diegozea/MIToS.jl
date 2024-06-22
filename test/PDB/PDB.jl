@@ -310,6 +310,16 @@ end
 
 @testset "RESTful PDB Interface" begin
 
+    @testset "Percent-encoding" begin
+        @test PDB._escape_url_query("name=John Snow") == "name%3DJohn%20Snow"
+
+        unreserved = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~"
+        @test PDB._escape_url_query(unreserved) == unreserved
+        
+        @test PDB._escape_url_query("£") == "%C2%A3"
+        @test PDB._escape_url_query("€") == "%E2%82%AC"
+    end
+    
     @test getpdbdescription("4HHB")["rcsb_entry_info"]["resolution_combined"][1] == 1.74
     @test getpdbdescription("104D")["rcsb_entry_info"]["resolution_combined"] === nothing
     

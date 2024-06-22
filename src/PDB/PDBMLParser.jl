@@ -187,20 +187,17 @@ end
 # =====================
 
 """
-    _escape_url_query_values(query_values::String)::String
+    _escape_url_query(query::String)::String
 
 This function use the percent-encoding to escape the characters that are not allowed in a URL.
-
-```jldoctest
-julia> _escape_url_query_values("name=John Doe")
-"name=John%20Doe"
 """
-function _escape_url_query_values(url::String)::String
+function _escape_url_query(query::String)::String
     # Characters that do not need to be percent-encoded
-    unreserved = Set{Char}("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~=")
+    unreserved = Set{Char}("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~")
     
     encoded_url = IOBuffer()
-    for char in url
+    for byte in codeunits(query)
+        char = Char(byte)
         if char in unreserved
             print(encoded_url, char)
         else
@@ -237,7 +234,7 @@ function _graphql_query(pdbcode::String)
         }
       }
     }
-    """ |> _escape_url_query_values
+    """ |> _escape_url_query
 end
 
 function _pdbheader(pdbcode::String; kargs...)
