@@ -140,4 +140,6 @@ function Base.parse(io::Union{IO,AbstractString}, format::Type{T}, args...; karg
     parse_file(io, format, args...; kargs...)
 end
 
-parse_file() = nothing
+# A placeholder to define the function name so that other modules can add their own 
+# definition of parse_file for their own `FileFormat`s
+function parse_file end
