@@ -39,7 +39,7 @@ function gaussdca(
     msa_file = base_name * ".fasta"
     jdl_file = base_name * ".jls"
     plm = fill!(columnpairsmatrix(msa), NaN)
-    write(msa_file, msa, FASTA)
+    write_file(msa_file, msa, FASTA)
     try
         _create_script(script_file, msa_file, jdl_file; kargs...)
         run(`$juliapath --project=$project $script_file`)

@@ -100,13 +100,13 @@ msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test
 print(msa, FASTA) # prints msa in FASTA format
 ```  
 
-To save an MSA object to a file, use the `write` function. This function takes a filename
+To save an MSA object to a file, use the `write_file` function. This function takes a filename
 as a first argument. If the filename ends with `.gz`, the output will be a compressed
-(gzipped) file. The next two arguments of `write` are passed to `print`, so `write` behaves
-as `print`.  
+(gzipped) file. The next two arguments of `write_file` are passed to `print_file`, 
+so `write_file` behaves as `print_file`.  
 
 ```@example msa_write
-write("msa.gz", msa, FASTA) # writes msa in FASTA format in a gzipped file
+write_file("msa.gz", msa, FASTA) # writes msa in FASTA format in a gzipped file
 ```  
 
 ## [MSA Annotations](@id MSA-Annotations)
@@ -215,7 +215,7 @@ The most simple input for the command line tool [freecontact![](./assets/externa
 (if you don't want to set `--mincontsep`) is a `Raw` MSA file with a reference sequence
 without insertions or gaps. This is easy to get with MIToS using `read_file` (deletes the insert
 columns), `setreference!` (to choose a reference), `adjustreference!` (to delete columns
-with gaps in the reference) and `write` (to save it in `Raw` format) functions.  
+with gaps in the reference) and `write_file` (to save it in `Raw` format) functions.  
 
 ```@repl
 using MIToS.MSA
@@ -224,7 +224,7 @@ msa_coverage = coverage(msa)
 maxcoverage, maxindex = findmax(msa_coverage) # chooses the sequence with more coverage of the MSA
 setreference!(msa, maxindex[1])
 adjustreference!(msa)
-write("tofreecontact.msa", msa, Raw)
+write_file("tofreecontact.msa", msa, Raw)
 print(read_file("tofreecontact.msa", String)) # It displays the contents of the output file
 ```
 
@@ -330,11 +330,11 @@ open("tofreecontact.msa", "w") do fh
 end
 ```
 
-As last (optional) argument, `write` takes the mode in which is opened the file. We use
+As last (optional) argument, `write_file` takes the mode in which is opened the file. We use
 `"a"` here to append the MSA to the header.  
 
 ```@example freecontact_ii
-write("tofreecontact.msa", msa, Raw, "a")
+write_file("tofreecontact.msa", msa, Raw, "a")
 ```  
 
 ```@example freecontact_ii

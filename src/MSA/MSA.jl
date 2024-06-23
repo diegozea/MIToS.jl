@@ -108,6 +108,8 @@ export  # Residue
         # Imported from Utils
         read_file,
         parse_file,
+        write_file,
+        print_file,
         # Imported from Base or StdLib (and exported for docs)
         names,
         parse,

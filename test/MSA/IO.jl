@@ -123,7 +123,7 @@
             tmp_file = joinpath(path, ".tmp.stockholm")
             try
                 msa = read_file(pf09645_sto, Stockholm, Matrix{Residue})
-                write(tmp_file, msa, Stockholm)
+                write_file(tmp_file, msa, Stockholm)
                 @test read_file(tmp_file, Stockholm, Matrix{Residue}) == msa
             finally
                 if isfile(tmp_file)
@@ -271,7 +271,7 @@
             path = tempdir()
             uncompressed = joinpath(path, ".tmp.fasta")
             try
-                write(uncompressed, msa, FASTA)
+                write_file(uncompressed, msa, FASTA)
                 @test read_file(uncompressed, FASTA) == msa
             finally
                 if isfile(uncompressed)
@@ -280,7 +280,7 @@
             end
             compressed = joinpath(path, ".tmp.fasta.gz")
             try
-                write(compressed, msa, FASTA)
+                write_file(compressed, msa, FASTA)
                 @test read_file(compressed, FASTA) == msa
             finally
                 if isfile(compressed)

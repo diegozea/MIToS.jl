@@ -31,6 +31,8 @@ export  # GeneralUtils.jl
         parse_file,
         # Write.jl
         Commandline,
+        write_file,
+        print_file,
         # ThreeLetterResidues.jl
         THREE2ONE,
         # Imported from Base (and exported for docs)

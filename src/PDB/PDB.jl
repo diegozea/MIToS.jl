@@ -99,15 +99,16 @@ export  # PDBResidues
         rmsf,
         # MIToS.Utils
         All,
+        read_file,
+        parse_file,
+        write_file,
+        print_file,
         # Sequences
         is_aminoacid,
         modelled_sequences,
         # AlphaFoldDB
         query_alphafolddb,
         download_alphafold_structure,
-        # Imported from Utils
-        read_file,
-        parse_file,
         # Imported from Base (and exported for docs)
         any,
         parse,

@@ -1,6 +1,9 @@
 import Base: read
 
-"`FileFormat` is used for write special `parse_file` (and `read_file`) methods on it."
+"""
+`FileFormat` is used for defile special `parse_file` (called by `read_file`) and 
+`print_file` (called by `read_file`) methods for different file formats.    
+"""
 abstract type FileFormat end
 
 "This function raises an error if a GZip file doesn't have the 0x1f8b magic number."
