@@ -112,7 +112,6 @@ export  # PDBResidues
         # Imported from Base (and exported for docs)
         any,
         parse,
-        print,
         angle
 
 include("PDBResidues.jl")

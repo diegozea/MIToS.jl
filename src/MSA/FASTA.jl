@@ -37,11 +37,11 @@ end
 # Print FASTA
 # ===========
 
-function Base.print(io::IO, msa::AbstractMatrix{Residue}, format::Type{FASTA})
+function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{FASTA})
     seqnames = sequencenames(msa)
     for i in 1:nsequences(msa)
         println(io, ">", seqnames[i], "\n", stringsequence(msa, i))
     end
 end
 
-Base.print(msa::AbstractMatrix{Residue}, format::Type{FASTA}) = print(stdout, msa, FASTA)
+Utils.print_file(msa::AbstractMatrix{Residue}, format::Type{FASTA}) = Utils.print_file(stdout, msa, FASTA)

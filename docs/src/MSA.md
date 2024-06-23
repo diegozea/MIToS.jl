@@ -89,7 +89,7 @@ printmodifications(msa)
 ### [Writing MSA files](@id Writing-MSA-files)
 
 Julia REPL shows MSAs as Matrices. If you want to print them in another format, you should
-use the `print` function with an MSA object as first argument and the `FileFormat` `FASTA`,
+use the `print_file` function with an MSA object as first argument and the `FileFormat` `FASTA`,
 `Stockholm`, `PIR` or `Raw` as second argument.  
 
 ```@example msa_write
@@ -97,7 +97,7 @@ using MIToS.MSA
 
 msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm) # reads a Stockholm MSA file
 
-print(msa, FASTA) # prints msa in FASTA format
+print_file(msa, FASTA) # prints msa in FASTA format
 ```  
 
 To save an MSA object to a file, use the `write_file` function. This function takes a filename

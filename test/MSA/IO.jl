@@ -143,7 +143,7 @@
             @testset "Print inserts" begin
 
                 io = IOBuffer()
-                print(io, msa, Stockholm)
+                print_file(io, msa, Stockholm)
                 printed = String(take!(io))
                 @test occursin(seq, printed)
             end
@@ -260,7 +260,7 @@
             @test parse_file(fasta_string, FASTA) == msa
 
             out = IOBuffer()
-            print(out, msa, FASTA)
+            print_file(out, msa, FASTA)
             @test String(take!(out)) == fasta_string
         end
 
@@ -333,10 +333,10 @@
         @testset "Print" begin
 
             buffer = IOBuffer()
-            print(buffer, raw, Raw)
+            print_file(buffer, raw, Raw)
             @test String(take!(buffer)) == raw_string
 
-            print(buffer, mat, Raw)
+            print_file(buffer, mat, Raw)
             @test String(take!(buffer)) == raw_string
         end
 
@@ -402,7 +402,7 @@
             @test stringsequence(msa, 1) == "MTNIRKSHPLFKIINHSFIDLPAPSVTHICRDVNYGWLIRYTWIGGQPVEHPFIIIGQLASISYFSIILILMPISGIVEDKMLKWN"
 
             out = IOBuffer()
-            print(out, msa, PIR)
+            print_file(out, msa, PIR)
             @test String(take!(out)) == """
                 >P1;CBRT
                 Cytochrome b - Rat mitochondrion (SGC1)
@@ -411,7 +411,7 @@
                 """
 
             out = IOBuffer()
-            print(out, msa.matrix, PIR) # NamedResidueMatrix{Array{Residue,2}}
+            print_file(out, msa.matrix, PIR) # NamedResidueMatrix{Array{Residue,2}}
             @test String(take!(out)) == """
                 >XX;CBRT
 
@@ -420,7 +420,7 @@
                 """
 
             out = IOBuffer()
-            print(out, msa.matrix.array, PIR) # Matrix{Residue}
+            print_file(out, msa.matrix.array, PIR) # Matrix{Residue}
             @test String(take!(out)) == """
                 >XX;1
 
@@ -454,7 +454,7 @@
             @test parse_file(emboss_string, PIR, deletefullgaps=false) == msa
 
             out = IOBuffer()
-            print(out, msa, PIR)
+            print_file(out, msa, PIR)
             @test String(take!(out)) == """
                 >P1;AZBR
                 finger protein zfpA - turnip fern chloroplast
@@ -524,7 +524,7 @@
 
                 @testset "There are no inserts" begin
                     io = IOBuffer()
-                    print(io, msa, A3M)
+                    print_file(io, msa, A3M)
                     printed = String(take!(io))
                     # The insert column has been removed when reading the MSA
                     @test occursin(seq_without_insert, printed)
@@ -536,7 +536,7 @@
                     @test ncolumns(msa) == 92
 
                     io = IOBuffer()
-                    print(io, msa, A3M)
+                    print_file(io, msa, A3M)
                     printed = String(take!(io))
                     @test occursin(seq, printed)
                     # Test that gaps are not added to the insert column for A3M
@@ -544,7 +544,7 @@
 
                     @testset "Saving as A2M" begin
                         io = IOBuffer()
-                        print(io, msa, A2M)
+                        print_file(io, msa, A2M)
                         printed = String(take!(io))
                         # A2M keeps the insert column
                         @test occursin(seq, printed)

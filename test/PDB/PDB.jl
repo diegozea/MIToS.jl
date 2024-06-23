@@ -341,7 +341,7 @@ end
         code = "2VQC"
         io = IOBuffer()
         pdb = read_file(txt(code), PDBFile)
-        print(io, pdb, PDBFile)
+        print_file(io, pdb, PDBFile)
         printed = split(String(take!(io)), '\n')
 
         @test length(printed) == 609 # Only ATOM, HETATM & END + 1 because the trailing \n
@@ -354,7 +354,7 @@ end
         io = IOBuffer()
 
         pdb = read_file(txt(code), PDBFile)
-        print(io, pdb, PDBFile)
+        print_file(io, pdb, PDBFile)
         printed = split(String(take!(io)), '\n')
 
         @test sum(map(x -> startswith(x, "MODEL "), printed)) == 14 # 14 models
@@ -366,7 +366,7 @@ end
         io = IOBuffer()
 
         pdb = read_file(txt(code), PDBFile)
-        print(io, pdb, PDBFile)
+        print_file(io, pdb, PDBFile)
         printed = split(String(take!(io)), '\n')
 
         # MIToS only prints TER for the ATOM group if the chain changes.
@@ -384,7 +384,7 @@ end
        for code in ["2VQC", "1IAO", "1NSA", "1HAG", "1IGY", "1DPO", "1AS5", "1CBN", "1SSX"]
 
            readed = read_file(txt(code), PDBFile)
-           print(io, readed, PDBFile)
+           print_file(io, readed, PDBFile)
            readed_writed_readed = parse_file(String(take!(io)), PDBFile)
 
            @test readed_writed_readed == readed

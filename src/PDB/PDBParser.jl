@@ -210,7 +210,7 @@ const _Format_PDB_TER = FormatExpr(
     "TER   {:>5d}      {:>3} {:>1}{:>4}{:>1}\n"
     )
 
-function Base.print(io::IO, res::PDBResidue, format::Type{PDBFile}, atom_index::Int, serial_number::Int)
+function Utils.print_file(io::IO, res::PDBResidue, format::Type{PDBFile}, atom_index::Int, serial_number::Int)
     number = match(r"(-?\d+)(\D?)", res.id.number)
     atomname = res.atoms[atom_index].atom
     printfmt(io, _Format_PDB_ATOM,
@@ -233,15 +233,15 @@ function Base.print(io::IO, res::PDBResidue, format::Type{PDBFile}, atom_index::
     serial_number + 1
 end
 
-function Base.print(io::IO, res::PDBResidue, format::Type{PDBFile}, start::Int=1)
+function Utils.print_file(io::IO, res::PDBResidue, format::Type{PDBFile}, start::Int=1)
     next = start
     for i in eachindex(res.atoms)
-        next = print(io, res, format, i, next)
+        next = print_file(io, res, format, i, next)
     end
     nothing
 end
 
-function Base.print(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PDBFile}, start::Int=1)
+function Utils.print_file(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PDBFile}, start::Int=1)
     next = start
 
     use_model = length(unique(map(res -> res.id.model, reslist))) > 1
@@ -285,7 +285,7 @@ function Base.print(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PD
 
         # ATOM/HETATM
         for i in eachindex(res.atoms)
-            next = print(io, res, format, i, next)
+            next = print_file(io, res, format, i, next)
         end
 
     end
@@ -298,12 +298,12 @@ function Base.print(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PD
     nothing
 end
 
-Base.print(reslist::AbstractVector{PDBResidue},format::Type{PDBFile}) = print(stdout, reslist, format)
-Base.print(res::PDBResidue, format::Type{PDBFile}) = print(stdout, res, format)
+Utils.print_file(reslist::AbstractVector{PDBResidue},format::Type{PDBFile}) = print_file(stdout, reslist, format)
+Utils.print_file(res::PDBResidue, format::Type{PDBFile}) = print_file(stdout, res, format)
 
 @doc """
-`print(io, res, format::Type{PDBFile})`
-`print(res, format::Type{PDBFile})`
+`print_file(io, res, format::Type{PDBFile})`
+`print_file(res, format::Type{PDBFile})`
 
 Print a `PDBResidue` or a vector of `PDBResidue`s in PDB format.
-""" print
+""" print_file

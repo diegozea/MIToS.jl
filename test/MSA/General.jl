@@ -140,9 +140,9 @@
 
         for T in (Stockholm, FASTA, Raw)
             buffer = IOBuffer()
-            print(buffer, pfam, T)
+            print_file(buffer, pfam, T)
             @test parse_file(String(take!(buffer)), T) == pfam
-            print(buffer, gao, T)
+            print_file(buffer, gao, T)
             @test parse_file(String(take!(buffer)), T) == gao
         end
     end

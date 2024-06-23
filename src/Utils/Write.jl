@@ -2,7 +2,7 @@
 `write_file{T<:FileFormat}(filename::AbstractString, object, format::Type{T}, mode::ASCIIString="w")`
 
 This function opens a file with `filename` and `mode` (default: "w")
-and writes (`print`) the `object` with the given `format`.
+and writes (`print_file`) the `object` with the given `format`.
 Gzipped files should end on `.gz`.
 """
 function write_file(filename::AbstractString, object, format::Type{T},
@@ -12,7 +12,7 @@ function write_file(filename::AbstractString, object, format::Type{T},
         fh = GzipCompressorStream(fh)
     end
     try
-        print(fh, object, format)
+        print_file(fh, object, format)
     finally
         close(fh)
     end
@@ -31,3 +31,8 @@ end
 # A placeholder for the print_file function so that other modules can add their own
 # definition of print_file for their own `FileFormat`s
 function print_file end
+
+function Base.print(fh::IO, object, format::Type{T}) where T<:FileFormat
+    @warn "Using print with $format is deprecated, use print_file instead."
+    print_file(fh, object, format)
+end

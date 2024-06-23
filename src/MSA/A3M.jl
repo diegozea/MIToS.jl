@@ -58,7 +58,7 @@ _load_sequences(io::Union{IO,AbstractString}, format::Type{A2M}) = _load_sequenc
 # Print A3M
 # =========
 
-function Base.print(io::IO, msa::AbstractMatrix{Residue}, format::Union{Type{A3M},Type{A2M}})
+function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Union{Type{A3M},Type{A2M}})
     seqnames = sequencenames(msa)
     aligned = _get_aligned_columns(msa)
     for i in 1:nsequences(msa)
@@ -71,4 +71,4 @@ function Base.print(io::IO, msa::AbstractMatrix{Residue}, format::Union{Type{A3M
     end
 end
 
-Base.print(msa::AbstractMatrix{Residue}, format::Union{Type{A3M},Type{A2M}}) = print(stdout, msa, format)
+Utils.print_file(msa::AbstractMatrix{Residue}, format::Union{Type{A3M},Type{A2M}}) = print_file(stdout, msa, format)

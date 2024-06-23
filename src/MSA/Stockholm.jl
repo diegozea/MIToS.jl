@@ -103,8 +103,7 @@ function _to_sequence_dict(annotation::Dict{Tuple{String,String},String})
     sizehint!(seq_dict, length(seq_dict))
 end
 
-function Base.print(io::IO, msa::AbstractMatrix{Residue},
-                    format::Type{Stockholm})
+function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{Stockholm})
     has_annotations = isa(msa, AnnotatedAlignedObject) && !isempty(msa.annotations)
     if has_annotations
         _printfileannotations(io, msa.annotations)
@@ -128,4 +127,4 @@ function Base.print(io::IO, msa::AbstractMatrix{Residue},
     println(io, "//")
 end
 
-Base.print(msa::AnnotatedMultipleSequenceAlignment) = print(stdout, msa, Stockholm)
+Utils.print_file(msa::AnnotatedMultipleSequenceAlignment) = print_file(stdout, msa, Stockholm)
