@@ -36,7 +36,9 @@ export  # Download
         getcontactmasks,
         # Utils
         read_file,
-        parse_file
+        parse_file,
+        write_file,
+        print_file
 
 include("Download.jl")
 include("PDB.jl")

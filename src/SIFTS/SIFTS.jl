@@ -42,7 +42,6 @@ export DataBase,
         SIFTSXML,
         # Mitos.Utils
         All,
-        # Imported from Utils
         read_file,
         parse_file,
         # Imported from Base (and exported for docs)
