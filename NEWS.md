@@ -1,6 +1,6 @@
 ## MIToS.jl Release Notes
 
-### Changes from v2.18.0 to v2.19.0
+### Changes from v2.17.0 to v2.18.0
 
 * [Breaking change]* The `read`, `parse`, `write`, and `print` functions for different 
   `FileFormat`s have been deprecated in favor of the `read_file`, `parse_file`, 
