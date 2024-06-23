@@ -114,7 +114,7 @@ end
 # Finally, we can save the changed residues in a new PDB file.
 #
 # ```julia
-# write("4zj9_hydrophobicity.pdb", pdb_residues, PDBFile)
+# write_file("4zj9_hydrophobicity.pdb", pdb_residues, PDBFile)
 # ```
 #
 # ## Discussion
