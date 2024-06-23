@@ -2,7 +2,7 @@
 
 ### Changes from v2.17.0 to v2.18.0
 
-* [Breaking change]* The `read`, `parse`, `write`, and `print` functions for different 
+* *[Breaking change]* The `read`, `parse`, `write`, and `print` functions for different 
   `FileFormat`s have been deprecated in favor of the `read_file`, `parse_file`, 
   `write_file`, and `print_file` functions. The new functions keep the same signature and
   behavior as the old ones.
