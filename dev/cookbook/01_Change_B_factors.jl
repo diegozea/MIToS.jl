@@ -129,5 +129,5 @@ end
 # create these strings and `strip` to get rid of the spaces. You can see the
 # [PDB format description](https://www.wwpdb.org/documentation/file-format-content/format23/sect9.html)
 # to know what is the format of the expected string or see the
-# [MIToS PDB print source code](https://github.com/diegozea/MIToS.jl/blob/master/src/PDB/PDBParser.j)
+# [MIToS PDB print_file source code](https://github.com/diegozea/MIToS.jl/blob/master/src/PDB/PDBParser.j)
 # to get a quick idea.
