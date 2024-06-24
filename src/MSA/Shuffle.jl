@@ -13,6 +13,8 @@ function _subset_indices(msa::Matrix{Residue}, dims::Int, subset)::Vector{Int}
         end
         if isa(subset, AbstractRange)
             collect(subset)
+        elseif isa(subset, Int)
+            [subset]
         else
             subset
         end
@@ -21,7 +23,8 @@ end
 
 function _subset_indices(msa::NamedResidueMatrix, dims::Int, subset)::Vector{Int}
     dict = dims == 1 ? msa.dicts[1] : msa.dicts[2]
-    NamedArrays.indices(dict, subset)
+    idxs = NamedArrays.indices(dict, subset)
+    isa(idxs, Int) ? [idxs] : idxs
 end
 
 function _subset_indices(msa::AbstractMultipleSequenceAlignment, dims, subset)::Vector{Int}
@@ -50,13 +53,13 @@ end
 
 
 function shuffle_msa!(r::AbstractRNG, msa::MultipleSequenceAlignment, args...; kwargs...)
-    shuffle_msa!(r, getresidues(msa), args...; kwargs...)
+    shuffle_msa!(r, msa.matrix, args...; kwargs...)
     msa
 end
 
 function shuffle_msa!(r::AbstractRNG, msa::AnnotatedMultipleSequenceAlignment, subset=Colon();
     dims::Int=2, fixedgaps::Bool=true, fixed_reference::Bool=false)
-    shuffle_msa!(r, getresidues(msa), subset; dims, fixedgaps, fixed_reference)
+    shuffle_msa!(r, msa.matrix, subset; dims, fixedgaps, fixed_reference)
 
     # Annotate the modifications
     subset_indices = _subset_indices(msa, dims, subset)
@@ -87,6 +90,7 @@ function shuffle_msa!(r::AbstractRNG, msa::AnnotatedMultipleSequenceAlignment, s
         shuffled[subset_indices] .= 1
         setannotcolumn!(msa, "Shuffled", join(shuffled))
     end
+    
     msa
 end
 

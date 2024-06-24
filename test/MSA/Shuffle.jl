@@ -91,11 +91,14 @@
                 end
             end
         end
+
+        msa = msas[end] # AnnotatedMultipleSequenceAlignment
+        aln = shuffle_msa(msa, dims=1, 1, fixed_reference=true)
+        @test msa == aln
     end
 
     @testset "Subset" begin
         for msa in msas
-            
             seqs_to_move = [3, 4]
             shuffled_seqs = shuffle_msa(msa, seqs_to_move, dims=1)
             @test msa[1:2, :] == shuffled_seqs[1:2, :]
@@ -122,5 +125,20 @@
                 any(startswith("4 columns shuffled."), values(getannotfile(shuffled_cols)))
             end
         end
+
+        # Shuffling a single sequence or column
+        annot_msa = msas[end] # AnnotatedMultipleSequenceAlignment
+        
+        ref = getsequence(annot_msa, 1)
+        @test getsequence(shuffle_msa(annot_msa, 1, dims=1), 1) != ref
+        @test getsequence(shuffle_msa(annot_msa, "C3N734_SULIY/1-95", dims=1), 1) != ref
+
+        # 10 == "15" : "EKQE"
+        shuffled_col_a = shuffle_msa(annot_msa, 10, dims=2)[:, 10]
+        shuffled_col_b = shuffle_msa(annot_msa, "15", dims=2)[:, "15"]
+        @test replace(replace(join(shuffled_col_a), "E"=>""), "K" => "") == "Q"
+        @test replace(replace(join(shuffled_col_b), "E"=>""), "K" => "") == "Q"
+        @test annot_msa[:, 10] != shuffled_col_a
+        @test annot_msa[:, "15"] != shuffled_col_b
     end
 end
