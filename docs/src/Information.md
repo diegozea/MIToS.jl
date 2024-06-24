@@ -420,7 +420,7 @@ This algorithm can be accessed through the `buslje09` function and includes:
 3. Average Product Correction (APC) proposed by
 [Dunn et. al. 2008![](./assets/external-link.png)](http://bioinformatics.oxfordjournals.org/content/24/3/333),
 through the `APC!` function that takes a MI matrix.
-4. Z score correction using the functions `shuffle!` from the MSA module and `zscore`
+4. Z score correction using the functions `shuffle_msa!` from the MSA module and `zscore`
 from the `PairwiseListMatrices` package.  
 
 ```@docs

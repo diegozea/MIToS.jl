@@ -1,5 +1,15 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.18.0 to v2.19.0
+
+* *[Breaking change]* The `shuffle` and `shuffle!` functions are deprecated in favor of the 
+  `shuffle_msa` and `shuffle_msa!` functions. The new functions take `dims` and 
+  `fixedgaps` as keyword arguments instead of taking them as positional ones. The new
+  functions add a last positional argument to allow the selection of specific sequences 
+  or columns to shuffle. Also, it adds the `fixed_reference` keyword argument to keep the 
+  residues in the reference sequence fixed during the shuffling. As an example of migration,
+  `shuffle!(msa, 1, false)` should be replaced by `shuffle_msa!(msa, dims=1, fixedgaps=false)`.
+
 ### Changes from v2.17.0 to v2.18.0
 
 * *[Breaking change]* The `read`, `parse`, `write`, and `print` functions for different 

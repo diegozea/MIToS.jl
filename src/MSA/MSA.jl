@@ -19,7 +19,7 @@ using OrderedCollections        # OrderedDicts for Annotations
 using AutoHashEquals        # Annotations, Clusters
 using NamedArrays           # Col and Seq names, basic sequence/MSA object
 using FastaIO               # FastaReader (fast)
-using Random                # GLOBAL_RNG, shuffle!, rand, Sampler, randstring
+using Random                # default_rng, shuffle!, rand, Sampler, randstring
 using Dates                 # Dates.now()
 using PairwiseListMatrices  # Percent Identity Matrices
 using Clustering            # Used for sequence clustering: ClusteringResult
@@ -94,6 +94,9 @@ export  # Residue
         PIR,
         # A3M
         A3M, A2M,
+        # Shuffle
+        shuffle_msa!,
+        shuffle_msa,
         # PLM
         sequencepairsmatrix, columnpairsmatrix,
         # Identity

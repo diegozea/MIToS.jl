@@ -25,23 +25,23 @@
         for dim in [1,2]
 
             aln = copy(msa)
-            shuffle!(aln, dim)
+            shuffle_msa!(aln, dims=dim)
             @test aln != msa
             @test (aln .== GAP) == gaps[1] # default: fixed gaps
 
             aln = copy(msa)
-            shuffle!(aln, dim, true)
+            shuffle_msa!(aln, dims=dim, fixedgaps=true)
             @test aln != msa
             @test (aln .== GAP) == gaps[1]
 
             aln = copy(msa)
-            shuffle!(aln, dim, false)
+            shuffle_msa!(aln, dims=dim, fixedgaps=false)
             @test aln != msa
             @test (aln .== GAP) != gaps[1]
         end
 
-        @test_throws AssertionError shuffle(msa, 0, true)
-        @test_throws AssertionError shuffle(msa, 3, true)
+        @test_throws AssertionError shuffle_msa(msa, dims=0, fixedgaps=true)
+        @test_throws AssertionError shuffle_msa(msa, dims=3, fixedgaps=true)
     end
 
     @testset "Columns" begin
@@ -49,13 +49,13 @@
         for i in 1:N
             # Fixed gaps
             msa = msas[i]
-            aln = shuffle(msa, 2, true)
+            aln = shuffle_msa(msa, dims=2, fixedgaps=true)
             @test aln != getresidues(msa)
             @test (aln .== GAP) == gaps[i]
             @test lcol[i] == mean(aln .== Residue('L'), dims=1)
             @test lseq[i] != mean(aln .== Residue('L'), dims=2)
             # Change gap positions
-            aln = shuffle(msa, 2, false)
+            aln = shuffle_msa(msa, dims=2, fixedgaps=false)
             @test aln != getresidues(msa)
             @test (aln .== GAP) != gaps[i]
             @test lcol[i] == mean(aln .== Residue('L'), dims=1)
@@ -67,16 +67,60 @@
         for  i in 1:N
             # Fixed gaps
             msa = msas[i]
-            aln = shuffle(msa, 1, true)
+            aln = shuffle_msa(msa, dims=1, fixedgaps=true)
             @test aln != getresidues(msa)
             @test (aln .== GAP) == gaps[i]
             @test lcol[i] != mean(aln .== Residue('L'), dims=1)
             @test lseq[i] == mean(aln .== Residue('L'), dims=2)
             # Change gap positions
-            aln = shuffle(msa, 1, false)
+            aln = shuffle_msa(msa, dims=1, fixedgaps=false)
             @test aln != getresidues(msa)
             @test (aln .== GAP) != gaps[i]
             @test lseq[i] == mean(aln .== Residue('L'), dims=2)
+        end
+    end
+
+    @testset "Reference" begin
+        
+        for msa in msas
+            ref = getsequence(msa, 1)
+            for dims in [1, 2]
+                for gaps in [true, false]
+                    aln = shuffle_msa(msa, dims=dims, fixedgaps=gaps, fixed_reference=true)
+                    @test getsequence(aln, 1) == ref
+                end
+            end
+        end
+    end
+
+    @testset "Subset" begin
+        for msa in msas
+            
+            seqs_to_move = [3, 4]
+            shuffled_seqs = shuffle_msa(msa, seqs_to_move, dims=1)
+            @test msa[1:2, :] == shuffled_seqs[1:2, :]
+            @test msa[seqs_to_move, :] != shuffled_seqs[seqs_to_move, :]
+
+            cols_to_move = [9, 10, 11, 12]
+            shuffled_cols = shuffle_msa(MersenneTwister(0), msa, cols_to_move, dims=2)
+            @test msa[:, 1:8] == shuffled_cols[:, 1:8]
+            @test msa[:, cols_to_move] != shuffled_cols[:, cols_to_move]
+
+            # Annotations
+            if isa(msa, AnnotatedMultipleSequenceAlignment)
+                @test isempty(getannotsequence(shuffled_seqs, "C3N734_SULIY/1-95", "Shuffled", ""))
+                @test isempty(getannotsequence(shuffled_seqs, "H2C869_9CREN/7-104", "Shuffled", ""))
+                @test getannotsequence(shuffled_seqs, "Y070_ATV/2-70", "Shuffled", "") == "true"
+                @test getannotsequence(shuffled_seqs, "F112_SSV1/3-112", "Shuffled", "") == "true"
+                
+                #                                                                         1111
+                #                                                                1234567890123
+                @test startswith(getannotcolumn(shuffled_cols, "Shuffled", ""), "0000000011110")
+
+                # MIToS modifications
+                any(startswith("2 sequences shuffled."), values(getannotfile(shuffled_seqs)))
+                any(startswith("4 columns shuffled."), values(getannotfile(shuffled_cols)))
+            end
         end
     end
 end
