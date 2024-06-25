@@ -126,19 +126,27 @@
             end
         end
 
-        # Shuffling a single sequence or column
-        annot_msa = msas[end] # AnnotatedMultipleSequenceAlignment
-        
-        ref = getsequence(annot_msa, 1)
-        @test getsequence(shuffle_msa(annot_msa, 1, dims=1), 1) != ref
-        @test getsequence(shuffle_msa(annot_msa, "C3N734_SULIY/1-95", dims=1), 1) != ref
 
-        # 10 == "15" : "EKQE"
-        shuffled_col_a = shuffle_msa(annot_msa, 10, dims=2)[:, 10]
-        shuffled_col_b = shuffle_msa(annot_msa, "15", dims=2)[:, "15"]
-        @test replace(replace(join(shuffled_col_a), "E"=>""), "K" => "") == "Q"
-        @test replace(replace(join(shuffled_col_b), "E"=>""), "K" => "") == "Q"
-        @test annot_msa[:, 10] != shuffled_col_a
-        @test annot_msa[:, "15"] != shuffled_col_b
+        annot_msa = read_file(pf09645_sto, Stockholm, AnnotatedMultipleSequenceAlignment, generatemapping=true, useidcoordinates=true)
+        
+        @testset "Shuffling a single sequence or column" begin 
+            ref = getsequence(annot_msa, 1)
+            @test getsequence(shuffle_msa(annot_msa, 1, dims=1), 1) != ref
+            @test getsequence(shuffle_msa(annot_msa, "C3N734_SULIY/1-95", dims=1), 1) != ref
+
+            # 10 == "15" : "EKQE"
+            shuffled_col_a = shuffle_msa(annot_msa, 10, dims=2)[:, 10]
+            shuffled_col_b = shuffle_msa(annot_msa, "15", dims=2)[:, "15"]
+            @test replace(replace(join(shuffled_col_a), "E"=>""), "K" => "") == "Q"
+            @test replace(replace(join(shuffled_col_b), "E"=>""), "K" => "") == "Q"
+            @test annot_msa[:, 10] != shuffled_col_a
+            @test annot_msa[:, "15"] != shuffled_col_b
+        end
+
+        @testset "Delete the SeqMap annotation of shuffled sequences" begin
+            shuffled_seqs = shuffle_msa(annot_msa, [2, 3], dims=1)
+            @test getannotsequence(shuffled_seqs, "H2C869_9CREN/7-104", "SeqMap", "") == ""
+            @test getannotsequence(shuffled_seqs, "F112_SSV1/3-112", "SeqMap", "") != ""
+        end
     end
 end

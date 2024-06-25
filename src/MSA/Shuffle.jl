@@ -1,5 +1,5 @@
-function _subset_indices(msa::Matrix{Residue}, dims::Int, subset)::Vector{Int}
-    if subset === Colon()
+function _subset_indices(msa::Matrix{Residue}, dims::Int, subset, fixed_reference)
+    _indices = if subset === Colon()
         nseq, ncol = size(msa)
         if dims == 1
             1:nseq
@@ -19,29 +19,35 @@ function _subset_indices(msa::Matrix{Residue}, dims::Int, subset)::Vector{Int}
             subset
         end
     end
+    indices = convert(Vector{Int}, _indices)
+    if fixed_reference && dims == 1
+        filter!(!=(1), indices)
+    end
+    indices
 end
 
-function _subset_indices(msa::NamedResidueMatrix, dims::Int, subset)::Vector{Int}
+function _subset_indices(msa::NamedResidueMatrix, dims::Int, subset, fixed_reference)
     dict = dims == 1 ? msa.dicts[1] : msa.dicts[2]
-    idxs = NamedArrays.indices(dict, subset)
-    isa(idxs, Int) ? [idxs] : idxs
+    _indices = NamedArrays.indices(dict, subset)
+    indices = convert(Vector{Int}, isa(_indices, Int) ? [_indices] : _indices)
+    if fixed_reference && dims == 1
+        filter!(!=(1), indices)
+    end
+    indices
 end
 
-function _subset_indices(msa::AbstractMultipleSequenceAlignment, dims, subset)::Vector{Int}
-    _subset_indices(msa.matrix, dims, subset)
+function _subset_indices(msa::AbstractMultipleSequenceAlignment, dims, subset, fixed_reference)::Vector{Int}
+    _subset_indices(msa.matrix, dims, subset, fixed_reference)
 end
 
 function shuffle_msa!(r::AbstractRNG, msa::AbstractMatrix{Residue}, subset=Colon();
     dims::Int=2, fixedgaps::Bool=true, fixed_reference::Bool=false)
     @assert dims == 1 || dims == 2 "dims must be 1 for shuffling along sequences or 2 for columns"
-    subset_indices = _subset_indices(msa, dims, subset)
+    subset_indices = _subset_indices(msa, dims, subset, fixed_reference)
     msa_matrix = getresidues(msa)
     nseq, ncol = size(msa_matrix)
     mask =  fixedgaps ? msa_matrix .!= GAP : trues(nseq, ncol)
     if fixed_reference
-        if dims == 1
-            filter!(!=(1), subset_indices)
-        end
         mask[1, :] .= 0
     end
     for i in subset_indices
@@ -62,7 +68,7 @@ function shuffle_msa!(r::AbstractRNG, msa::AnnotatedMultipleSequenceAlignment, s
     shuffle_msa!(r, msa.matrix, subset; dims, fixedgaps, fixed_reference)
 
     # Annotate the modifications
-    subset_indices = _subset_indices(msa, dims, subset)
+    subset_indices = _subset_indices(msa, dims, subset, fixed_reference)
     n = length(subset_indices)
     entities = dims == 1 ? "sequences" : "columns"
     message = "$n $entities shuffled."
@@ -83,14 +89,16 @@ function shuffle_msa!(r::AbstractRNG, msa::AnnotatedMultipleSequenceAlignment, s
     if dims == 1
         seqnames = sequencenames(msa)
         for i in subset_indices
-            setannotsequence!(msa, seqnames[i], "Shuffled", "true")
+            seqname = seqnames[i]
+            setannotsequence!(msa, seqname, "Shuffled", "true")
+            # Delete SeqMap of the shuffled sequences
+            delete!(msa.annotations.sequences, (seqname, "SeqMap"))
         end
     else
         shuffled = zeros(Int, ncolumns(msa))
         shuffled[subset_indices] .= 1
-        setannotcolumn!(msa, "Shuffled", join(shuffled))
+        setannotcolumn!(msa, "Shuffled", join(shuffled))    
     end
-    
     msa
 end
 
