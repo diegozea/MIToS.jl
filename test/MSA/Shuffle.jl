@@ -130,6 +130,8 @@
         annot_msa = read_file(pf09645_sto, Stockholm, AnnotatedMultipleSequenceAlignment, generatemapping=true, useidcoordinates=true)
         
         @testset "Shuffling a single sequence or column" begin 
+            Random.seed!(42)
+
             ref = getsequence(annot_msa, 1)
             @test getsequence(shuffle_msa(annot_msa, 1, dims=1), 1) != ref
             @test getsequence(shuffle_msa(annot_msa, "C3N734_SULIY/1-95", dims=1), 1) != ref
