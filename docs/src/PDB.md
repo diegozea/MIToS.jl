@@ -93,7 +93,7 @@ using MIToS.PDB
 pdbfile = downloadpdb("1IVO", format=PDBFile)
 residues_1ivo = read_file(pdbfile, PDBFile)
 # Select residue number 9 from model 1 and chain B (it looks in both ATOM and HETATM groups)
-select_residues(residues_1ivo, group="1", chain="B", residue="9")
+select_residues(residues_1ivo, model="1", chain="B", residue="9")
 ```
 
 ### Getting a `Dict` of `PDBResidue`s
@@ -135,7 +135,8 @@ A more complex example using an anonymous function:
 ```@example pdb_select
 # Select all the residues of the model 1, chain A of the ATOM group with residue number less than 5
 
-first_res = select_residues(residues_1ivo, model="1", chain="A", group="ATOM", residue=x -> parse(Int, match(r"^(\d+)", x)[1]) <= 5 )
+first_res = select_residues(residues_1ivo, model="1", chain="A", group="ATOM", 
+    residue = x -> parse(Int, match(r"^(\d+)", x)[1]) <= 5 )
 # The anonymous function takes the residue number (string) and use a regular expression
 # to extract the number (without insertion code).
 # It converts the number to `Int` to test if the it is `<= 5`.
