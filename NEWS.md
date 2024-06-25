@@ -1,5 +1,25 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.19.0 to v2.20.0
+
+* *[Breaking change]* The PDB module has deprecated `residues` and `@residues` in favor of
+  the `select_residues` function that uses keyword arguments. 
+  So, `residues(pdb, "1", "A", "ATOM", All)` or `@residues pdb "1" "A" "ATOM" All` should be
+  replaced by `select_residues(pdb, model="1", chain="A", group="ATOM")`.
+
+* *[Breaking change]* The PDB module has deprecated `atoms` and `@atoms` in favor of
+  the `select_atoms` function that uses keyword arguments. 
+  So, `atoms(pdb, "1", "A", "ATOM", All, "CA")` or `@atoms pdb "1" "A" "ATOM" All "CA"` should be
+  replaced by `select_atoms(pdb, model="1", chain="A", group="ATOM", atom="CA")`.
+
+* *[Breaking change]* The PDB module has deprecated the methods of the `isresidue` and 
+  `residuesdict` functions that rely on positional arguments in favor of the keyword arguments.
+  So, `isresidue(pdb, "1", "A", "ATOM", "10")` should be replaced by 
+  `isresidue(pdb, model="1", chain="A", group="ATOM", residue="10")`. Similarly,
+  `residuesdict(pdb, "1", "A", "ATOM", All)` should be replaced by 
+  `residuesdict(pdb, model="1", chain="A", group="ATOM")`.
+
+
 ### Changes from v2.18.0 to v2.19.0
 
 * *[Breaking change]* The `shuffle` and `shuffle!` functions are deprecated in favor of the 

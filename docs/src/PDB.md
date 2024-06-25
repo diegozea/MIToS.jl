@@ -81,42 +81,35 @@ CA_1ivo[1] # First residue. It has only the α carbon.
 MIToS parse PDB files to vector of residues, instead of using a hierarchical structure
 like other packages. This approach makes the search and selection of residues or atoms a
 little different.
-To make it easy, this module exports a number of functions and macros to select particular
-residues or atoms. Given the fact that residue numbers from different chains, models, etc.
-can collide, **it's mandatory to indicate the `model`, `chain`, `group`, `residue` number
-and `atom` name in a explicit way** to these functions or macros. If you want to select all
-the residues in one of the categories, you are able to use the type `All`. You can also use
-regular expressions or functions to make the selections.
+To make it easy, this module exports the `select_residues` and `select_atoms` functions. 
+Given the fact that residue numbers from different chains, models, etc. can collide, we
+can indicate the `model`, `chain`, `group`, `residue` number and `atom` name using the 
+keyword arguments of those functions. If you want to select all the residues in one of the 
+categories, you are able to use the type `All` (this is the default value of such arguments).
+You can also use regular expressions or functions to make the selections.
 
 ```@example pdb_select
 using MIToS.PDB
 pdbfile = downloadpdb("1IVO", format=PDBFile)
 residues_1ivo = read_file(pdbfile, PDBFile)
-# Select residue number 9 from model 1 and chain B
-residues(residues_1ivo, "1", "B", All, "9")
+# Select residue number 9 from model 1 and chain B (it looks in both ATOM and HETATM groups)
+select_residues(residues_1ivo, group="1", chain="B", residue="9")
 ```
 
 ### Getting a `Dict` of `PDBResidue`s
 
 If you prefer a `Dict` of `PDBResidue`, indexed by their residue numbers, you can use the
-`residuedict` function or the `@residuedict` macro.  
+`residuedict` function.  
 
 ```@example pdb_select
 # Dict of residues from the model 1, chain A and from the ATOM group
-chain_a = residuesdict(residues_1ivo, "1", "A", "ATOM", All)
+chain_a = residuesdict(residues_1ivo, model="1", chain="A", group="ATOM")
 chain_a["9"]
-```  
-
-You can do the same with the macro `@residuesdict` to get a more readable code  
-
-```@example pdb_select
-chain_a = @residuesdict residues_1ivo model "1" chain "A" group "ATOM" residue All
-chain_a["9"]
-```  
+```
 
 ### Select particular residues  
 
-Use the `residues` function to collect specific residues. It's possible to use a single
+Use the `select_residues` function to collect specific residues. It's possible to use a single
 **residue number** (i.e. `"2"`) or even a **function** which should return true for the
 selected residue numbers. Also **regular expressions** can be used to select residues.
 Use `All` to select all the residues.  
@@ -130,7 +123,7 @@ residue_list = map(string, 2:5)
 ```
 
 ```@example pdb_select
-first_res = residues(residues_1ivo, "1", "A", "ATOM", resnum -> resnum in residue_list)
+first_res = select_residues(residues_1ivo, model="1", chain="A", group="ATOM", residue=resnum -> resnum in residue_list)
 
 for res in first_res
     println(res.id.name, " ", res.id.number)
@@ -142,7 +135,7 @@ A more complex example using an anonymous function:
 ```@example pdb_select
 # Select all the residues of the model 1, chain A of the ATOM group with residue number less than 5
 
-first_res = residues(residues_1ivo, "1", "A", "ATOM", x -> parse(Int, match(r"^(\d+)", x)[1]) <= 5 )
+first_res = select_residues(residues_1ivo, model="1", chain="A", group="ATOM", residue=x -> parse(Int, match(r"^(\d+)", x)[1]) <= 5 )
 # The anonymous function takes the residue number (string) and use a regular expression
 # to extract the number (without insertion code).
 # It converts the number to `Int` to test if the it is `<= 5`.
@@ -152,35 +145,17 @@ for res in first_res
 end
 ```
 
-Use the `@residues` macro for a cleaner syntax.  
-
-```@example pdb_select
-# You can use All, regular expressions or functions also for model, chain and group:
-
-# i.e. Takes the residue 10 from chains A and B
-
-for res in @residues residues_1ivo model "1" chain ch -> ch in ["A","B"] group "ATOM" residue "10"
-    println(res.id.chain, " ", res.id.name, " ", res.id.number)
-end
-```
-
 ### Select particular atoms
 
-The `atoms` function or macro allow to select a particular set of atoms.
+The `select_atoms` function allow to select a particular set of atoms.
 
 ```@example pdb_select
 # Select all the atoms with name starting with "C" using a regular expression
 # from all the residues of the model 1, chain A of the ATOM group
 
-carbons = @atoms residues_1ivo model "1" chain "A" group "ATOM" residue All atom r"C.+"
+carbons = select_atoms(residues_1ivo, model="1", chain="A", group="ATOM", residue=All, atom=r"C.+")
 
 carbons[1]
-```  
-
-You can also use the `atoms` function instead of the `@atoms` macro:  
-
-```@example pdb_select
-atoms(residues_1ivo, "1", "A", "ATOM", All, r"C.+")[1]
 ```
 
 ## Protein contact map
@@ -202,7 +177,7 @@ pdbfile = downloadpdb("1IVO", format=PDBFile)
 
 residues_1ivo = read_file(pdbfile, PDBFile)
 
-pdb = @residues residues_1ivo model "1" chain "A" group "ATOM" residue All
+pdb = select_residues(residues_1ivo, model="1", chain="A", group="ATOM")
 
 dmap = distance(pdb, criteria="All") # Minimum distance between residues using all their atoms
 ```
@@ -256,8 +231,8 @@ pdbfile = downloadpdb("2HHB")
 
 res_2hhb = read_file(pdbfile, PDBML)
 
-chain_A = pdb = @residues res_2hhb model "1" chain "A" group "ATOM" residue All
-chain_C = pdb = @residues res_2hhb model "1" chain "C" group "ATOM" residue All
+chain_A = select_residues(res_2hhb, model="1", chain="A", group="ATOM", residue=All)
+chain_C = select_residues(res_2hhb, model="1", chain="C", group="ATOM", residue=All)
 
 using Plots
 gr()

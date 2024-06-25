@@ -26,7 +26,7 @@ end
     pdb_file   = joinpath(DATA, "2VQC.xml")
     msa = read_file(msa_file, Stockholm, generatemapping=true, useidcoordinates=true)
     cmap = msacolumn2pdbresidue(msa, "F112_SSV1/3-112", "2VQC", "A", "PF09645", sifts_file)
-    res = residuesdict(read_file(pdb_file, PDBML), "1", "A", "ATOM", All)
+    res = residuesdict(read_file(pdb_file, PDBML), model="1", chain="A", group="ATOM")
 
     #     -45              20 pdb
     #.....QTLNSYKMAEIMYKILEK  msa seq

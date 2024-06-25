@@ -107,10 +107,10 @@
 
         hemoglobin = read_file(joinpath(DATA, "2hhb.pdb.gz"),PDBFile,group="ATOM",model="1")
 
-        α1 = @residues hemoglobin model "1" chain "A" group "ATOM" residue All
-        α2 = @residues hemoglobin model "1" chain "C" group "ATOM" residue All
-        β1 = @residues hemoglobin model "1" chain "B" group "ATOM" residue All
-        β2 = @residues hemoglobin model "1" chain "D" group "ATOM" residue All
+        α1 = select_residues(hemoglobin, model="1", chain="A", group="ATOM")
+        α2 = select_residues(hemoglobin, model="1", chain="C", group="ATOM")
+        β1 = select_residues(hemoglobin, model="1", chain="B", group="ATOM")
+        β2 = select_residues(hemoglobin, model="1", chain="D", group="ATOM")
 
         a1, a2, rα = superimpose(α1, α2)
 

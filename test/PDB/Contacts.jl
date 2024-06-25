@@ -236,7 +236,8 @@
 
         code = "2VQC"
         pdb = read_file(txt(code), PDBFile)
-        residues = @residues pdb model "1" chain "A" group "ATOM" residue x -> x in ["62","64","65"]
+        residues = select_residues(pdb, model="1", chain="A", group="ATOM", 
+            residue = x -> x in ["62","64","65"])
 
         @test contact(residues, 6.05) == ( [1 1 0
                                             1 1 1

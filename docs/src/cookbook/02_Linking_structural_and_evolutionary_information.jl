@@ -106,7 +106,7 @@ Hx = mapcolfreq!(entropy,
 # functions from the MIToS `PDB` module:
 
 using MIToS.PDB
-res_dict = residuesdict(read_file(pdb_file, PDBFile, occupancyfilter=true), "1", "A") # model 1 chain A
+res_dict = residuesdict(read_file(pdb_file, PDBFile, occupancyfilter=true), model="1", chain="A")
 
 # Then, we can iterate the mapping dictionary to link the MSA and PDB based
 # values:
