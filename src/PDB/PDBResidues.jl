@@ -186,18 +186,18 @@ It tests if the atom has the indicated atom name.
 """
 isatom(atom::PDBAtom, name) = _is(atom.atom, name)
 
-# residues
-# --------
+# select_residues
+# ---------------
 
 """
-    residues(residue_list; model=All, chain=All, group=All, residue=All)
+    select_residues(residue_list; model=All, chain=All, group=All, residue=All)
 
 This function returns a new vector with the selected subset of residues from a list of 
 residues. You can use the keyword arguments `model`, `chain`, `group` and `residue` to 
 select the residues. You can use the type `All` (default value) to avoid filtering at 
 a particular level.
 """
-function residues(residue_list::AbstractArray{PDBResidue,N};
+function select_residues(residue_list::AbstractArray{PDBResidue,N};
                   model::ResidueQueryTypes=All,
                   chain::ResidueQueryTypes=All,
                   group::ResidueQueryTypes=All,
@@ -205,11 +205,15 @@ function residues(residue_list::AbstractArray{PDBResidue,N};
     filter(res -> isresidue(res, model=model, chain=chain, group=group, residue=residue), residue_list)
 end
 
-# Deprecation warning for the positional arguments version
+"""
+The `residues` function for `AbstractArray{PDBResidue,N}` is **deprecated**. Use the 
+`select_residues` function instead. So, `residues(residue_list, model, chain, group, residue)` 
+becomes `select_residues(residue_list; model=model, chain=chain, group=group, residue=residue)`.
+"""
 function residues(residue_list::AbstractArray{PDBResidue,N},
                   model, chain, group, residue) where N
-    @warn "residues using positional arguments is deprecated in favor of keyword arguments: residues(residue_list; model, chain, group, residue)"
-    residues(residue_list; model=model, chain=chain, group=group, residue=residue)
+    @warn "residues is deprecated in favor of select_residues(residue_list; model, chain, group, residue)"
+    select_residues(residue_list; model=model, chain=chain, group=group, residue=residue)
 end
 
 """
@@ -218,7 +222,7 @@ end
 These return a new vector with the selected subset of residues from a list of residues. You
 can use the type `All` to avoid filtering that option.
 
-**DEPRECATED:** This macro is deprecated. Use the [`residues`](@ref) function instead.
+**DEPRECATED:** This macro is deprecated. Use the [`select_residues`](@ref) function instead.
 """
 macro residues(residue_list,
                model::Symbol,  m,
@@ -226,8 +230,8 @@ macro residues(residue_list,
                group::Symbol,  g,
                residue::Symbol,r)
     if model == :model && chain == :chain && group == :group && residue == :residue
-        @warn "Using the @residues macro is deprecated in favor of the residues function with keyword arguments: residues(residue_list; model, chain, group, residue)"
-        return :(residues($(esc(residue_list)); model=$(esc(m)), chain=$(esc(c)), group=$(esc(g)), residue=$(esc(r))))
+        @warn "Using the @residues macro is deprecated in favor of the select_residues function: select_residues(residue_list; model, chain, group, residue)"
+        return :(select_residues($(esc(residue_list)); model=$(esc(m)), chain=$(esc(c)), group=$(esc(g)), residue=$(esc(r))))
     else
         throw(ArgumentError(
             "The signature is @residues ___ model ___ chain ___ group ___ residue ___"
@@ -291,18 +295,18 @@ macro residuesdict(residue_list,
     end
 end
 
-# atoms
-# -----
+# select_atoms
+# ------------
 
 """
-    atoms(residue_list; model=All, chain=All, group=All, residue=All, atom=All)
+    select_atoms(residue_list; model=All, chain=All, group=All, residue=All, atom=All)
 
 This function returns a vector of `PDBAtom`s with the selected subset of atoms from a list 
 of residues. The atoms are selected using the keyword arguments `model`, `chain`, `group`, 
 `residue`, and `atom`. You can use the type `All` (default value) to avoid filtering at 
 a particular level.
 """
-function atoms(residue_list::AbstractArray{PDBResidue,N};
+function select_atoms(residue_list::AbstractArray{PDBResidue,N};
                model::ResidueQueryTypes=All,
                chain::ResidueQueryTypes=All,
                group::ResidueQueryTypes=All,
@@ -324,8 +328,8 @@ end
 # Deprecation warning for the positional arguments version
 function atoms(residue_list::AbstractArray{PDBResidue,N},
                model, chain, group, residue, atom) where N
-    @warn "atoms using positional arguments is deprecated in favor of keyword arguments: atoms(residue_list; model, chain, group, residue, atom)"
-    atoms(residue_list; model=model, chain=chain, group=group, residue=residue, atom=atom)
+    @warn "atoms is deprecated in favor of select_atoms(residue_list; model, chain, group, residue, atom)"
+    select_atoms(residue_list; model=model, chain=chain, group=group, residue=residue, atom=atom)
 end
 
 """
@@ -334,7 +338,7 @@ end
 These return a vector of `PDBAtom`s with the selected subset of atoms from a list of 
 residues. You can use the type `All` to avoid filtering that option.
 
-**DEPRECATED:** This macro is deprecated. Use the [`atoms`](@ref) function instead.
+**DEPRECATED:** This macro is deprecated. Use the [`select_atoms`](@ref) function instead.
 """
 macro atoms(residue_list,
             model::Symbol,  m,
@@ -343,8 +347,8 @@ macro atoms(residue_list,
             residue::Symbol,r,
             atom::Symbol,   a)
     if model == :model && chain == :chain && group == :group && residue == :residue && atom == :atom
-        @warn "Using the @atoms macro is deprecated in favor of the atoms function with keyword arguments: atoms(residue_list; model, chain, group, residue, atom)"
-        return :(atoms($(esc(residue_list)); model=$(esc(m)), chain=$(esc(c)), group=$(esc(g)), residue=$(esc(r)), atom=$(esc(a))))
+        @warn "Using the @atoms macro is deprecated in favor of the select_atoms function: select_atoms(residue_list; model, chain, group, residue, atom)"
+        return :(select_atoms($(esc(residue_list)); model=$(esc(m)), chain=$(esc(c)), group=$(esc(g)), residue=$(esc(r)), atom=$(esc(a))))
     else
         throw(ArgumentError(
             "The signature is @atoms ___ model ___ chain ___ group ___ residue ___ atom ___"
