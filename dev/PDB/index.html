@@ -15,26 +15,12 @@ CA_1ivo[1] # First residue. It has only the α carbon.</code></pre><pre class="d
 	atoms::Vector{PDBAtom}	length: 1
 		                                                  coordinates            atom         element       occupancy               B
 		1:                                   [92.793, 69.578, 31.657]            &quot;CA&quot;             &quot;C&quot;             1.0        &quot;151.39&quot;
-</code></pre><h2 id="Looking-for-particular-residues"><a class="docs-heading-anchor" href="#Looking-for-particular-residues">Looking for particular residues</a><a id="Looking-for-particular-residues-1"></a><a class="docs-heading-anchor-permalink" href="#Looking-for-particular-residues" title="Permalink"></a></h2><p>MIToS parse PDB files to vector of residues, instead of using a hierarchical structure like other packages. This approach makes the search and selection of residues or atoms a little different. To make it easy, this module exports a number of functions and macros to select particular residues or atoms. Given the fact that residue numbers from different chains, models, etc. can collide, <strong>it&#39;s mandatory to indicate the <code>model</code>, <code>chain</code>, <code>group</code>, <code>residue</code> number and <code>atom</code> name in a explicit way</strong> to these functions or macros. If you want to select all the residues in one of the categories, you are able to use the type <code>All</code>. You can also use regular expressions or functions to make the selections.</p><pre><code class="language-julia hljs">using MIToS.PDB
+</code></pre><h2 id="Looking-for-particular-residues"><a class="docs-heading-anchor" href="#Looking-for-particular-residues">Looking for particular residues</a><a id="Looking-for-particular-residues-1"></a><a class="docs-heading-anchor-permalink" href="#Looking-for-particular-residues" title="Permalink"></a></h2><p>MIToS parse PDB files to vector of residues, instead of using a hierarchical structure like other packages. This approach makes the search and selection of residues or atoms a little different. To make it easy, this module exports the <code>select_residues</code> and <code>select_atoms</code> functions.  Given the fact that residue numbers from different chains, models, etc. can collide, we can indicate the <code>model</code>, <code>chain</code>, <code>group</code>, <code>residue</code> number and <code>atom</code> name using the  keyword arguments of those functions. If you want to select all the residues in one of the  categories, you are able to use the type <code>All</code> (this is the default value of such arguments). You can also use regular expressions or functions to make the selections.</p><pre><code class="language-julia hljs">using MIToS.PDB
 pdbfile = downloadpdb(&quot;1IVO&quot;, format=PDBFile)
 residues_1ivo = read_file(pdbfile, PDBFile)
-# Select residue number 9 from model 1 and chain B
-residues(residues_1ivo, &quot;1&quot;, &quot;B&quot;, All, &quot;9&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1-element Vector{MIToS.PDB.PDBResidue}:
- PDBResidue:
-	id::PDBResidueIdentifier
-		    PDBe_number          number            name           group           model           chain
-		             &quot;&quot;             &quot;9&quot;           &quot;GLY&quot;          &quot;ATOM&quot;             &quot;1&quot;             &quot;B&quot;
-	atoms::Vector{PDBAtom}	length: 4
-		                                                  coordinates            atom         element       occupancy               B
-		1:                                   [53.449, 49.375, 55.663]             &quot;N&quot;             &quot;N&quot;             1.0         &quot;28.86&quot;
-		                                                  coordinates            atom         element       occupancy               B
-		2:                                   [52.736, 49.613, 54.425]            &quot;CA&quot;             &quot;C&quot;             1.0         &quot;65.57&quot;
-		                                                  coordinates            atom         element       occupancy               B
-		3:                                   [52.382, 48.332, 53.719]             &quot;C&quot;             &quot;C&quot;             1.0         &quot;21.73&quot;
-		                                                  coordinates            atom         element       occupancy               B
-		4:                                   [53.261, 47.591, 53.294]             &quot;O&quot;             &quot;O&quot;             1.0         &quot;79.88&quot;
-</code></pre><h3 id="Getting-a-Dict-of-PDBResidues"><a class="docs-heading-anchor" href="#Getting-a-Dict-of-PDBResidues">Getting a <code>Dict</code> of <code>PDBResidue</code>s</a><a id="Getting-a-Dict-of-PDBResidues-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-a-Dict-of-PDBResidues" title="Permalink"></a></h3><p>If you prefer a <code>Dict</code> of <code>PDBResidue</code>, indexed by their residue numbers, you can use the <code>residuedict</code> function or the <code>@residuedict</code> macro.  </p><pre><code class="language-julia hljs"># Dict of residues from the model 1, chain A and from the ATOM group
-chain_a = residuesdict(residues_1ivo, &quot;1&quot;, &quot;A&quot;, &quot;ATOM&quot;, All)
+# Select residue number 9 from model 1 and chain B (it looks in both ATOM and HETATM groups)
+select_residues(residues_1ivo, group=&quot;1&quot;, chain=&quot;B&quot;, residue=&quot;9&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">MIToS.PDB.PDBResidue[]</code></pre><h3 id="Getting-a-Dict-of-PDBResidues"><a class="docs-heading-anchor" href="#Getting-a-Dict-of-PDBResidues">Getting a <code>Dict</code> of <code>PDBResidue</code>s</a><a id="Getting-a-Dict-of-PDBResidues-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-a-Dict-of-PDBResidues" title="Permalink"></a></h3><p>If you prefer a <code>Dict</code> of <code>PDBResidue</code>, indexed by their residue numbers, you can use the <code>residuedict</code> function.  </p><pre><code class="language-julia hljs"># Dict of residues from the model 1, chain A and from the ATOM group
+chain_a = residuesdict(residues_1ivo, model=&quot;1&quot;, chain=&quot;A&quot;, group=&quot;ATOM&quot;)
 chain_a[&quot;9&quot;]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">PDBResidue:
 	id::PDBResidueIdentifier
 		    PDBe_number          number            name           group           model           chain
@@ -48,28 +34,14 @@ chain_a[&quot;9&quot;]</code></pre><pre class="documenter-example-output"><code 
 		3:                                  [110.753, 73.103, 43.722]             &quot;C&quot;             &quot;C&quot;             1.0         &quot;23.60&quot;
 		                                                  coordinates            atom         element       occupancy               B
 		4:                                   [110.778, 72.21, 44.568]             &quot;O&quot;             &quot;O&quot;             1.0         &quot;83.70&quot;
-</code></pre><p>You can do the same with the macro <code>@residuesdict</code> to get a more readable code  </p><pre><code class="language-julia hljs">chain_a = @residuesdict residues_1ivo model &quot;1&quot; chain &quot;A&quot; group &quot;ATOM&quot; residue All
-chain_a[&quot;9&quot;]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">PDBResidue:
-	id::PDBResidueIdentifier
-		    PDBe_number          number            name           group           model           chain
-		             &quot;&quot;             &quot;9&quot;           &quot;GLY&quot;          &quot;ATOM&quot;             &quot;1&quot;             &quot;A&quot;
-	atoms::Vector{PDBAtom}	length: 4
-		                                                  coordinates            atom         element       occupancy               B
-		1:                                  [109.607, 71.943, 41.924]             &quot;N&quot;             &quot;N&quot;             1.0         &quot;50.08&quot;
-		                                                  coordinates            atom         element       occupancy               B
-		2:                                    [109.641, 73.162, 42.7]            &quot;CA&quot;             &quot;C&quot;             1.0         &quot;62.78&quot;
-		                                                  coordinates            atom         element       occupancy               B
-		3:                                  [110.753, 73.103, 43.722]             &quot;C&quot;             &quot;C&quot;             1.0         &quot;23.60&quot;
-		                                                  coordinates            atom         element       occupancy               B
-		4:                                   [110.778, 72.21, 44.568]             &quot;O&quot;             &quot;O&quot;             1.0         &quot;83.70&quot;
-</code></pre><h3 id="Select-particular-residues"><a class="docs-heading-anchor" href="#Select-particular-residues">Select particular residues</a><a id="Select-particular-residues-1"></a><a class="docs-heading-anchor-permalink" href="#Select-particular-residues" title="Permalink"></a></h3><p>Use the <code>residues</code> function to collect specific residues. It&#39;s possible to use a single <strong>residue number</strong> (i.e. <code>&quot;2&quot;</code>) or even a <strong>function</strong> which should return true for the selected residue numbers. Also <strong>regular expressions</strong> can be used to select residues. Use <code>All</code> to select all the residues.  </p><pre><code class="language-julia hljs">residue_list = map(string, 2:5)
+</code></pre><h3 id="Select-particular-residues"><a class="docs-heading-anchor" href="#Select-particular-residues">Select particular residues</a><a id="Select-particular-residues-1"></a><a class="docs-heading-anchor-permalink" href="#Select-particular-residues" title="Permalink"></a></h3><p>Use the <code>select_residues</code> function to collect specific residues. It&#39;s possible to use a single <strong>residue number</strong> (i.e. <code>&quot;2&quot;</code>) or even a <strong>function</strong> which should return true for the selected residue numbers. Also <strong>regular expressions</strong> can be used to select residues. Use <code>All</code> to select all the residues.  </p><pre><code class="language-julia hljs">residue_list = map(string, 2:5)
 
 # If the list is large, you can use a `Set` to gain performance
 # residue_set = Set(map(string, 2:5))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">4-element Vector{String}:
  &quot;2&quot;
  &quot;3&quot;
  &quot;4&quot;
- &quot;5&quot;</code></pre><pre><code class="language-julia hljs">first_res = residues(residues_1ivo, &quot;1&quot;, &quot;A&quot;, &quot;ATOM&quot;, resnum -&gt; resnum in residue_list)
+ &quot;5&quot;</code></pre><pre><code class="language-julia hljs">first_res = select_residues(residues_1ivo, model=&quot;1&quot;, chain=&quot;A&quot;, group=&quot;ATOM&quot;, residue=resnum -&gt; resnum in residue_list)
 
 for res in first_res
     println(res.id.name, &quot; &quot;, res.id.number)
@@ -78,7 +50,7 @@ GLU 3
 LYS 4
 LYS 5</code></pre><p>A more complex example using an anonymous function:  </p><pre><code class="language-julia hljs"># Select all the residues of the model 1, chain A of the ATOM group with residue number less than 5
 
-first_res = residues(residues_1ivo, &quot;1&quot;, &quot;A&quot;, &quot;ATOM&quot;, x -&gt; parse(Int, match(r&quot;^(\d+)&quot;, x)[1]) &lt;= 5 )
+first_res = select_residues(residues_1ivo, model=&quot;1&quot;, chain=&quot;A&quot;, group=&quot;ATOM&quot;, residue=x -&gt; parse(Int, match(r&quot;^(\d+)&quot;, x)[1]) &lt;= 5 )
 # The anonymous function takes the residue number (string) and use a regular expression
 # to extract the number (without insertion code).
 # It converts the number to `Int` to test if the it is `&lt;= 5`.
@@ -88,21 +60,12 @@ for res in first_res
 end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">GLU 2
 GLU 3
 LYS 4
-LYS 5</code></pre><p>Use the <code>@residues</code> macro for a cleaner syntax.  </p><pre><code class="language-julia hljs"># You can use All, regular expressions or functions also for model, chain and group:
-
-# i.e. Takes the residue 10 from chains A and B
-
-for res in @residues residues_1ivo model &quot;1&quot; chain ch -&gt; ch in [&quot;A&quot;,&quot;B&quot;] group &quot;ATOM&quot; residue &quot;10&quot;
-    println(res.id.chain, &quot; &quot;, res.id.name, &quot; &quot;, res.id.number)
-end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">A THR 10
-B THR 10</code></pre><h3 id="Select-particular-atoms"><a class="docs-heading-anchor" href="#Select-particular-atoms">Select particular atoms</a><a id="Select-particular-atoms-1"></a><a class="docs-heading-anchor-permalink" href="#Select-particular-atoms" title="Permalink"></a></h3><p>The <code>atoms</code> function or macro allow to select a particular set of atoms.</p><pre><code class="language-julia hljs"># Select all the atoms with name starting with &quot;C&quot; using a regular expression
+LYS 5</code></pre><h3 id="Select-particular-atoms"><a class="docs-heading-anchor" href="#Select-particular-atoms">Select particular atoms</a><a id="Select-particular-atoms-1"></a><a class="docs-heading-anchor-permalink" href="#Select-particular-atoms" title="Permalink"></a></h3><p>The <code>select_atoms</code> function allow to select a particular set of atoms.</p><pre><code class="language-julia hljs"># Select all the atoms with name starting with &quot;C&quot; using a regular expression
 # from all the residues of the model 1, chain A of the ATOM group
 
-carbons = @atoms residues_1ivo model &quot;1&quot; chain &quot;A&quot; group &quot;ATOM&quot; residue All atom r&quot;C.+&quot;
+carbons = select_atoms(residues_1ivo, model=&quot;1&quot;, chain=&quot;A&quot;, group=&quot;ATOM&quot;, residue=All, atom=r&quot;C.+&quot;)
 
 carbons[1]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">                                       coordinates            atom         element       occupancy               B
-                          [92.793, 69.578, 31.657]            &quot;CA&quot;             &quot;C&quot;             1.0        &quot;151.39&quot;
-</code></pre><p>You can also use the <code>atoms</code> function instead of the <code>@atoms</code> macro:  </p><pre><code class="language-julia hljs">atoms(residues_1ivo, &quot;1&quot;, &quot;A&quot;, &quot;ATOM&quot;, All, r&quot;C.+&quot;)[1]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">                                       coordinates            atom         element       occupancy               B
                           [92.793, 69.578, 31.657]            &quot;CA&quot;             &quot;C&quot;             1.0        &quot;151.39&quot;
 </code></pre><h2 id="Protein-contact-map"><a class="docs-heading-anchor" href="#Protein-contact-map">Protein contact map</a><a id="Protein-contact-map-1"></a><a class="docs-heading-anchor-permalink" href="#Protein-contact-map" title="Permalink"></a></h2><p>The PDB module offers a number of functions to measure <code>distance</code>s between atoms or residues, to detect possible interactions or <code>contact</code>s. In particular the <code>contact</code> function calls the <code>distance</code> function using a threshold or limit in an optimized way. The measure can be done between alpha carbons (<code>&quot;CA&quot;</code>), beta carbons (<code>&quot;CB&quot;</code>) (alpha carbon for glycine), any heavy atom (<code>&quot;Heavy&quot;</code>) or any (<code>&quot;All&quot;</code>) atom of the residues.</p><p>In the following <strong>example</strong>, whe are going to plot a contact map for the <em>1ivo</em> chain A. Two residues will be considered in contact if their β carbons (α carbon for glycine) have a distance of 8Å or less.  </p><pre><code class="language-julia hljs">using MIToS.PDB
 
@@ -110,7 +73,7 @@ pdbfile = downloadpdb(&quot;1IVO&quot;, format=PDBFile)
 
 residues_1ivo = read_file(pdbfile, PDBFile)
 
-pdb = @residues residues_1ivo model &quot;1&quot; chain &quot;A&quot; group &quot;ATOM&quot; residue All
+pdb = select_residues(residues_1ivo, model=&quot;1&quot;, chain=&quot;A&quot;, group=&quot;ATOM&quot;)
 
 dmap = distance(pdb, criteria=&quot;All&quot;) # Minimum distance between residues using all their atoms</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">511×511 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
  Res1 ╲ Res2 │   1_A_ATOM_2    1_A_ATOM_3  …  1_A_ATOM_511  1_A_ATOM_512
@@ -159,8 +122,8 @@ pdbfile = downloadpdb(&quot;2HHB&quot;)
 
 res_2hhb = read_file(pdbfile, PDBML)
 
-chain_A = pdb = @residues res_2hhb model &quot;1&quot; chain &quot;A&quot; group &quot;ATOM&quot; residue All
-chain_C = pdb = @residues res_2hhb model &quot;1&quot; chain &quot;C&quot; group &quot;ATOM&quot; residue All
+chain_A = select_residues(res_2hhb, model=&quot;1&quot;, chain=&quot;A&quot;, group=&quot;ATOM&quot;, residue=All)
+chain_C = select_residues(res_2hhb, model=&quot;1&quot;, chain=&quot;C&quot;, group=&quot;ATOM&quot;, residue=All)
 
 using Plots
 gr()
@@ -169,4 +132,4 @@ scatter3d(chain_A, label=&quot;A&quot;, alpha=0.5)
 scatter3d!(chain_C, label=&quot;C&quot;, alpha=0.5)</code></pre><p><img src="../pdb_unaligned.png" alt/>  </p><pre><code class="language-julia hljs">superimposed_A, superimposed_C, RMSD = superimpose(chain_A, chain_C)
 
 RMSD</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">0.23000472638958339</code></pre><pre><code class="language-julia hljs">scatter3d(superimposed_A, label=&quot;A&quot;, alpha=0.5)
-scatter3d!(superimposed_C, label=&quot;C&quot;, alpha=0.5)</code></pre><p><img src="../pdb_aligned.png" alt/>  </p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../SIFTS/">« SIFTS</a><a class="docs-footer-nextpage" href="../Pfam/">Pfam »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.4.1 on <span class="colophon-date" title="Tuesday 25 June 2024 11:59">Tuesday 25 June 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+scatter3d!(superimposed_C, label=&quot;C&quot;, alpha=0.5)</code></pre><p><img src="../pdb_aligned.png" alt/>  </p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../SIFTS/">« SIFTS</a><a class="docs-footer-nextpage" href="../Pfam/">Pfam »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.4.1 on <span class="colophon-date" title="Tuesday 25 June 2024 16:09">Tuesday 25 June 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
