@@ -32,3 +32,6 @@ JuliaManifest.toml
 
 # Visual Studio Code
 .vscode
+
+# PkgBenchmark
+benchmark/tune.json

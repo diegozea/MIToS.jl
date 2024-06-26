@@ -5,6 +5,8 @@ struct All end
 
 _get_function_name(str::String)::String = split(str,'.')[end]
 
+_is_space(c::Char)::Bool = c == '\t' || c == ' '
+
 """
 `get_n_words{T <: Union{ASCIIString, UTF8String}}(line::T, n::Int)`
 It returns a `Vector{T}` with the first `n` (possibles) words/fields (delimited
@@ -36,7 +38,7 @@ function get_n_words(line::String, n::Int)
             @inbounds words[N] = line[(last(last_spaces)+1):end]
             break
         end
-        spaces = something(findnext(r"[ \t]+", line, last(last_spaces)+1), 0:-1)
+        spaces = something(findnext(_is_space, line, last(last_spaces)+1), 0:-1)
         if first(spaces) == 0
             @inbounds words[N] = line[(last(last_spaces)+1):end]
             break

@@ -1,7 +1,5 @@
 # PF00501 in Pfam 30.0 has 3560 columns, 423 sin inserts
-@benchgroup "filtercolumns" ["IO", "Pfam", "MSA"] begin
-
-    seq = replace("""
+let seq = replace("""
     ........................................................................................
     ........................................................................................
     .m-----.----...--.---..--..........................-------....-..-..-.....-....-....-...
@@ -43,14 +41,13 @@
     -.-...-..-..-----vvys...................................................................
     ........................................................................................
     ........................................
-    """, '\n' => "")
-
+    """, '\n' => ""),
+    mask = convert(BitArray, Bool[isuppercase(char) || char == '-' for char in seq]),
+    indexes = collect(eachindex(seq))[mask],
     annot = Annotations()
+
     setannotresidue!(annot, "K1PKS6_CRAGI/1-58", "SEQ", seq)
 
-    mask = convert(BitArray, Bool[isuppercase(char) || char == '-' for char in seq])
-    indexes = collect(eachindex(seq))[mask]
-
-    @bench "boolean mask" filtercolumns!(copy($annot), $mask)
-    @bench "index array"  filtercolumns!(copy($annot), $indexes)
+    SUITE["MSA"]["Annotations"]["filtercolumns"]["boolean mask"] = @benchmarkable filtercolumns!(copy($annot), $mask)
+    SUITE["MSA"]["Annotations"]["filtercolumns"]["index array"] = @benchmarkable filtercolumns!(copy($annot), $indexes)
 end
