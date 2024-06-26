@@ -1,5 +1,13 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.20.0 to v2.21.0
+
+* *[Breaking change]* The `buslje09` and `BLMI` functions from the `Information` module does 
+  not longer accept a filename and a file format as arguments. You should explicitly read 
+  the MSA using the `read_file` function and then run the `buslje09` or `BLMI` functions
+  on the returned MSA object. As an example of migration, `buslje09("msa.sto", "Stockholm")`
+  should be replaced by `buslje09(read_file("msa.sto", Stockholm))`.
+
 ### Changes from v2.19.0 to v2.20.0
 
 * *[Breaking change]* The PDB module has deprecated `residues` and `@residues` in favor of

@@ -225,8 +225,8 @@
         @testset "Simple" begin
             data = readdlm(joinpath(DATA,
                            "data_simple_soft_Busljeetal2009_measure_MI.txt"), comments=true)
-            results = buslje09(joinpath(DATA, "simple.fasta"), FASTA,
-                               lambda=0.0, clustering=false, apc=false)
+            _msa = read_file(joinpath(DATA, "simple.fasta"), FASTA)
+            results = buslje09(_msa, lambda=0.0, clustering=false, apc=false)
 
             @test isapprox(Float64(data[1, SCORE]), results[MIToS_SCORE][1,2], atol=1e-6)
             @test isapprox(Float64(data[1, ZSCORE]), results[MIToS_ZSCORE][1,2], atol=2.)
@@ -234,7 +234,8 @@
 
         @testset "Gaoetal2011" begin
             data = readdlm(gao11_buslje09("MI"), comments=true)
-            results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=false)
+            _msa = read_file(Gaoetal2011, FASTA)
+            results = buslje09(_msa, lambda=0.0, clustering=false, apc=false)
 
             @test isapprox([ Float64(x) for x in data[:,SCORE] ],
                            matrix2list(results[MIToS_SCORE]), atol=1e-6)
@@ -252,7 +253,8 @@
                            #        1.38629 = 0.693147 + 0.693147
             end
 
-            result_0_05 = buslje09(Gaoetal2011,FASTA,lambda=0.05,clustering=false,apc=false)
+            _msa = read_file(Gaoetal2011, FASTA)
+            result_0_05 = buslje09(_msa,lambda=0.05,clustering=false,apc=false)
             @test isapprox(result_0_05[MIToS_SCORE][1,2], 0.33051006116310444, atol=1e-14)
         end
     end
@@ -260,7 +262,8 @@
     @testset "MI + clustering" begin
 
         data = readdlm(gao11_buslje09("MI_clustering"), comments=true)
-        results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=false)
+        _msa = read_file(Gaoetal2011, FASTA)
+        results = buslje09(_msa, lambda=0.0, clustering=true, apc=false)
 
         @test isapprox([ Float64(x) for x in data[:,SCORE] ],
                        matrix2list(results[MIToS_SCORE]), atol=1e-6)
@@ -271,7 +274,8 @@
     @testset "MIp" begin
 
         data = readdlm(gao11_buslje09("MI_APC"), comments=true)
-        results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=false, apc=true)
+        _msa = read_file(Gaoetal2011, FASTA)
+        results = buslje09(_msa, lambda=0.0, clustering=false, apc=true)
 
         @test isapprox([ Float64(x) for x in data[:,SCORE] ],
                        matrix2list(results[MIToS_SCORE]), atol=1e-6)
@@ -284,7 +288,8 @@
     @testset "MIp + clustering" begin
 
         data = readdlm(gao11_buslje09("MI_APC_clustering"), comments=true)
-        results = buslje09(Gaoetal2011, FASTA, lambda=0.0, clustering=true, apc=true)
+        _msa = read_file(Gaoetal2011, FASTA)
+        results = buslje09(_msa, lambda=0.0, clustering=true, apc=true)
 
         @test isapprox([ Float64(x) for x in data[:,SCORE] ],
                        matrix2list(results[MIToS_SCORE]), atol=1e-6)
@@ -298,8 +303,9 @@
 
         @testset "Simple" begin
             file = joinpath(DATA, "simple.fasta")
-            busl = buslje09(file, FASTA)
-            blmi = BLMI(file, FASTA)
+            msa = read_file(file, FASTA)
+            busl = buslje09(msa)
+            blmi = BLMI(msa)
 
             @test PairwiseListMatrices.getlist(busl[1]) ≈
                   PairwiseListMatrices.getlist(blmi[1])
@@ -309,7 +315,7 @@
 
         @testset "Gaoetal2011" begin
             msa  = read_file(Gaoetal2011, FASTA)
-            busl = buslje09(Gaoetal2011, FASTA, lambda=0.0, samples=0)
+            busl = buslje09(msa, lambda=0.0, samples=0)
             blmi = BLMI(msa, lambda=0.0, beta=0.0, samples=5)
             # BLMI should be equal to Buslje09 if beta is zero
 
@@ -320,8 +326,9 @@
 
         @testset "Gaoetal2011, lambda 0.05" begin
 
-            busl = buslje09(Gaoetal2011, FASTA, lambda=0.5, samples=0)
-            blmi = BLMI(Gaoetal2011, FASTA, lambda=0.5, beta=0.0, samples=5)
+            msa = read_file(Gaoetal2011, FASTA)
+            busl = buslje09(msa, lambda=0.5, samples=0)
+            blmi = BLMI(msa, lambda=0.5, beta=0.0, samples=5)
             # BLMI should be equal to Buslje09 if beta is zero
 
             @test PairwiseListMatrices.getlist(busl[2]) ≈
