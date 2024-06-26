@@ -35,7 +35,7 @@ pdbfile = abspath(pathof(MIToS), "..", "..", "docs", "data", "4zj9.pdb")
 # First, we need to read the PDB file using the `MIToS.PDB` module:
 
 using MIToS.PDB
-pdb_residues = read(pdbfile, PDBFile)
+pdb_residues = read_file(pdbfile, PDBFile)
 #md nothing # hide
 
 # For this example, we are going to replace the B-factor of the alpha-carbons
@@ -114,7 +114,7 @@ end
 # Finally, we can save the changed residues in a new PDB file.
 #
 # ```julia
-# write("4zj9_hydrophobicity.pdb", pdb_residues, PDBFile)
+# write_file("4zj9_hydrophobicity.pdb", pdb_residues, PDBFile)
 # ```
 #
 # ## Discussion
@@ -129,5 +129,5 @@ end
 # create these strings and `strip` to get rid of the spaces. You can see the
 # [PDB format description](https://www.wwpdb.org/documentation/file-format-content/format23/sect9.html)
 # to know what is the format of the expected string or see the
-# [MIToS PDB print source code](https://github.com/diegozea/MIToS.jl/blob/master/src/PDB/PDBParser.j)
+# [MIToS PDB print_file source code](https://github.com/diegozea/MIToS.jl/blob/master/src/PDB/PDBParser.j)
 # to get a quick idea.

@@ -7,11 +7,12 @@ using MIToS.Utils
 """
 module Utils
 
-using HTTP
+using Downloads
 using CodecZlib
-using LightXML
 using NamedArrays
 using Logging
+
+import LightXML
 
 export  # GeneralUtils.jl
         All,
@@ -26,8 +27,12 @@ export  # GeneralUtils.jl
         lineiterator,
         check_file, isnotemptyfile,
         download_file,
+        read_file,
+        parse_file,
         # Write.jl
         Commandline,
+        write_file,
+        print_file,
         # ThreeLetterResidues.jl
         THREE2ONE,
         # Imported from Base (and exported for docs)
@@ -58,6 +63,7 @@ export  parse_commandline,
 using Pkg
 using Distributed
 using ArgParse, CodecZlib
+using MIToS.Utils # to use read_file
 
 include("Scripts.jl")
 

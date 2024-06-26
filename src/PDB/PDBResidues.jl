@@ -131,20 +131,54 @@ LinearAlgebra.cross(a::PDBAtom, b::PDBAtom) = cross(a.coordinates, b.coordinates
 # Find Residues/Atoms
 # ===================
 
+"""
+    ResidueQueryTypes = Union{String,Type{All},Regex,Function}
+
+This type is used to indicate the type of the keyword arguments of functions that filter
+residues or atoms, such as [`isresidue`](@ref), [`residues`](@ref), [`residuesdict`](@ref)
+and [`atoms`](@ref).
+"""
+const ResidueQueryTypes = Union{String,Type{All},Regex,Function}
+
 @inline _is(element::String, all::Type{All}) = true
 @inline _is(element::String, value::String) = element == value
 @inline _is(element::String, regex::Regex) = occursin(regex, element)
 @inline _is(element::String, f::Function) = f(element)
 
-"""
-It tests if the PDB residue has the indicated model, chain, group and residue number.
-"""
+# isresidue
+# ---------
+
 function isresidue(id::PDBResidueIdentifier, model, chain, group, residue)
-    _is(id.model,model) && _is(id.chain,chain) && _is(id.group,group) && _is(id.number,residue)
+    @warn "isresidue using positional arguments is deprecated in favor of keyword arguments: isresidue(id; model, chain, group, residue)"
+    isresidue(id, model=model, chain=chain, group=group, residue=residue)
 end
 
 function isresidue(res::PDBResidue, model, chain, group, residue)
-    isresidue(res.id, model, chain, group, residue)
+    @warn "isresidue using positional arguments is deprecated in favor of keyword arguments: isresidue(res; model, chain, group, residue)"
+    isresidue(res.id, model=model, chain=chain, group=group, residue=residue)
+end
+
+function isresidue(id::PDBResidueIdentifier;
+                   model::ResidueQueryTypes=All,
+                   chain::ResidueQueryTypes=All,
+                   group::ResidueQueryTypes=All,
+                   residue::ResidueQueryTypes=All)
+    _is(id.model,model) && _is(id.chain,chain) && _is(id.group,group) && _is(id.number,residue)
+end
+
+"""
+     isresidue(res; model=All, chain=All, group=All, residue=All)
+
+This function tests if a `PDBResidue` has the indicated `model`, `chain`, `group` 
+and `residue` names/numbers. You can use the type `All` (default value) to avoid
+filtering that level.
+"""
+function isresidue(res::PDBResidue;
+                   model::ResidueQueryTypes=All,
+                   chain::ResidueQueryTypes=All,
+                   group::ResidueQueryTypes=All,
+                   residue::ResidueQueryTypes=All)
+    isresidue(res.id, model=model, chain=chain, group=group, residue=residue)
 end
 
 """
@@ -152,18 +186,34 @@ It tests if the atom has the indicated atom name.
 """
 isatom(atom::PDBAtom, name) = _is(atom.atom, name)
 
-# @residues
-# =========
+# select_residues
+# ---------------
 
 """
-`residues(residue_list, model, chain, group, residue)`
+    select_residues(residue_list; model=All, chain=All, group=All, residue=All)
 
-These return a new vector with the selected subset of residues from a list of residues. You
-can use the type `All` (default value) to avoid filtering a that level.
+This function returns a new vector with the selected subset of residues from a list of 
+residues. You can use the keyword arguments `model`, `chain`, `group` and `residue` to 
+select the residues. You can use the type `All` (default value) to avoid filtering at 
+a particular level.
+"""
+function select_residues(residue_list::AbstractArray{PDBResidue,N};
+                  model::ResidueQueryTypes=All,
+                  chain::ResidueQueryTypes=All,
+                  group::ResidueQueryTypes=All,
+                  residue::ResidueQueryTypes=All) where N
+    filter(res -> isresidue(res, model=model, chain=chain, group=group, residue=residue), residue_list)
+end
+
+"""
+The `residues` function for `AbstractArray{PDBResidue,N}` is **deprecated**. Use the 
+`select_residues` function instead. So, `residues(residue_list, model, chain, group, residue)` 
+becomes `select_residues(residue_list; model=model, chain=chain, group=group, residue=residue)`.
 """
 function residues(residue_list::AbstractArray{PDBResidue,N},
-                  model=All, chain=All, group=All, residue=All) where N
-    filter(res -> isresidue(res, model, chain, group, residue), residue_list)
+                  model, chain, group, residue) where N
+    @warn "residues is deprecated in favor of select_residues(residue_list; model, chain, group, residue)"
+    select_residues(residue_list; model=model, chain=chain, group=group, residue=residue)
 end
 
 """
@@ -171,6 +221,8 @@ end
 
 These return a new vector with the selected subset of residues from a list of residues. You
 can use the type `All` to avoid filtering that option.
+
+**DEPRECATED:** This macro is deprecated. Use the [`select_residues`](@ref) function instead.
 """
 macro residues(residue_list,
                model::Symbol,  m,
@@ -178,7 +230,8 @@ macro residues(residue_list,
                group::Symbol,  g,
                residue::Symbol,r)
     if model == :model && chain == :chain && group == :group && residue == :residue
-        return :(residues($(esc(residue_list)), $(esc(m)), $(esc(c)), $(esc(g)), $(esc(r))))
+        @warn "Using the @residues macro is deprecated in favor of the select_residues function: select_residues(residue_list; model, chain, group, residue)"
+        return :(select_residues($(esc(residue_list)); model=$(esc(m)), chain=$(esc(c)), group=$(esc(g)), residue=$(esc(r))))
     else
         throw(ArgumentError(
             "The signature is @residues ___ model ___ chain ___ group ___ residue ___"
@@ -186,28 +239,46 @@ macro residues(residue_list,
     end
 end
 
-"""
-`residuesdict(residue_list, model, chain, group, residue)`
+# residuesdict
+# ------------
 
-These return a dictionary (using PDB residue numbers as keys) with the selected subset of
-residues. You can use the type `All` (default value) to avoid filtering a that level.
 """
-function residuesdict(residue_list::AbstractArray{PDBResidue,N},
-                      model=All, chain=All, group=All, residue=All) where N
+     residuesdict(residue_list; model=All, chain=All, group=All, residue=All)
+
+This function returns a dictionary (using PDB residue numbers as keys) with the selected 
+subset of residues. The residues are selected using the keyword arguments `model`, `chain`,
+`group` and `residue`. You can use the type `All` (default value) to avoid filtering at 
+a particular level.
+"""
+function residuesdict(residue_list::AbstractArray{PDBResidue,N};
+                      model::ResidueQueryTypes=All,
+                      chain::ResidueQueryTypes=All,
+                      group::ResidueQueryTypes=All,
+                      residue::ResidueQueryTypes=All) where N
     dict = sizehint!(OrderedDict{String, PDBResidue}(), length(residue_list))
     for res in residue_list
-        if isresidue(res, model, chain, group, residue)
+        if isresidue(res, model=model, chain=chain, group=group, residue=residue)
             dict[res.id.number] = res
         end
     end
     dict
 end
 
+# Deprecation warning for the positional arguments version
+function residuesdict(residue_list::AbstractArray{PDBResidue,N},
+                      model, chain, group, residue) where N
+    @warn "residuesdict using positional arguments is deprecated in favor of keyword arguments: residuesdict(residue_list; model, chain, group, residue)"
+    residuesdict(residue_list; model=model, chain=chain, group=group, residue=residue)
+end
+
 """
 `@residuesdict ... model ... chain ... group ... residue ...`
 
-These return a dictionary (using PDB residue numbers as keys) with the selected subset of
-residues. You can use the type `All` to avoid filtering that option.
+This macro returns a dictionary (using PDB residue numbers as keys) with the selected 
+subset of residues from a list of residues. You can use the type `All` to avoid filtering 
+that option.
+
+**DEPRECATED:** This macro is deprecated. Use the [`residuesdict`](@ref) function instead.
 """
 macro residuesdict(residue_list,
                    model::Symbol,  m,
@@ -215,27 +286,35 @@ macro residuesdict(residue_list,
                    group::Symbol,  g,
                    residue::Symbol,r)
     if model == :model && chain == :chain && group == :group && residue == :residue
-        return :(residuesdict($(esc(residue_list)),$(esc(m)),$(esc(c)),$(esc(g)),$(esc(r))))
+        @warn "Using @residuesdict macro is deprecated in favor of residuesdict function with keyword arguments: residuesdict(residue_list; model, chain, group, residue)"
+        return :(residuesdict($(esc(residue_list)); model=$(esc(m)), chain=$(esc(c)), group=$(esc(g)), residue=$(esc(r))))
     else
         throw(ArgumentError(
-            "The signature is @residues ___ model ___ chain ___ group ___ residue ___"
+            "The signature is @residuesdict ___ model ___ chain ___ group ___ residue ___"
         ))
     end
 end
 
-# @atoms
-# ======
+# select_atoms
+# ------------
 
 """
-`atoms(residue_list, model, chain, group, residue, atom)`
+    select_atoms(residue_list; model=All, chain=All, group=All, residue=All, atom=All)
 
-These return a vector of `PDBAtom`s with the selected subset of atoms. You can use the
-type `All` (default value of the positional arguments) to avoid filtering a that level.
+This function returns a vector of `PDBAtom`s with the selected subset of atoms from a list 
+of residues. The atoms are selected using the keyword arguments `model`, `chain`, `group`, 
+`residue`, and `atom`. You can use the type `All` (default value) to avoid filtering at 
+a particular level.
 """
-function atoms(residue_list, model=All, chain=All, group=All, residue=All, atom=All)
+function select_atoms(residue_list::AbstractArray{PDBResidue,N};
+               model::ResidueQueryTypes=All,
+               chain::ResidueQueryTypes=All,
+               group::ResidueQueryTypes=All,
+               residue::ResidueQueryTypes=All,
+               atom::ResidueQueryTypes=All) where N
     atom_list = PDBAtom[]
     @inbounds for r in residue_list
-        if isresidue(r, model, chain, group, residue)
+        if isresidue(r, model=model, chain=chain, group=group, residue=residue)
             for a in r.atoms
                 if isatom(a, atom)
                     push!(atom_list, a)
@@ -246,11 +325,20 @@ function atoms(residue_list, model=All, chain=All, group=All, residue=All, atom=
     atom_list
 end
 
+# Deprecation warning for the positional arguments version
+function atoms(residue_list::AbstractArray{PDBResidue,N},
+               model, chain, group, residue, atom) where N
+    @warn "atoms is deprecated in favor of select_atoms(residue_list; model, chain, group, residue, atom)"
+    select_atoms(residue_list; model=model, chain=chain, group=group, residue=residue, atom=atom)
+end
+
 """
 `@atoms ... model ... chain ... group ... residue ... atom ...`
 
-These return a vector of `PDBAtom`s with the selected subset of atoms. You can use the
-type `All` to avoid filtering that option.
+These return a vector of `PDBAtom`s with the selected subset of atoms from a list of 
+residues. You can use the type `All` to avoid filtering that option.
+
+**DEPRECATED:** This macro is deprecated. Use the [`select_atoms`](@ref) function instead.
 """
 macro atoms(residue_list,
             model::Symbol,  m,
@@ -259,7 +347,8 @@ macro atoms(residue_list,
             residue::Symbol,r,
             atom::Symbol,   a)
     if model == :model && chain == :chain && group == :group && residue == :residue && atom == :atom
-        return :(atoms($(esc(residue_list)),$(esc(m)),$(esc(c)),$(esc(g)),$(esc(r)),$(esc(a))))
+        @warn "Using the @atoms macro is deprecated in favor of the select_atoms function: select_atoms(residue_list; model, chain, group, residue, atom)"
+        return :(select_atoms($(esc(residue_list)); model=$(esc(m)), chain=$(esc(c)), group=$(esc(g)), residue=$(esc(r)), atom=$(esc(a))))
     else
         throw(ArgumentError(
             "The signature is @atoms ___ model ___ chain ___ group ___ residue ___ atom ___"

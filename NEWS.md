@@ -1,5 +1,52 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.19.0 to v2.20.0
+
+* *[Breaking change]* The PDB module has deprecated `residues` and `@residues` in favor of
+  the `select_residues` function that uses keyword arguments. 
+  So, `residues(pdb, "1", "A", "ATOM", All)` or `@residues pdb "1" "A" "ATOM" All` should be
+  replaced by `select_residues(pdb, model="1", chain="A", group="ATOM")`.
+
+* *[Breaking change]* The PDB module has deprecated `atoms` and `@atoms` in favor of
+  the `select_atoms` function that uses keyword arguments. 
+  So, `atoms(pdb, "1", "A", "ATOM", All, "CA")` or `@atoms pdb "1" "A" "ATOM" All "CA"` should be
+  replaced by `select_atoms(pdb, model="1", chain="A", group="ATOM", atom="CA")`.
+
+* *[Breaking change]* The PDB module has deprecated the methods of the `isresidue` and 
+  `residuesdict` functions that rely on positional arguments in favor of the keyword arguments.
+  So, `isresidue(pdb, "1", "A", "ATOM", "10")` should be replaced by 
+  `isresidue(pdb, model="1", chain="A", group="ATOM", residue="10")`. Similarly,
+  `residuesdict(pdb, "1", "A", "ATOM", All)` should be replaced by 
+  `residuesdict(pdb, model="1", chain="A", group="ATOM")`.
+
+
+### Changes from v2.18.0 to v2.19.0
+
+* *[Breaking change]* The `shuffle` and `shuffle!` functions are deprecated in favor of the 
+  `shuffle_msa` and `shuffle_msa!` functions. The new functions take `dims` and 
+  `fixedgaps` as keyword arguments instead of taking them as positional ones. The new
+  functions add a last positional argument to allow the selection of specific sequences 
+  or columns to shuffle. Also, it adds the `fixed_reference` keyword argument to keep the 
+  residues in the reference sequence fixed during the shuffling. As an example of migration,
+  `shuffle!(msa, 1, false)` should be replaced by `shuffle_msa!(msa, dims=1, fixedgaps=false)`.
+
+### Changes from v2.17.0 to v2.18.0
+
+* *[Breaking change]* The `read`, `parse`, `write`, and `print` functions for different 
+  `FileFormat`s have been deprecated in favor of the `read_file`, `parse_file`, 
+  `write_file`, and `print_file` functions. The new functions keep the same signature and
+  behavior as the old ones.
+
+### Changes from v2.16.0 to v2.17.0
+
+* *[Breaking change]* The `download_file` now uses the `Downloads.jl` module instead of 
+  `HTTP.jl`. Therefore, the `download_file` function now accepts the `Downloads.download` 
+  keyword arguments. In particular, the `redirect` and `proxy` keyword arguments are no 
+  longer needed.
+
+* The `MSA` module now exports the `A2M` and `A3M` file formats, to allow reading and 
+  writing MSA files in these formats.
+
 ### Changes from v2.15.0 to v2.16.0
 
 MIToS v2.16.0 drops support for *Julia 1.0*. This release requires *Julia 1.6* or higher.

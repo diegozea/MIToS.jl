@@ -15,19 +15,20 @@ using MIToS.PDB
 """
 module PDB
 
+import LightXML
+
 using RecipesBase           # Plots for PDB Residues
 using AutoHashEquals
 using StaticArrays
 using OrderedCollections
 using PairwiseListMatrices
 using NamedArrays
-using LightXML
 using LinearAlgebra
 using Statistics            # mean
 using MIToS.Utils
 using Format
 using JSON3
-using HTTP
+using Downloads
 using Logging
 
 export  # PDBResidues
@@ -40,10 +41,12 @@ export  # PDBResidues
         contact,
         isresidue,
         isatom,
+        select_residues,
         residues,
         @residues,
         residuesdict,
         @residuesdict,
+        select_atoms,
         atoms,
         @atoms,
         findheavy,
@@ -98,6 +101,10 @@ export  # PDBResidues
         rmsf,
         # MIToS.Utils
         All,
+        read_file,
+        parse_file,
+        write_file,
+        print_file,
         # Sequences
         is_aminoacid,
         modelled_sequences,
@@ -107,7 +114,6 @@ export  # PDBResidues
         # Imported from Base (and exported for docs)
         any,
         parse,
-        print,
         angle
 
 include("PDBResidues.jl")

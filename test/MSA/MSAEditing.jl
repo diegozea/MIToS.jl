@@ -10,8 +10,8 @@
     pf09645_sto = joinpath(DATA, "PF09645_full.stockholm")
     gaoetal2011 = joinpath(DATA, "Gaoetal2011.fasta")
 
-    gaoetal_msas = [ read(gaoetal2011, FASTA, T) for T in msa_types ]
-    pfam_msas    = [ read(pf09645_sto, Stockholm, T) for T in msa_types ]
+    gaoetal_msas = [ read_file(gaoetal2011, FASTA, T) for T in msa_types ]
+    pfam_msas    = [ read_file(pf09645_sto, Stockholm, T) for T in msa_types ]
 
     pfam    = pfam_msas[end]
     pfam_na = pfam_msas[end-1] # na: not annotated

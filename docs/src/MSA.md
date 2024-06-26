@@ -31,14 +31,14 @@ Depth = 4
 
 ### [Reading MSA files](@id Reading-MSA-files)
 
-The main function for reading MSA files in MIToS is `read` and it is defined in the `Utils`
+The main function for reading MSA files in MIToS is `read_file` and it is defined in the `Utils`
 module. This function takes a filename/path as a first argument followed by other
-arguments. It opens the file and uses the arguments to call the `parse` function.
-`read` decides how to open the file, using the prefixes (e.g. https) and suffixes
-(i.e. extensions) of the file name, while `parse` does the actual parsing of
-the file. You can `read` **gzipped files** if they have the `.gz` extension and
+arguments. It opens the file and uses the arguments to call the `parse_file` function.
+`read_file` decides how to open the file, using the prefixes (e.g. https) and suffixes
+(i.e. extensions) of the file name, while `parse_file` does the actual parsing of
+the file. You can `read_file` **gzipped files** if they have the `.gz` extension and
 also urls pointing to a **web file**.  
-The second argument of `read` and `parse` is the file `FileFormat`. The supported MSA formats
+The second argument of `read_file` and `parse_file` is the file `FileFormat`. The supported MSA formats
 at the moment are `Stockholm`, `FASTA`, `PIR` (NBRF) and `Raw`.  
 For example, reading with MIToS the full Stockholm MSA of the Pfam family *PF09645* from 
 the MIToS test data will be:  
@@ -46,10 +46,10 @@ the MIToS test data will be:
 ```@example msa_read
 using MIToS.MSA
 
-read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm)
+read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm)
 ```
 
-The third (and optional) argument of `read` and `parse` is the output MSA type:  
+The third (and optional) argument of `read_file` and `parse_file` is the output MSA type:  
 
 - `Matrix{Residue}` : It only contains the aligned sequences.  
 - `MultipleSequenceAlignment` : It contains the aligned sequences and their names/identifiers.  
@@ -58,10 +58,10 @@ The third (and optional) argument of `read` and `parse` is the output MSA type:
 Example of `Matrix{Residue}` output using a `Stockholm` file as input:
 
 ```@example msa_read
-read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm, Matrix{Residue})
+read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm, Matrix{Residue})
 ```
 
-Because `read` calls `parse`, you should look into the documentation of `parse`
+Because `read_file` calls `parse_file`, you should look into the documentation of `parse_file`
 to know the available keyword arguments. The optional keyword arguments of
 those functions are:  
 
@@ -73,15 +73,15 @@ gap columns. `deletefullgaps` is `true` by default, deleting full gaps columns a
 
 !!! note  
     **If you want to keep the insert columns...**  Use the keyword argument `keepinserts`
-    to `true` in `read`/`parse`. This only works with an `AnnotatedMultipleSequenceAlignment`
+    to `true` in `read_file`/`parse_file`. This only works with an `AnnotatedMultipleSequenceAlignment`
     output. A column annotation (`"Aligned"`) is stored in the annotations, where insert
     columns are marked with `0` and aligned columns with `1`.  
 
-When `read` returns an `AnnotatedMultipleSequenceAlignment`, it uses the MSA `Annotations`
+When `read_file` returns an `AnnotatedMultipleSequenceAlignment`, it uses the MSA `Annotations`
 to keep track of performed modifications. To access these notes, use `printmodifications`:  
 
 ```@example msa_read
-msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm)
+msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm)
 
 printmodifications(msa)
 ```  
@@ -89,24 +89,24 @@ printmodifications(msa)
 ### [Writing MSA files](@id Writing-MSA-files)
 
 Julia REPL shows MSAs as Matrices. If you want to print them in another format, you should
-use the `print` function with an MSA object as first argument and the `FileFormat` `FASTA`,
+use the `print_file` function with an MSA object as first argument and the `FileFormat` `FASTA`,
 `Stockholm`, `PIR` or `Raw` as second argument.  
 
 ```@example msa_write
 using MIToS.MSA
 
-msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm) # reads a Stockholm MSA file
+msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm) # reads a Stockholm MSA file
 
-print(msa, FASTA) # prints msa in FASTA format
+print_file(msa, FASTA) # prints msa in FASTA format
 ```  
 
-To save an MSA object to a file, use the `write` function. This function takes a filename
+To save an MSA object to a file, use the `write_file` function. This function takes a filename
 as a first argument. If the filename ends with `.gz`, the output will be a compressed
-(gzipped) file. The next two arguments of `write` are passed to `print`, so `write` behaves
-as `print`.  
+(gzipped) file. The next two arguments of `write_file` are passed to `print_file`, 
+so `write_file` behaves as `print_file`.  
 
 ```@example msa_write
-write("msa.gz", msa, FASTA) # writes msa in FASTA format in a gzipped file
+write_file("msa.gz", msa, FASTA) # writes msa in FASTA format in a gzipped file
 ```  
 
 ## [MSA Annotations](@id MSA-Annotations)
@@ -130,7 +130,7 @@ function.
 ```@example msa_annot
 using MIToS.MSA
 
-msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF16996.alignment.full", Stockholm)
+msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF16996.alignment.full", Stockholm)
 
 annotations(msa)
 ```  
@@ -194,7 +194,7 @@ UniProt entry names:
 ```@example msa_edit
 using MIToS.MSA
 
-msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm)
+msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm)
 
 sequencenames(msa) # the function sequencenames returns the sequence names in the MSA
 ```  
@@ -213,19 +213,19 @@ sequencenames(msa)
 
 The most simple input for the command line tool [freecontact![](./assets/external-link.png)](https://rostlab.org/owiki/index.php/FreeContact)
 (if you don't want to set `--mincontsep`) is a `Raw` MSA file with a reference sequence
-without insertions or gaps. This is easy to get with MIToS using `read` (deletes the insert
+without insertions or gaps. This is easy to get with MIToS using `read_file` (deletes the insert
 columns), `setreference!` (to choose a reference), `adjustreference!` (to delete columns
-with gaps in the reference) and `write` (to save it in `Raw` format) functions.  
+with gaps in the reference) and `write_file` (to save it in `Raw` format) functions.  
 
 ```@repl
 using MIToS.MSA
-msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm)
+msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", Stockholm)
 msa_coverage = coverage(msa)
 maxcoverage, maxindex = findmax(msa_coverage) # chooses the sequence with more coverage of the MSA
 setreference!(msa, maxindex[1])
 adjustreference!(msa)
-write("tofreecontact.msa", msa, Raw)
-print(read("tofreecontact.msa", String)) # It displays the contents of the output file
+write_file("tofreecontact.msa", msa, Raw)
+print(read_file("tofreecontact.msa", String)) # It displays the contents of the output file
 ```
 
 ## [Column and sequence mappings](@id Column-and-sequence-mappings)
@@ -240,7 +240,7 @@ can know what is the UniProt residue number of each residue in the MSA.
 #                            012345
 ```
 
-MIToS `read` and `parse` functions delete the insert columns, but they do the mapping
+MIToS `read_file` and `parse_file` functions delete the insert columns, but they do the mapping
 between each residue and its residue number before deleting insert columns when `generatemapping` is
 `true`. If you don't set `useidcoordinates` to `true`, the residue first `i` residue will
 be 1 instead of 3 in the previous example.  
@@ -248,7 +248,7 @@ be 1 instead of 3 in the previous example.
 ```@example msa_mapping
 using MIToS.MSA
 
-msa = parse("PROT_SPECI/3-15 .....insertALIGNED", Stockholm, generatemapping=true, useidcoordinates=true)
+msa = parse_file("PROT_SPECI/3-15 .....insertALIGNED", Stockholm, generatemapping=true, useidcoordinates=true)
 ```  
 
 MIToS also keeps the column number of the input MSA and its total number of columns. All
@@ -283,8 +283,8 @@ We are going to use MIToS mapping data to create this header, so we read the MSA
 ```@example freecontact_ii
 using MIToS.MSA
 
-msa = read( "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm,
-            generatemapping=true, useidcoordinates=true)
+msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", 
+    Stockholm, generatemapping=true, useidcoordinates=true)
 ```  
 
 Here, we are going to choose the sequence with more coverage of the MSA as our reference
@@ -330,11 +330,11 @@ open("tofreecontact.msa", "w") do fh
 end
 ```
 
-As last (optional) argument, `write` takes the mode in which is opened the file. We use
+As last (optional) argument, `write_file` takes the mode in which is opened the file. We use
 `"a"` here to append the MSA to the header.  
 
 ```@example freecontact_ii
-write("tofreecontact.msa", msa, Raw, "a")
+write_file("tofreecontact.msa", msa, Raw, "a")
 ```  
 
 ```@example freecontact_ii
@@ -349,8 +349,8 @@ return a `Array` of `Residue`s without annotations but keeping names/identifiers
 ```@example msa_indexing
 using MIToS.MSA
 
-msa = read( "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", 
-            Stockholm, generatemapping=true, useidcoordinates=true)
+msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.stockholm", 
+    Stockholm, generatemapping=true, useidcoordinates=true)
 ```  
 
 ```@example msa_indexing
@@ -442,7 +442,7 @@ gr() # Hide possible warnings
 ```@example msa_plots
 using MIToS.MSA
 
-msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
+msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 
 using Plots
 
@@ -526,7 +526,7 @@ over an MSA to get those identity values.
 
 ```@example msa_pid
 using MIToS.MSA
-msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
+msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 pid = percentidentity(msa)
 nothing # hide
 ```
@@ -622,7 +622,7 @@ gr() # Hide possible warnings
 ```@example msa_clusters
 using MIToS.MSA
 
-msa = read("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
+msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 
 println("This MSA has ", nsequences(msa), " sequences...")
 ```

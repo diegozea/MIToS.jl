@@ -14,7 +14,7 @@ end
     # DAYCMT  33.3  83.3
     # DAYCMT  33.3  83.3
 
-    fasta = read(joinpath(DATA, "Gaoetal2011.fasta"), FASTA)
+    fasta = read_file(joinpath(DATA, "Gaoetal2011.fasta"), FASTA)
     clusters = hobohmI(fasta, 62)
 
     @test nclusters(clusters) == 2

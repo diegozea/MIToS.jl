@@ -57,7 +57,7 @@ function buslje09(aln::AbstractMatrix{Residue};
         zmi = copy(mi)
         residuematrix = getresidues(aln)
         for ns in 1:samples
-            shuffle!(residuematrix,1,fixedgaps)
+            shuffle_msa!(residuematrix, dims=1, fixedgaps=fixedgaps)
             rand_mi[ns] = getarray(_buslje09(aln, alphabet, clusters, lambda, apc))
         end
         PairwiseListMatrices.zscore!(rand_mi, getarray(zmi))
@@ -68,7 +68,7 @@ function buslje09(aln::AbstractMatrix{Residue};
 end
 
 function buslje09(filename::String, format::Type{T}; kargs...) where T <: FileFormat
-    aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
+    aln = read_file(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
     buslje09(aln; kargs...)
 end
 
@@ -132,7 +132,7 @@ function BLMI(aln::AbstractMatrix{Residue};
         zmi = copy(mi)
         residuematrix = getresidues(aln)
         for ns in 1:samples
-            shuffle!(residuematrix,1,fixedgaps)
+            shuffle_msa!(residuematrix, dims=1, fixedgaps=fixedgaps)
             rand_mi[ns] = getarray(_BLMI(aln, clusters, numbercl, beta, apc, lambda))
         end
         PairwiseListMatrices.zscore(rand_mi, getarray(zmi))
@@ -143,6 +143,6 @@ function BLMI(aln::AbstractMatrix{Residue};
 end
 
 function BLMI(filename::String, format::Type{T}; kargs...) where T <: FileFormat
-    aln = read(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
+    aln = read_file(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
     BLMI(aln; kargs...)
 end

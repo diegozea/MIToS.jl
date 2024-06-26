@@ -72,7 +72,7 @@
         @test_throws KeyError map["1"] # Without InterPro
         @test map["2"] == "2" # Same ResNum for different InterPros
 
-        mapII = read(_1cbn_file, SIFTSXML, chain="A")
+        mapII = read_file(_1cbn_file, SIFTSXML, chain="A")
         @test length(mapII[1].InterPro) == 0 # Without InterPro
         @test length(mapII[2].InterPro) == 4 # Same ResNum for different InterPros
     end
@@ -91,7 +91,7 @@
 
         _4cpa_file = joinpath(DATA, "4cpa.xml.gz")
 
-        map = read(_4cpa_file, SIFTSXML, chain="J")
+        map = read_file(_4cpa_file, SIFTSXML, chain="J")
         res = filter(r -> r.PDBe.number == "2", map)[1]
         @test length(res.InterPro) == 3
         for i in 1:3
@@ -164,7 +164,7 @@ end
 # 1NSA : Contains a single (unnamed) protein chain with sequence 7A-95A that continues 4-308.
 
     _1nsa_file = joinpath(DATA, "1nsa.xml.gz")
-    mapping = read(_1nsa_file, SIFTSXML)
+    mapping = read_file(_1nsa_file, SIFTSXML)
 
     @testset "findall & read" begin
 
@@ -190,7 +190,7 @@ end
 @testset "find & filter" begin
 # 1IAO : Contains in chain B (in this order) 1S, 323P-334P, 6-94, 94A, 95-188, 1T, 2T
 
-    mapp = read(joinpath(DATA, "1iao.xml.gz"), SIFTSXML)
+    mapp = read_file(joinpath(DATA, "1iao.xml.gz"), SIFTSXML)
 
     @test filter(db -> db.id == "1iao" && db.number == "1S" && db.chain == "B", mapp, dbPDB)[1].PDBe.number == "1"
     i = findall(db -> db.id == "1iao" && db.number == "1S" && db.chain == "B", mapp, dbPDB)[1]
@@ -210,24 +210,24 @@ end
 @testset "download" begin
 
     pdb = "2vqc"
-    mapping = read(joinpath(DATA, "$(pdb).xml.gz"), SIFTSXML)
+    mapping = read_file(joinpath(DATA, "$(pdb).xml.gz"), SIFTSXML)
 
     @test_throws AssertionError downloadsifts(pdb, source="http")
     @test_throws AssertionError downloadsifts(pdb, filename="bad_name.txt")
     @test_throws ErrorException downloadsifts("2vqc_A")
     
     filename_https = downloadsifts(pdb, filename=tempname()*".xml.gz")
-    @test length(read(filename_https, SIFTSXML)) == length(mapping)
+    @test length(read_file(filename_https, SIFTSXML)) == length(mapping)
 
     filename_ftp = downloadsifts(pdb, filename=tempname()*".xml.gz", source="ftp")
-    @test length(read(filename_ftp, SIFTSXML)) == length(mapping)
+    @test length(read_file(filename_ftp, SIFTSXML)) == length(mapping)
 end
 
 @testset "Ensembl" begin
 # 18GS has multiple Ensembl annotations for each residue
 # 18GS also has EC and GO annotations
 
-    mapping = read(joinpath(DATA, "18gs.xml.gz"), SIFTSXML)
+    mapping = read_file(joinpath(DATA, "18gs.xml.gz"), SIFTSXML)
 
     last_res = mapping[end]
     @test length(last_res.Ensembl) == 2
@@ -243,7 +243,7 @@ end
 
 @testset "SCOP2B" begin
     # 1IVO has residues mapped into SCOP2B (05/08/2020)
-    mapping = read(joinpath(DATA, "1ivo.xml.gz"), SIFTSXML)
+    mapping = read_file(joinpath(DATA, "1ivo.xml.gz"), SIFTSXML)
 
     # First residue with SCOP2B annotation: 
     # <crossRefDb dbSource="SCOP2B" dbCoordSys="PDBresnum" dbAccessionId="SF-DOMID:8038760" dbResNum="312" dbResName="VAL" dbChainId="A"/>
@@ -258,7 +258,7 @@ end
 
 @testset "SCOP2" begin
     # 1XYZ has residues mapped to two different SCOP2 domains (05/08/2020)
-    mapping = read(joinpath(DATA, "1xyz.xml.gz"), SIFTSXML)
+    mapping = read_file(joinpath(DATA, "1xyz.xml.gz"), SIFTSXML)
 
     # First residue with SCOP2 annotations: 
     # <crossRefDb dbAccessionId="FA-DOMID:8030967" dbCoordSys="PDBresnum" dbSource="SCOP2" dbResName="ASN" dbResNum="516" dbChainId="A"/>

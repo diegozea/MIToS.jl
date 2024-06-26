@@ -18,7 +18,8 @@ using MIToS.SIFTS
 """
 module SIFTS
 
-using LightXML
+import LightXML
+
 using AutoHashEquals
 using OrderedCollections
 using MIToS.Utils
@@ -41,6 +42,8 @@ export DataBase,
         SIFTSXML,
         # Mitos.Utils
         All,
+        read_file,
+        parse_file,
         # Imported from Base (and exported for docs)
         parse
 
