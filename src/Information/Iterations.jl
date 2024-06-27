@@ -166,6 +166,12 @@ function mapcolpairfreq!(
     scores
 end
 
+# DEPRECATED, usediagonal is now a boolean keyword argument
+function mapcolpairfreq!(f, msa, table, usediagonal::Type{Val{D}}; kargs...) where D
+    @warn "The `usediagonal` positional argument taking `Val{true}` or `Val{false}` is deprecated. Use `usediagonal = true` or `usediagonal = false` instead."
+    mapcolpairfreq!(f, msa, table; usediagonal = D, kargs...)
+end
+
 # Map to sequence pairs
 
 """
@@ -189,6 +195,12 @@ function mapseqpairfreq!(
     plm = getarray(scores)
     _mappairfreq!(f, sequences, plm, table, Val{usediagonal}; kargs...)
     scores
+end
+
+# DEPRECATED, usediagonal is now a boolean keyword argument
+function mapseqpairfreq!(f, msa, table, usediagonal::Type{Val{D}}; kargs...) where D
+    @warn "The `usediagonal` positional argument taking `Val{true}` or `Val{false}` is deprecated. Use `usediagonal = true` or `usediagonal = false` instead."
+    mapseqpairfreq!(f, msa, table; usediagonal = D, kargs...)
 end
 
 # cMI
