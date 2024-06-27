@@ -153,17 +153,17 @@ $_mappairfreq_kargs_doc
 function mapcolpairfreq!(
     f::Function,
     msa::AbstractMatrix{Residue},
-    table::Union{Probabilities{T,2,A},Counts{T,2,A}},
-    usediagonal::Type{Val{D}} = Val{true};
+    table::Union{Probabilities{T,2,A},Counts{T,2,A}};
+    usediagonal::Bool = true,
     diagonalvalue::T = zero(T),
     kargs...,
-) where {T,A,D}
+) where {T,A}
     ncol = ncolumns(msa)
     residues = _get_matrix_residue(msa)
     columns = map(i -> view(residues, :, i), 1:ncol) # 2x faster than calling view inside the loop
-    scores = columnpairsmatrix(msa, T, Val{D}, diagonalvalue) # Named PairwiseListMatrix
-    plm = getarray(scores)::PairwiseListMatrix{T,D,Vector{T}} # PairwiseListMatrix
-    _mappairfreq!(f, columns, plm, table, Val{D}; kargs...)
+    scores = columnpairsmatrix(msa, T, Val{usediagonal}, diagonalvalue) # Named PairwiseListMatrix
+    plm = getarray(scores)
+    _mappairfreq!(f, columns, plm, table, Val{usediagonal}; kargs...)
     scores
 end
 
@@ -182,15 +182,15 @@ $_mappairfreq_kargs_doc
 function mapseqpairfreq!(
     f::Function,
     msa::AbstractMatrix{Residue},
-    table::Union{Probabilities{T,2,A},Counts{T,2,A}},
-    usediagonal::Type{Val{D}} = Val{true};
+    table::Union{Probabilities{T,2,A},Counts{T,2,A}};
+    usediagonal::Bool = true,
     diagonalvalue::T = zero(T),
     kargs...,
-) where {T,A,D}
+) where {T,A}
     sequences = getresiduesequences(msa)
-    scores = sequencepairsmatrix(msa, T, Val{D}, diagonalvalue) # Named PairwiseListMatrix
-    plm = getarray(scores)::PairwiseListMatrix{T,D,Vector{T}} # PairwiseListMatrix
-    _mappairfreq!(f, sequences, plm, table, Val{D}; kargs...)
+    scores = sequencepairsmatrix(msa, T, Val{usediagonal}, diagonalvalue) # Named PairwiseListMatrix
+    plm = getarray(scores)
+    _mappairfreq!(f, sequences, plm, table, Val{usediagonal}; kargs...)
     scores
 end
 

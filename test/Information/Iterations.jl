@@ -21,7 +21,7 @@
             normalized_mutual_information,
             aln,
             Counts(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
-            Val{false},
+            usediagonal = false,
         )
         nmi_mat = convert(Matrix{Float64}, getarray(nmi))
         @test isapprox(nmi_mat, result, rtol = 1e-4)
@@ -30,7 +30,7 @@
             normalized_mutual_information,
             permutedims(aln),
             Counts(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
-            Val{false},
+            usediagonal = false,
         )
         @test nmi_mat == convert(Matrix{Float64}, getarray(nmi_t))
     end

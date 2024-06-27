@@ -1,5 +1,12 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.21.0 to dev
+
+* *[Breaking change]* The `mapcolpairfreq!` and `mapseqpairfreq!` functions now uses the
+  boolean `usediagonal` keyword argument to indicate if the function should be applied to
+  the diagonal elements of the matrix (the default is `true`). Before, this was done passing
+  `Val{true}` or `Val{false}` as the last positional argument.
+  
 ### Changes from v2.20.0 to v2.21.0
 
 * *[Breaking change]* The `buslje09` and `BLMI` functions from the `Information` module does 

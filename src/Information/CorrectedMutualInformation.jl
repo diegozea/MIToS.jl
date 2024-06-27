@@ -13,7 +13,7 @@ function _buslje09(aln, alphabet::A, clusters, lambda, apc) where {A}
         mutual_information,
         aln,
         Counts{Float64,2,A}(ContingencyTable(Float64, Val{2}, alphabet)),
-        Val{false}, # use diagonal
+        usediagonal = false,
         pseudocounts = AdditiveSmoothing{Float64}(lambda),
         weights = clusters,
         diagonalvalue = NaN,
@@ -93,7 +93,7 @@ function _BLMI(aln, clusters, alpha, beta, apc, lambda::Float64 = 0.0)
         Probabilities{Float64,2,UngappedAlphabet}(
             ContingencyTable(Float64, Val{2}, UngappedAlphabet()),
         ),
-        Val{false}, # use diagonal
+        usediagonal = false,
         pseudocounts = AdditiveSmoothing{Float64}(lambda),
         weights = clusters,
         diagonalvalue = NaN,

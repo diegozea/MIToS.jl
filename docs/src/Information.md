@@ -342,12 +342,9 @@ After that, this function takes some keyword arguments:
 - `weights` (default: `NoClustering()`) : Weights to be used for table counting.
 - `pseudocounts` (default: `NoPseudocount()`) : `Pseudocount` object to be applied to table.
 - `pseudofrequencies` (default: `NoPseudofrequencies()`) : `Pseudofrequencies` to be applied to the normalized (probabilities) table.  
+- `usediagonal` (default: `true`) : Indicates if the function should be applied to pairs containing the same sequence or column.
+- `diagonalvalue` (default to zero) : The value that fills the diagonal elements of the table if `usediagonal` is `false`.  
 
-`mapcolpairfreq!` and `mapseqpairfreq!` also have a fourth positional argument `usediagonal`
-that indicates if the function should be applied to identical element pairs
-(default to `Val{true}`). This two functions also have an extra keyword argument
-`diagonalvalue` (default to zero) to indicate the value used to fill the diagonal elements
-if `usediagonal` is `Val{false}`.  
 
 #### Example: Estimating *H(X)* and *H(X, Y)* over an MSA
 
