@@ -5,10 +5,14 @@ _get_matrix_residue(msa::NamedArray)::Matrix{Residue} = getarray(msa)
 _get_matrix_residue(msa::Matrix{Residue})::Matrix{Residue} = msa
 
 # Kernel function to fill ContingencyTable based on residues
-function _mapfreq_kernel!(f::Function,
-                          freqtable::Union{Probabilities{T,N,A},Counts{T,N,A}},
-                          weights, pseudocounts, pseudofrequencies,
-                          res::Vararg{AbstractVector{Residue},N}) where {T,N,A}
+function _mapfreq_kernel!(
+    f::Function,
+    freqtable::Union{Probabilities{T,N,A},Counts{T,N,A}},
+    weights,
+    pseudocounts,
+    pseudofrequencies,
+    res::Vararg{AbstractVector{Residue},N},
+) where {T,N,A}
     table = freqtable.table
     _cleanup_table!(table) # count! calls _cleanup_temporal! and cleans marginals
     count!(table, weights, pseudocounts, res...) # count! calls apply_pseudocount! and  _update!
@@ -32,12 +36,14 @@ _mappairfreq_kargs_doc = """
 # Residues: The output is a Named Vector
 # --------------------------------------
 
-function _mapfreq!(f::Function,
-res_list::Vector{V}, # sequences or columns
-table::Union{Probabilities{T,1,A},Counts{T,1,A}};
-weights = NoClustering(),
-pseudocounts::Pseudocount = NoPseudocount(),
-pseudofrequencies::Pseudofrequencies = NoPseudofrequencies()) where {T,A,V<:AbstractArray{Residue}}
+function _mapfreq!(
+    f::Function,
+    res_list::Vector{V}, # sequences or columns
+    table::Union{Probabilities{T,1,A},Counts{T,1,A}};
+    weights = NoClustering(),
+    pseudocounts::Pseudocount = NoPseudocount(),
+    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
+) where {T,A,V<:AbstractArray{Residue}}
     scores = map(res_list) do res
         _mapfreq_kernel!(f, table, weights, pseudocounts, pseudofrequencies, res)
     end
@@ -53,18 +59,26 @@ probabilities of each column from the `msa` (second argument).
 
 $_mapfreq_kargs_doc
 """
-function mapcolfreq!(f::Function, msa::AbstractMatrix{Residue},
-                     table::Union{Probabilities{T,1,A},Counts{T,1,A}}; kargs...) where {T,A}
+function mapcolfreq!(
+    f::Function,
+    msa::AbstractMatrix{Residue},
+    table::Union{Probabilities{T,1,A},Counts{T,1,A}};
+    kargs...,
+) where {T,A}
     N = ncolumns(msa)
     residues = _get_matrix_residue(msa)
-    ncol = size(residues,2)
-    columns = map(i -> view(residues,:,i), 1:ncol) # 2x faster than calling view inside the loop
+    ncol = size(residues, 2)
+    columns = map(i -> view(residues, :, i), 1:ncol) # 2x faster than calling view inside the loop
     scores = _mapfreq!(f, columns, table; kargs...)
     name_list = columnnames(msa)
-    NamedArray(reshape(scores, (1,N)),
-               (OrderedDict{String,Int}(string(f) => 1),
-                OrderedDict{String,Int}(name_list[i] => i for i in 1:N)),
-               ("Function","Col"))
+    NamedArray(
+        reshape(scores, (1, N)),
+        (
+            OrderedDict{String,Int}(string(f) => 1),
+            OrderedDict{String,Int}(name_list[i] => i for i = 1:N),
+        ),
+        ("Function", "Col"),
+    )
 end
 
 # Map to each sequence
@@ -76,34 +90,50 @@ probabilities of each sequence from the `msa` (second argument).
 
 $_mapfreq_kargs_doc
 """
-function mapseqfreq!(f::Function, msa::AbstractMatrix{Residue},
-                     table::Union{Probabilities{T,1,A},Counts{T,1,A}}; kargs...) where {T,A}
+function mapseqfreq!(
+    f::Function,
+    msa::AbstractMatrix{Residue},
+    table::Union{Probabilities{T,1,A},Counts{T,1,A}};
+    kargs...,
+) where {T,A}
     N = nsequences(msa)
     sequences = getresiduesequences(msa)
     name_list = sequencenames(msa)
     scores = _mapfreq!(f, sequences, table; kargs...)
-    NamedArray(reshape(scores, (N,1)),
-               (OrderedDict{String,Int}(name_list[i] => i for i in 1:N),
-               OrderedDict{String,Int}(string(f) => 1)),
-               ("Seq","Function"))
+    NamedArray(
+        reshape(scores, (N, 1)),
+        (
+            OrderedDict{String,Int}(name_list[i] => i for i = 1:N),
+            OrderedDict{String,Int}(string(f) => 1),
+        ),
+        ("Seq", "Function"),
+    )
 end
 
 # Residue pairs: The output is a Named PairwiseListMatrix
 # -------------------------------------------------------
 
-function _mappairfreq!(f::Function,
-res_list::Vector{V}, # sequences or columns
-plm::PairwiseListMatrix{T,D,TV}, # output
-table::Union{Probabilities{T,2,A},Counts{T,2,A}},
-usediagonal::Type{Val{D}} = Val{true};
-weights = NoClustering(),
-pseudocounts::Pseudocount = NoPseudocount(),
-pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
-diagonalvalue::T = zero(T)) where {T,D,TV,A,V<:AbstractArray{Residue}} # diagonalvalue used by mapcolpairfreq! ...
+function _mappairfreq!(
+    f::Function,
+    res_list::Vector{V}, # sequences or columns
+    plm::PairwiseListMatrix{T,D,TV}, # output
+    table::Union{Probabilities{T,2,A},Counts{T,2,A}},
+    usediagonal::Type{Val{D}} = Val{true};
+    weights = NoClustering(),
+    pseudocounts::Pseudocount = NoPseudocount(),
+    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
+    diagonalvalue::T = zero(T),
+) where {T,D,TV,A,V<:AbstractArray{Residue}} # diagonalvalue used by mapcolpairfreq! ...
     @inbounds @iterateupper plm D begin
-        list[k] = _mapfreq_kernel!(f, table, weights,
-                                   pseudocounts, pseudofrequencies,
-                                   res_list[i], res_list[j])
+        list[k] = _mapfreq_kernel!(
+            f,
+            table,
+            weights,
+            pseudocounts,
+            pseudofrequencies,
+            res_list[i],
+            res_list[j],
+        )
     end
     plm
 end
@@ -120,14 +150,17 @@ to identical element pairs (default to `Val{true}`).
 $_mapfreq_kargs_doc
 $_mappairfreq_kargs_doc
 """
-function mapcolpairfreq!(f::Function, msa::AbstractMatrix{Residue},
-                         table::Union{Probabilities{T,2,A},Counts{T,2,A}},
-                         usediagonal::Type{Val{D}} = Val{true};
-                         diagonalvalue::T = zero(T),
-                         kargs...) where {T,A,D}
+function mapcolpairfreq!(
+    f::Function,
+    msa::AbstractMatrix{Residue},
+    table::Union{Probabilities{T,2,A},Counts{T,2,A}},
+    usediagonal::Type{Val{D}} = Val{true};
+    diagonalvalue::T = zero(T),
+    kargs...,
+) where {T,A,D}
     ncol = ncolumns(msa)
     residues = _get_matrix_residue(msa)
-    columns = map(i -> view(residues,:,i), 1:ncol) # 2x faster than calling view inside the loop
+    columns = map(i -> view(residues, :, i), 1:ncol) # 2x faster than calling view inside the loop
     scores = columnpairsmatrix(msa, T, Val{D}, diagonalvalue) # Named PairwiseListMatrix
     plm = getarray(scores)::PairwiseListMatrix{T,D,Vector{T}} # PairwiseListMatrix
     _mappairfreq!(f, columns, plm, table, Val{D}; kargs...)
@@ -146,11 +179,14 @@ to identical element pairs (default to `Val{true}`).
 $_mapfreq_kargs_doc
 $_mappairfreq_kargs_doc
 """
-function mapseqpairfreq!(f::Function, msa::AbstractMatrix{Residue},
-                         table::Union{Probabilities{T,2,A},Counts{T,2,A}},
-                         usediagonal::Type{Val{D}} = Val{true};
-                         diagonalvalue::T = zero(T),
-                         kargs...) where {T,A,D}
+function mapseqpairfreq!(
+    f::Function,
+    msa::AbstractMatrix{Residue},
+    table::Union{Probabilities{T,2,A},Counts{T,2,A}},
+    usediagonal::Type{Val{D}} = Val{true};
+    diagonalvalue::T = zero(T),
+    kargs...,
+) where {T,A,D}
     sequences = getresiduesequences(msa)
     scores = sequencepairsmatrix(msa, T, Val{D}, diagonalvalue) # Named PairwiseListMatrix
     plm = getarray(scores)::PairwiseListMatrix{T,D,Vector{T}} # PairwiseListMatrix
@@ -183,15 +219,21 @@ function cumulative(plm::PairwiseListMatrix{T,D,VT}, threshold::T) where {T,D,VT
             out[j] += elem
         end
     end
-    reshape(out, (1,N))
+    reshape(out, (1, N))
 end
 
-function cumulative(nplm::NamedArray{T,2,PairwiseListMatrix{T,D,TV},DN},
-                    threshold::T) where {T,D,TV,DN}
+function cumulative(
+    nplm::NamedArray{T,2,PairwiseListMatrix{T,D,TV},DN},
+    threshold::T,
+) where {T,D,TV,DN}
     N = size(nplm, 2)
     name_list = names(nplm, 2)
-    NamedArray(cumulative(getarray(nplm), threshold),
-               (OrderedDict{String,Int}("cumulative" => 1),
-               OrderedDict{String,Int}(name_list[i] => i for i in 1:N)),
-               ("Function", dimnames(nplm,2)))
+    NamedArray(
+        cumulative(getarray(nplm), threshold),
+        (
+            OrderedDict{String,Int}("cumulative" => 1),
+            OrderedDict{String,Int}(name_list[i] => i for i = 1:N),
+        ),
+        ("Function", dimnames(nplm, 2)),
+    )
 end

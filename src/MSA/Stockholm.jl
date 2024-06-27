@@ -1,7 +1,7 @@
 struct Stockholm <: MSAFormat end
 
 @inline function _fill_with_sequence_line!(IDS, SEQS, line)
-    if !startswith(line,'#') && !startswith(line,"//")
+    if !startswith(line, '#') && !startswith(line, "//")
         words = get_n_words(line, 2)
         @inbounds id = words[1]
         if id in IDS
@@ -17,35 +17,35 @@ struct Stockholm <: MSAFormat end
 end
 
 function _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
-    if startswith(line,"#=GF")
+    if startswith(line, "#=GF")
         words = get_n_words(line, 3)
         id = words[2]
         if id in keys(GF)
-            GF[ id ] = GF[ id ] * "\n" * words[3]
+            GF[id] = GF[id] * "\n" * words[3]
         else
-            GF[ id ] = words[3]
+            GF[id] = words[3]
         end
-    elseif startswith(line,"#=GS")
+    elseif startswith(line, "#=GS")
         words = get_n_words(line, 4)
-        idtuple = (words[2],words[3])
+        idtuple = (words[2], words[3])
         if idtuple in keys(GS)
-            GS[ idtuple ] = GS[ idtuple ] * "\n" * words[4]
+            GS[idtuple] = GS[idtuple] * "\n" * words[4]
         else
-            GS[ idtuple ] = words[4]
+            GS[idtuple] = words[4]
         end
-    elseif startswith(line,"#=GC")
+    elseif startswith(line, "#=GC")
         words = get_n_words(line, 3)
         GC[words[2]] = words[3]
-    elseif startswith(line,"#=GR")
+    elseif startswith(line, "#=GR")
         words = get_n_words(line, 4)
-        GR[(words[2],words[3])] = words[4]
+        GR[(words[2], words[3])] = words[4]
     else
         _fill_with_sequence_line!(IDS, SEQS, line)
     end
 end
 
-function _pre_readstockholm(io::Union{IO, AbstractString})
-    IDS  = OrderedSet{String}()
+function _pre_readstockholm(io::Union{IO,AbstractString})
+    IDS = OrderedSet{String}()
     SEQS = String[]
     GF = OrderedDict{String,String}()
     GC = Dict{String,String}()
@@ -65,8 +65,8 @@ function _pre_readstockholm(io::Union{IO, AbstractString})
     (IDS, SEQS, GF, GS, GC, GR)
 end
 
-function _pre_readstockholm_sequences(io::Union{IO, AbstractString})
-    IDS  = OrderedSet{String}()
+function _pre_readstockholm_sequences(io::Union{IO,AbstractString})
+    IDS = OrderedSet{String}()
     SEQS = String[]
     @inbounds for line::String in lineiterator(io)
         isempty(line) && continue
@@ -76,7 +76,11 @@ function _pre_readstockholm_sequences(io::Union{IO, AbstractString})
     (IDS, SEQS)
 end
 
-function _load_sequences(io::Union{IO, AbstractString}, format::Type{Stockholm}; create_annotations::Bool=false)
+function _load_sequences(
+    io::Union{IO,AbstractString},
+    format::Type{Stockholm};
+    create_annotations::Bool = false,
+)
     if create_annotations
         IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
         annot = Annotations(GF, GS, GC, GR)
@@ -97,7 +101,7 @@ function _to_sequence_dict(annotation::Dict{Tuple{String,String},String})
         if haskey(seq_dict, seq_id)
             push!(seq_dict[seq_id], string(seq_id, '\t', key[2], '\t', value))
         else
-            seq_dict[seq_id] = [ string(seq_id, '\t', key[2], '\t', value) ]
+            seq_dict[seq_id] = [string(seq_id, '\t', key[2], '\t', value)]
         end
     end
     sizehint!(seq_dict, length(seq_dict))
@@ -112,7 +116,7 @@ function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{Sto
     end
     seqnames = sequencenames(msa)
     aligned = _get_aligned_columns(msa)
-    for i in 1:nsequences(msa)
+    for i = 1:nsequences(msa)
         id = seqnames[i]
         seq = stringsequence(msa, i)
         formatted_seq = _format_inserts(seq, aligned)
@@ -127,4 +131,5 @@ function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{Sto
     println(io, "//")
 end
 
-Utils.print_file(msa::AnnotatedMultipleSequenceAlignment) = print_file(stdout, msa, Stockholm)
+Utils.print_file(msa::AnnotatedMultipleSequenceAlignment) =
+    print_file(stdout, msa, Stockholm)

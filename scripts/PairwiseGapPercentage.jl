@@ -13,33 +13,30 @@ Args = parse_commandline(
     Dict(
         :help => "Format of the MSA: Stockholm, Raw or FASTA",
         :arg_type => String,
-        :default => "Stockholm"
+        :default => "Stockholm",
     ),
     ["--clustering", "-c"],
-    Dict(
-        :help => "Sequence clustering (Hobohm I)",
-        :action => :store_false
-    ),
+    Dict(:help => "Sequence clustering (Hobohm I)", :action => :store_false),
     ["--threshold", "-i"],
     Dict(
         :help => "Percent identity threshold for sequence clustering (Hobohm I)",
         :arg_type => Float64,
-        :default => 62.0
+        :default => 62.0,
     ),
     # Keywords...
-    description="""
-    Calculates and saves on *.pairwisegaps.csv the percentage of gaps on columns pairs (union and intersection) using sequence clustering (Hobohm I).
-    """,
-    output=".pairwisegaps.csv",
-	mitos_version=loadedversion(MIToS)
+    description = """
+      Calculates and saves on *.pairwisegaps.csv the percentage of gaps on columns pairs (union and intersection) using sequence clustering (Hobohm I).
+      """,
+    output = ".pairwisegaps.csv",
+    mitos_version = loadedversion(MIToS),
     # ----------------------------------------------------------------------------
-    )
+)
 
 set_parallel(Args["parallel"])
 
 @everywhere begin
 
-    const args = remotecall_fetch(()->Args,1)
+    const args = remotecall_fetch(() -> Args, 1)
 
     import MIToS.Utils.Scripts: script
 
@@ -49,11 +46,19 @@ set_parallel(Args["parallel"])
     using PairwiseListMatrices
     # ----------------------------------------------------------------------------
 
-    function script(input::Union{Base.LibuvStream,  AbstractString},
-                    args,
-                    fh_out::Union{Base.LibuvStream, IO})
+    function script(
+        input::Union{Base.LibuvStream,AbstractString},
+        args,
+        fh_out::Union{Base.LibuvStream,IO},
+    )
         # TO DO ------------------------------------------------------------------
-		println(fh_out, "# MIToS ", loadedversion(MIToS), " PairwiseGapPercentage.jl ", now())
+        println(
+            fh_out,
+            "# MIToS ",
+            loadedversion(MIToS),
+            " PairwiseGapPercentage.jl ",
+            now(),
+        )
         println(fh_out, "# used arguments:")
         for (key, value) in args
             println(fh_out, "# \t", key, "\t\t", value)
@@ -68,9 +73,13 @@ set_parallel(Args["parallel"])
         else
             throw(ErrorException("--format should be Stockholm, Raw or FASTA."))
         end
-        gapsunion, gapsinter = pairwisegapfraction(msa, clustering=args["clustering"], threshold=args["threshold"])
+        gapsunion, gapsinter = pairwisegapfraction(
+            msa,
+            clustering = args["clustering"],
+            threshold = args["threshold"],
+        )
         println(fh_out, "i,j,gapunion,gapintersection")
-        table = hcat(to_table(gapsunion), to_table(gapsinter)[:,3])
+        table = hcat(to_table(gapsunion), to_table(gapsinter)[:, 3])
         writedlm(fh_out, table, ',')
         # ------------------------------------------------------------------------
     end

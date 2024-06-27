@@ -5,25 +5,33 @@ struct SIFTSXML <: FileFormat end
 
 """
     downloadsifts(pdbcode::String; filename::String, source::String="https")
-    
-Download the gzipped SIFTS XML file for the provided `pdbcode`. 
-The downloaded file will have the default extension `.xml.gz`. 
-While you can change the `filename`, it must include the `.xml.gz` ending. 
-The `source` keyword argument is set to `"https"` by default. 
-Alternatively, you can choose `"ftp"` as the `source`, which will retrieve the file from 
-the EBI FTP server at ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/. 
-However, please note that using `"https"` is highly recommended. 
-This option will download the file from the 
+
+Download the gzipped SIFTS XML file for the provided `pdbcode`.
+The downloaded file will have the default extension `.xml.gz`.
+While you can change the `filename`, it must include the `.xml.gz` ending.
+The `source` keyword argument is set to `"https"` by default.
+Alternatively, you can choose `"ftp"` as the `source`, which will retrieve the file from
+the EBI FTP server at ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/.
+However, please note that using `"https"` is highly recommended.
+This option will download the file from the
 EBI PDBe server at https://www.ebi.ac.uk/pdbe/files/sifts/.
 """
-function downloadsifts(pdbcode::String;
-    filename::String="$(lowercase(pdbcode)).xml.gz", source::String="https")
+function downloadsifts(
+    pdbcode::String;
+    filename::String = "$(lowercase(pdbcode)).xml.gz",
+    source::String = "https",
+)
     @assert endswith(filename, ".xml.gz") "filename must end with .xml.gz"
     @assert source == "ftp" || source == "https" "source must be ftp or https"
     if check_pdbcode(pdbcode)
         url = if source == "ftp"
-            string("ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/",
-                    lowercase(pdbcode[2:3]), "/", lowercase(pdbcode), ".xml.gz")
+            string(
+                "ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/",
+                lowercase(pdbcode[2:3]),
+                "/",
+                lowercase(pdbcode),
+                ".xml.gz",
+            )
         else
             string("https://www.ebi.ac.uk/pdbe/files/sifts/", lowercase(pdbcode), ".xml.gz")
         end
@@ -77,8 +85,12 @@ Returns an Iterator of the residues on the listResidue
 ```
 """
 function _get_residues(segment)
-    LightXML.child_elements(select_element(
-        LightXML.get_elements_by_tagname(segment, "listResidue"), "listResidue"))
+    LightXML.child_elements(
+        select_element(
+            LightXML.get_elements_by_tagname(segment, "listResidue"),
+            "listResidue",
+        ),
+    )
 end
 
 """
@@ -88,7 +100,8 @@ function _is_missing(residue)
     details = LightXML.get_elements_by_tagname(residue, "residueDetail")
     for det in details
         # XML: <residueDetail dbSource="PDBe" property="Annotation">Not_Observed</residueDetail>
-        if LightXML.attribute(det, "property") == "Annotation" && LightXML.content(det) == "Not_Observed"
+        if LightXML.attribute(det, "property") == "Annotation" &&
+           LightXML.content(det) == "Not_Observed"
             return (true)
         end
     end

@@ -21,12 +21,12 @@ using PairwiseListMatrices  # getlist
 const DATA = joinpath(@__DIR__, "data")
 
 # Utils
-@testset verbose=true "Utils" begin
+@testset verbose = true "Utils" begin
     include("Utils/GeneralUtils.jl")
 end
 
 # MSA
-@testset verbose=true "MSA" begin
+@testset verbose = true "MSA" begin
     include("MSA/Residues.jl")
     include("MSA/Alphabet.jl")
     include("MSA/ThreeLetters.jl")
@@ -46,7 +46,7 @@ end
 end
 
 # Information
-@testset verbose=true "Information" begin
+@testset verbose = true "Information" begin
     include("Information/ContingencyTables.jl")
     include("Information/Counters.jl")
     include("Information/InformationMeasures.jl")
@@ -57,7 +57,7 @@ end
 end
 
 # PDB
-@testset verbose=true "PDB" begin
+@testset verbose = true "PDB" begin
     include("PDB/PDB.jl")
     include("PDB/Contacts.jl")
     include("PDB/Kabsch.jl")
@@ -67,17 +67,17 @@ end
 end
 
 # SIFTS
-@testset verbose=true "SIFTS" begin
+@testset verbose = true "SIFTS" begin
     include("SIFTS/SIFTS.jl")
 end
 
 # Pfam
-@testset verbose=true "Pfam" begin
+@testset verbose = true "Pfam" begin
     include("Pfam/Pfam.jl")
 end
 
 # Scripts
-@testset verbose=true "Scripts" begin
+@testset verbose = true "Scripts" begin
     include("Scripts/Template.jl")
     include("Scripts/Scripts.jl")
 end

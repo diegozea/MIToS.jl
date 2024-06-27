@@ -6,7 +6,7 @@
         @test XAA == XAA
         @test GAP != XAA
 
-        for i in 1:22, j in 1:22
+        for i = 1:22, j = 1:22
             if j != i
                 @test Residue(i) != Residue(j)
             else
@@ -19,8 +19,8 @@
 
         alphabet = "ARNDCQEGHILKMFPSTWYV"
 
-        @test Int[ Residue(char) for char in alphabet] == Int[ i for i in 1:20 ]
-        @test Int[ Residue(char) for char in lowercase(alphabet)] == Int[ 21 for i in 1:20 ]
+        @test Int[Residue(char) for char in alphabet] == Int[i for i = 1:20]
+        @test Int[Residue(char) for char in lowercase(alphabet)] == Int[21 for i = 1:20]
 
         @testset "GAP" begin
 
@@ -72,23 +72,21 @@
 
         alphabet = "ARNDCQEGHILKMFPSTWYV-X"
 
-        @test res"ARNDCQEGHILKMFPSTWYV-X" == Residue[ char for char in alphabet ]
+        @test res"ARNDCQEGHILKMFPSTWYV-X" == Residue[char for char in alphabet]
         @test String(res"ARNDCQEGHILKMFPSTWYV-X") == alphabet
     end
 
     @testset "String vector" begin
 
-        msa =  ["DAWAEF",
-                "DAWAED",
-                "DAYCMD" ]
+        msa = ["DAWAEF", "DAWAED", "DAYCMD"]
 
-        badmsa=["DAWAEF",
-                "DAWAED",
-                "DAM"    ]
+        badmsa = ["DAWAEF", "DAWAED", "DAM"]
 
-        @test convert(Matrix{Residue}, msa) == Residue['D' 'A' 'W' 'A' 'E' 'F'
-                                                       'D' 'A' 'W' 'A' 'E' 'D'
-                                                       'D' 'A' 'Y' 'C' 'M' 'D']
+        @test convert(Matrix{Residue}, msa) == Residue[
+            'D' 'A' 'W' 'A' 'E' 'F'
+            'D' 'A' 'W' 'A' 'E' 'D'
+            'D' 'A' 'Y' 'C' 'M' 'D'
+        ]
 
         @test_throws ErrorException convert(Matrix{Residue}, String[])
         @test_throws ErrorException convert(Matrix{Residue}, badmsa)
@@ -96,7 +94,7 @@
 
     @testset "Random" begin
 
-        for i in 1:5000
+        for i = 1:5000
             res = rand(Residue)
             @test res != GAP
             @test res != XAA
@@ -108,26 +106,30 @@
     @testset "Initialized arrays" begin
 
         @test size(rand(Residue, 20)) == (20,)
-        @test typeof(rand(Residue, 20)) == Array{Residue, 1}
-        @test size(rand(Residue, 20,30)) == (20,30)
-        @test typeof(rand(Residue, 20, 30)) == Array{Residue, 2}
+        @test typeof(rand(Residue, 20)) == Array{Residue,1}
+        @test size(rand(Residue, 20, 30)) == (20, 30)
+        @test typeof(rand(Residue, 20, 30)) == Array{Residue,2}
 
         @test zero(Residue) == GAP
-        @test one( Residue) == XAA
+        @test one(Residue) == XAA
 
-        @test zeros(Residue,4) == [GAP, GAP, GAP, GAP]
-        @test ones(Residue,4)  == [XAA, XAA, XAA, XAA]
+        @test zeros(Residue, 4) == [GAP, GAP, GAP, GAP]
+        @test ones(Residue, 4) == [XAA, XAA, XAA, XAA]
 
-        @test zeros(Residue,2,2) == [   GAP GAP
-                                        GAP GAP ]
+        @test zeros(Residue, 2, 2) == [
+            GAP GAP
+            GAP GAP
+        ]
 
-        @test ones(Residue,2,2)  == [   XAA XAA
-                                        XAA XAA ]
+        @test ones(Residue, 2, 2) == [
+            XAA XAA
+            XAA XAA
+        ]
     end
 
     @testset "Other base methods" begin
 
-        for i in 1:22
+        for i = 1:22
             @test bitstring(i) == bitstring(Residue(i))
         end
 

@@ -3,26 +3,28 @@
     @testset "count and probabilities" begin
         seq = res"ARNDCQEGHILKMFPSTWYV-"
 
-        for alphabet in (UngappedAlphabet(),
-                         GappedAlphabet(),
-                         ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"))
-            for N in 1:3
-                seqs = ((seq for i in 1:N)...,)::NTuple{N,Vector{Residue}}
+        for alphabet in (
+            UngappedAlphabet(),
+            GappedAlphabet(),
+            ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"),
+        )
+            for N = 1:3
+                seqs = ((seq for i = 1:N)...,)::NTuple{N,Vector{Residue}}
 
                 table = ContingencyTable(Float64, Val{N}, alphabet) # zeros in MIToS 1.0
                 if N == 1
                     @test table[1] == 0.0
                 elseif N == 2
-                    @test table[1,1] == 0.0
+                    @test table[1, 1] == 0.0
                 else
-                    @test table[1,1,1] == 0.0
+                    @test table[1, 1, 1] == 0.0
                 end
-                @test getmarginals(table)[1,1] == 0.0
+                @test getmarginals(table)[1, 1] == 0.0
                 @test gettotal(table) == 0.0
 
                 count!(table, NoClustering(), NoPseudocount(), seqs...)
 
-                @test table == count(seqs..., alphabet=alphabet)
+                @test table == count(seqs..., alphabet = alphabet)
 
                 if isa(alphabet, ReducedAlphabet)
                     @test table[1] == 5.0
@@ -35,87 +37,103 @@
                     if N == 2
                         len = length(alphabet)
                         @test gettablearray(table) == Matrix{Float64}(I, len, len)
-                        @test getmarginalsarray(table)[:,1] == [1.0 for i in 1:len]
+                        @test getmarginalsarray(table)[:, 1] == [1.0 for i = 1:len]
                     end
                 end
 
                 normalize!(table)
-                @test table == probabilities(seqs..., alphabet=alphabet)
+                @test table == probabilities(seqs..., alphabet = alphabet)
             end
         end
 
         @testset "Using clustering" begin
 
-            clusters = Clusters([21], ones(Int,21), Weights(ones(21)/21))
+            clusters = Clusters([21], ones(Int, 21), Weights(ones(21) / 21))
 
-            for alphabet in (UngappedAlphabet(),
-                            GappedAlphabet(),
-                            ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"))
+            for alphabet in (
+                UngappedAlphabet(),
+                GappedAlphabet(),
+                ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"),
+            )
 
-                for N in 1:3
-                    seqs = ((seq for i in 1:N)...,)::NTuple{N,Vector{Residue}}
+                for N = 1:3
+                    seqs = ((seq for i = 1:N)...,)::NTuple{N,Vector{Residue}}
 
                     table = ContingencyTable(Float64, Val{N}, alphabet)
 
                     count!(table, clusters, NoPseudocount(), seqs...)
 
-                    @test table == count(seqs..., alphabet=alphabet, weights=clusters)
+                    @test table == count(seqs..., alphabet = alphabet, weights = clusters)
 
                     len = length(alphabet)
                     if isa(alphabet, ReducedAlphabet)
-                        @test table[1] == 5.0/21
-                        @test getmarginals(table)[1] == 5.0/21
-                        @test gettotal(table) ≈ (1.0/21) * 20.0 # ReducedAlphabet without gap
+                        @test table[1] == 5.0 / 21
+                        @test getmarginals(table)[1] == 5.0 / 21
+                        @test gettotal(table) ≈ (1.0 / 21) * 20.0 # ReducedAlphabet without gap
                     else
-                        @test table[1] == 1.0/21
-                        @test getmarginals(table)[1] == 1.0/21
-                        @test gettotal(table) ≈ (1.0/21) * len
+                        @test table[1] == 1.0 / 21
+                        @test getmarginals(table)[1] == 1.0 / 21
+                        @test gettotal(table) ≈ (1.0 / 21) * len
                         if N == 2
-                            @test gettablearray(table) == (1.0/21) .* Matrix{Float64}(I, len, len)
-                            @test getmarginalsarray(table)[:,1] == [1.0/21 for i in 1:len]
+                            @test gettablearray(table) ==
+                                  (1.0 / 21) .* Matrix{Float64}(I, len, len)
+                            @test getmarginalsarray(table)[:, 1] == [1.0 / 21 for i = 1:len]
                         end
                     end
 
                     normalize!(table)
-                    @test table == probabilities(seqs..., alphabet=alphabet, weights=clusters)
+                    @test table ==
+                          probabilities(seqs..., alphabet = alphabet, weights = clusters)
                 end
             end
         end
 
         @testset "Using pseudocount" begin
 
-            for alphabet in (UngappedAlphabet(),
-                            GappedAlphabet(),
-                            ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"))
+            for alphabet in (
+                UngappedAlphabet(),
+                GappedAlphabet(),
+                ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"),
+            )
 
-                for N in 1:3
-                    seqs = ((seq for i in 1:N)...,)::NTuple{N,Vector{Residue}}
+                for N = 1:3
+                    seqs = ((seq for i = 1:N)...,)::NTuple{N,Vector{Residue}}
 
                     table = ContingencyTable(Float64, Val{N}, alphabet)
 
                     count!(table, NoClustering(), AdditiveSmoothing(1.0), seqs...)
 
-                    @test table == count(seqs..., alphabet = alphabet,
-                                                  pseudocounts = AdditiveSmoothing(1.0))
+                    @test table == count(
+                        seqs...,
+                        alphabet = alphabet,
+                        pseudocounts = AdditiveSmoothing(1.0),
+                    )
 
                     len = Float64(length(alphabet))
                     if isa(alphabet, ReducedAlphabet)
                         @test table[1] == 5.0 + 1.0
-                        @test getmarginals(table)[1] == 5. + (N==1 ? 1. : N==2 ? len : len^2)
+                        @test getmarginals(table)[1] ==
+                              5.0 + (N == 1 ? 1.0 : N == 2 ? len : len^2)
                         @test gettotal(table) ≈ length(gettable(table)) + 20.0 # without gap
                     else
                         @test table[1] == 2.0
-                        @test getmarginals(table)[1] == 1. + (N==1 ? 1. : N==2 ? len : len^2)
+                        @test getmarginals(table)[1] ==
+                              1.0 + (N == 1 ? 1.0 : N == 2 ? len : len^2)
                         @test gettotal(table) ≈ len + length(gettable(table))
                         if N == 2
-                            @test gettablearray(table) == Matrix{Float64}(I, Int(len), Int(len)) .+ 1.0
-                            @test getmarginalsarray(table)[:,1] == [ len + 1.0 for i in 1:len ]
+                            @test gettablearray(table) ==
+                                  Matrix{Float64}(I, Int(len), Int(len)) .+ 1.0
+                            @test getmarginalsarray(table)[:, 1] ==
+                                  [len + 1.0 for i = 1:len]
                         end
                     end
 
                     normalize!(table)
-                    @test table == probabilities(seqs..., alphabet = alphabet,
-                                                 pseudocounts = AdditiveSmoothing(1.0))
+                    @test table == probabilities(
+                        seqs...,
+                        alphabet = alphabet,
+                        pseudocounts = AdditiveSmoothing(1.0),
+                    )
                 end
             end
         end
@@ -124,27 +142,45 @@
 
             table = ContingencyTable(Float64, Val{2}, UngappedAlphabet())
 
-            probabilities!(table, NoClustering(), NoPseudocount(),
-                                  BLOSUM_Pseudofrequencies(1.,0.), seq, seq)
+            probabilities!(
+                table,
+                NoClustering(),
+                NoPseudocount(),
+                BLOSUM_Pseudofrequencies(1.0, 0.0),
+                seq,
+                seq,
+            )
 
-            @test table == probabilities(seq, seq,
-                                         pseudofrequencies = BLOSUM_Pseudofrequencies(1.,0.))
+            @test table == probabilities(
+                seq,
+                seq,
+                pseudofrequencies = BLOSUM_Pseudofrequencies(1.0, 0.0),
+            )
             @test table == probabilities(seq, seq)
 
-            @test table[1] == 1.0/20.
-            @test getmarginals(table)[1] == 1.0/20.
+            @test table[1] == 1.0 / 20.0
+            @test getmarginals(table)[1] == 1.0 / 20.0
             @test gettotal(table) ≈ 1.0
             @test gettablearray(table) == Matrix{Float64}(I, 20, 20) ./ 20.0
 
-            @test table != probabilities(seq, seq,
-                                         pseudofrequencies = BLOSUM_Pseudofrequencies(0.,1.))
+            @test table != probabilities(
+                seq,
+                seq,
+                pseudofrequencies = BLOSUM_Pseudofrequencies(0.0, 1.0),
+            )
         end
 
         @testset "BigFloat" begin
             table = ContingencyTable(BigFloat, Val{2}, UngappedAlphabet())
-            clusters = Clusters([21], ones(Int,21), Weights(ones(21)/21))
-            probabilities!(table, clusters, AdditiveSmoothing(one(BigFloat)),
-                           BLOSUM_Pseudofrequencies(1.0,1.0), seq, seq)
+            clusters = Clusters([21], ones(Int, 21), Weights(ones(21) / 21))
+            probabilities!(
+                table,
+                clusters,
+                AdditiveSmoothing(one(BigFloat)),
+                BLOSUM_Pseudofrequencies(1.0, 1.0),
+                seq,
+                seq,
+            )
 
             @test sum(table) ≈ one(BigFloat)
             @test eltype(table) == BigFloat

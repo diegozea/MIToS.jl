@@ -1,7 +1,9 @@
-for T in (:(AlignedSequence),
+for T in (
+    :(AlignedSequence),
     :(AnnotatedAlignedSequence),
     :(MultipleSequenceAlignment),
-    :(AnnotatedMultipleSequenceAlignment))
+    :(AnnotatedMultipleSequenceAlignment),
+)
     @eval Base.IndexStyle(::Type{$(T)}) = Base.IndexLinear()
 end
 
@@ -13,8 +15,8 @@ end
 """
     sequence_index(msa, seq_name)
 
-Return the index (integer position) of the sequence with name `seq_name` in the MSA `msa`.  
-A `KeyError` is thrown if the sequence name does not exist. If `seq_name` is an integer, 
+Return the index (integer position) of the sequence with name `seq_name` in the MSA `msa`.
+A `KeyError` is thrown if the sequence name does not exist. If `seq_name` is an integer,
 the same integer is returned without checking if it is a valid index.
 """
 sequence_index(msa::NamedResidueMatrix, seq_name::AbstractString) = msa.dicts[1][seq_name]
@@ -22,7 +24,7 @@ sequence_index(msa::NamedResidueMatrix, seq_name::AbstractString) = msa.dicts[1]
 """
     column_index(msa, col_name)
 
-Return the index (integer position) of the column with name `col_name` in the MSA `msa`. 
+Return the index (integer position) of the column with name `col_name` in the MSA `msa`.
 A `KeyError` is thrown if the column name does not exist. If `col_name` is an integer,
 the same integer is returned without checking if it is a valid index.
 """
@@ -39,13 +41,19 @@ end
 # Do not allow indexing Matrix{Residue} with AbstractString
 
 function sequence_index(msa::Matrix{Residue}, seq_name::AbstractString)
-    throw(ErrorException(
-        "There are no sequence names in a Matrix{Residue} object, use an integer index instead."))
+    throw(
+        ErrorException(
+            "There are no sequence names in a Matrix{Residue} object, use an integer index instead.",
+        ),
+    )
 end
 
 function column_index(msa::Matrix{Residue}, column_name::AbstractString)
-    throw(ErrorException(
-        "There are no column names in a Matrix{Residue} object, use an integer index instead."))
+    throw(
+        ErrorException(
+            "There are no column names in a Matrix{Residue} object, use an integer index instead.",
+        ),
+    )
 end
 
 # If the user already gives a position, return the same position.
@@ -55,8 +63,7 @@ column_index(msa, column_index::Int) = column_index
 
 # ---
 
-@inline Base.getindex(x::AbstractAlignedObject,
-              args...) = getindex(namedmatrix(x), args...)
+@inline Base.getindex(x::AbstractAlignedObject, args...) = getindex(namedmatrix(x), args...)
 
 @inline function Base.setindex!(x::AbstractAlignedObject, value, args...)
     setindex!(namedmatrix(x), value, args...)
@@ -64,13 +71,15 @@ end
 
 # Special getindex/setindex! for sequences to avoid `seq["seqname","colname"]`
 
-@inline function Base.getindex(x::AbstractAlignedSequence,
-                       i::Union{Int,AbstractString})
+@inline function Base.getindex(x::AbstractAlignedSequence, i::Union{Int,AbstractString})
     getindex(namedmatrix(x), 1, i)
 end
 
-@inline function Base.setindex!(x::AbstractAlignedSequence, value,
-                        i::Union{Int,AbstractString})
+@inline function Base.setindex!(
+    x::AbstractAlignedSequence,
+    value,
+    i::Union{Int,AbstractString},
+)
     setindex!(namedmatrix(x), value, 1, i)
 end
 
@@ -85,8 +94,8 @@ function _get_selected_sequences(msa, selector)
         return selector
     else
         to_select = Set(selector)
-        if type  <: Number
-            Bool[i in to_select for i in 1:nsequences(msa)]
+        if type <: Number
+            Bool[i in to_select for i = 1:nsequences(msa)]
         elseif type <: AbstractString
             Bool[i in to_select for i in sequencenames(msa)]
         end
@@ -100,8 +109,11 @@ function _column_indices(msa, selector)
     selector
 end
 
-function Base.getindex(msa::AnnotatedMultipleSequenceAlignment, 
-               seqs::AbstractArray, cols::AbstractArray)
+function Base.getindex(
+    msa::AnnotatedMultipleSequenceAlignment,
+    seqs::AbstractArray,
+    cols::AbstractArray,
+)
     annot = copy(annotations(msa))
     seq_selector = _get_selected_sequences(msa, seqs)
     filtersequences!(annot, sequencenames(msa), seq_selector)
@@ -112,8 +124,11 @@ function Base.getindex(msa::AnnotatedMultipleSequenceAlignment,
     AnnotatedMultipleSequenceAlignment(msa.matrix[seqs, cols], annot)
 end
 
-function Base.getindex(msa::AnnotatedMultipleSequenceAlignment, 
-               seqs::AbstractArray, cols::Colon)
+function Base.getindex(
+    msa::AnnotatedMultipleSequenceAlignment,
+    seqs::AbstractArray,
+    cols::Colon,
+)
     annot = copy(annotations(msa))
     seq_selector = _get_selected_sequences(msa, seqs)
     filtersequences!(annot, sequencenames(msa), seq_selector)
@@ -121,8 +136,11 @@ function Base.getindex(msa::AnnotatedMultipleSequenceAlignment,
     AnnotatedMultipleSequenceAlignment(msa.matrix[seqs, cols], annot)
 end
 
-function Base.getindex(msa::AnnotatedMultipleSequenceAlignment, 
-               seqs::Colon, cols::AbstractArray)
+function Base.getindex(
+    msa::AnnotatedMultipleSequenceAlignment,
+    seqs::Colon,
+    cols::AbstractArray,
+)
     annot = copy(annotations(msa))
     col_selector = _column_indices(msa, cols)
     filtercolumns!(annot, col_selector)
@@ -132,9 +150,11 @@ end
 
 Base.getindex(msa::AnnotatedMultipleSequenceAlignment, seqs::Colon, cols::Colon) = copy(msa)
 
-function Base.getindex(msa::MultipleSequenceAlignment, 
-seqs::Union{AbstractArray,Colon}, 
-cols::Union{AbstractArray,Colon})
+function Base.getindex(
+    msa::MultipleSequenceAlignment,
+    seqs::Union{AbstractArray,Colon},
+    cols::Union{AbstractArray,Colon},
+)
     MultipleSequenceAlignment(msa.matrix[seqs, cols])
 end
 

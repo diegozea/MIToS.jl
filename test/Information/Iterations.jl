@@ -8,29 +8,41 @@
         # BMC bioinformatics, 12(1), 206.
 
         aln = read_file(joinpath(DATA, "Gaoetal2011.fasta"), FASTA)
-        result = Float64[ 0     0     0     0     0     0
-                          0     0     0     0     0     0
-                          0     0     0     1     1     0.296
-                          0     0     1     0     1     0.296
-                          0     0     1     1     0     0.296
-                          0     0     0.296 0.296 0.296 0 ]
+        result = Float64[
+            0 0 0 0 0 0
+            0 0 0 0 0 0
+            0 0 0 1 1 0.296
+            0 0 1 0 1 0.296
+            0 0 1 1 0 0.296
+            0 0 0.296 0.296 0.296 0
+        ]
 
-        nmi = mapcolpairfreq!(normalized_mutual_information, aln,
-                              Counts(ContingencyTable(Float64,Val{2},UngappedAlphabet())),
-                              Val{false})
+        nmi = mapcolpairfreq!(
+            normalized_mutual_information,
+            aln,
+            Counts(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
+            Val{false},
+        )
         nmi_mat = convert(Matrix{Float64}, getarray(nmi))
-        @test isapprox(nmi_mat, result, rtol=1e-4)
+        @test isapprox(nmi_mat, result, rtol = 1e-4)
 
-        nmi_t = mapseqpairfreq!(normalized_mutual_information, permutedims(aln),
-                                Counts(ContingencyTable(Float64,Val{2},UngappedAlphabet())),
-                                Val{false})
-        @test nmi_mat == convert(Matrix{Float64},getarray(nmi_t))
+        nmi_t = mapseqpairfreq!(
+            normalized_mutual_information,
+            permutedims(aln),
+            Counts(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
+            Val{false},
+        )
+        @test nmi_mat == convert(Matrix{Float64}, getarray(nmi_t))
     end
 
     @testset "Gaps" begin
 
-        function _gaps(table::Union{Probabilities{Float64,1,GappedAlphabet},
-                                    Counts{Float64,1,GappedAlphabet}})
+        function _gaps(
+            table::Union{
+                Probabilities{Float64,1,GappedAlphabet},
+                Counts{Float64,1,GappedAlphabet},
+            },
+        )
             table[GAP]
         end
 
@@ -49,18 +61,18 @@
         # TH-------- 0.8
         # T--------- 0.9
 
-        ngaps = Float64[0,1,2,3,4,5,6,7,8,9]
+        ngaps = Float64[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
         colcount = mapcolfreq!(_gaps, gaps, Counts(table))
         @test all((vec(getarray(colcount)) .- ngaps) .== 0.0)
 
         colfract = mapcolfreq!(_gaps, gaps, Probabilities(table))
-        @test all((vec(getarray(colfract)) .- ngaps./10.0) .== 0.0)
+        @test all((vec(getarray(colfract)) .- ngaps ./ 10.0) .== 0.0)
 
         seqcount = mapseqfreq!(_gaps, gaps, Counts(table))
         @test all((vec(getarray(seqcount)) .- ngaps) .== 0.0)
 
         seqfract = mapseqfreq!(_gaps, gaps, Probabilities(table))
-        @test all((vec(getarray(seqfract)) .- ngaps./10.0) .== 0.0)
+        @test all((vec(getarray(seqfract)) .- ngaps ./ 10.0) .== 0.0)
     end
 end

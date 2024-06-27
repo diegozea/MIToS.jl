@@ -3,21 +3,27 @@
 
 # Clustering.jl : ClusteringResult
 
-"Use `NoClustering()` to avoid the use of clustering where a `Clusters` type is needed."
+"""
+Use `NoClustering()` to avoid the use of clustering where a `Clusters` type is needed.
+"""
 struct NoClustering <: ClusteringResult end
 
-"Data structure to represent sequence clusters. The sequence data itself is not included."
+"""
+Data structure to represent sequence clusters. The sequence data itself is not included.
+"""
 @auto_hash_equals struct Clusters <: ClusteringResult
     clustersize::Vector{Int}
     clusters::Vector{Int}
-    weights::StatsBase.Weights{Float64, Float64, Array{Float64,1}}
+    weights::StatsBase.Weights{Float64,Float64,Array{Float64,1}}
 end
 
 nelements(cl::Clusters) = length(cl.clusters)
 
 # Clustering.jl : nclusters, counts, assignments
 
-"Get the number of clusters in a `Clusters` object."
+"""
+Get the number of clusters in a `Clusters` object.
+"""
 Clustering.nclusters(cl::Clusters) = length(cl.clustersize)
 
 """
@@ -39,8 +45,10 @@ Clustering.assignments(cl::Clusters) = cl.clusters
 function Base.convert(::Type{Clusters}, cl::ClusteringResult)
     clustersize = counts(cl)
     clusters = assignments(cl)
-    weights = Weights(Float64[1.0/clustersize[k] for k in clusters],
-        Float64(length(clustersize)))
+    weights = Weights(
+        Float64[1.0 / clustersize[k] for k in clusters],
+        Float64(length(clustersize)),
+    )
     Clusters(clustersize, clusters, weights)
 end
 

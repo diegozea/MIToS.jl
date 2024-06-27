@@ -6,19 +6,19 @@ A `ContingencyTable` is a multidimensional array. It stores the contingency matr
 marginal values and total. The type also has an internal and private temporal array and an
 alphabet object. It's a parametric type, taking three ordered parameters:
 
-- `T` : The element type of the multidimensional array.
-- `N` : It's the dimension of the array and should be an `Int`.
-- `A` : This should be a type, subtype of `ResidueAlphabet`, i.e.: `UngappedAlphabet`,
-`GappedAlphabet` or `ReducedAlphabet`.
+  - `T` : The element type of the multidimensional array.
+  - `N` : It's the dimension of the array and should be an `Int`.
+  - `A` : This should be a type, subtype of `ResidueAlphabet`, i.e.: `UngappedAlphabet`,
+    `GappedAlphabet` or `ReducedAlphabet`.
 
 A `ContingencyTable` can be created from an alphabet if all the parameters are given.
 Otherwise, you need to give a type, a number (`Val`) and an alphabet. You can also create a
 `ContingencyTable` using a matrix and a alphabet. For example:
 
 ```julia
-ContingencyTable{Float64, 2, UngappedAlphabet}(UngappedAlphabet())
+ContingencyTable{Float64,2,UngappedAlphabet}(UngappedAlphabet())
 ContingencyTable(Float64, Val{2}, UngappedAlphabet())
-ContingencyTable(zeros(Float64,20,20), UngappedAlphabet())
+ContingencyTable(zeros(Float64, 20, 20), UngappedAlphabet())
 ```
 """
 mutable struct ContingencyTable{T,N,A} <: AbstractArray{T,N}
@@ -57,8 +57,8 @@ or `Counts` object.
 @inline getcontingencytable(p::Probabilities{T,N,A}) where {T,N,A} = p.table
 @inline getcontingencytable(n::Counts{T,N,A}) where {T,N,A} = n.table
 
-for f in (:getalphabet, :gettable, :getmarginals, :gettotal,
-          :gettablearray, :getmarginalsarray)
+for f in
+    (:getalphabet, :gettable, :getmarginals, :gettotal, :gettablearray, :getmarginalsarray)
     @eval $(f)(p::Probabilities{T,N,A}) where {T,N,A} = $(f)(getcontingencytable(p))
     @eval $(f)(n::Counts{T,N,A}) where {T,N,A} = $(f)(getcontingencytable(n))
 end
@@ -66,28 +66,40 @@ end
 # AbstractArray
 
 for f in (:size, :getindex, :setindex!)
-    @eval Base.$(f)(p::Probabilities{T,N,A},args...) where {T,N,A} = $(f)(getcontingencytable(p),args...)
-    @eval Base.$(f)(n::Counts{T,N,A},args...) where {T,N,A} = $(f)(getcontingencytable(n),args...)
+    @eval Base.$(f)(p::Probabilities{T,N,A}, args...) where {T,N,A} =
+        $(f)(getcontingencytable(p), args...)
+    @eval Base.$(f)(n::Counts{T,N,A}, args...) where {T,N,A} =
+        $(f)(getcontingencytable(n), args...)
 end
 
 # Getters
 # -------
 
-"`getalphabet` allows to access the stored alphabet object."
+"""
+`getalphabet` allows to access the stored alphabet object.
+"""
 @inline getalphabet(table::ContingencyTable) = table.alphabet
 
-"`gettable` allows to access the table (`NamedArray`)."
+"""
+`gettable` allows to access the table (`NamedArray`).
+"""
 @inline gettable(table::ContingencyTable) = table.table
 
-"`getmarginals` allows to access the array with the marginal values (`NamedArray`)."
+"""
+`getmarginals` allows to access the array with the marginal values (`NamedArray`).
+"""
 @inline getmarginals(table::ContingencyTable) = table.marginals
 
-"`gettotal` allows to access the stored total value."
+"""
+`gettotal` allows to access the stored total value.
+"""
 @inline gettotal(table::ContingencyTable) = table.total
 
 Base.sum(table::ContingencyTable) = gettotal(table)
 
-"`gettablearray` allows to access the table (`Array` without names)."
+"""
+`gettablearray` allows to access the table (`Array` without names).
+"""
 @inline gettablearray(table::ContingencyTable) = getarray(table.table)
 
 """
@@ -103,7 +115,9 @@ Base.sum(table::ContingencyTable) = gettotal(table)
 `_marginal(1,:A,:i,:value)` generates the expression: `A[i_1, 1] += value`
 """
 function _marginal(N::Int, marginal::Symbol, index::Symbol, value::Symbol)
-    aexprs = [Expr(:escape, Expr(:(+=), Expr(:ref, marginal, Symbol(index,'_',i), i), value)) for i = 1:N]
+    aexprs = [
+        Expr(:escape, Expr(:(+=), Expr(:ref, marginal, Symbol(index, '_', i), i), value)) for i = 1:N
+    ]
     Expr(:block, aexprs...)
 end
 
@@ -117,13 +131,9 @@ end
 function _test_index(N::Int, index::Symbol, expr::Expr)
     aexprs = Expr[]
     for i = 1:N
-        push!(aexprs, 
-            Expr(:escape,
-                Expr(:&&,
-                    Expr(:call, :>=, Symbol(index, "_", i), 22),
-                    expr
-                )
-            )
+        push!(
+            aexprs,
+            Expr(:escape, Expr(:&&, Expr(:call, :>=, Symbol(index, "_", i), 22), expr)),
         )
     end
     Expr(:block, aexprs...)
@@ -147,7 +157,7 @@ Base.getindex(table::ContingencyTable, i...) = getindex(table.table, i...)
         matrix = getarray(gettable(table))
         # index_1 = alphabet[I[1]]
         # index_2 ...
-        @nextract $N index d->alphabet[I[d]]
+        @nextract $N index d -> alphabet[I[d]]
         # index_1 >= 22 error("There is a Residue outside the alphabet")
         # index_2 ...
         @_test_index $N index error("There is a Residue outside the alphabet")
@@ -166,7 +176,7 @@ end
     quote
         alphabet = getalphabet(table)
         matrix = getarray(gettable(table))
-        @nextract $N index d->alphabet[I[d]]
+        @nextract $N index d -> alphabet[I[d]]
         @_test_index $N index error("There is a Residue outside the alphabet")
         @nref($N, matrix, index) = value
         update_marginals!(table)
@@ -176,7 +186,8 @@ end
 # Similar
 # -------
 
-Base.similar(table::ContingencyTable{T,N,A}) where {T,N,A} = ContingencyTable(T, Val{N}, table.alphabet)
+Base.similar(table::ContingencyTable{T,N,A}) where {T,N,A} =
+    ContingencyTable(T, Val{N}, table.alphabet)
 
 function Base.similar(table::ContingencyTable{T,N,A}, ::Type{S}) where {T,S,N,A}
     ContingencyTable(S, Val{N}, table.alphabet)
@@ -196,7 +207,11 @@ function Base.show(io::IO, ::MIME"text/plain", table::ContingencyTable{T,N,A}) w
     print(io, "\n\ntotal : $(gettotal(table))")
 end
 
-function Base.show(io::IO, ::MIME"text/plain", table::Union{Probabilities{T,N,A},Counts{T,N,A}}) where {T,N,A}
+function Base.show(
+    io::IO,
+    ::MIME"text/plain",
+    table::Union{Probabilities{T,N,A},Counts{T,N,A}},
+) where {T,N,A}
     print(io, typeof(table), " wrapping a ")
     show(io, MIME"text/plain"(), getcontingencytable(table))
 end
@@ -213,19 +228,19 @@ end
         namedict = getnamedict(alphabet)
         dimtable = @ntuple $N k -> n # (n, n, ...)
         dimtemporal = @ntuple $N k -> 22 # (22, 22, ...)
-        table = NamedArray(zeros($T, dimtable),
-                           @ntuple($N, k -> namedict), # (namedict, namedict, ...)
-                           @ntuple($N, k -> "Dim_k")) # ("Dim_1", "Dim_2", ...)
-        marginals = NamedArray(zeros($T, n, $N),
-                               # OrderedDict{String,Int}("Dim_$i" => i for i in 1:N)
-                               (namedict, OrderedDict{String,Int}(@ntuple $N k -> "Dim_k"=>k)),
-                               ("Residue","Dim"))
-        ContingencyTable{T,N,A}(alphabet,
-                                zeros(T, dimtemporal),
-                                table,
-                                marginals,
-                                zero(T))
-        end
+        table = NamedArray(
+            zeros($T, dimtable),
+            @ntuple($N, k -> namedict), # (namedict, namedict, ...)
+            @ntuple($N, k -> "Dim_k")
+        ) # ("Dim_1", "Dim_2", ...)
+        marginals = NamedArray(
+            zeros($T, n, $N),
+            # OrderedDict{String,Int}("Dim_$i" => i for i in 1:N)
+            (namedict, OrderedDict{String,Int}(@ntuple $N k -> "Dim_k" => k)),
+            ("Residue", "Dim"),
+        )
+        ContingencyTable{T,N,A}(alphabet, zeros(T, dimtemporal), table, marginals, zero(T))
+    end
 end
 
 function ContingencyTable(::Type{T}, ::Type{Val{N}}, alphabet::A) where {T,A,N}
@@ -234,7 +249,7 @@ end
 
 function ContingencyTable(matrix::AbstractArray{T,N}, alphabet::A) where {T,N,A}
     n = length(alphabet)
-    @assert size(matrix) == ((n for i in 1:N)...,) "Matrix size doesn't match alphabet length"
+    @assert size(matrix) == ((n for i = 1:N)...,) "Matrix size doesn't match alphabet length"
     table = ContingencyTable(T, Val{N}, alphabet)
     getarray(table.table)[:] = matrix
     _update_marginals!(table)
@@ -254,7 +269,7 @@ end
             freqtable = getarray(table.table)::Array{T,N}
             @inbounds @nloops $N i temporal begin
                 @_test_index $N i continue
-                @nextract $N a d->alphabet[i_d]
+                @nextract $N a d -> alphabet[i_d]
                 @_test_index $N a continue
                 @nref($N, freqtable, a) += @nref($N, temporal, i)
             end
@@ -273,29 +288,31 @@ end
 end
 
 @generated function _update_marginals!(table::ContingencyTable{T,N,A}) where {T,N,A}
-        quote
-            freqtable = getarray(table.table)::Array{T,N}
-            marginal  = getarray(table.marginals)::Matrix{T}
-            @inbounds @nloops $N i freqtable begin
-                value = @nref $N freqtable i
-                @_marginal($N, marginal, i, value)
-            end
-            table
+    quote
+        freqtable = getarray(table.table)::Array{T,N}
+        marginal = getarray(table.marginals)::Matrix{T}
+        @inbounds @nloops $N i freqtable begin
+            value = @nref $N freqtable i
+            @_marginal($N, marginal, i, value)
         end
+        table
+    end
 end
 
 function _update_total!(table::ContingencyTable{T,N,A}) where {T,N,A}
     marginals = getarray(table.marginals)::Matrix{T}
-    n = size(marginals,1)
+    n = size(marginals, 1)
     total = zero(T)
-    @inbounds @simd for i in 1:n
+    @inbounds @simd for i = 1:n
         total += marginals[i] # marginals[i,1]
     end
     table.total = total
     table
 end
 
-"`update_marginals!` updates the marginal and total values using the table."
+"""
+`update_marginals!` updates the marginal and total values using the table.
+"""
 function update_marginals!(table::ContingencyTable{T,N,A}) where {T,N,A}
     fill!(getarray(table.marginals)::Matrix{T}, zero(T))
     _update_marginals!(table)
@@ -336,7 +353,8 @@ function Base.fill!(table::ContingencyTable{T,N,A}, value::T) where {T,N,A}
     update_marginals!(table)
 end
 
-Base.fill!(table::ContingencyTable{T,N,A}, p::AdditiveSmoothing{T}) where {T,N,A} = fill!(table, p.λ)
+Base.fill!(table::ContingencyTable{T,N,A}, p::AdditiveSmoothing{T}) where {T,N,A} =
+    fill!(table, p.λ)
 
 @inline Base.fill!(table::ContingencyTable{T,N,A}, p::NoPseudocount) where {T,N,A} = table
 
@@ -352,13 +370,18 @@ function _sum!(matrix::NamedArray, value)
     matrix
 end
 
-"It adds the `pseudocount` value to the table cells."
+"""
+It adds the `pseudocount` value to the table cells.
+"""
 function apply_pseudocount!(table::ContingencyTable{T,N,A}, pseudocount::T) where {T,N,A}
     _sum!(table.table, pseudocount)
     update_marginals!(table)
 end
 
-function apply_pseudocount!(table::ContingencyTable{T,N,A}, p::AdditiveSmoothing{T}) where {T,N,A}
+function apply_pseudocount!(
+    table::ContingencyTable{T,N,A},
+    p::AdditiveSmoothing{T},
+) where {T,N,A}
     apply_pseudocount!(table, p.λ)
 end
 
@@ -376,7 +399,9 @@ function _div!(matrix::NamedArray, value)
     matrix
 end
 
-"`normalize!` makes the sum of the frequencies to be one, in place."
+"""
+`normalize!` makes the sum of the frequencies to be one, in place.
+"""
 function LinearAlgebra.normalize!(table::ContingencyTable{T,N,A}) where {T,N,A}
     if table.total != one(T)
         _div!(table.table, table.total)
@@ -385,24 +410,27 @@ function LinearAlgebra.normalize!(table::ContingencyTable{T,N,A}) where {T,N,A}
     table
 end
 
-"`normalize` returns another table where the sum of the frequencies is one."
-LinearAlgebra.normalize(table::ContingencyTable{T,N,A}) where {T,N,A} = normalize!(deepcopy(table))
+"""
+`normalize` returns another table where the sum of the frequencies is one.
+"""
+LinearAlgebra.normalize(table::ContingencyTable{T,N,A}) where {T,N,A} =
+    normalize!(deepcopy(table))
 
 # Delete Dimensions
 # =================
 
 function _list_without_dimensions(len::Int, output_len::Int, dimensions::Int...)
-  ndim = length(dimensions)
-  @assert (len-ndim) == output_len "$output_len should be = $(len-ndim)"
-  index_list = Array{Int}(undef, output_len)
-  j = 1
-  @inbounds for i in 1:len
-    if ! (i in dimensions)
-      index_list[j] = i
-      j += 1
+    ndim = length(dimensions)
+    @assert (len - ndim) == output_len "$output_len should be = $(len-ndim)"
+    index_list = Array{Int}(undef, output_len)
+    j = 1
+    @inbounds for i = 1:len
+        if !(i in dimensions)
+            index_list[j] = i
+            j += 1
+        end
     end
-  end
-  index_list
+    index_list
 end
 
 """
@@ -411,17 +439,19 @@ end
 This function fills a ContingencyTable with the counts/probabilities on `in` after the
 deletion of `dimensions`. i.e. This is useful for getting Pxy from Pxyz.
 """
-function delete_dimensions!(output::ContingencyTable{T,S,A},
-                            input::ContingencyTable{T,N,A},
-                            dimensions::Int...) where {T,N,S,A}
-  output_marginals = getarray(output.marginals)
-  output_table = getarray(output.table)
-  input_marginals = getarray(input.marginals)
-  input_table = getarray(input.table)
-  output_marginals[:] = input_marginals[:,_list_without_dimensions(N, S, dimensions...)]
-  output_table[:] = sum(input_table, dims=dimensions)
-  output.total = input.total
-  output
+function delete_dimensions!(
+    output::ContingencyTable{T,S,A},
+    input::ContingencyTable{T,N,A},
+    dimensions::Int...,
+) where {T,N,S,A}
+    output_marginals = getarray(output.marginals)
+    output_table = getarray(output.table)
+    input_marginals = getarray(input.marginals)
+    input_table = getarray(input.table)
+    output_marginals[:] = input_marginals[:, _list_without_dimensions(N, S, dimensions...)]
+    output_table[:] = sum(input_table, dims = dimensions)
+    output.total = input.total
+    output
 end
 
 """
@@ -430,15 +460,25 @@ end
 This function creates a ContingencyTable with the counts/probabilities on `in` after the
 deletion of `dimensions`. i.e. This is useful for getting Pxy from Pxyz.
 """
-function delete_dimensions(input::ContingencyTable{T,N,A}, dims::Vararg{Int,I}) where {T,N,A,I}
-    delete_dimensions!(ContingencyTable(T, Val{N-I}, input.alphabet), input, dims...)
+function delete_dimensions(
+    input::ContingencyTable{T,N,A},
+    dims::Vararg{Int,I},
+) where {T,N,A,I}
+    delete_dimensions!(ContingencyTable(T, Val{N - I}, input.alphabet), input, dims...)
 end
 
 for tp in (:Probabilities, :Counts)
     @eval begin
-        function delete_dimensions!(output::$(tp){T,S,A}, input::$(tp){T,N,A},
-                                    dimensions::Int...) where {T,N,S,A}
-            delete_dimensions!(getcontingencytable(output), getcontingencytable(input), dimensions...)
+        function delete_dimensions!(
+            output::$(tp){T,S,A},
+            input::$(tp){T,N,A},
+            dimensions::Int...,
+        ) where {T,N,S,A}
+            delete_dimensions!(
+                getcontingencytable(output),
+                getcontingencytable(input),
+                dimensions...,
+            )
             output
         end
 

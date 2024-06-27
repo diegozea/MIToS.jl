@@ -46,8 +46,8 @@
 # the *2VQC* *PDB* file. The needed files are available in the MIToS test suite:
 
 using MIToS
-pdb_file   = abspath(pathof(MIToS), "..", "..", "test", "data", "2VQC.pdb")
-pfam_file  = abspath(pathof(MIToS), "..", "..", "test", "data", "PF09645_full.stockholm")
+pdb_file = abspath(pathof(MIToS), "..", "..", "test", "data", "2VQC.pdb")
+pfam_file = abspath(pathof(MIToS), "..", "..", "test", "data", "PF09645_full.stockholm")
 sifts_file = abspath(pathof(MIToS), "..", "..", "test", "data", "2vqc.xml.gz")
 #md nothing # hide
 
@@ -60,7 +60,7 @@ sifts_file = abspath(pathof(MIToS), "..", "..", "test", "data", "2vqc.xml.gz")
 # number using the MSA annotations.
 
 using MIToS.Pfam
-msa = read_file(pfam_file, Stockholm, generatemapping=true, useidcoordinates=true)
+msa = read_file(pfam_file, Stockholm, generatemapping = true, useidcoordinates = true)
 
 # First, we need to know what is the sequence in the MSA that correspond to the
 # PDB we want to link. Luckily, Pfam Stockholm files store the mapping between
@@ -76,9 +76,9 @@ seq2pdbs = getseq2pdb(msa)
 # chain to be associated with more than one sequence in the *Pfam* MSA (e.g.
 # domain repeats).
 
-pdb_code  = "2VQC"
+pdb_code = "2VQC"
 pdb_chain = "A"
-seq_ids = [ seq for (seq, pdbs) in seq2pdbs if (pdb_code, pdb_chain) in pdbs ]
+seq_ids = [seq for (seq, pdbs) in seq2pdbs if (pdb_code, pdb_chain) in pdbs]
 
 # In this example, we are going to use the only sequence we found for the *A*
 # of *2VQC*.
@@ -97,16 +97,18 @@ msacol2pdbres = msacolumn2pdbresidue(msa, seq_id, pdb_code, pdb_chain, pfam_id, 
 # MSA column) and the mean B factor of the residue:
 
 using MIToS.Information
-Hx = mapcolfreq!(entropy,
-				 msa,
-				 Counts(ContingencyTable(Int, Val{1}, UngappedAlphabet())))
+Hx = mapcolfreq!(entropy, msa, Counts(ContingencyTable(Int, Val{1}, UngappedAlphabet())))
 
 # To get quick access to each PDB residue based on its residue number, we can
 # read the PDB file into a dictionary using the `read_file` and `residuesdict`
 # functions from the MIToS `PDB` module:
 
 using MIToS.PDB
-res_dict = residuesdict(read_file(pdb_file, PDBFile, occupancyfilter=true), model="1", chain="A")
+res_dict = residuesdict(
+    read_file(pdb_file, PDBFile, occupancyfilter = true),
+    model = "1",
+    chain = "A",
+)
 
 # Then, we can iterate the mapping dictionary to link the MSA and PDB based
 # values:
@@ -117,10 +119,10 @@ x = Float64[]
 y = Float64[]
 
 for (col_index, res_number) in msacol2pdbres
-	if res_number != "" # i.e. MSA column has an associated PDB residue
-		push!(x, Hx[col_index])
-		push!(y, mean(parse(Float64, atom.B) for atom in res_dict[res_number].atoms))
-	end
+    if res_number != "" # i.e. MSA column has an associated PDB residue
+        push!(x, Hx[col_index])
+        push!(y, mean(parse(Float64, atom.B) for atom in res_dict[res_number].atoms))
+    end
 end
 
 cor(x, y)
@@ -140,8 +142,8 @@ cor(x, y)
 # documentation:
 
 using MIToS
-pdb_file   = abspath(pathof(MIToS), "..", "..", "docs", "data", "1dur.pdb")
-msa_file   = abspath(pathof(MIToS), "..", "..", "docs", "data", "blast_alignment.fa")
+pdb_file = abspath(pathof(MIToS), "..", "..", "docs", "data", "1dur.pdb")
+msa_file = abspath(pathof(MIToS), "..", "..", "docs", "data", "blast_alignment.fa")
 sifts_file = abspath(pathof(MIToS), "..", "..", "docs", "data", "1dur.xml.gz")
 uniprot_file = abspath(pathof(MIToS), "..", "..", "docs", "data", "P00193.fasta")
 #md nothing # hide
@@ -153,7 +155,7 @@ uniprot_file = abspath(pathof(MIToS), "..", "..", "docs", "data", "P00193.fasta"
 # alignment (from `1` to the length of the aligned region):
 
 using MIToS.MSA
-msa = read_file(msa_file, FASTA, generatemapping=true)
+msa = read_file(msa_file, FASTA, generatemapping = true)
 
 # After that, we get the first sequence of the MSA, the one we know that
 # corresponds to the PDB of interest. We need the sequence as a `String`
@@ -184,7 +186,7 @@ uniprot_seq = uniprot_sequences[1][2]
 # of the *UniProt* sequence.
 
 using BioAlignments
-costmodel = AffineGapScoreModel(BLOSUM62, gap_open=-10, gap_extend=-1)
+costmodel = AffineGapScoreModel(BLOSUM62, gap_open = -10, gap_extend = -1)
 aln = pairalign(SemiGlobalAlignment(), msa_seq, uniprot_seq, costmodel)
 
 # Then, we only need to iterate the alignment to designate the positions and
@@ -192,21 +194,21 @@ aln = pairalign(SemiGlobalAlignment(), msa_seq, uniprot_seq, costmodel)
 
 function seq2refnumber(aln)
     seq_pos = 0
-	ref_pos = 0
-	last_seq_pos = 0
-	seq2ref = Dict{Int,Int}()
+    ref_pos = 0
+    last_seq_pos = 0
+    seq2ref = Dict{Int,Int}()
     for (seq_res, ref_res) in alignment(aln)
         if seq_res != '-'
             seq_pos += 1
-		end
+        end
         if ref_res != '-'
             ref_pos += 1
-		end
-		if seq_pos != last_seq_pos
-			seq2ref[seq_pos] = ref_pos
-			last_seq_pos = seq_pos
-    	end
-	end
+        end
+        if seq_pos != last_seq_pos
+            seq2ref[seq_pos] = ref_pos
+            last_seq_pos = seq_pos
+        end
+    end
     seq2ref
 end
 
@@ -221,9 +223,9 @@ seqmap = getsequencemapping(msa, 1)
 
 colnum2uniprotnum = Dict{Int,Int}()
 for (colnum, seqnum) in enumerate(seqmap)
-	if seqnum != 0 # getsequencemapping returns 0 where there is a gap
-		colnum2uniprotnum[colnum] = seqnum2uniprotnum[seqnum]
-	end
+    if seqnum != 0 # getsequencemapping returns 0 where there is a gap
+        colnum2uniprotnum[colnum] = seqnum2uniprotnum[seqnum]
+    end
 end
 colnum2uniprotnum
 
@@ -231,22 +233,24 @@ colnum2uniprotnum
 
 using MIToS.SIFTS
 
-uniprotnum2pdbnum = siftsmapping(sifts_file,
+uniprotnum2pdbnum = siftsmapping(
+    sifts_file,
     dbUniProt,
     "P00193",
     dbPDB,
     "1dur", # SIFTS stores PDB identifiers in lowercase
-    chain="A",
-    missings=false) # residues without coordinates aren't used in the mapping
+    chain = "A",
+    missings = false,
+) # residues without coordinates aren't used in the mapping
 
 # To finally get the dictionary from MSA column index to PDB residue number
 
 colnum2pdbnum = Dict{Int,String}()
 for (colnum, uniprotnum) in colnum2uniprotnum
-	pdbresnum = get(uniprotnum2pdbnum, string(uniprotnum), "")
-	if pdbresnum != ""
-		colnum2pdbnum[colnum] = pdbresnum
-	end
+    pdbresnum = get(uniprotnum2pdbnum, string(uniprotnum), "")
+    if pdbresnum != ""
+        colnum2pdbnum[colnum] = pdbresnum
+    end
 end
 
 colnum2pdbnum

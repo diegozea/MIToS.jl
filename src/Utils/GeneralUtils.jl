@@ -6,7 +6,7 @@ struct All end
 _get_function_name(str::String)::String = split(str, '.')[end]
 
 """
-This function performs the same operation as 
+This function performs the same operation as
 `something(findnext(r"[ \t]+", line, last(last_spaces)+1), 0:-1)` but it is faster.
 """
 function _find_next_space_or_tab(line, start_pos::Int)

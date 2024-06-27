@@ -11,7 +11,6 @@ Keys are sequence IDs and each value is a list of tuples containing PDB code and
 julia> getseq2pdb(msa)
 Dict{String,Array{Tuple{String,String},1}} with 1 entry:
   "F112_SSV1/3-112" => [("2VQC","A")]
-
 ```
 """
 function getseq2pdb(msa::AnnotatedMultipleSequenceAlignment)
@@ -24,7 +23,7 @@ function getseq2pdb(msa::AnnotatedMultipleSequenceAlignment)
                 if haskey(dict, id)
                     push!(dict[id], (m.captures[1], m.captures[2]))
                 else
-                    dict[id] = Tuple{String,String}[ (m.captures[1], m.captures[2]) ]
+                    dict[id] = Tuple{String,String}[(m.captures[1], m.captures[2])]
                 end
             end
         end
@@ -53,62 +52,94 @@ a **downloaded Pfam MSA without modifications**, you should `read` it using
 folder. If you don't indicate the Pfam accession number (`pfamid`), this function tries to
 read the *AC* file annotation.
 """
-function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
-                              seqid::String,
-                              pdbid::String,
-                              chain::String,
-                              pfamid::String,
-                              siftsfile::String;
-                              strict::Bool=false,
-                              checkpdbname::Bool=false,
-                              missings::Bool=true)
+function msacolumn2pdbresidue(
+    msa::AnnotatedMultipleSequenceAlignment,
+    seqid::String,
+    pdbid::String,
+    chain::String,
+    pfamid::String,
+    siftsfile::String;
+    strict::Bool = false,
+    checkpdbname::Bool = false,
+    missings::Bool = true,
+)
 
-    siftsres = read_file(siftsfile, SIFTSXML, chain=chain, missings=missings)
+    siftsres = read_file(siftsfile, SIFTSXML, chain = chain, missings = missings)
 
     up2res = OrderedDict{String,Tuple{String,String,Char}}()
     for res in siftsres
         if !ismissing(res.Pfam) && res.Pfam.id == uppercase(pfamid)
-            pfnum  = res.Pfam.number
+            pfnum = res.Pfam.number
             if pfnum == ""
                 continue
             end
             pfname = res.Pfam.name
             if !ismissing(res.PDB) && (res.PDB.id == lowercase(pdbid)) && !res.missing
-                up2res[pfnum] = checkpdbname ?
-                    (pfname, res.PDB.number, three2residue(res.PDB.name)) :
+                up2res[pfnum] =
+                    checkpdbname ? (pfname, res.PDB.number, three2residue(res.PDB.name)) :
                     (pfname, res.PDB.number, '-')
             else
-                up2res[pfnum] = checkpdbname ?
+                up2res[pfnum] =
+                    checkpdbname ?
                     (pfname, "", ismissing(res.PDB) ? "" : three2residue(res.PDB.name)) :
                     (pfname, "", '-')
             end
         end
     end
 
-    seq      = Char[x for x in vec(getsequence(msa, seqid))]
-    seqmap   = getsequencemapping(msa, seqid)
-    colmap   = getcolumnmapping(msa)
-    N        = ncolumns(msa)
+    seq = Char[x for x in vec(getsequence(msa, seqid))]
+    seqmap = getsequencemapping(msa, seqid)
+    colmap = getcolumnmapping(msa)
+    N = ncolumns(msa)
 
     m = OrderedDict{Int,String}()
     sizehint!(m, N)
-    for i in 1:N
+    for i = 1:N
         up_number = string(seqmap[i])
         if up_number != "0"
             up_res, pdb_resnum, pdb_res = get(up2res, up_number, ("", "", '-'))
             if string(seq[i]) == up_res
                 m[colmap[i]] = pdb_resnum
             else
-                msg = string(pfamid, " ", seqid, " ", pdbid, " ", chain,
-                             " : MSA sequence residue at ", i, " (", seq[i],
-                             ") != SIFTS residue (UniProt/Pfam: ", up_res, ", PDB: ",
-                             pdb_resnum, ")")
+                msg = string(
+                    pfamid,
+                    " ",
+                    seqid,
+                    " ",
+                    pdbid,
+                    " ",
+                    chain,
+                    " : MSA sequence residue at ",
+                    i,
+                    " (",
+                    seq[i],
+                    ") != SIFTS residue (UniProt/Pfam: ",
+                    up_res,
+                    ", PDB: ",
+                    pdb_resnum,
+                    ")",
+                )
                 strict ? throw(ErrorException(msg)) : @warn(msg)
             end
-            if ( checkpdbname && (seq[i] != pdb_res) )
-                msg = string(pfamid, " ", seqid, " ", pdbid, " ", chain,
-                             " : MSA sequence residue at ", i, " (", seq[i],
-                             ") != PDB residue at ", pdb_resnum, " (", pdb_res, ")")
+            if (checkpdbname && (seq[i] != pdb_res))
+                msg = string(
+                    pfamid,
+                    " ",
+                    seqid,
+                    " ",
+                    pdbid,
+                    " ",
+                    chain,
+                    " : MSA sequence residue at ",
+                    i,
+                    " (",
+                    seq[i],
+                    ") != PDB residue at ",
+                    pdb_resnum,
+                    " (",
+                    pdb_res,
+                    ")",
+                )
                 throw(ErrorException(msg))
             end
         end
@@ -116,26 +147,45 @@ function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
     m
 end
 
-function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
-                              seqid::String, pdbid::String, chain::String,
-                              pfamid::String; kargs...)
+function msacolumn2pdbresidue(
+    msa::AnnotatedMultipleSequenceAlignment,
+    seqid::String,
+    pdbid::String,
+    chain::String,
+    pfamid::String;
+    kargs...,
+)
     msacolumn2pdbresidue(msa, seqid, pdbid, chain, pfamid, downloadsifts(pdbid), kargs...)
 end
 
-function msacolumn2pdbresidue(msa::AnnotatedMultipleSequenceAlignment,
-                              seqid::String, pdbid::String, chain::String; kargs...)
-    msacolumn2pdbresidue(msa,seqid,pdbid,chain,
-                         String(split(getannotfile(msa, "AC"), '.')[1]),
-                         kargs...)
+function msacolumn2pdbresidue(
+    msa::AnnotatedMultipleSequenceAlignment,
+    seqid::String,
+    pdbid::String,
+    chain::String;
+    kargs...,
+)
+    msacolumn2pdbresidue(
+        msa,
+        seqid,
+        pdbid,
+        chain,
+        String(split(getannotfile(msa, "AC"), '.')[1]),
+        kargs...,
+    )
 end
 
-"Returns a `BitVector` where there is a `true` for each column with PDB residue."
-function hasresidues(msa::AnnotatedMultipleSequenceAlignment,
-                    column2residues::AbstractDict{Int,String})
+"""
+Returns a `BitVector` where there is a `true` for each column with PDB residue.
+"""
+function hasresidues(
+    msa::AnnotatedMultipleSequenceAlignment,
+    column2residues::AbstractDict{Int,String},
+)
     colmap = getcolumnmapping(msa)
     ncol = length(colmap)
     mask = falses(ncol)
-    for i in 1:ncol
+    for i = 1:ncol
         if get(column2residues, colmap[i], "") != ""
             mask[i] = true
         end
@@ -150,15 +200,17 @@ end
 This function takes an `AnnotatedMultipleSequenceAlignment` with correct *ColMap*
 annotations and two dicts:
 
-1. The first is an `OrderedDict{String,PDBResidue}` from PDB residue number to `PDBResidue`.
-2. The second is a `Dict{Int,String}` from MSA column number **on the input file** to PDB residue number.
+ 1. The first is an `OrderedDict{String,PDBResidue}` from PDB residue number to `PDBResidue`.
+ 2. The second is a `Dict{Int,String}` from MSA column number **on the input file** to PDB residue number.
 
 `msaresidues` returns an `OrderedDict{Int,PDBResidue}` from input column number (ColMap)
 to `PDBResidue`. Residues on inserts are not included.
 """
-function msaresidues(msa::AnnotatedMultipleSequenceAlignment,
-                     residues::AbstractDict{String,PDBResidue},
-                     column2residues::AbstractDict{Int,String})
+function msaresidues(
+    msa::AnnotatedMultipleSequenceAlignment,
+    residues::AbstractDict{String,PDBResidue},
+    column2residues::AbstractDict{Int,String},
+)
     colmap = getcolumnmapping(msa)
     msares = sizehint!(OrderedDict{Int,PDBResidue}(), length(colmap))
     for col in colmap
@@ -167,7 +219,9 @@ function msaresidues(msa::AnnotatedMultipleSequenceAlignment,
             if haskey(residues, resnum)
                 msares[col] = residues[resnum]
             else
-                @warn("MSA column $col : The residue number $resnum isn't in the residues Dict.")
+                @warn(
+                    "MSA column $col : The residue number $resnum isn't in the residues Dict."
+                )
             end
         end
     end
@@ -181,19 +235,21 @@ end
 This function takes an `AnnotatedMultipleSequenceAlignment` with correct *ColMap*
 annotations and two dicts:
 
-1. The first is an `OrderedDict{String,PDBResidue}` from PDB residue number to `PDBResidue`.
-2. The second is a `Dict{Int,String}` from **MSA column number on the input file** to PDB residue number.
+ 1. The first is an `OrderedDict{String,PDBResidue}` from PDB residue number to `PDBResidue`.
+ 2. The second is a `Dict{Int,String}` from **MSA column number on the input file** to PDB residue number.
 
 `msacontacts` returns a `PairwiseListMatrix{Float64,false}` of `0.0` and `1.0` where `1.0`
 indicates a residue contact. Contacts are defined with an inter residue distance less or
 equal to `distance_limit` (default to `6.05`) angstroms between any heavy atom. `NaN`
 indicates a missing value.
 """
-function msacontacts(msa::AnnotatedMultipleSequenceAlignment,
-                     residues::AbstractDict{String,PDBResidue},
-                     column2residues::AbstractDict{Int,String},
-                     distance_limit::Float64=6.05)
-    colmap   = getcolumnmapping(msa)
+function msacontacts(
+    msa::AnnotatedMultipleSequenceAlignment,
+    residues::AbstractDict{String,PDBResidue},
+    column2residues::AbstractDict{Int,String},
+    distance_limit::Float64 = 6.05,
+)
+    colmap = getcolumnmapping(msa)
     contacts = columnpairsmatrix(msa)
     plm = getarray(contacts)
     @inbounds @iterateupper plm false begin
@@ -219,14 +275,14 @@ true contacts and 0.0 for not contacts (NaN or other numbers for missing values)
 Returns two `BitVector`s, the first with `true`s where `contact_list` is 1.0 and the second
 with `true`s where `contact_list` is 0.0. There are useful for AUC calculations.
 """
-function getcontactmasks(contact_list::Vector{T}) where T <: AbstractFloat
+function getcontactmasks(contact_list::Vector{T}) where {T<:AbstractFloat}
     N = length(contact_list)
-    true_contacts  = falses(N)
+    true_contacts = falses(N)
     false_contacts = falses(N)
-    @inbounds for i in 1:N
+    @inbounds for i = 1:N
         value = contact_list[i]
         if value == 1.0
-            true_contacts[i]  = true
+            true_contacts[i] = true
         elseif value == 0.0
             false_contacts[i] = true
         end
@@ -235,10 +291,12 @@ function getcontactmasks(contact_list::Vector{T}) where T <: AbstractFloat
     true_contacts, false_contacts
 end
 
-function getcontactmasks(plm::PairwiseListMatrix{T,false,VT}) where {T <: AbstractFloat,VT}
+function getcontactmasks(plm::PairwiseListMatrix{T,false,VT}) where {T<:AbstractFloat,VT}
     getcontactmasks(getlist(plm))
 end
 
-function getcontactmasks(nplm::NamedArray{T,2,PairwiseListMatrix{T,false,TV},DN}) where {T,TV,DN}
+function getcontactmasks(
+    nplm::NamedArray{T,2,PairwiseListMatrix{T,false,TV},DN},
+) where {T,TV,DN}
     getcontactmasks(getarray(nplm))
 end

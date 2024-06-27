@@ -1,12 +1,14 @@
 import Base: read
 
 """
-`FileFormat` is used for defile special `parse_file` (called by `read_file`) and 
-`print_file` (called by `read_file`) methods for different file formats.    
+`FileFormat` is used for defile special `parse_file` (called by `read_file`) and
+`print_file` (called by `read_file`) methods for different file formats.
 """
 abstract type FileFormat end
 
-"This function raises an error if a GZip file doesn't have the 0x1f8b magic number."
+"""
+This function raises an error if a GZip file doesn't have the 0x1f8b magic number.
+"""
 function _check_gzip_file(filename)
     if endswith(filename, ".gz")
         open(filename, "r") do fh
@@ -22,8 +24,7 @@ function _check_gzip_file(filename)
     filename
 end
 
-function _download_file(url::AbstractString, filename::AbstractString;
-    kargs...)
+function _download_file(url::AbstractString, filename::AbstractString; kargs...)
     with_logger(ConsoleLogger(stderr, Logging.Warn)) do
         Downloads.download(url, filename; kargs...)
     end
@@ -31,27 +32,26 @@ function _download_file(url::AbstractString, filename::AbstractString;
 end
 
 """
-`download_file` uses **Downloads.jl** to download files from the web. It takes the file 
+`download_file` uses **Downloads.jl** to download files from the web. It takes the file
 url as first argument and, optionally, a path to save it.
 Keyword arguments are are directly passed to to `Downloads.download`.
 
 ```jldoctest
 julia> using MIToS.Utils
 
-julia> download_file("http://www.uniprot.org/uniprot/P69905.fasta","seq.fasta",
-       headers = Dict("User-Agent" =>
-                      "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)"))
+julia> download_file(
+           "http://www.uniprot.org/uniprot/P69905.fasta",
+           "seq.fasta",
+           headers = Dict("User-Agent" => "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)"),
+       )
 "seq.fasta"
-
 ```
 """
-function download_file(url::AbstractString, filename::AbstractString;
-    kargs...)
-    retry(_download_file, delays=ExponentialBackOff(n=5))(url, filename; kargs...)
+function download_file(url::AbstractString, filename::AbstractString; kargs...)
+    retry(_download_file, delays = ExponentialBackOff(n = 5))(url, filename; kargs...)
 end
 
-function download_file(url::AbstractString;
-    kargs...)
+function download_file(url::AbstractString; kargs...)
     name = tempname()
     if endswith(url, ".gz")
         name *= ".gz"
@@ -59,7 +59,9 @@ function download_file(url::AbstractString;
     download_file(url, name; kargs...)
 end
 
-"Create an iterable object that will yield each line from a stream **or string**."
+"""
+Create an iterable object that will yield each line from a stream **or string**.
+"""
 lineiterator(string::String) = eachline(IOBuffer(string))
 lineiterator(stream::IO) = eachline(stream)
 
@@ -76,14 +78,19 @@ function check_file(filename)
     filename
 end
 
-"Returns `true` if the file exists and isn't empty."
+"""
+Returns `true` if the file exists and isn't empty.
+"""
 isnotemptyfile(filename) = isfile(filename) && filesize(filename) > 0
 
 # for using with download, since filename doesn't have file extension
-function _read(completename::AbstractString,
+function _read(
+    completename::AbstractString,
     filename::AbstractString,
     format::Type{T},
-    args...; kargs...) where {T<:FileFormat}
+    args...;
+    kargs...,
+) where {T<:FileFormat}
     check_file(filename)
     if endswith(completename, ".xml.gz") || endswith(completename, ".xml")
         document = LightXML.parse_file(filename)
@@ -111,14 +118,18 @@ the given `FileFormat` and `Type` on it. If the  `pathname` is an HTTP or FTP UR
 the file is downloaded with `download` in a temporal file.
 Gzipped files should end on `.gz`.
 """
-function read_file(completename::AbstractString,
+function read_file(
+    completename::AbstractString,
     format::Type{T},
-    args...; kargs...) where {T<:FileFormat}
+    args...;
+    kargs...,
+) where {T<:FileFormat}
     if startswith(completename, "http://") ||
        startswith(completename, "https://") ||
        startswith(completename, "ftp://")
 
-        filename = download_file(completename, headers=Dict("Accept-Encoding" => "identity",))
+        filename =
+            download_file(completename, headers = Dict("Accept-Encoding" => "identity"))
         try
             _read(completename, filename, T, args...; kargs...)
         finally
@@ -130,7 +141,12 @@ function read_file(completename::AbstractString,
     end
 end
 
-function read(name::AbstractString, format::Type{T}, args...; kargs...) where {T<:FileFormat}
+function read(
+    name::AbstractString,
+    format::Type{T},
+    args...;
+    kargs...,
+) where {T<:FileFormat}
     @warn "Using read with $format is deprecated, use read_file instead."
     read_file(name, format, args...; kargs...)
 end
@@ -138,7 +154,12 @@ end
 # parse_file
 # ----------
 
-function Base.parse(io::Union{IO,AbstractString}, format::Type{T}, args...; kargs...) where {T<:FileFormat}
+function Base.parse(
+    io::Union{IO,AbstractString},
+    format::Type{T},
+    args...;
+    kargs...,
+) where {T<:FileFormat}
     @warn "Using parse with $format is deprecated, use parse_file instead."
     parse_file(io, format, args...; kargs...)
 end

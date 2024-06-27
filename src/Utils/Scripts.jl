@@ -3,109 +3,126 @@ Return the version of the loaded module.
 
 Source: https://stackoverflow.com/questions/60587041/julia-getting-the-version-number-of-my-module
 """
-loadedversion(m::Module) =  VersionNumber(Pkg.TOML.parsefile(abspath(string(first(methods(m.eval)).file), "..", "..", "Project.toml"))["version"])
+loadedversion(m::Module) = VersionNumber(
+    Pkg.TOML.parsefile(
+        abspath(string(first(methods(m.eval)).file), "..", "..", "Project.toml"),
+    )["version"],
+)
 
-"Parse MIToS scripts command line arguments."
-function parse_commandline(args...; description::AbstractString="Made with MIToS",
-                                    output::AbstractString=".mitos.",
-                                    stdout::Bool=true, mitos_version="")
-    settings = ArgParseSettings(description = description,
-                                version = "MIToS $mitos_version",
-                                add_version = true,
-                                epilog =    """
-                                            \n
-                                            MIToS $mitos_version\n
-                                            \n
-                                            Bioinformatics Unit\n
-                                            Leloir Institute Foundation\n
-                                            Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina
-                                            """
-                                )
+"""
+Parse MIToS scripts command line arguments.
+"""
+function parse_commandline(
+    args...;
+    description::AbstractString = "Made with MIToS",
+    output::AbstractString = ".mitos.",
+    stdout::Bool = true,
+    mitos_version = "",
+)
+    settings = ArgParseSettings(
+        description = description,
+        version = "MIToS $mitos_version",
+        add_version = true,
+        epilog = """
+                 \n
+                 MIToS $mitos_version\n
+                 \n
+                 Bioinformatics Unit\n
+                 Leloir Institute Foundation\n
+                 Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina
+                 """,
+    )
 
-    add_arg_table!(settings,
-                  "FILE",
-                  Dict(
-                      :help => "File name. If it is not used, the script reads from STDIN.",
-                      :required => false
-                      ),
-                  ["--list", "-l"],
-                  Dict(
-                      :help => "The input is a list of file names. If -p is used, files will be processed in parallel.",
-                      :action => :store_true
-                      ),
-                  ["--output", "-o"],
-                  Dict(
-                      :help => string( """Name of the output file. Output will be gzip if the extension is ".gz".
-                      If it starts with a dot, the name is used as a suffix or extension of the input filename.
-                      If it ends with a dot, is used as a prefix.
-                      If the output name starts and ends with dots, it's used as an interfix before the extension.""",
-                      stdout ? """If a single file is used and there is not a file name (STDIN), the output will be print into
-                      STDOUT, unless a output filename is used. You can use "STDOUT" to force print into STDOUT.
-                      STDOUT can not be use with --list.""" : ""),
-                      :arg_type => AbstractString,
-                      :default => output
-                      ),
-                  ["--parallel", "-p"],
-                  Dict(
-                      :help => "Number of worker processes.",
-                      :arg_type => Int,
-                      :default => 1
-                      ),
-
-                  args...)
+    add_arg_table!(
+        settings,
+        "FILE",
+        Dict(
+            :help => "File name. If it is not used, the script reads from STDIN.",
+            :required => false,
+        ),
+        ["--list", "-l"],
+        Dict(
+            :help => "The input is a list of file names. If -p is used, files will be processed in parallel.",
+            :action => :store_true,
+        ),
+        ["--output", "-o"],
+        Dict(
+            :help => string(
+                """Name of the output file. Output will be gzip if the extension is ".gz".
+If it starts with a dot, the name is used as a suffix or extension of the input filename.
+If it ends with a dot, is used as a prefix.
+If the output name starts and ends with dots, it's used as an interfix before the extension.""",
+                stdout ?
+                """If a single file is used and there is not a file name (STDIN), the output will be print into
+       STDOUT, unless a output filename is used. You can use "STDOUT" to force print into STDOUT.
+       STDOUT can not be use with --list.""" : "",
+            ),
+            :arg_type => AbstractString,
+            :default => output,
+        ),
+        ["--parallel", "-p"],
+        Dict(:help => "Number of worker processes.", :arg_type => Int, :default => 1),
+        args...,
+    )
 
     return parse_args(settings)
 end
 
 function _generate_output_name(file, output)
     begins = startswith(output, '.')
-    ends = endswith(output,'.')
+    ends = endswith(output, '.')
 
     if file !== nothing && file !== stdin
 
         if begins && ends
             parts = split(file, '.')
-            return( string(join(parts[1:end-1],'.'), output, parts[end]) )
+            return (string(join(parts[1:end-1], '.'), output, parts[end]))
         elseif begins
-            return( string(file, output) )
+            return (string(file, output))
         elseif ends
-            return( string(output, file) )
+            return (string(output, file))
         else
-            return(output)
+            return (output)
         end
 
     elseif !begins && !ends
 
-        return(output)
+        return (output)
 
     else
 
-        return("STDOUT")
+        return ("STDOUT")
 
     end
 end
 
-"Opens the output file or returns STDOUT."
+"""
+Opens the output file or returns STDOUT.
+"""
 function open_output(file, output)
     output_name = _generate_output_name(file, output)
     if output_name != "STDOUT"
         fh = open(output_name, "w")
         if endswith(output_name, ".gz")
-            return(GzipCompressorStream(fh))
+            return (GzipCompressorStream(fh))
         end
-        return(fh)
+        return (fh)
     else
-        return(stdout)
+        return (stdout)
     end
 end
 
-"Close output (check if output is STDOUT)."
+"""
+Close output (check if output is STDOUT).
+"""
 function close_output(fh_out)
     fh_out === stdout ? nothing : close(fh_out)
     nothing
 end
 
-"Adds the needed number of workers."
+"""
+Adds the needed number of workers.
+"""
 function set_parallel(parallel)
     N = nprocs()
     if N < parallel
@@ -153,6 +170,9 @@ function runscript(args)
     end
 end
 
-"Decides if read_file or parse_file, uses parse_file with STDIN"
+"""
+Decides if read_file or parse_file, uses parse_file with STDIN
+"""
 readorparse(input::AbstractString, args...; kargs...) = read_file(input, args...; kargs...)
-readorparse(input::Base.LibuvStream, args...; kargs...) = parse_file(input, args...; kargs...)
+readorparse(input::Base.LibuvStream, args...; kargs...) =
+    parse_file(input, args...; kargs...)

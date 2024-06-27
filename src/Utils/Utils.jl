@@ -15,29 +15,31 @@ using Logging
 import LightXML
 
 export  # GeneralUtils.jl
-        All,
-        get_n_words,
-        hascoordinates,
-        select_element,
-        matrix2list, list2matrix,
-        check_pdbcode,
-        getarray,
-        # Read.jl
-        FileFormat,
-        lineiterator,
-        check_file, isnotemptyfile,
-        download_file,
-        read_file,
-        parse_file,
-        # Write.jl
-        Commandline,
-        write_file,
-        print_file,
-        # ThreeLetterResidues.jl
-        THREE2ONE,
-        # Imported from Base (and exported for docs)
-        read,
-        write
+    All,
+    get_n_words,
+    hascoordinates,
+    select_element,
+    matrix2list,
+    list2matrix,
+    check_pdbcode,
+    getarray,
+    # Read.jl
+    FileFormat,
+    lineiterator,
+    check_file,
+    isnotemptyfile,
+    download_file,
+    read_file,
+    parse_file,
+    # Write.jl
+    Commandline,
+    write_file,
+    print_file,
+    # ThreeLetterResidues.jl
+    THREE2ONE,
+    # Imported from Base (and exported for docs)
+    read,
+    write
 
 
 include("GeneralUtils.jl")
@@ -52,20 +54,22 @@ include("ThreeLetterResidues.jl")
 
 module Scripts
 
-export  parse_commandline,
-        runscript, run_single_script,
+    export parse_commandline,
+        runscript,
+        run_single_script,
         script,
         set_parallel,
-        open_output, close_output,
+        open_output,
+        close_output,
         readorparse,
-	loadedversion
+        loadedversion
 
-using Pkg
-using Distributed
-using ArgParse, CodecZlib
-using MIToS.Utils # to use read_file
+    using Pkg
+    using Distributed
+    using ArgParse, CodecZlib
+    using MIToS.Utils # to use read_file
 
-include("Scripts.jl")
+    include("Scripts.jl")
 
 end # Scripts
 

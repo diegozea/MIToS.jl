@@ -1,6 +1,27 @@
-const _res2three = [ "ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE",
-                     "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL",
-                     "   ", "XAA" ]
+const _res2three = [
+    "ALA",
+    "ARG",
+    "ASN",
+    "ASP",
+    "CYS",
+    "GLN",
+    "GLU",
+    "GLY",
+    "HIS",
+    "ILE",
+    "LEU",
+    "LYS",
+    "MET",
+    "PHE",
+    "PRO",
+    "SER",
+    "THR",
+    "TRP",
+    "TYR",
+    "VAL",
+    "   ",
+    "XAA",
+]
 
 """
 This function returns the three letter name of the `Residue`.
@@ -10,12 +31,11 @@ julia> using MIToS.MSA
 
 julia> residue2three(Residue('G'))
 "GLY"
-
 ```
 """
 function residue2three(res::Residue)
     int_res = Int(res)
-    if int_res == 21  || !isvalid(res)
+    if int_res == 21 || !isvalid(res)
         #         GAP
         throw(ErrorException("Residue($(int_res)) has not three letter name."))
     end
@@ -31,7 +51,6 @@ julia> using MIToS.MSA
 
 julia> three2residue("ALA")
 A
-
 ```
 """
 function three2residue(res::String)
@@ -42,4 +61,4 @@ function three2residue(res::String)
     end
 end
 
-const _three2res = convert(Dict{String, Residue}, THREE2ONE) # THREE2ONE from MIToS.Utils
+const _three2res = convert(Dict{String,Residue}, THREE2ONE) # THREE2ONE from MIToS.Utils

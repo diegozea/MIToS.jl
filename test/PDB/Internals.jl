@@ -6,18 +6,18 @@
     PDB._add_CTER_O!(s)
     @test length(s) == 20 * 3
     for aa in PDB._3_letter_aa
-        @test (aa,"OXT") in s
-        @test (aa,"OT2") in s
-        @test (aa,"OT1") in s
+        @test (aa, "OXT") in s
+        @test (aa, "OT2") in s
+        @test (aa, "OT1") in s
     end
 
     d = Dict{Tuple{String,String},Float64}()
     PDB._add_CTER_O!(d, 1.0)
     @test length(d) == 20 * 3
     for aa in PDB._3_letter_aa
-        @test d[(aa,"OXT")] == 1.0
-        @test d[(aa,"OT2")] == 1.0
-        @test d[(aa,"OT1")] == 1.0
+        @test d[(aa, "OXT")] == 1.0
+        @test d[(aa, "OT2")] == 1.0
+        @test d[(aa, "OT1")] == 1.0
     end
 
     value = Set(String["OXT", "OT2", "OT1"])

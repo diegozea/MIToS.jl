@@ -5,9 +5,9 @@ needed for measure the predictive performance at protein contact prediction of m
 
 **Features**
 
-- Read and parse PDF and PDBML files
-- Calculate distance and contacts between atoms or residues
-- Determine interaction between residues
+  - Read and parse PDF and PDBML files
+  - Calculate distance and contacts between atoms or residues
+  - Determine interaction between residues
 
 ```julia
 using MIToS.PDB
@@ -32,89 +32,89 @@ using Downloads
 using Logging
 
 export  # PDBResidues
-        PDBResidueIdentifier,
-        Coordinates,
-        PDBAtom,
-        PDBResidue,
-        squared_distance,
-        distance,
-        contact,
-        isresidue,
-        isatom,
-        select_residues,
-        residues,
-        @residues,
-        residuesdict,
-        @residuesdict,
-        select_atoms,
-        atoms,
-        @atoms,
-        findheavy,
-        findatoms,
-        findCB,
-        selectbestoccupancy,
-        bestoccupancy,
-        residuepairsmatrix,
-        proximitymean,
-        # AtomsData
-        covalentradius,
-        vanderwaalsradius,
-        check_atoms_for_interactions,
-        # Interaction
-        ishydrophobic,
-        isaromatic,
-        iscationic,
-        isanionic,
-        ishbonddonor,
-        ishbondacceptor,
-        hydrogenbond,
-        vanderwaals,
-        vanderwaalsclash,
-        covalent,
-        disulphide,
-        aromaticsulphur,
-        pication,
-        aromatic,
-        ionic,
-        hydrophobic,
-        stridehydrogenbond,
-        chimerahydrogenbond,
-        # PDBParser
-        PDBFile,
-        # PDBMLParser
-        PDBML,
-        downloadpdb,
-        downloadpdbheader,
-        getpdbdescription,
-        # Kabsch
-        kabsch,
-        center!,
-        rmsd,
-        getCA,
-        CAmatrix,
-        coordinatesmatrix,
-        change_coordinates,
-        centeredcoordinates,
-        centeredresidues,
-        superimpose,
-        mean_coordinates,
-        rmsf,
-        # MIToS.Utils
-        All,
-        read_file,
-        parse_file,
-        write_file,
-        print_file,
-        # Sequences
-        is_aminoacid,
-        modelled_sequences,
-        # AlphaFoldDB
-        query_alphafolddb,
-        download_alphafold_structure,
-        # Imported from Base (and exported for docs)
-        any,
-        parse,
-        angle
+    PDBResidueIdentifier,
+    Coordinates,
+    PDBAtom,
+    PDBResidue,
+    squared_distance,
+    distance,
+    contact,
+    isresidue,
+    isatom,
+    select_residues,
+    residues,
+    @residues,
+    residuesdict,
+    @residuesdict,
+    select_atoms,
+    atoms,
+    @atoms,
+    findheavy,
+    findatoms,
+    findCB,
+    selectbestoccupancy,
+    bestoccupancy,
+    residuepairsmatrix,
+    proximitymean,
+    # AtomsData
+    covalentradius,
+    vanderwaalsradius,
+    check_atoms_for_interactions,
+    # Interaction
+    ishydrophobic,
+    isaromatic,
+    iscationic,
+    isanionic,
+    ishbonddonor,
+    ishbondacceptor,
+    hydrogenbond,
+    vanderwaals,
+    vanderwaalsclash,
+    covalent,
+    disulphide,
+    aromaticsulphur,
+    pication,
+    aromatic,
+    ionic,
+    hydrophobic,
+    stridehydrogenbond,
+    chimerahydrogenbond,
+    # PDBParser
+    PDBFile,
+    # PDBMLParser
+    PDBML,
+    downloadpdb,
+    downloadpdbheader,
+    getpdbdescription,
+    # Kabsch
+    kabsch,
+    center!,
+    rmsd,
+    getCA,
+    CAmatrix,
+    coordinatesmatrix,
+    change_coordinates,
+    centeredcoordinates,
+    centeredresidues,
+    superimpose,
+    mean_coordinates,
+    rmsf,
+    # MIToS.Utils
+    All,
+    read_file,
+    parse_file,
+    write_file,
+    print_file,
+    # Sequences
+    is_aminoacid,
+    modelled_sequences,
+    # AlphaFoldDB
+    query_alphafolddb,
+    download_alphafold_structure,
+    # Imported from Base (and exported for docs)
+    any,
+    parse,
+    angle
 
 include("PDBResidues.jl")
 include("Sequences.jl")

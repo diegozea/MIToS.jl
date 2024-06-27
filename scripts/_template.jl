@@ -6,22 +6,18 @@ using MIToS.Utils.Scripts
 Args = parse_commandline(
     # TO DO ----------------------------------------------------------------------
     ["--arg", "-a"],
-    Dict(
-        :help => "Argument",
-        :arg_type => Int,
-        :default => 0
-    ),
+    Dict(:help => "Argument", :arg_type => Int, :default => 0),
     # Keywords...
-    description="Made with MIToS",
-    output=".mitos."
+    description = "Made with MIToS",
+    output = ".mitos.",
     # ----------------------------------------------------------------------------
-    )
+)
 
 set_parallel(Args["parallel"])
 
 @everywhere begin
 
-    const args = remotecall_fetch(()->Args,1)
+    const args = remotecall_fetch(() -> Args, 1)
 
     import MIToS.Utils.Scripts: script
 
@@ -29,9 +25,11 @@ set_parallel(Args["parallel"])
     using MIToS
     # ----------------------------------------------------------------------------
 
-    function script(input::Union{Base.LibuvStream,  AbstractString},
-                    args,
-                    fh_out::Union{Base.LibuvStream, IO})
+    function script(
+        input::Union{Base.LibuvStream,AbstractString},
+        args,
+        fh_out::Union{Base.LibuvStream,IO},
+    )
         # TO DO ------------------------------------------------------------------
         arg_one = args["arg"]
         println(fh_out, "RUN : $arg_one")

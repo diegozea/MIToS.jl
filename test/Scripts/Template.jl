@@ -1,11 +1,11 @@
 # Set up function
 function _set_up()
     path = tempdir()
-    one_file  = joinpath(path, "one.tmp")
-    two_file  = joinpath(path, "two.tmp")
+    one_file = joinpath(path, "one.tmp")
+    two_file = joinpath(path, "two.tmp")
     list_file = joinpath(path, "list.tmp")
-    write(one_file,  "ONE")
-    write(two_file,  "TWO")
+    write(one_file, "ONE")
+    write(two_file, "TWO")
     write(list_file, one_file, "\n", two_file, "\n")
     one_file, two_file, list_file
 end
@@ -47,7 +47,7 @@ end
         out = read(pipeline(`$julia -e 'print("Hello hello")'`, `$julia $template`), String)
 
         @test occursin(r"RUN : 0", out)
-        @test length(collect((m.match for m = eachmatch(r"[Hh]ello", out)))) == 2
+        @test length(collect((m.match for m in eachmatch(r"[Hh]ello", out)))) == 2
 
         @static if Sys.isunix()
 
@@ -55,12 +55,15 @@ end
                 out = read(pipeline(`cat $list_file`, `$julia $template --arg 42`), String)
 
                 @test occursin(r"RUN : 42", out)
-                @test length(collect((m.match for m = eachmatch(r"\.tmp", out)))) == 2
+                @test length(collect((m.match for m in eachmatch(r"\.tmp", out)))) == 2
             end
 
             @testset "--list & -a" begin
                 _clean_up_outputs()
-                out = read(pipeline(`cat $list_file`, `$julia $template -a 42 --list`), String)
+                out = read(
+                    pipeline(`cat $list_file`, `$julia $template -a 42 --list`),
+                    String,
+                )
 
                 @test occursin(r"ONE", out) # Printed into STDOUT
                 @test occursin(r"TWO", out) # Printed into STDOUT
@@ -114,7 +117,10 @@ end
 
             @testset "STDIN -> File (--list)" begin
                 _clean_up_outputs()
-                out = read(pipeline(`cat $list_file`,`$julia $template -p 2 --a 42 --list`), String)
+                out = read(
+                    pipeline(`cat $list_file`, `$julia $template -p 2 --a 42 --list`),
+                    String,
+                )
 
                 @test occursin(r"ONE", out) # Printed into STDOUT
                 @test occursin(r"TWO", out) # Printed into STDOUT

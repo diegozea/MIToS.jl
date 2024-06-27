@@ -7,7 +7,7 @@ function _add_insert_gaps!(SEQS)
     j = 1
     is_insert = false
     while j <= ncol
-        for i in 1:length(SEQS)
+        for i = 1:length(SEQS)
             if j <= seq_len[i]
                 res = SEQS[i][j]
                 if islowercase(res) || res == '.'
@@ -17,7 +17,7 @@ function _add_insert_gaps!(SEQS)
             end
         end
         if is_insert
-            for i in 1:length(SEQS)
+            for i = 1:length(SEQS)
                 seq = SEQS[i]
                 if j > seq_len[i]
                     SEQS[i] = seq * "."
@@ -38,7 +38,11 @@ function _add_insert_gaps!(SEQS)
     SEQS
 end
 
-function _load_sequences(io::Union{IO,AbstractString}, format::Type{A3M}; create_annotations::Bool=false)
+function _load_sequences(
+    io::Union{IO,AbstractString},
+    format::Type{A3M};
+    create_annotations::Bool = false,
+)
     IDS, SEQS = _pre_readfasta(io)
     _check_seq_and_id_number(IDS, SEQS)
     try
@@ -58,10 +62,14 @@ _load_sequences(io::Union{IO,AbstractString}, format::Type{A2M}) = _load_sequenc
 # Print A3M
 # =========
 
-function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Union{Type{A3M},Type{A2M}})
+function Utils.print_file(
+    io::IO,
+    msa::AbstractMatrix{Residue},
+    format::Union{Type{A3M},Type{A2M}},
+)
     seqnames = sequencenames(msa)
     aligned = _get_aligned_columns(msa)
-    for i in 1:nsequences(msa)
+    for i = 1:nsequences(msa)
         seq = stringsequence(msa, i)
         # A2M uses dots for gaps aligned to insertions, but A3M can avoid them
         keep_insert_gaps = format === A2M
@@ -71,4 +79,5 @@ function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Union{Ty
     end
 end
 
-Utils.print_file(msa::AbstractMatrix{Residue}, format::Union{Type{A3M},Type{A2M}}) = print_file(stdout, msa, format)
+Utils.print_file(msa::AbstractMatrix{Residue}, format::Union{Type{A3M},Type{A2M}}) =
+    print_file(stdout, msa, format)

@@ -1,7 +1,9 @@
 # Pseudofrequencies
 # =================
 
-"Parametric abstract type to define pseudofrequencies types"
+"""
+Parametric abstract type to define pseudofrequencies types
+"""
 abstract type Pseudofrequencies end
 
 """
@@ -16,8 +18,8 @@ struct NoPseudofrequencies <: Pseudofrequencies end
 """
 `BLOSUM_Pseudofrequencies` type. It takes to arguments/fields:
 
-- `α` : Usually the number of sequences or sequence clusters in the MSA.
-- `β` : The weight of the pseudofrequencies, a value close to 8.512 when `α` is the number of sequence clusters.
+  - `α` : Usually the number of sequences or sequence clusters in the MSA.
+  - `β` : The weight of the pseudofrequencies, a value close to 8.512 when `α` is the number of sequence clusters.
 """
 struct BLOSUM_Pseudofrequencies <: Pseudofrequencies
     α::Float64
@@ -33,30 +35,32 @@ frequencies/probabilities `Pab` because they are used to estimate the pseudofreq
 
 `Gab = Σcd  Pcd ⋅ BLOSUM62( a | c ) ⋅ BLOSUM62( b | d )`
 """
-function _calculate_blosum_pseudofrequencies!(Pab::ContingencyTable{T,2,UngappedAlphabet}) where T
+function _calculate_blosum_pseudofrequencies!(
+    Pab::ContingencyTable{T,2,UngappedAlphabet},
+) where {T}
     @assert gettotal(Pab) ≈ one(T) "The input should be a probability table (normalized)"
-    pab  = getarray(gettable(Pab))
-    gab  = Pab.temporal
+    pab = getarray(gettable(Pab))
+    gab = Pab.temporal
     bl62 = getarray(gettable(BLOSUM62_Pij))
     total = zero(T)
-    @inbounds for b in 1:20, a in 1:20
-        gab[a,b] = zero(T)
-        for d in 1:20
-            bl62_db = bl62[d,b]
-            for c in 1:20
-                P = pab[c,d]
+    @inbounds for b = 1:20, a = 1:20
+        gab[a, b] = zero(T)
+        for d = 1:20
+            bl62_db = bl62[d, b]
+            for c = 1:20
+                P = pab[c, d]
                 if P != 0
                     # BLOSUM62_Pij[c,a] is p(a|c)
-                    gab[a,b] += ( P * bl62[c,a] * bl62_db )
+                    gab[a, b] += (P * bl62[c, a] * bl62_db)
                 end
             end
         end
-        total += gab[a,b]
+        total += gab[a, b]
     end
     if total ≉ one(T)
-        @inbounds for col in 1:20
-            @simd for row in 1:20
-                gab[row,col] /= total
+        @inbounds for col = 1:20
+            @simd for row = 1:20
+                gab[row, col] /= total
             end
         end
     end
@@ -75,24 +79,29 @@ of the pseudofrequencies.
 `Gab = Σcd  Pcd ⋅ BLOSUM62( a | c ) ⋅ BLOSUM62( b | d )`
 `Pab = (α ⋅ Pab + β ⋅ Gab )/(α + β)`
 """
-function apply_pseudofrequencies!(Pab::ContingencyTable{T,2,UngappedAlphabet},
-                                  pseudofrequencies::BLOSUM_Pseudofrequencies) where T
+function apply_pseudofrequencies!(
+    Pab::ContingencyTable{T,2,UngappedAlphabet},
+    pseudofrequencies::BLOSUM_Pseudofrequencies,
+) where {T}
     α = T(pseudofrequencies.α)
     β = T(pseudofrequencies.β)
     if β == 0.0
-        return(Pab)
+        return (Pab)
     end
     _calculate_blosum_pseudofrequencies!(Pab)
-    pab  = getarray(gettable(Pab))
-    gab  = Pab.temporal
-    frac = one(T) / ( α + β )
-    @inbounds for col in 1:20
-        @simd for row in 1:20
-            pab[row,col] = ( α * pab[row,col] + β * gab[row,col] ) * frac
+    pab = getarray(gettable(Pab))
+    gab = Pab.temporal
+    frac = one(T) / (α + β)
+    @inbounds for col = 1:20
+        @simd for row = 1:20
+            pab[row, col] = (α * pab[row, col] + β * gab[row, col]) * frac
         end
     end
     update_marginals!(Pab)
     normalize!(Pab)
 end
 
-@inline apply_pseudofrequencies!(Pab::ContingencyTable, pseudofrequencies::NoPseudofrequencies) = Pab
+@inline apply_pseudofrequencies!(
+    Pab::ContingencyTable,
+    pseudofrequencies::NoPseudofrequencies,
+) = Pab

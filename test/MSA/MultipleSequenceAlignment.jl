@@ -19,12 +19,12 @@
 
     @testset "Creation" begin
 
-        M = reshape(reinterpret(Residue,collect(1:21)),(3,7))
+        M = reshape(reinterpret(Residue, collect(1:21)), (3, 7))
         m = NamedArray(M)
 
-        T = permutedims(M, [2,1])
+        T = permutedims(M, [2, 1])
 
-        S = reshape(reinterpret(Residue,collect(1:21)),(1,21))
+        S = reshape(reinterpret(Residue, collect(1:21)), (1, 21))
         s = NamedArray(S)
 
         @test MultipleSequenceAlignment(M) == MultipleSequenceAlignment(m)
@@ -42,24 +42,25 @@
 
     @testset "MSA & sequences" begin
 
-        M = reshape(reinterpret(Residue,collect(1:21)),(3,7))
+        M = reshape(reinterpret(Residue, collect(1:21)), (3, 7))
         msa = MultipleSequenceAlignment(M)
         annotated_msa = AnnotatedMultipleSequenceAlignment(M)
 
-        S = reshape(reinterpret(Residue,collect(1:21)),(1,21))
+        S = reshape(reinterpret(Residue, collect(1:21)), (1, 21))
         sequence = AlignedSequence(S)
         annotated_sequence = AnnotatedAlignedSequence(S)
 
         @testset "Getters" begin
             @test isa(annotations(annotated_msa), Annotations)
             @test isa(annotations(annotated_sequence), Annotations)
-            
+
             # unannotated objects return empty annotations
-            for unannotated_object in (Matrix{Residue}(M), msa, Matrix{Residue}(S), sequence)
+            for unannotated_object in
+                (Matrix{Residue}(M), msa, Matrix{Residue}(S), sequence)
                 @test isempty(annotations(unannotated_object))
                 @test isa(annotations(unannotated_object), Annotations)
             end
-            
+
             for object in (msa, annotated_msa, sequence, annotated_sequence)
                 @test isa(namedmatrix(object), NamedResidueMatrix{Array{Residue,2}})
             end
@@ -68,7 +69,7 @@
         @testset "Dimension names" begin
 
             for object in (msa, annotated_msa, sequence, annotated_sequence)
-                @test dimnames(namedmatrix(object)) == ["Seq","Col"]
+                @test dimnames(namedmatrix(object)) == ["Seq", "Col"]
             end
         end
 
@@ -97,11 +98,11 @@
 
         @testset "AbstractArray Interface" begin
 
-            @test size(msa) == (3,7)
-            @test size(annotated_msa) == (3,7)
+            @test size(msa) == (3, 7)
+            @test size(annotated_msa) == (3, 7)
 
-            @test size(sequence) == (1,21)
-            @test size(annotated_sequence) == (1,21)
+            @test size(sequence) == (1, 21)
+            @test size(annotated_sequence) == (1, 21)
 
             for object in (msa, annotated_msa, sequence, annotated_sequence)
                 @test length(object) == 21
@@ -111,17 +112,17 @@
         @testset "Indexing" begin
 
             for object in (msa, annotated_msa)
-                for i in 1:3, j in 1:7
-                    @test object[string(i),string(j)] == object[i,j]
+                for i = 1:3, j = 1:7
+                    @test object[string(i), string(j)] == object[i, j]
                 end
             end
 
             for object in (sequence, annotated_sequence)
-                for j in 1:7
-                    @test object["1",string(j)] == object[1,j]
-                    @test object[j] == object[1,j]
+                for j = 1:7
+                    @test object["1", string(j)] == object[1, j]
+                    @test object[j] == object[1, j]
                     # Special sequence indexing:
-                    @test object[string(j)] == object[1,j]
+                    @test object[string(j)] == object[1, j]
                 end
             end
         end
@@ -132,43 +133,46 @@
 
             show(out, MIME"text/plain"(), msa)
             str = String(take!(out))
-            @test startswith(str,"MultipleSequenceAlignment : ")
+            @test startswith(str, "MultipleSequenceAlignment : ")
             @test occursin("Seq", str)
             @test occursin("Col", str)
-            @test length(split(str,'\n')) == 6
+            @test length(split(str, '\n')) == 6
 
             show(out, MIME"text/plain"(), annotated_msa)
             str = String(take!(out))
-            @test startswith(str,"AnnotatedMultipleSequenceAlignment with 0 annotations : ")
+            @test startswith(
+                str,
+                "AnnotatedMultipleSequenceAlignment with 0 annotations : ",
+            )
             @test occursin("Seq", str)
             @test occursin("Col", str)
-            @test length(split(str,'\n')) == 6
+            @test length(split(str, '\n')) == 6
 
             show(out, MIME"text/plain"(), sequence)
             str = String(take!(out))
-            @test startswith(str,"AlignedSequence : ")
+            @test startswith(str, "AlignedSequence : ")
             @test occursin("Seq", str)
             @test occursin("Col", str)
-            @test length(split(str,'\n')) == 4
+            @test length(split(str, '\n')) == 4
 
             show(out, MIME"text/plain"(), annotated_sequence)
             str = String(take!(out))
-            @test startswith(str,"AnnotatedAlignedSequence with 0 annotations : ")
+            @test startswith(str, "AnnotatedAlignedSequence with 0 annotations : ")
             @test occursin("Seq", str)
             @test occursin("Col", str)
-            @test length(split(str,'\n')) == 4
+            @test length(split(str, '\n')) == 4
         end
 
         @testset "Transpose" begin
 
             # deprecated, use permutedims instead
             @test transpose(msa) == permutedims(msa)
-            @test size(transpose(msa)) == (7,3)
-            @test size(transpose(annotated_msa)) == (7,3)
+            @test size(transpose(msa)) == (7, 3)
+            @test size(transpose(annotated_msa)) == (7, 3)
 
             @test transpose(sequence) == permutedims(sequence)
-            @test size(transpose(sequence)) == (21,1)
-            @test size(transpose(annotated_sequence)) == (21,1)
+            @test size(transpose(sequence)) == (21, 1)
+            @test size(transpose(annotated_sequence)) == (21, 1)
         end
 
         @testset "Get residues" begin
@@ -183,9 +187,7 @@
             end
 
             for object in (msa, annotated_msa, sequence, annotated_sequence)
-                @test getresiduesequences(msa) == [res"ADEIMSY",
-                                                   res"RCGLFTV",
-                                                   res"NQHKPW-"]
+                @test getresiduesequences(msa) == [res"ADEIMSY", res"RCGLFTV", res"NQHKPW-"]
             end
         end
 
@@ -205,9 +207,9 @@
         @testset "Get sequences" begin
 
             for object in (msa, annotated_msa)
-                for seq in 1:3
+                for seq = 1:3
                     @test getsequence(object, string(seq)) == getsequence(msa, seq)
-                    @test size(getsequence(msa, seq)) == (1,7)
+                    @test size(getsequence(msa, seq)) == (1, 7)
                 end
             end
         end
@@ -215,13 +217,13 @@
         @testset "Sequence names" begin
 
             for object in (M, NamedArray(M), msa, annotated_msa)
-                @test sequencenames(object) == ["1","2","3"]
+                @test sequencenames(object) == ["1", "2", "3"]
                 # Iterators
                 iterator = sequencename_iterator(object)
                 @test first(iterator) == "1"
                 @test length(iterator) == 3
                 @test !isempty(iterator)
-                @test collect(iterator) == ["1","2","3"]
+                @test collect(iterator) == ["1", "2", "3"]
                 @test_throws MethodError iterator[1] # no getindex defined for iterators
             end
         end
@@ -235,9 +237,9 @@
                     setannotsequence!(copied_object, "1", "Name", "One")
                     setannotresidue!(copied_object, "1", "SS", "HHHHHHH")
                 end
-                new_object = rename_sequences!(copied_object, ["I","II","III"])
+                new_object = rename_sequences!(copied_object, ["I", "II", "III"])
                 @test new_object == copied_object
-                @test sequencenames(copied_object) == ["I","II","III"]
+                @test sequencenames(copied_object) == ["I", "II", "III"]
                 if isa(copied_object, AnnotatedMultipleSequenceAlignment)
                     @test getannotsequence(copied_object, "I", "Name") == "One"
                     @test getannotresidue(copied_object, "I", "SS") == "HHHHHHH"
@@ -246,9 +248,9 @@
 
             # rename_sequences
             for object in (NamedArray(M), msa, annotated_msa)
-                new_object = rename_sequences(object, ["I","II","III"])
-                @test sequencenames(object) == ["1","2","3"]
-                @test sequencenames(new_object) == ["I","II","III"]
+                new_object = rename_sequences(object, ["I", "II", "III"])
+                @test sequencenames(object) == ["1", "2", "3"]
+                @test sequencenames(new_object) == ["I", "II", "III"]
             end
 
             # rename one or two sequences
@@ -262,8 +264,8 @@
                 # as rename_sequences calls rename_sequences! and 
                 # Pairs are transformed to Dict and then to Vectors using _newnames
                 new_object = rename_sequences(copied_object, "1" => "I", "2" => "II")
-                @test sequencenames(copied_object) == ["1","2","3"]
-                @test sequencenames(new_object) == ["I","II","3"]
+                @test sequencenames(copied_object) == ["1", "2", "3"]
+                @test sequencenames(new_object) == ["I", "II", "3"]
                 if isa(new_object, AnnotatedMultipleSequenceAlignment)
                     @test getannotsequence(new_object, "I", "Name") == "One"
                     @test getannotresidue(new_object, "I", "SS") == "HHHHHHH"
@@ -274,13 +276,13 @@
         @testset "Column names" begin
 
             for object in (M, NamedArray(M), msa, annotated_msa)
-                @test columnnames(object) == ["1","2","3","4","5","6","7"]
+                @test columnnames(object) == ["1", "2", "3", "4", "5", "6", "7"]
                 # Iterators
                 iterator = columnname_iterator(object)
                 @test first(iterator) == "1"
                 @test length(iterator) == 7
                 @test !isempty(iterator)
-                @test collect(iterator) == ["1","2","3","4","5","6","7"]
+                @test collect(iterator) == ["1", "2", "3", "4", "5", "6", "7"]
                 @test_throws MethodError iterator[1] # no getindex defined for iterators
             end
         end
@@ -288,7 +290,7 @@
         @testset "Column mapping" begin
 
             for object in (NamedArray(M), msa, annotated_msa)
-                @test getcolumnmapping(object) == [1,2,3,4,5,6,7]
+                @test getcolumnmapping(object) == [1, 2, 3, 4, 5, 6, 7]
             end
         end
 
@@ -296,7 +298,7 @@
 
             for object in (M, NamedArray(M), msa, annotated_msa)
                 @test stringsequence(object, 1) == "ADEIMSY"
-                @test stringsequence(getsequence(object,1)) == "ADEIMSY"
+                @test stringsequence(getsequence(object, 1)) == "ADEIMSY"
             end
 
             for object in (NamedArray(M), msa, annotated_msa)
@@ -313,20 +315,20 @@
             deepcopy_annotated_msa = deepcopy(annotated_msa)
 
             for x in [copy_msa, deepcopy_msa, copy_annotated_msa, deepcopy_annotated_msa]
-                x[1,:] = res"YSMIEDA"
-                @test vec(x[1,:]) == res"YSMIEDA"
+                x[1, :] = res"YSMIEDA"
+                @test vec(x[1, :]) == res"YSMIEDA"
 
-                x["2",:] = res"YSMIEDA"
-                @test vec(x["2",:]) == res"YSMIEDA"
+                x["2", :] = res"YSMIEDA"
+                @test vec(x["2", :]) == res"YSMIEDA"
 
-                x[:,1] = res"YYY"
-                @test vec(x[:,1]) == res"YYY"
+                x[:, 1] = res"YYY"
+                @test vec(x[:, 1]) == res"YYY"
 
-                x[:,"2"] = res"YYY"
-                @test vec(x[:,"2"]) == res"YYY"
+                x[:, "2"] = res"YYY"
+                @test vec(x[:, "2"]) == res"YYY"
 
-                x[end,end] = 'X'
-                @test x[end,end] == XAA
+                x[end, end] = 'X'
+                @test x[end, end] == XAA
 
                 @test length(unique(x)) != 21
             end
@@ -341,8 +343,8 @@
                 x[1] = XAA
                 @test x[1] == XAA
 
-                x["1","2"] = XAA
-                @test x["1","2"] == XAA
+                x["1", "2"] = XAA
+                @test x["1", "2"] == XAA
 
                 x[end] = 'X'
                 @test x[end] == XAA

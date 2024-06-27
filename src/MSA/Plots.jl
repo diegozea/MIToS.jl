@@ -13,7 +13,7 @@ const _residue_labels = map(string, reverse!(res"ARNDCQEGHILKMFPSTWYV-"))
     if nseq > 20
         step = div(nseq, 20)
         yticks --> (1:step:nseq, names)
-        html_output_format :=  :png
+        html_output_format := :png
     end
     1:ncolumns(msa), names, map(string, getresidues(msa))
 end
