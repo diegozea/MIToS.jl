@@ -47,12 +47,7 @@ function pairwisegapfraction(
     clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
     table = Counts(ContingencyTable(Float64, Val{2}, GappedAlphabet()))
     gu = mapcolpairfreq!(gap_union_percentage, aln, table, weights = clusters)
-    gi = mapcolpairfreq!(
-        gap_intersection_percentage,
-        aln,
-        table,
-        weights = clusters,
-    )
+    gi = mapcolpairfreq!(gap_intersection_percentage, aln, table, weights = clusters)
     gu, gi
 end
 
