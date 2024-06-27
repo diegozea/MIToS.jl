@@ -30,7 +30,8 @@ _mapfreq_kargs_doc = """
 """
 
 _mappairfreq_kargs_doc = """
-- `diagonalvalue` (default: `0`): Value to fill diagonal elements if `usediagonal` is `Val{false}`.
+- `usediagonal` (default: `true`): If `true`, the function will be also applied to the diagonal elements.
+- `diagonalvalue` (default: `0`): Value to fill diagonal elements if `usediagonal` is `false`.
 """
 
 # Residues: The output is a Named Vector
@@ -144,8 +145,6 @@ end
 It efficiently map a function (first argument) that takes a table of `Counts` or
 `Probabilities` (third argument). The table is filled in place with the counts or
 probabilities of each pair of columns from the `msa` (second argument).
-The fourth positional argument `usediagonal` indicates if the function should be applied
-to identical element pairs (default to `Val{true}`).
 
 $_mapfreq_kargs_doc
 $_mappairfreq_kargs_doc
@@ -173,8 +172,6 @@ end
 It efficiently map a function (first argument) that takes a table of `Counts` or
 `Probabilities` (third argument). The table is filled in place with the counts or
 probabilities of each pair of sequences from the `msa` (second argument).
-The fourth positional argument `usediagonal` indicates if the function should be applied
-to identical element pairs (default to `Val{true}`).
 
 $_mapfreq_kargs_doc
 $_mappairfreq_kargs_doc
