@@ -39,8 +39,8 @@ using Plots
 
 # Lets read the NMR ensemble:
 
-pdb_file   = abspath(pathof(MIToS), "..", "..", "test", "data", "1AS5.pdb")
-pdb_res = read_file(pdb_file, PDBFile, occupancyfilter=true)
+pdb_file = abspath(pathof(MIToS), "..", "..", "test", "data", "1AS5.pdb")
+pdb_res = read_file(pdb_file, PDBFile, occupancyfilter = true)
 #md nothing # hide
 
 # We set `occupancyfilter` to `true` to ensure that we have one single set of 
@@ -49,7 +49,7 @@ pdb_res = read_file(pdb_file, PDBFile, occupancyfilter=true)
 # disordered atoms.  
 # We can get an idea of the alpha carbon positions by plotting these residues:
 
-scatter(pdb_res, legend=false)
+scatter(pdb_res, legend = false)
 
 # As we saw in the previous plot, the structure doesn't need to be 
 # superimposed. Now, we are going to separate each model into different 
@@ -57,7 +57,7 @@ scatter(pdb_res, legend=false)
 
 models = Dict{String,Vector{PDBResidue}}()
 for res in pdb_res
-	push!(get!(models, res.id.model, []), res) 
+    push!(get!(models, res.id.model, []), res)
 end
 
 # Then, we simply need to collect all the PDB models in the values 
@@ -79,5 +79,5 @@ RMSF = rmsf(pdb_models)
 # You can plot this vector to get an idea of the which are the most flexible 
 # position in your structure:
 
-plot(RMSF, legend=false, xlab="Residue", ylab="RMSF [Å]")
+plot(RMSF, legend = false, xlab = "Residue", ylab = "RMSF [Å]")
 

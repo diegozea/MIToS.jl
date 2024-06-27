@@ -44,26 +44,27 @@ pdb_residues = read_file(pdbfile, PDBFile)
 # [Chimera](https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/midas/hydrophob.html):
 
 hydrophobicity = Dict(
-	"ILE" => 4.5,
-	"VAL" => 4.2,
-	"LEU" => 3.8,
-	"PHE" => 2.8,
-	"CYS" => 2.5,
-	"MET" => 1.9,
-	"ALA" => 1.8,
-	"GLY" => -0.4,
-	"THR" => -0.7,
-	"SER" => -0.8,
-	"TRP" => -0.9,
-	"TYR" => -1.3,
-	"PRO" => -1.6,
-	"HIS" => -3.2,
-	"GLU" => -3.5,
-	"GLN" => -3.5,
-	"ASP" => -3.5,
-	"ASN" => -3.5,
-	"LYS" => -3.9,
-	"ARG" => -4.5 )
+    "ILE" => 4.5,
+    "VAL" => 4.2,
+    "LEU" => 3.8,
+    "PHE" => 2.8,
+    "CYS" => 2.5,
+    "MET" => 1.9,
+    "ALA" => 1.8,
+    "GLY" => -0.4,
+    "THR" => -0.7,
+    "SER" => -0.8,
+    "TRP" => -0.9,
+    "TYR" => -1.3,
+    "PRO" => -1.6,
+    "HIS" => -3.2,
+    "GLU" => -3.5,
+    "GLN" => -3.5,
+    "ASP" => -3.5,
+    "ASN" => -3.5,
+    "LYS" => -3.9,
+    "ARG" => -4.5,
+)
 #md nothing # hide
 
 # First, we define a helper function using `Format` to create a proper
@@ -79,7 +80,9 @@ hydrophobicity = Dict(
 
 using Format
 
-"Return value as a string with the B factor format described in PDB."
+"""
+Return value as a string with the B factor format described in PDB. # e.g. 1.5 -> "  1.50"
+"""
 format_b_factor(value) = pyfmt(FormatSpec("6.2f"), value) # e.g. 1.5 -> "  1.50"
 #md nothing # hide
 
@@ -88,14 +91,16 @@ format_b_factor(value) = pyfmt(FormatSpec("6.2f"), value) # e.g. 1.5 -> "  1.50"
 
 using Setfield
 
-"Return a new PDBAtom with the B-factor changed to value."
+"""
+Return a new PDBAtom with the B-factor changed to value.
+"""
 function change_b_factor(atom::PDBAtom, value)
-	b_factor_string = format_b_factor(value)
-	b_factor_string = strip(b_factor_string) # e.g. "  1.50" -> "1.50"
-	if length(b_factor_string) > 6
-		throw(ErrorException("$b_factor_string has more than 6 characters."))
-	end
-	@set atom.B = b_factor_string
+    b_factor_string = format_b_factor(value)
+    b_factor_string = strip(b_factor_string) # e.g. "  1.50" -> "1.50"
+    if length(b_factor_string) > 6
+        throw(ErrorException("$b_factor_string has more than 6 characters."))
+    end
+    @set atom.B = b_factor_string
 end
 #md nothing # hide
 
@@ -103,12 +108,12 @@ end
 # `"CA"` atom:
 
 for res in pdb_residues
-	for i in eachindex(res.atoms)
-		atom = res.atoms[i]
-		if atom.atom == "CA"
-			res.atoms[i] = change_b_factor(atom, hydrophobicity[res.id.name])
-		end
-	end
+    for i in eachindex(res.atoms)
+        atom = res.atoms[i]
+        if atom.atom == "CA"
+            res.atoms[i] = change_b_factor(atom, hydrophobicity[res.id.name])
+        end
+    end
 end
 
 # Finally, we can save the changed residues in a new PDB file.
