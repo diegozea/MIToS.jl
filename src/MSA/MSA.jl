@@ -140,7 +140,6 @@ export  # Residue
     nclusters,
     counts,
     assignments, # from Clustering.jl
-    
     getweight,
     nelements,
     # Hobohm

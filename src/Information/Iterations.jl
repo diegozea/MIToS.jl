@@ -15,7 +15,7 @@ function _mapfreq_kernel!(
 ) where {T,N,A}
     table = freqtable.table
     _cleanup_table!(table) # frequencies! calls _cleanup_temporal! and cleans marginals
-    frequencies!(table, res..., weights=weights, pseudocounts=pseudocounts) # frequencies! calls apply_pseudocount! and  _update!
+    frequencies!(table, res..., weights = weights, pseudocounts = pseudocounts) # frequencies! calls apply_pseudocount! and  _update!
     if isa(freqtable, Probabilities{T,N,A})
         normalize!(table)
         apply_pseudofrequencies!(table, pseudofrequencies)
@@ -168,7 +168,11 @@ end
 
 # DEPRECATED, usediagonal is now a boolean keyword argument
 function mapcolpairfreq!(f, msa, table, usediagonal::Type{Val{D}}; kargs...) where {D}
-    Base.depwarn("The `usediagonal` positional argument of `mapcolpairfreq!` taking `Val{true}` or `Val{false}` is deprecated. Use `usediagonal = true` or `usediagonal = false` instead.", :mapcolpairfreq!, force=true)
+    Base.depwarn(
+        "The `usediagonal` positional argument of `mapcolpairfreq!` taking `Val{true}` or `Val{false}` is deprecated. Use `usediagonal = true` or `usediagonal = false` instead.",
+        :mapcolpairfreq!,
+        force = true,
+    )
     mapcolpairfreq!(f, msa, table; usediagonal = D, kargs...)
 end
 
@@ -199,7 +203,11 @@ end
 
 # DEPRECATED, usediagonal is now a boolean keyword argument
 function mapseqpairfreq!(f, msa, table, usediagonal::Type{Val{D}}; kargs...) where {D}
-    Base.depwarn("The `usediagonal` positional argument of mapseqpairfreq! taking `Val{true}` or `Val{false}` is deprecated. Use `usediagonal = true` or `usediagonal = false` instead.", :mapseqpairfreq!, force=true)
+    Base.depwarn(
+        "The `usediagonal` positional argument of mapseqpairfreq! taking `Val{true}` or `Val{false}` is deprecated. Use `usediagonal = true` or `usediagonal = false` instead.",
+        :mapseqpairfreq!,
+        force = true,
+    )
     mapseqpairfreq!(f, msa, table; usediagonal = D, kargs...)
 end
 

@@ -46,8 +46,12 @@ function count!(
     pseudocounts::Pseudocount,
     seqs::Vararg{AbstractVector{Residue},N},
 ) where {T,N,A}
-    Base.depwarn("count! using a ContingencyTable or Counts is deprecated. Use frequencies! instead.", :count!, force=true)
-    frequencies!(table, seqs..., weights=weights, pseudocounts=pseudocounts)
+    Base.depwarn(
+        "count! using a ContingencyTable or Counts is deprecated. Use frequencies! instead.",
+        :count!,
+        force = true,
+    )
+    frequencies!(table, seqs..., weights = weights, pseudocounts = pseudocounts)
 end
 
 function count!(table::Counts{T,N,A}, args...) where {T,N,A}
@@ -58,11 +62,11 @@ end
 """
     frequencies!(table, seqs...; weights::WeightTypes, pseudocounts::Pseudocount)
 
-It populates a `ContingencyTable` or `Counts` table (first argument) using the frequencies 
-in the given sequences (last positional arguments). The dimension of the table must match 
-the number of sequences and all the sequences must have the same length. You must indicate 
-the used `weights` and `pseudocounts` as keyword arguments. Those arguments default to 
-`NoClustering()` and `NoPseudocount()` respectively, to avoid the use of sequence 
+It populates a `ContingencyTable` or `Counts` table (first argument) using the frequencies
+in the given sequences (last positional arguments). The dimension of the table must match
+the number of sequences and all the sequences must have the same length. You must indicate
+the used `weights` and `pseudocounts` as keyword arguments. Those arguments default to
+`NoClustering()` and `NoPseudocount()` respectively, to avoid the use of sequence
 weighting and pseudocounts.
 """
 function frequencies!(
@@ -102,7 +106,7 @@ to indicate the alphabet of the table (default to `UngappedAlphabet()`), a clust
 result (default to `NoClustering()`) and the pseudocounts (default to `NoPseudocount()`)
 to be used during the estimation of the frequencies.
 
-**DEPRECATED**: Use [`frequencies`](@ref) instead. Note that `frequencies` defines the 
+**DEPRECATED**: Use [`frequencies`](@ref) instead. Note that `frequencies` defines the
 alphabet, weigths and pseudocounts using keyword arguments instead of positional arguments.
 """
 function Base.count(
@@ -111,8 +115,17 @@ function Base.count(
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
 ) where {N}
-    Base.depwarn("`count` on sequences is deprecated in favor of `frequencies`.", :count, force=true)
-    frequencies(seqs...; alphabet=alphabet, weights=weights, pseudocounts=pseudocounts)
+    Base.depwarn(
+        "`count` on sequences is deprecated in favor of `frequencies`.",
+        :count,
+        force = true,
+    )
+    frequencies(
+        seqs...;
+        alphabet = alphabet,
+        weights = weights,
+        pseudocounts = pseudocounts,
+    )
 end
 
 
@@ -122,7 +135,7 @@ end
 This function returns a `Counts` object wrapping a `ContingencyTable` with the frequencies
 of residues in the sequences that takes as arguments. The dimension of the table is equal
 to the number of sequences. You can use the keyword arguments `alphabet`, `weights` and
-`pseudocounts` to indicate the alphabet of the table, a clustering result and the 
+`pseudocounts` to indicate the alphabet of the table, a clustering result and the
 pseudocounts to be used during the estimation of the frequencies.
 """
 function frequencies(
@@ -152,11 +165,23 @@ function probabilities!(
     pseudofrequencies::Pseudofrequencies,
     seqs::Vararg{AbstractVector{Residue},N},
 ) where {T,N,A}
-    Base.depwarn("The probabilities! method indicating weights, pseudocounts and pseudofrequencies using positional arguments is deprecated; use keyword arguments instead.", :probabilities!, force=true)
-    probabilities!(table, seqs..., weights=weights, pseudocounts=pseudocounts, pseudofrequencies=pseudofrequencies)
+    Base.depwarn(
+        "The probabilities! method indicating weights, pseudocounts and pseudofrequencies using positional arguments is deprecated; use keyword arguments instead.",
+        :probabilities!,
+        force = true,
+    )
+    probabilities!(
+        table,
+        seqs...,
+        weights = weights,
+        pseudocounts = pseudocounts,
+        pseudofrequencies = pseudofrequencies,
+    )
 end
 
-function probabilities!(table::ContingencyTable{T,N,A}, seqs::Vararg{AbstractVector{Residue},N}; 
+function probabilities!(
+    table::ContingencyTable{T,N,A},
+    seqs::Vararg{AbstractVector{Residue},N};
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
     pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),

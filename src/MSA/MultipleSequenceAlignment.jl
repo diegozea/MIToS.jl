@@ -223,12 +223,20 @@ function Base.convert(
     ::Type{MultipleSequenceAlignment},
     msa::AnnotatedMultipleSequenceAlignment,
 )
-    Base.depwarn("`convert(::Type{MultipleSequenceAlignment}, msa)` has been deprecated. Use `MultipleSequenceAlignment(msa)`", :convert, force=true)
+    Base.depwarn(
+        "`convert(::Type{MultipleSequenceAlignment}, msa)` has been deprecated. Use `MultipleSequenceAlignment(msa)`",
+        :convert,
+        force = true,
+    )
     MultipleSequenceAlignment(namedmatrix(msa))
 end
 
 function Base.convert(::Type{AlignedSequence}, seq::AnnotatedAlignedSequence)
-    Base.depwarn("`convert(::Type{AlignedSequence}, seq)` has been deprecated. Use `AlignedSequence(seq)`", :convert, force=true)
+    Base.depwarn(
+        "`convert(::Type{AlignedSequence}, seq)` has been deprecated. Use `AlignedSequence(seq)`",
+        :convert,
+        force = true,
+    )
     AlignedSequence(namedmatrix(seq))
 end
 
@@ -236,12 +244,20 @@ function Base.convert(
     ::Type{AnnotatedMultipleSequenceAlignment},
     msa::MultipleSequenceAlignment,
 )
-    Base.depwarn("`convert(::Type{AnnotatedMultipleSequenceAlignment}, msa)` has been deprecated. Use `AnnotatedMultipleSequenceAlignment(msa)`", :convert, force=true)
+    Base.depwarn(
+        "`convert(::Type{AnnotatedMultipleSequenceAlignment}, msa)` has been deprecated. Use `AnnotatedMultipleSequenceAlignment(msa)`",
+        :convert,
+        force = true,
+    )
     AnnotatedMultipleSequenceAlignment(namedmatrix(msa), Annotations())
 end
 
 function Base.convert(::Type{AnnotatedAlignedSequence}, seq::AlignedSequence)
-    Base.depwarn("`convert(::Type{AnnotatedAlignedSequence}, seq)` has been deprecated. Use `AnnotatedAlignedSequence(seq)`", :convert, force=true)
+    Base.depwarn(
+        "`convert(::Type{AnnotatedAlignedSequence}, seq)` has been deprecated. Use `AnnotatedAlignedSequence(seq)`",
+        :convert,
+        force = true,
+    )
     AnnotatedAlignedSequence(namedmatrix(seq), Annotations())
 end
 
@@ -280,7 +296,11 @@ end
 # -----------------------
 
 function Base.transpose(x::AbstractAlignedObject)
-    Base.depwarn("`transpose(x::AbstractAlignedObject)` has been deprecated, use `permutedims(x)` instead.", :transpose, force=true)
+    Base.depwarn(
+        "`transpose(x::AbstractAlignedObject)` has been deprecated, use `permutedims(x)` instead.",
+        :transpose,
+        force = true,
+    )
     permutedims(namedmatrix(x))
 end
 

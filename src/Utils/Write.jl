@@ -29,7 +29,11 @@ function Base.write(
     format::Type{T},
     mode::String = "w",
 ) where {T<:FileFormat}
-    Base.depwarn("Using write with $format is deprecated, use write_file instead.", :write, force=true)
+    Base.depwarn(
+        "Using write with $format is deprecated, use write_file instead.",
+        :write,
+        force = true,
+    )
     write_file(filename, object, format, mode)
 end
 
@@ -41,6 +45,10 @@ end
 function print_file end
 
 function Base.print(fh::IO, object, format::Type{T}) where {T<:FileFormat}
-    Base.depwarn("Using print with $format is deprecated, use print_file instead.", :print, force=true)
+    Base.depwarn(
+        "Using print with $format is deprecated, use print_file instead.",
+        :print,
+        force = true,
+    )
     print_file(fh, object, format)
 end

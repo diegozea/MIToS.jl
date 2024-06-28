@@ -61,9 +61,10 @@
 
                     table = ContingencyTable(Float64, Val{N}, alphabet)
 
-                    frequencies!(table, seqs..., weights=clusters)
+                    frequencies!(table, seqs..., weights = clusters)
 
-                    @test table == frequencies(seqs..., alphabet = alphabet, weights = clusters)
+                    @test table ==
+                          frequencies(seqs..., alphabet = alphabet, weights = clusters)
 
                     len = length(alphabet)
                     if isa(alphabet, ReducedAlphabet)
@@ -101,7 +102,7 @@
 
                     table = ContingencyTable(Float64, Val{N}, alphabet)
 
-                    frequencies!(table, seqs..., pseudocounts=AdditiveSmoothing(1.0))
+                    frequencies!(table, seqs..., pseudocounts = AdditiveSmoothing(1.0))
 
                     @test table == frequencies(
                         seqs...,
