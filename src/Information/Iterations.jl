@@ -286,9 +286,11 @@ $_mapfreq_kargs_doc
 Note that the `pseudofrequencies` argument is only valid if `probabilities = true`. All the 
 other keyword arguments are passed to the function `f`.
 ```jldoctest
-julia> using MIToS.Information, MIToS.MSA, Random
+julia> using PairwiseListMatrices, MIToS.MSA, Random # needed for the doctest
 
-julia> msa = rand(Random.MersenneTwister(1), Residue, 3, 6)
+julia> using MIToS.Information 
+
+julia> msa = rand(Random.MersenneTwister(1), Residue, 3, 6) # random MSA as an example
 3×6 Matrix{Residue}:
  F  A  F  D  E  V
  T  R  R  G  F  I
