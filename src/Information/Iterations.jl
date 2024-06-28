@@ -31,7 +31,7 @@ _mapfreq_kargs_doc = """
 
 _mappairfreq_kargs_doc = """
 - `usediagonal` (default: `true`): If `true`, the function will be also applied to the diagonal elements.
-- `diagonalvalue` (default: `0`): Value to fill diagonal elements if `usediagonal` is `false`.
+- `diagonalvalue` (default: `zero`): Value to fill diagonal elements if `usediagonal` is `false`.
 """
 
 # Residues: The output is a Named Vector
@@ -122,9 +122,8 @@ function _mappairfreq!(
     usediagonal::Type{Val{D}} = Val{true};
     weights = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
-    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
-    diagonalvalue::T = zero(T),
-) where {T,D,TV,A,V<:AbstractArray{Residue}} # diagonalvalue used by mapcolpairfreq! ...
+    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies()
+) where {T,D,TV,A,V<:AbstractArray{Residue}}
     @inbounds @iterateupper plm D begin
         list[k] = _mapfreq_kernel!(
             f,
