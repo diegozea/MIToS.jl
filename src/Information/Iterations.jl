@@ -11,7 +11,8 @@ function _mapfreq_kernel!(
     weights,
     pseudocounts,
     pseudofrequencies,
-    res::Vararg{AbstractVector{Residue},N},
+    res::Vararg{AbstractVector{Residue},N};
+    kargs...,
 ) where {T,N,A}
     table = freqtable.table
     _cleanup_table!(table) # frequencies! calls _cleanup_temporal! and cleans marginals
@@ -20,7 +21,7 @@ function _mapfreq_kernel!(
         normalize!(table)
         apply_pseudofrequencies!(table, pseudofrequencies)
     end
-    f(freqtable)
+    f(freqtable; kargs...)
 end
 
 _mapfreq_kargs_doc = """
@@ -41,12 +42,13 @@ function _mapfreq!(
     f::Function,
     res_list::Vector{V}, # sequences or columns
     table::Union{Probabilities{T,1,A},Counts{T,1,A}};
-    weights = NoClustering(),
+    weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
     pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
+    kargs...,
 ) where {T,A,V<:AbstractArray{Residue}}
     scores = map(res_list) do res
-        _mapfreq_kernel!(f, table, weights, pseudocounts, pseudofrequencies, res)
+        _mapfreq_kernel!(f, table, weights, pseudocounts, pseudofrequencies, res; kargs...)
     end
     scores
 end
@@ -64,13 +66,24 @@ function mapcolfreq!(
     f::Function,
     msa::AbstractMatrix{Residue},
     table::Union{Probabilities{T,1,A},Counts{T,1,A}};
+    weights::WeightTypes = NoClustering(),
+    pseudocounts::Pseudocount = NoPseudocount(),
+    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
     kargs...,
 ) where {T,A}
     N = ncolumns(msa)
     residues = _get_matrix_residue(msa)
     ncol = size(residues, 2)
     columns = map(i -> view(residues, :, i), 1:ncol) # 2x faster than calling view inside the loop
-    scores = _mapfreq!(f, columns, table; kargs...)
+    scores = _mapfreq!(
+        f,
+        columns,
+        table;
+        weights = weights,
+        pseudocounts = pseudocounts,
+        pseudofrequencies = pseudofrequencies,
+        kargs...,
+    )
     name_list = columnnames(msa)
     NamedArray(
         reshape(scores, (1, N)),
@@ -95,12 +108,23 @@ function mapseqfreq!(
     f::Function,
     msa::AbstractMatrix{Residue},
     table::Union{Probabilities{T,1,A},Counts{T,1,A}};
+    weights::WeightTypes = NoClustering(),
+    pseudocounts::Pseudocount = NoPseudocount(),
+    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
     kargs...,
 ) where {T,A}
     N = nsequences(msa)
     sequences = getresiduesequences(msa)
     name_list = sequencenames(msa)
-    scores = _mapfreq!(f, sequences, table; kargs...)
+    scores = _mapfreq!(
+        f,
+        sequences,
+        table;
+        weights = weights,
+        pseudocounts = pseudocounts,
+        pseudofrequencies = pseudofrequencies,
+        kargs...,
+    )
     NamedArray(
         reshape(scores, (N, 1)),
         (
@@ -120,9 +144,10 @@ function _mappairfreq!(
     plm::PairwiseListMatrix{T,D,TV}, # output
     table::Union{Probabilities{T,2,A},Counts{T,2,A}},
     usediagonal::Type{Val{D}} = Val{true};
-    weights = NoClustering(),
+    weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
-    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies()
+    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
+    kargs...,
 ) where {T,D,TV,A,V<:AbstractArray{Residue}}
     @inbounds @iterateupper plm D begin
         list[k] = _mapfreq_kernel!(
@@ -132,7 +157,8 @@ function _mappairfreq!(
             pseudocounts,
             pseudofrequencies,
             res_list[i],
-            res_list[j],
+            res_list[j];
+            kargs...,
         )
     end
     plm
@@ -154,6 +180,9 @@ function mapcolpairfreq!(
     table::Union{Probabilities{T,2,A},Counts{T,2,A}};
     usediagonal::Bool = true,
     diagonalvalue::T = zero(T),
+    weights::WeightTypes = NoClustering(),
+    pseudocounts::Pseudocount = NoPseudocount(),
+    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
     kargs...,
 ) where {T,A}
     ncol = ncolumns(msa)
@@ -161,7 +190,17 @@ function mapcolpairfreq!(
     columns = map(i -> view(residues, :, i), 1:ncol) # 2x faster than calling view inside the loop
     scores = columnpairsmatrix(msa, T, Val{usediagonal}, diagonalvalue) # Named PairwiseListMatrix
     plm = getarray(scores)
-    _mappairfreq!(f, columns, plm, table, Val{usediagonal}; kargs...)
+    _mappairfreq!(
+        f,
+        columns,
+        plm,
+        table,
+        Val{usediagonal};
+        weights = weights,
+        pseudocounts = pseudocounts,
+        pseudofrequencies = pseudofrequencies,
+        kargs...,
+    )
     scores
 end
 
@@ -191,12 +230,25 @@ function mapseqpairfreq!(
     table::Union{Probabilities{T,2,A},Counts{T,2,A}};
     usediagonal::Bool = true,
     diagonalvalue::T = zero(T),
+    weights::WeightTypes = NoClustering(),
+    pseudocounts::Pseudocount = NoPseudocount(),
+    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
     kargs...,
 ) where {T,A}
     sequences = getresiduesequences(msa)
     scores = sequencepairsmatrix(msa, T, Val{usediagonal}, diagonalvalue) # Named PairwiseListMatrix
     plm = getarray(scores)
-    _mappairfreq!(f, sequences, plm, table, Val{usediagonal}; kargs...)
+    _mappairfreq!(
+        f,
+        sequences,
+        plm,
+        table,
+        Val{usediagonal};
+        weights = weights,
+        pseudocounts = pseudocounts,
+        pseudofrequencies = pseudofrequencies,
+        kargs...,
+    )
     scores
 end
 
@@ -213,17 +265,19 @@ end
 # General mapfreq methods
 # =======================
 
-function mapfreq(f::Function,
+function mapfreq(
+    f::Function,
     msa::AbstractArray{Residue};
-    rank::Int=2,
-    dims::Int=2,
+    rank::Int = 2,
+    dims::Int = 2,
     alphabet::ResidueAlphabet = UngappedAlphabet(),
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
     pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
     probabilities::Bool = true,
     diagonalvalue::Float64 = NaN,
-    kargs...) where {T}
+    kargs...,
+)
     # Ensure that the keyword arguments are correct
     @assert dims == 1 || dims == 2 "The dimension must be 1 (sequences) or 2 (columns)."
     @assert rank == 1 || rank == 2 "The rank must be 1 (single sequences or columns) or 2 (pairs)."

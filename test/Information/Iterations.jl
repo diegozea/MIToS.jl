@@ -75,4 +75,26 @@
         seqfract = mapseqfreq!(_gaps, gaps, Probabilities(table))
         @test all((vec(getarray(seqfract)) .- ngaps ./ 10.0) .== 0.0)
     end
+
+    @testset "Passing keyword arguments" begin
+
+        # Dummy function that returns the value of the keyword argument `karg` for testing
+        f(table; karg::Float64 = 0.0) = karg
+
+        msa = rand(Random.MersenneTwister(123), Residue, 4, 10)
+        table_1d = Counts(ContingencyTable(Float64, Val{1}, UngappedAlphabet()))
+        table_2d = Probabilities(ContingencyTable(Float64, Val{2}, UngappedAlphabet()))
+
+        @test sum(mapseqfreq!(f, msa, deepcopy(table_1d))) == 0.0
+        @test sum(mapseqfreq!(f, msa, deepcopy(table_1d), karg = 1.0)) == 4.0
+
+        @test sum(mapcolfreq!(f, msa, deepcopy(table_1d))) == 0.0
+        @test sum(mapcolfreq!(f, msa, deepcopy(table_1d), karg = 1.0)) == 10.0
+
+        @test sum(mapseqpairfreq!(f, msa, deepcopy(table_2d))) == 0
+        @test sum(mapseqpairfreq!(f, msa, deepcopy(table_2d), karg = 1.0)) == 16.0
+
+        @test sum(mapcolpairfreq!(f, msa, deepcopy(table_2d))) == 0
+        @test sum(mapcolpairfreq!(f, msa, deepcopy(table_2d), karg = 1.0)) == 100.0
+    end
 end
