@@ -6,7 +6,22 @@
   boolean `usediagonal` keyword argument to indicate if the function should be applied to
   the diagonal elements of the matrix (the default is `true`). Before, this was done passing
   `Val{true}` or `Val{false}` as the last positional argument.
-  
+
+* *[Breaking change]* The `count` function on sequences has been deprecated in favor of the
+  `frequencies` function, which has the same signature and behavior as the old one.
+
+* *[Breaking change]* The `count!` function is deprecated in favor of `frequencies!`. 
+  The new function use keyword arguments to define the weights and pseudocounts. As an
+  example of migration, `count!(table, weights, pseudocounts, seqs...)` should be replaced 
+  by `frequencies!(table, seqs..., weights=weights, pseudocounts=pseudocounts)`.
+
+* *[Breaking change]* The `probabilities!` method using positional arguments for the 
+  weights, pseudocounts and pseudofrequencies is deprecated in favor the one that uses 
+  keyword arguments. As an example of migration, 
+  `probabilities!(table, weights, pseudocounts, pseudofrequencies, seqs...)` 
+  should be replaced by 
+  `probabilities!(table, seqs..., weights=weights, pseudocounts=pseudocounts, pseudofrequencies=pseudofrequencies)`.
+
 ### Changes from v2.20.0 to v2.21.0
 
 * *[Breaking change]* The `buslje09` and `BLMI` functions from the `Information` module does 

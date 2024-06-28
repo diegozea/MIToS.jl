@@ -57,12 +57,14 @@ end
 # weights
 # -------
 
+const WeightTypes = Union{Weights,NoClustering,Clusters}
+
 """
 `getweight(c[, i::Int])`
 
 This function returns the weight of the sequence number `i`. getweight should be defined for
-any type used for `count!`/`count` in order to use his weigths. If `i` isn't used, this
-function returns a vector with the weight of each sequence.
+any type used for `frequencies!`/`frequencies` in order to use his weigths. If `i` isn't 
+used, this function returns a vector with the weight of each sequence.
 """
 @inline getweight(weight::NoClustering, seq::Int) = 1.0
 
@@ -74,3 +76,4 @@ getweight(cl::Clusters, seq::Int) = cl.weights[seq]
 
 # getweight(cl::ClusteringResult) = getweight(convert(Clusters, cl))
 # getweight(cl::ClusteringResult, seq::Int) = getweight(convert(Clusters, cl), seq)
+

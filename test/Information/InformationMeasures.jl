@@ -10,7 +10,7 @@
     Pss = probabilities(s, s)
     Psr = probabilities(s, r)
     Psss = probabilities(s, s, s)
-    count_random = count(Residue[], Residue[], pseudocounts = AdditiveSmoothing(1.0))
+    count_random = frequencies(Residue[], Residue[], pseudocounts = AdditiveSmoothing(1.0))
     prob_random = probabilities(Residue[], Residue[], pseudocounts = AdditiveSmoothing(1.0))
 
     @testset "Entropy" begin
@@ -40,9 +40,9 @@
 
         @testset "Using counts" begin
 
-            @test entropy(count(g, g)) ≈ entropy(Pgg)
-            @test entropy(count(s, s)) ≈ entropy(Pss)
-            @test entropy(count(s, r)) ≈ entropy(Psr)
+            @test entropy(frequencies(g, g)) ≈ entropy(Pgg)
+            @test entropy(frequencies(s, s)) ≈ entropy(Pss)
+            @test entropy(frequencies(s, r)) ≈ entropy(Psr)
         end
     end
 
@@ -70,7 +70,7 @@
         Q = getmarginalsarray(Pgs)[:, 1] * getmarginalsarray(Pgs)[:, 2]' # 0.05000000000000002
         @test mutual_information(Pgs) ≈
               mapreduce(x -> isnan(x) ? 0.0 : x, +, P .* log.(P ./ Q))
-        @test mutual_information(count(g, s)) ≈ 0.0 # It's more accurate
+        @test mutual_information(frequencies(g, s)) ≈ 0.0 # It's more accurate
 
         # MI(X,Y)=H(X)+H(Y)-H(X,Y)
 
@@ -99,9 +99,9 @@
         @testset "Using counts" begin
 
             @test mutual_information(count_random) ≈ 0.0
-            @test mutual_information(count(g, g)) ≈ mutual_information(Pgg)
-            @test mutual_information(count(s, s)) ≈ mutual_information(Pss)
-            @test mutual_information(count(s, r)) ≈ mutual_information(Psr)
+            @test mutual_information(frequencies(g, g)) ≈ mutual_information(Pgg)
+            @test mutual_information(frequencies(s, s)) ≈ mutual_information(Pss)
+            @test mutual_information(frequencies(s, r)) ≈ mutual_information(Psr)
         end
 
         @testset "MI(X,Y,Z)" begin
@@ -109,10 +109,10 @@
             @test mutual_information(Pggg) ≈ 0.0
             @test mutual_information(probabilities(g, s, r)) ≈ 0.0
             @test mutual_information(probabilities(s, s, r)) ≈
-                  mutual_information(count(s, s, r))
+                  mutual_information(frequencies(s, s, r))
 
             # MI(X,Y,Z) = H(X) + H(Y) + H(Z) - H(X,Y) - H(X,Z) - H(Y,Z) + H(X,Y,Z)
-            @test mutual_information(Psss) ≈ mutual_information(count(s, s, s))
+            @test mutual_information(Psss) ≈ mutual_information(frequencies(s, s, s))
             @test mutual_information(Psss) ≈ (
                 marginal_entropy(Psss, 1) +
                 marginal_entropy(Psss, 2) +
@@ -127,14 +127,14 @@
         @testset "Pairwise Gap Percentage" begin
 
             @test gap_union_percentage(
-                count(res"AA--", res"--AA", alphabet = GappedAlphabet()),
+                frequencies(res"AA--", res"--AA", alphabet = GappedAlphabet()),
             ) ≈ 100.0
             @test gap_intersection_percentage(
-                count(res"AA--", res"--AA", alphabet = GappedAlphabet()),
+                frequencies(res"AA--", res"--AA", alphabet = GappedAlphabet()),
             ) ≈ 0.0
 
             @test gap_union_percentage(
-                count(
+                frequencies(
                     res"AA--",
                     res"--AA",
                     alphabet = GappedAlphabet(),
@@ -142,7 +142,7 @@
                 ),
             ) ≈ 100.0
             @test gap_intersection_percentage(
-                count(
+                frequencies(
                     res"AA--",
                     res"--AA",
                     alphabet = GappedAlphabet(),
@@ -151,14 +151,14 @@
             ) ≈ 0.0
 
             @test gap_union_percentage(
-                count(res"AAA-", res"AA--", alphabet = GappedAlphabet()),
+                frequencies(res"AAA-", res"AA--", alphabet = GappedAlphabet()),
             ) ≈ 50.0
             @test gap_intersection_percentage(
-                count(res"AAA-", res"AA--", alphabet = GappedAlphabet()),
+                frequencies(res"AAA-", res"AA--", alphabet = GappedAlphabet()),
             ) ≈ 25.0
 
             @test gap_union_percentage(
-                count(
+                frequencies(
                     res"AAA-",
                     res"AA--",
                     alphabet = GappedAlphabet(),
@@ -166,7 +166,7 @@
                 ),
             ) ≈ 60.0
             @test gap_intersection_percentage(
-                count(
+                frequencies(
                     res"AAA-",
                     res"AA--",
                     alphabet = GappedAlphabet(),

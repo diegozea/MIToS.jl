@@ -133,12 +133,14 @@ export  # Residue
     meanpercentidentity,
     percentsimilarity,
     # Clusters
+    WeightTypes,
+    NoClustering,
+    Clusters,
     ClusteringResult, # from Clustering.jl
     nclusters,
     counts,
     assignments, # from Clustering.jl
-    NoClustering,
-    Clusters,
+    
     getweight,
     nelements,
     # Hobohm

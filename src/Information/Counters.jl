@@ -36,6 +36,9 @@ and all the sequences must have the same length. You must indicate the used weig
 pseudocounts as second and third positional arguments respectively. You can use
 `NoPseudofrequencies()` and `NoClustering()` to avoid the use of sequence weighting and
 pseudocounts, respectively.
+
+**DEPRECATED**: Use [`frequencies!`](@ref) instead. Note that `frequencies!` defines the weigths and
+pseudocounts using keyword arguments instead of positional arguments.
 """
 function count!(
     table::ContingencyTable{T,N,A},
@@ -43,16 +46,39 @@ function count!(
     pseudocounts::Pseudocount,
     seqs::Vararg{AbstractVector{Residue},N},
 ) where {T,N,A}
+    # @warn "count! using a ContingencyTable or Counts is deprecated. Use frequencies! instead."
+    frequencies!(table, seqs..., weights=weights, pseudocounts=pseudocounts)
+end
+
+function count!(table::Counts{T,N,A}, args...) where {T,N,A}
+    count!(getcontingencytable(table), args...)
+end
+
+# frequencies! is like count! but using keyword arguments
+"""
+    frequencies!(table, seqs...; weights::WeightTypes, pseudocounts::Pseudocount)
+
+It populates a `ContingencyTable` or `Counts` table (first argument) using the frequencies 
+in the given sequences (last positional arguments). The dimension of the table must match 
+the number of sequences and all the sequences must have the same length. You must indicate 
+the used `weights` and `pseudocounts` as keyword arguments. Those arguments default to 
+`NoClustering()` and `NoPseudocount()` respectively, to avoid the use of sequence 
+weighting and pseudocounts.
+"""
+function frequencies!(
+    table::ContingencyTable{T,N,A},
+    seqs::Vararg{AbstractVector{Residue},N};
+    weights::WeightTypes = NoClustering(),
+    pseudocounts::Pseudocount = NoPseudocount(),
+) where {T,N,A}
     _temporal_counts!(table, weights, seqs...)
     apply_pseudocount!(table, pseudocounts)
     _update!(table)
     table
 end
 
-function count!(table::Counts{T,N,A}, args...) where {T,N,A}
-    count!(getcontingencytable(table), args...)
-    table
-end
+frequencies!(table::Counts{T,N,A}, args...; kwargs...) where {T,N,A} =
+    frequencies!(getcontingencytable(table), args...; kwargs...)
 
 # Default counters
 # ================
@@ -75,11 +101,34 @@ of sequences. You can use the keyword arguments `alphabet`, `weights` and `pseud
 to indicate the alphabet of the table (default to `UngappedAlphabet()`), a clustering
 result (default to `NoClustering()`) and the pseudocounts (default to `NoPseudocount()`)
 to be used during the estimation of the frequencies.
+
+**DEPRECATED**: Use [`frequencies`](@ref) instead. Note that `frequencies` defines the 
+alphabet, weigths and pseudocounts using keyword arguments instead of positional arguments.
 """
 function Base.count(
     seqs::Vararg{AbstractVector{Residue},N};
     alphabet::ResidueAlphabet = UngappedAlphabet(),
-    weights = NoClustering(),
+    weights::WeightTypes = NoClustering(),
+    pseudocounts::Pseudocount = NoPseudocount(),
+) where {N}
+    # @warn "`count` on sequences is deprecated in favor of `frequencies`."
+    frequencies(seqs...; alphabet=alphabet, weights=weights, pseudocounts=pseudocounts)
+end
+
+
+"""
+    frequencies(seqs...; alphabet=UngappedAlphabet(), weights=NoClustering(), pseudocounts=NoPseudocount() 
+
+This function returns a `Counts` object wrapping a `ContingencyTable` with the frequencies
+of residues in the sequences that takes as arguments. The dimension of the table is equal
+to the number of sequences. You can use the keyword arguments `alphabet`, `weights` and
+`pseudocounts` to indicate the alphabet of the table, a clustering result and the 
+pseudocounts to be used during the estimation of the frequencies.
+"""
+function frequencies(
+    seqs::Vararg{AbstractVector{Residue},N};
+    alphabet::ResidueAlphabet = UngappedAlphabet(),
+    weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
 ) where {N}
     Counts(_count(alphabet, weights, pseudocounts, seqs...))
@@ -103,16 +152,23 @@ function probabilities!(
     pseudofrequencies::Pseudofrequencies,
     seqs::Vararg{AbstractVector{Residue},N},
 ) where {T,N,A}
+    # @warn "The probabilities! method indicating weights, pseudocounts and pseudofrequencies using positional arguments is deprecated; use keyword arguments instead."
+    probabilities!(table, seqs..., weights=weights, pseudocounts=pseudocounts, pseudofrequencies=pseudofrequencies)
+end
+
+function probabilities!(table::ContingencyTable{T,N,A}, seqs::Vararg{AbstractVector{Residue},N}; 
+    weights::WeightTypes = NoClustering(),
+    pseudocounts::Pseudocount = NoPseudocount(),
+    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
+) where {T,N,A}
     count!(table, weights, pseudocounts, seqs...)
     normalize!(table)
     apply_pseudofrequencies!(table, pseudofrequencies)
     table
 end
 
-
-function probabilities!(table::Probabilities{T,N,A}, args...) where {T,N,A}
-    probabilities!(getcontingencytable(table), args...)
-    table
+function probabilities!(table::Probabilities{T,N,A}, args...; kargs...) where {T,N,A}
+    probabilities!(getcontingencytable(table), args...; kargs...)
 end
 
 # Default probabilities
@@ -131,7 +187,7 @@ function _probabilities(
 end
 
 """
-It returns a `ContingencyTable` wrapped in a `Probabilities` type with the frequencies of
+It returns a `ContingencyTable` wrapped in a `Probabilities` type with the probabilities of
 residues in the sequences that takes as arguments. The dimension of the table is equal to
 the number of sequences. You can use the keyword arguments `alphabet`, `weights`,
 `pseudocounts` and `pseudofrequencies` to indicate the alphabet of the table
@@ -142,7 +198,7 @@ the pseudocounts (default to `NoPseudocount()`) and the pseudofrequencies
 function probabilities(
     seqs::Vararg{AbstractVector{Residue},N};
     alphabet::ResidueAlphabet = UngappedAlphabet(),
-    weights = NoClustering(),
+    weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
     pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
 ) where {N}

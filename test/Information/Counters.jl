@@ -22,9 +22,9 @@
                 @test getmarginals(table)[1, 1] == 0.0
                 @test gettotal(table) == 0.0
 
-                count!(table, NoClustering(), NoPseudocount(), seqs...)
+                frequencies!(table, seqs...)
 
-                @test table == count(seqs..., alphabet = alphabet)
+                @test table == frequencies(seqs..., alphabet = alphabet)
 
                 if isa(alphabet, ReducedAlphabet)
                     @test table[1] == 5.0
@@ -61,9 +61,9 @@
 
                     table = ContingencyTable(Float64, Val{N}, alphabet)
 
-                    count!(table, clusters, NoPseudocount(), seqs...)
+                    frequencies!(table, seqs..., weights=clusters)
 
-                    @test table == count(seqs..., alphabet = alphabet, weights = clusters)
+                    @test table == frequencies(seqs..., alphabet = alphabet, weights = clusters)
 
                     len = length(alphabet)
                     if isa(alphabet, ReducedAlphabet)
@@ -101,9 +101,9 @@
 
                     table = ContingencyTable(Float64, Val{N}, alphabet)
 
-                    count!(table, NoClustering(), AdditiveSmoothing(1.0), seqs...)
+                    frequencies!(table, seqs..., pseudocounts=AdditiveSmoothing(1.0))
 
-                    @test table == count(
+                    @test table == frequencies(
                         seqs...,
                         alphabet = alphabet,
                         pseudocounts = AdditiveSmoothing(1.0),
@@ -194,11 +194,11 @@
             Pxy = delete_dimensions(Pxyz, 3)
             @test delete_dimensions!(Pxy, Pxyz, 1) == probabilities(seq, seq)
             @test sum(Pxy) ≈ 1.0
-            Nxyz = count(seq, seq, seq)
+            Nxyz = frequencies(seq, seq, seq)
             Nxy = delete_dimensions(Nxyz, 3)
-            @test Nxy == count(seq, seq)
-            @test delete_dimensions(Nxyz, 3, 2) == count(seq)
-            @test delete_dimensions!(Nxy, Nxyz, 1) == count(seq, seq)
+            @test Nxy == frequencies(seq, seq)
+            @test delete_dimensions(Nxyz, 3, 2) == frequencies(seq)
+            @test delete_dimensions!(Nxy, Nxyz, 1) == frequencies(seq, seq)
         end
     end
 end

@@ -62,7 +62,7 @@ using MIToS.Information
 Pij = ContingencyTable(Float64, Val{2}, UngappedAlphabet())
 ```  
 
-**[High level interface]** It is possible to use the functions `count` and `probabilities`
+**[High level interface]** It is possible to use the functions `frequencies` and `probabilities`
 to easily calculate the frequencies of sequences or columns of a MSA, where the number of
 sequences/columns determine the dimension of the resulting table.  
 
@@ -74,7 +74,7 @@ column_i = res"AARANHDDRDC-"
 column_j = res"-ARRNHADRAVY"
 #   Nij[R,R] =   1     1   = 2
 
-Nij = count(column_i, column_j)
+Nij = frequencies(column_i, column_j)
 ```  
 
 You can use `sum` to get the stored total:  
@@ -111,7 +111,7 @@ column_i = res"AARANHDDRDC-"
 column_j = res"-ARRNHADRAVY"
 #   Fij[R,R] =   1  1  1   = 3 # RHK
 
-Fij = count(column_i, column_j, alphabet=alphabet)
+Fij = frequencies(column_i, column_j, alphabet=alphabet)
 ```  
 ```@example inf_reduced
 Fij[Residue('R'), Residue('R')] # Use Residue to index the table
@@ -127,7 +127,7 @@ Probabilities(normalize(getcontingencytable(Fij)))
 
 #### Example: Plotting the probabilities of each residue in a sequence
 
-Similar to the `count` function, the `probabilities` function can take at least one
+Similar to the `frequencies` function, the `probabilities` function can take at least one
 sequence (vector of residues) and returns the probabilities of each residue. Optionally,
 the keyword argument `alphabet` could be used to count some residues in the same cell
 of the table.  
@@ -151,8 +151,8 @@ probabilities(seq[1,:]) # Select the single sequence and calculate the probabili
 !!! note
     In the previous example, using `getsequence(seq,1)` instead of `seq[1,:]` will return
     the sequence as a matrix with a single column to keep information for both dimensions.
-    To use `probabilities` (or `count`) you can make use of the Julia's `vec` function to
-    transform the matrix to a vector, e.g.: `probabilities(vec(getsequence(seq,1)))`.
+    To use `probabilities` (or `frequencies`) you can make use of the Julia's `vec` 
+    function to transform the matrix to a vector, e.g.: `probabilities(vec(getsequence(seq,1)))`.
 
 ```@setup inf_plotfreq
 @info "Information: Plots"
@@ -161,7 +161,7 @@ gr(size=(600,300))
 using MIToS.Information # to use the probabilities function
 using MIToS.MSA # to use getsequence on the one sequence FASTA (canonical) from UniProt
 seq = read_file("http://www.uniprot.org/uniprot/P29374.fasta", FASTA) # Small hack: read the single sequence as a MSA
-frequencies = probabilities(seq[1,:]) # Select the single sequence and calculate the probabilities
+Pa = probabilities(seq[1,:]) # Select the single sequence and calculate the probabilities
 ```  
 
 ```@example inf_plotfreq
@@ -176,7 +176,7 @@ is exported as a constant by the `Information` module as `BLOSUM62_Pi`.
 ```@example inf_plotfreq
 bar(
     1:20,
-    [ frequencies  BLOSUM62_Pi ],
+    [ Pa  BLOSUM62_Pi ],
     lab = [ "Sequence"  "BLOSUM62"   ],
     alpha=0.5
     )
@@ -208,8 +208,8 @@ column_i = msa[:,1]
 column_j = msa[:,2]
 ```
 
-If you have a preallocated `ContingencyTable` you can use `count!` to fill it, this prevent
-to create a new table as `count` do. However, you should note that `count!` **adds the new
+If you have a preallocated `ContingencyTable` you can use `frequencies!` to fill it, this prevent
+to create a new table as `frequencies` do. However, you should note that `frequencies!` **adds the new
 counts to the pre existing values**, so in this case, we want to start with a table
 initialized with zeros.  
 
@@ -223,14 +223,8 @@ Nij = ContingencyTable(Float64, Val{2}, alphabet)
 ```  
 
 ```@example inf_msa
-#      table  weights         pseudocount      sequences...
-count!(Nij,   NoClustering(), NoPseudocount(), column_i, column_j)
-```  
-
-!!! note
-    You can use `NoClustering()` in places where clustering weights are required to not use
-    weights. Also, `NoPseudocount()` in places where pseudocount values are required to not
-    use pseudocounts.
+frequencies!(Nij, column_i, column_j)
+```
 
 In cases like the above, where there are few observations, it is possible to apply a
 constant pseudocount to the counting table.  This module defines the type
@@ -241,13 +235,14 @@ efficiently add or fill with a constant value each element of the table.
 apply_pseudocount!(Nij, AdditiveSmoothing(1.0))
 ```
 
-**[High level interface.]** The `count` function has a `pseudocounts` keyword argument that
-can take a `AdditiveSmoothing` value to easily calculate occurrences with pseudocounts. Also
-the alphabet keyword argument can be used to chage the default alphabet (i.e. )
+**[High level interface.]** The `frequencies` and `frequencies!` function has a 
+`pseudocounts` keyword argument that can take a `AdditiveSmoothing` value to easily 
+calculate occurrences with pseudocounts. Also their `alphabet` keyword argument can be 
+used to chage the default alphabet.
 
 
 ```@example inf_msa
-count(column_i, column_j, pseudocounts=AdditiveSmoothing(1.0), alphabet=alphabet)
+frequencies(column_i, column_j, pseudocounts=AdditiveSmoothing(1.0), alphabet=alphabet)
 ```  
 
 To use the conditional probability matrix `BLOSUM62_Pij` in the calculation of pseudo
@@ -286,8 +281,8 @@ A simple way to reduce redundancy in a MSA without losing sequences, is clusteri
 sequence weighting. The weight of each sequence should be 1/N, where N is the number of
 sequences in its cluster. The `Clusters` type of the `MSA` module stores the
 weights. This vector of weights can be extracted (with the `getweight` function) and used
-by the `count` and `probabilities` functions with the keyword argument `weights`. Also it's
-possible to use the `Clusters` as second argument of the function `count!`.  
+by the `frequencies` and `probabilities` functions with the keyword argument `weights`. Also it's
+possible to use the `Clusters` as second argument of the function `frequencies!`.  
 
 
 ```@example inf_msa
@@ -295,7 +290,7 @@ clusters = hobohmI(msa, 62) # from MIToS.MSA
 ```
 
 ```@example inf_msa
-count(msa[:,1], msa[:,2], weights=clusters)
+frequencies(msa[:,1], msa[:,2], weights=clusters)
 ```
 
 ## Estimating information measures on an MSA
@@ -318,7 +313,7 @@ Information measure functions take optionally the base as the last positional ar
 using MIToS.Information
 using MIToS.MSA
 
-Ni = count(res"PPCDPPPPPKDKKKKDDGPP") # Ni has the count table of residues in this low complexity sequence
+Ni = frequencies(res"PPCDPPPPPKDKKKKDDGPP") # Ni has the count table of residues in this low complexity sequence
 
 H = entropy(Ni) # returns the Shannon entropy in nats (base e)
 ```

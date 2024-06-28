@@ -69,6 +69,8 @@ export  # MIToS.MSA
     apply_pseudofrequencies!,
     # Counters
     count!,
+    frequencies,
+    frequencies!,
     probabilities,
     probabilities!,
     # Iterations
