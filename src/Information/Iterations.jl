@@ -210,6 +210,36 @@ function mapseqpairfreq!(f, msa, table, usediagonal::Type{Val{D}}; kargs...) whe
     mapseqpairfreq!(f, msa, table; usediagonal = D, kargs...)
 end
 
+# General mapfreq methods
+# =======================
+
+function mapfreq(f::Function,
+    msa::AbstractArray{Residue};
+    rank::Int=2,
+    dims::Int=2,
+    alphabet::ResidueAlphabet = UngappedAlphabet(),
+    weights::WeightTypes = NoClustering(),
+    pseudocounts::Pseudocount = NoPseudocount(),
+    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
+    probabilities::Bool = true,
+    diagonalvalue::Float64 = NaN,
+    kargs...) where {T}
+    # Ensure that the keyword arguments are correct
+    @assert dims == 1 || dims == 2 "The dimension must be 1 (sequences) or 2 (columns)."
+    @assert rank == 1 || rank == 2 "The rank must be 1 (single sequences or columns) or 2 (pairs)."
+    if pseudofrequencies !== NoPseudofrequencies()
+        @assert probabilities "Set `probabilities = true` to use pseudofrequencies."
+    end
+    # Define the table to apply the function
+    _table = ContingencyTable(Float64, Val{rank}, alphabet)
+    table = probabilities ? Probabilities(_table) : Counts(_table)
+    #=
+    if dims == 1
+        mapseqpairfreq!(f, msa, table; kargs...)
+    end
+    =#
+end
+
 # cMI
 # ===
 
