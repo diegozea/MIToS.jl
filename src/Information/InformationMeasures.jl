@@ -1,39 +1,80 @@
 # Entropy
 # =======
 
-function StatsBase.entropy(table::Probabilities{T,N,A}) where {T,N,A}
+"""
+    shannon_entropy(table::Union{Counts{T,N,A},Probabilities{T,N,A}}; base::Union{Real, Nothing}=nothing)
+
+It calculates the Shannon entropy (H) from a table of `Counts` or `Probabilities`.
+Use last and optional positional argument to change the base of the log. The default base
+(`base=nothing`) is ℯ, so the result is in nats. You can use `base=2.0` to get the result 
+in bits.
+"""
+function shannon_entropy(table::Probabilities{T,N,A}; base::Union{Real, Nothing}=nothing) where {T,N,A}
     H = zero(T)
     p = gettablearray(table)
     @inbounds for pᵢ in p
         if pᵢ > zero(T)
-            H += pᵢ * log(pᵢ)
+            H -= pᵢ * log(pᵢ)
         end
     end
-    -H # Default base: e
+    base === nothing ? H : (H / log(base))
 end
 
-function StatsBase.entropy(table::Counts{T,N,A}) where {T,N,A}
+function shannon_entropy(table::Counts{T,N,A}; base::Union{Real, Nothing}=nothing) where {T,N,A}
     H = zero(T)
     total = gettotal(table)
     n = gettablearray(table)
     @inbounds for nᵢ in n
         if nᵢ > zero(T)
-            H += nᵢ * log(nᵢ / total)
+            H -= nᵢ * log(nᵢ / total)
         end
     end
-    -H / total # Default base: e
+    if base === nothing
+        H / total  # Default base: e
+    else
+        (H / total) / log(base)
+    end
 end
 
+function StatsBase.entropy(table::Union{Counts{T,N,A},Probabilities{T,N,A}}) where {T,N,A}
+    Base.depwarn("entropy(table::Union{Counts,Probabilities}) is deprecated. Use shannon_entropy(table) instead.", :entropy, force=true)
+    shannon_entropy(table)
+end
+
+function StatsBase.entropy(table::Union{Counts{T,N,A},Probabilities{T,N,A}}, base::Real) where {T,N,A}
+    Base.depwarn("entropy(table::Union{Counts,Probabilities}, base::Real) is deprecated. Use shannon_entropy(table; base=base) instead.", :entropy, force=true)
+    shannon_entropy(table, base=base)
+end
+
+# using mapfreq to define the method for multiple sequence alignments
 """
-It calculates the Shannon entropy (H) from a table of `Counts` or `Probabilities`.
-Use last and optional positional argument to change the base of the log. The default base
-is e, so the result is in nats. You can use 2.0 as base to get the result in bits.
+    shannon_entropy(msa::AbstractArray{Residue}; base::Real=ℯ)
+
+It calculates the Shannon entropy (H) on a MSA. You can use the keyword argument `base` to
+change the base of the log. The default base is ℯ, so the result is in nats. You can use 2.0
+as base to get the result in bits. It uses [`mapfreq`](@ref) under the hood, so it takes 
+the same keyword arguments. By default, it measures the entropy of each column in the MSA.
+You can use `dims = 1` to measure the entropy of each sequence. You can also set `rank = 2`
+to measure the joint entropy of each pair of sequences or columns.
+
+```jldoctest
+julia> using MIToS.MSA, MIToS.Information
+
+julia> msa = Residue['C' 'G'; 'C' 'L'; 'C' 'I']
+3×2 Matrix{Residue}:
+ C  G
+ C  L
+ C  I
+
+julia> shannon_entropy(msa)
+1×2 Named Matrix{Float64}
+ Function ╲ Col │       1        2
+────────────────┼─────────────────
+shannon_entropy │     0.0  1.09861
+
 """
-function StatsBase.entropy(
-    table::Union{Counts{T,N,A},Probabilities{T,N,A}},
-    base::Real,
-) where {T,N,A}
-    entropy(table) / log(base)
+function shannon_entropy(msa::AbstractArray{Residue}; kargs...)
+    mapfreq(shannon_entropy, msa; kargs...)
 end
 
 # Marginal Entropy

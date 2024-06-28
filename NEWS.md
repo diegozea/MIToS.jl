@@ -35,6 +35,15 @@
   probabilities of the columns or sequences of an MSA. When `rank = 2`, the function is
   applied to pairs of sequences or columns.
 
+* The `Information` has deprecated the `entropy` method on `Counts` and `Probabilities` in
+  favor of the `shannon_entropy` function. The definition of the base is now done using the
+  `base` keyword argument. As an example of migration, `entropy(p, 2.0)` should be 
+  replaced by `shannon_entropy(p, base=2.0)`.
+
+* The `Information` module now exports a `shannon_entropy` method that takes a 
+  `AbstractArray{Residue}` as input to ease the calculation of this measure on 
+  sequences and multiple sequence alignments.
+
 ### Changes from v2.20.0 to v2.21.0
 
 * *[Breaking change]* The `buslje09` and `BLMI` functions from the `Information` module does 

@@ -265,6 +265,12 @@ end
 # General mapfreq methods
 # =======================
 
+# The doctest for rank=2 can not be supported simultaneously for Julia 1.6 and 1.10
+# because of the different behavior when printing the matrix headers.
+# Therefore, the following docstest could be added once we drop support for Julia 1.6:
+# mapfreq(sum, msa, rank=2)
+# mapfreq(sum, msa, dims=1, rank=2)
+
 """
     mapfreq(f, msa; rank = 1, dims = 2, alphabet = UngappedAlphabet(), 
         weights = NoClustering(), pseudocounts = NoPseudocount(), 
@@ -286,9 +292,7 @@ $_mapfreq_kargs_doc
 Note that the `pseudofrequencies` argument is only valid if `probabilities = true`. All the 
 other keyword arguments are passed to the function `f`.
 ```jldoctest
-julia> using PairwiseListMatrices, MIToS.MSA, Random # needed for the doctest
-
-julia> using MIToS.Information 
+julia> using Random, MIToS.MSA, MIToS.Information
 
 julia> msa = rand(Random.MersenneTwister(1), Residue, 3, 6) # random MSA as an example
 3×6 Matrix{Residue}:
@@ -301,17 +305,6 @@ julia> mapfreq(sum, msa) # default: rank=1, dims=2, probabilities=true
 Function ╲ Col │   1    2    3    4    5    6
 ───────────────┼─────────────────────────────
 sum            │ 1.0  1.0  1.0  1.0  1.0  1.0
-
-julia> mapfreq(sum, msa, rank=2)
-6×6 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
-Col1 ╲ Col2 │   1    2    3    4    5    6
-────────────┼─────────────────────────────
-1           │ NaN  1.0  1.0  1.0  1.0  1.0
-2           │ 1.0  NaN  1.0  1.0  1.0  1.0
-3           │ 1.0  1.0  NaN  1.0  1.0  1.0
-4           │ 1.0  1.0  1.0  NaN  1.0  1.0
-5           │ 1.0  1.0  1.0  1.0  NaN  1.0
-6           │ 1.0  1.0  1.0  1.0  1.0  NaN
 
 julia> mapfreq(sum, msa, probabilities=false)
 1×6 Named Matrix{Float64}
@@ -326,14 +319,6 @@ Seq ╲ Function │ sum
 1              │ 1.0
 2              │ 1.0
 3              │ 1.0
-
-julia> mapfreq(sum, msa, dims=1, rank=2)
-3×3 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
-Seq1 ╲ Seq2 │   1    2    3
-────────────┼──────────────
-1           │ NaN  1.0  1.0
-2           │ 1.0  NaN  1.0
-3           │ 1.0  1.0  NaN
 
 ```
 """

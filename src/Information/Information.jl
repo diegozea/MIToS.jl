@@ -82,6 +82,7 @@ export  # MIToS.MSA
     cumulative,
     # InformationMeasures
     entropy,
+    shannon_entropy,
     marginal_entropy,
     kullback_leibler,
     mutual_information,
