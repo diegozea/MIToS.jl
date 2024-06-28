@@ -29,8 +29,8 @@
         @testset "Interface between chain A and D" begin
 
             # Contacts: Chain A (4 residues) y Chain D (3 residues)
-            C1 = @residuesdict pdb model "1" chain "A" group "ATOM" residue All
-            C2 = @residuesdict pdb model "1" chain "D" group "ATOM" residue All
+            C1 = residuesdict(pdb, model = "1", chain = "A", group = "ATOM")
+            C2 = residuesdict(pdb, model = "1", chain = "D", group = "ATOM")
 
             TRUE = [
                 ("126", "311"),
@@ -94,8 +94,8 @@
 
         @testset "Aromatic between chain A and B" begin
 
-            C1 = @residuesdict pdb model "1" chain "A" group "ATOM" residue All
-            C2 = @residuesdict pdb model "1" chain "B" group "ATOM" residue All
+            C1 = residuesdict(pdb, model = "1", chain = "A", group = "ATOM")
+            C2 = residuesdict(pdb, model = "1", chain = "B", group = "ATOM")
 
             @test aromatic(C1["36"], C2["103"])
             @test aromatic(C1["94"], C2["47"])
@@ -112,8 +112,8 @@
 
         pdb = read_file(joinpath(DATA, "1AKS.xml.gz"), PDBML)
 
-        CA = @residuesdict pdb model "1" chain "A" group "ATOM" residue All
-        CB = @residuesdict pdb model "1" chain "B" group "ATOM" residue All
+        CA = residuesdict(pdb, model = "1", chain = "A", group = "ATOM")
+        CB = residuesdict(pdb, model = "1", chain = "B", group = "ATOM")
 
         @test aromaticsulphur(CA["20"], CB["157"])
         @test !aromaticsulphur(CA["29"], CB["157"])

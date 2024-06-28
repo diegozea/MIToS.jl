@@ -94,7 +94,7 @@ function _count(
     seqs::Vararg{AbstractVector{Residue},N},
 )::ContingencyTable{Float64,N,A} where {N,A<:ResidueAlphabet}
     table = ContingencyTable(Float64, Val{N}, alphabet)::ContingencyTable{Float64,N,A}
-    count!(table, weights, pseudocounts, seqs...)
+    frequencies!(table, seqs..., weights = weights, pseudocounts = pseudocounts)
     table
 end
 
@@ -186,7 +186,7 @@ function probabilities!(
     pseudocounts::Pseudocount = NoPseudocount(),
     pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
 ) where {T,N,A}
-    count!(table, weights, pseudocounts, seqs...)
+    frequencies!(table, seqs..., weights = weights, pseudocounts = pseudocounts)
     normalize!(table)
     apply_pseudofrequencies!(table, pseudofrequencies)
     table
@@ -207,7 +207,13 @@ function _probabilities(
     seqs::Vararg{AbstractVector{Residue},N},
 )::ContingencyTable{Float64,N,A} where {N,A<:ResidueAlphabet}
     table = ContingencyTable(Float64, Val{N}, alphabet)::ContingencyTable{Float64,N,A}
-    probabilities!(table, weights, pseudocounts, pseudofrequencies, seqs...)
+    probabilities!(
+        table,
+        seqs...;
+        weights = weights,
+        pseudocounts = pseudocounts,
+        pseudofrequencies = pseudofrequencies,
+    )
     table
 end
 

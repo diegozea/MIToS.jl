@@ -75,11 +75,11 @@
 
         @testset "Convert" begin
 
-            msa2annot = convert(AnnotatedMultipleSequenceAlignment, msa)
-            annot2msa = convert(MultipleSequenceAlignment, annotated_msa)
+            msa2annot = AnnotatedMultipleSequenceAlignment(msa)
+            annot2msa = MultipleSequenceAlignment(annotated_msa)
 
-            seq2annot = convert(AnnotatedAlignedSequence, sequence)
-            annot2seq = convert(AlignedSequence, annotated_sequence)
+            seq2annot = AnnotatedAlignedSequence(sequence)
+            annot2seq = AlignedSequence(annotated_sequence)
 
             @test isa(annotations(msa2annot), Annotations)
             @test isa(annotations(seq2annot), Annotations)
@@ -163,16 +163,13 @@
             @test length(split(str, '\n')) == 4
         end
 
-        @testset "Transpose" begin
+        @testset "Transpose, i.e. permutedims" begin
 
-            # deprecated, use permutedims instead
-            @test transpose(msa) == permutedims(msa)
-            @test size(transpose(msa)) == (7, 3)
-            @test size(transpose(annotated_msa)) == (7, 3)
+            @test size(permutedims(msa)) == (7, 3)
+            @test size(permutedims(annotated_msa)) == (7, 3)
 
-            @test transpose(sequence) == permutedims(sequence)
-            @test size(transpose(sequence)) == (21, 1)
-            @test size(transpose(annotated_sequence)) == (21, 1)
+            @test size(permutedims(sequence)) == (21, 1)
+            @test size(permutedims(annotated_sequence)) == (21, 1)
         end
 
         @testset "Get residues" begin

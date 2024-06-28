@@ -145,11 +145,9 @@
 
             probabilities!(
                 table,
-                NoClustering(),
-                NoPseudocount(),
-                BLOSUM_Pseudofrequencies(1.0, 0.0),
                 seq,
                 seq,
+                pseudofrequencies = BLOSUM_Pseudofrequencies(1.0, 0.0),
             )
 
             @test table == probabilities(
@@ -176,11 +174,11 @@
             clusters = Clusters([21], ones(Int, 21), Weights(ones(21) / 21))
             probabilities!(
                 table,
-                clusters,
-                AdditiveSmoothing(one(BigFloat)),
-                BLOSUM_Pseudofrequencies(1.0, 1.0),
                 seq,
                 seq,
+                weights = clusters,
+                pseudocounts = AdditiveSmoothing(one(BigFloat)),
+                pseudofrequencies = BLOSUM_Pseudofrequencies(1.0, 1.0),
             )
 
             @test sum(table) ≈ one(BigFloat)
