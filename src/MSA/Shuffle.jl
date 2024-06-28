@@ -198,7 +198,7 @@ function Random.shuffle!(
     dim::Int,
     fixedgaps::Bool = true,
 )
-    @warn "The function `shuffle!(r, msa, dim, fixedgaps)` is deprecated. Use `shuffle_msa!(r, msa; dims, fixedgaps)` instead."
+    Base.depwarn("The function `shuffle!(r, msa, dim, fixedgaps)` is deprecated. Use `shuffle_msa!(r, msa; dims, fixedgaps)` instead.", :shuffle!, force=true)
     shuffle_msa!(r, msa, Colon(); dims = dim, fixedgaps = fixedgaps) |> getresidues
 end
 
@@ -219,7 +219,7 @@ function Random.shuffle(
     dim::Int,
     fixedgaps::Bool = true,
 )
-    @warn "The function `shuffle(r, msa, dim, fixedgaps)` is deprecated. Use `shuffle_msa(r, msa; dims, fixedgaps)` instead."
+    Base.depwarn("The function `shuffle(r, msa, dim, fixedgaps)` is deprecated. Use `shuffle_msa(r, msa; dims, fixedgaps)` instead.", :shuffle, force=true)
     shuffle_msa(r, msa, Colon(); dims = dim, fixedgaps = fixedgaps) |> getresidues
 end
 

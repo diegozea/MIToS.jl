@@ -78,7 +78,7 @@ function buslje09(
 end
 
 function buslje09(filename::String, format::Type{T}; kargs...) where {T<:FileFormat}
-    @warn "Using a file name and format with `buslje09` is deprecated. Use `read_file` to read an MSA object and call `buslje09` on it."
+    Base.depwarn("Using a file name and format with `buslje09` is deprecated. Use `read_file` to read an MSA object and call `buslje09` on it.", :buslje09, force=true)
     aln = read_file(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping = true)
     buslje09(aln; kargs...)
 end
@@ -159,7 +159,7 @@ function BLMI(
 end
 
 function BLMI(filename::String, format::Type{T}; kargs...) where {T<:FileFormat}
-    @warn "Using a file name and format with `BLMI` is deprecated. Use `read_file` to read an MSA object and call `BLMI` on it."
+    Base.depwarn("Using a file name and format with `BLMI` is deprecated. Use `read_file` to read an MSA object and call `BLMI` on it.", :BLMI, force=true)
     aln = read_file(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping = true)
     BLMI(aln; kargs...)
 end

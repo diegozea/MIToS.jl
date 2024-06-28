@@ -155,12 +155,12 @@ const ResidueQueryTypes = Union{String,Type{All},Regex,Function}
 # ---------
 
 function isresidue(id::PDBResidueIdentifier, model, chain, group, residue)
-    @warn "isresidue using positional arguments is deprecated in favor of keyword arguments: isresidue(id; model, chain, group, residue)"
+    Base.depwarn("isresidue using positional arguments is deprecated in favor of keyword arguments: isresidue(id; model, chain, group, residue)", :isresidue, force=true)
     isresidue(id, model = model, chain = chain, group = group, residue = residue)
 end
 
 function isresidue(res::PDBResidue, model, chain, group, residue)
-    @warn "isresidue using positional arguments is deprecated in favor of keyword arguments: isresidue(res; model, chain, group, residue)"
+    Base.depwarn("isresidue using positional arguments is deprecated in favor of keyword arguments: isresidue(res; model, chain, group, residue)", :isresidue, force=true)
     isresidue(res.id, model = model, chain = chain, group = group, residue = residue)
 end
 
@@ -236,7 +236,7 @@ function residues(
     group,
     residue,
 ) where {N}
-    @warn "residues is deprecated in favor of select_residues(residue_list; model, chain, group, residue)"
+    Base.depwarn("residues is deprecated in favor of select_residues(residue_list; model, chain, group, residue)", :residues, force=true)
     select_residues(
         residue_list;
         model = model,
@@ -266,7 +266,7 @@ macro residues(
     r,
 )
     if model == :model && chain == :chain && group == :group && residue == :residue
-        @warn "Using the @residues macro is deprecated in favor of the select_residues function: select_residues(residue_list; model, chain, group, residue)"
+        Base.depwarn("Using the @residues macro is deprecated in favor of the select_residues function: select_residues(residue_list; model, chain, group, residue)", Symbol("@residues"), force=true)
         return :(select_residues(
             $(esc(residue_list));
             model = $(esc(m)),
@@ -318,7 +318,7 @@ function residuesdict(
     group,
     residue,
 ) where {N}
-    @warn "residuesdict using positional arguments is deprecated in favor of keyword arguments: residuesdict(residue_list; model, chain, group, residue)"
+    Base.depwarn("residuesdict using positional arguments is deprecated in favor of keyword arguments: residuesdict(residue_list; model, chain, group, residue)", :residuesdict, force=true)
     residuesdict(
         residue_list;
         model = model,
@@ -349,7 +349,7 @@ macro residuesdict(
     r,
 )
     if model == :model && chain == :chain && group == :group && residue == :residue
-        @warn "Using @residuesdict macro is deprecated in favor of residuesdict function with keyword arguments: residuesdict(residue_list; model, chain, group, residue)"
+        Base.depwarn("Using @residuesdict macro is deprecated in favor of residuesdict function with keyword arguments: residuesdict(residue_list; model, chain, group, residue)", Symbol("@residuesdict"), force=true)
         return :(residuesdict(
             $(esc(residue_list));
             model = $(esc(m)),
@@ -407,7 +407,7 @@ function atoms(
     residue,
     atom,
 ) where {N}
-    @warn "atoms is deprecated in favor of select_atoms(residue_list; model, chain, group, residue, atom)"
+    Base.depwarn("atoms is deprecated in favor of select_atoms(residue_list; model, chain, group, residue, atom)", :atoms, force=true)
     select_atoms(
         residue_list;
         model = model,
@@ -444,7 +444,7 @@ macro atoms(
        group == :group &&
        residue == :residue &&
        atom == :atom
-        @warn "Using the @atoms macro is deprecated in favor of the select_atoms function: select_atoms(residue_list; model, chain, group, residue, atom)"
+        Base.depwarn("Using the @atoms macro is deprecated in favor of the select_atoms function: select_atoms(residue_list; model, chain, group, residue, atom)", Symbol("@atoms"), force=true)
         return :(select_atoms(
             $(esc(residue_list));
             model = $(esc(m)),

@@ -46,7 +46,7 @@ function count!(
     pseudocounts::Pseudocount,
     seqs::Vararg{AbstractVector{Residue},N},
 ) where {T,N,A}
-    # @warn "count! using a ContingencyTable or Counts is deprecated. Use frequencies! instead."
+    Base.depwarn("count! using a ContingencyTable or Counts is deprecated. Use frequencies! instead.", :count!, force=true)
     frequencies!(table, seqs..., weights=weights, pseudocounts=pseudocounts)
 end
 
@@ -111,7 +111,7 @@ function Base.count(
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
 ) where {N}
-    # @warn "`count` on sequences is deprecated in favor of `frequencies`."
+    Base.depwarn("`count` on sequences is deprecated in favor of `frequencies`.", :count, force=true)
     frequencies(seqs...; alphabet=alphabet, weights=weights, pseudocounts=pseudocounts)
 end
 
@@ -152,7 +152,7 @@ function probabilities!(
     pseudofrequencies::Pseudofrequencies,
     seqs::Vararg{AbstractVector{Residue},N},
 ) where {T,N,A}
-    # @warn "The probabilities! method indicating weights, pseudocounts and pseudofrequencies using positional arguments is deprecated; use keyword arguments instead."
+    Base.depwarn("The probabilities! method indicating weights, pseudocounts and pseudofrequencies using positional arguments is deprecated; use keyword arguments instead.", :probabilities!, force=true)
     probabilities!(table, seqs..., weights=weights, pseudocounts=pseudocounts, pseudofrequencies=pseudofrequencies)
 end
 

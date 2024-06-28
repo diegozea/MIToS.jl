@@ -147,7 +147,7 @@ function read(
     args...;
     kargs...,
 ) where {T<:FileFormat}
-    @warn "Using read with $format is deprecated, use read_file instead."
+    Base.depwarn("Using read with $format is deprecated, use read_file instead.", :read, force=true)
     read_file(name, format, args...; kargs...)
 end
 
@@ -160,7 +160,7 @@ function Base.parse(
     args...;
     kargs...,
 ) where {T<:FileFormat}
-    @warn "Using parse with $format is deprecated, use parse_file instead."
+    Base.depwarn("Using parse with $format is deprecated, use parse_file instead.", :parse, force=true)
     parse_file(io, format, args...; kargs...)
 end
 

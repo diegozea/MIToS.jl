@@ -168,7 +168,7 @@ end
 
 # DEPRECATED, usediagonal is now a boolean keyword argument
 function mapcolpairfreq!(f, msa, table, usediagonal::Type{Val{D}}; kargs...) where {D}
-    @warn "The `usediagonal` positional argument taking `Val{true}` or `Val{false}` is deprecated. Use `usediagonal = true` or `usediagonal = false` instead."
+    Base.depwarn("The `usediagonal` positional argument of `mapcolpairfreq!` taking `Val{true}` or `Val{false}` is deprecated. Use `usediagonal = true` or `usediagonal = false` instead.", :mapcolpairfreq!, force=true)
     mapcolpairfreq!(f, msa, table; usediagonal = D, kargs...)
 end
 
@@ -199,7 +199,7 @@ end
 
 # DEPRECATED, usediagonal is now a boolean keyword argument
 function mapseqpairfreq!(f, msa, table, usediagonal::Type{Val{D}}; kargs...) where {D}
-    @warn "The `usediagonal` positional argument taking `Val{true}` or `Val{false}` is deprecated. Use `usediagonal = true` or `usediagonal = false` instead."
+    Base.depwarn("The `usediagonal` positional argument of mapseqpairfreq! taking `Val{true}` or `Val{false}` is deprecated. Use `usediagonal = true` or `usediagonal = false` instead.", :mapseqpairfreq!, force=true)
     mapseqpairfreq!(f, msa, table; usediagonal = D, kargs...)
 end
 
