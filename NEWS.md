@@ -22,6 +22,10 @@
   should be replaced by 
   `probabilities!(table, seqs..., weights=weights, pseudocounts=pseudocounts, pseudofrequencies=pseudofrequencies)`.
 
+* The `frequencies!`, `frequencies`, `probabilities!`, and `probabilities` functions now 
+  accept arrays of `Residue`s of any dimension. Therefore, there is no need to use the
+  `vec` function to convert the arrays to vectors.
+
 ### Changes from v2.20.0 to v2.21.0
 
 * *[Breaking change]* The `buslje09` and `BLMI` functions from the `Information` module does 

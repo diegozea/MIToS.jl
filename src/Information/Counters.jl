@@ -4,7 +4,7 @@
 @generated function _temporal_counts!(
     counts::ContingencyTable{T,N,A},
     weights,
-    seqs::Vararg{AbstractVector{Residue},N},
+    seqs::Vararg{AbstractArray{Residue},N},
 ) where {T,N,A}
     quote
         @assert N == length(seqs) "Number of residue arrays and table dimension doesn't match."
@@ -44,7 +44,7 @@ function count!(
     table::ContingencyTable{T,N,A},
     weights,
     pseudocounts::Pseudocount,
-    seqs::Vararg{AbstractVector{Residue},N},
+    seqs::Vararg{AbstractArray{Residue},N},
 ) where {T,N,A}
     Base.depwarn(
         "count! using a ContingencyTable or Counts is deprecated. Use frequencies! instead.",
@@ -71,7 +71,7 @@ weighting and pseudocounts.
 """
 function frequencies!(
     table::ContingencyTable{T,N,A},
-    seqs::Vararg{AbstractVector{Residue},N};
+    seqs::Vararg{AbstractArray{Residue},N};
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
 ) where {T,N,A}
@@ -91,7 +91,7 @@ function _count(
     alphabet::A,
     weights,
     pseudocounts,
-    seqs::Vararg{AbstractVector{Residue},N},
+    seqs::Vararg{AbstractArray{Residue},N},
 )::ContingencyTable{Float64,N,A} where {N,A<:ResidueAlphabet}
     table = ContingencyTable(Float64, Val{N}, alphabet)::ContingencyTable{Float64,N,A}
     frequencies!(table, seqs..., weights = weights, pseudocounts = pseudocounts)
@@ -110,7 +110,7 @@ to be used during the estimation of the frequencies.
 alphabet, weigths and pseudocounts using keyword arguments instead of positional arguments.
 """
 function Base.count(
-    seqs::Vararg{AbstractVector{Residue},N};
+    seqs::Vararg{AbstractArray{Residue},N};
     alphabet::ResidueAlphabet = UngappedAlphabet(),
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
@@ -139,7 +139,7 @@ to the number of sequences. You can use the keyword arguments `alphabet`, `weigh
 pseudocounts to be used during the estimation of the frequencies.
 """
 function frequencies(
-    seqs::Vararg{AbstractVector{Residue},N};
+    seqs::Vararg{AbstractArray{Residue},N};
     alphabet::ResidueAlphabet = UngappedAlphabet(),
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
@@ -163,7 +163,7 @@ function probabilities!(
     weights,
     pseudocounts::Pseudocount,
     pseudofrequencies::Pseudofrequencies,
-    seqs::Vararg{AbstractVector{Residue},N},
+    seqs::Vararg{AbstractArray{Residue},N},
 ) where {T,N,A}
     Base.depwarn(
         "The probabilities! method indicating weights, pseudocounts and pseudofrequencies using positional arguments is deprecated; use keyword arguments instead.",
@@ -181,7 +181,7 @@ end
 
 function probabilities!(
     table::ContingencyTable{T,N,A},
-    seqs::Vararg{AbstractVector{Residue},N};
+    seqs::Vararg{AbstractArray{Residue},N};
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
     pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
@@ -204,7 +204,7 @@ function _probabilities(
     weights,
     pseudocounts,
     pseudofrequencies,
-    seqs::Vararg{AbstractVector{Residue},N},
+    seqs::Vararg{AbstractArray{Residue},N},
 )::ContingencyTable{Float64,N,A} where {N,A<:ResidueAlphabet}
     table = ContingencyTable(Float64, Val{N}, alphabet)::ContingencyTable{Float64,N,A}
     probabilities!(
@@ -227,7 +227,7 @@ the pseudocounts (default to `NoPseudocount()`) and the pseudofrequencies
 (default to `NoPseudofrequencies()`) to be used during the estimation of the probabilities.
 """
 function probabilities(
-    seqs::Vararg{AbstractVector{Residue},N};
+    seqs::Vararg{AbstractArray{Residue},N};
     alphabet::ResidueAlphabet = UngappedAlphabet(),
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),

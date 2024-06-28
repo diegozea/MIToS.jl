@@ -1,6 +1,6 @@
 @testset "Counters" begin
 
-    @testset "count and probabilities" begin
+    @testset "frequencies and probabilities" begin
         seq = res"ARNDCQEGHILKMFPSTWYV-"
 
         for alphabet in (
@@ -44,6 +44,32 @@
                 normalize!(table)
                 @test table == probabilities(seqs..., alphabet = alphabet)
             end
+        end
+
+        @testset "MSA" begin
+            msa = rand(Random.MersenneTwister(123), Residue, 3, 6)
+
+            Nres = frequencies(msa)
+            @test size(Nres) == (20,)
+            @test sum(Nres) == 18.0
+
+            Pres = probabilities(msa)
+            @test size(Pres) == (20,)
+            @test sum(Pres) ≈ 1.0
+
+            # Test on sequences or columns with a trailing dimension
+            col_a = msa[:, 1:1]
+            col_b = msa[:, 2:2]
+            @test size(col_a) == (3, 1)
+            @test isa(col_a, Matrix{Residue})
+
+            Npair = frequencies(col_a, col_b)
+            @test size(Npair) == (20, 20)
+            @test sum(Npair) == 3.0
+
+            Ppair = probabilities(col_a, col_b)
+            @test size(Ppair) == (20, 20)
+            @test sum(Ppair) ≈ 1.0
         end
 
         @testset "Using clustering" begin

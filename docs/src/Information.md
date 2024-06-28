@@ -146,13 +146,7 @@ using MIToS.Information # to use the probabilities function
 using MIToS.MSA # to use getsequence on the one sequence FASTA (canonical) from UniProt
 seq = read_file("http://www.uniprot.org/uniprot/P29374.fasta", FASTA) # Small hack: read the single sequence as a MSA
 probabilities(seq[1,:]) # Select the single sequence and calculate the probabilities
-```  
-
-!!! note
-    In the previous example, using `getsequence(seq,1)` instead of `seq[1,:]` will return
-    the sequence as a matrix with a single column to keep information for both dimensions.
-    To use `probabilities` (or `frequencies`) you can make use of the Julia's `vec` 
-    function to transform the matrix to a vector, e.g.: `probabilities(vec(getsequence(seq,1)))`.
+``` 
 
 ```@setup inf_plotfreq
 @info "Information: Plots"
