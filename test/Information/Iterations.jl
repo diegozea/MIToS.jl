@@ -97,4 +97,34 @@
         @test sum(mapcolpairfreq!(f, msa, deepcopy(table_2d))) == 0
         @test sum(mapcolpairfreq!(f, msa, deepcopy(table_2d), karg = 1.0)) == 100.0
     end
+
+    @testset "mapfreq" begin
+        # test mapfreq using the sum function
+        msa = rand(Random.MersenneTwister(123), Residue, 4, 10)
+
+        sum_11 = mapfreq(sum, msa, rank = 1, dims = 1)
+        @test sum(sum_11) ≈ 4.0
+        @test size(sum_11) == (4, 1)
+
+        sum_12 = mapfreq(sum, msa, rank = 1, dims = 2)
+        @test sum(sum_12) ≈ 10.0
+        @test size(sum_12) == (1, 10)
+
+        sum_21 = mapfreq(sum, msa, rank = 2, dims = 1)
+        @test isnan(sum(sum_21))
+        @test sum(i for i in sum_21 if !isnan(i)) ≈ 12 # 4 * (4-1)
+        @test size(sum_21) == (4, 4)
+
+        sum_22 = mapfreq(sum, msa, rank = 2, dims = 2)
+        @test isnan(sum(sum_22))
+        @test sum(i for i in sum_22 if !isnan(i)) ≈ 90 # 10 * (10-1)
+        @test size(sum_22) == (10, 10)
+
+
+        # the default is rank = 1 and dims = 2
+        @test mapfreq(sum, msa, rank = 1, dims = 2) == mapfreq(sum, msa)
+
+        # probabilities=false
+        @test sum(mapfreq(sum, msa, dims = 1, probabilities = false)) ≈ 4 * 10.0
+    end
 end

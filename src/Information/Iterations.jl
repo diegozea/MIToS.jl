@@ -265,10 +265,80 @@ end
 # General mapfreq methods
 # =======================
 
+"""
+    mapfreq(f, msa; rank = 1, dims = 2, alphabet = UngappedAlphabet(), 
+        weights = NoClustering(), pseudocounts = NoPseudocount(), 
+        pseudofrequencies = NoPseudofrequencies(), probabilities = true, 
+        diagonalvalue = NaN, kargs...)
+
+It efficiently map a function (first argument) that takes a table of `Counts` or
+`Probabilities` (depending on the `probabilities` keyword argument) calculated on 
+sequences (`dims = 1`) or columns (`dims = 2`, the default) of an `msa` (second argument). 
+If `rank = 1`, the default, the function is applied to each sequence or column. If 
+`rank = 2`, the function is applied to each pair of sequences or columns. In that case, the 
+function is not applied to the diagonal elements, and the `diagonalvalue` keyword argument
+is used to fill the diagonal elements of the output table. The `alphabet` keyword argument
+can be used to set the alphabet used to construct the contingency table. The function 
+also accepts the following keyword arguments:
+
+$_mapfreq_kargs_doc
+
+Note that the `pseudofrequencies` argument is only valid if `probabilities = true`. All the 
+other keyword arguments are passed to the function `f`.
+```jldoctest
+julia> using MIToS.Information, MIToS.MSA, Random
+
+julia> msa = rand(Random.MersenneTwister(1), Residue, 3, 6)
+3×6 Matrix{Residue}:
+ F  A  F  D  E  V
+ T  R  R  G  F  I
+ N  V  S  W  Q  T
+
+julia> mapfreq(sum, msa) # default: rank=1, dims=2, probabilities=true
+1×6 Named Matrix{Float64}
+Function ╲ Col │   1    2    3    4    5    6
+───────────────┼─────────────────────────────
+sum            │ 1.0  1.0  1.0  1.0  1.0  1.0
+
+julia> mapfreq(sum, msa, rank=2)
+6×6 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
+Col1 ╲ Col2 │   1    2    3    4    5    6
+────────────┼─────────────────────────────
+1           │ NaN  1.0  1.0  1.0  1.0  1.0
+2           │ 1.0  NaN  1.0  1.0  1.0  1.0
+3           │ 1.0  1.0  NaN  1.0  1.0  1.0
+4           │ 1.0  1.0  1.0  NaN  1.0  1.0
+5           │ 1.0  1.0  1.0  1.0  NaN  1.0
+6           │ 1.0  1.0  1.0  1.0  1.0  NaN
+
+julia> mapfreq(sum, msa, probabilities=false)
+1×6 Named Matrix{Float64}
+Function ╲ Col │   1    2    3    4    5    6
+───────────────┼─────────────────────────────
+sum            │ 3.0  3.0  3.0  3.0  3.0  3.0
+
+julia> mapfreq(sum, msa, dims=1)
+3×1 Named Matrix{Float64}
+Seq ╲ Function │ sum
+───────────────┼────
+1              │ 1.0
+2              │ 1.0
+3              │ 1.0
+
+julia> mapfreq(sum, msa, dims=1, rank=2)
+3×3 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
+Seq1 ╲ Seq2 │   1    2    3
+────────────┼──────────────
+1           │ NaN  1.0  1.0
+2           │ 1.0  NaN  1.0
+3           │ 1.0  1.0  NaN
+
+```
+"""
 function mapfreq(
     f::Function,
     msa::AbstractArray{Residue};
-    rank::Int = 2,
+    rank::Int = 1,
     dims::Int = 2,
     alphabet::ResidueAlphabet = UngappedAlphabet(),
     weights::WeightTypes = NoClustering(),
@@ -284,14 +354,61 @@ function mapfreq(
     if pseudofrequencies !== NoPseudofrequencies()
         @assert probabilities "Set `probabilities = true` to use pseudofrequencies."
     end
+    if !isnan(diagonalvalue)
+        @assert rank == 2 "The `diagonalvalue` keyword argument is only valid for rank 2."
+    end
     # Define the table to apply the function
     _table = ContingencyTable(Float64, Val{rank}, alphabet)
     table = probabilities ? Probabilities(_table) : Counts(_table)
-    #=
-    if dims == 1
-        mapseqpairfreq!(f, msa, table; kargs...)
+    if rank == 1
+        if dims == 1
+            mapseqfreq!(
+                f,
+                msa,
+                table;
+                weights = weights,
+                pseudocounts = pseudocounts,
+                pseudofrequencies = pseudofrequencies,
+                kargs...,
+            )
+        else
+            mapcolfreq!(
+                f,
+                msa,
+                table;
+                weights = weights,
+                pseudocounts = pseudocounts,
+                pseudofrequencies = pseudofrequencies,
+                kargs...,
+            )
+        end
+    else
+        if dims == 1
+            mapseqpairfreq!(
+                f,
+                msa,
+                table;
+                usediagonal = false,
+                diagonalvalue = diagonalvalue,
+                weights = weights,
+                pseudocounts = pseudocounts,
+                pseudofrequencies = pseudofrequencies,
+                kargs...,
+            )
+        else
+            mapcolpairfreq!(
+                f,
+                msa,
+                table;
+                usediagonal = false,
+                diagonalvalue = diagonalvalue,
+                weights = weights,
+                pseudocounts = pseudocounts,
+                pseudofrequencies = pseudofrequencies,
+                kargs...,
+            )
+        end
     end
-    =#
 end
 
 # cMI

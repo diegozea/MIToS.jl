@@ -78,6 +78,7 @@ export  # MIToS.MSA
     mapseqfreq!,
     mapcolpairfreq!,
     mapseqpairfreq!,
+    mapfreq,
     cumulative,
     # InformationMeasures
     entropy,

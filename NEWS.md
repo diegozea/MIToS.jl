@@ -26,6 +26,15 @@
   accept arrays of `Residue`s of any dimension. Therefore, there is no need to use the
   `vec` function to convert the arrays to vectors.
 
+* The `mapcolfreq!`, `mapseqfreq!`, `mapcolpairfreq!`, and `mapseqpairfreq!` methods using
+  keyword arguments, now pass the extra keyword arguments to mapped function.
+
+* The `Information` module now exports the `mapfreq` function that offers a more high-level
+  interface to the `mapcolfreq!`, `mapseqfreq!`, `mapcolpairfreq!`, and `mapseqpairfreq!`
+  functions. This function allows the user to map a function to the residue frequencies or 
+  probabilities of the columns or sequences of an MSA. When `rank = 2`, the function is
+  applied to pairs of sequences or columns.
+
 ### Changes from v2.20.0 to v2.21.0
 
 * *[Breaking change]* The `buslje09` and `BLMI` functions from the `Information` module does 
