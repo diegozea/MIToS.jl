@@ -48,16 +48,17 @@ end
 
 # using mapfreq to define the method for multiple sequence alignments
 """
-    shannon_entropy(msa::AbstractArray{Residue}; base::Real=ℯ, probabilities::Bool=false, kargs...)
+    shannon_entropy(msa::AbstractArray{Residue}; base::Union{Real, Nothing}=nothing, 
+        probabilities::Bool=false, kargs...)
 
 It calculates the Shannon entropy (H) on a MSA. You can use the keyword argument `base` to
-change the base of the log. The default base is ℯ, so the result is in nats. You can use 2.0
-as base to get the result in bits. It uses [`mapfreq`](@ref) under the hood, so it takes 
-the same keyword arguments. By default, it measures the entropy of each column in the MSA.
-You can use `dims = 1` to measure the entropy of each sequence. You can also set `rank = 2`
-to measure the joint entropy of each pair of sequences or columns. This function sets by 
-default the `probabilities` keyword argument to `false` because it's faster to calculate 
-the entropy from counts/frequencies.
+change the base of the log. The default base is ℯ (`base=nothing`), so the result is in nats. 
+You can use 2.0 as base to get the result in bits. It uses [`mapfreq`](@ref) under the hood, 
+so it takes the same keyword arguments. By default, it measures the entropy of each column 
+in the MSA. You can use `dims = 1` to measure the entropy of each sequence. You can also 
+set `rank = 2`to measure the joint entropy of each pair of sequences or columns. This 
+function sets by default the `probabilities` keyword argument to `false` because it's 
+faster to calculate the entropy from counts/frequencies.
 
 ```jldoctest
 julia> using MIToS.MSA, MIToS.Information
@@ -82,7 +83,7 @@ end
 # Marginal Entropy
 # ----------------
 
-function marginal_entropy(table::Probabilities{T,N,A}, margin::Int) where {T,N,A}
+function _marginal_entropy(table::Probabilities{T,N,A}, margin::Int) where {T,N,A}
     H = zero(T)
     marginals = getmarginalsarray(table)
     @inbounds for pi in view(marginals, :, margin)
@@ -93,7 +94,7 @@ function marginal_entropy(table::Probabilities{T,N,A}, margin::Int) where {T,N,A
     -H # Default base: e
 end
 
-function marginal_entropy(table::Counts{T,N,A}, margin::Int) where {T,N,A}
+function _marginal_entropy(table::Counts{T,N,A}, margin::Int) where {T,N,A}
     H = zero(T)
     total = gettotal(table)
     marginals = getmarginalsarray(table)
@@ -106,18 +107,38 @@ function marginal_entropy(table::Counts{T,N,A}, margin::Int) where {T,N,A}
 end
 
 """
-It calculates marginal entropy (H) from a table of `Counts` or `Probabilities`. The second
-positional argument is used to indicate the magin used to calculate the entropy, e.g. it
-estimates the entropy H(X) if marginal is 1, H(Y) for 2, etc.
-Use last and optional positional argument to change the base of the log. The default base
-is e, so the result is in nats. You can use 2.0 as base to get the result in bits.
+    marginal_entropy(table::Union{Counts{T,N,A},Probabilities{T,N,A}}; margin::Int=1, 
+        base::Union{Real, Nothing}=nothing)
+
+It calculates marginal entropy (H) from a table of `Counts` or `Probabilities`. It takes 
+two keyword arguments: `margin` and `base`. The first one is used to indicate the margin
+used to calculate the entropy, e.g. it estimates the entropy H(X) if margin is 1, H(Y)
+for 2, etc. The default value of `margin` is 1. The second keyword argument is used to
+change the base of the log. The default base is ℯ (`base = nothing`), so the result is in
+nats. You can use `base = 2.0` to get the result in bits.
 """
 function marginal_entropy(
-    table::Union{Counts{T,N,A},Probabilities{T,N,A}},
-    margin::Int,
-    base::Real,
+    table::Union{Counts{T,N,A},Probabilities{T,N,A}};
+    margin::Int=1,
+    base::Union{Real, Nothing}=nothing,
 ) where {T,N,A}
-    marginal_entropy(table, margin) / log(base)
+    H = _marginal_entropy(table, margin)
+    if base === nothing
+        H # Default base: e
+    else
+        H / log(base)
+    end
+end
+
+# Deprecate the marginal_entropy methods taking positional arguments
+function marginal_entropy(table::Union{Counts{T,N,A},Probabilities{T,N,A}}, margin::Int) where {T,N,A}
+    Base.depwarn("marginal_entropy(table, margin) is deprecated. Use marginal_entropy(table; margin=margin) instead.", :marginal_entropy, force=true)
+    marginal_entropy(table, margin=margin)
+end
+
+function marginal_entropy(table::Union{Counts{T,N,A},Probabilities{T,N,A}}, margin::Int, base::Real) where {T,N,A}
+    Base.depwarn("marginal_entropy(table, margin, base) is deprecated. Use marginal_entropy(table; margin=margin, base=base) instead.", :marginal_entropy, force=true)
+    marginal_entropy(table, margin=margin, base=base)
 end
 
 # Kullback-Leibler
@@ -221,9 +242,9 @@ end
 function mutual_information(pxyz::Union{Counts{T,3,A},Probabilities{T,3,A}}) where {T,A}
     pxy = delete_dimensions(pxyz, 3)
     return (
-        marginal_entropy(pxyz, 1) +                 # H(X) +
-        marginal_entropy(pxyz, 2) +                 # H(Y) +
-        marginal_entropy(pxyz, 3) -                 # H(Z) -
+        marginal_entropy(pxyz, margin=1) +                 # H(X) +
+        marginal_entropy(pxyz, margin=2) +                 # H(Y) +
+        marginal_entropy(pxyz, margin=3) -                 # H(Z) -
         shannon_entropy(pxy) -                              # H(X,Y) -
         shannon_entropy(delete_dimensions!(pxy, pxyz, 2)) - # H(X,Z) -
         shannon_entropy(delete_dimensions!(pxy, pxyz, 2)) + # H(Y,Z) +

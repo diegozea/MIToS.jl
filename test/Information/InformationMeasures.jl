@@ -75,23 +75,23 @@
         # MI(X,Y)=H(X)+H(Y)-H(X,Y)
 
         @test mutual_information(Psr) ≈
-              (marginal_entropy(Psr, 1) + marginal_entropy(Psr, 2) - shannon_entropy(Psr))
+              (marginal_entropy(Psr, margin=1) + marginal_entropy(Psr, margin=2) - shannon_entropy(Psr))
 
         @test mutual_information(Pss) ≈
-              (marginal_entropy(Pss, 1) + marginal_entropy(Pss, 2) - shannon_entropy(Pss))
+              (marginal_entropy(Pss, margin=1) + marginal_entropy(Pss, margin=2) - shannon_entropy(Pss))
 
         @test mutual_information(Psr, 2) ≈
-              (marginal_entropy(Psr, 1, 2) + marginal_entropy(Psr, 2, 2) - shannon_entropy(Psr, base=2))
+              (marginal_entropy(Psr, margin=1, base=2) + marginal_entropy(Psr, margin=2, base=2) - shannon_entropy(Psr, base=2))
 
         @test mutual_information(Pss, 20) ≈ (
-            marginal_entropy(Pss, 1, 20) + marginal_entropy(Pss, 2, 20) - shannon_entropy(Pss, base=20)
+            marginal_entropy(Pss, margin=1, base=20) + marginal_entropy(Pss, margin=2, base=20) - shannon_entropy(Pss, base=20)
         )
 
         @test isapprox(mutual_information(prob_random), 0.0, atol = 1e-15)
         @test mutual_information(count_random) ≈ 0.0
         @test isapprox(
             mutual_information(count_random),
-            marginal_entropy(count_random, 1) + marginal_entropy(count_random, 2) -
+            marginal_entropy(count_random, margin=1) + marginal_entropy(count_random, margin=2) -
             shannon_entropy(count_random),
             atol = 1e-13,
         )
@@ -114,9 +114,9 @@
             # MI(X,Y,Z) = H(X) + H(Y) + H(Z) - H(X,Y) - H(X,Z) - H(Y,Z) + H(X,Y,Z)
             @test mutual_information(Psss) ≈ mutual_information(frequencies(s, s, s))
             @test mutual_information(Psss) ≈ (
-                marginal_entropy(Psss, 1) +
-                marginal_entropy(Psss, 2) +
-                marginal_entropy(Psss, 3) - shannon_entropy(Pss) - shannon_entropy(Pss) - shannon_entropy(Pss) +
+                marginal_entropy(Psss, margin=1) +
+                marginal_entropy(Psss, margin=2) +
+                marginal_entropy(Psss, margin=3) - shannon_entropy(Pss) - shannon_entropy(Pss) - shannon_entropy(Pss) +
                 shannon_entropy(Psss)
             )
 

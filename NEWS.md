@@ -22,6 +22,16 @@
   should be replaced by 
   `probabilities!(table, seqs..., weights=weights, pseudocounts=pseudocounts, pseudofrequencies=pseudofrequencies)`.
 
+* *[Breaking change]* The `Information` has deprecated the `entropy` method on `Counts` and `Probabilities` in
+  favor of the `shannon_entropy` function. The definition of the base is now done using the
+  `base` keyword argument. As an example of migration, `entropy(p, 2.0)` should be 
+  replaced by `shannon_entropy(p, base=2.0)`.
+
+* *[Breaking change]* The `marginal_entropy` methods based on positional arguments are 
+  deprecated in favor of a method relying on the `margin` and `base` keyword arguments.
+  As an example of migration, `marginal_entropy(p, 2, 2.0)` should be replaced by
+  `marginal_entropy(p, margin=2, base=2.0)`.
+
 * The `frequencies!`, `frequencies`, `probabilities!`, and `probabilities` functions now 
   accept arrays of `Residue`s of any dimension. Therefore, there is no need to use the
   `vec` function to convert the arrays to vectors.
@@ -34,11 +44,6 @@
   functions. This function allows the user to map a function to the residue frequencies or 
   probabilities of the columns or sequences of an MSA. When `rank = 2`, the function is
   applied to pairs of sequences or columns.
-
-* The `Information` has deprecated the `entropy` method on `Counts` and `Probabilities` in
-  favor of the `shannon_entropy` function. The definition of the base is now done using the
-  `base` keyword argument. As an example of migration, `entropy(p, 2.0)` should be 
-  replaced by `shannon_entropy(p, base=2.0)`.
 
 * The `Information` module now exports a `shannon_entropy` method that takes a 
   `AbstractArray{Residue}` as input to ease the calculation of this measure on 
