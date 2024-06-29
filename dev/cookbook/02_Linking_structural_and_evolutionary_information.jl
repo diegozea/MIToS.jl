@@ -33,7 +33,7 @@
 #
 # Particular solutions depend on problem details, here we show some common ways
 # to use MIToS and *SIFTS* to map evolutionary information calculated in an MSA
-# (e.g. Shannon entropy) with structural information (e.g. B-factors).
+# (e.g. entropy) with structural information (e.g. B-factors).
 #
 # ## PDB and Pfam alignment mapping
 #
@@ -97,7 +97,7 @@ msacol2pdbres = msacolumn2pdbresidue(msa, seq_id, pdb_code, pdb_chain, pfam_id, 
 # MSA column) and the mean B factor of the residue:
 
 using MIToS.Information
-Hx = mapcolfreq!(shannon_entropy, msa, Counts(ContingencyTable(Int, Val{1}, UngappedAlphabet())))
+Hx = mapcolfreq!(entropy, msa, Counts(ContingencyTable(Int, Val{1}, UngappedAlphabet())))
 
 # To get quick access to each PDB residue based on its residue number, we can
 # read the PDB file into a dictionary using the `read_file` and `residuesdict`
