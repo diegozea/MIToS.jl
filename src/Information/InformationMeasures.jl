@@ -48,14 +48,16 @@ end
 
 # using mapfreq to define the method for multiple sequence alignments
 """
-    shannon_entropy(msa::AbstractArray{Residue}; base::Real=ℯ)
+    shannon_entropy(msa::AbstractArray{Residue}; base::Real=ℯ, probabilities::Bool=false, kargs...)
 
 It calculates the Shannon entropy (H) on a MSA. You can use the keyword argument `base` to
 change the base of the log. The default base is ℯ, so the result is in nats. You can use 2.0
 as base to get the result in bits. It uses [`mapfreq`](@ref) under the hood, so it takes 
 the same keyword arguments. By default, it measures the entropy of each column in the MSA.
 You can use `dims = 1` to measure the entropy of each sequence. You can also set `rank = 2`
-to measure the joint entropy of each pair of sequences or columns.
+to measure the joint entropy of each pair of sequences or columns. This function sets by 
+default the `probabilities` keyword argument to `false` because it's faster to calculate 
+the entropy from counts/frequencies.
 
 ```jldoctest
 julia> using MIToS.MSA, MIToS.Information
@@ -73,8 +75,8 @@ julia> shannon_entropy(msa)
 shannon_entropy │     0.0  1.09861
 
 """
-function shannon_entropy(msa::AbstractArray{Residue}; kargs...)
-    mapfreq(shannon_entropy, msa; kargs...)
+function shannon_entropy(msa::AbstractArray{Residue}; probabilities::Bool=false, kargs...)
+    mapfreq(shannon_entropy, msa; probabilities=probabilities, kargs...)
 end
 
 # Marginal Entropy

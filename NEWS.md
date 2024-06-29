@@ -44,6 +44,8 @@
   `AbstractArray{Residue}` as input to ease the calculation of this measure on 
   sequences and multiple sequence alignments.
 
+* The `MSA` module now exports the `WeightType` union type to represent `weights`.
+
 ### Changes from v2.20.0 to v2.21.0
 
 * *[Breaking change]* The `buslje09` and `BLMI` functions from the `Information` module does 

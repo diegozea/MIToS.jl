@@ -275,17 +275,19 @@ end
     mapfreq(f, msa; rank = 1, dims = 2, alphabet = UngappedAlphabet(), 
         weights = NoClustering(), pseudocounts = NoPseudocount(), 
         pseudofrequencies = NoPseudofrequencies(), probabilities = true, 
-        diagonalvalue = NaN, kargs...)
+        usediagonal = false, diagonalvalue = NaN, kargs...)
 
 It efficiently map a function (first argument) that takes a table of `Counts` or
 `Probabilities` (depending on the `probabilities` keyword argument) calculated on 
 sequences (`dims = 1`) or columns (`dims = 2`, the default) of an `msa` (second argument). 
 If `rank = 1`, the default, the function is applied to each sequence or column. If 
-`rank = 2`, the function is applied to each pair of sequences or columns. In that case, the 
-function is not applied to the diagonal elements, and the `diagonalvalue` keyword argument
-is used to fill the diagonal elements of the output table. The `alphabet` keyword argument
-can be used to set the alphabet used to construct the contingency table. The function 
-also accepts the following keyword arguments:
+`rank = 2`, the function is applied to each pair of sequences or columns. In that case, 
+we can set the `usediagonal` keyword argument to `true` to apply the function to pairs
+of the same sequence or column. The `diagonalvalue` keyword argument is used to set the 
+value of the diagonal elements if `usediagonal` is `false`. By default, the function is not
+applied to the diagonal elements (i.e. `usediagonal = false`) and the `diagonalvalue` is
+set to `NaN`. The `alphabet` keyword argument can be used to set the alphabet used to 
+construct the contingency table. The function also accepts the following keyword arguments:
 
 $_mapfreq_kargs_doc
 
@@ -332,6 +334,7 @@ function mapfreq(
     pseudocounts::Pseudocount = NoPseudocount(),
     pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
     probabilities::Bool = true,
+    usediagonal::Bool = false,
     diagonalvalue::Float64 = NaN,
     kargs...,
 )
@@ -341,8 +344,11 @@ function mapfreq(
     if pseudofrequencies !== NoPseudofrequencies()
         @assert probabilities "Set `probabilities = true` to use pseudofrequencies."
     end
+    if usediagonal
+        @assert rank == 2 "Setting `usediagonal` to `true` is only valid for `rank = 2`."
+    end
     if !isnan(diagonalvalue)
-        @assert rank == 2 "The `diagonalvalue` keyword argument is only valid for rank 2."
+        @assert rank == 2 "The `diagonalvalue` keyword argument is only valid for `rank = 2`."
     end
     # Define the table to apply the function
     _table = ContingencyTable(Float64, Val{rank}, alphabet)
@@ -375,7 +381,7 @@ function mapfreq(
                 f,
                 msa,
                 table;
-                usediagonal = false,
+                usediagonal = usediagonal,
                 diagonalvalue = diagonalvalue,
                 weights = weights,
                 pseudocounts = pseudocounts,
@@ -387,7 +393,7 @@ function mapfreq(
                 f,
                 msa,
                 table;
-                usediagonal = false,
+                usediagonal = usediagonal,
                 diagonalvalue = diagonalvalue,
                 weights = weights,
                 pseudocounts = pseudocounts,
