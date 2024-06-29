@@ -93,7 +93,7 @@ set_parallel(Args["parallel"])
             Probabilities(ContingencyTable(Float64, Val{1}, UngappedAlphabet()))
 
         KL = mapcolfreq!(kullback_leibler, msa, probability_table, weights = clusters)
-        H = mapcolfreq!(entropy, msa, probability_table, weights = clusters)
+        H = mapcolfreq!(shannon_entropy, msa, probability_table, weights = clusters)
 
         col_names = names(KL, 2)
         println(fh_out, "i,H,KL")

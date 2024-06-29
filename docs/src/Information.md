@@ -50,8 +50,8 @@ These types are parametric, taking three ordered parameters:
 !!! note
     `ContingencyTable` can be used for storing probabilities or counts. The wrapper types
     `Probabilities` and `Counts` are mainly intended to dispatch in methods that need to
-    know if the matrix has probabilities or counts, e.g. `entropy`. In general, the use of
-    `ContingencyTable` is recommended over the use of `Probabilities` and `Counts`.
+    know if the matrix has probabilities or counts, e.g. `shannon_entropy`. In general, 
+    the use of `ContingencyTable` is recommended over the use of `Probabilities` and `Counts`.
 
 In this way, a matrix for storing pairwise probabilities of residues (without gaps) can be
 initialized using:  
@@ -292,7 +292,7 @@ frequencies(msa[:,1], msa[:,2], weights=clusters)
 The `Information` module has a number of functions defined to calculate information
 measures from `Counts` and `Probabilities`:
 
-- `entropy` : Shannon entropy (H)
+- `shannon_entropy` : Shannon entropy (H)
 - `marginal_entropy` : Shannon entropy (H) of the marginals
 - `kullback_leibler` : Kullback-Leibler (KL) divergence
 - `mutual_information` : Mutual Information (MI)
@@ -300,8 +300,8 @@ measures from `Counts` and `Probabilities`:
 - `gap_intersection_percentage`
 - `gap_union_percentage`
 
-Information measure functions take optionally the base as the last positional argument
-(default: `e`). You can use `2.0` to measure information in bits.
+Information measure functions take optionally the base as a keyword argument (default: `ℯ`). 
+You can set `base=2.0` to measure information in bits.
 
 ```@example inf_information
 using MIToS.Information
@@ -309,11 +309,11 @@ using MIToS.MSA
 
 Ni = frequencies(res"PPCDPPPPPKDKKKKDDGPP") # Ni has the count table of residues in this low complexity sequence
 
-H = entropy(Ni) # returns the Shannon entropy in nats (base e)
+H = shannon_entropy(Ni) # returns the Shannon entropy in nats (base e)
 ```
 
 ```@example inf_information
-H = entropy(Ni, 2.0) # returns the Shannon entropy in bits (base 2)
+H = shannon_entropy(Ni, base=2.0) # returns the Shannon entropy in bits (base 2)
 ```
 
 Information module defines special iteration functions to easily and efficiently compute a
@@ -338,7 +338,7 @@ After that, this function takes some keyword arguments:
 #### Example: Estimating *H(X)* and *H(X, Y)* over an MSA
 
 In this example, we are going to use `mapcolfreq!` and `mapcolpairfreq!` to estimate
-Shannon `entropy` of MSA columns *H(X)* and the joint entropy *H(X, Y)* of columns pairs,
+Shannon `shannon_entropy` of MSA columns *H(X)* and the joint entropy *H(X, Y)* of columns pairs,
 respectively.  
 
 ```@setup inf_entropy
@@ -353,21 +353,21 @@ using MIToS.MSA
 msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 ```
 
-We are going to count residues to estimate the entropy. The `entropy` estimation is
-performed over a rehused `Counts` object. The result will be a vector containing the
-values estimated over each column without counting gaps (`UngappedAlphabet`).  
+We are going to count residues to estimate the Shannon entropy. The `shannon_entropy` 
+estimation is performed over a rehused `Counts` object. The result will be a vector 
+containing the values estimated over each column without counting gaps (`UngappedAlphabet`).  
 
 ```@example inf_entropy
 using MIToS.Information
 
-Hx = mapcolfreq!(entropy, msa, Counts(ContingencyTable(Float64, Val{1}, UngappedAlphabet())))
+Hx = mapcolfreq!(shannon_entropy, msa, Counts(ContingencyTable(Float64, Val{1}, UngappedAlphabet())))
 ```  
 
 If we want the **joint entropy** between columns pairs, we need to use a bidimensional
 table of `Counts` and `mapcolpairfreq!`.
 
 ```@example inf_entropy
-Hxy = mapcolpairfreq!(entropy, msa, Counts(ContingencyTable(Float64, Val{2}, UngappedAlphabet())))
+Hxy = mapcolpairfreq!(shannon_entropy, msa, Counts(ContingencyTable(Float64, Val{2}, UngappedAlphabet())))
 ```  
 
 In the above examples, we indicate the type of each occurrence in the counting and the probability table to use. Also, it's possible for some measures as **entropy** and **mutual information**, to estimate the values only with the count table (without calculate the probability table). Estimating measures only with a `ResidueCount` table, when this is possible, should be faster than using a probability table.  
@@ -375,11 +375,11 @@ In the above examples, we indicate the type of each occurrence in the counting a
 
 ```@example inf_entropy
 Time_Pab = map(1:100) do x
-    time = @elapsed mapcolpairfreq!(entropy, msa, Probabilities(ContingencyTable(Float64, Val{2}, UngappedAlphabet())))
+    time = @elapsed mapcolpairfreq!(shannon_entropy, msa, Probabilities(ContingencyTable(Float64, Val{2}, UngappedAlphabet())))
 end
 
 Time_Nab = map(1:100) do x
-    time = @elapsed mapcolpairfreq!(entropy, msa, Counts(ContingencyTable(Float64, Val{2}, UngappedAlphabet())))
+    time = @elapsed mapcolpairfreq!(shannon_entropy, msa, Counts(ContingencyTable(Float64, Val{2}, UngappedAlphabet())))
 end
 
 using Plots

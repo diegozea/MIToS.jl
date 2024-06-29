@@ -224,10 +224,10 @@ function mutual_information(pxyz::Union{Counts{T,3,A},Probabilities{T,3,A}}) whe
         marginal_entropy(pxyz, 1) +                 # H(X) +
         marginal_entropy(pxyz, 2) +                 # H(Y) +
         marginal_entropy(pxyz, 3) -                 # H(Z) -
-        entropy(pxy) -                              # H(X,Y) -
-        entropy(delete_dimensions!(pxy, pxyz, 2)) - # H(X,Z) -
-        entropy(delete_dimensions!(pxy, pxyz, 2)) + # H(Y,Z) +
-        entropy(pxyz)                               # H(X,Y,Z)
+        shannon_entropy(pxy) -                              # H(X,Y) -
+        shannon_entropy(delete_dimensions!(pxy, pxyz, 2)) - # H(X,Z) -
+        shannon_entropy(delete_dimensions!(pxy, pxyz, 2)) + # H(Y,Z) +
+        shannon_entropy(pxyz)                               # H(X,Y,Z)
     )
 end
 
@@ -243,7 +243,7 @@ It calculates a Normalized Mutual Information (nMI) by Entropy from a table of `
 function normalized_mutual_information(
     table::Union{Counts{T,N,A},Probabilities{T,N,A}},
 ) where {T,N,A}
-    H = entropy(table)
+    H = shannon_entropy(table)
     if H != zero(T)
         MI = mutual_information(table)
         return (T(MI / H))
