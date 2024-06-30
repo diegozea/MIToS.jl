@@ -48,12 +48,12 @@
 
     @testset "Kullback-Leibler" begin
 
-        @test kullback_leibler(Ps, [1.0 / 20.0 for i = 1:20]) ≈ 0.0
-        @test kullback_leibler(Ps, Ps) ≈ 0.0
-        @test kullback_leibler(Ps, BLOSUM62_Pi) ≈ kullback_leibler(Ps)
-        @test kullback_leibler(Ps, BLOSUM62_Pi) ≈
+        @test kullback_leibler(Ps, background=[1.0 / 20.0 for i = 1:20]) ≈ 0.0
+        @test kullback_leibler(Ps, background=Ps) ≈ 0.0
+        @test kullback_leibler(Ps, background=BLOSUM62_Pi) ≈ kullback_leibler(Ps)
+        @test kullback_leibler(Ps, background=BLOSUM62_Pi) ≈
               mapreduce(i -> 0.05 * log(0.05 / BLOSUM62_Pi[i]), +, 1:20)
-        @test kullback_leibler(Psr, Psr) ≈ 0.0
+        @test kullback_leibler(Psr, background=Psr) ≈ 0.0
     end
 
     @testset "Mutual Information" begin
