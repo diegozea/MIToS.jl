@@ -97,7 +97,11 @@ msacol2pdbres = msacolumn2pdbresidue(msa, seq_id, pdb_code, pdb_chain, pfam_id, 
 # MSA column) and the mean B factor of the residue:
 
 using MIToS.Information
-Hx = mapcolfreq!(shannon_entropy, msa, Counts(ContingencyTable(Int, Val{1}, UngappedAlphabet())))
+Hx = mapcolfreq!(
+    shannon_entropy,
+    msa,
+    Counts(ContingencyTable(Int, Val{1}, UngappedAlphabet())),
+)
 
 # To get quick access to each PDB residue based on its residue number, we can
 # read the PDB file into a dictionary using the `read_file` and `residuesdict`
