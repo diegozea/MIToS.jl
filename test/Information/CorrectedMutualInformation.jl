@@ -73,7 +73,7 @@
             end
             # Compare with MIToS result
             mi = mapcolpairfreq!(
-                mutual_information,
+                Information._mutual_information,
                 aln,
                 Probabilities(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
             )
@@ -96,7 +96,7 @@
             end
             # Compare with MIToS result
             mi = mapcolpairfreq!(
-                mutual_information,
+                Information._mutual_information,
                 aln,
                 Probabilities(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
                 pseudocounts = AdditiveSmoothing(0.05),
@@ -167,7 +167,7 @@
             @test total == 0.5 * log(2) + 0.5 * log(2) # 0.5/(0.5*0.5) == 2
             # Compare with MIToS result
             mi = mapcolpairfreq!(
-                mutual_information,
+                Information._mutual_information,
                 aln,
                 Probabilities(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
             )
@@ -190,7 +190,7 @@
             end
             # Compare with MIToS result
             mi = mapcolpairfreq!(
-                mutual_information,
+                Information._mutual_information,
                 aln,
                 Probabilities(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
                 pseudocounts = AdditiveSmoothing(0.05),
@@ -221,7 +221,7 @@
             # 4 Possibilities:  R A   R A   A R   A R
             #                   A R   R A   A R   R A
             mi = mapcolpairfreq!(
-                mutual_information,
+                Information._mutual_information,
                 aln,
                 Probabilities(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
                 pseudocounts = AdditiveSmoothing(0.05),
@@ -231,7 +231,7 @@
                 'A' 'R'
             ]
             other_mi = mapcolpairfreq!(
-                mutual_information,
+                Information._mutual_information,
                 other_posib,
                 Probabilities(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
                 pseudocounts = AdditiveSmoothing(0.05),

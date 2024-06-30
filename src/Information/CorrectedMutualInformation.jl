@@ -10,7 +10,7 @@ const _MI_MAT_TYPE = NamedArray{
 
 function _buslje09(aln, alphabet::A, clusters, lambda, apc) where {A}
     mi = mapcolpairfreq!(
-        mutual_information,
+        _mutual_information,
         aln,
         Counts{Float64,2,A}(ContingencyTable(Float64, Val{2}, alphabet)),
         usediagonal = false,
@@ -92,7 +92,7 @@ end
 
 function _BLMI(aln, clusters, alpha, beta, apc, lambda::Float64 = 0.0)
     mi = mapcolpairfreq!(
-        mutual_information,
+        _mutual_information,
         aln,
         Probabilities{Float64,2,UngappedAlphabet}(
             ContingencyTable(Float64, Val{2}, UngappedAlphabet()),

@@ -302,12 +302,15 @@ end
 end
 
 """
-    mutual_information(table::Union{Counts{T,N,A},Probabilities{T,N,A}}; base::Number=ℯ)
+    Information._mutual_information(table::Union{Counts{T,2,A},Probabilities{T,2,A}}) where {T,A}
 
-It calculates Mutual Information (MI) from a table of `Counts` or `Probabilities`. 
-$_DOC_LOG_BASE Note that calculating MI from `Counts` is faster than from `Probabilities`.
+It calculates Mutual Information (MI) from a table of `Counts` or `Probabilities` using ℯ as
+the base of the log. This function is the kernel of the `mutual_information` function. It is
+also used to calculate the MI values of different MIToS functions that do not require the
+base of the log as an argument. In particular, the `buslje09` and `BLMI` functions use this
+function.
 """
-function mutual_information(table::Probabilities{T,2,A}; base::Number = ℯ) where {T,A}
+function _mutual_information(table::Probabilities{T,2,A}) where {T,A}
     MI = zero(T)
     marginals = getmarginalsarray(table)
     p = gettablearray(table)
@@ -320,7 +323,18 @@ function mutual_information(table::Probabilities{T,2,A}; base::Number = ℯ) whe
             end
         end
     end
-    base === ℯ ? MI : (MI / log(base)) # Default base: e
+    MI
+end
+
+"""
+    mutual_information(table::Union{Counts{T,N,A},Probabilities{T,N,A}}; base::Number=ℯ)
+
+It calculates Mutual Information (MI) from a table of `Counts` or `Probabilities`. 
+$_DOC_LOG_BASE Note that calculating MI from `Counts` is faster than from `Probabilities`.
+"""
+function mutual_information(table::Probabilities{T,2,A}; base::Number = ℯ) where {T,A}
+    mi = _mutual_information(table)
+    base === ℯ ? mi : (mi / log(base)) # Default base: e
 end
 
 # It avoids ifelse() because log is expensive (https://github.com/JuliaLang/julia/issues/8869)
@@ -328,8 +342,9 @@ end
     (nij > zero(T)) && (ni > zero(T)) ? T(nij * log((total * nij) / (ni * nj))) : zero(T)
 end
 
-function mutual_information(table::Counts{T,2,A}; base::Number = ℯ) where {T,A}
-    MI = zero(T)
+
+function _mutual_information(table::Counts{T,2,A}) where {T,A}
+    mi = zero(T)
     marginals = getmarginalsarray(table)
     n = gettablearray(table)
     total = gettotal(table)
@@ -338,11 +353,15 @@ function mutual_information(table::Counts{T,2,A}; base::Number = ℯ) where {T,A
         nj = marginals[j, 2]
         if nj > zero(T)
             @inbounds @simd for i = 1:N
-                MI += _mi(total, n[i, j], marginals[i, 1], nj)
+                mi += _mi(total, n[i, j], marginals[i, 1], nj)
             end
         end
     end
-    mi = MI / total
+    mi / total
+end
+
+function mutual_information(table::Counts{T,2,A}; base::Number = ℯ) where {T,A}
+    mi = _mutual_information(table)
     base === ℯ ? mi : (mi / log(base)) # Default base: e
 end
 
@@ -435,7 +454,7 @@ function normalized_mutual_information(
 ) where {T,N,A}
     H = shannon_entropy(table)
     if H != zero(T)
-        MI = mutual_information(table)
+        MI = _mutual_information(table)
         return (T(MI / H))
     else
         return (zero(T))
