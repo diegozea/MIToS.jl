@@ -58,8 +58,8 @@ end
 # -------
 
 """
-The `WeightTypes` type is the same as `Union{Weights,NoClustering,Clusters}`. This type is 
-used to represent weights. Most of the functions taking the `weights` kerword argument in 
+The `WeightTypes` type is the same as `Union{Weights,NoClustering,Clusters}`. This type is
+used to represent weights. Most of the functions taking the `weights` kerword argument in
 the `Information` module accept instances of `WeightTypes`.
 """
 const WeightTypes = Union{Weights,NoClustering,Clusters}

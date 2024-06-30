@@ -19,7 +19,7 @@
 
             @test shannon_entropy(Pg) ≈ 0.0
             @test shannon_entropy(Ps) ≈ log(20.0)
-            @test shannon_entropy(Ps, base=2) ≈ log(2, 20.0)
+            @test shannon_entropy(Ps, base = 2) ≈ log(2, 20.0)
         end
 
         @testset "Joint Entropy: H(X,Y)" begin
@@ -27,7 +27,7 @@
             @test shannon_entropy(Pgg) ≈ 0.0
             @test shannon_entropy(Pss) ≈ log(20.0)
             @test shannon_entropy(Psr) ≈ log(19.0)
-            @test shannon_entropy(Pss, base=2) ≈ log(2, 20.0)
+            @test shannon_entropy(Pss, base = 2) ≈ log(2, 20.0)
             @test shannon_entropy(count_random) ≈ log(400.0)
             @test shannon_entropy(prob_random) ≈ log(400.0)
         end
@@ -48,12 +48,12 @@
 
     @testset "Kullback-Leibler" begin
 
-        @test kullback_leibler(Ps, background=[1.0 / 20.0 for i = 1:20]) ≈ 0.0
-        @test kullback_leibler(Ps, background=Ps) ≈ 0.0
-        @test kullback_leibler(Ps, background=BLOSUM62_Pi) ≈ kullback_leibler(Ps)
-        @test kullback_leibler(Ps, background=BLOSUM62_Pi) ≈
+        @test kullback_leibler(Ps, background = [1.0 / 20.0 for i = 1:20]) ≈ 0.0
+        @test kullback_leibler(Ps, background = Ps) ≈ 0.0
+        @test kullback_leibler(Ps, background = BLOSUM62_Pi) ≈ kullback_leibler(Ps)
+        @test kullback_leibler(Ps, background = BLOSUM62_Pi) ≈
               mapreduce(i -> 0.05 * log(0.05 / BLOSUM62_Pi[i]), +, 1:20)
-        @test kullback_leibler(Psr, background=Psr) ≈ 0.0
+        @test kullback_leibler(Psr, background = Psr) ≈ 0.0
     end
 
     @testset "Mutual Information" begin
@@ -74,25 +74,32 @@
 
         # MI(X,Y)=H(X)+H(Y)-H(X,Y)
 
-        @test mutual_information(Psr) ≈
-              (marginal_entropy(Psr, margin=1) + marginal_entropy(Psr, margin=2) - shannon_entropy(Psr))
+        @test mutual_information(Psr) ≈ (
+            marginal_entropy(Psr, margin = 1) + marginal_entropy(Psr, margin = 2) -
+            shannon_entropy(Psr)
+        )
 
-        @test mutual_information(Pss) ≈
-              (marginal_entropy(Pss, margin=1) + marginal_entropy(Pss, margin=2) - shannon_entropy(Pss))
+        @test mutual_information(Pss) ≈ (
+            marginal_entropy(Pss, margin = 1) + marginal_entropy(Pss, margin = 2) -
+            shannon_entropy(Pss)
+        )
 
-        @test mutual_information(Psr, 2) ≈
-              (marginal_entropy(Psr, margin=1, base=2) + marginal_entropy(Psr, margin=2, base=2) - shannon_entropy(Psr, base=2))
+        @test mutual_information(Psr, base = 2) ≈ (
+            marginal_entropy(Psr, margin = 1, base = 2) +
+            marginal_entropy(Psr, margin = 2, base = 2) - shannon_entropy(Psr, base = 2)
+        )
 
-        @test mutual_information(Pss, 20) ≈ (
-            marginal_entropy(Pss, margin=1, base=20) + marginal_entropy(Pss, margin=2, base=20) - shannon_entropy(Pss, base=20)
+        @test mutual_information(Pss, base = 20) ≈ (
+            marginal_entropy(Pss, margin = 1, base = 20) +
+            marginal_entropy(Pss, margin = 2, base = 20) - shannon_entropy(Pss, base = 20)
         )
 
         @test isapprox(mutual_information(prob_random), 0.0, atol = 1e-15)
         @test mutual_information(count_random) ≈ 0.0
         @test isapprox(
             mutual_information(count_random),
-            marginal_entropy(count_random, margin=1) + marginal_entropy(count_random, margin=2) -
-            shannon_entropy(count_random),
+            marginal_entropy(count_random, margin = 1) +
+            marginal_entropy(count_random, margin = 2) - shannon_entropy(count_random),
             atol = 1e-13,
         )
 
@@ -114,10 +121,10 @@
             # MI(X,Y,Z) = H(X) + H(Y) + H(Z) - H(X,Y) - H(X,Z) - H(Y,Z) + H(X,Y,Z)
             @test mutual_information(Psss) ≈ mutual_information(frequencies(s, s, s))
             @test mutual_information(Psss) ≈ (
-                marginal_entropy(Psss, margin=1) +
-                marginal_entropy(Psss, margin=2) +
-                marginal_entropy(Psss, margin=3) - shannon_entropy(Pss) - shannon_entropy(Pss) - shannon_entropy(Pss) +
-                shannon_entropy(Psss)
+                marginal_entropy(Psss, margin = 1) +
+                marginal_entropy(Psss, margin = 2) +
+                marginal_entropy(Psss, margin = 3) - shannon_entropy(Pss) -
+                shannon_entropy(Pss) - shannon_entropy(Pss) + shannon_entropy(Psss)
             )
 
             # MI(X,Y,Z) <= min{ H(X,Y), H(X,Z), H(Y,Z) }
