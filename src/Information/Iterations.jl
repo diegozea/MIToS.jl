@@ -344,12 +344,6 @@ function mapfreq(
     if pseudofrequencies !== NoPseudofrequencies()
         @assert probabilities "Set `probabilities = true` to use pseudofrequencies."
     end
-    if usediagonal
-        @assert rank == 2 "Setting `usediagonal` to `true` is only valid for `rank = 2`."
-    end
-    if !isnan(diagonalvalue)
-        @assert rank == 2 "The `diagonalvalue` keyword argument is only valid for `rank = 2`."
-    end
     # Define the table to apply the function
     _table = ContingencyTable(Float64, Val{rank}, alphabet)
     table = probabilities ? Probabilities(_table) : Counts(_table)

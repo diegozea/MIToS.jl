@@ -49,7 +49,7 @@ end
 # using mapfreq to define the method for multiple sequence alignments
 """
     shannon_entropy(msa::AbstractArray{Residue}; base::Union{Real, Nothing}=nothing, 
-        probabilities::Bool=false, kargs...)
+        probabilities::Bool=false, usediagonal::Bool=true, kargs...)
 
 It calculates the Shannon entropy (H) on a MSA. You can use the keyword argument `base` to
 change the base of the log. The default base is ℯ (`base=nothing`), so the result is in nats. 
@@ -58,7 +58,8 @@ so it takes the same keyword arguments. By default, it measures the entropy of e
 in the MSA. You can use `dims = 1` to measure the entropy of each sequence. You can also 
 set `rank = 2`to measure the joint entropy of each pair of sequences or columns. This 
 function sets by default the `probabilities` keyword argument to `false` because it's 
-faster to calculate the entropy from counts/frequencies.
+faster to calculate the entropy from counts/frequencies. It also sets `usediagonal = true`
+to also calculate the entropy of the individual variables (sequences or columns).
 
 ```jldoctest
 julia> using MIToS.MSA, MIToS.Information
@@ -76,8 +77,9 @@ julia> shannon_entropy(msa)
 shannon_entropy │     0.0  1.09861
 
 """
-function shannon_entropy(msa::AbstractArray{Residue}; probabilities::Bool=false, kargs...)
-    mapfreq(shannon_entropy, msa; probabilities=probabilities, kargs...)
+function shannon_entropy(msa::AbstractArray{Residue}; probabilities::Bool=false, 
+    usediagonal=true, kargs...)
+    mapfreq(shannon_entropy, msa; probabilities=probabilities, usediagonal=usediagonal, kargs...)
 end
 
 # Marginal Entropy
@@ -144,41 +146,80 @@ end
 # Kullback-Leibler
 # ================
 
+function _gettablearray(table::Union{Probabilities{T,N,A}, Counts{T,N,A}, ContingencyTable{T,N,A}}) where {T,N,A}
+    gettablearray(table)
+end
+_gettablearray(table::Array{T,N}) where {T,N} = table
 
+const KL_KARG_DOC = """
+You can use the keyword argument `background` to set the background distribution. This 
+argument can take an `Array`, `Probabilities`, or `ContingencyTable` object. The background 
+distribution must have the same size and alphabet as the probabilities. The default is the 
+`BLOSUM62_Pi` table.  You can use the `base` keyword argument to change the base of the log.
+The default base of the log is ℯ (`base = nothing`).
+"""
+
+"""
+    kullback_leibler(probabilities::Probabilities{T,N,A}, background::Union{Array{T,N}, 
+        Probabilities{T,N,A}, ContingencyTable{T,N,A}}=BLOSUM62_Pi, 
+        base::Union{Real, Nothing}=nothing)
+
+It calculates the Kullback-Leibler (KL) divergence from a table of `Probabilities`. 
+$KL_KARG_DOC
+"""
 function kullback_leibler(
-    probabilities::Probabilities{T,N,A},
-    background::Array{T,N},
-) where {T,N,A}
+    probabilities::Probabilities{T,N,A};
+    background::Union{Array{T,N}, Probabilities{T,N,A}, ContingencyTable{T,N,A}} = BLOSUM62_Pi,
+    base::Union{Real, Nothing}=nothing) where {T,N,A}
     p = getcontingencytable(probabilities)
+    bg = _gettablearray(background)
     @assert size(background) == size(p) "probabilities and background must have the same size."
     KL = zero(T)
     @inbounds for i in eachindex(p)
-        pi = p[i]
-        if pi > zero(T)
-            KL += pi * log(pi / background[i])
+        pᵢ = p[i]
+        if pᵢ > zero(T)
+            KL += pᵢ * log(pᵢ / bg[i])
         end
     end
-    KL # Default base: e
+    if base === nothing
+        KL # Default base: e
+    else
+        KL / log(base)
+    end
 end
 
-function kullback_leibler(
-    probabilities::Probabilities{T,N,A},
-    background::Union{Probabilities{T,N,A},ContingencyTable{T,N,A}} = BLOSUM62_Pi,
-) where {T,N,A}
-    kullback_leibler(probabilities, gettablearray(background))
-end
+# Kullback-Leibler for MSA
 
 """
-It calculates the Kullback-Leibler (KL) divergence from a table of `Probabilities`. The
-second positional argument is a `Probabilities` or `ContingencyTable` with the background
-distribution. It's optional, the default is the `BLOSUM62_Pi` table.
-Use last and optional positional argument to change the base of the log. The default base
-is e, so the result is in nats. You can use 2.0 as base to get the result in bits.
+    kullback_leibler(msa::AbstractArray{Residue}; background::Union{Array{T,N}, Probabilities{T,N,A}, ContingencyTable{T,N,A}}=BLOSUM62_Pi, base::Union{Real, Nothing}=nothing, kargs...)
+
+It calculates the Kullback-Leibler (KL) divergence from a multiple sequence alignment (MSA).
+$KL_KARG_DOC The other keyword arguments are passed to the [`mapfreq`](@ref) function.
 """
-kullback_leibler(p::Probabilities{T,1,A}, q, base::Real) where {T,A} =
-    kullback_leibler(p, q) / log(base)
-kullback_leibler(p::Probabilities{T,1,A}, base::Real) where {T,A} =
-    kullback_leibler(p) / log(base)
+function kullback_leibler(msa::AbstractArray{Residue}; background::Union{Array{T,N}, Probabilities{T,N,A}, ContingencyTable{T,N,A}}=BLOSUM62_Pi, base::Union{Real, Nothing}=nothing, rank::Int=1, kargs...) where {T,N,A}
+    @assert rank == 1 "rank must be 1 for kullback_leibler"
+    mapfreq(kullback_leibler, msa; rank=rank, background=background, base=base, kargs...)
+end
+
+# Deprecate the old methods
+
+# Method with positional arguments for background and base
+function kullback_leibler(p::Probabilities{T,N,A}, q::Union{Array{T,N}, Probabilities{T,N,A}, ContingencyTable{T,N,A}}, base::Real) where {T,N,A}
+    Base.depwarn("kullback_leibler(p, q, base) is deprecated. Use kullback_leibler(p; background=q, base=base) instead.", :kullback_leibler, force=true)
+    kullback_leibler(p; background=q, base=base)
+end
+
+# Method with positional argument for background
+function kullback_leibler(p::Probabilities{T,N,A}, q::Union{Array{T,N}, Probabilities{T,N,A}, ContingencyTable{T,N,A}}) where {T,N,A}
+    Base.depwarn("kullback_leibler(p, q) is deprecated. Use kullback_leibler(p; background=q) instead.", :kullback_leibler, force=true)
+    kullback_leibler(p; background=q)
+end
+
+# Method with positional argument for base
+function kullback_leibler(p::Probabilities{T,N,A}, base::Real) where {T,N,A}
+    Base.depwarn("kullback_leibler(p, base) is deprecated. Use kullback_leibler(p; base=base) instead.", :kullback_leibler, force=true)
+    kullback_leibler(p; base=base)
+end
 
 # Mutual Information
 # ==================
