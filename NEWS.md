@@ -24,13 +24,17 @@
 
 * *[Breaking change]* The `Information` has deprecated the `entropy` method on `Counts` and `Probabilities` in
   favor of the `shannon_entropy` function. The definition of the base is now done using the
-  `base` keyword argument. As an example of migration, `entropy(p, 2.0)` should be 
-  replaced by `shannon_entropy(p, base=2.0)`.
+  `base` keyword argument. As an example of migration, `entropy(p, 2)` should be 
+  replaced by `shannon_entropy(p, base=2)`.
 
 * *[Breaking change]* The `marginal_entropy` methods based on positional arguments are 
   deprecated in favor of a method relying on the `margin` and `base` keyword arguments.
   As an example of migration, `marginal_entropy(p, 2, 2.0)` should be replaced by
   `marginal_entropy(p, margin=2, base=2.0)`.
+
+* *[Breaking change]* The `mutual_information` method based on positional arguments is
+  deprecated in favor of a method relying on the `base` keyword argument. As an example of
+  migration, `mutual_information(p, 2)` should be replaced by `mutual_information(p, base=2)`.
 
 * The `frequencies!`, `frequencies`, `probabilities!`, and `probabilities` functions now 
   accept arrays of `Residue`s of any dimension. Therefore, there is no need to use the

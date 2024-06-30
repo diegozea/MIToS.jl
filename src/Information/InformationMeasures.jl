@@ -12,10 +12,7 @@ The default base for the log is ℯ (`base=ℯ`), so the result is in nats. You 
 It calculates the Shannon entropy (H) from a table of `Counts` or `Probabilities`.
 Use last and optional positional argument to change the base of the log. $_DOC_LOG_BASE
 """
-function shannon_entropy(
-    table::Probabilities{T,N,A};
-    base::Number = ℯ,
-) where {T,N,A}
+function shannon_entropy(table::Probabilities{T,N,A}; base::Number = ℯ) where {T,N,A}
     H = zero(T)
     p = gettablearray(table)
     @inbounds for pᵢ in p
@@ -26,10 +23,7 @@ function shannon_entropy(
     base === ℯ ? H : (H / log(base))
 end
 
-function shannon_entropy(
-    table::Counts{T,N,A};
-    base::Number = ℯ,
-) where {T,N,A}
+function shannon_entropy(table::Counts{T,N,A}; base::Number = ℯ) where {T,N,A}
     H = zero(T)
     total = gettotal(table)
     n = gettablearray(table)
@@ -226,7 +220,7 @@ function kullback_leibler(
             KL += pᵢ * log(pᵢ / bg[i])
         end
     end
-    
+
     if base === ℯ
         KL # Default base: e
     else
@@ -313,10 +307,7 @@ end
 It calculates Mutual Information (MI) from a table of `Counts` or `Probabilities`. 
 $_DOC_LOG_BASE Note that calculating MI from `Counts` is faster than from `Probabilities`.
 """
-function mutual_information(
-    table::Probabilities{T,2,A};
-    base::Number = ℯ,
-) where {T,A}
+function mutual_information(table::Probabilities{T,2,A}; base::Number = ℯ) where {T,A}
     MI = zero(T)
     marginals = getmarginalsarray(table)
     p = gettablearray(table)
@@ -337,10 +328,7 @@ end
     (nij > zero(T)) && (ni > zero(T)) ? T(nij * log((total * nij) / (ni * nj))) : zero(T)
 end
 
-function mutual_information(
-    table::Counts{T,2,A};
-    base::Number = ℯ,
-) where {T,A}
+function mutual_information(table::Counts{T,2,A}; base::Number = ℯ) where {T,A}
     MI = zero(T)
     marginals = getmarginalsarray(table)
     n = gettablearray(table)

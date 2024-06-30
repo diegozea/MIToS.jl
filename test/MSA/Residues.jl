@@ -127,7 +127,7 @@
         ]
     end
 
-    @testset "Other base methods" begin
+    @testset "Other Base methods" begin
 
         for i = 1:22
             @test bitstring(i) == bitstring(Residue(i))

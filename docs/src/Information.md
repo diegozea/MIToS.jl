@@ -301,7 +301,7 @@ measures from `Counts` and `Probabilities`:
 - `gap_union_percentage`
 
 Information measure functions take optionally the base as a keyword argument (default: `ℯ`). 
-You can set `base=2.0` to measure information in bits.
+You can set `base=2` to measure information in bits.
 
 ```@example inf_information
 using MIToS.Information
@@ -313,7 +313,7 @@ H = shannon_entropy(Ni) # returns the Shannon entropy in nats (base e)
 ```
 
 ```@example inf_information
-H = shannon_entropy(Ni, base=2.0) # returns the Shannon entropy in bits (base 2)
+H = shannon_entropy(Ni, base=2) # returns the Shannon entropy in bits (base 2)
 ```
 
 Information module defines special iteration functions to easily and efficiently compute a
