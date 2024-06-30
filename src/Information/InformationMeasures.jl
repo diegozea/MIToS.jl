@@ -2,19 +2,19 @@
 # =======
 
 const _DOC_LOG_BASE = """
-The default base for the log is ℯ (`base=nothing`), so the result is in nats. You can use 
+The default base for the log is ℯ (`base=ℯ`), so the result is in nats. You can use 
 `base = 2` to get the result in bits.
 """
 
 """
-    shannon_entropy(table::Union{Counts{T,N,A},Probabilities{T,N,A}}; base::Union{Real, Nothing}=nothing)
+    shannon_entropy(table::Union{Counts{T,N,A},Probabilities{T,N,A}}; base::Number=ℯ)
 
 It calculates the Shannon entropy (H) from a table of `Counts` or `Probabilities`.
 Use last and optional positional argument to change the base of the log. $_DOC_LOG_BASE
 """
 function shannon_entropy(
     table::Probabilities{T,N,A};
-    base::Union{Real,Nothing} = nothing,
+    base::Number = ℯ,
 ) where {T,N,A}
     H = zero(T)
     p = gettablearray(table)
@@ -23,12 +23,12 @@ function shannon_entropy(
             H -= pᵢ * log(pᵢ)
         end
     end
-    base === nothing ? H : (H / log(base))
+    base === ℯ ? H : (H / log(base))
 end
 
 function shannon_entropy(
     table::Counts{T,N,A};
-    base::Union{Real,Nothing} = nothing,
+    base::Number = ℯ,
 ) where {T,N,A}
     H = zero(T)
     total = gettotal(table)
@@ -38,7 +38,7 @@ function shannon_entropy(
             H -= nᵢ * log(nᵢ / total)
         end
     end
-    if base === nothing
+    if base === ℯ
         H / total  # Default base: e
     else
         (H / total) / log(base)
@@ -68,7 +68,7 @@ end
 
 # using mapfreq to define the method for multiple sequence alignments
 """
-    shannon_entropy(msa::AbstractArray{Residue}; base::Union{Real, Nothing}=nothing, 
+    shannon_entropy(msa::AbstractArray{Residue}; base::Number=ℯ, 
         probabilities::Bool=false, usediagonal::Bool=true, kargs...)
 
 It calculates the Shannon entropy (H) on a MSA. You can use the keyword argument `base` to
@@ -139,7 +139,7 @@ end
 
 """
     marginal_entropy(table::Union{Counts{T,N,A},Probabilities{T,N,A}}; margin::Int=1, 
-        base::Union{Real, Nothing}=nothing)
+        base::Number=ℯ)
 
 It calculates marginal entropy (H) from a table of `Counts` or `Probabilities`. It takes 
 two keyword arguments: `margin` and `base`. The first one is used to indicate the margin
@@ -150,10 +150,10 @@ change the base of the log. $_DOC_LOG_BASE
 function marginal_entropy(
     table::Union{Counts{T,N,A},Probabilities{T,N,A}};
     margin::Int = 1,
-    base::Union{Real,Nothing} = nothing,
+    base::Number = ℯ,
 ) where {T,N,A}
     H = _marginal_entropy(table, margin)
-    if base === nothing
+    if base === ℯ
         H # Default base: e
     else
         H / log(base)
@@ -206,7 +206,7 @@ distribution must have the same size and alphabet as the probabilities. The defa
 """
     kullback_leibler(probabilities::Probabilities{T,N,A}, background::Union{Array{T,N}, 
         Probabilities{T,N,A}, ContingencyTable{T,N,A}}=BLOSUM62_Pi, 
-        base::Union{Real, Nothing}=nothing)
+        base::Number=ℯ)
 
 It calculates the Kullback-Leibler (KL) divergence from a table of `Probabilities`. 
 $_DOC_KL_KARG
@@ -214,7 +214,7 @@ $_DOC_KL_KARG
 function kullback_leibler(
     probabilities::Probabilities{T,N,A};
     background::Union{Array{T,N},Probabilities{T,N,A},ContingencyTable{T,N,A}} = BLOSUM62_Pi,
-    base::Union{Real,Nothing} = nothing,
+    base::Number = ℯ,
 ) where {T,N,A}
     p = getcontingencytable(probabilities)
     bg = _gettablearray(background)
@@ -226,7 +226,8 @@ function kullback_leibler(
             KL += pᵢ * log(pᵢ / bg[i])
         end
     end
-    if base === nothing
+    
+    if base === ℯ
         KL # Default base: e
     else
         KL / log(base)
@@ -236,7 +237,7 @@ end
 # Kullback-Leibler for MSA
 
 """
-    kullback_leibler(msa::AbstractArray{Residue}; background::Union{Array{T,N}, Probabilities{T,N,A}, ContingencyTable{T,N,A}}=BLOSUM62_Pi, base::Union{Real, Nothing}=nothing, kargs...)
+    kullback_leibler(msa::AbstractArray{Residue}; background::Union{Array{T,N}, Probabilities{T,N,A}, ContingencyTable{T,N,A}}=BLOSUM62_Pi, base::Number=ℯ, kargs...)
 
 It calculates the Kullback-Leibler (KL) divergence from a multiple sequence alignment (MSA).
 $_DOC_KL_KARG The other keyword arguments are passed to the [`mapfreq`](@ref) function.
@@ -244,7 +245,7 @@ $_DOC_KL_KARG The other keyword arguments are passed to the [`mapfreq`](@ref) fu
 function kullback_leibler(
     msa::AbstractArray{Residue};
     background::Union{Array{T,N},Probabilities{T,N,A},ContingencyTable{T,N,A}} = BLOSUM62_Pi,
-    base::Union{Real,Nothing} = nothing,
+    base::Number = ℯ,
     rank::Int = 1,
     kargs...,
 ) where {T,N,A}
@@ -307,14 +308,14 @@ end
 end
 
 """
-    mutual_information(table::Union{Counts{T,N,A},Probabilities{T,N,A}}; base::Union{Real, Nothing}=nothing)
+    mutual_information(table::Union{Counts{T,N,A},Probabilities{T,N,A}}; base::Number=ℯ)
 
 It calculates Mutual Information (MI) from a table of `Counts` or `Probabilities`. 
 $_DOC_LOG_BASE Note that calculating MI from `Counts` is faster than from `Probabilities`.
 """
 function mutual_information(
     table::Probabilities{T,2,A};
-    base::Union{Real,Nothing} = nothing,
+    base::Number = ℯ,
 ) where {T,A}
     MI = zero(T)
     marginals = getmarginalsarray(table)
@@ -328,7 +329,7 @@ function mutual_information(
             end
         end
     end
-    base === nothing ? MI : (MI / log(base)) # Default base: e
+    base === ℯ ? MI : (MI / log(base)) # Default base: e
 end
 
 # It avoids ifelse() because log is expensive (https://github.com/JuliaLang/julia/issues/8869)
@@ -338,7 +339,7 @@ end
 
 function mutual_information(
     table::Counts{T,2,A};
-    base::Union{Real,Nothing} = nothing,
+    base::Number = ℯ,
 ) where {T,A}
     MI = zero(T)
     marginals = getmarginalsarray(table)
@@ -354,7 +355,7 @@ function mutual_information(
         end
     end
     mi = MI / total
-    base === nothing ? mi : (mi / log(base)) # Default base: e
+    base === ℯ ? mi : (mi / log(base)) # Default base: e
 end
 
 function mutual_information(
@@ -371,7 +372,7 @@ end
 
 function mutual_information(
     pxyz::Union{Counts{T,3,A},Probabilities{T,3,A}};
-    base::Union{Real,Nothing} = nothing,
+    base::Number = ℯ,
 ) where {T,A}
     pxy = delete_dimensions(pxyz, 3)
     mi = (
@@ -383,11 +384,11 @@ function mutual_information(
         shannon_entropy(delete_dimensions!(pxy, pxyz, 2)) + # H(Y,Z) +
         shannon_entropy(pxyz)                               # H(X,Y,Z)
     )
-    base === nothing ? mi : (mi / log(base))
+    base === ℯ ? mi : (mi / log(base))
 end
 
 """
-    mutual_information(msa::AbstractArray{Residue}; base::Union{Real, Nothing}=nothing, kargs...)
+    mutual_information(msa::AbstractArray{Residue}; base::Number=ℯ, kargs...)
 
 It calculates Mutual Information (MI) from a multiple sequence alignment (MSA).
 $_DOC_LOG_BASE The minimum value for `rank` is 2 (the default value). By defualt, it 
@@ -418,7 +419,7 @@ function mutual_information(
     msa::AbstractArray{Residue};
     rank::Int = 2,
     probabilities::Bool = false,
-    base::Union{Real,Nothing} = nothing,
+    base::Number = ℯ,
     kargs...,
 )
     @assert rank > 1 "rank must be greater than 1 for mutual_information"
