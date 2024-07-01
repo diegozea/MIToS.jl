@@ -39,7 +39,9 @@ function shannon_entropy(table::Frequencies{T,N,A}; base::Number = ℯ) where {T
     end
 end
 
-function StatsBase.entropy(table::Union{Frequencies{T,N,A},Probabilities{T,N,A}}) where {T,N,A}
+function StatsBase.entropy(
+    table::Union{Frequencies{T,N,A},Probabilities{T,N,A}},
+) where {T,N,A}
     Base.depwarn(
         "entropy(table::Union{Frequencies,Probabilities}) is deprecated. Use shannon_entropy(table) instead.",
         :entropy,
@@ -495,8 +497,18 @@ alignment using the [`mapfreq`](@ref) function—all the keyword arguments are p
 `mapfreq`. $_DOC_NMI By default, it uses counts/frequencies to estimate the nMI, as it's
 faster than using probabilities.
 """
-function normalized_mutual_information(msa::AbstractArray{Residue}; rank::Int=2, probabilities::Bool=false,
-    kargs...)
+function normalized_mutual_information(
+    msa::AbstractArray{Residue};
+    rank::Int = 2,
+    probabilities::Bool = false,
+    kargs...,
+)
     @assert rank > 1 "rank must be greater than 1 for normalized_mutual_information"
-    mapfreq(normalized_mutual_information, msa, rank=rank, probabilities=probabilities, kargs...)
+    mapfreq(
+        normalized_mutual_information,
+        msa,
+        rank = rank,
+        probabilities = probabilities,
+        kargs...,
+    )
 end

@@ -2,10 +2,8 @@
 
 ### Changes from v2.21.0 to dev
 
-* *[Breaking change]* The `mapcolpairfreq!` and `mapseqpairfreq!` functions now uses the
-  boolean `usediagonal` keyword argument to indicate if the function should be applied to
-  the diagonal elements of the matrix (the default is `true`). Before, this was done passing
-  `Val{true}` or `Val{false}` as the last positional argument.
+* *[Breaking change]* The `Information` module deprecates the `Counts` type in favor of 
+  the new `Frequencies` type. The new type as the same signature and behavior as the old one.
 
 * *[Breaking change]* The `count` function on sequences has been deprecated in favor of the
   `frequencies` function, which has the same signature and behavior as the old one.
@@ -40,8 +38,13 @@
   accept arrays of `Residue`s of any dimension. Therefore, there is no need to use the
   `vec` function to convert the arrays to vectors.
 
+* *[Breaking change]* The `mapcolpairfreq!` and `mapseqpairfreq!` functions now uses the
+  boolean `usediagonal` keyword argument to indicate if the function should be applied to
+  the diagonal elements of the matrix (the default is `true`). Before, this was done passing
+  `Val{true}` or `Val{false}` as the last positional argument.
+
 * The `mapcolfreq!`, `mapseqfreq!`, `mapcolpairfreq!`, and `mapseqpairfreq!` methods using
-  keyword arguments, now pass the extra keyword arguments to mapped function.
+  keyword arguments, now pass the extra keyword arguments to the mapped function.
 
 * The `Information` module now exports the `mapfreq` function that offers a more high-level
   interface to the `mapcolfreq!`, `mapseqfreq!`, `mapcolpairfreq!`, and `mapseqpairfreq!`

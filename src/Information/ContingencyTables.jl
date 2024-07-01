@@ -53,7 +53,11 @@ mutable struct Counts{T,N,A} <: AbstractArray{T,N}
     table::ContingencyTable{T,N,A}
 end
 function Counts{T,N,A}(table::ContingencyTable{T,N,A}) where {T,N,A}
-    Base.depwarn("The `Counts` type is deprecated. Please use `Frequencies` instead.", :Counts, force=true)
+    Base.depwarn(
+        "The `Counts` type is deprecated. Please use `Frequencies` instead.",
+        :Counts,
+        force = true,
+    )
     Frequencies{T,N,A}(table)
 end
 
