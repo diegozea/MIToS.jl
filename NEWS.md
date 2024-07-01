@@ -1,6 +1,9 @@
 ## MIToS.jl Release Notes
 
-### Changes from v2.21.0 to dev
+### Changes from v2.21.0 to v2.22.0
+
+This versions introduces several breaking changes to improve the usability of the 
+`Information` module. The main changes are:
 
 * *[Breaking change]* The `Information` module deprecates the `Counts` type in favor of 
   the new `Frequencies` type. The new type as the same signature and behavior as the old one.
@@ -34,10 +37,6 @@
   deprecated in favor of a method relying on the `base` keyword argument. As an example of
   migration, `mutual_information(p, 2)` should be replaced by `mutual_information(p, base=2)`.
 
-* The `frequencies!`, `frequencies`, `probabilities!`, and `probabilities` functions now 
-  accept arrays of `Residue`s of any dimension. Therefore, there is no need to use the
-  `vec` function to convert the arrays to vectors.
-
 * *[Breaking change]* The `mapcolpairfreq!` and `mapseqpairfreq!` functions now uses the
   boolean `usediagonal` keyword argument to indicate if the function should be applied to
   the diagonal elements of the matrix (the default is `true`). Before, this was done passing
@@ -56,6 +55,10 @@
   `mutual_information`, and `normalized_mutual_information` functions that take an 
   `AbstractArray{Residue}` as input, e.g. an MSA. Those methods use the `mapfreq` function
   under the hood to ease the calculation of the information measures on MSAs.
+
+* The `frequencies!`, `frequencies`, `probabilities!`, and `probabilities` functions now 
+  accept arrays of `Residue`s of any dimension. Therefore, there is no need to use the
+  `vec` function to convert the arrays to vectors.
 
 * The `MSA` module now exports the `WeightType` union type to represent `weights`.
 
