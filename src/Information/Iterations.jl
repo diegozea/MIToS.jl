@@ -7,7 +7,7 @@ _get_matrix_residue(msa::Matrix{Residue})::Matrix{Residue} = msa
 # Kernel function to fill ContingencyTable based on residues
 function _mapfreq_kernel!(
     f::Function,
-    freqtable::Union{Probabilities{T,N,A},Counts{T,N,A}},
+    freqtable::Union{Probabilities{T,N,A},Frequencies{T,N,A}},
     weights,
     pseudocounts,
     pseudofrequencies,
@@ -41,7 +41,7 @@ _mappairfreq_kargs_doc = """
 function _mapfreq!(
     f::Function,
     res_list::Vector{V}, # sequences or columns
-    table::Union{Probabilities{T,1,A},Counts{T,1,A}};
+    table::Union{Probabilities{T,1,A},Frequencies{T,1,A}};
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
     pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
@@ -56,7 +56,7 @@ end
 # Map to each column
 
 """
-It efficiently map a function (first argument) that takes a table of `Counts` or
+It efficiently map a function (first argument) that takes a table of `Frequencies` or
 `Probabilities` (third argument). The table is filled in place with the counts or
 probabilities of each column from the `msa` (second argument).
 
@@ -65,7 +65,7 @@ $_mapfreq_kargs_doc
 function mapcolfreq!(
     f::Function,
     msa::AbstractMatrix{Residue},
-    table::Union{Probabilities{T,1,A},Counts{T,1,A}};
+    table::Union{Probabilities{T,1,A},Frequencies{T,1,A}};
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
     pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
@@ -98,7 +98,7 @@ end
 # Map to each sequence
 
 """
-It efficiently map a function (first argument) that takes a table of `Counts` or
+It efficiently map a function (first argument) that takes a table of `Frequencies` or
 `Probabilities` (third argument). The table is filled in place with the counts or
 probabilities of each sequence from the `msa` (second argument).
 
@@ -107,7 +107,7 @@ $_mapfreq_kargs_doc
 function mapseqfreq!(
     f::Function,
     msa::AbstractMatrix{Residue},
-    table::Union{Probabilities{T,1,A},Counts{T,1,A}};
+    table::Union{Probabilities{T,1,A},Frequencies{T,1,A}};
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
     pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
@@ -142,7 +142,7 @@ function _mappairfreq!(
     f::Function,
     res_list::Vector{V}, # sequences or columns
     plm::PairwiseListMatrix{T,D,TV}, # output
-    table::Union{Probabilities{T,2,A},Counts{T,2,A}},
+    table::Union{Probabilities{T,2,A},Frequencies{T,2,A}},
     usediagonal::Type{Val{D}} = Val{true};
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
@@ -167,7 +167,7 @@ end
 # Map to column pairs
 
 """
-It efficiently map a function (first argument) that takes a table of `Counts` or
+It efficiently map a function (first argument) that takes a table of `Frequencies` or
 `Probabilities` (third argument). The table is filled in place with the counts or
 probabilities of each pair of columns from the `msa` (second argument).
 
@@ -177,7 +177,7 @@ $_mappairfreq_kargs_doc
 function mapcolpairfreq!(
     f::Function,
     msa::AbstractMatrix{Residue},
-    table::Union{Probabilities{T,2,A},Counts{T,2,A}};
+    table::Union{Probabilities{T,2,A},Frequencies{T,2,A}};
     usediagonal::Bool = true,
     diagonalvalue::T = zero(T),
     weights::WeightTypes = NoClustering(),
@@ -217,7 +217,7 @@ end
 # Map to sequence pairs
 
 """
-It efficiently map a function (first argument) that takes a table of `Counts` or
+It efficiently map a function (first argument) that takes a table of `Frequencies` or
 `Probabilities` (third argument). The table is filled in place with the counts or
 probabilities of each pair of sequences from the `msa` (second argument).
 
@@ -227,7 +227,7 @@ $_mappairfreq_kargs_doc
 function mapseqpairfreq!(
     f::Function,
     msa::AbstractMatrix{Residue},
-    table::Union{Probabilities{T,2,A},Counts{T,2,A}};
+    table::Union{Probabilities{T,2,A},Frequencies{T,2,A}};
     usediagonal::Bool = true,
     diagonalvalue::T = zero(T),
     weights::WeightTypes = NoClustering(),
@@ -277,7 +277,7 @@ end
         pseudofrequencies = NoPseudofrequencies(), probabilities = true, 
         usediagonal = false, diagonalvalue = NaN, kargs...)
 
-It efficiently map a function (first argument) that takes a table of `Counts` or
+It efficiently map a function (first argument) that takes a table of `Frequencies` or
 `Probabilities` (depending on the `probabilities` keyword argument) calculated on 
 sequences (`dims = 1`) or columns (`dims = 2`, the default) of an `msa` (second argument). 
 If `rank = 1`, the default, the function is applied to each sequence or column. If 
@@ -346,7 +346,7 @@ function mapfreq(
     end
     # Define the table to apply the function
     _table = ContingencyTable(Float64, Val{rank}, alphabet)
-    table = probabilities ? Probabilities(_table) : Counts(_table)
+    table = probabilities ? Probabilities(_table) : Frequencies(_table)
     if rank == 1
         if dims == 1
             mapseqfreq!(

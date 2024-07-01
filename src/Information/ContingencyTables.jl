@@ -29,7 +29,7 @@ mutable struct ContingencyTable{T,N,A} <: AbstractArray{T,N}
     total::T
 end
 
-# Probability and Counts
+# Probability and Frequencies
 # ----------------------
 
 """
@@ -42,25 +42,34 @@ mutable struct Probabilities{T,N,A} <: AbstractArray{T,N}
 end
 
 """
-A `Counts` object wraps a `ContingencyTable` storing counts/frequencies.
+A `Frequencies` object wraps a `ContingencyTable` storing counts/frequencies.
 """
+mutable struct Frequencies{T,N,A} <: AbstractArray{T,N}
+    table::ContingencyTable{T,N,A}
+end
+
+# DEPRECATED: Deprecation warning for Counts type
 mutable struct Counts{T,N,A} <: AbstractArray{T,N}
     table::ContingencyTable{T,N,A}
+end
+function Counts{T,N,A}(table::ContingencyTable{T,N,A}) where {T,N,A}
+    Base.depwarn("The `Counts` type is deprecated. Please use `Frequencies` instead.", :Counts, force=true)
+    Frequencies{T,N,A}(table)
 end
 
 # Getters
 
 """
 `getcontingencytable` allows to access the wrapped `ContingencyTable` in a `Probabilities`
-or `Counts` object.
+or `Frequencies` object.
 """
 @inline getcontingencytable(p::Probabilities{T,N,A}) where {T,N,A} = p.table
-@inline getcontingencytable(n::Counts{T,N,A}) where {T,N,A} = n.table
+@inline getcontingencytable(n::Frequencies{T,N,A}) where {T,N,A} = n.table
 
 for f in
     (:getalphabet, :gettable, :getmarginals, :gettotal, :gettablearray, :getmarginalsarray)
     @eval $(f)(p::Probabilities{T,N,A}) where {T,N,A} = $(f)(getcontingencytable(p))
-    @eval $(f)(n::Counts{T,N,A}) where {T,N,A} = $(f)(getcontingencytable(n))
+    @eval $(f)(n::Frequencies{T,N,A}) where {T,N,A} = $(f)(getcontingencytable(n))
 end
 
 # AbstractArray
@@ -68,7 +77,7 @@ end
 for f in (:size, :getindex, :setindex!)
     @eval Base.$(f)(p::Probabilities{T,N,A}, args...) where {T,N,A} =
         $(f)(getcontingencytable(p), args...)
-    @eval Base.$(f)(n::Counts{T,N,A}, args...) where {T,N,A} =
+    @eval Base.$(f)(n::Frequencies{T,N,A}, args...) where {T,N,A} =
         $(f)(getcontingencytable(n), args...)
 end
 
@@ -210,7 +219,7 @@ end
 function Base.show(
     io::IO,
     ::MIME"text/plain",
-    table::Union{Probabilities{T,N,A},Counts{T,N,A}},
+    table::Union{Probabilities{T,N,A},Frequencies{T,N,A}},
 ) where {T,N,A}
     print(io, typeof(table), " wrapping a ")
     show(io, MIME"text/plain"(), getcontingencytable(table))
@@ -467,7 +476,7 @@ function delete_dimensions(
     delete_dimensions!(ContingencyTable(T, Val{N - I}, input.alphabet), input, dims...)
 end
 
-for tp in (:Probabilities, :Counts)
+for tp in (:Probabilities, :Frequencies)
     @eval begin
         function delete_dimensions!(
             output::$(tp){T,S,A},

@@ -47,14 +47,14 @@ function count!(
     seqs::Vararg{AbstractArray{Residue},N},
 ) where {T,N,A}
     Base.depwarn(
-        "count! using a ContingencyTable or Counts is deprecated. Use frequencies! instead.",
+        "count! using a ContingencyTable or Frequencies is deprecated. Use frequencies! instead.",
         :count!,
         force = true,
     )
     frequencies!(table, seqs..., weights = weights, pseudocounts = pseudocounts)
 end
 
-function count!(table::Counts{T,N,A}, args...) where {T,N,A}
+function count!(table::Frequencies{T,N,A}, args...) where {T,N,A}
     count!(getcontingencytable(table), args...)
 end
 
@@ -62,7 +62,7 @@ end
 """
     frequencies!(table, seqs...; weights::WeightTypes, pseudocounts::Pseudocount)
 
-It populates a `ContingencyTable` or `Counts` table (first argument) using the frequencies
+It populates a `ContingencyTable` or `Frequencies` table (first argument) using the frequencies
 in the given sequences (last positional arguments). The dimension of the table must match
 the number of sequences and all the sequences must have the same length. You must indicate
 the used `weights` and `pseudocounts` as keyword arguments. Those arguments default to
@@ -81,7 +81,7 @@ function frequencies!(
     table
 end
 
-frequencies!(table::Counts{T,N,A}, args...; kwargs...) where {T,N,A} =
+frequencies!(table::Frequencies{T,N,A}, args...; kwargs...) where {T,N,A} =
     frequencies!(getcontingencytable(table), args...; kwargs...)
 
 # Default counters
@@ -99,7 +99,7 @@ function _count(
 end
 
 """
-It returns a `ContingencyTable` wrapped in a `Counts` type with the frequencies of residues
+It returns a `ContingencyTable` wrapped in a `Frequencies` type with the frequencies of residues
 in the sequences that takes as arguments. The dimension of the table is equal to the number
 of sequences. You can use the keyword arguments `alphabet`, `weights` and `pseudocounts`
 to indicate the alphabet of the table (default to `UngappedAlphabet()`), a clustering
@@ -132,7 +132,7 @@ end
 """
     frequencies(seqs...; alphabet=UngappedAlphabet(), weights=NoClustering(), pseudocounts=NoPseudocount() 
 
-This function returns a `Counts` object wrapping a `ContingencyTable` with the frequencies
+This function returns a `Frequencies` object wrapping a `ContingencyTable` with the frequencies
 of residues in the sequences that takes as arguments. The dimension of the table is equal
 to the number of sequences. You can use the keyword arguments `alphabet`, `weights` and
 `pseudocounts` to indicate the alphabet of the table, a clustering result and the
@@ -144,7 +144,7 @@ function frequencies(
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
 ) where {N}
-    Counts(_count(alphabet, weights, pseudocounts, seqs...))
+    Frequencies(_count(alphabet, weights, pseudocounts, seqs...))
 end
 
 # Probabilities

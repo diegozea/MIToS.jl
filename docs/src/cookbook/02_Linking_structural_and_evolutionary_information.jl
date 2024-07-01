@@ -100,7 +100,7 @@ using MIToS.Information
 Hx = mapcolfreq!(
     shannon_entropy,
     msa,
-    Counts(ContingencyTable(Int, Val{1}, UngappedAlphabet())),
+    Frequencies(ContingencyTable(Int, Val{1}, UngappedAlphabet())),
 )
 
 # To get quick access to each PDB residue based on its residue number, we can

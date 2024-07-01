@@ -20,7 +20,7 @@
         nmi = mapcolpairfreq!(
             normalized_mutual_information,
             aln,
-            Counts(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
+            Frequencies(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
             usediagonal = false,
         )
         nmi_mat = convert(Matrix{Float64}, getarray(nmi))
@@ -29,7 +29,7 @@
         nmi_t = mapseqpairfreq!(
             normalized_mutual_information,
             permutedims(aln),
-            Counts(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
+            Frequencies(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
             usediagonal = false,
         )
         @test nmi_mat == convert(Matrix{Float64}, getarray(nmi_t))
@@ -40,7 +40,7 @@
         function _gaps(
             table::Union{
                 Probabilities{Float64,1,GappedAlphabet},
-                Counts{Float64,1,GappedAlphabet},
+                Frequencies{Float64,1,GappedAlphabet},
             },
         )
             table[GAP]
@@ -63,13 +63,13 @@
 
         ngaps = Float64[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-        colcount = mapcolfreq!(_gaps, gaps, Counts(table))
+        colcount = mapcolfreq!(_gaps, gaps, Frequencies(table))
         @test all((vec(getarray(colcount)) .- ngaps) .== 0.0)
 
         colfract = mapcolfreq!(_gaps, gaps, Probabilities(table))
         @test all((vec(getarray(colfract)) .- ngaps ./ 10.0) .== 0.0)
 
-        seqcount = mapseqfreq!(_gaps, gaps, Counts(table))
+        seqcount = mapseqfreq!(_gaps, gaps, Frequencies(table))
         @test all((vec(getarray(seqcount)) .- ngaps) .== 0.0)
 
         seqfract = mapseqfreq!(_gaps, gaps, Probabilities(table))
@@ -82,7 +82,7 @@
         f(table; karg::Float64 = 0.0) = karg
 
         msa = rand(Random.MersenneTwister(123), Residue, 4, 10)
-        table_1d = Counts(ContingencyTable(Float64, Val{1}, UngappedAlphabet()))
+        table_1d = Frequencies(ContingencyTable(Float64, Val{1}, UngappedAlphabet()))
         table_2d = Probabilities(ContingencyTable(Float64, Val{2}, UngappedAlphabet()))
 
         @test sum(mapseqfreq!(f, msa, deepcopy(table_1d))) == 0.0

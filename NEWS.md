@@ -22,10 +22,10 @@
   should be replaced by 
   `probabilities!(table, seqs..., weights=weights, pseudocounts=pseudocounts, pseudofrequencies=pseudofrequencies)`.
 
-* *[Breaking change]* The `Information` has deprecated the `entropy` method on `Counts` and `Probabilities` in
-  favor of the `shannon_entropy` function. The definition of the base is now done using the
-  `base` keyword argument. As an example of migration, `entropy(p, 2)` should be 
-  replaced by `shannon_entropy(p, base=2)`.
+* *[Breaking change]* The `Information` has deprecated the `entropy` method on 
+  `Frequencies` and `Probabilities` in favor of the `shannon_entropy` function. The 
+  definition of the base is now done using the `base` keyword argument. As an example of 
+  migration, `entropy(p, 2)` should be replaced by `shannon_entropy(p, base=2)`.
 
 * *[Breaking change]* The `marginal_entropy` methods based on positional arguments are 
   deprecated in favor of a method relying on the `margin` and `base` keyword arguments.

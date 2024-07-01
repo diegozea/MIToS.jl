@@ -7,9 +7,9 @@ The default base for the log is ℯ (`base=ℯ`), so the result is in nats. You 
 """
 
 """
-    shannon_entropy(table::Union{Counts{T,N,A},Probabilities{T,N,A}}; base::Number=ℯ)
+    shannon_entropy(table::Union{Frequencies{T,N,A},Probabilities{T,N,A}}; base::Number=ℯ)
 
-It calculates the Shannon entropy (H) from a table of `Counts` or `Probabilities`.
+It calculates the Shannon entropy (H) from a table of `Frequencies` or `Probabilities`.
 Use last and optional positional argument to change the base of the log. $_DOC_LOG_BASE
 """
 function shannon_entropy(table::Probabilities{T,N,A}; base::Number = ℯ) where {T,N,A}
@@ -23,7 +23,7 @@ function shannon_entropy(table::Probabilities{T,N,A}; base::Number = ℯ) where 
     base === ℯ ? H : (H / log(base))
 end
 
-function shannon_entropy(table::Counts{T,N,A}; base::Number = ℯ) where {T,N,A}
+function shannon_entropy(table::Frequencies{T,N,A}; base::Number = ℯ) where {T,N,A}
     H = zero(T)
     total = gettotal(table)
     n = gettablearray(table)
@@ -39,9 +39,9 @@ function shannon_entropy(table::Counts{T,N,A}; base::Number = ℯ) where {T,N,A}
     end
 end
 
-function StatsBase.entropy(table::Union{Counts{T,N,A},Probabilities{T,N,A}}) where {T,N,A}
+function StatsBase.entropy(table::Union{Frequencies{T,N,A},Probabilities{T,N,A}}) where {T,N,A}
     Base.depwarn(
-        "entropy(table::Union{Counts,Probabilities}) is deprecated. Use shannon_entropy(table) instead.",
+        "entropy(table::Union{Frequencies,Probabilities}) is deprecated. Use shannon_entropy(table) instead.",
         :entropy,
         force = true,
     )
@@ -49,11 +49,11 @@ function StatsBase.entropy(table::Union{Counts{T,N,A},Probabilities{T,N,A}}) whe
 end
 
 function StatsBase.entropy(
-    table::Union{Counts{T,N,A},Probabilities{T,N,A}},
+    table::Union{Frequencies{T,N,A},Probabilities{T,N,A}},
     base::Real,
 ) where {T,N,A}
     Base.depwarn(
-        "entropy(table::Union{Counts,Probabilities}, base::Real) is deprecated. Use shannon_entropy(table; base=base) instead.",
+        "entropy(table::Union{Frequencies,Probabilities}, base::Real) is deprecated. Use shannon_entropy(table; base=base) instead.",
         :entropy,
         force = true,
     )
@@ -119,7 +119,7 @@ function _marginal_entropy(table::Probabilities{T,N,A}, margin::Int) where {T,N,
     -H # Default base: e
 end
 
-function _marginal_entropy(table::Counts{T,N,A}, margin::Int) where {T,N,A}
+function _marginal_entropy(table::Frequencies{T,N,A}, margin::Int) where {T,N,A}
     H = zero(T)
     total = gettotal(table)
     marginals = getmarginalsarray(table)
@@ -132,17 +132,17 @@ function _marginal_entropy(table::Counts{T,N,A}, margin::Int) where {T,N,A}
 end
 
 """
-    marginal_entropy(table::Union{Counts{T,N,A},Probabilities{T,N,A}}; margin::Int=1, 
+    marginal_entropy(table::Union{Frequencies{T,N,A},Probabilities{T,N,A}}; margin::Int=1, 
         base::Number=ℯ)
 
-It calculates marginal entropy (H) from a table of `Counts` or `Probabilities`. It takes 
+It calculates marginal entropy (H) from a table of `Frequencies` or `Probabilities`. It takes 
 two keyword arguments: `margin` and `base`. The first one is used to indicate the margin
 used to calculate the entropy, e.g. it estimates the entropy H(X) if margin is 1, H(Y)
 for 2, etc. The default value of `margin` is 1. The second keyword argument is used to
 change the base of the log. $_DOC_LOG_BASE
 """
 function marginal_entropy(
-    table::Union{Counts{T,N,A},Probabilities{T,N,A}};
+    table::Union{Frequencies{T,N,A},Probabilities{T,N,A}};
     margin::Int = 1,
     base::Number = ℯ,
 ) where {T,N,A}
@@ -156,7 +156,7 @@ end
 
 # Deprecate the marginal_entropy methods taking positional arguments
 function marginal_entropy(
-    table::Union{Counts{T,N,A},Probabilities{T,N,A}},
+    table::Union{Frequencies{T,N,A},Probabilities{T,N,A}},
     margin::Int,
 ) where {T,N,A}
     Base.depwarn(
@@ -168,7 +168,7 @@ function marginal_entropy(
 end
 
 function marginal_entropy(
-    table::Union{Counts{T,N,A},Probabilities{T,N,A}},
+    table::Union{Frequencies{T,N,A},Probabilities{T,N,A}},
     margin::Int,
     base::Real,
 ) where {T,N,A}
@@ -184,7 +184,7 @@ end
 # ================
 
 function _gettablearray(
-    table::Union{Probabilities{T,N,A},Counts{T,N,A},ContingencyTable{T,N,A}},
+    table::Union{Probabilities{T,N,A},Frequencies{T,N,A},ContingencyTable{T,N,A}},
 ) where {T,N,A}
     gettablearray(table)
 end
@@ -302,9 +302,9 @@ end
 end
 
 """
-    Information._mutual_information(table::Union{Counts{T,2,A},Probabilities{T,2,A}}) where {T,A}
+    Information._mutual_information(table::Union{Frequencies{T,2,A},Probabilities{T,2,A}}) where {T,A}
 
-It calculates Mutual Information (MI) from a table of `Counts` or `Probabilities` using ℯ as
+It calculates Mutual Information (MI) from a table of `Frequencies` or `Probabilities` using ℯ as
 the base of the log. This function is the kernel of the `mutual_information` function. It is
 also used to calculate the MI values of different MIToS functions that do not require the
 base of the log as an argument. In particular, the `buslje09` and `BLMI` functions use this
@@ -327,10 +327,10 @@ function _mutual_information(table::Probabilities{T,2,A}) where {T,A}
 end
 
 """
-    mutual_information(table::Union{Counts{T,2,A},Probabilities{T,2,A}}; base::Number=ℯ)
+    mutual_information(table::Union{Frequencies{T,2,A},Probabilities{T,2,A}}; base::Number=ℯ)
 
-It calculates Mutual Information (MI) from a table of `Counts` or `Probabilities`. 
-$_DOC_LOG_BASE Note that calculating MI from `Counts` is faster than from `Probabilities`.
+It calculates Mutual Information (MI) from a table of `Frequencies` or `Probabilities`. 
+$_DOC_LOG_BASE Note that calculating MI from `Frequencies` is faster than from `Probabilities`.
 """
 function mutual_information(table::Probabilities{T,2,A}; base::Number = ℯ) where {T,A}
     mi = _mutual_information(table)
@@ -343,7 +343,7 @@ end
 end
 
 
-function _mutual_information(table::Counts{T,2,A}) where {T,A}
+function _mutual_information(table::Frequencies{T,2,A}) where {T,A}
     mi = zero(T)
     marginals = getmarginalsarray(table)
     n = gettablearray(table)
@@ -360,13 +360,13 @@ function _mutual_information(table::Counts{T,2,A}) where {T,A}
     mi / total
 end
 
-function mutual_information(table::Counts{T,2,A}; base::Number = ℯ) where {T,A}
+function mutual_information(table::Frequencies{T,2,A}; base::Number = ℯ) where {T,A}
     mi = _mutual_information(table)
     base === ℯ ? mi : (mi / log(base)) # Default base: e
 end
 
 function mutual_information(
-    table::Union{Counts{T,N,A},Probabilities{T,N,A}},
+    table::Union{Frequencies{T,N,A},Probabilities{T,N,A}},
     base::Real,
 ) where {T,N,A}
     Base.depwarn(
@@ -378,9 +378,9 @@ function mutual_information(
 end
 
 """
-    mutual_information(table::Union{Counts{T,3,A},Probabilities{T,3,A}}; base::Number=ℯ)
+    mutual_information(table::Union{Frequencies{T,3,A},Probabilities{T,3,A}}; base::Number=ℯ)
 
-It calculates Mutual Information (MI) from a table of `Counts` or `Probabilities` with three
+It calculates Mutual Information (MI) from a table of `Frequencies` or `Probabilities` with three
 dimensions. $_DOC_LOG_BASE
 
 ```jldoctest
@@ -400,7 +400,7 @@ julia> mutual_information(Nxyz)
 ```
 """
 function mutual_information(
-    pxyz::Union{Counts{T,3,A},Probabilities{T,3,A}};
+    pxyz::Union{Frequencies{T,3,A},Probabilities{T,3,A}};
     base::Number = ℯ,
 ) where {T,A}
     pxy = delete_dimensions(pxyz, 3)
@@ -471,11 +471,11 @@ two variables: \$nMI(X, Y) = MI(X, Y) / H(X, Y)\$
 """
 
 """
-It calculates a Normalized Mutual Information (nMI) from a table of `Counts` or
+It calculates a Normalized Mutual Information (nMI) from a table of `Frequencies` or
 `Probabilities`. $_DOC_NMI
 """
 function normalized_mutual_information(
-    table::Union{Counts{T,N,A},Probabilities{T,N,A}},
+    table::Union{Frequencies{T,N,A},Probabilities{T,N,A}},
 ) where {T,N,A}
     H = shannon_entropy(table)
     if H != zero(T)

@@ -12,7 +12,7 @@ function _buslje09(aln, alphabet::A, clusters, lambda, apc) where {A}
     mi = mapcolpairfreq!(
         _mutual_information,
         aln,
-        Counts{Float64,2,A}(ContingencyTable(Float64, Val{2}, alphabet)),
+        Frequencies{Float64,2,A}(ContingencyTable(Float64, Val{2}, alphabet)),
         usediagonal = false,
         pseudocounts = AdditiveSmoothing{Float64}(lambda),
         weights = clusters,

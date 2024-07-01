@@ -47,7 +47,8 @@ export  # MIToS.MSA
     # ContingencyTables
     ContingencyTable,
     Probabilities,
-    Counts,
+    Frequencies,
+    Counts, # deprecated
     getcontingencytable,
     getalphabet,
     gettable,

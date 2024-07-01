@@ -2,16 +2,16 @@
 # =======================
 
 """
-It calculates the gap intersection as percentage from a table of `Counts`.
+It calculates the gap intersection as percentage from a table of `Frequencies`.
 """
-function gap_intersection_percentage(nxy::Counts{T,2,GappedAlphabet}) where {T}
+function gap_intersection_percentage(nxy::Frequencies{T,2,GappedAlphabet}) where {T}
     T(100.0) * gettablearray(nxy)[21, 21] / gettotal(nxy)
 end
 
 """
-It calculates the gap union as percentage from a table of `Counts`.
+It calculates the gap union as percentage from a table of `Frequencies`.
 """
-function gap_union_percentage(nxy::Counts{T,2,GappedAlphabet}) where {T}
+function gap_union_percentage(nxy::Frequencies{T,2,GappedAlphabet}) where {T}
     marginals = getmarginalsarray(nxy)
     T(100.0) * (marginals[21, 1] + marginals[21, 2] - gettablearray(nxy)[21, 21]) /
     gettotal(nxy)
@@ -45,7 +45,7 @@ function pairwisegapfraction(
     threshold = 62,
 )
     clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
-    table = Counts(ContingencyTable(Float64, Val{2}, GappedAlphabet()))
+    table = Frequencies(ContingencyTable(Float64, Val{2}, GappedAlphabet()))
     gu = mapcolpairfreq!(gap_union_percentage, aln, table, weights = clusters)
     gi = mapcolpairfreq!(gap_intersection_percentage, aln, table, weights = clusters)
     gu, gi
