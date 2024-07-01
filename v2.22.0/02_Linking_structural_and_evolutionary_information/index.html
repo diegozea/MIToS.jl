@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Linking structural and evolutionary information · MIToS</title><meta name="title" content="Linking structural and evolutionary information · MIToS"/><meta property="og:title" content="Linking structural and evolutionary information · MIToS"/><meta property="twitter:title" content="Linking structural and evolutionary information · MIToS"/><meta name="description" content="Documentation for MIToS."/><meta property="og:description" content="Documentation for MIToS."/><meta property="twitter:description" content="Documentation for MIToS."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">MIToS</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../Installation/">Installation</a></li><li><a class="tocitem" href="../Example/">Example</a></li><li><span class="tocitem">Modules</span><ul><li><a class="tocitem" href="../MSA/">MSA</a></li><li><a class="tocitem" href="../Information/">Information</a></li><li><a class="tocitem" href="../SIFTS/">SIFTS</a></li><li><a class="tocitem" href="../PDB/">PDB</a></li><li><a class="tocitem" href="../Pfam/">Pfam</a></li></ul></li><li><span class="tocitem">Cookbook</span><ul><li><a class="tocitem" href="../01_Change_B_factors/">Change B-factors</a></li><li class="is-active"><a class="tocitem" href>Linking structural and evolutionary information</a><ul class="internal"><li><a class="tocitem" href="#Problem-description"><span>Problem description</span></a></li><li><a class="tocitem" href="#PDB-and-Pfam-alignment-mapping"><span>PDB and Pfam alignment mapping</span></a></li><li><a class="tocitem" href="#Unknown-sequence-coordinates"><span>Unknown sequence coordinates</span></a></li></ul></li><li><a class="tocitem" href="../03_RMSF/">Root Mean Squared Fluctuation (RMSF)</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../MSA_API/">MSA</a></li><li><a class="tocitem" href="../Information_API/">Information</a></li><li><a class="tocitem" href="../SIFTS_API/">SIFTS</a></li><li><a class="tocitem" href="../PDB_API/">PDB</a></li><li><a class="tocitem" href="../Pfam_API/">Pfam</a></li><li><a class="tocitem" href="../Utils_API/">Utils</a></li></ul></li><li><a class="tocitem" href="../Scripts/">Scripts</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Cookbook</a></li><li class="is-active"><a href>Linking structural and evolutionary information</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Linking structural and evolutionary information</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/diegozea/MIToS.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/diegozea/MIToS.jl/blob/master/docs/src/cookbook/02_Linking_structural_and_evolutionary_information.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Linking-structural-and-evolutionary-information"><a class="docs-heading-anchor" href="#Linking-structural-and-evolutionary-information">Linking structural and evolutionary information</a><a id="Linking-structural-and-evolutionary-information-1"></a><a class="docs-heading-anchor-permalink" href="#Linking-structural-and-evolutionary-information" title="Permalink"></a></h1><p><a href="https://mybinder.org/v2/gh/diegozea/MIToS.jl/gh-pages?filepath=v2.22.0cookbook/notebooks/02_Linking_structural_and_evolutionary_information.ipynb"><img src="https://mybinder.org/badge_logo.svg" alt/></a> <a href="https://nbviewer.jupyter.org/github/diegozea/MIToS.jl/blob/gh-pages/v2.22.0cookbook/notebooks/02_Linking_structural_and_evolutionary_information.ipynb"><img src="https://img.shields.io/badge/show-nbviewer-579ACA.svg" alt/></a></p><h2 id="Problem-description"><a class="docs-heading-anchor" href="#Problem-description">Problem description</a><a id="Problem-description-1"></a><a class="docs-heading-anchor-permalink" href="#Problem-description" title="Permalink"></a></h2><p>It is a very common task to map sequence to structure residue number. For example, to link structural information coming from <em>PDB</em> and evolutionary information calculated from multiple sequence alignments.</p><p>The naive way of mapping sequence and structure is to perform global pairwise alignment between the sequence and the <em>PDB</em> sequence (using the residues in <em>ATOM</em>). The problem with this approach is that the sequences can have missing regions and standard pairwise alignment algorithms often yield incorrect assignations around those regions <a href="https://doi.org/10.1093/nar/gks1258">(Velankar et.al. 2013)</a>. This is particularly important when aligning <em>PDB</em> sequences, that can have missing residues, and sequences coming from multiple sequence alignments, that can be incomplete or have unaligned regions (e.g. insert states).</p><p>The <a href="https://www.ebi.ac.uk/pdbe/docs/sifts/index.html">SIFTS</a> (Structure Integration with Function, Taxonomy and Sequences) database solves this problem and provides residue level mapping between PDB and other databases (e.g. <em>UniProt</em> and <em>Pfam</em>).</p><p>The <code>SIFTS</code> module of MIToS has functions to access this residue level mapping between <em>PDB</em> and other databases. Also, MIToS keeps track of the residue number of each residue in a multiple sequence alignment (MSA) using its annotations. Both things together, allow the correct mapping of sequence and structure without performing error-prone pairwise alignments.</p><p>Particular solutions depend on problem details, here we show some common ways to use MIToS and <em>SIFTS</em> to map evolutionary information calculated in an MSA (e.g. Shannon entropy) with structural information (e.g. B-factors).</p><h2 id="PDB-and-Pfam-alignment-mapping"><a class="docs-heading-anchor" href="#PDB-and-Pfam-alignment-mapping">PDB and Pfam alignment mapping</a><a id="PDB-and-Pfam-alignment-mapping-1"></a><a class="docs-heading-anchor-permalink" href="#PDB-and-Pfam-alignment-mapping" title="Permalink"></a></h2><p>This is the easiest problem to solve with the <a href="../Pfam/#Module-Pfam">MIToS <code>Pfam</code> module</a> because <em>SIFTS</em> already has a residue level mapping between <em>PDB</em> and <em>Pfam</em>.</p><p>For this example, we are going to map the columns in the multiple sequence alignment of the <em>PF09645</em> Pfam family and the residues in the chain <em>A</em> from the <em>2VQC</em> <em>PDB</em> file. The needed files are available in the MIToS test suite:</p><pre><code class="language-julia hljs">using MIToS
+pdb_file = abspath(pathof(MIToS), &quot;..&quot;, &quot;..&quot;, &quot;test&quot;, &quot;data&quot;, &quot;2VQC.pdb&quot;)
+pfam_file = abspath(pathof(MIToS), &quot;..&quot;, &quot;..&quot;, &quot;test&quot;, &quot;data&quot;, &quot;PF09645_full.stockholm&quot;)
+sifts_file = abspath(pathof(MIToS), &quot;..&quot;, &quot;..&quot;, &quot;test&quot;, &quot;data&quot;, &quot;2vqc.xml.gz&quot;)</code></pre><p>You can also use <code>downloadpdb</code> from <code>MIToS.PDB</code>, <code>downloadpfam</code> from <code>MIToS.Pfam</code> and <code>downloadsifts</code> from <code>MIToS.SIFTS</code> to get the corresponding files from those databases.</p><p>It is important to read the Pfam MSA file using <code>generatemapping=true</code> and <code>useidcoordinates=true</code> because that allows keeping track of the residue number using the MSA annotations.</p><pre><code class="language-julia hljs">using MIToS.Pfam
+msa = read_file(pfam_file, Stockholm, generatemapping = true, useidcoordinates = true)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">AnnotatedMultipleSequenceAlignment with 16 annotations : 4×110 Named Matrix{MIToS.MSA.Residue}
+         Seq ╲ Col │   6    7    8    9   10  …  111  112  113  114  115
+───────────────────┼────────────────────────────────────────────────────
+C3N734_SULIY/1-95  │   -    -    -    N    S  …    -    -    -    -    -
+H2C869_9CREN/7-104 │   -    -    L    N    D       -    -    -    -    -
+Y070_ATV/2-70      │   -    -    -    -    -       -    -    -    -    -
+F112_SSV1/3-112    │   Q    T    L    N    S  …    I    K    A    K    Q</code></pre><p>First, we need to know what is the sequence in the MSA that correspond to the PDB we want to link. Luckily, Pfam Stockholm files store the mapping between sequences and PDB chains. You can access that mapping using the <code>getseq2pdb</code> function from <code>MIToS.Pfam</code></p><pre><code class="language-julia hljs">seq2pdbs = getseq2pdb(msa)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{String, Vector{Tuple{String, String}}} with 1 entry:
+  &quot;F112_SSV1/3-112&quot; =&gt; [(&quot;2VQC&quot;, &quot;A&quot;)]</code></pre><p>The returned dictionary gives you all the PDB chains associated with a determined sequence in the MSA. But, in this case, we want to go in the other direction to find all the sequences associated with a determined <em>PDB</em> chain. We are going to use a list comprehension because it is possible for a single chain to be associated with more than one sequence in the <em>Pfam</em> MSA (e.g. domain repeats).</p><pre><code class="language-julia hljs">pdb_code = &quot;2VQC&quot;
+pdb_chain = &quot;A&quot;
+seq_ids = [seq for (seq, pdbs) in seq2pdbs if (pdb_code, pdb_chain) in pdbs]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1-element Vector{String}:
+ &quot;F112_SSV1/3-112&quot;</code></pre><p>In this example, we are going to use the only sequence we found for the <em>A</em> of <em>2VQC</em>.</p><pre><code class="language-julia hljs">seq_id = seq_ids[1]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;F112_SSV1/3-112&quot;</code></pre><p>Finally, we can use the <code>msacolumn2pdbresidue</code> function from the Pfam module to get a dictionary from the MSA column index to the <em>PDB</em> residue number:</p><pre><code class="language-julia hljs">pfam_id = &quot;PF09645&quot;
+msacol2pdbres = msacolumn2pdbresidue(msa, seq_id, pdb_code, pdb_chain, pfam_id, sifts_file)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{Int64, String} with 110 entries:
+  6  =&gt; &quot;&quot;
+  7  =&gt; &quot;4&quot;
+  8  =&gt; &quot;5&quot;
+  9  =&gt; &quot;6&quot;
+  10 =&gt; &quot;7&quot;
+  11 =&gt; &quot;8&quot;
+  12 =&gt; &quot;9&quot;
+  13 =&gt; &quot;10&quot;
+  14 =&gt; &quot;11&quot;
+  15 =&gt; &quot;12&quot;
+  16 =&gt; &quot;13&quot;
+  17 =&gt; &quot;14&quot;
+  18 =&gt; &quot;15&quot;
+  19 =&gt; &quot;16&quot;
+  20 =&gt; &quot;17&quot;
+  21 =&gt; &quot;18&quot;
+  22 =&gt; &quot;19&quot;
+  23 =&gt; &quot;20&quot;
+  24 =&gt; &quot;21&quot;
+  ⋮  =&gt; ⋮</code></pre><p>This dictionary has the mapping between MSA column and PDB residue that allows the mapping between evolutionary and structural information. For example, to measure the correlation between entropy (related to residue variation in an MSA column) and the mean B factor of the residue:</p><pre><code class="language-julia hljs">using MIToS.Information
+Hx = mapcolfreq!(
+    shannon_entropy,
+    msa,
+    Frequencies(ContingencyTable(Int, Val{1}, UngappedAlphabet())),
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1×110 Named Matrix{Float64}
+ Function ╲ Col │        6         7         8  …       113       114       115
+────────────────┼──────────────────────────────────────────────────────────────
+shannon_entropy │      0.0       0.0       0.0  …       0.0       0.0       0.0</code></pre><p>To get quick access to each PDB residue based on its residue number, we can read the PDB file into a dictionary using the <code>read_file</code> and <code>residuesdict</code> functions from the MIToS <code>PDB</code> module:</p><pre><code class="language-julia hljs">using MIToS.PDB
+res_dict = residuesdict(
+    read_file(pdb_file, PDBFile, occupancyfilter = true),
+    model = &quot;1&quot;,
+    chain = &quot;A&quot;,
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{String, MIToS.PDB.PDBResidue} with 95 entries:
+  &quot;4&quot;  =&gt; PDBResidue:…
+  &quot;5&quot;  =&gt; PDBResidue:…
+  &quot;6&quot;  =&gt; PDBResidue:…
+  &quot;7&quot;  =&gt; PDBResidue:…
+  &quot;8&quot;  =&gt; PDBResidue:…
+  &quot;9&quot;  =&gt; PDBResidue:…
+  &quot;10&quot; =&gt; PDBResidue:…
+  &quot;11&quot; =&gt; PDBResidue:…
+  &quot;12&quot; =&gt; PDBResidue:…
+  &quot;13&quot; =&gt; PDBResidue:…
+  &quot;14&quot; =&gt; PDBResidue:…
+  &quot;15&quot; =&gt; PDBResidue:…
+  &quot;16&quot; =&gt; PDBResidue:…
+  &quot;17&quot; =&gt; PDBResidue:…
+  &quot;18&quot; =&gt; PDBResidue:…
+  &quot;19&quot; =&gt; PDBResidue:…
+  &quot;20&quot; =&gt; PDBResidue:…
+  &quot;21&quot; =&gt; PDBResidue:…
+  &quot;22&quot; =&gt; PDBResidue:…
+  ⋮    =&gt; ⋮</code></pre><p>Then, we can iterate the mapping dictionary to link the MSA and PDB based values:</p><pre><code class="language-julia hljs">using Statistics
+
+x = Float64[]
+y = Float64[]
+
+for (col_index, res_number) in msacol2pdbres
+    if res_number != &quot;&quot; # i.e. MSA column has an associated PDB residue
+        push!(x, Hx[col_index])
+        push!(y, mean(parse(Float64, atom.B) for atom in res_dict[res_number].atoms))
+    end
+end
+
+cor(x, y)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">0.059911489235294435</code></pre><h2 id="Unknown-sequence-coordinates"><a class="docs-heading-anchor" href="#Unknown-sequence-coordinates">Unknown sequence coordinates</a><a id="Unknown-sequence-coordinates-1"></a><a class="docs-heading-anchor-permalink" href="#Unknown-sequence-coordinates" title="Permalink"></a></h2><p>While <em>Pfam</em> alignments have the start and end of the aligned region indicated in the sequence name, other multiple sequence alignments don&#39;t give any hint about that. In those cases, we should use pairwise alignments. However, instead of aligning the sequence coming from the MSA and the <em>PDB</em> sequence, we can align the MSA sequence to the <em>UniProt</em> sequence to reduce the possibility of mapping errors. Once we have the mapping of the MSA sequence to the <em>UniProt</em> sequence, we can use <em>SIFTS</em> to map the <em>PDB</em> sequence to the MSA sequence using the <em>UniProt</em> numeration.</p><p>For this example, we are going to use the following files included in MIToS documentation:</p><pre><code class="language-julia hljs">using MIToS
+pdb_file = abspath(pathof(MIToS), &quot;..&quot;, &quot;..&quot;, &quot;docs&quot;, &quot;data&quot;, &quot;1dur.pdb&quot;)
+msa_file = abspath(pathof(MIToS), &quot;..&quot;, &quot;..&quot;, &quot;docs&quot;, &quot;data&quot;, &quot;blast_alignment.fa&quot;)
+sifts_file = abspath(pathof(MIToS), &quot;..&quot;, &quot;..&quot;, &quot;docs&quot;, &quot;data&quot;, &quot;1dur.xml.gz&quot;)
+uniprot_file = abspath(pathof(MIToS), &quot;..&quot;, &quot;..&quot;, &quot;docs&quot;, &quot;data&quot;, &quot;P00193.fasta&quot;)</code></pre><p>First, we are going to read the MSA file. In this case, we can not use <code>useidcoordinates=true</code> because the sequence names don&#39;t have the sequence coordinates in the Pfam format. However, we are going to use <code>generatemapping=true</code> to get the default mapping for each sequence in the alignment (from <code>1</code> to the length of the aligned region):</p><pre><code class="language-julia hljs">using MIToS.MSA
+msa = read_file(msa_file, FASTA, generatemapping = true)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">AnnotatedMultipleSequenceAlignment with 102 annotations : 100×62 Named Matrix{MIToS.MSA.Residue}
+                                                                                                                       Seq ╲ Col │   …  
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼──────
+Query_23408 PDB 1DUR 4Fe-4S ferredoxin-type 2 motif                                                                              │   …  
+gi|120014|sp|P00193.1|FER_PEPAS RecName: Full=Ferredoxin                                                                         │      
+gi|7546410|pdb|1DUR|A Chain A, Replacement for 1FDX 2(4FE4S) ferredoxin from (NOW) Peptostreptococcus asaccharolyticus           │      
+gi|1180747586|ref|WP_084229968.1| 4Fe-4S dicluster domain-containing protein [Peptoniphilus asaccharolyticus]                    │      
+gi|1443100176|ref|WP_115312158.1| 4Fe-4S dicluster domain-containing protein [Peptoniphilus indolicus]                           │      
+gi|769945096|ref|WP_045078402.1| 4Fe-4S dicluster domain-containing protein [Peptoniphilus sp. ING2-D1G]                         │      
+gi|517967820|ref|WP_019138028.1| MULTISPECIES: 4Fe-4S dicluster domain-containing protein [Peptoniphilus]                        │      
+gi|496513533|ref|WP_009221816.1| MULTISPECIES: 4Fe-4S dicluster domain-containing protein [Peptoniphilus]                        │      
+⋮                                                                                                                                    ⋱  
+tpg|HBK85263.1||gnl|WGS:DNZI|DDZ53_04440 ferredoxin [Firmicutes bacterium]                                                       │      
+gi|1172242992|ref|WP_080632354.1| 4Fe-4S dicluster domain-containing protein [Desulfitobacterium hafniense]                      │      
+tpg|HBL81567.1||gnl|WGS:DOAW|DD391_03060 ferredoxin [Clostridiales bacterium]                                                    │      
+gi|1057632375|ref|WP_068914150.1| 4Fe-4S dicluster domain-containing protein [Criibacterium bergeronii]                          │      
+gi|737312160|ref|WP_035295014.1| MULTISPECIES: 4Fe-4S dicluster domain-containing protein [Clostridiaceae]                       │      
+gi|769212113|ref|WP_044975592.1| 4Fe-4S dicluster domain-containing protein [Ruminococcus sp. HUN007]                            │      
+tpg|HCW03068.1||gnl|WGS:DPMH|DGK91_00085 ferredoxin [Clostridium sp.]                                                            │      
+gi|1489662625|gb|RKW38741.1| 4Fe-4S dicluster domain-containing protein [Lachnospiraceae bacterium]                              │   …  </code></pre><p>After that, we get the first sequence of the MSA, the one we know that corresponds to the PDB of interest. We need the sequence as a <code>String</code> without gaps (unaligned), so we use the <code>MIToS.MSA</code> <code>stringsequence</code> function together with <code>replace</code>:</p><pre><code class="language-julia hljs">msa_seq = replace(stringsequence(msa, 1), &#39;-&#39; =&gt; &quot;&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;GSIYAIDADSCIDCGSCASVCPVGAPNPED&quot;</code></pre><p>Also, we are going to read the <em>UniProt</em> sequence. You can easily download the sequence from UniProt by doing:</p><pre><code class="language-julia hljs">using MIToS.Utils
+download_file(&quot;https://www.uniprot.org/uniprot/P00193.fasta&quot;, &quot;P00193.fasta&quot;)</code></pre><p>To read the FASTA file we are going to use the <code>FastaIO</code> package:</p><pre><code class="language-julia hljs">using FastaIO
+uniprot_sequences = readfasta(uniprot_file)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1-element Vector{Tuple{String, String}}:
+ (&quot;sp|P00193|FER_PEPAS Ferredoxin OS=Peptoniphilus asaccharolyticus OX=1258 PE=1 SV=1&quot;, &quot;AYVINDSCIACGACKPECPVNIQQGSIYAIDADSCIDCGSCASVCPVGAPNPED&quot;)</code></pre><p>And get the unique sequence:</p><pre><code class="language-julia hljs">uniprot_seq = uniprot_sequences[1][2]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;AYVINDSCIACGACKPECPVNIQQGSIYAIDADSCIDCGSCASVCPVGAPNPED&quot;</code></pre><p>We can perform a pairwise sequence alignment between both sequences by using the <a href="https://github.com/BioJulia/BioAlignments.jl"><code>BioAlignments</code> package</a> from the <em>BioJulia</em> suite. In this case, we use a semi-global alignment (no start/end gap penalty) because we know that the MSA sequence is a region of the <em>UniProt</em> sequence.</p><pre><code class="language-julia hljs">using BioAlignments
+costmodel = AffineGapScoreModel(BLOSUM62, gap_open = -10, gap_extend = -1)
+aln = pairalign(SemiGlobalAlignment(), msa_seq, uniprot_seq, costmodel)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">BioAlignments.PairwiseAlignmentResult{Int64, String, String}:
+  score: 169
+  seq:  0 ------------------------GSIYAIDADSCIDCGSCASVCPVGAPNPED 30
+                                  ||||||||||||||||||||||||||||||
+  ref:  1 AYVINDSCIACGACKPECPVNIQQGSIYAIDADSCIDCGSCASVCPVGAPNPED 54
+</code></pre><p>Then, we only need to iterate the alignment to designate the positions and store the equivalences in a dictionary:</p><pre><code class="language-julia hljs">function seq2refnumber(aln)
+    seq_pos = 0
+    ref_pos = 0
+    last_seq_pos = 0
+    seq2ref = Dict{Int,Int}()
+    for (seq_res, ref_res) in alignment(aln)
+        if seq_res != &#39;-&#39;
+            seq_pos += 1
+        end
+        if ref_res != &#39;-&#39;
+            ref_pos += 1
+        end
+        if seq_pos != last_seq_pos
+            seq2ref[seq_pos] = ref_pos
+            last_seq_pos = seq_pos
+        end
+    end
+    seq2ref
+end
+
+seqnum2uniprotnum = seq2refnumber(aln)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{Int64, Int64} with 30 entries:
+  5  =&gt; 29
+  16 =&gt; 40
+  20 =&gt; 44
+  12 =&gt; 36
+  24 =&gt; 48
+  28 =&gt; 52
+  8  =&gt; 32
+  17 =&gt; 41
+  30 =&gt; 54
+  1  =&gt; 25
+  19 =&gt; 43
+  22 =&gt; 46
+  23 =&gt; 47
+  6  =&gt; 30
+  11 =&gt; 35
+  9  =&gt; 33
+  14 =&gt; 38
+  3  =&gt; 27
+  29 =&gt; 53
+  ⋮  =&gt; ⋮</code></pre><p>Then, we can use <code>getsequencemapping</code> to go from MSA column number to <em>UniProt</em> residue, and <code>siftsmapping</code> to go from <em>UniProt</em> to <em>PDB</em>:</p><pre><code class="language-julia hljs">seqmap = getsequencemapping(msa, 1)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">62-element Vector{Int64}:
+  0
+  0
+  0
+  0
+  0
+  0
+  0
+  0
+  0
+  0
+  ⋮
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30</code></pre><ul><li></li></ul><pre><code class="language-julia hljs">colnum2uniprotnum = Dict{Int,Int}()
+for (colnum, seqnum) in enumerate(seqmap)
+    if seqnum != 0 # getsequencemapping returns 0 where there is a gap
+        colnum2uniprotnum[colnum] = seqnum2uniprotnum[seqnum]
+    end
+end
+colnum2uniprotnum</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{Int64, Int64} with 30 entries:
+  56 =&gt; 48
+  35 =&gt; 27
+  55 =&gt; 47
+  58 =&gt; 50
+  52 =&gt; 44
+  60 =&gt; 52
+  37 =&gt; 29
+  53 =&gt; 45
+  32 =&gt; 25
+  47 =&gt; 39
+  41 =&gt; 33
+  43 =&gt; 35
+  45 =&gt; 37
+  36 =&gt; 28
+  44 =&gt; 36
+  49 =&gt; 41
+  39 =&gt; 31
+  51 =&gt; 43
+  61 =&gt; 53
+  ⋮  =&gt; ⋮</code></pre><ul><li></li></ul><pre><code class="language-julia hljs">using MIToS.SIFTS
+
+uniprotnum2pdbnum = siftsmapping(
+    sifts_file,
+    dbUniProt,
+    &quot;P00193&quot;,
+    dbPDB,
+    &quot;1dur&quot;, # SIFTS stores PDB identifiers in lowercase
+    chain = &quot;A&quot;,
+    missings = false,
+) # residues without coordinates aren&#39;t used in the mapping</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{String, String} with 54 entries:
+  &quot;1&quot;  =&gt; &quot;1&quot;
+  &quot;2&quot;  =&gt; &quot;2&quot;
+  &quot;3&quot;  =&gt; &quot;3&quot;
+  &quot;4&quot;  =&gt; &quot;4&quot;
+  &quot;5&quot;  =&gt; &quot;5&quot;
+  &quot;6&quot;  =&gt; &quot;6&quot;
+  &quot;7&quot;  =&gt; &quot;7&quot;
+  &quot;8&quot;  =&gt; &quot;8&quot;
+  &quot;9&quot;  =&gt; &quot;9&quot;
+  &quot;10&quot; =&gt; &quot;10&quot;
+  &quot;11&quot; =&gt; &quot;11&quot;
+  &quot;12&quot; =&gt; &quot;12&quot;
+  &quot;13&quot; =&gt; &quot;13&quot;
+  &quot;14&quot; =&gt; &quot;14&quot;
+  &quot;15&quot; =&gt; &quot;15&quot;
+  &quot;16&quot; =&gt; &quot;16&quot;
+  &quot;17&quot; =&gt; &quot;17&quot;
+  &quot;18&quot; =&gt; &quot;18&quot;
+  &quot;19&quot; =&gt; &quot;19&quot;
+  ⋮    =&gt; ⋮</code></pre><p>To finally get the dictionary from MSA column index to PDB residue number</p><pre><code class="language-julia hljs">colnum2pdbnum = Dict{Int,String}()
+for (colnum, uniprotnum) in colnum2uniprotnum
+    pdbresnum = get(uniprotnum2pdbnum, string(uniprotnum), &quot;&quot;)
+    if pdbresnum != &quot;&quot;
+        colnum2pdbnum[colnum] = pdbresnum
+    end
+end
+
+colnum2pdbnum</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Dict{Int64, String} with 30 entries:
+  56 =&gt; &quot;49&quot;
+  35 =&gt; &quot;28&quot;
+  55 =&gt; &quot;48&quot;
+  58 =&gt; &quot;51&quot;
+  52 =&gt; &quot;45&quot;
+  60 =&gt; &quot;53&quot;
+  37 =&gt; &quot;30&quot;
+  53 =&gt; &quot;46&quot;
+  32 =&gt; &quot;26&quot;
+  47 =&gt; &quot;40&quot;
+  41 =&gt; &quot;34&quot;
+  43 =&gt; &quot;36&quot;
+  45 =&gt; &quot;38&quot;
+  36 =&gt; &quot;29&quot;
+  44 =&gt; &quot;37&quot;
+  49 =&gt; &quot;42&quot;
+  39 =&gt; &quot;32&quot;
+  51 =&gt; &quot;44&quot;
+  61 =&gt; &quot;54&quot;
+  ⋮  =&gt; ⋮</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../01_Change_B_factors/">« Change B-factors</a><a class="docs-footer-nextpage" href="../03_RMSF/">Root Mean Squared Fluctuation (RMSF) »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Monday 1 July 2024 13:27">Monday 1 July 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
