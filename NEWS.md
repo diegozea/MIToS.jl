@@ -49,9 +49,10 @@
   probabilities of the columns or sequences of an MSA. When `rank = 2`, the function is
   applied to pairs of sequences or columns.
 
-* The `Information` module now exports a `shannon_entropy` method that takes a 
-  `AbstractArray{Residue}` as input to ease the calculation of this measure on 
-  sequences and multiple sequence alignments.
+* The `Information` module now exports methods of the `shannon_entropy`, `kullback_leibler`,
+  `mutual_information`, and `normalized_mutual_information` functions that take an 
+  `AbstractArray{Residue}` as input, e.g. an MSA. Those methods use the `mapfreq` function
+  under the hood to ease the calculation of the information measures on MSAs.
 
 * The `MSA` module now exports the `WeightType` union type to represent `weights`.
 

@@ -327,7 +327,7 @@ function _mutual_information(table::Probabilities{T,2,A}) where {T,A}
 end
 
 """
-    mutual_information(table::Union{Counts{T,N,A},Probabilities{T,N,A}}; base::Number=ℯ)
+    mutual_information(table::Union{Counts{T,2,A},Probabilities{T,2,A}}; base::Number=ℯ)
 
 It calculates Mutual Information (MI) from a table of `Counts` or `Probabilities`. 
 $_DOC_LOG_BASE Note that calculating MI from `Counts` is faster than from `Probabilities`.
@@ -377,6 +377,28 @@ function mutual_information(
     mutual_information(table, base = base)
 end
 
+"""
+    mutual_information(table::Union{Counts{T,3,A},Probabilities{T,3,A}}; base::Number=ℯ)
+
+It calculates Mutual Information (MI) from a table of `Counts` or `Probabilities` with three
+dimensions. $_DOC_LOG_BASE
+
+```jldoctest
+julia> using Random, MIToS.MSA, MIToS.Information
+
+julia> msa = rand(Random.MersenneTwister(37), Residue, 3, 4)
+3×4 Matrix{Residue}:
+ T  R  F  K
+ S  H  C  I
+ G  G  R  V
+
+julia> Nxyz = frequencies(msa[:, 1], msa[:, 2], msa[:, 3]);
+
+julia> mutual_information(Nxyz)
+1.0986122886681093
+
+```
+"""
 function mutual_information(
     pxyz::Union{Counts{T,3,A},Probabilities{T,3,A}};
     base::Number = ℯ,
@@ -443,11 +465,14 @@ end
 # Normalized Mutual Information by Entropy
 # ----------------------------------------
 
+const _DOC_NMI = """
+The mutual information score is normalized by the joint entropy of the 
+two variables: \$nMI(X, Y) = MI(X, Y) / H(X, Y)\$
 """
-It calculates a Normalized Mutual Information (nMI) by Entropy from a table of `Counts` or
-`Probabilities`.
 
-`nMI(X, Y) = MI(X, Y) / H(X, Y)`
+"""
+It calculates a Normalized Mutual Information (nMI) from a table of `Counts` or
+`Probabilities`. $_DOC_NMI
 """
 function normalized_mutual_information(
     table::Union{Counts{T,N,A},Probabilities{T,N,A}},
@@ -459,4 +484,19 @@ function normalized_mutual_information(
     else
         return (zero(T))
     end
+end
+
+
+"""
+    normalized_mutual_information(msa::AbstractArray{Residue}; kargs...)
+
+This function calculates the Normalized Mutual Information (nMI) from a multiple sequence 
+alignment using the [`mapfreq`](@ref) function—all the keyword arguments are passed to
+`mapfreq`. $_DOC_NMI By default, it uses counts/frequencies to estimate the nMI, as it's
+faster than using probabilities.
+"""
+function normalized_mutual_information(msa::AbstractArray{Residue}; rank::Int=2, probabilities::Bool=false,
+    kargs...)
+    @assert rank > 1 "rank must be greater than 1 for normalized_mutual_information"
+    mapfreq(normalized_mutual_information, msa, rank=rank, probabilities=probabilities, kargs...)
 end
