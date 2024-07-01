@@ -112,6 +112,16 @@ end
         end
     end
 
+    @testset "Download file: redirect" begin
+        try
+            # Use https://httpbin.io/ and example.com to test redirection
+            download_file("https://httpbin.io/redirect-to?url=https://example.com", ".tmp")
+            @test occursin("Example Domain", read(".tmp", String))
+        finally
+            isfile(".tmp") && rm(".tmp")
+        end
+    end
+
     @testset "Test _check_gzip_file" begin
         for file in readdir(DATA)
             filename = joinpath(DATA, file)
