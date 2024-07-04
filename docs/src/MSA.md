@@ -621,6 +621,7 @@ gr() # Hide possible warnings
 
 ```@example msa_clusters
 using MIToS.MSA
+using Clustering # to use the nclusters and assignments functions
 
 msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 

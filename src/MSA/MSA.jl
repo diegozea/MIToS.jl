@@ -22,13 +22,11 @@ using FastaIO               # FastaReader (fast)
 using Random                # default_rng, shuffle!, rand, Sampler, randstring
 using Dates                 # Dates.now()
 using PairwiseListMatrices  # Percent Identity Matrices
-using Clustering            # Used for sequence clustering: ClusteringResult
 using StatsBase             # Weights for clustering
 using RecipesBase           # Plots for MSAs
 using TranscodingStreams    # To solve MethodError seek(::TranscodingStream, ::Int)
 using MIToS.Utils
 
-import Clustering: ClusteringResult, nclusters, counts, assignments
 import Markdown: @md_str # for docstrings
 
 export  # Residue
@@ -144,10 +142,9 @@ export  # Residue
     WeightTypes,
     NoClustering,
     Clusters,
-    ClusteringResult, # from Clustering.jl
+    AbstractCluster,
     nclusters,
     counts,
-    assignments, # from Clustering.jl
     getweight,
     nelements,
     # Hobohm

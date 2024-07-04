@@ -145,7 +145,7 @@ function BLMI(
 )::NTuple{2,_MI_MAT_TYPE}
     aln = filtercolumns(aln, gapfraction(aln, 1) .<= maxgap)
     clusters = hobohmI(aln, threshold)
-    numbercl = Float64(nclusters(clusters))
+    numbercl = Float64(length(clusters.clustersize))
     mi = _BLMI(aln, clusters, numbercl, beta, apc, lambda)
     if samples > 0
         rand_mi = Array{PairwiseListMatrix{Float64,false,Vector{Float64}}}(undef, samples)

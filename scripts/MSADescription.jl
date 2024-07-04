@@ -152,7 +152,7 @@ set_parallel(Args["parallel"])
         println(fh_out, input, ",", "gapfraction", ",", "std", ",", "", ",", std(gap))
 
         hob = hobohmI(aln, 62)
-        ncu = nclusters(hob)
+        ncu = length(hob.clustersize)
 
         println(fh_out, input, ",", "clusters", ",", "number", ",", "", ",", ncu)
         # ------------------------------------------------------------------------

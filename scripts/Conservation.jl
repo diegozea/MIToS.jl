@@ -82,7 +82,7 @@ set_parallel(Args["parallel"])
         println(fh_out, "# Number of sequences: ", nsequences(msa))
         if args["clustering"]
             clusters = hobohmI(msa, args["threshold"])
-            println(fh_out, "# Number of sequence clusters: ", nclusters(clusters))
+            println(fh_out, "# Number of sequence clusters: ", length(clusters.clustersize))
         else
             clusters = NoClustering()
         end
