@@ -15,93 +15,89 @@ Pages = ["Scripts.md"]
 Depth = 4
 ```   
 
+```@setup scripts
+julia = Base.julia_cmd(); # path to the julia executable
+run(`$julia -e "using Pkg; Pkg.add("MIToS")`)
+```
+
 ## Buslje09.jl
 
-```@repl
+```@repl scripts
 using MIToS
-julia = Base.julia_cmd()
+julia = Base.julia_cmd(); # path to the julia executable
 script_path = joinpath(pkgdir(MIToS), "scripts", "Buslje09.jl")
-script_output = read(`$julia $script_path -h`, String)
-print(script_output)
+run(`$julia $script_path -h`)
 ```  
 
 ## BLMI.jl
 
-```@repl
+```@repl scripts
 using MIToS
-julia = Base.julia_cmd()
+julia = Base.julia_cmd(); # path to the julia executable
 script_path = joinpath(pkgdir(MIToS), "scripts", "BLMI.jl")
-script_output = read(`$julia $script_path -h`, String)
-print(script_output)
+run(`$julia $script_path -h`)
 ```  
 
 ## Conservation.jl
 
-```@repl
+```@repl scripts
 using MIToS
-julia = Base.julia_cmd()
+julia = Base.julia_cmd(); # path to the julia executable
 script_path = joinpath(pkgdir(MIToS), "scripts", "Conservation.jl")
-script_output = read(`$julia $script_path -h`, String)
-print(script_output)
+run(`$julia $script_path -h`)
 ```  
 
 ## DownloadPDB.jl
 
-```@repl
+```@repl scripts
 using MIToS
-julia = Base.julia_cmd()
+julia = Base.julia_cmd(); # path to the julia executable
 script_path = joinpath(pkgdir(MIToS), "scripts", "DownloadPDB.jl")
-script_output = read(`$julia $script_path -h`, String)
-print(script_output)
+run(`$julia $script_path -h`)
 ```  
 
 ## Distances.jl
 
-```@repl
+```@repl scripts
 using MIToS
-julia = Base.julia_cmd()
+julia = Base.julia_cmd(); # path to the julia executable
 script_path = joinpath(pkgdir(MIToS), "scripts", "Distances.jl")
-script_output = read(`$julia $script_path -h`, String)
-print(script_output)
+run(`$julia $script_path -h`)
 ```  
 
 ## MSADescription.jl
 
-```@repl
+```@repl scripts
 using MIToS
-julia = Base.julia_cmd()
+julia = Base.julia_cmd(); # path to the julia executable
 script_path = joinpath(pkgdir(MIToS), "scripts", "MSADescription.jl")
-script_output = read(`$julia $script_path -h`, String)
-print(script_output)
+run(`$julia $script_path -h`)
 ```  
 
 ## PercentIdentity.jl
 
-```@repl
+```@repl scripts
 using MIToS
-julia = Base.julia_cmd()
+julia = Base.julia_cmd(); # path to the julia executable
 script_path = joinpath(pkgdir(MIToS), "scripts", "PercentIdentity.jl")
-script_output = read(`$julia $script_path -h`, String)
-print(script_output)
+run(`$julia $script_path -h`)
 ```  
 
 ## AlignedColumns.jl
 
-```@repl
+```@repl scripts
 using MIToS
-julia = Base.julia_cmd()
+julia = Base.julia_cmd(); # path to the julia executable
 script_path = joinpath(pkgdir(MIToS), "scripts", "AlignedColumns.jl")
-script_output = read(`$julia $script_path -h`, String)
-print(script_output)
+run(`$julia $script_path -h`)
 ```  
 
 ## SplitStockholm.jl
 
-```@repl
+```@repl scripts
 using MIToS
-julia = Base.julia_cmd()
+julia = Base.julia_cmd(); # path to the julia executable
 script_path = joinpath(pkgdir(MIToS), "scripts", "SplitStockholm.jl")
-script_output = read(`$julia $script_path -h`, String)
-print(script_output)
+run(`$julia $script_path -h`)
 ```
 
