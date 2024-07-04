@@ -1,10 +1,8 @@
 #!/usr/bin/env julia
 
-using Pkg
-using Dates
-using Distributed
-using ArgParse
 import MIToS
+include(joinpath(pkgdir(MIToS), "scripts", "_setup_script.jl"))
+
 @everywhere using MIToS
 
 using MIToS.Utils.Scripts

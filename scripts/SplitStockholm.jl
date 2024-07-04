@@ -1,12 +1,11 @@
 #!/usr/bin/env julia
 
-using Pkg
-using ArgParse
+using MIToS
+include(joinpath(pkgdir(MIToS), "scripts", "_setup_script.jl"))
+
 using CodecZlib
 using MIToS.Utils # get_n_words, check_file
 using ProgressMeter
-using MIToS
-using MIToS.Utils.Scripts
 
 function parse_commandline()
     mitos_version = loadedversion(MIToS)

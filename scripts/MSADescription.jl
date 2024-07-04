@@ -1,7 +1,7 @@
 #!/usr/bin/env julia
-using Distributed
-using MIToS.Utils.Scripts
+
 using MIToS
+include(joinpath(pkgdir(MIToS), "scripts", "_setup_script.jl"))
 
 Args = parse_commandline(
     ["--format", "-f"],

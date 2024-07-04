@@ -1,7 +1,7 @@
 #!/usr/bin/env julia
 
-using Distributed
-using MIToS.Utils.Scripts
+using MIToS
+include(joinpath(pkgdir(MIToS), "scripts", "_setup_script.jl"))
 
 Args = parse_commandline(
     # TO DO ----------------------------------------------------------------------
@@ -19,6 +19,7 @@ set_parallel(Args["parallel"])
 
     const args = remotecall_fetch(() -> Args, 1)
 
+    using MIToS.Utils.Scripts
     import MIToS.Utils.Scripts: script
 
     # TO DO ----------------------------------------------------------------------
@@ -37,7 +38,6 @@ set_parallel(Args["parallel"])
         println(read(input, String))
         # ------------------------------------------------------------------------
     end
-
 end
 
 runscript(args)

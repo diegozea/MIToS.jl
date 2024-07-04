@@ -24,6 +24,10 @@ The MSA module now includes ways to read, write, and work with unaligned protein
   `getannotsequence(sequence, "feature_name")`. You still need to specify the sequence name
   when working with MSA objects.
 
+* *[Breaking change]* The scripts now have their project environment and the 
+  `MIToS.Utils.Scripts` module does not longer export the `parse_commandline` and 
+  `runscript` functions. Therefore, `ArgParse` is no longer a dependency of MIToS.
+
 ### Changes from v2.21.0 to v2.22.0
 
 This versions introduces several breaking changes to improve the usability of the 

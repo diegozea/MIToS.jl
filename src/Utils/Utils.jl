@@ -54,9 +54,7 @@ include("ThreeLetterResidues.jl")
 
 module Scripts
 
-    export parse_commandline,
-        runscript,
-        run_single_script,
+    export run_single_script,
         script,
         set_parallel,
         open_output,
@@ -66,7 +64,7 @@ module Scripts
 
     using Pkg
     using Distributed
-    using ArgParse, CodecZlib
+    using CodecZlib
     using MIToS.Utils # to use read_file
 
     include("Scripts.jl")

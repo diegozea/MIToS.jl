@@ -1,12 +1,10 @@
 #!/usr/bin/env julia
 
-using Pkg
-using Dates
-using DelimitedFiles
-using Distributed
-using Statistics
-using MIToS.Utils.Scripts
 using MIToS
+include(joinpath(pkgdir(MIToS), "scripts", "_setup_script.jl"))
+
+using DelimitedFiles
+using Statistics
 
 Args = parse_commandline(
     # TO DO ----------------------------------------------------------------------

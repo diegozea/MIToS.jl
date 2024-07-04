@@ -3,7 +3,6 @@ uuid = "51bafb47-8a16-5ded-8b04-24ef4eede0b5"
 version = "2.22.0"
 
 [deps]
-ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
 AutoHashEquals = "15f4f7f2-30c1-5605-9d31-71845cf9641f"
 Clustering = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
 CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
@@ -32,7 +31,6 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 TranscodingStreams = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
 
 [compat]
-ArgParse = "1"
 AutoHashEquals = "0.2, 1, 2"
 Clustering = "0.14, 0.15"
 CodecZlib = "0.6, 0.7"
