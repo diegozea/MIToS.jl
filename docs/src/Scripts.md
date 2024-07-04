@@ -13,92 +13,95 @@ their folder or put them in the path
 ```@contents
 Pages = ["Scripts.md"]
 Depth = 4
-```  
+```   
 
 ## Buslje09.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.Sys.BINDIR, "julia")
-script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "Buslje09.jl")
-read(`$julia_path $script_path -h`, String) |> println
+julia = Base.julia_cmd()
+script_path = joinpath(pkgdir(MIToS), "scripts", "Buslje09.jl")
+script_output = read(`$julia $script_path -h`, String)
+print(script_output)
 ```  
 
 ## BLMI.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.Sys.BINDIR, "julia")
-script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "BLMI.jl")
-read(`$julia_path $script_path -h`, String) |> println
+julia = Base.julia_cmd()
+script_path = joinpath(pkgdir(MIToS), "scripts", "BLMI.jl")
+script_output = read(`$julia $script_path -h`, String)
+print(script_output)
 ```  
 
 ## Conservation.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.Sys.BINDIR, "julia")
-script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "Conservation.jl")
-read(`$julia_path $script_path -h`, String) |> println
+julia = Base.julia_cmd()
+script_path = joinpath(pkgdir(MIToS), "scripts", "Conservation.jl")
+script_output = read(`$julia $script_path -h`, String)
+print(script_output)
 ```  
 
 ## DownloadPDB.jl
 
 ```@repl
-import Pkg
-Pkg.add("ArgParse")
 using MIToS
-julia_path = joinpath(Base.Sys.BINDIR, "julia")
-script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "DownloadPDB.jl")
-read(`$julia_path $script_path -h`, String) |> println
+julia = Base.julia_cmd()
+script_path = joinpath(pkgdir(MIToS), "scripts", "DownloadPDB.jl")
+script_output = read(`$julia $script_path -h`, String)
+print(script_output)
 ```  
 
 ## Distances.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.Sys.BINDIR, "julia")
-script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "Distances.jl")
-read(`$julia_path $script_path -h`, String) |> println
+julia = Base.julia_cmd()
+script_path = joinpath(pkgdir(MIToS), "scripts", "Distances.jl")
+script_output = read(`$julia $script_path -h`, String)
+print(script_output)
 ```  
 
 ## MSADescription.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.Sys.BINDIR, "julia")
-script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "MSADescription.jl")
-read(`$julia_path $script_path -h`, String) |> println
+julia = Base.julia_cmd()
+script_path = joinpath(pkgdir(MIToS), "scripts", "MSADescription.jl")
+script_output = read(`$julia $script_path -h`, String)
+print(script_output)
 ```  
 
 ## PercentIdentity.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.Sys.BINDIR, "julia")
-script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "PercentIdentity.jl")
-read(`$julia_path $script_path -h`, String) |> println
+julia = Base.julia_cmd()
+script_path = joinpath(pkgdir(MIToS), "scripts", "PercentIdentity.jl")
+script_output = read(`$julia $script_path -h`, String)
+print(script_output)
 ```  
 
 ## AlignedColumns.jl
 
 ```@repl
 using MIToS
-julia_path = joinpath(Base.Sys.BINDIR, "julia")
-script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "AlignedColumns.jl")
-read(`$julia_path $script_path -h`, String) |> println
+julia = Base.julia_cmd()
+script_path = joinpath(pkgdir(MIToS), "scripts", "AlignedColumns.jl")
+script_output = read(`$julia $script_path -h`, String)
+print(script_output)
 ```  
 
 ## SplitStockholm.jl
 
 ```@repl
-import Pkg
-Pkg.add("ArgParse")
-Pkg.add("CodecZlib")
-Pkg.add("ProgressMeter")
 using MIToS
-julia_path = joinpath(Base.Sys.BINDIR, "julia")
-script_path = joinpath(dirname(pathof(MIToS)), "..", "scripts", "SplitStockholm.jl")
-read(`$julia_path $script_path -h`, String) |> println
+julia = Base.julia_cmd()
+script_path = joinpath(pkgdir(MIToS), "scripts", "SplitStockholm.jl")
+script_output = read(`$julia $script_path -h`, String)
+print(script_output)
 ```
 
