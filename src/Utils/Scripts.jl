@@ -61,17 +61,6 @@ function close_output(fh_out)
     nothing
 end
 
-"""
-Adds the needed number of workers.
-"""
-function set_parallel(parallel)
-    N = nprocs()
-    if N < parallel
-        addprocs(parallel - N + 1)
-    end
-    nothing
-end
-
 script(x, y, z) = throw("Define your script function!")
 
 """

@@ -28,8 +28,9 @@ The MSA module now includes ways to read, write, and work with unaligned protein
   when working with MSA objects.
 
 * *[Breaking change]* The scripts now have their project environment and the 
-  `MIToS.Utils.Scripts` module does not longer export the `parse_commandline` and 
-  `runscript` functions. Therefore, `ArgParse` is no longer a dependency of MIToS.
+  `MIToS.Utils.Scripts` module does not longer export the `set_parallel`, 
+  `parse_commandline` and `runscript` functions. Therefore, `ArgParse` and 
+  `Distributed` are no longer dependencies of MIToS.
 
 ### Changes from v2.21.0 to v2.22.0
 

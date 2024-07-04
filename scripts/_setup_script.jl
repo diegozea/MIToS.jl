@@ -101,3 +101,17 @@ function runscript(args)
         run_single_script(file === nothing ? stdin : file, args)
     end
 end
+
+# Distrubuted
+# -----------
+
+"""
+Adds the needed number of workers.
+"""
+function set_parallel(parallel)
+    N = nprocs()
+    if N < parallel
+        addprocs(parallel - N + 1)
+    end
+    nothing
+end

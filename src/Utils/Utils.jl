@@ -56,14 +56,12 @@ module Scripts
 
     export run_single_script,
         script,
-        set_parallel,
         open_output,
         close_output,
         readorparse,
         loadedversion
 
     using Pkg
-    using Distributed
     using CodecZlib
     using MIToS.Utils # to use read_file
 
