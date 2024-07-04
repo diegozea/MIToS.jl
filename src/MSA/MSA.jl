@@ -62,6 +62,7 @@ export  # Residue
     delete_annotated_modifications!,
     printmodifications,
     # MultipleSequenceAlignment
+    AbstractResidueMatrix,
     AbstractAlignedObject,
     AbstractMultipleSequenceAlignment,
     AbstractAlignedSequence,
@@ -71,12 +72,15 @@ export  # Residue
     AnnotatedAlignedSequence,
     AnnotatedAlignedObject,
     UnannotatedAlignedObject,
+    AbstractSequence,
+    AnnotatedSequence,
     NamedResidueMatrix,
     annotations,
     namedmatrix,
     nsequences,
     getresidues,
     getsequence,
+    sequence_id,
     getresiduesequences,
     stringsequence,
     getcolumnmapping,
@@ -122,6 +126,10 @@ export  # Residue
     # A3M
     A3M,
     A2M,
+    # Sequences
+    FASTASequences,
+    PIRSequences,
+    RawSequences,
     # Shuffle
     shuffle_msa!,
     shuffle_msa,
@@ -173,6 +181,7 @@ include("Stockholm.jl")
 include("FASTA.jl")
 include("PIR.jl")
 include("A3M.jl")
+include("Sequences.jl")
 include("Shuffle.jl")
 include("PLM.jl")
 include("Identity.jl")

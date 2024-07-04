@@ -40,9 +40,9 @@ end
 # print_file
 # ----------
 
-# A placeholder for the print_file function so that other modules can add their own
-# definition of print_file for their own `FileFormat`s
-function print_file end
+# Other modules can add their own definition of print_file for their own `FileFormat`s 
+# Utils.print_file(io::IO,
+print_file(object, format::Type{T}) where {T<:FileFormat} = print_file(stdout, object, T)
 
 function Base.print(fh::IO, object, format::Type{T}) where {T<:FileFormat}
     Base.depwarn(

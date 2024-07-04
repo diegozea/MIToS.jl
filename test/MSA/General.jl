@@ -136,11 +136,13 @@
 
             @test getannotcolumn(msa, "SS_cons") ==
                   getannotcolumn(getsequence(msa, 4), "SS_cons")
-            @test getannotresidue(msa, "F112_SSV1/3-112", "SS") ==
-                  getannotresidue(getsequence(msa, 4), "F112_SSV1/3-112", "SS")
             @test getannotfile(msa) == getannotfile(getsequence(msa, 4))
+
+            # The sequence name is only needed when working with MSA objects.
+            @test getannotresidue(msa, "F112_SSV1/3-112", "SS") ==
+                  getannotresidue(getsequence(msa, 4), "SS")
             @test getannotsequence(msa, "F112_SSV1/3-112", "DR") ==
-                  getannotsequence(getsequence(msa, 4), "F112_SSV1/3-112", "DR")
+                  getannotsequence(getsequence(msa, 4), "DR")
         end
     end
 

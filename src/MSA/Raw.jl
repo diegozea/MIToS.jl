@@ -25,6 +25,3 @@ function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{Raw
         println(io, stringsequence(msa, i))
     end
 end
-
-Utils.print_file(msa::AbstractMatrix{Residue}, format::Type{Raw}) =
-    print_file(stdout, msa, Raw)

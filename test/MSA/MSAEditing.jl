@@ -102,8 +102,7 @@
             @test vec(getresidues(filtered_seq)) == res"QQQQQQQQQQQQQQ"
 
             @test getannotcolumn(filtered_annseq, "SS_cons") == "XHHEXXXXXXXXXX"
-            @test getannotresidue(filtered_annseq, "F112_SSV1/3-112", "SS") ==
-                  "XHHEXXXXXXXXXX"
+            @test getannotresidue(filtered_annseq, "SS") == "XHHEXXXXXXXXXX"
         end
     end
 

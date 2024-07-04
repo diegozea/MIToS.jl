@@ -318,10 +318,6 @@ function Utils.print_file(
     nothing
 end
 
-Utils.print_file(reslist::AbstractVector{PDBResidue}, format::Type{PDBFile}) =
-    print_file(stdout, reslist, format)
-Utils.print_file(res::PDBResidue, format::Type{PDBFile}) = print_file(stdout, res, format)
-
 @doc """
 `print_file(io, res, format::Type{PDBFile})`
 `print_file(res, format::Type{PDBFile})`

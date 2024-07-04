@@ -1,5 +1,29 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.22.0 to master
+
+The MSA module now includes ways to read, write, and work with unaligned protein sequences:
+
+* The `MSA` module now exports the `AnnotatedSequence` type to represent a single protein
+ sequence with annotations. This type is a subtype of the new `AbstractSequence` type,
+ a subtype of the new `AbstractResidueMatrix` type.
+
+* The `MSA` module now exports the `sequence_id` function to get the identifier of a 
+ sequence object.
+
+* The `MSA` module now defines the `FASTASequences`, `PIRSequences`, and `RawSequences` 
+ file formats to read and write (unaligned) protein sequences in FASTA, PIR, and raw 
+ formats, respectively.
+
+* *[Breaking change]* The behavior of the `getannotresidue`, `getannotsequence`, 
+  `setannotresidue!`, and `setannotsequence!` functions have changed for sequences objects, 
+  such as `AnnotatedSequence`, `AnnotatedAlignedSequence`, and `AlignedSequence`. Now, these 
+  functions take the feature name, rather than the sequence name, as the second 
+  positional argument. As an example of migration, 
+  `getannotsequence(sequence, "sequence_name", "feature_name")` should be replaced by 
+  `getannotsequence(sequence, "feature_name")`. You still need to specify the sequence name
+  when working with MSA objects.
+
 ### Changes from v2.21.0 to v2.22.0
 
 This versions introduces several breaking changes to improve the usability of the 

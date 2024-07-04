@@ -154,7 +154,11 @@ end
 It allows to filter MSA or aligned sequence columns/positions using a
 `AbstractVector{Bool}` `mask`. Annotations are updated if `annotate` is `true` (default).
 """
-function filtercolumns!(x::AnnotatedAlignedObject, mask, annotate::Bool = true)
+function filtercolumns!(
+    x::Union{AnnotatedMultipleSequenceAlignment,AnnotatedAlignedSequence,AnnotatedSequence},
+    mask,
+    annotate::Bool = true,
+)
     selector = _column_mask(mask, x)
     filtercolumns!(annotations(x), selector)
     x.matrix = filtercolumns(namedmatrix(x), selector)
@@ -170,7 +174,7 @@ function filtercolumns!(x::UnannotatedAlignedObject, mask, annotate::Bool = fals
     x
 end
 
-filtercolumns(x::AbstractAlignedObject, args...) = filtercolumns!(deepcopy(x), args...)
+filtercolumns(x::AbstractResidueMatrix, args...) = filtercolumns!(deepcopy(x), args...)
 
 # Util function
 # -------------

@@ -130,6 +130,3 @@ function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{Sto
     has_annotations && _printcolumnsannotations(io, msa.annotations)
     println(io, "//")
 end
-
-Utils.print_file(msa::AnnotatedMultipleSequenceAlignment) =
-    print_file(stdout, msa, Stockholm)

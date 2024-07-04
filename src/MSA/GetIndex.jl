@@ -1,5 +1,6 @@
 for T in (
     :(AlignedSequence),
+    :(AnnotatedSequence),
     :(AnnotatedAlignedSequence),
     :(MultipleSequenceAlignment),
     :(AnnotatedMultipleSequenceAlignment),
@@ -30,11 +31,11 @@ the same integer is returned without checking if it is a valid index.
 """
 column_index(msa::NamedResidueMatrix, col_name::AbstractString) = msa.dicts[2][col_name]
 
-function sequence_index(msa::AbstractAlignedObject, seq_name::AbstractString)
+function sequence_index(msa::AbstractResidueMatrix, seq_name::AbstractString)
     sequence_index(msa.matrix, seq_name)
 end
 
-function column_index(msa::AbstractAlignedObject, column_name::AbstractString)
+function column_index(msa::AbstractResidueMatrix, column_name::AbstractString)
     column_index(msa.matrix, column_name)
 end
 
@@ -63,20 +64,23 @@ column_index(msa, column_index::Int) = column_index
 
 # ---
 
-@inline Base.getindex(x::AbstractAlignedObject, args...) = getindex(namedmatrix(x), args...)
+@inline Base.getindex(x::AbstractResidueMatrix, args...) = getindex(namedmatrix(x), args...)
 
-@inline function Base.setindex!(x::AbstractAlignedObject, value, args...)
+@inline function Base.setindex!(x::AbstractResidueMatrix, value, args...)
     setindex!(namedmatrix(x), value, args...)
 end
 
 # Special getindex/setindex! for sequences to avoid `seq["seqname","colname"]`
 
-@inline function Base.getindex(x::AbstractAlignedSequence, i::Union{Int,AbstractString})
+@inline function Base.getindex(
+    x::Union{AbstractSequence,AbstractAlignedSequence},
+    i::Union{Int,AbstractString},
+)
     getindex(namedmatrix(x), 1, i)
 end
 
 @inline function Base.setindex!(
-    x::AbstractAlignedSequence,
+    x::Union{AbstractSequence,AbstractAlignedSequence},
     value,
     i::Union{Int,AbstractString},
 )
@@ -165,6 +169,8 @@ function Base.getindex(seq::AnnotatedAlignedSequence, cols::AbstractArray)
     _annotate_col_modification!(seq_copy, col_selector)
     seq_copy
 end
+
+# TODO: AnnotatedSequence
 
 function Base.getindex(seq::AlignedSequence, cols::Union{AbstractArray,Colon})
     AlignedSequence(seq.matrix[cols])

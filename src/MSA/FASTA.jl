@@ -47,6 +47,3 @@ function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{FAS
         println(io, ">", seqnames[i], "\n", stringsequence(msa, i))
     end
 end
-
-Utils.print_file(msa::AbstractMatrix{Residue}, format::Type{FASTA}) =
-    Utils.print_file(stdout, msa, FASTA)

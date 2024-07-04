@@ -78,6 +78,3 @@ function Utils.print_file(
         println(io, formatted_seq)
     end
 end
-
-Utils.print_file(msa::AbstractMatrix{Residue}, format::Union{Type{A3M},Type{A2M}}) =
-    print_file(stdout, msa, format)

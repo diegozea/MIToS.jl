@@ -74,7 +74,7 @@ macro keep_names_dimension(functions)
                 end
             end
 
-            ($f)(a::AbstractAlignedObject, dimension::Int) =
+            ($f)(a::AbstractResidueMatrix, dimension::Int) =
                 ($f)(namedmatrix(a), dimension)
         end
     end
