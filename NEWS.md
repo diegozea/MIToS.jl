@@ -2,6 +2,9 @@
 
 ### Changes from v2.22.0 to master
 
+MIToS v3.0.0 requires Julia v1.9 or higher, dropping support for older versions. This 
+release introduces several breaking changes to improve the usability of the package.
+
 The MSA module now includes ways to read, write, and work with unaligned protein sequences:
 
 * The `MSA` module now exports the `AnnotatedSequence` type to represent a single protein
