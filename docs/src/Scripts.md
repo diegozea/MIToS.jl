@@ -15,6 +15,13 @@ Pages = ["Scripts.md"]
 Depth = 4
 ```   
 
+```@setup _scripts
+using MIToS
+julia = Base.julia_cmd(); # path to the julia executable
+scripts_folder = joinpath(pkgdir(MIToS), "scripts")
+run(`$julia --project=$scripts_folder -e "using Pkg; Pkg.instantiate()"`)
+```
+
 ## Buslje09.jl
 
 ```@repl
@@ -32,7 +39,7 @@ using MIToS
 julia = Base.julia_cmd(); # path to the julia executable
 scripts_folder = joinpath(pkgdir(MIToS), "scripts")
 script_path = joinpath(scripts_folder, "BLMI.jl")
-run(`$julia --project=$scripts_folder $script_path -h`)
+run(`$julia $script_path -h`)
 ```  
 
 ## Conservation.jl
