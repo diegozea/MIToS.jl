@@ -22,7 +22,6 @@ using MIToS.Information
 using PairwiseListMatrices
 using NamedArrays
 using OrderedCollections
-using Requires
 
 export  # Download
     downloadpfam,
@@ -42,9 +41,5 @@ export  # Download
 
 include("Download.jl")
 include("PDB.jl")
-
-function __init__()
-    @require ROCAnalysis = "f535d66d-59bb-5153-8d2b-ef0a426c6aff" include("rocanalysis.jl")
-end
 
 end

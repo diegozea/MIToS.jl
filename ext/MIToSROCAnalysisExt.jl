@@ -1,5 +1,15 @@
+module MIToSROCAnalysisExt
+
+using MIToS.Pfam
+using MIToS.Utils
+
+using ROCAnalysis
+
+using PairwiseListMatrices
+using NamedArrays
+
 """
-`AUC(scores::PairwiseListMatrix, msacontacts::PairwiseListMatrix)`
+    AUC(scores::PairwiseListMatrix, msacontacts::PairwiseListMatrix)
 
 Returns the Area Under a ROC (Receiver Operating Characteristic) Curve (AUC) of the
 `scores` for `msacontact` prediction. `score` and `msacontact` lists are vinculated
@@ -22,4 +32,4 @@ function ROCAnalysis.AUC(
     )
 end
 
-export AUC
+end
