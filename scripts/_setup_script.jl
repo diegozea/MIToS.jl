@@ -6,6 +6,7 @@ using Pkg
 const SCRIPTS_PATH = joinpath(pkgdir(MIToS), "scripts")
 
 Pkg.activate(SCRIPTS_PATH, io=devnull)
+Pkg.instantiate(io=devnull)
 
 using Distributed
 
