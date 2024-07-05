@@ -4,6 +4,7 @@ version = "3.0.0"
 
 [deps]
 AutoHashEquals = "15f4f7f2-30c1-5605-9d31-71845cf9641f"
+BioStructures = "de9282ab-8554-53be-b2d6-f6c222edabfc"
 CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
@@ -35,6 +36,7 @@ MIToSClusteringExt = "Clustering"
 MIToSROCAnalysisExt = "ROCAnalysis"
 
 [compat]
+BioStructures = "4"
 Aqua = "0.8"
 AutoHashEquals = "0.2, 1, 2"
 Clustering = "0.14, 0.15"

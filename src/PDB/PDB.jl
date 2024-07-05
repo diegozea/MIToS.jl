@@ -30,6 +30,7 @@ using Format
 using JSON3
 using Downloads
 using Logging
+using BioStructures
 
 export  # PDBResidues
     PDBResidueIdentifier,
@@ -84,6 +85,8 @@ export  # PDBResidues
     downloadpdb,
     downloadpdbheader,
     getpdbdescription,
+    # MMCIF
+    MMCIFFile,
     # Kabsch
     kabsch,
     center!,
@@ -120,6 +123,8 @@ include("AtomsData.jl")
 include("Interaction.jl")
 include("PDBParser.jl")
 include("PDBMLParser.jl")
+include("MMCIF.jl")
+include("BioStructures.jl")
 include("Kabsch.jl")
 include("Plots.jl")
 include("AlphaFoldDB.jl")
