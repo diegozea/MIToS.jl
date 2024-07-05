@@ -32,7 +32,7 @@ using MIToS
 julia = Base.julia_cmd(); # path to the julia executable
 scripts_folder = joinpath(pkgdir(MIToS), "scripts")
 script_path = joinpath(scripts_folder, "BLMI.jl")
-run(`$julia $script_path -h`)
+run(`$julia --project=$scripts_folder $script_path -h`)
 ```  
 
 ## Conservation.jl
