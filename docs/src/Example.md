@@ -25,12 +25,12 @@ gr() # Just to avoid warnings in the output
 ```@example juliarepl
 using MIToS.Pfam
 pfam_file = downloadpfam("PF10660")
-msa = read(pfam_file, Stockholm, generatemapping=true, useidcoordinates=true)
+msa = read_file(pfam_file, Stockholm, generatemapping=true, useidcoordinates=true)
 ```
 
 !!! note
     **Generation of sequence and column mappings**  
-    The keyword argument `generatemapping` of `read` allows to generate sequence and column
+    The keyword argument `generatemapping` of `read_file` allows to generate sequence and column
     mappings for the MSA. *Column mapping* is the map between of each column on the MSA
     object and the column number in the file. *Sequence mappings* will use the start and
     end coordinates in the sequence ids for enumerate each residue in the sequence if

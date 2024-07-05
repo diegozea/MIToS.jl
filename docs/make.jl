@@ -1,5 +1,7 @@
 using Documenter, MIToS
 
+DocMeta.setdocmeta!(MIToS, :DocTestSetup, :(using MIToS); recursive=true)
+
 include("literate.jl")
 
 makedocs(

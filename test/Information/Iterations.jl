@@ -7,7 +7,7 @@
         # New methods to measure residues coevolution in proteins.
         # BMC bioinformatics, 12(1), 206.
 
-        aln = read(joinpath(DATA, "Gaoetal2011.fasta"), FASTA)
+        aln = read_file(joinpath(DATA, "Gaoetal2011.fasta"), FASTA)
         result = Float64[ 0     0     0     0     0     0
                           0     0     0     0     0     0
                           0     0     0     1     1     0.296
@@ -36,7 +36,7 @@
 
         table = ContingencyTable(Float64, Val{1}, GappedAlphabet())
 
-        gaps = read(joinpath(DATA, "gaps.txt"), Raw)
+        gaps = read_file(joinpath(DATA, "gaps.txt"), Raw)
 
         # THAYQAIHQV 0
         # THAYQAIHQ- 0.1

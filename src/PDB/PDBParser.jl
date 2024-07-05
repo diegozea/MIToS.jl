@@ -28,7 +28,7 @@ function _parse_pdbatom(line::String, atom_name, element)
 end
 
 """
-`parse(io, ::Type{PDBFile}; chain=All, model=All, group=All, atomname=All, onlyheavy=false, occupancyfilter=false)`
+`parse_file(io, ::Type{PDBFile}; chain=All, model=All, group=All, atomname=All, onlyheavy=false, occupancyfilter=false)`
 
 Reads a text file of a PDB entry.
 Returns a list of `PDBResidue` (view `MIToS.PDB.PDBResidues`).
@@ -38,7 +38,7 @@ or `"HETATM"`. If not set, all residues are returned.
 If the keyword argument `occupancyfilter` (default: `false`) is `true`,
 only the atoms with the best occupancy are returned.
 """
-function Base.parse(io::Union{IO,String}, ::Type{PDBFile};
+function Utils.parse_file(io::Union{IO,String}, ::Type{PDBFile};
                     chain::Union{String,Type{All}}=All,
                     model::Union{String,Type{All}}=All,
                     group::Union{String,Type{All}}=All,
@@ -210,7 +210,7 @@ const _Format_PDB_TER = FormatExpr(
     "TER   {:>5d}      {:>3} {:>1}{:>4}{:>1}\n"
     )
 
-function Base.print(io::IO, res::PDBResidue, format::Type{PDBFile}, atom_index::Int, serial_number::Int)
+function Utils.print_file(io::IO, res::PDBResidue, format::Type{PDBFile}, atom_index::Int, serial_number::Int)
     number = match(r"(-?\d+)(\D?)", res.id.number)
     atomname = res.atoms[atom_index].atom
     printfmt(io, _Format_PDB_ATOM,
@@ -233,15 +233,15 @@ function Base.print(io::IO, res::PDBResidue, format::Type{PDBFile}, atom_index::
     serial_number + 1
 end
 
-function Base.print(io::IO, res::PDBResidue, format::Type{PDBFile}, start::Int=1)
+function Utils.print_file(io::IO, res::PDBResidue, format::Type{PDBFile}, start::Int=1)
     next = start
     for i in eachindex(res.atoms)
-        next = print(io, res, format, i, next)
+        next = print_file(io, res, format, i, next)
     end
     nothing
 end
 
-function Base.print(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PDBFile}, start::Int=1)
+function Utils.print_file(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PDBFile}, start::Int=1)
     next = start
 
     use_model = length(unique(map(res -> res.id.model, reslist))) > 1
@@ -285,7 +285,7 @@ function Base.print(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PD
 
         # ATOM/HETATM
         for i in eachindex(res.atoms)
-            next = print(io, res, format, i, next)
+            next = print_file(io, res, format, i, next)
         end
 
     end
@@ -298,12 +298,12 @@ function Base.print(io::IO, reslist::AbstractVector{PDBResidue}, format::Type{PD
     nothing
 end
 
-Base.print(reslist::AbstractVector{PDBResidue},format::Type{PDBFile}) = print(stdout, reslist, format)
-Base.print(res::PDBResidue, format::Type{PDBFile}) = print(stdout, res, format)
+Utils.print_file(reslist::AbstractVector{PDBResidue},format::Type{PDBFile}) = print_file(stdout, reslist, format)
+Utils.print_file(res::PDBResidue, format::Type{PDBFile}) = print_file(stdout, res, format)
 
 @doc """
-`print(io, res, format::Type{PDBFile})`
-`print(res, format::Type{PDBFile})`
+`print_file(io, res, format::Type{PDBFile})`
+`print_file(res, format::Type{PDBFile})`
 
 Print a `PDBResidue` or a vector of `PDBResidue`s in PDB format.
-""" print
+""" print_file

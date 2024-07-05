@@ -13,7 +13,7 @@
     @testset "Gaps" begin
 
         file = joinpath(DATA, "gaps.txt")
-        cl = hobohmI(read(file, Raw), 62)
+        cl = hobohmI(read_file(file, Raw), 62)
         gu, gi = pairwisegapfraction(file, Raw)
         ncl = nclusters(cl)
 

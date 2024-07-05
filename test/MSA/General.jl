@@ -10,8 +10,8 @@
     pf09645_sto = joinpath(DATA, "PF09645_full.stockholm")
     gaoetal2011 = joinpath(DATA, "Gaoetal2011.fasta")
 
-    gaoetal_msas = [ read(gaoetal2011, FASTA, T) for T in msa_types ]
-    pfam_msas    = [ read(pf09645_sto, Stockholm, T) for T in msa_types ]
+    gaoetal_msas = [ read_file(gaoetal2011, FASTA, T) for T in msa_types ]
+    pfam_msas    = [ read_file(pf09645_sto, Stockholm, T) for T in msa_types ]
 
     @testset "getindex" begin
 
@@ -119,7 +119,7 @@
         end
 
         @testset "Annotations" begin
-            msa = read(pf09645_sto, Stockholm)
+            msa = read_file(pf09645_sto, Stockholm)
 
             @test   getannotcolumn(msa, "SS_cons") ==
                     getannotcolumn(getsequence(msa, 4), "SS_cons")
@@ -132,19 +132,18 @@
     end
 
     @testset "Print" begin
-        pfam = read(pf09645_sto, Stockholm)
-        gao  = read(gaoetal2011, FASTA)
+        pfam = read_file(pf09645_sto, Stockholm)
+        gao  = read_file(gaoetal2011, FASTA)
 
         @test stringsequence(gao, 4) == "DAYCMD"
         @test stringsequence(pfam, 1) == stringsequence(pfam, "C3N734_SULIY/1-95")
 
         for T in (Stockholm, FASTA, Raw)
             buffer = IOBuffer()
-            print(buffer, pfam, T)
-            @test parse(String(take!(buffer)), T) == pfam
-
-            print(buffer, gao, T)
-            @test parse(String(take!(buffer)), T) == gao
+            print_file(buffer, pfam, T)
+            @test parse_file(String(take!(buffer)), T) == pfam
+            print_file(buffer, gao, T)
+            @test parse_file(String(take!(buffer)), T) == gao
         end
     end
 end

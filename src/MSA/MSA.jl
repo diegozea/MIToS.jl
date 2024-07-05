@@ -3,7 +3,7 @@ The MSA module of MIToS has utilities for working with Multiple Sequence Alignme
 
 **Features**
 
-- Read and write MSAs in `Stockholm`, `FASTA` or `Raw` format
+- Read and write MSAs in `Stockholm`, `FASTA`, `A3M`, `PIR`, or `Raw` format
 - Handle MSA annotations
 - Edit the MSA, e.g. delete columns or sequences, change sequence order, shuffling...
 - Keep track of positions and annotations after modifications on the MSA
@@ -19,7 +19,7 @@ using OrderedCollections        # OrderedDicts for Annotations
 using AutoHashEquals        # Annotations, Clusters
 using NamedArrays           # Col and Seq names, basic sequence/MSA object
 using FastaIO               # FastaReader (fast)
-using Random                # GLOBAL_RNG, shuffle!, rand, Sampler, randstring
+using Random                # default_rng, shuffle!, rand, Sampler, randstring
 using Dates                 # Dates.now()
 using PairwiseListMatrices  # Percent Identity Matrices
 using Clustering            # Used for sequence clustering: ClusteringResult
@@ -81,6 +81,8 @@ export  # Residue
         # GetIndex
         sequence_index, column_index,
         # GeneralParserMethods
+        SequenceFormat,
+        MSAFormat,
         deletefullgapcolumns, deletefullgapcolumns!,
         # Raw
         Raw,
@@ -90,6 +92,11 @@ export  # Residue
         FASTA,
         # NBRF/PIR
         PIR,
+        # A3M
+        A3M, A2M,
+        # Shuffle
+        shuffle_msa!,
+        shuffle_msa,
         # PLM
         sequencepairsmatrix, columnpairsmatrix,
         # Identity
@@ -101,6 +108,11 @@ export  # Residue
         getweight, nelements,
         # Hobohm
         hobohmI,
+        # Imported from Utils
+        read_file,
+        parse_file,
+        write_file,
+        print_file,
         # Imported from Base or StdLib (and exported for docs)
         names,
         parse,
@@ -124,6 +136,7 @@ include("Raw.jl")
 include("Stockholm.jl")
 include("FASTA.jl")
 include("PIR.jl")
+include("A3M.jl")
 include("Shuffle.jl")
 include("PLM.jl")
 include("Identity.jl")

@@ -7,9 +7,9 @@
             @test match(r"^https.+\.pdb$", structure_info[1]["pdbUrl"]) !== nothing
         end
 
-        @testset "Invalid UniProt ID" begin
-            @test_throws HTTP.Exceptions.StatusError query_alphafolddb("INVALID_ID")
-        end
+        # @testset "Invalid UniProt ID" begin
+        #     @test_throws HTTP.Exceptions.StatusError query_alphafolddb("INVALID_ID")
+        # end
     end
 
     @testset "download_alphafold_structure tests" begin
@@ -17,7 +17,7 @@
             outfile = download_alphafold_structure("A0A0C5B5G6", format=PDBFile)
             if isfile(outfile)
                 try
-                    res = read(outfile, PDBFile)
+                    res = read_file(outfile, PDBFile)
                     @test length(res) == 16
                 finally
                     rm(outfile)

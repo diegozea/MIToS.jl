@@ -99,7 +99,7 @@ domain coverage.
 Returns "" if the attributte is missing
 """
 function _get_attribute(elem::LightXML.XMLElement, attr::String)
-    text = attribute(elem, attr)
+    text = LightXML.attribute(elem, attr)
     if text === nothing || text == "None"
         return("")
     else
@@ -112,7 +112,7 @@ Returns `missing` if the attributte is missing
 """
 function _get_nullable_attribute(elem::LightXML.XMLElement,
                                  attr::String)::Union{String,Missing}
-    text = attribute(elem, attr)
+    text = LightXML.attribute(elem, attr)
     (text === nothing || text == "None") ? missing : text
 end
 
@@ -289,8 +289,8 @@ function SIFTSResidue(residue::LightXML.XMLElement, missing_residue::Bool,
     SCOP2B = missing
     CATH = missing
     Ensembl = dbEnsembl[]
-    for crossref in get_elements_by_tagname(residue, "crossRefDb")
-        db = attribute(crossref, "dbSource")
+    for crossref in LightXML.get_elements_by_tagname(residue, "crossRefDb")
+        db = LightXML.attribute(crossref, "dbSource")
         if db == "UniProt"
             UniProt = dbUniProt(crossref)
         elseif db == "Pfam"
@@ -355,7 +355,7 @@ function siftsmapping(filename::String,
                       chain::Union{Type{All},String}=All,
                       missings::Bool=true) where {F,T}
     mapping = OrderedDict{String,String}()
-    xdoc = parse_file(filename)
+    xdoc = LightXML.parse_file(filename)
     try
         for entity in _get_entities(xdoc)
             segments = _get_segments(entity)
@@ -363,20 +363,20 @@ function siftsmapping(filename::String,
                 residues = _get_residues(segment)
                 for residue in residues
                     in_chain = _is_All(chain)
-                    key_data = _name(db_from) == "PDBe" ? attribute(residue, "dbResNum") : missing
-                    value_data = _name(db_to) == "PDBe" ? attribute(residue, "dbResNum") : missing
+                    key_data = _name(db_from) == "PDBe" ? LightXML.attribute(residue, "dbResNum") : missing
+                    value_data = _name(db_to) == "PDBe" ? LightXML.attribute(residue, "dbResNum") : missing
                     if missings || !_is_missing(residue)
-                        crossref = get_elements_by_tagname(residue, "crossRefDb")
+                        crossref = LightXML.get_elements_by_tagname(residue, "crossRefDb")
                         for ref in crossref
-                            source = attribute(ref, "dbSource")
-                            if source == _name(db_from) && attribute(ref, "dbAccessionId") == id_from
+                            source = LightXML.attribute(ref, "dbSource")
+                            if source == _name(db_from) && LightXML.attribute(ref, "dbAccessionId") == id_from
                                 key_data = _get_nullable_attribute(ref, "dbResNum")
                             end
-                            if source == _name(db_to) && attribute(ref, "dbAccessionId") == id_to
+                            if source == _name(db_to) && LightXML.attribute(ref, "dbAccessionId") == id_to
                                 value_data = _get_nullable_attribute(ref, "dbResNum")
                             end
                             if !in_chain && source == "PDB" # XML: <crossRefDb dbSource="PDB" ... dbChainId="E"/>
-                                in_chain = attribute(ref, "dbChainId") == chain
+                                in_chain = LightXML.attribute(ref, "dbChainId") == chain
                             end
                         end
                         if !ismissing(key_data) && !ismissing(value_data) && in_chain
@@ -393,18 +393,18 @@ function siftsmapping(filename::String,
             end
         end
     finally
-        free(xdoc)
+        LightXML.free(xdoc)
     end
     sizehint!(mapping, length(mapping))
 end
 
 """
-`parse(document::LightXML.XMLDocument, ::Type{SIFTSXML}; chain=All, missings::Bool=true)`
+`parse_file(document::LightXML.XMLDocument, ::Type{SIFTSXML}; chain=All, missings::Bool=true)`
 
 Returns a `Vector{SIFTSResidue}` parsed from a `SIFTSXML` file.
 By default, parses all the `chain`s and includes missing residues.
 """
-function Base.parse(document::LightXML.XMLDocument, ::Type{SIFTSXML};
+function Utils.parse_file(document::LightXML.XMLDocument, ::Type{SIFTSXML};
                     chain::Union{Type{All},String}=All, missings::Bool=true)
     vector = SIFTSResidue[]
     for entity in _get_entities(document)

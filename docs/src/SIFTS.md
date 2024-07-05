@@ -88,14 +88,14 @@ siftsmap = siftsmapping(siftsfile,
 ## [Storing residue-level mapping](@id Storing-residue-level-mapping)
 
 If you need more than the residue number mapping between two databases, you could access
-all the residue-level cross references using the function `read` in the `SIFTSXML``File.Format`
-file. The `parse` function (and therefore the `read` function) for the `SIFTSXML` format,
-also takes the keyword arguments `chain` and `missings`. The `read`/`parse` function
+all the residue-level cross references using the function `read_file` in the `SIFTSXML``File.Format`
+file. The `parse_file` function (and therefore the `read_file` function) for the `SIFTSXML` format,
+also takes the keyword arguments `chain` and `missings`. The `read_file`/`parse_file` function
 returns a `Vector` of `SIFTSResidue`s objects that stores the cross references between
 residues in each database.  
 
 ```@setup sifts_simple
-siftsresidues = read(siftsfile, SIFTSXML, chain="A", missings=false) # Array{SIFTSResidue,1}
+siftsresidues = read_file(siftsfile, SIFTSXML, chain="A", missings=false) # Array{SIFTSResidue,1}
 residue_data = siftsresidues[301];
 ```
 
@@ -130,7 +130,7 @@ import MIToS # to use pathof(MIToS)
 siftsfile = joinpath(dirname(pathof(MIToS)), "..", "docs", "data", "1ivo.xml.gz")
 
 using MIToS.SIFTS
-residue_data = read(siftsfile, SIFTSXML)[301]; # hide
+residue_data = read_file(siftsfile, SIFTSXML)[301]; # hide
 ```
 
 ```@repl sifts_repl
@@ -161,7 +161,7 @@ You can ask for particular values in a single `SIFTSResidue` using the `get` fun
 
 ```@repl sifts_repl
 using MIToS.SIFTS
-residue_data = read(siftsfile, SIFTSXML)[301]
+residue_data = read_file(siftsfile, SIFTSXML)[301]
 # Is the UniProt residue name in the list of basic amino acids ["H", "K", "R"]?
 get(residue_data, dbUniProt, :name, "") in ["H", "K", "R"]
 ```  
@@ -212,7 +212,7 @@ siftsfile = joinpath(dirname(pathof(MIToS)), "..", "docs", "data", "1ivo.xml.gz"
 
 ```@repl sifts_repl_ii
 using MIToS.SIFTS
-sifts_1ivo = read(siftsfile, SIFTSXML, chain="A"); # SIFTSResidues of the 1IVO chain A
+sifts_1ivo = read_file(siftsfile, SIFTSXML, chain="A"); # SIFTSResidues of the 1IVO chain A
 [res.missing for res in sifts_1ivo]
 ```  
 
@@ -234,7 +234,7 @@ siftsfile = downloadsifts("1JQZ")
 
 ```@repl sifts_1jqz
 using MIToS.SIFTS
-sifts_1jqz = read(siftsfile, SIFTSXML); # It has an amino terminal his tag
+sifts_1jqz = read_file(siftsfile, SIFTSXML); # It has an amino terminal his tag
 missings = [ (  ( get(res, dbUniProt, :id, "") == "P05230" ) &
                 ( get(res, dbPDB, :chain, "") ==  "A" ) &
                 res.missing ) for res in sifts_1jqz             ];

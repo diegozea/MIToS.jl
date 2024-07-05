@@ -93,8 +93,7 @@ end
         try
             @test ".tmp" == download_file("http://www.uniprot.org/uniprot/P69905.fasta",
                 ".tmp", 
-		headers = Dict("User-Agent" => "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)"),
-                redirect =true)
+		        headers = Dict("User-Agent" => "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)"))
         finally
             if isfile(".tmp")
                 rm(".tmp")

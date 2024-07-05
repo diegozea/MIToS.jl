@@ -30,7 +30,7 @@ set_parallel(Args["parallel"])
                     fh_out::Union{Base.LibuvStream,IO})
         try
             aln = readorparse(input, Stockholm, generatemapping=true, useidcoordinates=true, deletefullgaps=true)
-            print(fh_out, aln, Stockholm)
+            print_file(fh_out, aln, Stockholm)
         catch err
             @warn(string("ERROR for ", input, ": ", err))
         end

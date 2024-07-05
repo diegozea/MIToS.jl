@@ -14,7 +14,7 @@ end
     file(code) = joinpath(DATA, string(uppercase(code), ".pdb"))
 
     @testset "2VQC: Missings & selenomethionines" begin
-        res = read(file("2VQC"), PDBFile)
+        res = read_file(file("2VQC"), PDBFile)
         # seq length : 118
         # missing residues : 1-9, 80-118
         # number of modelled residues : 70
@@ -34,7 +34,7 @@ end
     end
 
     @testset "1AS5: NMR" begin
-        res = read(file("1AS5"), PDBFile)
+        res = read_file(file("1AS5"), PDBFile)
         seqs = modelled_sequences(res)
 
         @test length(seqs) == 14
@@ -53,7 +53,7 @@ end
     end
 
     @testset "1IGY: Insertions & chains" begin
-        res = read(file("1IGY"), PDBFile)
+        res = read_file(file("1IGY"), PDBFile)
         seqs = modelled_sequences(res)
         # chains
         @test length(seqs) == 4

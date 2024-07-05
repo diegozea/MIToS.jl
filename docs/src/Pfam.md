@@ -43,13 +43,13 @@ using MIToS
 pfamfile = joinpath(dirname(pathof(MIToS)), "..", "docs", "data", "PF18883.stockholm.gz");
 ```
 
-Use `read` function and the `Stockholm` `FileFormat` to get a
+Use `read_file` function and the `Stockholm` `FileFormat` to get a
 `AnnotatedMultipleSequenceAlignment` object with the MSA and its Pfam annotations.
 You must set `generatemapping` and `useidcoordinates` to `true` the first time you read
 the downloaded MSA. This is necessary to some of the methods in the `Pfam` module.  
 
 ```@example pfam_example
-msa = read(pfamfile, Stockholm, generatemapping=true, useidcoordinates=true)
+msa = read_file(pfamfile, Stockholm, generatemapping=true, useidcoordinates=true)
 ```
 
 ## [Getting PDB information from an MSA](@id Getting-PDB-information-from-an-MSA)  
@@ -76,7 +76,7 @@ The returned dictionary can be used to get the PDB residue associated to each co
 ```@example pfam_example
 using MIToS.PDB
 pdbfile = downloadpdb("3ML3")
-pdb = read(pdbfile, PDBML)
+pdb = read_file(pdbfile, PDBML)
 resdict = @residuesdict pdb model "1" chain "A" group "ATOM" residue All
 
 msaresidues(msa, resdict, col2res)
