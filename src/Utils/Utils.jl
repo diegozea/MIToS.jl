@@ -12,7 +12,7 @@ using CodecZlib
 using LightXML
 using NamedArrays
 using Logging
-
+using MIToS
 export  # GeneralUtils.jl
         All,
         get_n_words,

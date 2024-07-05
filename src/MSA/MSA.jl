@@ -14,7 +14,7 @@ using MIToS.MSA
 ```
 """
 module MSA
-
+using MIToS
 using OrderedCollections        # OrderedDicts for Annotations
 using AutoHashEquals        # Annotations, Clusters
 using NamedArrays           # Col and Seq names, basic sequence/MSA object
@@ -131,5 +131,5 @@ include("Clusters.jl")
 include("Hobohm.jl")
 include("Plots.jl")
 include("Concatenation.jl")
-
+include("A3M.jl")
 end
