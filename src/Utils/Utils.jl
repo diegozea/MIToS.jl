@@ -32,7 +32,6 @@ export  # GeneralUtils.jl
     read_file,
     parse_file,
     # Write.jl
-    Commandline,
     write_file,
     print_file,
     # ThreeLetterResidues.jl

@@ -7,6 +7,7 @@ using MIToS.Information
 using MIToS.PDB
 using MIToS.SIFTS
 using MIToS.Pfam
+using Aqua
 using LinearAlgebra
 using Random
 using OrderedCollections    # OrderedDict
@@ -19,6 +20,10 @@ using StatsBase             # WeightVec
 using PairwiseListMatrices  # getlist
 
 const DATA = joinpath(@__DIR__, "data")
+
+# The ambiguities are not caused by MIToS
+# Information.kullback_leibler breaks the unbound_args test
+Aqua.test_all(MIToS, ambiguities=false, unbound_args=false)
 
 # Utils
 @testset verbose = true "Utils" begin

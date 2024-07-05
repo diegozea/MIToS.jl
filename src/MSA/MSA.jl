@@ -143,7 +143,6 @@ export  # Residue
     NoClustering,
     Clusters,
     AbstractCluster,
-    nclusters,
     counts,
     getweight,
     nelements,

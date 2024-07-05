@@ -261,7 +261,7 @@ end
 # Method with positional arguments for background and base
 function kullback_leibler(
     p::Probabilities{T,N,A},
-    q::Union{Array{T,N},Probabilities{T,N,A},ContingencyTable{T,N,A}},
+    q::AbstractArray{T,N},
     base::Real,
 ) where {T,N,A}
     Base.depwarn(
@@ -275,7 +275,7 @@ end
 # Method with positional argument for background
 function kullback_leibler(
     p::Probabilities{T,N,A},
-    q::Union{Array{T,N},Probabilities{T,N,A},ContingencyTable{T,N,A}},
+    q::AbstractArray{T,N},
 ) where {T,N,A}
     Base.depwarn(
         "kullback_leibler(p, q) is deprecated. Use kullback_leibler(p; background=q) instead.",

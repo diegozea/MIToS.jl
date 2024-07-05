@@ -27,20 +27,22 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 TranscodingStreams = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
 
 [weakdeps]
-ROCAnalysis = "f535d66d-59bb-5153-8d2b-ef0a426c6aff"
 Clustering = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
+ROCAnalysis = "f535d66d-59bb-5153-8d2b-ef0a426c6aff"
 
 [extensions]
-MIToSROCAnalysisExt = "ROCAnalysis"
 MIToSClusteringExt = "Clustering"
+MIToSROCAnalysisExt = "ROCAnalysis"
 
 [compat]
+Aqua = "0.8"
 AutoHashEquals = "0.2, 1, 2"
 Clustering = "0.14, 0.15"
 CodecZlib = "0.6, 0.7"
 Dates = "1"
 DelimitedFiles = "1"
 Documenter = "0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 1"
+Downloads = "1"
 FastaIO = "1"
 Format = "1"
 JSON3 = "1"
@@ -60,15 +62,16 @@ StaticArrays = "0.12, 1.0"
 Statistics = "1"
 StatsBase = "0.32, 0.33, 0.34"
 Test = "1"
-TranscodingStreams = "0.9, 0.10"
+TranscodingStreams = "0.9, 0.10, 0.11"
 julia = "1.9"
 
 [extras]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+Clustering = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 ROCAnalysis = "f535d66d-59bb-5153-8d2b-ef0a426c6aff"
-Clustering = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["DelimitedFiles", "Test", "ROCAnalysis", "Documenter", "Clustering"]
+test = ["Aqua", "DelimitedFiles", "Test", "ROCAnalysis", "Documenter", "Clustering"]

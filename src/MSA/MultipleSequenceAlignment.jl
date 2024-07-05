@@ -862,23 +862,24 @@ to new names, or one or more pairs going from old to new names. If the `msa` is 
 """
 
 """
-    rename_sequences!(msa, newnames)
+    rename_sequences!(msa, newnames::Vector{T}) where {T<:AbstractString}
     rename_sequences!(msa, old2new::AbstractDict)
     rename_sequences!(msa, old2new::Pair...)
     
 $RENAME_SEQUENCES_DOC The function modifies the `msa` in place and returns it.
 """
-function rename_sequences!(msa::NamedResidueMatrix{AT}, newnames) where {AT}
+function rename_sequences!(msa::NamedResidueMatrix{AT}, newnames::Vector{T}) where {AT, T<:AbstractString}
+    @assert length(newnames) == size(msa, 1) "The number of new names must match the number of sequences."
     setnames!(msa, newnames, 1)
     msa
 end
 
-function rename_sequences!(msa::MultipleSequenceAlignment, newnames)
+function rename_sequences!(msa::MultipleSequenceAlignment, newnames::Vector{T}) where {T<:AbstractString}
     rename_sequences!(namedmatrix(msa), newnames)
     msa
 end
 
-function rename_sequences!(msa::AnnotatedMultipleSequenceAlignment, newnames)
+function rename_sequences!(msa::AnnotatedMultipleSequenceAlignment, newnames::Vector{T}) where {T<:AbstractString}
     name_mapping = Dict{String,String}(
         old => new for
         (old, new) in zip(sequencename_iterator(msa), newnames) if old != new
@@ -890,7 +891,7 @@ function rename_sequences!(msa::AnnotatedMultipleSequenceAlignment, newnames)
 end
 
 """
-    rename_sequences(msa, newnames)
+    rename_sequences(msa, newnames::Vector{T}) where {T<:AbstractString}
     rename_sequences(msa, old2new::AbstractDict)
     rename_sequences(msa, old2new::Pair...)
 

@@ -77,8 +77,6 @@ export  # PDBResidues
     aromatic,
     ionic,
     hydrophobic,
-    stridehydrogenbond,
-    chimerahydrogenbond,
     # PDBParser
     PDBFile,
     # PDBMLParser
