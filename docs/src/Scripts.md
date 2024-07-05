@@ -15,13 +15,6 @@ Pages = ["Scripts.md"]
 Depth = 4
 ```   
 
-```@setup _scripts
-using MIToS
-julia = Base.julia_cmd(); # path to the julia executable
-scripts_folder = joinpath(pkgdir(MIToS), "scripts")
-run(`$julia --project=$scripts_folder -e "using Pkg; Pkg.instantiate()"`)
-```
-
 ## Buslje09.jl
 
 ```@repl
