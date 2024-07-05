@@ -65,3 +65,29 @@
         @test d_annotated_msa == annotated_msa
     end
 end
+
+#disambiguate sequences
+
+include("disambiguate_sequences.jl")  
+
+@testset "Disambiguate Sequences Tests" begin
+    IDS = ["seq", "seq", "seq"]
+    old2new, new_IDS = disambiguate_sequences(IDS)
+    @test new_IDS == ["seq", "seq(1)", "seq(2)"]
+    @test old2new == Dict("seq" => ["seq", "seq(1)", "seq(2)"])
+
+    IDS = ["a", "a", "b", "b", "b"]
+    old2new, new_IDS = disambiguate_sequences(IDS)
+    @test new_IDS == ["a", "a(1)", "b", "b(1)", "b(2)"]
+    @test old2new == Dict("a" => ["a", "a(1)"], "b" => ["b", "b(1)", "b(2)"])
+
+    IDS = ["item", "item(1)", "item(1)", "item(2)"]
+    old2new, new_IDS = disambiguate_sequences(IDS)
+    @test new_IDS == ["item", "item(1)", "item(1)(1)", "item(2)"]
+    @test old2new == Dict("item" => ["item"], "item(1)" => ["item(1)", "item(1)(1)"], "item(2)" => ["item(2)"])
+
+    IDS = ["x", "x", "x", "x(1)", "x(1)"]
+    old2new, new_IDS = disambiguate_sequences(IDS)
+    @test new_IDS == ["x", "x(1)", "x(2)", "x(1)(1)", "x(1)(2)"]
+
+end
