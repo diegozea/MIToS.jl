@@ -142,6 +142,37 @@ function _check_seq_len(IDS, SEQS)
     end
 end
 
+
+# Disambiguate Sequences
+# ----------------------
+
+function _disambiguate_sequences(IDS::Vector{String})
+    old2new = Dict{String,Vector{String}}()
+    seen = OrderedSet{String}()
+
+    for original in IDS
+        current_name = original
+        count = length(get(old2new, current_name, []))
+        new_name = current_name
+        if count > 0
+            new_name = _propose_name(current_name, count)
+        end
+        while new_name in seen
+            count += 1
+            new_name = _propose_name(current_name, count)
+        end
+        push!(seen, new_name)
+        if haskey(old2new, original)
+            push!(old2new[original], new_name)
+        else
+            old2new[original] = [new_name]
+        end
+    end
+    return old2new, collect(seen)
+end
+
+_propose_name(base::String, count::Int)::String = "$(base)($(count))"
+
 # NamedArray{Residue,2} and AnnotatedMultipleSequenceAlignment generation
 # -----------------------------------------------------------------------
 
