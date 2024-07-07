@@ -112,6 +112,8 @@ export  # PDBResidues
     # AlphaFoldDB
     query_alphafolddb,
     download_alphafold_structure,
+    # Imported from BioStructures
+    MolecularStructure,
     # Imported from Base (and exported for docs)
     any,
     parse,
