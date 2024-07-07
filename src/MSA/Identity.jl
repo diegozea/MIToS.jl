@@ -1,11 +1,13 @@
 # Calculates percent identity of two aligned sequences
 # No account of the positions with gaps in both sequences in the length
 
-"seq1 and seq2 should have the same len"
+"""
+seq1 and seq2 should have the same len
+"""
 function _percentidentity(seq1, seq2, len)
     count = 0
     notcount = 0
-    for i in 1:len
+    for i = 1:len
         @inbounds aa1 = seq1[i]
         @inbounds aa2 = seq2[i]
         if aa1 == aa2
@@ -35,9 +37,11 @@ aren't counted.
 function percentidentity(seq1, seq2)
     len = length(seq1)
     if len != length(seq2)
-        throw(ErrorException("""
-        Sequences of different length, they aren't aligned or don't come from the same MSA.
-        """))
+        throw(
+            ErrorException("""
+      Sequences of different length, they aren't aligned or don't come from the same MSA.
+      """),
+        )
     end
     _percentidentity(seq1, seq2, len)
 end
@@ -54,15 +58,17 @@ function percentidentity(seq1, seq2, threshold)
     fraction = threshold / 100.0
     len = length(seq1)
     if len != length(seq2)
-        throw(ErrorException("""
-        Sequences of different length, they aren't aligned or don't come from the same MSA.
-        """))
+        throw(
+            ErrorException("""
+      Sequences of different length, they aren't aligned or don't come from the same MSA.
+      """),
+        )
     end
     n = len
     limit_count = n * fraction
     diff = 0
     count = 0
-    @inbounds for i in 1:len
+    @inbounds for i = 1:len
         aa1 = seq1[i]
         aa2 = seq2[i]
         if aa1 == XAA || aa2 == XAA
@@ -73,7 +79,7 @@ function percentidentity(seq1, seq2, threshold)
             if aa1 != GAP
                 count += 1
                 if count >= limit_count
-                    return(true)
+                    return (true)
                 end
             else
                 n -= 1
@@ -82,11 +88,11 @@ function percentidentity(seq1, seq2, threshold)
         else
             diff += 1
             if diff > n - limit_count
-                return(false)
+                return (false)
             end
         end
     end
-    (count/n) >= fraction
+    (count / n) >= fraction
 end
 
 # percentidentity for a MSA
@@ -95,10 +101,10 @@ end
 function _percentidentity_kernel!(scores, aln::Vector{Vector{Residue}}, nseq, len)
     k = 0
     list = getlist(scores)
-    @inbounds for i in 1:(nseq-1)
+    @inbounds for i = 1:(nseq-1)
         a = aln[i]
-        for j in (i+1):nseq
-            list[k += 1] = _percentidentity(a, aln[j], len)
+        for j = (i+1):nseq
+            list[k+=1] = _percentidentity(a, aln[j], len)
         end
     end
     scores
@@ -111,7 +117,7 @@ Calculates the identity between all the sequences on a MSA. You can indicate the
 element type with the last optional parameter (`Float64` by default). For a MSA with a lot
 of sequences, you can use `Float32` or `Flot16` in order to avoid the `OutOfMemoryError()`.
 """
-function percentidentity(msa::AbstractMatrix{Residue}, out::Type{T}=Float64) where T
+function percentidentity(msa::AbstractMatrix{Residue}, out::Type{T} = Float64) where {T}
     aln = getresiduesequences(msa)
     nseq = length(aln)
     len = length(aln[1])
@@ -130,7 +136,7 @@ is `false` (defualt), 44850 random pairs of sequences are used for the estimatio
 number of samples can be changed using the second argument. Use `exact=true` to perform all
 the pairwise comparison (the calculation could be slow).
 """
-function meanpercentidentity(msa, nsamples::Int=44850; exact::Bool=false)
+function meanpercentidentity(msa, nsamples::Int = 44850; exact::Bool = false)
     #                 lengthlist(300, false) == 44850
     nseq, ncol = size(msa)
     @assert nsamples > 2 "At least 2 samples are needed."
@@ -142,19 +148,19 @@ function meanpercentidentity(msa, nsamples::Int=44850; exact::Bool=false)
         while length(samples) < nsamples
             i = rand(1:(nseq-1))
             j = rand((i+1):nseq)
-            if !in((i,j), samples)
-                push!(samples, (i,j))
-                sum += percentidentity(msa[i,:], msa[j,:])
+            if !in((i, j), samples)
+                push!(samples, (i, j))
+                sum += percentidentity(msa[i, :], msa[j, :])
             end
         end
-        return( (sum/nsamples) )
+        return ((sum / nsamples))
     else # exact and/or few sequences
-        for i in 1:(nseq-1)
-            @inbounds @simd for j in (i+1):nseq
-                sum += percentidentity(msa[i,:], msa[j,:])
+        for i = 1:(nseq-1)
+            @inbounds @simd for j = (i+1):nseq
+                sum += percentidentity(msa[i, :], msa[j, :])
             end
         end
-        return( (sum/nvalues) )
+        return ((sum / nvalues))
     end
 end
 
@@ -197,20 +203,27 @@ ReducedAlphabet("(GA)(MVLI)(FYW)(ST)(KRH)(DE)(NQ)PC")
 
 *Grant, B.J. et al. (2006) Bioinformatics 22, 2695--2696.*
 """
-function percentsimilarity(seq1::Vector{Residue}, seq2::Vector{Residue},
-    alphabet::ResidueAlphabet = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP"))
+function percentsimilarity(
+    seq1::Vector{Residue},
+    seq2::Vector{Residue},
+    alphabet::ResidueAlphabet = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP"),
+)
 
     len = length(seq1)
     if len != length(seq2)
-        throw(ErrorException("""
-        Sequences of different lengths, they aren't aligned or don't come from the same MSA.
-        """))
+        throw(
+            ErrorException(
+                """
+Sequences of different lengths, they aren't aligned or don't come from the same MSA.
+""",
+            ),
+        )
     end
 
     count = 0
     colgap = 0
     colout = 0 # Columns with residues outside the alphabet aren't used
-    @inbounds for i in 1:len
+    @inbounds for i = 1:len
         res1 = seq1[i]
         res2 = seq2[i]
         isgap1 = res1 == GAP
@@ -219,8 +232,7 @@ function percentsimilarity(seq1::Vector{Residue}, seq2::Vector{Residue},
             colgap += 1
             continue
         end
-        if  (!isgap1 && !in(res1, alphabet)) ||
-            (!isgap2 && !in(res2, alphabet))
+        if (!isgap1 && !in(res1, alphabet)) || (!isgap2 && !in(res2, alphabet))
             colout += 1
             continue
         end
@@ -238,7 +250,7 @@ the output element type with the `out` keyword argument (`Float64` by default). 
 MSA with a lot of sequences, you can use `out=Float32` or `out=Flot16` in order to
 avoid the `OutOfMemoryError()`.
 """
-function percentsimilarity(msa::AbstractMatrix{Residue}, A...; out::Type=Float64)
+function percentsimilarity(msa::AbstractMatrix{Residue}, A...; out::Type = Float64)
     M = getresiduesequences(msa)
     P = sequencepairsmatrix(msa, out, Val{false}, out(100.0))
     @inbounds @iterateupper getarray(P) false begin

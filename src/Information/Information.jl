@@ -10,11 +10,11 @@ frequency based values.
 
 **Features**
 
-- Estimate multi dimensional frequencies and probabilities tables from sequences, MSAs, etc...
-- Correction for small number of observations
-- Correction for data redundancy on a MSA
-- Estimate information measures
-- Calculate corrected mutual information between residues
+  - Estimate multi dimensional frequencies and probabilities tables from sequences, MSAs, etc...
+  - Correction for small number of observations
+  - Correction for data redundancy on a MSA
+  - Estimate information measures
+  - Calculate corrected mutual information between residues
 
 ```julia
 using MIToS.Information
@@ -33,69 +33,80 @@ using LinearAlgebra         # normalize
 using PairwiseListMatrices
 
 if isdefined(Base, :count!)
-	import Base: count!
+    import Base: count!
 end
 
 export  # MIToS.MSA
-        GappedAlphabet,
-        UngappedAlphabet,
-        ReducedAlphabet,
-        # Pseudocounts
-        Pseudocount,
-        NoPseudocount,
-        AdditiveSmoothing,
-        # ContingencyTables
-        ContingencyTable,
-        Probabilities,
-        Counts,
-        getcontingencytable,
-        getalphabet,
-        gettable, gettablearray,
-        getmarginals, getmarginalsarray,
-        gettotal,
-        # update_marginals!,
-        apply_pseudocount!,
-        delete_dimensions!, delete_dimensions,
-        # BLOSUM62
-        BLOSUM62_Pi, BLOSUM62_Pij,
-        # Pseudofrequencies
-        Pseudofrequencies,
-        NoPseudofrequencies,
-        BLOSUM_Pseudofrequencies,
-        apply_pseudofrequencies!,
-        # Counters
-        count!,
-        probabilities,
-        probabilities!,
-        # Iterations
-        mapcolfreq!,
-        mapseqfreq!,
-        mapcolpairfreq!,
-        mapseqpairfreq!,
-        cumulative,
-        # InformationMeasures
-        entropy,
-        marginal_entropy,
-        kullback_leibler,
-        mutual_information,
-        normalized_mutual_information,
-        # Corrections
-        APC!,
-        # CorrectedMutualInformation
-        buslje09,
-        BLMI,
-        # Gaps
-        gap_union_percentage,
-        gap_intersection_percentage,
-        pairwisegapfraction,
-        # Externals
-        gaussdca,
-        # Formats from MIToS.MSA
-        Raw, Stockholm, FASTA,
-        # Imported from Base (and exported for docs)
-        normalize,
-        normalize!,
-        count
+    GappedAlphabet,
+    UngappedAlphabet,
+    ReducedAlphabet,
+    # Pseudocounts
+    Pseudocount,
+    NoPseudocount,
+    AdditiveSmoothing,
+    # ContingencyTables
+    ContingencyTable,
+    Probabilities,
+    Frequencies,
+    Counts, # deprecated
+    getcontingencytable,
+    getalphabet,
+    gettable,
+    gettablearray,
+    getmarginals,
+    getmarginalsarray,
+    gettotal,
+    # update_marginals!,
+    apply_pseudocount!,
+    delete_dimensions!,
+    delete_dimensions,
+    # BLOSUM62
+    BLOSUM62_Pi,
+    BLOSUM62_Pij,
+    # Pseudofrequencies
+    Pseudofrequencies,
+    NoPseudofrequencies,
+    BLOSUM_Pseudofrequencies,
+    apply_pseudofrequencies!,
+    # Counters
+    count!,
+    frequencies,
+    frequencies!,
+    probabilities,
+    probabilities!,
+    # Iterations
+    mapcolfreq!,
+    mapseqfreq!,
+    mapcolpairfreq!,
+    mapseqpairfreq!,
+    mapfreq,
+    cumulative,
+    # InformationMeasures
+    entropy,
+    shannon_entropy,
+    marginal_entropy,
+    kullback_leibler,
+    mutual_information,
+    normalized_mutual_information,
+    # Corrections
+    APC!,
+    # CorrectedMutualInformation
+    buslje09,
+    BLMI,
+    # Gaps
+    gap_union_percentage,
+    gap_intersection_percentage,
+    pairwisegapfraction,
+    # Externals
+    gaussdca,
+    # Formats from MIToS.MSA
+    Raw,
+    Stockholm,
+    FASTA,
+    # Imported from Base (and exported for docs)
+    normalize,
+    normalize!,
+    count
 
 include("Pseudocounts.jl")
 include("ContingencyTables.jl")

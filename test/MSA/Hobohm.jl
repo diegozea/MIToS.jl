@@ -1,6 +1,6 @@
 @testset "Clusters" begin
 
-    for int in 1:100
+    for int = 1:100
         @test getweight(NoClustering(), int) == 1.0
     end
 end
@@ -19,8 +19,8 @@ end
 
     @test nclusters(clusters) == 2
     @test nelements(clusters) == 6
-    @test getweight(clusters, 1) == 1/3
-    @test getweight(clusters, 6) == 1/3
+    @test getweight(clusters, 1) == 1 / 3
+    @test getweight(clusters, 6) == 1 / 3
 
     @testset "Clusters getters" begin
 
@@ -34,7 +34,7 @@ end
         @test convert(Clusters, clusters) == clusters
 
         distance = convert(Matrix{Float64}, 100.0 .- percentidentity(fasta))
-        cr = Clustering.dbscan(distance, 38.0, metric=nothing, min_neighbors = 2)
+        cr = Clustering.dbscan(distance, 38.0, metric = nothing, min_neighbors = 2)
         @test convert(Clusters, cr) == clusters
     end
 end

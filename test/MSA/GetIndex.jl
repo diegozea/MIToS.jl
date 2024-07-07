@@ -2,7 +2,7 @@
     simple = joinpath(DATA, "simple.fasta")
 
     @testset "get index" begin
-        msa = read_file(simple, FASTA, generatemapping=true)
+        msa = read_file(simple, FASTA, generatemapping = true)
         first_seq = getsequence(msa, 1)
         @test first_seq isa AbstractAlignedSequence
         matrix_msa = convert(Matrix{Residue}, msa)
@@ -44,18 +44,20 @@
     end
 
     @testset "MSA" begin
-        msa = read_file(simple, FASTA, generatemapping=true)
+        msa = read_file(simple, FASTA, generatemapping = true)
 
-        matrix = Residue['A'  'R'
-                         'R'  'A']
-        
+        matrix = Residue[
+            'A' 'R'
+            'R' 'A'
+        ]
+
         @test msa == matrix
         @test getcolumnmapping(msa) == [1, 2]
         @test getsequencemapping(msa, "ONE") == [1, 2]
         @test getsequencemapping(msa, "TWO") == [1, 2]
 
         for reverse_col_selector in [[2, 1], 2:-1:1, String["2", "1"]]
-            ref = Residue['R'  'A'; 'A'  'R']
+            ref = Residue['R' 'A'; 'A' 'R']
 
             reversed_cols = msa[:, reverse_col_selector]
             @test reversed_cols == ref
@@ -65,14 +67,20 @@
             @test sequencenames(reversed_cols) == ["ONE", "TWO"]
             @test columnnames(reversed_cols) == ["2", "1"]
             annot_values = Set(values(getannotfile(reversed_cols)))
-            @test any(occursin("filtercolumns! : 2 columns have been selected.", val) for val in annot_values)
-            @test any(occursin("filtercolumns! : column order has changed!", val) for val in annot_values)
+            @test any(
+                occursin("filtercolumns! : 2 columns have been selected.", val) for
+                val in annot_values
+            )
+            @test any(
+                occursin("filtercolumns! : column order has changed!", val) for
+                val in annot_values
+            )
 
             @test MultipleSequenceAlignment(msa)[:, reverse_col_selector] == ref
         end
 
         for reverse_seq_selector in [[2, 1], 2:-1:1, String["TWO", "ONE"]]
-            ref = Residue['R'  'A'; 'A'  'R']
+            ref = Residue['R' 'A'; 'A' 'R']
 
             reversed_seqs = msa[reverse_seq_selector, :]
             @test reversed_seqs == ref
@@ -96,7 +104,9 @@
             @test sequencenames(single_col) == ["ONE", "TWO"]
             @test columnnames(single_col) == ["2"]
             annot_values = Set(values(getannotfile(single_col)))
-            @test any(occursin("filtercolumns! : 1 column has been", val) for val in annot_values)
+            @test any(
+                occursin("filtercolumns! : 1 column has been", val) for val in annot_values
+            )
 
             @test MultipleSequenceAlignment(msa)[:, single_col_selector] == ref_single_col
         end
@@ -112,7 +122,10 @@
             @test sequencenames(single_seq) == ["TWO"]
             @test columnnames(single_seq) == ["1", "2"]
             annot_values = Set(values(getannotfile(single_seq)))
-            @test any(occursin("filtersequences! : 1 sequence has been", val) for val in annot_values)
+            @test any(
+                occursin("filtersequences! : 1 sequence has been", val) for
+                val in annot_values
+            )
 
             @test MultipleSequenceAlignment(msa)[single_seq_selector, :] == ref_single_seq
         end
@@ -129,10 +142,19 @@
                 @test sequencenames(single_res) == ["TWO"]
                 @test columnnames(single_res) == ["2"]
                 annot_values = Set(values(getannotfile(single_res)))
-                @test any(occursin("filtersequences! : 1 sequence has been", val) for val in annot_values)
-                @test any(occursin("filtercolumns! : 1 column has been", val) for val in annot_values)
+                @test any(
+                    occursin("filtersequences! : 1 sequence has been", val) for
+                    val in annot_values
+                )
+                @test any(
+                    occursin("filtercolumns! : 1 column has been", val) for
+                    val in annot_values
+                )
 
-                @test MultipleSequenceAlignment(msa)[single_seq_selector, single_col_selector] == ref_single_res
+                @test MultipleSequenceAlignment(msa)[
+                    single_seq_selector,
+                    single_col_selector,
+                ] == ref_single_res
             end
         end
     end

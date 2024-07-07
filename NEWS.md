@@ -1,5 +1,107 @@
 ## MIToS.jl Release Notes
 
+### Changes from v2.22.0 to master
+
+MIToS v3.0.0 requires Julia v1.9 or higher, dropping support for older versions. This 
+release introduces several breaking changes to improve the usability of the package.
+
+The MSA module now includes ways to read, write, and work with unaligned protein sequences:
+
+* The `MSA` module now exports the `AnnotatedSequence` type to represent a single protein
+ sequence with annotations. This type is a subtype of the new `AbstractSequence` type,
+ a subtype of the new `AbstractResidueMatrix` type.
+
+* The `MSA` module now exports the `sequence_id` function to get the identifier of a 
+ sequence object.
+
+* The `MSA` module now defines the `FASTASequences`, `PIRSequences`, and `RawSequences` 
+ file formats to read and write (unaligned) protein sequences in FASTA, PIR, and raw 
+ formats, respectively.
+
+* *[Breaking change]* The behavior of the `getannotresidue`, `getannotsequence`, 
+  `setannotresidue!`, and `setannotsequence!` functions have changed for sequences objects, 
+  such as `AnnotatedSequence`, `AnnotatedAlignedSequence`, and `AlignedSequence`. Now, these 
+  functions take the feature name, rather than the sequence name, as the second 
+  positional argument. As an example of migration, 
+  `getannotsequence(sequence, "sequence_name", "feature_name")` should be replaced by 
+  `getannotsequence(sequence, "feature_name")`. You still need to specify the sequence name
+  when working with MSA objects.
+
+* *[Breaking change]* The scripts now have their project environment and the 
+  `MIToS.Utils.Scripts` module does not longer export the `set_parallel`, 
+  `parse_commandline` and `runscript` functions. Therefore, `ArgParse` and 
+  `Distributed` are no longer dependencies of MIToS.
+
+### Changes from v2.21.0 to v2.22.0
+
+This versions introduces several breaking changes to improve the usability of the 
+`Information` module. The main changes are:
+
+* *[Breaking change]* The `Information` module deprecates the `Counts` type in favor of 
+  the new `Frequencies` type. The new type as the same signature and behavior as the old one.
+
+* *[Breaking change]* The `count` function on sequences has been deprecated in favor of the
+  `frequencies` function, which has the same signature and behavior as the old one.
+
+* *[Breaking change]* The `count!` function is deprecated in favor of `frequencies!`. 
+  The new function use keyword arguments to define the weights and pseudocounts. As an
+  example of migration, `count!(table, weights, pseudocounts, seqs...)` should be replaced 
+  by `frequencies!(table, seqs..., weights=weights, pseudocounts=pseudocounts)`.
+
+* *[Breaking change]* The `probabilities!` method using positional arguments for the 
+  weights, pseudocounts and pseudofrequencies is deprecated in favor the one that uses 
+  keyword arguments. As an example of migration, 
+  `probabilities!(table, weights, pseudocounts, pseudofrequencies, seqs...)` 
+  should be replaced by 
+  `probabilities!(table, seqs..., weights=weights, pseudocounts=pseudocounts, pseudofrequencies=pseudofrequencies)`.
+
+* *[Breaking change]* The `Information` has deprecated the `entropy` method on 
+  `Frequencies` and `Probabilities` in favor of the `shannon_entropy` function. The 
+  definition of the base is now done using the `base` keyword argument. As an example of 
+  migration, `entropy(p, 2)` should be replaced by `shannon_entropy(p, base=2)`.
+
+* *[Breaking change]* The `marginal_entropy` methods based on positional arguments are 
+  deprecated in favor of a method relying on the `margin` and `base` keyword arguments.
+  As an example of migration, `marginal_entropy(p, 2, 2.0)` should be replaced by
+  `marginal_entropy(p, margin=2, base=2.0)`.
+
+* *[Breaking change]* The `mutual_information` method based on positional arguments is
+  deprecated in favor of a method relying on the `base` keyword argument. As an example of
+  migration, `mutual_information(p, 2)` should be replaced by `mutual_information(p, base=2)`.
+
+* *[Breaking change]* The `mapcolpairfreq!` and `mapseqpairfreq!` functions now uses the
+  boolean `usediagonal` keyword argument to indicate if the function should be applied to
+  the diagonal elements of the matrix (the default is `true`). Before, this was done passing
+  `Val{true}` or `Val{false}` as the last positional argument.
+
+* The `mapcolfreq!`, `mapseqfreq!`, `mapcolpairfreq!`, and `mapseqpairfreq!` methods using
+  keyword arguments, now pass the extra keyword arguments to the mapped function.
+
+* The `Information` module now exports the `mapfreq` function that offers a more high-level
+  interface to the `mapcolfreq!`, `mapseqfreq!`, `mapcolpairfreq!`, and `mapseqpairfreq!`
+  functions. This function allows the user to map a function to the residue frequencies or 
+  probabilities of the columns or sequences of an MSA. When `rank = 2`, the function is
+  applied to pairs of sequences or columns.
+
+* The `Information` module now exports methods of the `shannon_entropy`, `kullback_leibler`,
+  `mutual_information`, and `normalized_mutual_information` functions that take an 
+  `AbstractArray{Residue}` as input, e.g. an MSA. Those methods use the `mapfreq` function
+  under the hood to ease the calculation of the information measures on MSAs.
+
+* The `frequencies!`, `frequencies`, `probabilities!`, and `probabilities` functions now 
+  accept arrays of `Residue`s of any dimension. Therefore, there is no need to use the
+  `vec` function to convert the arrays to vectors.
+
+* The `MSA` module now exports the `WeightType` union type to represent `weights`.
+
+### Changes from v2.20.0 to v2.21.0
+
+* *[Breaking change]* The `buslje09` and `BLMI` functions from the `Information` module does 
+  not longer accept a filename and a file format as arguments. You should explicitly read 
+  the MSA using the `read_file` function and then run the `buslje09` or `BLMI` functions
+  on the returned MSA object. As an example of migration, `buslje09("msa.sto", "Stockholm")`
+  should be replaced by `buslje09(read_file("msa.sto", Stockholm))`.
+
 ### Changes from v2.19.0 to v2.20.0
 
 * *[Breaking change]* The PDB module has deprecated `residues` and `@residues` in favor of

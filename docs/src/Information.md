@@ -39,7 +39,7 @@ Depth = 4
 ## Counting residues
 
 MIToS Information module defines a multidimensional `ContingencyTable` type and two types
-wrapping it, `Counts` and `Probabilities`, to store occurrences or probabilities.
+wrapping it, `Frequencies` and `Probabilities`, to store occurrences or probabilities.
 The `ContingencyTable` type stores the contingency matrix, its marginal values and total.
 These types are parametric, taking three ordered parameters:
 
@@ -49,9 +49,9 @@ These types are parametric, taking three ordered parameters:
 
 !!! note
     `ContingencyTable` can be used for storing probabilities or counts. The wrapper types
-    `Probabilities` and `Counts` are mainly intended to dispatch in methods that need to
-    know if the matrix has probabilities or counts, e.g. `entropy`. In general, the use of
-    `ContingencyTable` is recommended over the use of `Probabilities` and `Counts`.
+    `Probabilities` and `Frequencies` are mainly intended to dispatch in methods that need to
+    know if the matrix has probabilities or counts, e.g. `shannon_entropy`. In general, 
+    the use of `ContingencyTable` is recommended over the use of `Probabilities` and `Frequencies`.
 
 In this way, a matrix for storing pairwise probabilities of residues (without gaps) can be
 initialized using:  
@@ -62,7 +62,7 @@ using MIToS.Information
 Pij = ContingencyTable(Float64, Val{2}, UngappedAlphabet())
 ```  
 
-**[High level interface]** It is possible to use the functions `count` and `probabilities`
+**[High level interface]** It is possible to use the functions `frequencies` and `probabilities`
 to easily calculate the frequencies of sequences or columns of a MSA, where the number of
 sequences/columns determine the dimension of the resulting table.  
 
@@ -74,7 +74,7 @@ column_i = res"AARANHDDRDC-"
 column_j = res"-ARRNHADRAVY"
 #   Nij[R,R] =   1     1   = 2
 
-Nij = count(column_i, column_j)
+Nij = frequencies(column_i, column_j)
 ```  
 
 You can use `sum` to get the stored total:  
@@ -111,14 +111,14 @@ column_i = res"AARANHDDRDC-"
 column_j = res"-ARRNHADRAVY"
 #   Fij[R,R] =   1  1  1   = 3 # RHK
 
-Fij = count(column_i, column_j, alphabet=alphabet)
+Fij = frequencies(column_i, column_j, alphabet=alphabet)
 ```  
 ```@example inf_reduced
 Fij[Residue('R'), Residue('R')] # Use Residue to index the table
 ```  
 
 The function `getcontingencytable` allows to access the wrapped `ContingencyTable` in a
-`Counts` object. You can use it, in combination with `normalize` to get a contingency table
+`Frequencies` object. You can use it, in combination with `normalize` to get a contingency table
 of probabilities. The result can be wrapped inside a `Probabilities` object:  
 
 ```@example inf_reduced
@@ -127,7 +127,7 @@ Probabilities(normalize(getcontingencytable(Fij)))
 
 #### Example: Plotting the probabilities of each residue in a sequence
 
-Similar to the `count` function, the `probabilities` function can take at least one
+Similar to the `frequencies` function, the `probabilities` function can take at least one
 sequence (vector of residues) and returns the probabilities of each residue. Optionally,
 the keyword argument `alphabet` could be used to count some residues in the same cell
 of the table.  
@@ -146,13 +146,7 @@ using MIToS.Information # to use the probabilities function
 using MIToS.MSA # to use getsequence on the one sequence FASTA (canonical) from UniProt
 seq = read_file("http://www.uniprot.org/uniprot/P29374.fasta", FASTA) # Small hack: read the single sequence as a MSA
 probabilities(seq[1,:]) # Select the single sequence and calculate the probabilities
-```  
-
-!!! note
-    In the previous example, using `getsequence(seq,1)` instead of `seq[1,:]` will return
-    the sequence as a matrix with a single column to keep information for both dimensions.
-    To use `probabilities` (or `count`) you can make use of the Julia's `vec` function to
-    transform the matrix to a vector, e.g.: `probabilities(vec(getsequence(seq,1)))`.
+``` 
 
 ```@setup inf_plotfreq
 @info "Information: Plots"
@@ -161,7 +155,7 @@ gr(size=(600,300))
 using MIToS.Information # to use the probabilities function
 using MIToS.MSA # to use getsequence on the one sequence FASTA (canonical) from UniProt
 seq = read_file("http://www.uniprot.org/uniprot/P29374.fasta", FASTA) # Small hack: read the single sequence as a MSA
-frequencies = probabilities(seq[1,:]) # Select the single sequence and calculate the probabilities
+Pa = probabilities(seq[1,:]) # Select the single sequence and calculate the probabilities
 ```  
 
 ```@example inf_plotfreq
@@ -176,7 +170,7 @@ is exported as a constant by the `Information` module as `BLOSUM62_Pi`.
 ```@example inf_plotfreq
 bar(
     1:20,
-    [ frequencies  BLOSUM62_Pi ],
+    [ Pa  BLOSUM62_Pi ],
     lab = [ "Sequence"  "BLOSUM62"   ],
     alpha=0.5
     )
@@ -208,8 +202,8 @@ column_i = msa[:,1]
 column_j = msa[:,2]
 ```
 
-If you have a preallocated `ContingencyTable` you can use `count!` to fill it, this prevent
-to create a new table as `count` do. However, you should note that `count!` **adds the new
+If you have a preallocated `ContingencyTable` you can use `frequencies!` to fill it, this prevent
+to create a new table as `frequencies` do. However, you should note that `frequencies!` **adds the new
 counts to the pre existing values**, so in this case, we want to start with a table
 initialized with zeros.  
 
@@ -223,14 +217,8 @@ Nij = ContingencyTable(Float64, Val{2}, alphabet)
 ```  
 
 ```@example inf_msa
-#      table  weights         pseudocount      sequences...
-count!(Nij,   NoClustering(), NoPseudocount(), column_i, column_j)
-```  
-
-!!! note
-    You can use `NoClustering()` in places where clustering weights are required to not use
-    weights. Also, `NoPseudocount()` in places where pseudocount values are required to not
-    use pseudocounts.
+frequencies!(Nij, column_i, column_j)
+```
 
 In cases like the above, where there are few observations, it is possible to apply a
 constant pseudocount to the counting table.  This module defines the type
@@ -241,13 +229,14 @@ efficiently add or fill with a constant value each element of the table.
 apply_pseudocount!(Nij, AdditiveSmoothing(1.0))
 ```
 
-**[High level interface.]** The `count` function has a `pseudocounts` keyword argument that
-can take a `AdditiveSmoothing` value to easily calculate occurrences with pseudocounts. Also
-the alphabet keyword argument can be used to chage the default alphabet (i.e. )
+**[High level interface.]** The `frequencies` and `frequencies!` function has a 
+`pseudocounts` keyword argument that can take a `AdditiveSmoothing` value to easily 
+calculate occurrences with pseudocounts. Also their `alphabet` keyword argument can be 
+used to chage the default alphabet.
 
 
 ```@example inf_msa
-count(column_i, column_j, pseudocounts=AdditiveSmoothing(1.0), alphabet=alphabet)
+frequencies(column_i, column_j, pseudocounts=AdditiveSmoothing(1.0), alphabet=alphabet)
 ```  
 
 To use the conditional probability matrix `BLOSUM62_Pij` in the calculation of pseudo
@@ -286,8 +275,8 @@ A simple way to reduce redundancy in a MSA without losing sequences, is clusteri
 sequence weighting. The weight of each sequence should be 1/N, where N is the number of
 sequences in its cluster. The `Clusters` type of the `MSA` module stores the
 weights. This vector of weights can be extracted (with the `getweight` function) and used
-by the `count` and `probabilities` functions with the keyword argument `weights`. Also it's
-possible to use the `Clusters` as second argument of the function `count!`.  
+by the `frequencies` and `probabilities` functions with the keyword argument `weights`. Also it's
+possible to use the `Clusters` as second argument of the function `frequencies!`.  
 
 
 ```@example inf_msa
@@ -295,15 +284,15 @@ clusters = hobohmI(msa, 62) # from MIToS.MSA
 ```
 
 ```@example inf_msa
-count(msa[:,1], msa[:,2], weights=clusters)
+frequencies(msa[:,1], msa[:,2], weights=clusters)
 ```
 
 ## Estimating information measures on an MSA
 
 The `Information` module has a number of functions defined to calculate information
-measures from `Counts` and `Probabilities`:
+measures from `Frequencies` and `Probabilities`:
 
-- `entropy` : Shannon entropy (H)
+- `shannon_entropy` : Shannon entropy (H)
 - `marginal_entropy` : Shannon entropy (H) of the marginals
 - `kullback_leibler` : Kullback-Leibler (KL) divergence
 - `mutual_information` : Mutual Information (MI)
@@ -311,48 +300,45 @@ measures from `Counts` and `Probabilities`:
 - `gap_intersection_percentage`
 - `gap_union_percentage`
 
-Information measure functions take optionally the base as the last positional argument
-(default: `e`). You can use `2.0` to measure information in bits.
+Information measure functions take optionally the base as a keyword argument (default: `ℯ`). 
+You can set `base=2` to measure information in bits.
 
 ```@example inf_information
 using MIToS.Information
 using MIToS.MSA
 
-Ni = count(res"PPCDPPPPPKDKKKKDDGPP") # Ni has the count table of residues in this low complexity sequence
+Ni = frequencies(res"PPCDPPPPPKDKKKKDDGPP") # Ni has the count table of residues in this low complexity sequence
 
-H = entropy(Ni) # returns the Shannon entropy in nats (base e)
+H = shannon_entropy(Ni) # returns the Shannon entropy in nats (base e)
 ```
 
 ```@example inf_information
-H = entropy(Ni, 2.0) # returns the Shannon entropy in bits (base 2)
+H = shannon_entropy(Ni, base=2) # returns the Shannon entropy in bits (base 2)
 ```
 
 Information module defines special iteration functions to easily and efficiently compute a
 measure over a MSA. In particular, `mapcolfreq!` and `mapseqfreq!` map a function that takes
-a table of `Counts` or `Probabilities`. The table is filled in place with the counts or
+a table of `Frequencies` or `Probabilities`. The table is filled in place with the counts or
 probabilities of each column or sequence of a MSA, respectively. `mapcolpairfreq!` and
 `mapseqpairfreq!` are similar, but they fill the table using pairs of columns or sequences,
 respectively.  
 
 This functions take three positional arguments: the function `f` to be calculated, the
-`msa` and `table` of `Counts` or `Probabilities`.  
+`msa` and `table` of `Frequencies` or `Probabilities`.  
 
 After that, this function takes some keyword arguments:
 
 - `weights` (default: `NoClustering()`) : Weights to be used for table counting.
 - `pseudocounts` (default: `NoPseudocount()`) : `Pseudocount` object to be applied to table.
 - `pseudofrequencies` (default: `NoPseudofrequencies()`) : `Pseudofrequencies` to be applied to the normalized (probabilities) table.  
+- `usediagonal` (default: `true`) : Indicates if the function should be applied to pairs containing the same sequence or column.
+- `diagonalvalue` (default to zero) : The value that fills the diagonal elements of the table if `usediagonal` is `false`.  
 
-`mapcolpairfreq!` and `mapseqpairfreq!` also have a fourth positional argument `usediagonal`
-that indicates if the function should be applied to identical element pairs
-(default to `Val{true}`). This two functions also have an extra keyword argument
-`diagonalvalue` (default to zero) to indicate the value used to fill the diagonal elements
-if `usediagonal` is `Val{false}`.  
 
 #### Example: Estimating *H(X)* and *H(X, Y)* over an MSA
 
 In this example, we are going to use `mapcolfreq!` and `mapcolpairfreq!` to estimate
-Shannon `entropy` of MSA columns *H(X)* and the joint entropy *H(X, Y)* of columns pairs,
+Shannon `shannon_entropy` of MSA columns *H(X)* and the joint entropy *H(X, Y)* of columns pairs,
 respectively.  
 
 ```@setup inf_entropy
@@ -367,21 +353,21 @@ using MIToS.MSA
 msa = read_file("https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz", Stockholm)
 ```
 
-We are going to count residues to estimate the entropy. The `entropy` estimation is
-performed over a rehused `Counts` object. The result will be a vector containing the
-values estimated over each column without counting gaps (`UngappedAlphabet`).  
+We are going to count residues to estimate the Shannon entropy. The `shannon_entropy` 
+estimation is performed over a rehused `Frequencies` object. The result will be a vector 
+containing the values estimated over each column without counting gaps (`UngappedAlphabet`).  
 
 ```@example inf_entropy
 using MIToS.Information
 
-Hx = mapcolfreq!(entropy, msa, Counts(ContingencyTable(Float64, Val{1}, UngappedAlphabet())))
+Hx = mapcolfreq!(shannon_entropy, msa, Frequencies(ContingencyTable(Float64, Val{1}, UngappedAlphabet())))
 ```  
 
 If we want the **joint entropy** between columns pairs, we need to use a bidimensional
-table of `Counts` and `mapcolpairfreq!`.
+table of `Frequencies` and `mapcolpairfreq!`.
 
 ```@example inf_entropy
-Hxy = mapcolpairfreq!(entropy, msa, Counts(ContingencyTable(Float64, Val{2}, UngappedAlphabet())))
+Hxy = mapcolpairfreq!(shannon_entropy, msa, Frequencies(ContingencyTable(Float64, Val{2}, UngappedAlphabet())))
 ```  
 
 In the above examples, we indicate the type of each occurrence in the counting and the probability table to use. Also, it's possible for some measures as **entropy** and **mutual information**, to estimate the values only with the count table (without calculate the probability table). Estimating measures only with a `ResidueCount` table, when this is possible, should be faster than using a probability table.  
@@ -389,11 +375,11 @@ In the above examples, we indicate the type of each occurrence in the counting a
 
 ```@example inf_entropy
 Time_Pab = map(1:100) do x
-    time = @elapsed mapcolpairfreq!(entropy, msa, Probabilities(ContingencyTable(Float64, Val{2}, UngappedAlphabet())))
+    time = @elapsed mapcolpairfreq!(shannon_entropy, msa, Probabilities(ContingencyTable(Float64, Val{2}, UngappedAlphabet())))
 end
 
 Time_Nab = map(1:100) do x
-    time = @elapsed mapcolpairfreq!(entropy, msa, Counts(ContingencyTable(Float64, Val{2}, UngappedAlphabet())))
+    time = @elapsed mapcolpairfreq!(shannon_entropy, msa, Frequencies(ContingencyTable(Float64, Val{2}, UngappedAlphabet())))
 end
 
 using Plots

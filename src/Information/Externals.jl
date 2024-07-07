@@ -8,8 +8,9 @@ You need to install GaussDCA:
 ```julia
 using Pkg
 
-Pkg.add(PackageSpec(url="https://github.com/carlobaldassi/GaussDCA.jl", rev="master"))
+Pkg.add(PackageSpec(url = "https://github.com/carlobaldassi/GaussDCA.jl", rev = "master"))
 ```
+
 Look into [GaussDCA.jl README](https://github.com/carlobaldassi/GaussDCA.jl) for further information.
 If you use this wrapper, **please cite the GaussDCA publication and the package's doi**.
 
@@ -23,10 +24,11 @@ Baldassi, Carlo, Marco Zamparo, Christoph Feinauer, Andrea Procaccini, Riccardo 
 PloS one 9, no. 3 (2014): e92721.
 """
 function gaussdca(
-		  msa; 
-		  juliapath::String=joinpath(Sys.BINDIR,Base.julia_exename()), 
-		  project::String=Base.active_project(),
-		  kargs...)
+    msa;
+    juliapath::String = joinpath(Sys.BINDIR, Base.julia_exename()),
+    project::String = Base.active_project(),
+    kargs...,
+)
     base_name = tempname()
     if Sys.iswindows()
         base_name = escape_string(base_name)
@@ -44,8 +46,8 @@ function gaussdca(
         _create_script(script_file, msa_file, jdl_file; kargs...)
         run(`$juliapath --project=$project $script_file`)
         pairedvalues = open(deserialize, jdl_file, "r")
-        for (i,j,value) in pairedvalues
-           plm[i,j] = value
+        for (i, j, value) in pairedvalues
+            plm[i, j] = value
         end
     finally
         isfile(script_file) && rm(script_file)
@@ -57,10 +59,11 @@ end
 
 function _create_script(script_file::String, msa_file::String, jdl_file::String; kargs...)
     if length(kargs) > 0
-        for (k,v) in kargs
-            @assert isa(v,Number) || isa(v,Symbol) "Argument values must be numbers or symbols"
+        for (k, v) in kargs
+            @assert isa(v, Number) || isa(v, Symbol) "Argument values must be numbers or symbols"
         end
-        str_kargs = "," * join([ isa(v,Symbol) ? "$k=:$v" : "$k=$v" for (k,v) in kargs],',')
+        str_kargs =
+            "," * join([isa(v, Symbol) ? "$k=:$v" : "$k=$v" for (k, v) in kargs], ',')
     else
         str_kargs = ""
     end

@@ -3,10 +3,9 @@
     @testset "Creation, Iteration and getindex" begin
 
         # Creation & Iteration
-        @test [ i for i in UngappedAlphabet() ] == Int[ i for i in 1:20 ]
-        @test [ i for i in GappedAlphabet() ]   == Int[ i for i in 1:21 ]
-        @test [ i for i in ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP") ]  ==
-           Int[ i for i in 1:8 ]
+        @test [i for i in UngappedAlphabet()] == Int[i for i = 1:20]
+        @test [i for i in GappedAlphabet()] == Int[i for i = 1:21]
+        @test [i for i in ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP")] == Int[i for i = 1:8]
     end
 
     @testset "getindex and names" begin
@@ -17,17 +16,38 @@
         @test length(reduced) == length(strings)
         @test names(reduced) == strings
 
-        for i in 1:length(reduced)
+        for i = 1:length(reduced)
             @test reduced[strings[i]] == i
         end
 
-        strings_gapped = ["A","R","N","D","C","Q","E","G","H","I","L","K","M","F","P","S",
-            "T","W","Y","V","-"]
+        strings_gapped = [
+            "A",
+            "R",
+            "N",
+            "D",
+            "C",
+            "Q",
+            "E",
+            "G",
+            "H",
+            "I",
+            "L",
+            "K",
+            "M",
+            "F",
+            "P",
+            "S",
+            "T",
+            "W",
+            "Y",
+            "V",
+            "-",
+        ]
 
         @test names(GappedAlphabet()) == strings_gapped
         @test names(UngappedAlphabet()) == strings_gapped[1:end-1]
 
-        for i in 1:20
+        for i = 1:20
             @test UngappedAlphabet()[strings_gapped[i]] == i
             @test GappedAlphabet()[strings_gapped[i]] == i
         end
@@ -44,7 +64,7 @@
         @test in(Residue('A'), ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"))
 
         @test !in(GAP, UngappedAlphabet())
-        @test  in(GAP, GappedAlphabet())
+        @test in(GAP, GappedAlphabet())
         @test !in(GAP, ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"))
 
         @test !in(XAA, UngappedAlphabet())
@@ -57,14 +77,14 @@
         tmp = IOBuffer()
         show(tmp, UngappedAlphabet())
         @test String(take!(tmp)) ==
-        "UngappedAlphabet of length 20. Residues : res\"ARNDCQEGHILKMFPSTWYV\""
+              "UngappedAlphabet of length 20. Residues : res\"ARNDCQEGHILKMFPSTWYV\""
 
         show(tmp, GappedAlphabet())
         @test String(take!(tmp)) ==
-        "GappedAlphabet of length 21. Residues : res\"ARNDCQEGHILKMFPSTWYV-\""
+              "GappedAlphabet of length 21. Residues : res\"ARNDCQEGHILKMFPSTWYV-\""
 
         show(tmp, ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"))
         @test String(take!(tmp)) ==
-        "ReducedAlphabet of length 8 : \"(AILMV)(NQST)(RHK)(DE)(FWY)CGP\""
+              "ReducedAlphabet of length 8 : \"(AILMV)(NQST)(RHK)(DE)(FWY)CGP\""
     end
 end

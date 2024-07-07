@@ -21,12 +21,14 @@ It has the following fields that you can access at any moment for query purposes
     chain::String
 end
 
-"A `Coordinates` object is a fixed size vector with the coordinates x,y,z."
-@auto_hash_equals struct Coordinates <: FieldVector{3, Float64}
+"""
+A `Coordinates` object is a fixed size vector with the coordinates x,y,z.
+"""
+@auto_hash_equals struct Coordinates <: FieldVector{3,Float64}
     x::Float64
     y::Float64
     z::Float64
-    function Coordinates(a::NTuple{3, Real})
+    function Coordinates(a::NTuple{3,Real})
         new(a[1], a[2], a[3])
     end
     Coordinates(x, y, z) = new(x, y, z)
@@ -76,16 +78,20 @@ Base.vec(a::Coordinates) = Float64[a.x, a.y, a.z]
     (a.x - b.x)^2 + (a.y - b.y)^2 + (a.z - b.z)^2
 end
 
-"It calculates the squared euclidean distance, i.e. it doesn't spend time in `sqrt`"
+"""
+It calculates the squared euclidean distance, i.e. it doesn't spend time in `sqrt`
+"""
 squared_distance(a::PDBAtom, b::PDBAtom) = squared_distance(a.coordinates, b.coordinates)
 
-"It calculates the squared euclidean distance."
-distance(a::Coordinates, b::Coordinates) = sqrt(squared_distance(a,b))
+"""
+It calculates the squared euclidean distance.
+"""
+distance(a::Coordinates, b::Coordinates) = sqrt(squared_distance(a, b))
 
 distance(a::PDBAtom, b::PDBAtom) = distance(a.coordinates, b.coordinates)
 
 function _squared_limit_contact(a::Coordinates, b::Coordinates, limit::AbstractFloat)
-    squared_distance(a,b) <= limit
+    squared_distance(a, b) <= limit
 end
 
 function _squared_limit_contact(a::PDBAtom, b::PDBAtom, limit::AbstractFloat)
@@ -114,11 +120,11 @@ Angle (in degrees) at `b` between `a-b` and `b-c`
 function Base.angle(a::Coordinates, b::Coordinates, c::Coordinates)
     A = b - a
     B = b - c
-    norms = (norm(A)*norm(B))
+    norms = (norm(A) * norm(B))
     if norms != 0
-        return( acosd(dot(A,B) / norms) )
+        return (acosd(dot(A, B) / norms))
     else
-        return(0.0)
+        return (0.0)
     end
 end
 
@@ -149,36 +155,51 @@ const ResidueQueryTypes = Union{String,Type{All},Regex,Function}
 # ---------
 
 function isresidue(id::PDBResidueIdentifier, model, chain, group, residue)
-    @warn "isresidue using positional arguments is deprecated in favor of keyword arguments: isresidue(id; model, chain, group, residue)"
-    isresidue(id, model=model, chain=chain, group=group, residue=residue)
+    Base.depwarn(
+        "isresidue using positional arguments is deprecated in favor of keyword arguments: isresidue(id; model, chain, group, residue)",
+        :isresidue,
+        force = true,
+    )
+    isresidue(id, model = model, chain = chain, group = group, residue = residue)
 end
 
 function isresidue(res::PDBResidue, model, chain, group, residue)
-    @warn "isresidue using positional arguments is deprecated in favor of keyword arguments: isresidue(res; model, chain, group, residue)"
-    isresidue(res.id, model=model, chain=chain, group=group, residue=residue)
+    Base.depwarn(
+        "isresidue using positional arguments is deprecated in favor of keyword arguments: isresidue(res; model, chain, group, residue)",
+        :isresidue,
+        force = true,
+    )
+    isresidue(res.id, model = model, chain = chain, group = group, residue = residue)
 end
 
-function isresidue(id::PDBResidueIdentifier;
-                   model::ResidueQueryTypes=All,
-                   chain::ResidueQueryTypes=All,
-                   group::ResidueQueryTypes=All,
-                   residue::ResidueQueryTypes=All)
-    _is(id.model,model) && _is(id.chain,chain) && _is(id.group,group) && _is(id.number,residue)
+function isresidue(
+    id::PDBResidueIdentifier;
+    model::ResidueQueryTypes = All,
+    chain::ResidueQueryTypes = All,
+    group::ResidueQueryTypes = All,
+    residue::ResidueQueryTypes = All,
+)
+    _is(id.model, model) &&
+        _is(id.chain, chain) &&
+        _is(id.group, group) &&
+        _is(id.number, residue)
 end
 
 """
      isresidue(res; model=All, chain=All, group=All, residue=All)
 
-This function tests if a `PDBResidue` has the indicated `model`, `chain`, `group` 
+This function tests if a `PDBResidue` has the indicated `model`, `chain`, `group`
 and `residue` names/numbers. You can use the type `All` (default value) to avoid
 filtering that level.
 """
-function isresidue(res::PDBResidue;
-                   model::ResidueQueryTypes=All,
-                   chain::ResidueQueryTypes=All,
-                   group::ResidueQueryTypes=All,
-                   residue::ResidueQueryTypes=All)
-    isresidue(res.id, model=model, chain=chain, group=group, residue=residue)
+function isresidue(
+    res::PDBResidue;
+    model::ResidueQueryTypes = All,
+    chain::ResidueQueryTypes = All,
+    group::ResidueQueryTypes = All,
+    residue::ResidueQueryTypes = All,
+)
+    isresidue(res.id, model = model, chain = chain, group = group, residue = residue)
 end
 
 """
@@ -192,28 +213,49 @@ isatom(atom::PDBAtom, name) = _is(atom.atom, name)
 """
     select_residues(residue_list; model=All, chain=All, group=All, residue=All)
 
-This function returns a new vector with the selected subset of residues from a list of 
-residues. You can use the keyword arguments `model`, `chain`, `group` and `residue` to 
-select the residues. You can use the type `All` (default value) to avoid filtering at 
+This function returns a new vector with the selected subset of residues from a list of
+residues. You can use the keyword arguments `model`, `chain`, `group` and `residue` to
+select the residues. You can use the type `All` (default value) to avoid filtering at
 a particular level.
 """
-function select_residues(residue_list::AbstractArray{PDBResidue,N};
-                  model::ResidueQueryTypes=All,
-                  chain::ResidueQueryTypes=All,
-                  group::ResidueQueryTypes=All,
-                  residue::ResidueQueryTypes=All) where N
-    filter(res -> isresidue(res, model=model, chain=chain, group=group, residue=residue), residue_list)
+function select_residues(
+    residue_list::AbstractArray{PDBResidue,N};
+    model::ResidueQueryTypes = All,
+    chain::ResidueQueryTypes = All,
+    group::ResidueQueryTypes = All,
+    residue::ResidueQueryTypes = All,
+) where {N}
+    filter(
+        res ->
+            isresidue(res, model = model, chain = chain, group = group, residue = residue),
+        residue_list,
+    )
 end
 
 """
-The `residues` function for `AbstractArray{PDBResidue,N}` is **deprecated**. Use the 
-`select_residues` function instead. So, `residues(residue_list, model, chain, group, residue)` 
+The `residues` function for `AbstractArray{PDBResidue,N}` is **deprecated**. Use the
+`select_residues` function instead. So, `residues(residue_list, model, chain, group, residue)`
 becomes `select_residues(residue_list; model=model, chain=chain, group=group, residue=residue)`.
 """
-function residues(residue_list::AbstractArray{PDBResidue,N},
-                  model, chain, group, residue) where N
-    @warn "residues is deprecated in favor of select_residues(residue_list; model, chain, group, residue)"
-    select_residues(residue_list; model=model, chain=chain, group=group, residue=residue)
+function residues(
+    residue_list::AbstractArray{PDBResidue,N},
+    model,
+    chain,
+    group,
+    residue,
+) where {N}
+    Base.depwarn(
+        "residues is deprecated in favor of select_residues(residue_list; model, chain, group, residue)",
+        :residues,
+        force = true,
+    )
+    select_residues(
+        residue_list;
+        model = model,
+        chain = chain,
+        group = group,
+        residue = residue,
+    )
 end
 
 """
@@ -224,18 +266,36 @@ can use the type `All` to avoid filtering that option.
 
 **DEPRECATED:** This macro is deprecated. Use the [`select_residues`](@ref) function instead.
 """
-macro residues(residue_list,
-               model::Symbol,  m,
-               chain::Symbol,  c,
-               group::Symbol,  g,
-               residue::Symbol,r)
+macro residues(
+    residue_list,
+    model::Symbol,
+    m,
+    chain::Symbol,
+    c,
+    group::Symbol,
+    g,
+    residue::Symbol,
+    r,
+)
     if model == :model && chain == :chain && group == :group && residue == :residue
-        @warn "Using the @residues macro is deprecated in favor of the select_residues function: select_residues(residue_list; model, chain, group, residue)"
-        return :(select_residues($(esc(residue_list)); model=$(esc(m)), chain=$(esc(c)), group=$(esc(g)), residue=$(esc(r))))
-    else
-        throw(ArgumentError(
-            "The signature is @residues ___ model ___ chain ___ group ___ residue ___"
+        Base.depwarn(
+            "Using the @residues macro is deprecated in favor of the select_residues function: select_residues(residue_list; model, chain, group, residue)",
+            Symbol("@residues"),
+            force = true,
+        )
+        return :(select_residues(
+            $(esc(residue_list));
+            model = $(esc(m)),
+            chain = $(esc(c)),
+            group = $(esc(g)),
+            residue = $(esc(r)),
         ))
+    else
+        throw(
+            ArgumentError(
+                "The signature is @residues ___ model ___ chain ___ group ___ residue ___",
+            ),
+        )
     end
 end
 
@@ -245,19 +305,21 @@ end
 """
      residuesdict(residue_list; model=All, chain=All, group=All, residue=All)
 
-This function returns a dictionary (using PDB residue numbers as keys) with the selected 
+This function returns a dictionary (using PDB residue numbers as keys) with the selected
 subset of residues. The residues are selected using the keyword arguments `model`, `chain`,
-`group` and `residue`. You can use the type `All` (default value) to avoid filtering at 
+`group` and `residue`. You can use the type `All` (default value) to avoid filtering at
 a particular level.
 """
-function residuesdict(residue_list::AbstractArray{PDBResidue,N};
-                      model::ResidueQueryTypes=All,
-                      chain::ResidueQueryTypes=All,
-                      group::ResidueQueryTypes=All,
-                      residue::ResidueQueryTypes=All) where N
-    dict = sizehint!(OrderedDict{String, PDBResidue}(), length(residue_list))
+function residuesdict(
+    residue_list::AbstractArray{PDBResidue,N};
+    model::ResidueQueryTypes = All,
+    chain::ResidueQueryTypes = All,
+    group::ResidueQueryTypes = All,
+    residue::ResidueQueryTypes = All,
+) where {N}
+    dict = sizehint!(OrderedDict{String,PDBResidue}(), length(residue_list))
     for res in residue_list
-        if isresidue(res, model=model, chain=chain, group=group, residue=residue)
+        if isresidue(res, model = model, chain = chain, group = group, residue = residue)
             dict[res.id.number] = res
         end
     end
@@ -265,33 +327,66 @@ function residuesdict(residue_list::AbstractArray{PDBResidue,N};
 end
 
 # Deprecation warning for the positional arguments version
-function residuesdict(residue_list::AbstractArray{PDBResidue,N},
-                      model, chain, group, residue) where N
-    @warn "residuesdict using positional arguments is deprecated in favor of keyword arguments: residuesdict(residue_list; model, chain, group, residue)"
-    residuesdict(residue_list; model=model, chain=chain, group=group, residue=residue)
+function residuesdict(
+    residue_list::AbstractArray{PDBResidue,N},
+    model,
+    chain,
+    group,
+    residue,
+) where {N}
+    Base.depwarn(
+        "residuesdict using positional arguments is deprecated in favor of keyword arguments: residuesdict(residue_list; model, chain, group, residue)",
+        :residuesdict,
+        force = true,
+    )
+    residuesdict(
+        residue_list;
+        model = model,
+        chain = chain,
+        group = group,
+        residue = residue,
+    )
 end
 
 """
 `@residuesdict ... model ... chain ... group ... residue ...`
 
-This macro returns a dictionary (using PDB residue numbers as keys) with the selected 
-subset of residues from a list of residues. You can use the type `All` to avoid filtering 
+This macro returns a dictionary (using PDB residue numbers as keys) with the selected
+subset of residues from a list of residues. You can use the type `All` to avoid filtering
 that option.
 
 **DEPRECATED:** This macro is deprecated. Use the [`residuesdict`](@ref) function instead.
 """
-macro residuesdict(residue_list,
-                   model::Symbol,  m,
-                   chain::Symbol,  c,
-                   group::Symbol,  g,
-                   residue::Symbol,r)
+macro residuesdict(
+    residue_list,
+    model::Symbol,
+    m,
+    chain::Symbol,
+    c,
+    group::Symbol,
+    g,
+    residue::Symbol,
+    r,
+)
     if model == :model && chain == :chain && group == :group && residue == :residue
-        @warn "Using @residuesdict macro is deprecated in favor of residuesdict function with keyword arguments: residuesdict(residue_list; model, chain, group, residue)"
-        return :(residuesdict($(esc(residue_list)); model=$(esc(m)), chain=$(esc(c)), group=$(esc(g)), residue=$(esc(r))))
-    else
-        throw(ArgumentError(
-            "The signature is @residuesdict ___ model ___ chain ___ group ___ residue ___"
+        Base.depwarn(
+            "Using @residuesdict macro is deprecated in favor of residuesdict function with keyword arguments: residuesdict(residue_list; model, chain, group, residue)",
+            Symbol("@residuesdict"),
+            force = true,
+        )
+        return :(residuesdict(
+            $(esc(residue_list));
+            model = $(esc(m)),
+            chain = $(esc(c)),
+            group = $(esc(g)),
+            residue = $(esc(r)),
         ))
+    else
+        throw(
+            ArgumentError(
+                "The signature is @residuesdict ___ model ___ chain ___ group ___ residue ___",
+            ),
+        )
     end
 end
 
@@ -301,20 +396,22 @@ end
 """
     select_atoms(residue_list; model=All, chain=All, group=All, residue=All, atom=All)
 
-This function returns a vector of `PDBAtom`s with the selected subset of atoms from a list 
-of residues. The atoms are selected using the keyword arguments `model`, `chain`, `group`, 
-`residue`, and `atom`. You can use the type `All` (default value) to avoid filtering at 
+This function returns a vector of `PDBAtom`s with the selected subset of atoms from a list
+of residues. The atoms are selected using the keyword arguments `model`, `chain`, `group`,
+`residue`, and `atom`. You can use the type `All` (default value) to avoid filtering at
 a particular level.
 """
-function select_atoms(residue_list::AbstractArray{PDBResidue,N};
-               model::ResidueQueryTypes=All,
-               chain::ResidueQueryTypes=All,
-               group::ResidueQueryTypes=All,
-               residue::ResidueQueryTypes=All,
-               atom::ResidueQueryTypes=All) where N
+function select_atoms(
+    residue_list::AbstractArray{PDBResidue,N};
+    model::ResidueQueryTypes = All,
+    chain::ResidueQueryTypes = All,
+    group::ResidueQueryTypes = All,
+    residue::ResidueQueryTypes = All,
+    atom::ResidueQueryTypes = All,
+) where {N}
     atom_list = PDBAtom[]
     @inbounds for r in residue_list
-        if isresidue(r, model=model, chain=chain, group=group, residue=residue)
+        if isresidue(r, model = model, chain = chain, group = group, residue = residue)
             for a in r.atoms
                 if isatom(a, atom)
                     push!(atom_list, a)
@@ -326,33 +423,74 @@ function select_atoms(residue_list::AbstractArray{PDBResidue,N};
 end
 
 # Deprecation warning for the positional arguments version
-function atoms(residue_list::AbstractArray{PDBResidue,N},
-               model, chain, group, residue, atom) where N
-    @warn "atoms is deprecated in favor of select_atoms(residue_list; model, chain, group, residue, atom)"
-    select_atoms(residue_list; model=model, chain=chain, group=group, residue=residue, atom=atom)
+function atoms(
+    residue_list::AbstractArray{PDBResidue,N},
+    model,
+    chain,
+    group,
+    residue,
+    atom,
+) where {N}
+    Base.depwarn(
+        "atoms is deprecated in favor of select_atoms(residue_list; model, chain, group, residue, atom)",
+        :atoms,
+        force = true,
+    )
+    select_atoms(
+        residue_list;
+        model = model,
+        chain = chain,
+        group = group,
+        residue = residue,
+        atom = atom,
+    )
 end
 
 """
 `@atoms ... model ... chain ... group ... residue ... atom ...`
 
-These return a vector of `PDBAtom`s with the selected subset of atoms from a list of 
+These return a vector of `PDBAtom`s with the selected subset of atoms from a list of
 residues. You can use the type `All` to avoid filtering that option.
 
 **DEPRECATED:** This macro is deprecated. Use the [`select_atoms`](@ref) function instead.
 """
-macro atoms(residue_list,
-            model::Symbol,  m,
-            chain::Symbol,  c,
-            group::Symbol,  g,
-            residue::Symbol,r,
-            atom::Symbol,   a)
-    if model == :model && chain == :chain && group == :group && residue == :residue && atom == :atom
-        @warn "Using the @atoms macro is deprecated in favor of the select_atoms function: select_atoms(residue_list; model, chain, group, residue, atom)"
-        return :(select_atoms($(esc(residue_list)); model=$(esc(m)), chain=$(esc(c)), group=$(esc(g)), residue=$(esc(r)), atom=$(esc(a))))
-    else
-        throw(ArgumentError(
-            "The signature is @atoms ___ model ___ chain ___ group ___ residue ___ atom ___"
+macro atoms(
+    residue_list,
+    model::Symbol,
+    m,
+    chain::Symbol,
+    c,
+    group::Symbol,
+    g,
+    residue::Symbol,
+    r,
+    atom::Symbol,
+    a,
+)
+    if model == :model &&
+       chain == :chain &&
+       group == :group &&
+       residue == :residue &&
+       atom == :atom
+        Base.depwarn(
+            "Using the @atoms macro is deprecated in favor of the select_atoms function: select_atoms(residue_list; model, chain, group, residue, atom)",
+            Symbol("@atoms"),
+            force = true,
+        )
+        return :(select_atoms(
+            $(esc(residue_list));
+            model = $(esc(m)),
+            chain = $(esc(c)),
+            group = $(esc(g)),
+            residue = $(esc(r)),
+            atom = $(esc(a)),
         ))
+    else
+        throw(
+            ArgumentError(
+                "The signature is @atoms ___ model ___ chain ___ group ___ residue ___ atom ___",
+            ),
+        )
     end
 end
 
@@ -362,11 +500,11 @@ end
 # This _find implementation should be faster than Base.find. It is faster than Base.find
 # for small vectors (like atoms) because and allocations is't a problem:
 # https://discourse.julialang.org/t/avoid-calling-push-in-base-find/1336
-function _find(f::Function, vector::Vector{T}) where T
+function _find(f::Function, vector::Vector{T}) where {T}
     N = length(vector)
     indices = Array{Int}(undef, N)
     j = 0
-    @inbounds for i in 1:N
+    @inbounds for i = 1:N
         if f(vector[i])
             j += 1
             indices[j] = i
@@ -396,7 +534,9 @@ end
 
 findatoms(res::PDBResidue, atom::String) = findatoms(res.atoms, atom)
 
-"Returns a vector of indices for `CB` (`CA` for `GLY`)"
+"""
+Returns a vector of indices for `CB` (`CA` for `GLY`)
+"""
 function findCB(res::PDBResidue)
     atom = res.id.name == "GLY" ? "CA" : "CB"
     findatoms(res, atom)
@@ -413,7 +553,7 @@ function selectbestoccupancy(atoms::Vector{PDBAtom}, indices::Vector{Int})
     Ni = length(indices)
     @assert Ni != 0 "There are no atom indices"
     if Ni == 1
-        return(indices[1])
+        return (indices[1])
     end
     Na = length(atoms)
     @assert Ni ≤ Na "There are more atom indices ($Ni) than atoms in the Residue ($Na)"
@@ -426,7 +566,7 @@ function selectbestoccupancy(atoms::Vector{PDBAtom}, indices::Vector{Int})
             indice = i
         end
     end
-    return(indice)
+    return (indice)
 end
 
 selectbestoccupancy(res::PDBResidue, indices) = selectbestoccupancy(res.atoms, indices)
@@ -438,9 +578,9 @@ function bestoccupancy(atoms::Vector{PDBAtom})::Vector{PDBAtom}
     N = length(atoms)
     if N == 0
         @warn("There are no atoms.")
-        return(atoms)
+        return (atoms)
     elseif N == 1
-        return(atoms)
+        return (atoms)
     else
         atomdict = sizehint!(OrderedDict{String,PDBAtom}(), N)
         for atom in atoms
@@ -453,7 +593,7 @@ function bestoccupancy(atoms::Vector{PDBAtom})::Vector{PDBAtom}
                 atomdict[name] = atom
             end
         end
-        return(collect(values(atomdict)))
+        return (collect(values(atomdict)))
     end
 end
 
@@ -469,9 +609,9 @@ end
 function _update_squared_distance(a_atoms, b_atoms, i, j, dist)
     actual_dist = squared_distance(a_atoms[i], b_atoms[j])
     if actual_dist < dist
-        return(actual_dist)
+        return (actual_dist)
     else
-        return(dist)
+        return (dist)
     end
 end
 
@@ -481,15 +621,15 @@ end
 Returns the squared distance between the residues `A` and `B`.
 The available `criteria` are: `Heavy`, `All`, `CA`, `CB` (`CA` for `GLY`)
 """
-function squared_distance(A::PDBResidue, B::PDBResidue; criteria::String="All")
+function squared_distance(A::PDBResidue, B::PDBResidue; criteria::String = "All")
     a = A.atoms
     b = B.atoms
     dist = Inf
     if criteria == "All"
         Na = length(a)
         Nb = length(b)
-        @inbounds for i in 1:Na
-            for j in 1:Nb
+        @inbounds for i = 1:Na
+            for j = 1:Nb
                 dist = _update_squared_distance(a, b, i, j, dist)
             end
         end
@@ -527,8 +667,8 @@ function squared_distance(A::PDBResidue, B::PDBResidue; criteria::String="All")
     dist
 end
 
-function distance(A::PDBResidue, B::PDBResidue; criteria::String="All")
-    sqrt(squared_distance(A, B, criteria=criteria))
+function distance(A::PDBResidue, B::PDBResidue; criteria::String = "All")
+    sqrt(squared_distance(A, B, criteria = criteria))
 end
 
 """
@@ -542,11 +682,11 @@ function Base.any(f::Function, a_atoms::Vector{PDBAtom}, b_atoms::Vector{PDBAtom
     @inbounds for a in a_atoms
         for b in b_atoms
             if f(a, b)
-                return(true)
+                return (true)
             end
         end
     end
-    return(false)
+    return (false)
 end
 
 """
@@ -555,18 +695,23 @@ end
 Returns `true` if the residues `A` and `B` are at contact distance (`limit`).
 The available distance `criteria` are: `Heavy`, `All`, `CA`, `CB` (`CA` for `GLY`)
 """
-function contact(A::PDBResidue, B::PDBResidue, limit::AbstractFloat; criteria::String="All")
+function contact(
+    A::PDBResidue,
+    B::PDBResidue,
+    limit::AbstractFloat;
+    criteria::String = "All",
+)
     squared_limit = limit^2
     a = A.atoms
     b = B.atoms
     if criteria == "All"
         Na = length(a)
         Nb = length(b)
-        @inbounds for i in 1:Na
+        @inbounds for i = 1:Na
             ai = a[i]
-            for j in 1:Nb
+            for j = 1:Nb
                 if _squared_limit_contact(ai, b[j], squared_limit)
-                    return(true)
+                    return (true)
                 end
             end
         end
@@ -578,7 +723,7 @@ function contact(A::PDBResidue, B::PDBResidue, limit::AbstractFloat; criteria::S
                 ai = a[i]
                 for j in indices_b
                     if _squared_limit_contact(ai, b[j], squared_limit)
-                        return(true)
+                        return (true)
                     end
                 end
             end
@@ -591,7 +736,7 @@ function contact(A::PDBResidue, B::PDBResidue, limit::AbstractFloat; criteria::S
                 ai = a[i]
                 for j in indices_b
                     if _squared_limit_contact(ai, b[j], squared_limit)
-                        return(true)
+                        return (true)
                     end
                 end
             end
@@ -604,7 +749,7 @@ function contact(A::PDBResidue, B::PDBResidue, limit::AbstractFloat; criteria::S
                 ai = a[i]
                 for j in indices_b
                     if _squared_limit_contact(ai, b[j], squared_limit)
-                        return(true)
+                        return (true)
                     end
                 end
             end
@@ -625,18 +770,25 @@ It creates a `NamedArray` containing a `PairwiseListMatrix` where each element
 the value type of the matrix (default to `Float64`), if the list should have the
 diagonal values (default to `Val{false}`) and the diagonal values (default to `NaN`).
 """
-function residuepairsmatrix(residue_list::Vector{PDBResidue},
-                            ::Type{T},
-                            ::Type{Val{diagonal}},
-                            diagonalvalue::T) where {T,diagonal}
+function residuepairsmatrix(
+    residue_list::Vector{PDBResidue},
+    ::Type{T},
+    ::Type{Val{diagonal}},
+    diagonalvalue::T,
+) where {T,diagonal}
     plm = PairwiseListMatrix(T, length(residue_list), diagonal, diagonalvalue)
-    resnames = [ string(res.id.model, '_',
-                        res.id.chain, '_',
-                        res.id.group, '_',
-                        res.id.number) for res in residue_list ]
+    resnames = [
+        string(res.id.model, '_', res.id.chain, '_', res.id.group, '_', res.id.number)
+        for res in residue_list
+    ]
     nplm = setlabels(plm, resnames)
     setdimnames!(nplm, ["Res1", "Res2"])
-    nplm::NamedArray{T,2,PairwiseListMatrix{T,diagonal,Vector{T}},NTuple{2,OrderedDict{String,Int}}}
+    nplm::NamedArray{
+        T,
+        2,
+        PairwiseListMatrix{T,diagonal,Vector{T}},
+        NTuple{2,OrderedDict{String,Int}},
+    }
 end
 
 function residuepairsmatrix(residue_list::Vector{PDBResidue})
@@ -646,7 +798,7 @@ end
 # Contacts and distances
 # ----------------------
 
-function squared_distance(residues::Vector{PDBResidue}; criteria::String="All")
+function squared_distance(residues::Vector{PDBResidue}; criteria::String = "All")
     nplm = residuepairsmatrix(residues, Float64, Val{false}, 0.0)
     plm = getarray(nplm)
     @iterateupper plm false begin
@@ -661,7 +813,11 @@ end
 If `contact` takes a `Vector{PDBResidue}`, It returns a matrix with all the pairwise
 comparisons (contact map).
 """
-function contact(residues::Vector{PDBResidue}, limit::AbstractFloat; criteria::String="All")
+function contact(
+    residues::Vector{PDBResidue},
+    limit::AbstractFloat;
+    criteria::String = "All",
+)
     nplm = residuepairsmatrix(residues, Bool, Val{false}, true)
     plm = getarray(nplm)
     @iterateupper plm false begin
@@ -676,7 +832,7 @@ end
 If `distance` takes a `Vector{PDBResidue}` returns a `PairwiseListMatrix{Float64, false}`
 with all the pairwise comparisons (distance matrix).
 """
-function distance(residues::Vector{PDBResidue}; criteria::String="All")
+function distance(residues::Vector{PDBResidue}; criteria::String = "All")
     nplm = residuepairsmatrix(residues, Float64, Val{false}, 0.0)
     plm = getarray(nplm)
     @iterateupper plm false begin
@@ -700,23 +856,25 @@ Buslje, Cristina Marino, Elin Teppa, Tomas Di Doménico, José María Delfino, a
 *Networks of high mutual information define the structural proximity of catalytic sites: implications for catalytic residue identification.*
 PLoS Comput Biol 6, no. 11 (2010): e1000978.
 """
-function proximitymean(residues::Vector{PDBResidue},
-                       scores::AbstractVector{T},
-                       limit::T = 6.05;
-                       criteria::String="Heavy",
-                       include::Bool=false) where T <: AbstractFloat
+function proximitymean(
+    residues::Vector{PDBResidue},
+    scores::AbstractVector{T},
+    limit::T = 6.05;
+    criteria::String = "Heavy",
+    include::Bool = false,
+) where {T<:AbstractFloat}
     N = length(residues)
     @assert N == length(scores) "Vectors must have the same length."
     count = zeros(Int, N)
-    sum   = zeros(T, N)
+    sum = zeros(T, N)
     offset = include ? 0 : 1
-    @inbounds for i in 1:(N-offset)
+    @inbounds for i = 1:(N-offset)
         res_i = residues[i]
-        for j in (i+offset):N
+        for j = (i+offset):N
             if include && (i == j)
                 count[i] += 1
                 sum[i] += scores[i]
-            elseif contact(res_i, residues[j], limit, criteria=criteria)
+            elseif contact(res_i, residues[j], limit, criteria = criteria)
                 count[i] += 1
                 count[j] += 1
                 sum[i] += scores[j]
@@ -760,8 +918,9 @@ end
 
 function _centre(planes::Vector{Vector{PDBAtom}})
     subset = Vector{PDBAtom}[bestoccupancy(atoms) for atoms in planes]
-    polyg = Vector{Coordinates}[Coordinates[a.coordinates for a in atoms] for atoms in subset]
-    Coordinates[sum(points)./Float64(length(points)) for points in polyg]
+    polyg =
+        Vector{Coordinates}[Coordinates[a.coordinates for a in atoms] for atoms in subset]
+    Coordinates[sum(points) ./ Float64(length(points)) for points in polyg]
 end
 
 # function _simple_normal_and_centre(atoms::Vector{PDBAtom})
@@ -780,27 +939,85 @@ const _Format_ResidueID_Res = FormatExpr("\t\t{:>15} {:>15} {:>15} {:>15} {:>15}
 const _Format_ATOM_Res = FormatExpr("\t\t{:<10} {:>50} {:>15} {:>15} {:>15} {:>15}\n")
 
 function Base.show(io::IO, id::PDBResidueIdentifier)
-    printfmt(io, _Format_ResidueID, "PDBe_number", "number", "name", "group", "model", "chain")
-    printfmt(io, _Format_ResidueID, string('"',id.PDBe_number,'"'), string('"',id.number,'"'), string('"',id.name,'"'),
-             string('"',id.group,'"'), string('"',id.model,'"'), string('"',id.chain,'"'))
+    printfmt(
+        io,
+        _Format_ResidueID,
+        "PDBe_number",
+        "number",
+        "name",
+        "group",
+        "model",
+        "chain",
+    )
+    printfmt(
+        io,
+        _Format_ResidueID,
+        string('"', id.PDBe_number, '"'),
+        string('"', id.number, '"'),
+        string('"', id.name, '"'),
+        string('"', id.group, '"'),
+        string('"', id.model, '"'),
+        string('"', id.chain, '"'),
+    )
 end
 
 function Base.show(io::IO, atom::PDBAtom)
     printfmt(io, _Format_ATOM, "coordinates", "atom", "element", "occupancy", "B")
-    printfmt(io, _Format_ATOM, atom.coordinates, string('"',atom.atom,'"'), string('"',atom.element,'"'),
-             atom.occupancy, string('"',atom.B,'"'))
+    printfmt(
+        io,
+        _Format_ATOM,
+        atom.coordinates,
+        string('"', atom.atom, '"'),
+        string('"', atom.element, '"'),
+        atom.occupancy,
+        string('"', atom.B, '"'),
+    )
 end
 
 function Base.show(io::IO, res::PDBResidue)
     println(io, "PDBResidue:\n\tid::PDBResidueIdentifier")
-    printfmt(io, _Format_ResidueID_Res, "PDBe_number", "number", "name", "group", "model", "chain")
-    printfmt(io, _Format_ResidueID_Res, string('"',res.id.PDBe_number,'"'), string('"',res.id.number,'"'),
-             string('"',res.id.name,'"'), string('"',res.id.group,'"'), string('"',res.id.model,'"'), string('"',res.id.chain,'"'))
+    printfmt(
+        io,
+        _Format_ResidueID_Res,
+        "PDBe_number",
+        "number",
+        "name",
+        "group",
+        "model",
+        "chain",
+    )
+    printfmt(
+        io,
+        _Format_ResidueID_Res,
+        string('"', res.id.PDBe_number, '"'),
+        string('"', res.id.number, '"'),
+        string('"', res.id.name, '"'),
+        string('"', res.id.group, '"'),
+        string('"', res.id.model, '"'),
+        string('"', res.id.chain, '"'),
+    )
     len = length(res)
     println(io, "\tatoms::Vector{PDBAtom}\tlength: ", len)
-    for i in 1:len
-        printfmt(io, _Format_ATOM_Res, "", "coordinates", "atom", "element", "occupancy", "B")
-        printfmt(io, _Format_ATOM_Res, string(i,":"), res.atoms[i].coordinates, string('"',res.atoms[i].atom,'"'),
-                 string('"',res.atoms[i].element,'"'), res.atoms[i].occupancy, string('"',res.atoms[i].B,'"'))
+    for i = 1:len
+        printfmt(
+            io,
+            _Format_ATOM_Res,
+            "",
+            "coordinates",
+            "atom",
+            "element",
+            "occupancy",
+            "B",
+        )
+        printfmt(
+            io,
+            _Format_ATOM_Res,
+            string(i, ":"),
+            res.atoms[i].coordinates,
+            string('"', res.atoms[i].atom, '"'),
+            string('"', res.atoms[i].element, '"'),
+            res.atoms[i].occupancy,
+            string('"', res.atoms[i].B, '"'),
+        )
     end
 end

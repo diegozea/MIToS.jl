@@ -8,21 +8,23 @@ the **Stockholm format**.
 
 MIToS also uses MSA annotations to keep track of:
 
-- **Modifications** of the MSA (`MIToS_...`) as deletion of sequences or columns.
-- Positions numbers in the original MSA file (**column mapping:** `ColMap`)
-- Position of the residues in the sequence (**sequence mapping:** `SeqMap`)
+  - **Modifications** of the MSA (`MIToS_...`) as deletion of sequences or columns.
+  - Positions numbers in the original MSA file (**column mapping:** `ColMap`)
+  - Position of the residues in the sequence (**sequence mapping:** `SeqMap`)
 """
 @auto_hash_equals mutable struct Annotations
-    file::OrderedDict{String, String}
+    file::OrderedDict{String,String}
     sequences::Dict{Tuple{String,String},String}
     columns::Dict{String,String}
     residues::Dict{Tuple{String,String},String}
 end
 
-Annotations() = Annotations(  OrderedDict{String, String}(),
-                              Dict{Tuple{String,String},String}(),
-                              Dict{String, String}(),
-                              Dict{Tuple{String,String},String}() )
+Annotations() = Annotations(
+    OrderedDict{String,String}(),
+    Dict{Tuple{String,String},String}(),
+    Dict{String,String}(),
+    Dict{Tuple{String,String},String}(),
+)
 
 # Length
 # ------
@@ -38,9 +40,9 @@ end
 function _filter(str::String, mask::AbstractArray{Bool})
     @assert length(str) == length(mask) "The string and the mask must have the same length"
     #                 data                             readable   writable
-    buffer = IOBuffer(Array{UInt8}(undef, lastindex(str)), read=true, write=true)
+    buffer = IOBuffer(Array{UInt8}(undef, lastindex(str)), read = true, write = true)
     # To start at the beginning of the buffer:
-    truncate(buffer,0)
+    truncate(buffer, 0)
     i = 1
     for char in str
         @inbounds if mask[i]
@@ -64,13 +66,16 @@ _filter_mapping(str_map::String, mask) = join(split(str_map, ',')[mask], ',')
 It is useful for deleting sequence annotations. `ids` should be a list of the sequence
 names and `mask` should be a logical vector.
 """
-function filtersequences!(data::Annotations, ids::Vector{String},
-                          mask::AbstractVector{Bool})
-    @assert length(ids)==length(mask) "It's needed one sequence id per element in the mask."
+function filtersequences!(
+    data::Annotations,
+    ids::Vector{String},
+    mask::AbstractVector{Bool},
+)
+    @assert length(ids) == length(mask) "It's needed one sequence id per element in the mask."
     nresannot = length(data.residues)
     nseqannot = length(data.sequences)
     if nresannot > 0 || nseqannot > 0
-        del = Set(ids[ .!mask ])
+        del = Set(ids[.!mask])
     end
     if nresannot > 0
         for key in keys(data.residues)
@@ -98,17 +103,17 @@ It is useful for deleting column annotations (creating a subset in place).
 """
 function filtercolumns!(data::Annotations, mask)
     if length(data.residues) > 0
-        for (key,value) in data.residues
+        for (key, value) in data.residues
             data.residues[key] = _filter(value, mask)
         end
     end
     if length(data.columns) > 0
-        for (key,value) in data.columns
+        for (key, value) in data.columns
             data.columns[key] = _filter(value, mask)
         end
     end
     if length(data.sequences) > 0
-        for (key,value) in data.sequences
+        for (key, value) in data.sequences
             if key[2] == "SeqMap"
                 data.sequences[key] = _filter_mapping(value, mask)
             end
@@ -127,10 +132,12 @@ end
 
 for fun in [:copy, :deepcopy]
     @eval begin
-        Base.$(fun)(ann::Annotations) = Annotations( $(fun)( ann.file ),
-                                                     $(fun)( ann.sequences ),
-                                                     $(fun)( ann.columns ),
-                                                     $(fun)( ann.residues ) )
+        Base.$(fun)(ann::Annotations) = Annotations(
+            $(fun)(ann.file),
+            $(fun)(ann.sequences),
+            $(fun)(ann.columns),
+            $(fun)(ann.residues),
+        )
     end
 end
 
@@ -142,8 +149,11 @@ function Base.empty!(ann::Annotations)
     ann
 end
 
-Base.isempty(ann::Annotations) = isempty(ann.file) && isempty(ann.sequences) &&
-                                 isempty(ann.columns) && isempty(ann.residues)
+Base.isempty(ann::Annotations) =
+    isempty(ann.file) &&
+    isempty(ann.sequences) &&
+    isempty(ann.columns) &&
+    isempty(ann.residues)
 
 # merge! and merge
 # ----------------
@@ -184,7 +194,8 @@ See also `merge!`.
 
 $_MERGE_NOTE
 """
-Base.merge(target::Annotations, sources::Annotations...) = merge!(deepcopy(target), sources...)
+Base.merge(target::Annotations, sources::Annotations...) =
+    merge!(deepcopy(target), sources...)
 
 # ncolumns
 # --------
@@ -195,10 +206,10 @@ This function returns `-1` if there is not annotations per column/residue.
 """
 function ncolumns(ann::Annotations)
     for value in values(ann.columns)
-        return(length(value))
+        return (length(value))
     end
     for value in values(ann.residues)
-        return(length(value))
+        return (length(value))
     end
     -1
 end
@@ -206,24 +217,23 @@ end
 # Getters
 # -------
 
-for (fun, field) in [ (:getannotfile,   :(ann.file)),
-                      (:getannotcolumn, :(ann.columns))]
+for (fun, field) in [(:getannotfile, :(ann.file)), (:getannotcolumn, :(ann.columns))]
     @eval begin
         $(fun)(ann::Annotations) = $(field)
         $(fun)(ann::Annotations, feature::String) = getindex($(field), feature)
-        $(fun)(ann::Annotations, feature::String,
-               default::String) = get($(field), feature, default)
+        $(fun)(ann::Annotations, feature::String, default::String) =
+            get($(field), feature, default)
     end
 end
 
-for (fun, field) in [ (:getannotsequence, :(ann.sequences)),
-                      (:getannotresidue,  :(ann.residues))]
+for (fun, field) in
+    [(:getannotsequence, :(ann.sequences)), (:getannotresidue, :(ann.residues))]
     @eval begin
         $(fun)(ann::Annotations) = $(field)
-        $(fun)(ann::Annotations, seqname::String,
-               feature::String) = getindex($(field), (seqname,feature))
-        $(fun)(ann::Annotations, seqname::String,
-               feature::String, default::String) = get($(field), (seqname,feature), default)
+        $(fun)(ann::Annotations, seqname::String, feature::String) =
+            getindex($(field), (seqname, feature))
+        $(fun)(ann::Annotations, seqname::String, feature::String, default::String) =
+            get($(field), (seqname, feature), default)
     end
 end
 
@@ -261,12 +271,16 @@ function setannotfile!(ann::Annotations, feature::String, annotation::String)
     ann.file[feature] = previous != "" ? string(previous, '\n', annotation) : annotation
 end
 
-function setannotsequence!(ann::Annotations, seqname::String, feature::String,
-                           annotation::String)
+function setannotsequence!(
+    ann::Annotations,
+    seqname::String,
+    feature::String,
+    annotation::String,
+)
     _test_feature_name(feature)
     previous = get(ann.sequences, (seqname, feature), "")
-    ann.sequences[(seqname, feature)] = previous != "" ?
-                                        string(previous, '\n', annotation) : annotation
+    ann.sequences[(seqname, feature)] =
+        previous != "" ? string(previous, '\n', annotation) : annotation
 end
 
 function setannotcolumn!(ann::Annotations, feature::String, annotation::String)
@@ -275,20 +289,38 @@ function setannotcolumn!(ann::Annotations, feature::String, annotation::String)
     if (len == -1) || (len == length(annotation))
         setindex!(ann.columns, annotation, feature)
     else
-        throw(DimensionMismatch(string("You should have exactly 1 char per column (",
-        len, " columns/residues)")))
+        throw(
+            DimensionMismatch(
+                string(
+                    "You should have exactly 1 char per column (",
+                    len,
+                    " columns/residues)",
+                ),
+            ),
+        )
     end
 end
 
-function setannotresidue!(ann::Annotations, seqname::String, feature::String,
-                          annotation::String)
+function setannotresidue!(
+    ann::Annotations,
+    seqname::String,
+    feature::String,
+    annotation::String,
+)
     _test_feature_name(feature)
     len = ncolumns(ann)
     if (len == -1) || (len == length(annotation))
         setindex!(ann.residues, annotation, (seqname, feature))
     else
-        throw(DimensionMismatch(string("You should have exactly 1 char per residue (",
-        len, " columns/residues)")))
+        throw(
+            DimensionMismatch(
+                string(
+                    "You should have exactly 1 char per residue (",
+                    len,
+                    " columns/residues)",
+                ),
+            ),
+        )
     end
 end
 
@@ -324,7 +356,9 @@ function annotate_modification!(ann::Annotations, modification::String)
     true # generally used in a boolean context: annotate && annotate_modification!(...
 end
 
-"Deletes all the MIToS annotated modifications"
+"""
+Deletes all the MIToS annotated modifications
+"""
 function delete_annotated_modifications!(ann::Annotations)
     for key in keys(ann.file)
         if startswith(key, "MIToS_")
@@ -333,9 +367,11 @@ function delete_annotated_modifications!(ann::Annotations)
     end
 end
 
-"Prints MIToS annotated modifications"
+"""
+Prints MIToS annotated modifications
+"""
 function printmodifications(ann::Annotations)
-    for (key,value) in ann.file
+    for (key, value) in ann.file
         if startswith(key, "MIToS_")
             list_k = split(key, '_')
             println("-------------------")
@@ -404,28 +440,28 @@ Base.show(io::IO, ann::Annotations) = print(io, ann)
 
 Renames sequences in a given `Annotations` object based on a mapping provided in `old2new`.
 
-This function iterates through residue-level and sequence-level annotations in the 
-provided `Annotations` object. For each annotation, it checks if the sequence name exists 
-in the `old2new` dictionary. If so, the sequence name is updated to the new name from 
+This function iterates through residue-level and sequence-level annotations in the
+provided `Annotations` object. For each annotation, it checks if the sequence name exists
+in the `old2new` dictionary. If so, the sequence name is updated to the new name from
 `old2new`; otherwise, the original sequence name is retained.
 
 The function then returns a new `Annotations` object with updated sequence names.
 """
 function _rename_sequences(annotations::Annotations, old2new::Dict{String,String})
-	res_annotations = Dict{Tuple{String,String},String}()
-	for ((seqname, annot_name), value) in getannotresidue(annotations)
-		seqname = get(old2new, seqname, seqname)
-		res_annotations[(seqname, annot_name)] = value
-	end
-	seq_annotations = Dict{Tuple{String,String},String}()
-	for ((seqname, annot_name), value) in getannotsequence(annotations)
-		seqname = get(old2new, seqname, seqname)
-		seq_annotations[(seqname, annot_name)] = value
-	end
-	Annotations(
-		copy(getannotfile(annotations)),
-		seq_annotations,
-		copy(getannotcolumn(annotations)),
-		res_annotations
-	)
+    res_annotations = Dict{Tuple{String,String},String}()
+    for ((seqname, annot_name), value) in getannotresidue(annotations)
+        seqname = get(old2new, seqname, seqname)
+        res_annotations[(seqname, annot_name)] = value
+    end
+    seq_annotations = Dict{Tuple{String,String},String}()
+    for ((seqname, annot_name), value) in getannotsequence(annotations)
+        seqname = get(old2new, seqname, seqname)
+        seq_annotations[(seqname, annot_name)] = value
+    end
+    Annotations(
+        copy(getannotfile(annotations)),
+        seq_annotations,
+        copy(getannotcolumn(annotations)),
+        res_annotations,
+    )
 end

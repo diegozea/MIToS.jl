@@ -11,12 +11,27 @@ abstract type SequenceFormat <: AbstractSequenceFormat end
 # ========
 
 # It checks sequence lengths
-function _fill_aln_seq_ann!(aln, seq_ann::Vector{String}, seq::String,
-    init::Int, nres::Int, i)
+function _fill_aln_seq_ann!(
+    aln,
+    seq_ann::Vector{String},
+    seq::String,
+    init::Int,
+    nres::Int,
+    i,
+)
     if length(seq) != nres
-        throw(ErrorException(string(
-            "There is an aligned sequence with different number of columns [ ",
-            length(seq), " != ", nres, " ]:\n", seq)))
+        throw(
+            ErrorException(
+                string(
+                    "There is an aligned sequence with different number of columns [ ",
+                    length(seq),
+                    " != ",
+                    nres,
+                    " ]:\n",
+                    seq,
+                ),
+            ),
+        )
     end
     j = 1
     @inbounds for res in seq
@@ -38,7 +53,7 @@ function _to_msa_mapping(sequences::Array{String,1})
     aln = Array{Residue}(undef, nres, nseq)
     mapp = Array{String}(undef, nseq)
     seq_ann = Array{String}(undef, nres)
-    for i in 1:nseq
+    for i = 1:nseq
         # It checks sequence lengths
         mapp[i], last = _fill_aln_seq_ann!(aln, seq_ann, sequences[i], 1, nres, i)
     end
@@ -55,24 +70,37 @@ function _to_msa_mapping(sequences::Array{String,1}, ids)
     mapp = Array{String}(undef, nseq)
     seq_ann = Array{String}(undef, nres)
     sep = r"/|-"
-    for i in 1:nseq
+    for i = 1:nseq
         fields = split(ids[i], sep)
         init = length(fields) == 3 ? parse(Int, fields[2]) : 1
         mapp[i], last = _fill_aln_seq_ann!(aln, seq_ann, sequences[i], init, nres, i)
         if length(fields) == 3
             end_coordinate = parse(Int, fields[3])
             if last != end_coordinate
-                throw(ErrorException(string("The last residue in sequence ", i,
-                    " (residue number ", last,
-                    ") doesn't match the sequence coordinate indicated on sequence name (",
-                    end_coordinate, ").")))
+                throw(
+                    ErrorException(
+                        string(
+                            "The last residue in sequence ",
+                            i,
+                            " (residue number ",
+                            last,
+                            ") doesn't match the sequence coordinate indicated on sequence name (",
+                            end_coordinate,
+                            ").",
+                        ),
+                    ),
+                )
             end
         end
     end
-    msa = NamedArray(permutedims(aln, [2, 1]),
-        (OrderedDict{String,Int}(zip(ids, 1:nseq)),
-            OrderedDict{String,Int}(string(i) => i for i in 1:nres)),
-        ("Seq", "Col"))
+    msa = NamedArray(
+        permutedims(aln, [2, 1]),
+        (
+            OrderedDict{String,Int}(zip(ids, 1:nseq)),
+            OrderedDict{String,Int}(string(i) => i for i = 1:nres),
+        ),
+        ("Seq", "Col"),
+    )
     msa, mapp
 end
 
@@ -87,8 +115,11 @@ end
 
 function _check_seq_and_id_number(IDS, SEQS)
     if length(SEQS) != length(IDS)
-        throw(ErrorException(
-            "The number of sequences is different from the number of names."))
+        throw(
+            ErrorException(
+                "The number of sequences is different from the number of names.",
+            ),
+        )
     end
 end
 
@@ -97,12 +128,15 @@ function _check_seq_len(IDS, SEQS)
     _check_seq_and_id_number(IDS, SEQS)
     if N > 1
         first_length = length(SEQS[1])
-        for i in 2:N
+        for i = 2:N
             len = length(SEQS[i])
             if len != first_length
-                throw(ErrorException(
-                    "The sequence $(IDS[i]) has $len residues. " *
-                    "$first_length residues are expected."))
+                throw(
+                    ErrorException(
+                        "The sequence $(IDS[i]) has $len residues. " *
+                        "$first_length residues are expected.",
+                    ),
+                )
             end
         end
     end
@@ -118,8 +152,7 @@ function _ids_ordered_dict(ids, nseq::Int)
         dict[id] = i
     end
     if length(dict) < nseq
-        throw(ArgumentError(
-            "There are less unique sequence identifiers than sequences."))
+        throw(ArgumentError("There are less unique sequence identifiers than sequences."))
     end
     return dict
 end
@@ -127,7 +160,7 @@ end
 function _colnumber_ordered_dict(nres::Int)
     dict = OrderedDict{String,Int}()
     sizehint!(dict, nres)
-    for i in 1:nres
+    for i = 1:nres
         dict[string(i)] = i
     end
     return dict
@@ -136,14 +169,22 @@ end
 function _generate_named_array(SEQS, IDS)::NamedResidueMatrix{Array{Residue,2}}
     nseq, nres = _get_msa_size(SEQS)
     msa = _convert_to_matrix_residues(SEQS, (nseq, nres))
-    NamedResidueMatrix{Array{Residue,2}}(msa,
+    NamedResidueMatrix{Array{Residue,2}}(
+        msa,
         (_ids_ordered_dict(IDS, nseq), _colnumber_ordered_dict(nres)),
-        ("Seq", "Col"))
+        ("Seq", "Col"),
+    )
 end
 
-function _generate_annotated_msa(annot::Annotations, IDS::Vector{String},
-    SEQS, keepinserts, generatemapping,
-    useidcoordinates, deletefullgaps)
+function _generate_annotated_msa(
+    annot::Annotations,
+    IDS::Vector{String},
+    SEQS,
+    keepinserts,
+    generatemapping,
+    useidcoordinates,
+    deletefullgaps,
+)
     if keepinserts
         _keepinserts!(SEQS, annot)
     end
@@ -182,7 +223,7 @@ function _generate_annotated_msa(annot::Annotations, IDS::Vector{String},
         end
         setannotfile!(annot, "NCol", string(size(MSA, 2)))
         setannotfile!(annot, "ColMap", join(vcat(1:size(MSA, 2)), ','))
-        for i in 1:N
+        for i = 1:N
             setannotsequence!(annot, IDS[i], "SeqMap", MAP[i])
         end
     else
@@ -218,8 +259,11 @@ end
 # This checks that all the sequences have the same length
 #
 
-function _strings_to_msa(::Type{NamedArray{Residue,2}}, seqs::Vector{String},
-    deletefullgaps::Bool)
+function _strings_to_msa(
+    ::Type{NamedArray{Residue,2}},
+    seqs::Vector{String},
+    deletefullgaps::Bool,
+)
     msa = NamedArray(convert(Matrix{Residue}, seqs))
     setdimnames!(msa, ("Seq", "Col"))
     if deletefullgaps
@@ -228,8 +272,11 @@ function _strings_to_msa(::Type{NamedArray{Residue,2}}, seqs::Vector{String},
     msa
 end
 
-function _strings_to_msa(::Type{Matrix{Residue}}, seqs::Vector{String},
-    deletefullgaps::Bool)
+function _strings_to_msa(
+    ::Type{Matrix{Residue}},
+    seqs::Vector{String},
+    deletefullgaps::Bool,
+)
     msa = convert(Matrix{Residue}, seqs)
     if deletefullgaps
         return (deletefullgapcolumns(msa))
@@ -251,14 +298,25 @@ end
 # Delete Full of Gap Columns
 # ==========================
 
-"Deletes columns with 100% gaps, this columns are generated by inserts."
-function deletefullgapcolumns!(msa::AbstractMultipleSequenceAlignment, annotate::Bool=true)
+"""
+Deletes columns with 100% gaps, this columns are generated by inserts.
+"""
+function deletefullgapcolumns!(
+    msa::AbstractMultipleSequenceAlignment,
+    annotate::Bool = true,
+)
     mask = columngapfraction(msa) .!= one(Float64)
     number = sum(.~mask)
     if number != 0
-        annotate && annotate_modification!(msa, string("deletefullgaps!  :  Deletes ",
-            number, " columns full of gaps (inserts generate full gap columns on MIToS ",
-            "because lowercase and dots are not allowed)"))
+        annotate && annotate_modification!(
+            msa,
+            string(
+                "deletefullgaps!  :  Deletes ",
+                number,
+                " columns full of gaps (inserts generate full gap columns on MIToS ",
+                "because lowercase and dots are not allowed)",
+            ),
+        )
         filtercolumns!(msa, mask, annotate)
     end
     msa
@@ -273,7 +331,7 @@ function deletefullgapcolumns(msa::AbstractMatrix{Residue})
     msa
 end
 
-function deletefullgapcolumns(msa::AbstractMultipleSequenceAlignment, annotate::Bool=true)
+function deletefullgapcolumns(msa::AbstractMultipleSequenceAlignment, annotate::Bool = true)
     deletefullgapcolumns!(copy(msa), annotate)
 end
 
@@ -351,7 +409,7 @@ end
 _get_aligned_columns(msa::AnnotatedAlignedObject) = getannotcolumn(msa, "Aligned", "")
 _get_aligned_columns(msa::AbstractMatrix{Residue}) = ""
 
-function _format_inserts(seq::String, aligned::String, keep_insert_gaps::Bool=true)
+function _format_inserts(seq::String, aligned::String, keep_insert_gaps::Bool = true)
     if isempty(aligned)
         return seq
     end
@@ -373,24 +431,35 @@ end
 # Parse for MSA formats
 # =====================
 
-function Utils.parse_file(io::Union{IO,AbstractString},
+function Utils.parse_file(
+    io::Union{IO,AbstractString},
     format::Type{T},
     output::Type{AnnotatedMultipleSequenceAlignment};
-    generatemapping::Bool=false,
-    useidcoordinates::Bool=false,
-    deletefullgaps::Bool=true,
-    keepinserts::Bool=false) where {T<:MSAFormat}
-    IDS, SEQS, annot = _load_sequences(io, format; create_annotations=true)
+    generatemapping::Bool = false,
+    useidcoordinates::Bool = false,
+    deletefullgaps::Bool = true,
+    keepinserts::Bool = false,
+) where {T<:MSAFormat}
+    IDS, SEQS, annot = _load_sequences(io, format; create_annotations = true)
     _check_seq_len(IDS, SEQS)
-    _generate_annotated_msa(annot, IDS, SEQS, keepinserts, generatemapping,
-        useidcoordinates, deletefullgaps)
+    _generate_annotated_msa(
+        annot,
+        IDS,
+        SEQS,
+        keepinserts,
+        generatemapping,
+        useidcoordinates,
+        deletefullgaps,
+    )
 end
 
-function Utils.parse_file(io::Union{IO,AbstractString},
+function Utils.parse_file(
+    io::Union{IO,AbstractString},
     format::Type{T},
     output::Type{NamedResidueMatrix{Array{Residue,2}}};
-    deletefullgaps::Bool=true) where {T<:MSAFormat}
-    IDS, SEQS, _ = _load_sequences(io, format; create_annotations=false)
+    deletefullgaps::Bool = true,
+) where {T<:MSAFormat}
+    IDS, SEQS, _ = _load_sequences(io, format; create_annotations = false)
     _check_seq_len(IDS, SEQS)
     msa = _generate_named_array(SEQS, IDS)
     if deletefullgaps
@@ -399,38 +468,52 @@ function Utils.parse_file(io::Union{IO,AbstractString},
     msa
 end
 
-function Utils.parse_file(io::Union{IO,AbstractString},
+function Utils.parse_file(
+    io::Union{IO,AbstractString},
     format::Type{T},
     output::Type{MultipleSequenceAlignment};
-    deletefullgaps::Bool=true) where {T<:MSAFormat}
-    msa = parse_file(io, format, NamedResidueMatrix{Array{Residue,2}},
-        deletefullgaps=deletefullgaps)
+    deletefullgaps::Bool = true,
+) where {T<:MSAFormat}
+    msa = parse_file(
+        io,
+        format,
+        NamedResidueMatrix{Array{Residue,2}},
+        deletefullgaps = deletefullgaps,
+    )
     MultipleSequenceAlignment(msa)
 end
 
-function Utils.parse_file(io::Union{IO,AbstractString},
+function Utils.parse_file(
+    io::Union{IO,AbstractString},
     format::Type{T},
     output::Type{Matrix{Residue}};
-    deletefullgaps::Bool=true) where {T<:MSAFormat}
-    IDS, SEQS, _ = _load_sequences(io, format; create_annotations=false)
+    deletefullgaps::Bool = true,
+) where {T<:MSAFormat}
+    IDS, SEQS, _ = _load_sequences(io, format; create_annotations = false)
     _check_seq_len(IDS, SEQS)
     _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
 end
 
-function Utils.parse_file(io::Union{IO,AbstractString},
+function Utils.parse_file(
+    io::Union{IO,AbstractString},
     format::Type{T};
-    generatemapping::Bool=false,
-    useidcoordinates::Bool=false,
-    deletefullgaps::Bool=true,
-    keepinserts::Bool=false) where {T<:MSAFormat}
-    parse_file(io, format, AnnotatedMultipleSequenceAlignment; 
-        generatemapping=generatemapping, useidcoordinates=useidcoordinates, 
-        deletefullgaps=deletefullgaps, keepinserts=keepinserts)
+    generatemapping::Bool = false,
+    useidcoordinates::Bool = false,
+    deletefullgaps::Bool = true,
+    keepinserts::Bool = false,
+) where {T<:MSAFormat}
+    parse_file(
+        io,
+        format,
+        AnnotatedMultipleSequenceAlignment;
+        generatemapping = generatemapping,
+        useidcoordinates = useidcoordinates,
+        deletefullgaps = deletefullgaps,
+        keepinserts = keepinserts,
+    )
 end
 
 # Disambiguate Sequences
-
-
 
 function disambiguate_sequences(IDS::Vector{String})
     old2new = Dict{String, Vector{String}}() 
@@ -456,6 +539,7 @@ function disambiguate_sequences(IDS::Vector{String})
     end
     return old2new, collect(seen)  
 end
+
 function propose_name(base::String, count::Int) :: String
     return "$(base)($(count))"
 end

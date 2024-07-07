@@ -1,15 +1,20 @@
 # Pairwise Gap Percentage
 # =======================
 
-"It calculates the gap intersection as percentage from a table of `Counts`."
-function gap_intersection_percentage(nxy::Counts{T,2,GappedAlphabet}) where T
-    T(100.0) * gettablearray(nxy)[21,21] / gettotal(nxy)
+"""
+It calculates the gap intersection as percentage from a table of `Frequencies`.
+"""
+function gap_intersection_percentage(nxy::Frequencies{T,2,GappedAlphabet}) where {T}
+    T(100.0) * gettablearray(nxy)[21, 21] / gettotal(nxy)
 end
 
-"It calculates the gap union as percentage from a table of `Counts`."
-function gap_union_percentage(nxy::Counts{T,2,GappedAlphabet}) where T
+"""
+It calculates the gap union as percentage from a table of `Frequencies`.
+"""
+function gap_union_percentage(nxy::Frequencies{T,2,GappedAlphabet}) where {T}
     marginals = getmarginalsarray(nxy)
-    T(100.0) * (marginals[21,1] + marginals[21,2] - gettablearray(nxy)[21,21]) / gettotal(nxy)
+    T(100.0) * (marginals[21, 1] + marginals[21, 2] - gettablearray(nxy)[21, 21]) /
+    gettotal(nxy)
 end
 
 
@@ -32,17 +37,25 @@ This function returns:
 ```
     - pairwise gap union as percentage
     - pairwise gap intersection as percentage
-```  
+```
 """
-function pairwisegapfraction(aln::AbstractMatrix{Residue}; clustering::Bool=true, threshold=62)
+function pairwisegapfraction(
+    aln::AbstractMatrix{Residue};
+    clustering::Bool = true,
+    threshold = 62,
+)
     clusters = clustering ? hobohmI(aln, threshold) : NoClustering()
-    table = Counts(ContingencyTable(Float64,Val{2},GappedAlphabet()))
-    gu = mapcolpairfreq!(gap_union_percentage, aln, table, Val{true}, weights=clusters)
-    gi = mapcolpairfreq!(gap_intersection_percentage, aln, table, Val{true}, weights=clusters)
+    table = Frequencies(ContingencyTable(Float64, Val{2}, GappedAlphabet()))
+    gu = mapcolpairfreq!(gap_union_percentage, aln, table, weights = clusters)
+    gi = mapcolpairfreq!(gap_intersection_percentage, aln, table, weights = clusters)
     gu, gi
 end
 
-function pairwisegapfraction(filename::String, format::Type{T}; kargs...) where T <: FileFormat
-    aln = read_file(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping=true)
+function pairwisegapfraction(
+    filename::String,
+    format::Type{T};
+    kargs...,
+) where {T<:FileFormat}
+    aln = read_file(filename, T, AnnotatedMultipleSequenceAlignment, generatemapping = true)
     pairwisegapfraction(aln; kargs...)
 end

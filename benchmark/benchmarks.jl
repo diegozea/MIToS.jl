@@ -1,13 +1,13 @@
-using PkgBenchmark
+using BenchmarkTools
 using Random
 using MIToS.Utils
 using MIToS.MSA
+using MIToS.Information
 
-@benchgroup "Utils" begin
-    include("Utils/GeneralUtils.jl")
-end
+const SUITE = BenchmarkGroup()
 
-@benchgroup "MSA" begin
-    include("MSA/Residues.jl")
-    include("MSA/Annotations.jl")
-end
+include("Utils/GeneralUtils.jl")
+include("MSA/Residues.jl")
+include("MSA/Annotations.jl")
+include("Information/CorrectedMutualInformation.jl")
+include("Information/Counters.jl")

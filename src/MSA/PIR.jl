@@ -17,12 +17,14 @@ function _pre_readpir(io::Union{IO,AbstractString})
     GS = Dict{Tuple{String,String},String}()
 
     # Sequence types from http://iubio.bio.indiana.edu/soft/molbio/readseq/classic/src/Formats
-    nucleic_types = Set(["DL",  # DNA, linear
-                         "DC",  # DNA, circular
-                         "RL",  # RNA, linear
-                         "RC",  # RNA, circular
-                         "N1",  # functional RNA, other than tRNA
-                         "N3"]) # tRNA
+    nucleic_types = Set([
+        "DL",  # DNA, linear
+        "DC",  # DNA, circular
+        "RL",  # RNA, linear
+        "RC",  # RNA, circular
+        "N1",  # functional RNA, other than tRNA
+        "N3",
+    ]) # tRNA
 
     nonres = r"[^A-Za-z-\.]+" # large negated character class becuase seqs are free text
 
@@ -35,10 +37,10 @@ function _pre_readpir(io::Union{IO,AbstractString})
             line_number = 1
             seq_number += 1
             finished = false
-            m = match(r"^>([A-Z][A-Z0-9]);(\S+)", line) # e.g. >P1;5fd1
+            m = match(r"^>([A-Z][A-Z0-9]);(.+)$", line) # e.g. >P1;5fd1
             if m !== nothing
                 seq_type = m[1]
-                seq_id   = m[2]
+                seq_id = rstrip(m[2]) # remove trailing whitespaces
                 push!(IDS, seq_id)
                 push!(GS, (seq_id, "Type") => seq_type)
                 if seq_type in nucleic_types
@@ -65,7 +67,11 @@ function _pre_readpir(io::Union{IO,AbstractString})
     (IDS, SEQS, GS)
 end
 
-function _load_sequences(io::Union{IO, AbstractString}, format::Type{PIR}; create_annotations::Bool=false)
+function _load_sequences(
+    io::Union{IO,AbstractString},
+    format::Type{PIR};
+    create_annotations::Bool = false,
+)
     IDS, SEQS, GS = _pre_readpir(io)
     annot = Annotations()
     if create_annotations
@@ -91,23 +97,32 @@ function _print_pir_seq(io::IO, seq_type, seq_id, seq_title, seq)
     println(io, '*')
 end
 
-function Utils.print_file(io::IO, msa::AnnotatedMultipleSequenceAlignment, format::Type{PIR})
-    seqann = getannotsequence(msa)
+function _get_pir_annotations(sequence_annotations, seq_id::String)
+    if haskey(sequence_annotations, (seq_id, "Type"))
+        seq_type = sequence_annotations[(seq_id, "Type")]
+    else
+        @warn("There is not sequence Type annotation for $seq_id, using XX (Unknown).")
+        seq_type = "XX"
+    end
+    if haskey(sequence_annotations, (seq_id, "Title"))
+        seq_title = sequence_annotations[(seq_id, "Title")]
+    else
+        @warn("There is not sequence Title annotation for $seq_id.")
+        seq_title = ""
+    end
+    seq_type, seq_title
+end
+
+function Utils.print_file(
+    io::IO,
+    msa::AnnotatedMultipleSequenceAlignment,
+    format::Type{PIR},
+)
+    sequence_annotations = getannotsequence(msa)
     seqnames = sequencenames(msa)
-    for i in 1:nsequences(msa)
+    for i = 1:nsequences(msa)
         seq_id = seqnames[i]
-        if haskey(seqann, (seq_id, "Type"))
-            seq_type = seqann[(seq_id, "Type")]
-        else
-            @warn("There is not sequence Type annotation for $seq_id, using XX (Unknown).")
-            seq_type = "XX"
-        end
-        if haskey(seqann, (seq_id, "Title"))
-            seq_title = seqann[(seq_id, "Title")]
-        else
-            @warn("There is not sequence Title annotation for $seq_id.")
-            seq_title = ""
-        end
+        seq_type, seq_title = _get_pir_annotations(sequence_annotations, seq_id)
         seq = stringsequence(msa, i)
         _print_pir_seq(io, seq_type, seq_id, seq_title, seq)
     end
@@ -115,7 +130,7 @@ end
 
 function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{PIR})
     seqnames = sequencenames(msa)
-    for i in 1:nsequences(msa)
+    for i = 1:nsequences(msa)
         _print_pir_seq(io, "XX", seqnames[i], "", stringsequence(msa, i))
     end
 end

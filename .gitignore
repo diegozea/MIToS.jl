@@ -27,8 +27,13 @@ docs/src/0*.md
 docs/seq.fasta
 
 # Manifest
-Manifest.toml
 JuliaManifest.toml
+Manifest.toml
+# but, do not ignore the manifest in the scripts folder
+!scripts/Manifest.toml 
 
 # Visual Studio Code
 .vscode
+
+# PkgBenchmark
+benchmark/tune.json

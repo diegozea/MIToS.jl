@@ -7,6 +7,7 @@ using MIToS.Information
 using MIToS.PDB
 using MIToS.SIFTS
 using MIToS.Pfam
+using Aqua
 using LinearAlgebra
 using Random
 using OrderedCollections    # OrderedDict
@@ -20,13 +21,19 @@ using PairwiseListMatrices  # getlist
 
 const DATA = joinpath(@__DIR__, "data")
 
+@testset verbose=true "Aqua" begin
+    # The ambiguities are not caused by MIToS
+    # Information.kullback_leibler breaks the unbound_args test
+    Aqua.test_all(MIToS, ambiguities=false, unbound_args=false)
+end
+
 # Utils
-@testset verbose=true "Utils" begin
+@testset verbose = true "Utils" begin
     include("Utils/GeneralUtils.jl")
 end
 
 # MSA
-@testset verbose=true "MSA" begin
+@testset verbose = true "MSA" begin
     include("MSA/Residues.jl")
     include("MSA/Alphabet.jl")
     include("MSA/ThreeLetters.jl")
@@ -37,6 +44,7 @@ end
     include("MSA/General.jl")
     include("MSA/MSAEditing.jl")
     include("MSA/MSAStats.jl")
+    include("MSA/Sequences.jl")
     include("MSA/Shuffle.jl")
     include("MSA/Identity.jl")
     include("MSA/Hobohm.jl")
@@ -46,7 +54,7 @@ end
 end
 
 # Information
-@testset verbose=true "Information" begin
+@testset verbose = true "Information" begin
     include("Information/ContingencyTables.jl")
     include("Information/Counters.jl")
     include("Information/InformationMeasures.jl")
@@ -57,7 +65,7 @@ end
 end
 
 # PDB
-@testset verbose=true "PDB" begin
+@testset verbose = true "PDB" begin
     include("PDB/PDB.jl")
     include("PDB/Contacts.jl")
     include("PDB/Kabsch.jl")
@@ -67,17 +75,17 @@ end
 end
 
 # SIFTS
-@testset verbose=true "SIFTS" begin
+@testset verbose = true "SIFTS" begin
     include("SIFTS/SIFTS.jl")
 end
 
 # Pfam
-@testset verbose=true "Pfam" begin
+@testset verbose = true "Pfam" begin
     include("Pfam/Pfam.jl")
 end
 
 # Scripts
-@testset verbose=true "Scripts" begin
+@testset verbose = true "Scripts" begin
     include("Scripts/Template.jl")
     include("Scripts/Scripts.jl")
 end

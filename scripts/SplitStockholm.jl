@@ -1,36 +1,41 @@
 #!/usr/bin/env julia
 
-using Pkg
-using ArgParse
+using MIToS
+include(joinpath(pkgdir(MIToS), "scripts", "_setup_script.jl"))
+
 using CodecZlib
 using MIToS.Utils # get_n_words, check_file
 using ProgressMeter
-using MIToS
-using MIToS.Utils.Scripts
 
 function parse_commandline()
-	mitos_version=loadedversion(MIToS)
-    s = ArgParseSettings(description = "Splits a file with multiple sequence alignments in Stockholm format, creating one compressed file per MSA in Stockholm format: accessionumber.gz",
-						 version = "MIToS $(mitos_version)",
-                         add_version = true)
+    mitos_version = loadedversion(MIToS)
+    s = ArgParseSettings(
+        description = "Splits a file with multiple sequence alignments in Stockholm format, creating one compressed file per MSA in Stockholm format: accessionumber.gz",
+        version = "MIToS $(mitos_version)",
+        add_version = true,
+    )
 
     @add_arg_table! s begin
-        "file"
-            help = "Input file"
-            required = true
+        """
+        file
+        """
+        help = "Input file"
+        required = true
         "--path", "-p"
-            help = "Path for the output files [default: execution directory]"
-            arg_type = String
-            default = ""
-        "--hideprogress"
-            help = "Hide the progress bar"
-            action = :store_true
+        help = "Path for the output files [default: execution directory]"
+        arg_type = String
+        default = ""
+        """
+        --hideprogress
+        """
+        help = "Hide the progress bar"
+        action = :store_true
     end
 
     s.epilog = """
 
     \n
-	MIToS $(mitos_version)\n
+ MIToS $(mitos_version)\n
     \n
     Bioinformatics Unit\n
     Leloir Institute Foundation\n

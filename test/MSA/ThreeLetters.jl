@@ -17,5 +17,5 @@
 
     # Example for three letter amino acid sequence
     seq = "AlaCysAspGluPheGlyHisIleLysAsxXaaGlx"
-    @test [ three2residue(seq[i:i+2]) for i in 1:3:length(seq) ] == res"ACDEFGHIKXXX"
+    @test [three2residue(seq[i:i+2]) for i = 1:3:length(seq)] == res"ACDEFGHIKXXX"
 end

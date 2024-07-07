@@ -1,11 +1,13 @@
 # import Base: length, getindex, setindex!, size, copy, deepcopy, empty!,
 #              convert, transpose, names
 
+abstract type AbstractResidueMatrix <: AbstractMatrix{Residue} end
+
 """
 MIToS MSA and aligned sequences (aligned objects) are subtypes of `AbstractMatrix{Residue}`,
 because MSAs and sequences are stored as `Matrix` of `Residue`s.
 """
-abstract type AbstractAlignedObject <: AbstractMatrix{Residue} end
+abstract type AbstractAlignedObject <: AbstractResidueMatrix end
 
 """
 MSAs are stored as `Matrix{Residue}`. It's possible to use a
@@ -14,13 +16,21 @@ identifiers and column names.
 """
 abstract type AbstractMultipleSequenceAlignment <: AbstractAlignedObject end
 
-"A MIToS aligned sequence is an `AbstractMatrix{Residue}` with only 1 row/sequence."
+"""
+A MIToS aligned sequence is an `AbstractMatrix{Residue}` with only 1 row/sequence.
+"""
 abstract type AbstractAlignedSequence <: AbstractAlignedObject end
+
+"""
+A MIToS (unaligned) sequence is an `AbstractMatrix{Residue}` with only 1 row/sequence.
+"""
+abstract type AbstractSequence <: AbstractResidueMatrix end
 
 # Multiple Sequence Alignment
 # ===========================
 
-const NamedResidueMatrix{AT} = NamedArray{Residue,2,AT,Tuple{OrderedDict{String,Int},OrderedDict{String,Int}}}
+const NamedResidueMatrix{AT} =
+    NamedArray{Residue,2,AT,Tuple{OrderedDict{String,Int},OrderedDict{String,Int}}}
 
 """
 This MSA type include a `NamedArray` wrapping a `Matrix` of `Residue`s. The use of
@@ -30,7 +40,9 @@ fast indexing using them.
 mutable struct MultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
     matrix::NamedResidueMatrix{Array{Residue,2}}
 
-    function (::Type{MultipleSequenceAlignment})(matrix::NamedResidueMatrix{Array{Residue,2}})
+    function (::Type{MultipleSequenceAlignment})(
+        matrix::NamedResidueMatrix{Array{Residue,2}},
+    )
         setdimnames!(matrix, ("Seq", "Col"))
         new(matrix)
     end
@@ -42,27 +54,38 @@ This type represent an MSA, similar to `MultipleSequenceAlignment`, but It also 
 to UniProt residue numbers).
 """
 mutable struct AnnotatedMultipleSequenceAlignment <: AbstractMultipleSequenceAlignment
-    matrix::NamedArray{Residue,2,Array{Residue,2},Tuple{OrderedDict{String,Int},OrderedDict{String,Int}}}
+    matrix::NamedArray{
+        Residue,
+        2,
+        Array{Residue,2},
+        Tuple{OrderedDict{String,Int},OrderedDict{String,Int}},
+    }
     annotations::Annotations
 
-    function (::Type{AnnotatedMultipleSequenceAlignment})(matrix::NamedResidueMatrix{Array{Residue,2}},
-                                                          annotations::Annotations)
+    function (::Type{AnnotatedMultipleSequenceAlignment})(
+        matrix::NamedResidueMatrix{Array{Residue,2}},
+        annotations::Annotations,
+    )
         setdimnames!(matrix, ("Seq", "Col"))
         new(matrix, annotations)
     end
 end
 
 # Helper constructor for NamedResidueMatrix{Array{Residue,2}}
-function _namedresiduematrix(matrix::Matrix{Residue}, 
-        seqnames::OrderedDict{String,Int}, 
-        colnames::OrderedDict{String,Int})::NamedResidueMatrix{Array{Residue,2}}
-    NamedArray(matrix, (seqnames, colnames), ("Seq","Col"))
+function _namedresiduematrix(
+    matrix::Matrix{Residue},
+    seqnames::OrderedDict{String,Int},
+    colnames::OrderedDict{String,Int},
+)::NamedResidueMatrix{Array{Residue,2}}
+    NamedArray(matrix, (seqnames, colnames), ("Seq", "Col"))
 end
 
 function _namedresiduematrix(matrix::Matrix{Residue}, seqnames, colnames)
-    _namedresiduematrix(matrix, 
+    _namedresiduematrix(
+        matrix,
         OrderedDict{String,Int}(string(k) => i for (i, k) in enumerate(seqnames)),
-		OrderedDict{String,Int}(string(k) => i for (i, k) in enumerate(colnames)))
+        OrderedDict{String,Int}(string(k) => i for (i, k) in enumerate(colnames)),
+    )
 end
 
 # Aligned Sequences
@@ -90,11 +113,38 @@ mutable struct AnnotatedAlignedSequence <: AbstractAlignedSequence
     matrix::NamedResidueMatrix{Array{Residue,2}}
     annotations::Annotations
 
-    function (::Type{AnnotatedAlignedSequence})(matrix::NamedResidueMatrix{Array{Residue,2}},
-                                                annotations::Annotations)
+    function (::Type{AnnotatedAlignedSequence})(
+        matrix::NamedResidueMatrix{Array{Residue,2}},
+        annotations::Annotations,
+    )
         @assert size(matrix, 1) == 1 "There are more than one sequence."
         setdimnames!(matrix, ("Seq", "Col"))
         new(matrix, annotations)
+    end
+end
+
+# Unaligned Sequences
+# -------------------
+
+"""
+An `AnnotationSequence` wraps a `NamedResidueMatrix{Array{Residue,2}}` with only 1
+row/sequence and its `Annotations`. The `NamedArray` stores the sequence name and
+original position numbers as `String`s.
+"""
+mutable struct AnnotatedSequence <: AbstractSequence
+    matrix::NamedResidueMatrix{Array{Residue,2}}
+    annotations::Annotations
+
+    function (::Type{AnnotatedSequence})(
+        matrix::NamedResidueMatrix{Array{Residue,2}},
+        annotations::Annotations,
+    )
+        @assert size(matrix, 1) == 1 "There should be only one sequence—i.e. one row."
+        if dimnames(matrix, 2) != "Pos"
+            setdimnames!(matrix, ("Seq", "Pos")) # Unaligned sequences have positions instead of columns
+        end
+        clean_matrix = adjustreference(matrix) # ensure that the sequence has no gaps
+        new(clean_matrix, annotations)
     end
 end
 
@@ -167,10 +217,73 @@ AlignedSequence(seq::AnnotatedAlignedSequence) = AlignedSequence(namedmatrix(seq
 
 AlignedSequence(seq::AlignedSequence) = seq
 
+# Annotated Unaligned Sequence
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Constructors from strings or vectors
+
+function _clean_sequence(seq::AbstractString)
+    seq = uppercase(seq) # to avoid converting lowercase to GAP
+    replace(seq, r"[^A-Z]" => "") # remove non-alphabetic characters
+end
+
+function AnnotatedSequence(
+    id::AbstractString,
+    seq::AbstractString,
+    annot::Annotations = Annotations(),
+)
+    clean_seq = _clean_sequence(seq)
+    vector_res = convert(Vector{Residue}, clean_seq) # string -> vector
+    AnnotatedSequence(id, vector_res, annot)
+end
+
+# ⬇ 
+
+function AnnotatedSequence(
+    id::AbstractString,
+    seq::AbstractVector{Residue},
+    annot::Annotations = Annotations(),
+)
+    matrix = permutedims(seq) # vector -> matrix
+    named_matrix = NamedArray(
+        matrix,
+        (
+            OrderedDict{String,Int}(id => 1),
+            OrderedDict{String,Int}(string(i) => i for i = 1:length(matrix)),
+        ),
+        ("Seq", "Pos"),
+    )
+    AnnotatedSequence(named_matrix, annot)
+end
+
+# The default id is an empty string
+AnnotatedSequence(seq::AbstractString, annot::Annotations = Annotations()) =
+    AnnotatedSequence("", seq, annot)
+AnnotatedSequence(seq::AbstractVector{Residue}, annot::Annotations = Annotations()) =
+    AnnotatedSequence("", seq, annot)
+
+# From matrices
+function AnnotatedSequence(seq::AbstractMatrix{Residue}, annot::Annotations = Annotations())
+    AnnotatedSequence(NamedArray(seq), annot)
+end
+
+# Form aligned sequences
+function AnnotatedSequence(seq::AlignedSequence)
+    AnnotatedSequence(namedmatrix(seq), Annotations())
+end
+
+function AnnotatedSequence(seq::AnnotatedAlignedSequence)
+    AnnotatedSequence(namedmatrix(seq), deepcopy(seq.annotations))
+end
+
+# no-op
+AnnotatedSequence(seq::AnnotatedSequence) = seq
+
 # AnnotatedAlignedObject
 # ----------------------
 
-const AnnotatedAlignedObject = Union{AnnotatedMultipleSequenceAlignment,AnnotatedAlignedSequence}
+const AnnotatedAlignedObject =
+    Union{AnnotatedMultipleSequenceAlignment,AnnotatedAlignedSequence}
 
 const UnannotatedAlignedObject = Union{MultipleSequenceAlignment,AlignedSequence}
 
@@ -183,42 +296,93 @@ const MSAMatrix = Union{Matrix{Residue},NamedResidueMatrix{Array{Residue,2}}}
 # -------
 
 """
-The `annotations` function returns the `Annotations` of an annotated MSA or aligned 
+The `annotations` function returns the `Annotations` of an annotated MSA or aligned
 sequence. If the object is not annotated, it returns an empty `Annotations` object.
 """
 @inline annotations(msa::AnnotatedMultipleSequenceAlignment) = msa.annotations
 @inline annotations(seq::AnnotatedAlignedSequence) = seq.annotations
+@inline annotations(seq::AnnotatedSequence) = seq.annotations
 @inline annotations(x::UnannotatedAlignedObject) = Annotations()
 @inline annotations(x::MSAMatrix) = Annotations()
 
 """
-The `namedmatrix` function returns the `NamedResidueMatrix{Array{Residue,2}}` stored in an 
+The `namedmatrix` function returns the `NamedResidueMatrix{Array{Residue,2}}` stored in an
 MSA or aligned sequence.
 """
-@inline namedmatrix(x::AbstractAlignedObject) = x.matrix
+@inline namedmatrix(x::AbstractResidueMatrix) = x.matrix
+
+NamedArrays.dimnames(x::AbstractResidueMatrix) = dimnames(namedmatrix(x))
+
+# Sequence equality
+# -----------------
+# By default, the sequences objects use the AbstractArray implementations of the equality
+# operators. This means that only the matrices are compared, i.e. the sequence residues.
+# Therefore, we define the following methods to compare the whole object, including the
+# sequence identifier. This doesn't compare the annotations, as they are not part of the
+# sequence itself.
+
+function Base.:(==)(
+    seq_a::Union{AbstractSequence,AbstractAlignedSequence},
+    seq_b::Union{AbstractSequence,AbstractAlignedSequence},
+)
+    sequence_id(seq_a) == sequence_id(seq_b) && namedmatrix(seq_a) == namedmatrix(seq_b)
+end
+
+function Base.isequal(
+    seq_a::Union{AbstractSequence,AbstractAlignedSequence},
+    seq_b::Union{AbstractSequence,AbstractAlignedSequence},
+)
+    isequal(sequence_id(seq_a), sequence_id(seq_b)) &&
+        isequal(namedmatrix(seq_a), namedmatrix(seq_b))
+end
+
+function Base.hash(seq::Union{AbstractSequence,AbstractAlignedSequence}, h::UInt)
+    h = hash(sequence_id(seq), h)
+    hash(namedmatrix(seq), h)
+end
 
 # Convert
 # -------
 
-function Base.convert(::Type{MultipleSequenceAlignment},
-                      msa::AnnotatedMultipleSequenceAlignment)
-    @warn "`convert(::Type{MultipleSequenceAlignment}, msa)` has been deprecated. Use `MultipleSequenceAlignment(msa)`"
+function Base.convert(
+    ::Type{MultipleSequenceAlignment},
+    msa::AnnotatedMultipleSequenceAlignment,
+)
+    Base.depwarn(
+        "`convert(::Type{MultipleSequenceAlignment}, msa)` has been deprecated. Use `MultipleSequenceAlignment(msa)`",
+        :convert,
+        force = true,
+    )
     MultipleSequenceAlignment(namedmatrix(msa))
 end
 
 function Base.convert(::Type{AlignedSequence}, seq::AnnotatedAlignedSequence)
-    @warn "`convert(::Type{AlignedSequence}, seq)` has been deprecated. Use `AlignedSequence(seq)`"
+    Base.depwarn(
+        "`convert(::Type{AlignedSequence}, seq)` has been deprecated. Use `AlignedSequence(seq)`",
+        :convert,
+        force = true,
+    )
     AlignedSequence(namedmatrix(seq))
 end
 
-function Base.convert(::Type{AnnotatedMultipleSequenceAlignment},
-                      msa::MultipleSequenceAlignment)
-    @warn "`convert(::Type{AnnotatedMultipleSequenceAlignment}, msa)` has been deprecated. Use `AnnotatedMultipleSequenceAlignment(msa)`"
+function Base.convert(
+    ::Type{AnnotatedMultipleSequenceAlignment},
+    msa::MultipleSequenceAlignment,
+)
+    Base.depwarn(
+        "`convert(::Type{AnnotatedMultipleSequenceAlignment}, msa)` has been deprecated. Use `AnnotatedMultipleSequenceAlignment(msa)`",
+        :convert,
+        force = true,
+    )
     AnnotatedMultipleSequenceAlignment(namedmatrix(msa), Annotations())
 end
 
 function Base.convert(::Type{AnnotatedAlignedSequence}, seq::AlignedSequence)
-    @warn "`convert(::Type{AnnotatedAlignedSequence}, seq)` has been deprecated. Use `AnnotatedAlignedSequence(seq)`"
+    Base.depwarn(
+        "`convert(::Type{AnnotatedAlignedSequence}, seq)` has been deprecated. Use `AnnotatedAlignedSequence(seq)`",
+        :convert,
+        force = true,
+    )
     AnnotatedAlignedSequence(namedmatrix(seq), Annotations())
 end
 
@@ -226,21 +390,31 @@ end
 # -----------------------
 
 for f in (:size, :length)
-    @eval Base.$(f)(x::AbstractAlignedObject) = $(f)(namedmatrix(x))
+    @eval Base.$(f)(x::AbstractResidueMatrix) = $(f)(namedmatrix(x))
 end
 
 # Show
 # ----
 
-for T in (:(AlignedSequence),
-            :(AnnotatedAlignedSequence),
-            :(MultipleSequenceAlignment),
-            :(AnnotatedMultipleSequenceAlignment))
+for T in (
+    :(AnnotatedSequence),
+    :(AlignedSequence),
+    :(AnnotatedAlignedSequence),
+    :(MultipleSequenceAlignment),
+    :(AnnotatedMultipleSequenceAlignment),
+)
     @eval begin
-        
+
         function Base.show(io::IO, ::MIME"text/plain", x::$(T))
             type_name = split(string($T), '.')[end]
-            if isa(x, AnnotatedAlignedObject)
+            if isa(
+                x,
+                Union{
+                    AnnotatedMultipleSequenceAlignment,
+                    AnnotatedAlignedSequence,
+                    AnnotatedSequence,
+                },
+            )
                 print(io, type_name, " with ", length(annotations(x)), " annotations : ")
             else
                 print(io, type_name, " : ")
@@ -255,11 +429,15 @@ end
 # -----------------------
 
 function Base.transpose(x::AbstractAlignedObject)
-    @warn "`transpose(x::AbstractAlignedObject)` has been deprecated, use `permutedims(x)` instead."
+    Base.depwarn(
+        "`transpose(x::AbstractAlignedObject)` has been deprecated, use `permutedims(x)` instead.",
+        :transpose,
+        force = true,
+    )
     permutedims(namedmatrix(x))
 end
 
-Base.permutedims(x::AbstractAlignedObject, args...) = permutedims(namedmatrix(x), args...)
+Base.permutedims(x::AbstractResidueMatrix, args...) = permutedims(namedmatrix(x), args...)
 
 # Selection without Mappings
 # --------------------------
@@ -270,12 +448,16 @@ as a `Matrix{Residue}` without annotations nor column/row names.
 """
 getresidues(x::Matrix{Residue}) = x
 getresidues(x::NamedResidueMatrix{Array{Residue,2}}) = getarray(x)
-getresidues(x::AbstractAlignedObject) = getresidues(namedmatrix(x))
+getresidues(x::AbstractResidueMatrix) = getresidues(namedmatrix(x))
 
-"`nsequences` returns the number of sequences on the MSA."
+"""
+`nsequences` returns the number of sequences on the MSA.
+"""
 nsequences(x::AbstractMatrix{Residue}) = size(x, 1)
 
-"`ncolumns` returns the number of MSA columns or positions."
+"""
+`ncolumns` returns the number of MSA columns or positions.
+"""
 ncolumns(x::AbstractMatrix{Residue}) = size(x, 2)
 
 """
@@ -284,16 +466,17 @@ annotations nor column/sequence names.
 """
 function getresiduesequences(msa::Matrix{Residue})
     nseq = nsequences(msa)
-    tmsa = permutedims(msa, [2,1])
+    tmsa = permutedims(msa, [2, 1])
     sequences = Array{Vector{Residue}}(undef, nseq)
-    for i in 1:nseq
-        @inbounds sequences[i] = tmsa[:,i]
+    for i = 1:nseq
+        @inbounds sequences[i] = tmsa[:, i]
     end
     sequences
 end
 
-getresiduesequences(x::NamedResidueMatrix{Array{Residue,2}}) = getresiduesequences(getresidues(x))
-getresiduesequences(x::AbstractAlignedObject) = getresiduesequences(getresidues(x))
+getresiduesequences(x::NamedResidueMatrix{Array{Residue,2}}) =
+    getresiduesequences(getresidues(x))
+getresiduesequences(x::AbstractResidueMatrix) = getresiduesequences(getresidues(x))
 
 # Select sequence
 # ---------------
@@ -330,19 +513,19 @@ object and a sequence identifier are used, this function returns the annotations
 to the sequence.
 """ getsequence
 
-getsequence(msa::AbstractMatrix{Residue}, i::Int) = msa[i:i,:]
+getsequence(msa::AbstractMatrix{Residue}, i::Int) = msa[i:i, :]
 
-getsequence(msa::NamedResidueMatrix{Array{Residue,2}}, i::Int) = msa[i:i,:]
-getsequence(msa::NamedResidueMatrix{Array{Residue,2}}, id::String) = msa[String[id],:]
+getsequence(msa::NamedResidueMatrix{Array{Residue,2}}, i::Int) = msa[i:i, :]
+getsequence(msa::NamedResidueMatrix{Array{Residue,2}}, id::String) = msa[String[id], :]
 
 function getsequence(msa::AnnotatedMultipleSequenceAlignment, i::Int)
-    seq   = namedmatrix(msa)[i:i,:]
+    seq = namedmatrix(msa)[i:i, :]
     annot = getsequence(annotations(msa), names(seq, 1)[1])
     AnnotatedAlignedSequence(seq, annot)
 end
 
 function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::String)
-    seq   = namedmatrix(msa)[String[id],:]
+    seq = namedmatrix(msa)[String[id], :]
     annot = getsequence(annotations(msa), id)
     AnnotatedAlignedSequence(seq, annot)
 end
@@ -363,10 +546,10 @@ end
 
 It returns a `Vector{String}` with the sequence names/identifiers.
 """
-function sequencenames(x::NamedResidueMatrix{AT})::Vector{String} where AT <: AbstractArray
+function sequencenames(x::NamedResidueMatrix{AT})::Vector{String} where {AT<:AbstractArray}
     names(x, 1)
 end
-sequencenames(x::AbstractAlignedObject)::Vector{String} = sequencenames(namedmatrix(x))
+sequencenames(x::AbstractResidueMatrix)::Vector{String} = sequencenames(namedmatrix(x))
 sequencenames(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(msa, 1))
 
 """
@@ -376,11 +559,18 @@ It returns a `Vector{String}` with the sequence names/identifiers. If the `msa` 
 `Matrix{Residue}` this function returns the actual column numbers as strings. Otherwise it
 returns the column number of the original MSA through the wrapped `NamedArray` column names.
 """
-function columnnames(x::NamedResidueMatrix{AT})::Vector{String} where AT
+function columnnames(x::NamedResidueMatrix{AT})::Vector{String} where {AT}
     names(x, 2)
 end
-columnnames(x::AbstractAlignedObject)::Vector{String} = columnnames(namedmatrix(x))
+columnnames(x::AbstractResidueMatrix)::Vector{String} = columnnames(namedmatrix(x))
 columnnames(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(msa, 2))
+
+"""
+    sequence_id(seq::Union{AbstractSequence,AbstractAlignedSequence})
+
+It returns the sequence identifier of a sequence object.
+"""
+sequence_id(seq::Union{AbstractSequence,AbstractAlignedSequence}) = only(sequencenames(seq))
 
 # Name Iterators
 # --------------
@@ -393,11 +583,11 @@ columnnames(msa::AbstractMatrix{Residue})::Vector{String} = map(string, 1:size(m
 
 It returns an iterator that returns the sequence names/identifiers of the `msa`.
 """
-function sequencename_iterator(x::NamedResidueMatrix{AT}) where AT
-    keys(x.dicts[1])::Base.KeySet{String, OrderedDict{String, Int64}}
+function sequencename_iterator(x::NamedResidueMatrix{AT}) where {AT}
+    keys(x.dicts[1])::Base.KeySet{String,OrderedDict{String,Int64}}
 end
-sequencename_iterator(x::AbstractAlignedObject) = sequencename_iterator(namedmatrix(x))
-sequencename_iterator(msa::AbstractMatrix{Residue}) = (string(i) for i in 1:size(msa, 1))
+sequencename_iterator(x::AbstractResidueMatrix) = sequencename_iterator(namedmatrix(x))
+sequencename_iterator(msa::AbstractMatrix{Residue}) = (string(i) for i = 1:size(msa, 1))
 
 """
 `columnname_iterator(msa)`
@@ -406,11 +596,11 @@ It returns an iterator that returns the column names of the `msa`. If the `msa` 
 `Matrix{Residue}` this function returns the actual column numbers as strings. Otherwise it
 returns the column number of the original MSA through the wrapped `NamedArray` column names.
 """
-function columnname_iterator(x::NamedResidueMatrix{AT}) where AT
+function columnname_iterator(x::NamedResidueMatrix{AT}) where {AT}
     keys(x.dicts[2])
 end
-columnname_iterator(x::AbstractAlignedObject) = columnname_iterator(namedmatrix(x))
-columnname_iterator(msa::AbstractMatrix{Residue}) = (string(i) for i in 1:size(msa, 2))
+columnname_iterator(x::AbstractResidueMatrix) = columnname_iterator(namedmatrix(x))
+columnname_iterator(msa::AbstractMatrix{Residue}) = (string(i) for i = 1:size(msa, 2))
 
 # Copy, deepcopy
 # --------------
@@ -418,14 +608,19 @@ columnname_iterator(msa::AbstractMatrix{Residue}) = (string(i) for i in 1:size(m
 for f in (:copy, :deepcopy)
     @eval begin
         function Base.$(f)(msa::AnnotatedMultipleSequenceAlignment)
-            AnnotatedMultipleSequenceAlignment( $(f)(namedmatrix(msa)),
-                                                $(f)(annotations(msa)) )
+            AnnotatedMultipleSequenceAlignment(
+                $(f)(namedmatrix(msa)),
+                $(f)(annotations(msa)),
+            )
         end
         function Base.$(f)(msa::MultipleSequenceAlignment)
             MultipleSequenceAlignment($(f)(namedmatrix(msa)))
         end
         function Base.$(f)(seq::AnnotatedAlignedSequence)
             AnnotatedAlignedSequence($(f)(seq.matrix), $(f)(seq.annotations))
+        end
+        function Base.$(f)(seq::AnnotatedSequence)
+            AnnotatedSequence($(f)(seq.matrix), $(f)(seq.annotations))
         end
         Base.$(f)(seq::AlignedSequence) = AlignedSequence($(f)(seq.matrix))
     end
@@ -434,18 +629,111 @@ end
 # Get annotations
 # ---------------
 
+# MSA
 for getter in (:getannotcolumn, :getannotfile, :getannotresidue, :getannotsequence)
-    @eval $(getter)(x::AnnotatedAlignedObject, args...) = $(getter)(annotations(x), args...)
+    @eval $(getter)(x::AnnotatedMultipleSequenceAlignment, args...) =
+        $(getter)(annotations(x), args...)
+end
+
+# Sequence
+function _check_feature(
+    seq::Union{AnnotatedAlignedSequence,AnnotatedSequence},
+    feature::String,
+)
+    if feature == sequence_id(seq)
+        annot = annotations(seq)
+        sequence_features = last.(keys(annot.sequences))
+        residue_features = last.(keys(annot.residues))
+
+        if feature ∉ sequence_features && feature ∉ residue_features
+            sequence_features_str =
+                isempty(sequence_features) ? "" :
+                "Possible sequence features: " * join(sequence_features, ", ", " and ")
+            residue_features_str =
+                isempty(residue_features) ? "" :
+                "Possible residue features: " * join(residue_features, ", ", " and ")
+
+            @warn """The second argument should be a feature name, not the sequence identifier: $(feature).
+            $sequence_features_str
+            $residue_features_str"""
+        end
+    end
+    feature
+end
+
+for getter in (:getannotcolumn, :getannotfile)
+    @eval $(getter)(x::Union{AnnotatedSequence,AnnotatedAlignedSequence}, args...) =
+        $(getter)(annotations(x), args...)
+end
+
+for getter in (:getannotresidue, :getannotsequence)
+    @eval begin
+        function $(getter)(x::Union{AnnotatedSequence,AnnotatedAlignedSequence})
+            return $(getter)(annotations(x)) # get all the annotations
+        end
+
+        function $(getter)(
+            x::Union{AnnotatedSequence,AnnotatedAlignedSequence},
+            feature::String,
+        )
+            return $(getter)(annotations(x), sequence_id(x), _check_feature(x, feature))
+        end
+
+        function $(getter)(
+            x::Union{AnnotatedSequence,AnnotatedAlignedSequence},
+            feature::String,
+            default::String,
+        )
+            return $(getter)(
+                annotations(x),
+                sequence_id(x),
+                _check_feature(x, feature),
+                default,
+            )
+        end
+    end
 end
 
 # Set annotations
 # ---------------
 
-for setter in (:setannotcolumn!, :setannotfile!, :setannotresidue!, :setannotsequence!,
-                :annotate_modification!,
-                :delete_annotated_modifications!,
-                :printmodifications)
-    @eval $(setter)(x::AnnotatedAlignedObject, args...) = $(setter)(annotations(x), args...)
+for setter in (
+    :setannotcolumn!,
+    :setannotfile!,
+    :annotate_modification!,
+    :delete_annotated_modifications!,
+    :printmodifications,
+)
+    @eval $(setter)(
+        x::Union{
+            AnnotatedMultipleSequenceAlignment,
+            AnnotatedAlignedSequence,
+            AnnotatedSequence,
+        },
+        args...,
+    ) = $(setter)(annotations(x), args...)
+end
+
+for setter in (:setannotresidue!, :setannotsequence!)
+    @eval $(setter)(x::AnnotatedMultipleSequenceAlignment, args...) =
+        $(setter)(annotations(x), args...)
+end
+
+for setter in (:setannotresidue!, :setannotsequence!)
+    @eval begin
+        function $(setter)(
+            x::Union{AnnotatedAlignedSequence,AnnotatedSequence},
+            feature::String,
+            annotation::String,
+        )
+            return $(setter)(
+                annotations(x),
+                sequence_id(x),
+                _check_feature(x, feature),
+                annotation,
+            )
+        end
+    end
 end
 
 # To be used on AbstractMultipleSequenceAlignment methods
@@ -471,14 +759,13 @@ julia> MSA._str2int_mapping(",,2,,4,5")
  0
  4
  5
-
 ```
 """
 function _str2int_mapping(mapping::String)
     values = split(mapping, ',')
     len = length(values)
     intmap = Array{Int}(undef, len)
-    @inbounds for i in 1:len
+    @inbounds for i = 1:len
         value = values[i]
         intmap[i] = value == "" ? 0 : parse(Int, value)
     end
@@ -489,11 +776,11 @@ end
 It returns a `Vector{Int}` with the original column number of each column on the actual MSA.
 The mapping is annotated in the `ColMap` file annotation of an
 `AnnotatedMultipleSequenceAlignment` or in the column names of an `NamedArray` or
-`MultipleSequenceAlignment`. 
+`MultipleSequenceAlignment`.
 
-NOTE: When the MSA results from vertically concatenating MSAs using `vcat`, 
-the column map annotations from the constituent MSAs (such as `1_ColMap`, `2_ColMap`, etc.) 
-are not returned. Instead, the column numbers referenced in the column names are provided. 
+NOTE: When the MSA results from vertically concatenating MSAs using `vcat`,
+the column map annotations from the constituent MSAs (such as `1_ColMap`, `2_ColMap`, etc.)
+are not returned. Instead, the column numbers referenced in the column names are provided.
 To access the original annotations, utilize the `getannotfile` function.
 """
 function getcolumnmapping(msa::AnnotatedMultipleSequenceAlignment)
@@ -514,9 +801,9 @@ function getcolumnmapping(msa::AnnotatedMultipleSequenceAlignment)
     end
 end
 
-function getcolumnmapping(msa::NamedResidueMatrix{AT}) where AT <: AbstractMatrix
+function getcolumnmapping(msa::NamedResidueMatrix{AT}) where {AT<:AbstractMatrix}
     # replace to clean names from hcat
-    Int[ parse(Int, replace(col, r"^[0-9]+_" => "")) for col in names(msa, 2) ]
+    Int[parse(Int, replace(col, r"^[0-9]+_" => "")) for col in names(msa, 2)]
 end
 
 getcolumnmapping(msa::MultipleSequenceAlignment) = getcolumnmapping(namedmatrix(msa))
@@ -534,6 +821,11 @@ function getsequencemapping(msa::AnnotatedMultipleSequenceAlignment, seq_num::In
     getsequencemapping(msa, sequencenames(msa)[seq_num])
 end
 
+function getsequencemapping(seq::Union{AnnotatedAlignedSequence,AnnotatedSequence})
+    seq_id = sequence_id(seq)
+    _str2int_mapping(getannotsequence(seq, seq_id, "SeqMap"))
+end
+
 # Sequences as strings
 # --------------------
 
@@ -546,7 +838,7 @@ stringsequence(msa, id::String)
 
 It returns the selected sequence as a `String`.
 """
-stringsequence(msa::AbstractMatrix{Residue}, i) = String(vec(msa[i,:]))
+stringsequence(msa::AbstractMatrix{Residue}, i) = String(vec(msa[i, :]))
 
 function stringsequence(msa::AbstractMultipleSequenceAlignment, i)
     stringsequence(namedmatrix(msa), i)
@@ -557,7 +849,8 @@ function stringsequence(seq::AbstractMatrix{Residue})
     String(vec(seq))
 end
 
-stringsequence(seq::AbstractAlignedSequence) = stringsequence(namedmatrix(seq))
+stringsequence(seq::Union{AbstractSequence,AbstractAlignedSequence}) =
+    stringsequence(namedmatrix(seq))
 
 # Rename sequences
 # ----------------
@@ -569,25 +862,28 @@ to new names, or one or more pairs going from old to new names. If the `msa` is 
 """
 
 """
-    rename_sequences!(msa, newnames)
+    rename_sequences!(msa, newnames::Vector{T}) where {T<:AbstractString}
     rename_sequences!(msa, old2new::AbstractDict)
     rename_sequences!(msa, old2new::Pair...)
     
 $RENAME_SEQUENCES_DOC The function modifies the `msa` in place and returns it.
 """
-function rename_sequences!(msa::NamedResidueMatrix{AT}, newnames) where AT
+function rename_sequences!(msa::NamedResidueMatrix{AT}, newnames::Vector{T}) where {AT, T<:AbstractString}
+    @assert length(newnames) == size(msa, 1) "The number of new names must match the number of sequences."
     setnames!(msa, newnames, 1)
     msa
 end
 
-function rename_sequences!(msa::MultipleSequenceAlignment, newnames)
+function rename_sequences!(msa::MultipleSequenceAlignment, newnames::Vector{T}) where {T<:AbstractString}
     rename_sequences!(namedmatrix(msa), newnames)
     msa
 end
 
-function rename_sequences!(msa::AnnotatedMultipleSequenceAlignment, newnames)
-    name_mapping = Dict{String, String}(old => new for (old, new) in 
-        zip(sequencename_iterator(msa), newnames) if old != new)
+function rename_sequences!(msa::AnnotatedMultipleSequenceAlignment, newnames::Vector{T}) where {T<:AbstractString}
+    name_mapping = Dict{String,String}(
+        old => new for
+        (old, new) in zip(sequencename_iterator(msa), newnames) if old != new
+    )
     new_annotations = _rename_sequences(annotations(msa), name_mapping)
     rename_sequences!(namedmatrix(msa), newnames)
     msa.annotations = new_annotations
@@ -595,7 +891,7 @@ function rename_sequences!(msa::AnnotatedMultipleSequenceAlignment, newnames)
 end
 
 """
-    rename_sequences(msa, newnames)
+    rename_sequences(msa, newnames::Vector{T}) where {T<:AbstractString}
     rename_sequences(msa, old2new::AbstractDict)
     rename_sequences(msa, old2new::Pair...)
 
@@ -607,7 +903,7 @@ rename_sequences(msa, newnames) = rename_sequences!(deepcopy(msa), newnames)
 # Rename a single sequence or a set of sequences
 
 function _newnames(msa, old2new::AbstractDict)
-    String[ get(old2new, name, name) for name in sequencename_iterator(msa) ]
+    String[get(old2new, name, name) for name in sequencename_iterator(msa)]
 end
 
 _newnames(msa, old2new::Pair...) = _newnames(msa, Dict(old2new))

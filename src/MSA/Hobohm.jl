@@ -7,17 +7,21 @@ Fill `cluster` and `clustersize` matrices. These matrices are assumed to be empt
 alignment (`aln`). `threshold` is the minimum identity value between two sequences
 to be in the same cluster.
 """
-function _fill_hobohmI!(cluster::Vector{Int}, clustersize::Vector{Int},
-                        aln::Vector{Vector{Residue}}, threshold)
+function _fill_hobohmI!(
+    cluster::Vector{Int},
+    clustersize::Vector{Int},
+    aln::Vector{Vector{Residue}},
+    threshold,
+)
     cluster_id = 0
     nseq = length(aln)
-    @inbounds for i in 1:(nseq-1)
+    @inbounds for i = 1:(nseq-1)
         if cluster[i] == 0
             cluster_id += 1
             cluster[i] = cluster_id
             clustersize[cluster_id] += 1
             ref_seq = aln[i]
-            for j in (i+1):nseq
+            for j = (i+1):nseq
                 if cluster[j] == 0 && percentidentity(ref_seq, aln[j], threshold)
                     cluster[j] = cluster_id
                     clustersize[cluster_id] += 1
@@ -40,7 +44,7 @@ by the number of sequences in the cluster.
 function _get_sequence_weight(clustersize, cluster)
     nseq = length(cluster)
     sequence_weight = Array{Float64}(undef, nseq)
-    for i in 1:nseq
+    for i = 1:nseq
         @inbounds sequence_weight[i] = 1.0 / clustersize[cluster[i]]
     end
     Weights(sequence_weight, Float64(length(clustersize)))
@@ -55,8 +59,8 @@ Protein Science 1.3 (1992): 409-417.*
 function hobohmI(msa::AbstractMatrix{Residue}, threshold)
     aln = getresiduesequences(msa)
     nseq = length(aln)
-    cluster = zeros(Int,nseq)
-    clustersize = zeros(Int,nseq)
+    cluster = zeros(Int, nseq)
+    clustersize = zeros(Int, nseq)
     _fill_hobohmI!(cluster, clustersize, aln, threshold)
     Clusters(clustersize, cluster, _get_sequence_weight(clustersize, cluster))
 end

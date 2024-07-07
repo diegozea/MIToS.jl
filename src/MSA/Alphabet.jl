@@ -1,4 +1,6 @@
-"Abstract type to define residue alphabet types."
+"""
+Abstract type to define residue alphabet types.
+"""
 abstract type ResidueAlphabet end
 
 """
@@ -9,7 +11,6 @@ julia> using MIToS.MSA
 
 julia> GappedAlphabet()
 GappedAlphabet of length 21. Residues : res"ARNDCQEGHILKMFPSTWYV-"
-
 ```
 """
 struct GappedAlphabet <: ResidueAlphabet end
@@ -22,7 +23,6 @@ julia> using MIToS.MSA
 
 julia> UngappedAlphabet()
 UngappedAlphabet of length 20. Residues : res"ARNDCQEGHILKMFPSTWYV"
-
 ```
 """
 struct UngappedAlphabet <: ResidueAlphabet end
@@ -39,7 +39,6 @@ ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
 
 julia> ab[Residue('K')]
 2
-
 ```
 """
 struct ReducedAlphabet <: ResidueAlphabet
@@ -75,21 +74,24 @@ function ReducedAlphabet(str::AbstractString)
         group_names[pos] = string(group_names[pos], char)
         mapping[int_residue] = pos
     end
-    named = NamedArray(collect(1:pos), (
-        OrderedDict{String,Int}(group_names[i] => i for i in 1:pos),), ("Groups",))
+    named = NamedArray(
+        collect(1:pos),
+        (OrderedDict{String,Int}(group_names[i] => i for i = 1:pos),),
+        ("Groups",),
+    )
     ReducedAlphabet(mapping, named, pos)
 end
 
 # Iteration Interface
 # -------------------
 
-Base.length(ab::UngappedAlphabet)  = 20
-Base.length(ab::GappedAlphabet)    = 21
+Base.length(ab::UngappedAlphabet) = 20
+Base.length(ab::GappedAlphabet) = 21
 Base.length(ab::ReducedAlphabet) = ab.len
 
 Base.eltype(::ResidueAlphabet) = Int
 
-function Base.iterate(ab::ResidueAlphabet, state=0)
+function Base.iterate(ab::ResidueAlphabet, state = 0)
     if state ≥ length(ab)
         return nothing
     else
@@ -102,8 +104,15 @@ end
 # ----
 
 function Base.show(io::IO, ab::ResidueAlphabet)
-    print(io, typeof(ab), " of length ", length(ab), ". Residues : res\"",
-          join(_to_char[1:length(ab)]), "\"")
+    print(
+        io,
+        typeof(ab),
+        " of length ",
+        length(ab),
+        ". Residues : res\"",
+        join(_to_char[1:length(ab)]),
+        "\"",
+    )
 end
 
 function Base.show(io::IO, ab::ReducedAlphabet)
@@ -114,7 +123,7 @@ function Base.show(io::IO, ab::ReducedAlphabet)
         if length(chars) == 1
             print(io, chars[1])
         elseif length(chars) > 1
-            print(io, "(", join(chars),")")
+            print(io, "(", join(chars), ")")
         end
     end
     print(io, "\"")
@@ -177,19 +186,20 @@ julia> names(ab)
  "C"
  "G"
  "P"
-
 ```
 """
 Base.names(alphabet::ReducedAlphabet) = names(alphabet.named, 1)
-Base.names(alphabet::ResidueAlphabet) = String[ string(Residue(i)) for i in alphabet ]
+Base.names(alphabet::ResidueAlphabet) = String[string(Residue(i)) for i in alphabet]
 
 # Dict of names to indexes
 # ------------------------
 
-@inline _getdict(n::NamedArray{Int,1,Array{Int,1},Tuple{OrderedDict{String,Int}}}) = n.dicts[1]
+@inline _getdict(n::NamedArray{Int,1,Array{Int,1},Tuple{OrderedDict{String,Int}}}) =
+    n.dicts[1]
 
-const _UngappedAlphabet_Names = OrderedDict{String,Int}(string(Residue(i))=>i for i in 1:20)
-const _GappedAlphabet_Names = OrderedDict{String,Int}(string(Residue(i))=>i for i in 1:21)
+const _UngappedAlphabet_Names =
+    OrderedDict{String,Int}(string(Residue(i)) => i for i = 1:20)
+const _GappedAlphabet_Names = OrderedDict{String,Int}(string(Residue(i)) => i for i = 1:21)
 
 @inline getnamedict(alphabet::UngappedAlphabet) = _UngappedAlphabet_Names
 @inline getnamedict(alphabet::GappedAlphabet) = _GappedAlphabet_Names
@@ -213,7 +223,6 @@ OrderedCollections.OrderedDict{String, Int64} with 8 entries:
   "C"     => 6
   "G"     => 7
   "P"     => 8
-
 ```
 """
 @inline getnamedict(alphabet::ReducedAlphabet) = _getdict(copy(alphabet.named))

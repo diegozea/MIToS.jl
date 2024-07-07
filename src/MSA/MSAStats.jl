@@ -18,7 +18,7 @@ function gapfraction(x::AbstractArray{Residue})
 end
 
 function gapfraction(x::AbstractArray{Residue}, dimension::Int)
-    mapslices(gapfraction, x, dims=dimension)
+    mapslices(gapfraction, x, dims = dimension)
 end
 
 """
@@ -29,7 +29,7 @@ for calculation of the residue fraction over the given dimension
 residuefraction(x::AbstractArray{Residue}) = 1.0 - gapfraction(x)
 
 function residuefraction(x::AbstractArray{Residue}, dimension::Int)
-    mapslices(residuefraction, x, dims=dimension)
+    mapslices(residuefraction, x, dims = dimension)
 end
 
 macro keep_names_dimension(functions)
@@ -37,32 +37,45 @@ macro keep_names_dimension(functions)
     n = length(function_names)
     definitions = Array{Any}(undef, n)
 
-    for i in 1:n
+    for i = 1:n
         f = esc(function_names[i])
         definitions[i] = quote
 
-            function ($f)(msa::NamedResidueMatrix{T}, dimension::Int) where T
+            function ($f)(msa::NamedResidueMatrix{T}, dimension::Int) where {T}
                 result = ($f)(getarray(msa), dimension)
                 if dimension == 1
-                    name_list = names(msa,2)
+                    name_list = names(msa, 2)
                     N = length(name_list)
-                    NamedArray(result,
-                        (OrderedDict{String,Int}(Utils._get_function_name(string($f))=>1),
-                         OrderedDict{String,Int}(name_list[i]=>i for i in 1:N)),
-                        ("Function","Col"))
+                    NamedArray(
+                        result,
+                        (
+                            OrderedDict{String,Int}(
+                                Utils._get_function_name(string($f)) => 1,
+                            ),
+                            OrderedDict{String,Int}(name_list[i] => i for i = 1:N),
+                        ),
+                        ("Function", "Col"),
+                    )
                 elseif dimension == 2
-                    name_list = names(msa,1)
+                    name_list = names(msa, 1)
                     N = length(name_list)
-                    NamedArray(result,
-                        (OrderedDict{String,Int}(name_list[i]=>i for i in 1:N),
-                         OrderedDict{String,Int}(Utils._get_function_name(string($f))=>1)),
-                        ("Seq","Function"))
+                    NamedArray(
+                        result,
+                        (
+                            OrderedDict{String,Int}(name_list[i] => i for i = 1:N),
+                            OrderedDict{String,Int}(
+                                Utils._get_function_name(string($f)) => 1,
+                            ),
+                        ),
+                        ("Seq", "Function"),
+                    )
                 else
                     throw(ArgumentError("Dimension must be 1 or 2."))
                 end
             end
 
-            ($f)(a::AbstractAlignedObject, dimension::Int) = ($f)(namedmatrix(a), dimension)
+            ($f)(a::AbstractResidueMatrix, dimension::Int) =
+                ($f)(namedmatrix(a), dimension)
         end
     end
 
@@ -71,17 +84,21 @@ end
 
 @keep_names_dimension([gapfraction, residuefraction])
 
-"Coverage of the sequences with respect of the number of positions on the MSA"
+"""
+Coverage of the sequences with respect of the number of positions on the MSA
+"""
 function coverage(msa::AbstractMatrix{Residue})
     result = residuefraction(msa, 2)
     if isa(result, NamedArray) && ndims(result) == 2
-        setnames!(result,["coverage"],2)
+        setnames!(result, ["coverage"], 2)
     end
     result
 end
 
 coverage(msa::AbstractAlignedObject) = coverage(namedmatrix(msa))
 
-"Fraction of gaps per column/position on the MSA"
+"""
+Fraction of gaps per column/position on the MSA
+"""
 columngapfraction(msa::AbstractMatrix{Residue}) = gapfraction(msa, 1)
 columngapfraction(msa::AbstractAlignedObject) = columngapfraction(namedmatrix(msa))

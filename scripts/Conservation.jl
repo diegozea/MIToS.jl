@@ -1,10 +1,7 @@
 #!/usr/bin/env julia
 
-using Pkg
-using Dates
-using Distributed
-using MIToS.Utils.Scripts
 using MIToS
+include(joinpath(pkgdir(MIToS), "scripts", "_setup_script.jl"))
 
 Args = parse_commandline(
     # TO DO ----------------------------------------------------------------------
@@ -12,49 +9,46 @@ Args = parse_commandline(
     Dict(
         :help => "Format of the MSA: Stockholm, Raw or FASTA",
         :arg_type => String,
-        :default => "Stockholm"
+        :default => "Stockholm",
     ),
     ["--clustering", "-c"],
-    Dict(
-        :help => "Sequence clustering (Hobohm I)",
-        :action => :store_false
-    ),
+    Dict(:help => "Sequence clustering (Hobohm I)", :action => :store_false),
     ["--threshold", "-i"],
     Dict(
         :help => "Percent identity threshold for sequence clustering (Hobohm I)",
         :arg_type => Float64,
-        :default => 62.0
+        :default => 62.0,
     ),
     # Keywords...
-    description="""
-    This takes a MSA file as input and it calculates and saves on *.conservation.csv the
-    Shannon entropy (H) and Kullback-Leibler divergence (KL) values for each column
-    (Johansson and Toh 2010).\n
-    It is possible to do a sequence clustering using the Hobohm I algorithm to avoid the
-    effect of sequence redundancy in the conservation scores. Each sequence in a cluster
-    is weighted using the inverse of the number of elements in that cluster.\n
-    Shannon entropy is a common measure of the residue variability of a particular MSA column.
-    For each column, we consider the frequency of the 20 natural protein residues. This uses
-    the Euler's number e as the base of the logarithm, so the entropy is measured in nats.\n
-    The Kullback-Leibler divergence, also called relative entropy, is a measure of residue
-    conservation. It measures how much a probability distribution differs from a background
-    distribution. In particular, this implementation measures the divergence between the
-    residue distribution of an MSA column and the probabilities derived from the BLOSUM62
-    substitution matrix.\n
-    Johansson, F., Toh, H., 2010.
-    A comparative study of conservation and variation scores.
-    BMC Bioinformatics 11, 388.
-    """,
-    output=".conservation.csv",
-	mitos_version=loadedversion(MIToS)
+    description = """
+      This takes a MSA file as input and it calculates and saves on *.conservation.csv the
+      Shannon entropy (H) and Kullback-Leibler divergence (KL) values for each column
+      (Johansson and Toh 2010).\n
+      It is possible to do a sequence clustering using the Hobohm I algorithm to avoid the
+      effect of sequence redundancy in the conservation scores. Each sequence in a cluster
+      is weighted using the inverse of the number of elements in that cluster.\n
+      Shannon entropy is a common measure of the residue variability of a particular MSA column.
+      For each column, we consider the frequency of the 20 natural protein residues. This uses
+      the Euler's number e as the base of the logarithm, so the entropy is measured in nats.\n
+      The Kullback-Leibler divergence, also called relative entropy, is a measure of residue
+      conservation. It measures how much a probability distribution differs from a background
+      distribution. In particular, this implementation measures the divergence between the
+      residue distribution of an MSA column and the probabilities derived from the BLOSUM62
+      substitution matrix.\n
+      Johansson, F., Toh, H., 2010.
+      A comparative study of conservation and variation scores.
+      BMC Bioinformatics 11, 388.
+      """,
+    output = ".conservation.csv",
+    mitos_version = loadedversion(MIToS),
     # ----------------------------------------------------------------------------
-    )
+)
 
 set_parallel(Args["parallel"])
 
 @everywhere begin
 
-    const args = remotecall_fetch(()->Args,1)
+    const args = remotecall_fetch(() -> Args, 1)
 
     import MIToS.Utils.Scripts: script
 
@@ -64,11 +58,13 @@ set_parallel(Args["parallel"])
     using PairwiseListMatrices
     # ----------------------------------------------------------------------------
 
-    function script(input::Union{Base.LibuvStream,  AbstractString},
-                    args,
-                    fh_out::Union{Base.LibuvStream, IO})
+    function script(
+        input::Union{Base.LibuvStream,AbstractString},
+        args,
+        fh_out::Union{Base.LibuvStream,IO},
+    )
         # TO DO ------------------------------------------------------------------
-		println(fh_out, "# MIToS ", loadedversion(MIToS), " Conservation.jl ", now())
+        println(fh_out, "# MIToS ", loadedversion(MIToS), " Conservation.jl ", now())
         println(fh_out, "# used arguments:")
         for (key, value) in args
             println(fh_out, "# \t", key, "\t\t", value)
@@ -86,16 +82,17 @@ set_parallel(Args["parallel"])
         println(fh_out, "# Number of sequences: ", nsequences(msa))
         if args["clustering"]
             clusters = hobohmI(msa, args["threshold"])
-            println(fh_out, "# Number of sequence clusters: ", nclusters(clusters))
+            println(fh_out, "# Number of sequence clusters: ", length(clusters.clustersize))
         else
             clusters = NoClustering()
         end
-        probability_table = Probabilities(ContingencyTable(Float64, Val{1}, UngappedAlphabet()))
+        probability_table =
+            Probabilities(ContingencyTable(Float64, Val{1}, UngappedAlphabet()))
 
         KL = mapcolfreq!(kullback_leibler, msa, probability_table, weights = clusters)
-        H  = mapcolfreq!(entropy, msa, probability_table, weights = clusters)
+        H = mapcolfreq!(shannon_entropy, msa, probability_table, weights = clusters)
 
-        col_names = names(KL,2)
+        col_names = names(KL, 2)
         println(fh_out, "i,H,KL")
         for i in eachindex(col_names)
             println(fh_out, col_names[i], ",", H[i], ",", KL[i])

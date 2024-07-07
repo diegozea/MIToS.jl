@@ -4,23 +4,23 @@
         Matrix{Residue},
         NamedResidueMatrix{Array{Residue,2}},
         MultipleSequenceAlignment,
-        AnnotatedMultipleSequenceAlignment
-        )
+        AnnotatedMultipleSequenceAlignment,
+    )
 
     pf09645_sto = joinpath(DATA, "PF09645_full.stockholm")
     gaoetal2011 = joinpath(DATA, "Gaoetal2011.fasta")
 
-    gaoetal_msas = [ read_file(gaoetal2011, FASTA, T) for T in msa_types ]
-    pfam_msas    = [ read_file(pf09645_sto, Stockholm, T) for T in msa_types ]
+    gaoetal_msas = [read_file(gaoetal2011, FASTA, T) for T in msa_types]
+    pfam_msas = [read_file(pf09645_sto, Stockholm, T) for T in msa_types]
 
-    pfam    = pfam_msas[end]
+    pfam = pfam_msas[end]
     pfam_na = pfam_msas[end-1] # na: not annotated
 
     @testset "Boolean mask array" begin
 
-        matrix_mask = pfam[1:1,:] .== GAP
-        @test size(matrix_mask) == (1,110)
-        
+        matrix_mask = pfam[1:1, :] .== GAP
+        @test size(matrix_mask) == (1, 110)
+
         @test size(MSA._column_mask(matrix_mask, pfam)) == (110,)
         @test MSA._column_mask(vec(matrix_mask), pfam) == vec(matrix_mask)
         @test MSA._column_mask(col -> col[1] == GAP, pfam) ==
@@ -30,8 +30,8 @@
         @test MSA._column_mask(int_mask, pfam) == int_mask
         @test MSA._column_mask(Colon(), pfam) == Colon()
 
-        matrix_mask = pfam[:,1:1] .== Residue('-')
-        @test size(matrix_mask) == (4,1)
+        matrix_mask = pfam[:, 1:1] .== Residue('-')
+        @test size(matrix_mask) == (4, 1)
 
         @test size(MSA._sequence_mask(matrix_mask, pfam)) == (4,)
         @test MSA._sequence_mask(vec(matrix_mask), pfam) == vec(matrix_mask)
@@ -47,16 +47,19 @@
         end
 
         for msa in pfam_msas
-            @test getsequence(filtersequences(
-                msa, [1,2,3,4] .== 3), 1) == getsequence(msa, 3)
-            @test getsequence(filtersequences(
-                msa, [1,2,3,4] .> 2), 2) == getsequence(msa, 4)
+            @test getsequence(filtersequences(msa, [1, 2, 3, 4] .== 3), 1) ==
+                  getsequence(msa, 3)
+            @test getsequence(filtersequences(msa, [1, 2, 3, 4] .> 2), 2) ==
+                  getsequence(msa, 4)
 
-            @test getsequence(filtersequences(
-                msa, Bool[false,false,true,true] ), 2) == getsequence(msa, 4)
+            @test getsequence(filtersequences(msa, Bool[false, false, true, true]), 2) ==
+                  getsequence(msa, 4)
 
-            @test_throws AssertionError filtersequences(msa, [1,2,3,4,5,6,7,8,9,10] .> 2)
-            @test_throws AssertionError filtersequences(msa, [1,2,3] .> 2)
+            @test_throws AssertionError filtersequences(
+                msa,
+                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] .> 2,
+            )
+            @test_throws AssertionError filtersequences(msa, [1, 2, 3] .> 2)
         end
     end
 
@@ -68,10 +71,11 @@
         end
 
         for msa in pfam_msas
-            @test vec(getresidues(getsequence(filtercolumns(
-                msa, collect(1:110) .<= 10), 4))) == res"QTLNSYKMAE"
+            @test vec(
+                getresidues(getsequence(filtercolumns(msa, collect(1:110) .<= 10), 4)),
+            ) == res"QTLNSYKMAE"
 
-            @test_throws AssertionError filtercolumns(msa, [1,2,3] .> 2)
+            @test_throws AssertionError filtercolumns(msa, [1, 2, 3] .> 2)
             @test_throws AssertionError filtercolumns(msa, collect(1:200) .<= 10)
         end
 
@@ -88,7 +92,7 @@
             filtered_seq = filtercolumns!(copy(seq), seq .== Residue('Q'))
 
             @test filtercolumns(seq, seq .== Residue('Q')) ==
-                filtercolumns(seq, seq .== Residue('Q'))
+                  filtercolumns(seq, seq .== Residue('Q'))
 
             @test_throws AssertionError filtercolumns(annseq, 1:(length(seq)-10) .> 2)
             @test_throws AssertionError filtercolumns(seq, 1:(length(seq)+10) .<= 10)
@@ -98,8 +102,7 @@
             @test vec(getresidues(filtered_seq)) == res"QQQQQQQQQQQQQQ"
 
             @test getannotcolumn(filtered_annseq, "SS_cons") == "XHHEXXXXXXXXXX"
-            @test getannotresidue(filtered_annseq,
-                "F112_SSV1/3-112", "SS") == "XHHEXXXXXXXXXX"
+            @test getannotresidue(filtered_annseq, "SS") == "XHHEXXXXXXXXXX"
         end
     end
 
@@ -111,12 +114,12 @@
                 copy_msa = copy(msa)
                 setreference!(copy_msa, 4)
                 # Sequences are matrices
-                @test vec(getresidues(getsequence(copy_msa,1))) ==
-                    res"QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ"
+                @test vec(getresidues(getsequence(copy_msa, 1))) ==
+                      res"QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ"
                 setreference!(copy_msa, "C3N734_SULIY/1-95")
                 @test_throws ErrorException setreference!(copy_msa, "FALSE_SEQID/1-95")
-                @test vec(getresidues(getsequence(copy_msa,4))) ==
-                    res"QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ"
+                @test vec(getresidues(getsequence(copy_msa, 4))) ==
+                      res"QTLNSYKMAEIMYKILEKKGELTLEDILAQFEISVPSAYNIQRALKAICERHPDECEVQYKNRKTTFKWIKQEQKEEQKQEQTQDNIAKIFDAQPANFEQTDQGFIKAKQ"
                 @test copy_msa == msa
             end
         end
@@ -127,17 +130,17 @@
                 copy_msa = copy(msa)
 
                 setreference!(copy_msa, 4)
-                gapstrip!(copy_msa, gaplimit=1.0, coveragelimit=0.0)
+                gapstrip!(copy_msa, gaplimit = 1.0, coveragelimit = 0.0)
                 @test size(copy_msa) == (4, 110)
 
                 setreference!(copy_msa, 1)
                 gapstrip!(copy_msa)
-                residuefraction(copy_msa[1,:]) == 1.0
+                residuefraction(copy_msa[1, :]) == 1.0
             end
 
             for msa in pfam_msas[1:2]
-                @test size(gapstrip(msa, gaplimit=1.0, coveragelimit=0.0)) == (4, 92)
-                @test residuefraction(gapstrip(msa)[1,:]) == 1.0
+                @test size(gapstrip(msa, gaplimit = 1.0, coveragelimit = 0.0)) == (4, 92)
+                @test residuefraction(gapstrip(msa)[1, :]) == 1.0
             end
         end
 
@@ -146,11 +149,11 @@
             for msa in pfam_msas[3:4]
                 copy_msa = copy(msa)
                 adjustreference!(copy_msa)
-                residuefraction(copy_msa[1,:]) == 1.0
+                residuefraction(copy_msa[1, :]) == 1.0
             end
 
             for msa in pfam_msas[1:2]
-                @test residuefraction(adjustreference(msa)[1,:]) == 1.0
+                @test residuefraction(adjustreference(msa)[1, :]) == 1.0
             end
         end
     end

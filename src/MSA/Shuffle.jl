@@ -8,8 +8,11 @@ function _subset_indices(msa::Matrix{Residue}, dims::Int, subset, fixed_referenc
         end
     else
         if eltype(subset) !== Int
-            throw(ArgumentError(
-                "For a Matrix{Residue}, subset must be an iterator of Int values or Colon()"))
+            throw(
+                ArgumentError(
+                    "For a Matrix{Residue}, subset must be an iterator of Int values or Colon()",
+                ),
+            )
         end
         if isa(subset, AbstractRange)
             collect(subset)
@@ -36,22 +39,34 @@ function _subset_indices(msa::NamedResidueMatrix, dims::Int, subset, fixed_refer
     indices
 end
 
-function _subset_indices(msa::AbstractMultipleSequenceAlignment, dims, subset, fixed_reference)::Vector{Int}
+function _subset_indices(
+    msa::AbstractMultipleSequenceAlignment,
+    dims,
+    subset,
+    fixed_reference,
+)::Vector{Int}
     _subset_indices(msa.matrix, dims, subset, fixed_reference)
 end
 
-function shuffle_msa!(r::AbstractRNG, msa::AbstractMatrix{Residue}, subset=Colon();
-    dims::Int=2, fixedgaps::Bool=true, fixed_reference::Bool=false)
+function shuffle_msa!(
+    r::AbstractRNG,
+    msa::AbstractMatrix{Residue},
+    subset = Colon();
+    dims::Int = 2,
+    fixedgaps::Bool = true,
+    fixed_reference::Bool = false,
+)
     @assert dims == 1 || dims == 2 "dims must be 1 for shuffling along sequences or 2 for columns"
     subset_indices = _subset_indices(msa, dims, subset, fixed_reference)
     msa_matrix = getresidues(msa)
     nseq, ncol = size(msa_matrix)
-    mask =  fixedgaps ? msa_matrix .!= GAP : trues(nseq, ncol)
+    mask = fixedgaps ? msa_matrix .!= GAP : trues(nseq, ncol)
     if fixed_reference
         mask[1, :] .= 0
     end
     for i in subset_indices
-        to_shuffle = dims == 1 ? view(msa_matrix, i, mask[i,:]) : view(msa_matrix, mask[:,i], i)
+        to_shuffle =
+            dims == 1 ? view(msa_matrix, i, mask[i, :]) : view(msa_matrix, mask[:, i], i)
         shuffle!(r, to_shuffle)
     end
     msa
@@ -63,8 +78,14 @@ function shuffle_msa!(r::AbstractRNG, msa::MultipleSequenceAlignment, args...; k
     msa
 end
 
-function shuffle_msa!(r::AbstractRNG, msa::AnnotatedMultipleSequenceAlignment, subset=Colon();
-    dims::Int=2, fixedgaps::Bool=true, fixed_reference::Bool=false)
+function shuffle_msa!(
+    r::AbstractRNG,
+    msa::AnnotatedMultipleSequenceAlignment,
+    subset = Colon();
+    dims::Int = 2,
+    fixedgaps::Bool = true,
+    fixed_reference::Bool = false,
+)
     shuffle_msa!(r, msa.matrix, subset; dims, fixedgaps, fixed_reference)
 
     # Annotate the modifications
@@ -78,7 +99,7 @@ function shuffle_msa!(r::AbstractRNG, msa::AnnotatedMultipleSequenceAlignment, s
         " Gaps"
     elseif fixed_reference
         " Residues in the first sequence"
-    else 
+    else
         ""
     end
     if !isempty(fixed)
@@ -97,7 +118,7 @@ function shuffle_msa!(r::AbstractRNG, msa::AnnotatedMultipleSequenceAlignment, s
     else
         shuffled = zeros(Int, ncolumns(msa))
         shuffled[subset_indices] .= 1
-        setannotcolumn!(msa, "Shuffled", join(shuffled))    
+        setannotcolumn!(msa, "Shuffled", join(shuffled))
     end
     msa
 end
@@ -171,10 +192,18 @@ residues in a column.
 
 **DEPRECATED:** This method is deprecated. Use [`shuffle_msa!`](@ref) instead.
 """
-function Random.shuffle!(r::AbstractRNG, msa::AbstractMatrix{Residue},
-                       dim::Int, fixedgaps::Bool=true)
-    @warn "The function `shuffle!(r, msa, dim, fixedgaps)` is deprecated. Use `shuffle_msa!(r, msa; dims, fixedgaps)` instead."
-    shuffle_msa!(r, msa, Colon(); dims=dim, fixedgaps=fixedgaps) |> getresidues
+function Random.shuffle!(
+    r::AbstractRNG,
+    msa::AbstractMatrix{Residue},
+    dim::Int,
+    fixedgaps::Bool = true,
+)
+    Base.depwarn(
+        "The function `shuffle!(r, msa, dim, fixedgaps)` is deprecated. Use `shuffle_msa!(r, msa; dims, fixedgaps)` instead.",
+        :shuffle!,
+        force = true,
+    )
+    shuffle_msa!(r, msa, Colon(); dims = dim, fixedgaps = fixedgaps) |> getresidues
 end
 
 function Random.shuffle!(msa::AbstractMatrix{Residue}, args...)
@@ -188,9 +217,18 @@ using the last boolean argument.
 
 **DEPRECATED:** This method is deprecated. Use [`shuffle_msa`](@ref) instead.
 """
-function Random.shuffle(r::AbstractRNG, msa::AbstractMatrix{Residue}, dim::Int, fixedgaps::Bool=true)
-    @warn "The function `shuffle(r, msa, dim, fixedgaps)` is deprecated. Use `shuffle_msa(r, msa; dims, fixedgaps)` instead."
-    shuffle_msa(r, msa, Colon(); dims=dim, fixedgaps=fixedgaps) |> getresidues
+function Random.shuffle(
+    r::AbstractRNG,
+    msa::AbstractMatrix{Residue},
+    dim::Int,
+    fixedgaps::Bool = true,
+)
+    Base.depwarn(
+        "The function `shuffle(r, msa, dim, fixedgaps)` is deprecated. Use `shuffle_msa(r, msa; dims, fixedgaps)` instead.",
+        :shuffle,
+        force = true,
+    )
+    shuffle_msa(r, msa, Colon(); dims = dim, fixedgaps = fixedgaps) |> getresidues
 end
 
 function Random.shuffle(msa::AbstractMatrix{Residue}, args...)

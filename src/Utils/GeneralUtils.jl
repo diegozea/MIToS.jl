@@ -3,7 +3,27 @@ All is used instead of MIToS 1.0 "all" or "*", because it's possible to dispatch
 """
 struct All end
 
-_get_function_name(str::String)::String = split(str,'.')[end]
+_get_function_name(str::String)::String = split(str, '.')[end]
+
+"""
+This function performs the same operation as
+`something(findnext(r"[ \t]+", line, last(last_spaces)+1), 0:-1)` but it is faster.
+"""
+function _find_next_space_or_tab(line, start_pos::Int)
+    for i = start_pos:lastindex(line)
+        char = line[i]
+        if char == ' ' || char == '\t'
+            start_index = i
+            end_index = start_index
+            while end_index <= lastindex(line) &&
+                (line[end_index] == ' ' || line[end_index] == '\t')
+                end_index = nextind(line, end_index)
+            end
+            return start_index:(prevind(line, end_index))
+        end
+    end
+    return 0:-1
+end
 
 """
 `get_n_words{T <: Union{ASCIIString, UTF8String}}(line::T, n::Int)`
@@ -21,7 +41,6 @@ julia> get_n_words("#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHH
  "#=GR"
  "O31698/18-71"
  "SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH"
-
 ```
 """
 function get_n_words(line::String, n::Int)
@@ -29,14 +48,14 @@ function get_n_words(line::String, n::Int)
         return String[]
     end
     words = Array{String}(undef, n)
-    N  = 1
+    N = 1
     last_spaces = 0:0
     while true
         if N == n
             @inbounds words[N] = line[(last(last_spaces)+1):end]
             break
         end
-        spaces = something(findnext(r"[ \t]+", line, last(last_spaces)+1), 0:-1)
+        spaces = _find_next_space_or_tab(line, last(last_spaces) + 1)
         if first(spaces) == 0
             @inbounds words[N] = line[(last(last_spaces)+1):end]
             break
@@ -46,7 +65,7 @@ function get_n_words(line::String, n::Int)
         N += 1
     end
     if N != n
-      resize!(words, N)
+        resize!(words, N)
     end
     words
 end
@@ -65,21 +84,25 @@ Selects the first element of the vector. This is useful for unpacking one elemen
 Throws a warning if there are more elements. `element_name` is *element* by default,
 but the name can be changed using the second argument.
 """
-function select_element(vector::Array{T,1}, element_name::String="element") where T
+function select_element(vector::Array{T,1}, element_name::String = "element") where {T}
     len = length(vector)
     if len == 0
         throw(ErrorException("There is not $element_name"))
     elseif len != 1
         @warn("There are more than one ($len) $element_name using the first.")
     end
-    @inbounds return(vector[1])
+    @inbounds return (vector[1])
 end
 
 """
 Returns a vector with the `part` ("upper" or "lower") of the square matrix `mat`.
 The `diagonal` is not included by default.
 """
-function matrix2list(mat::AbstractMatrix{T}; part="upper", diagonal::Bool=false) where T
+function matrix2list(
+    mat::AbstractMatrix{T};
+    part = "upper",
+    diagonal::Bool = false,
+) where {T}
     nrow, ncol = size(mat)
     if nrow != ncol
         throw(ErrorException("Should be a square matrix"))
@@ -93,16 +116,16 @@ function matrix2list(mat::AbstractMatrix{T}; part="upper", diagonal::Bool=false)
     end
     list = Array{T}(undef, N)
     k = 1
-    if part=="upper"
-        for i in 1:(ncol-d)
-            for j in (i+d):ncol
+    if part == "upper"
+        for i = 1:(ncol-d)
+            for j = (i+d):ncol
                 list[k] = mat[i, j]
                 k += 1
             end
         end
-    elseif part=="lower"
-        for j in 1:(ncol-d)
-            for i in (j+d):ncol
+    elseif part == "lower"
+        for j = 1:(ncol-d)
+            for i = (j+d):ncol
                 list[k] = mat[i, j]
                 k += 1
             end
@@ -118,12 +141,12 @@ Returns a square symmetric matrix from the vector `vec`. `side` is the number of
 rows/columns. The `diagonal` is not included by default, set to `true` if there are
 diagonal elements in the list.
 """
-function list2matrix(vec::AbstractVector{T}, side::Int; diagonal::Bool=false) where T
+function list2matrix(vec::AbstractVector{T}, side::Int; diagonal::Bool = false) where {T}
     d = diagonal ? 0 : 1
     mat = zeros(T, side, side)
     k = 1
-    for i in 1:(side-d)
-        for j in (i+d):side
+    for i = 1:(side-d)
+        for j = (i+d):side
             value = vec[k]
             mat[i, j] = value
             mat[j, i] = value
