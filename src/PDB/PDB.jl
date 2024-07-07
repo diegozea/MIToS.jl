@@ -80,13 +80,13 @@ export  # PDBResidues
     hydrophobic,
     # PDBParser
     PDBFile,
+    # MMCIF
+    MMCIFFile,
     # PDBMLParser
     PDBML,
     downloadpdb,
     downloadpdbheader,
     getpdbdescription,
-    # MMCIF
-    MMCIFFile,
     # Kabsch
     kabsch,
     center!,
@@ -122,8 +122,8 @@ include("Sequences.jl")
 include("AtomsData.jl")
 include("Interaction.jl")
 include("PDBParser.jl")
-include("PDBMLParser.jl")
 include("MMCIF.jl")
+include("PDBMLParser.jl")
 include("BioStructures.jl")
 include("Kabsch.jl")
 include("Plots.jl")

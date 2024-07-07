@@ -32,16 +32,17 @@ end
 
 # Function to download the PDB or CIF file based on the UniProt Accession
 """
-    download_alphafold_structure(uniprot_accession::String; format::Type{T}=PDBFile) where T<:FileFormat
+    download_alphafold_structure(uniprot_accession::String; format::Type{T}=MMCIFFile) where T<:FileFormat
 
 This function downloads the structure file (PDB or mmCIF) for a given UniProt Accession
 from AlphaFoldDB. The `uniprot_accession` parameter specifies the UniProt Accession of the
 protein, e.g. `"P00520"`. The `format` parameter specifies the file format to download,
-with the default being `PDBFile`. Set `format` to `MMCIFFile` to download the mmCIF file.
+with the default being mmCIF, i.e. `MMCIFFile`. You can set `format` to `PDBFile` if you
+want to download a PDB file.
 """
 function download_alphafold_structure(
     uniprot_accession::String;
-    format::Type{T} = PDBFile,
+    format::Type{T} = MMCIFFile,
 ) where {T<:FileFormat}
 
     structure_info = query_alphafolddb(uniprot_accession)

@@ -164,13 +164,16 @@ function _inputnameforgzip(outfile)
     string(outfile, ".gz")
 end
 
+_file_extension(format::Type{MMCIFFile}) = ".cif.gz"
 _file_extension(format::Type{PDBML}) = ".xml.gz"
 _file_extension(format::Type{PDBFile}) = ".pdb.gz"
 
 """
+    downloadpdb(pdbcode::String; format::Type{T} = MMCIFFile, filename, baseurl, kargs...)
+
 It downloads a gzipped PDB file from PDB database.
 It requires a four character `pdbcode`.
-Its default `format` is `PDBML` (PDB XML) and It uses the `baseurl`
+Its default `format` is `MMCIFFile` (mmCIF) and It uses the `baseurl`
 "http://www.rcsb.org/pdb/files/".
 `filename` is the path/name of the output file.
 This function calls `MIToS.Utils.download_file` that calls `Downloads.download`. So, you
@@ -178,7 +181,7 @@ can use keyword arguments, such as `headers`, from that function.
 """
 function downloadpdb(
     pdbcode::String;
-    format::Type{T} = PDBML,
+    format::Type{T} = MMCIFFile,
     filename::String = uppercase(pdbcode) * _file_extension(format),
     baseurl::String = "http://www.rcsb.org/pdb/files/",
     kargs...,

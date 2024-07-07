@@ -76,7 +76,7 @@ The returned dictionary can be used to get the PDB residue associated to each co
 ```@example pfam_example
 using MIToS.PDB
 pdbfile = downloadpdb("3ML3")
-pdb = read_file(pdbfile, PDBML)
+pdb = read_file(pdbfile, MMCIFFile)
 resdict = residuesdict(pdb, model="1", chain="A", group="ATOM")
 
 msaresidues(msa, resdict, col2res)

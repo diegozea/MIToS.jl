@@ -18,8 +18,9 @@
     @testset "Test downloadpdb" begin
 
         code = "2VQC"
-        pdb = read_file(txt(code), PDBFile)
-        filename = downloadpdb(code)
+        pdb = read_file(txt(code), PDBFile) # reference
+        # PDBML
+        filename = downloadpdb(code, format = PDBML)
         try
             pdbml = read_file(filename, PDBML)
 
@@ -30,7 +31,19 @@
         finally
             rm(filename)
         end
+        # mmCIF (the default format)
+        filename = downloadpdb(code)
+        try
+            mmcif = read_file(filename, MMCIFFile)
 
+            @test findfirst(x -> x.id.number == "4", pdb) ==
+                  findfirst(x -> x.id.number == "4", mmcif)
+            @test findfirst(x -> x.id.number == "73", pdb) ==
+                  findfirst(x -> x.id.number == "73", mmcif)
+        finally
+            rm(filename)
+        end
+        # PDB
         filename = downloadpdb(
             code,
             headers = Dict(

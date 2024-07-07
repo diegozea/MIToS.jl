@@ -29,7 +29,7 @@ Depth = 4
 
 This module exports the `downloadpdb` function, to retrieve a PDB file from  
 [PDB database![](./assets/external-link.png)](http://www.rcsb.org/pdb/home/home.do). This
-function downloads a gzipped `PDBML` file, which could be easily read it with MIToS
+function downloads a gzipped `MMCIFFile` file, which could be easily read it with MIToS
 by default, but you are able to determine the `format` as `PDBFile` if you want it.  
 
 ```@example pdb_io
@@ -230,7 +230,7 @@ using MIToS.PDB
 
 pdbfile = downloadpdb("2HHB")
 
-res_2hhb = read_file(pdbfile, PDBML)
+res_2hhb = read_file(pdbfile, MMCIFFile)
 
 chain_A = select_residues(res_2hhb, model="1", chain="A", group="ATOM", residue=All)
 chain_C = select_residues(res_2hhb, model="1", chain="C", group="ATOM", residue=All)

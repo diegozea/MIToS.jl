@@ -37,8 +37,12 @@ The PDB module now depends on the `BioStructures` package. The main changes are:
 * The `PDB` module now exports the `MMCIFFile` file format to read and write PDB files in 
   the mmCIF format (using `BioStructures` under the hood).
 
-* The `download_alphafold_structure` function can now download the predicted structures 
-  from the *AlphaFold Protein Structure Database* using the mmCIF format (`format=MMCIFFile`).
+* *[Breaking change]* The `download_alphafold_structure` function can now download the 
+  predicted structures from the *AlphaFold Protein Structure Database* using the mmCIF 
+  format (`format=MMCIFFile`). This is the new default format. Therefore, you should use
+  `format=PDBFile` to get a PDB file as before. For example,
+  `download_alphafold_structure("P00520")` in previous versions is the same as 
+  `download_alphafold_structure("P00520", format=PDBFile)` in this version.
 
 * *[Breaking change]* The `query_alphafolddb` function now returns the EntrySummary object 
   of the returned JSON response instead of the Root list. Therefore, there is no need to 
@@ -46,6 +50,10 @@ The PDB module now depends on the `BioStructures` package. The main changes are:
   `query_alphafolddb("P00520")[1]["uniprotId"]` would be replaced by
   `query_alphafolddb("P00520")["uniprotId"]`.
 
+* *[Breaking change]* The `downloadpdb` function now returns a mmCIF file by default.
+  Therefore, you should use `format=PDBML` to get a PDBML file. As an example of migration,
+  `downloadpdb("1IVO")` should be replaced by `downloadpdb("1IVO", format=PDBML)`, unless you
+  want to get a mmCIF file.
 
 ### Changes from v2.21.0 to v2.22.0
 
