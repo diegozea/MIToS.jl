@@ -32,6 +32,21 @@ The MSA module now includes ways to read, write, and work with unaligned protein
   `parse_commandline` and `runscript` functions. Therefore, `ArgParse` and 
   `Distributed` are no longer dependencies of MIToS.
 
+The PDB module now depends on the `BioStructures` package. The main changes are:
+
+* The `PDB` module now exports the `MMCIFFile` file format to read and write PDB files in 
+  the mmCIF format (using `BioStructures` under the hood).
+
+* The `download_alphafold_structure` function can now download the predicted structures 
+  from the *AlphaFold Protein Structure Database* using the mmCIF format (`format=MMCIFFile`).
+
+* *[Breaking change]* The `query_alphafolddb` function now returns the EntrySummary object 
+  of the returned JSON response instead of the Root list. Therefore, there is no need to 
+  take the first element of the list to get the requiered information. For example,
+  `query_alphafolddb("P00520")[1]["uniprotId"]` would be replaced by
+  `query_alphafolddb("P00520")["uniprotId"]`.
+
+
 ### Changes from v2.21.0 to v2.22.0
 
 This versions introduces several breaking changes to improve the usability of the 

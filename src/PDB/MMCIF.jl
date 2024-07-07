@@ -21,17 +21,24 @@ function _parse_mmcif_to_pdbresidues(mmcif_dict::MMCIFDict, label::Bool)
     elements = mmcif_dict["_atom_site.type_symbol"] # Element, e.g. "C"
     group_pdb = mmcif_dict["_atom_site.group_PDB"]  # Group type, "ATOM" or "HETATM"
     pdb_model = mmcif_dict["_atom_site.pdbx_PDB_model_num"]  # Model number
-    
+
     ins_codes = mmcif_dict["_atom_site.pdbx_PDB_ins_code"] # Insertion codes
 
     residues = PDBResidue[]
     current_residue_id = ""
     current_residue = PDBResidue(PDBResidueIdentifier("", "", "", "", "", ""), PDBAtom[])
-    
-    for i in 1:length(auth_seq_ids)
+
+    for i = 1:length(auth_seq_ids)
         pdb_number = string(auth_seq_ids[i], replace(ins_codes[i], "?" => ""))
         pdbe_number = replace(label_seq_ids[i], "." => "")
-        residue_id = PDBResidueIdentifier(pdbe_number, pdb_number, auth_comp_ids[i], group_pdb[i], pdb_model[i], auth_asym_ids[i])
+        residue_id = PDBResidueIdentifier(
+            pdbe_number,
+            pdb_number,
+            auth_comp_ids[i],
+            group_pdb[i],
+            pdb_model[i],
+            auth_asym_ids[i],
+        )
 
         if current_residue_id != string(residue_id)
             if !isempty(current_residue.atoms)
@@ -42,11 +49,15 @@ function _parse_mmcif_to_pdbresidues(mmcif_dict::MMCIFDict, label::Bool)
         end
 
         atom = PDBAtom(
-            Coordinates(parse(Float64, cartn_x[i]), parse(Float64, cartn_y[i]), parse(Float64, cartn_z[i])),
+            Coordinates(
+                parse(Float64, cartn_x[i]),
+                parse(Float64, cartn_y[i]),
+                parse(Float64, cartn_z[i]),
+            ),
             atom_names[i],
             elements[i],
             parse(Float64, occupancies[i]),
-            bfactors[i]
+            bfactors[i],
         )
 
         push!(current_residue.atoms, atom)
@@ -55,21 +66,21 @@ function _parse_mmcif_to_pdbresidues(mmcif_dict::MMCIFDict, label::Bool)
     if !isempty(current_residue.atoms)
         push!(residues, current_residue)
     end
-    
+
     residues
 end
 
 """
 `parse_file(io, ::Type{MMCIFFile}; chain=All, model=All, group=All, atomname=All, onlyheavy=false, label=true, occupancyfilter=false)`
 
-Parse an mmCIF file and returns a list of `PDBResidue`s. Setting `chain`, `model`, `group`, 
-`atomname` and `onlyheavy` values can be used to select a subset of residues. Group can be 
+Parse an mmCIF file and returns a list of `PDBResidue`s. Setting `chain`, `model`, `group`,
+`atomname` and `onlyheavy` values can be used to select a subset of residues. Group can be
 `"ATOM"` or `"HETATM"`. If those keyword arguments are not set, all residues are returned.
 If the keyword argument `label` (default: `true`) is `false`, the **auth_** attributes will be used instead
 of the **label_** attributes for `chain`, `atom`, and residue `name` fields. The **auth_**
 attributes are alternatives provided by an author in order to match the
 identification/values used in the publication that describes the structure. If the
-keyword argument `occupancyfilter` (default: `false`) is `true`, only the atoms 
+keyword argument `occupancyfilter` (default: `false`) is `true`, only the atoms
 with the best occupancy are returned.
 """
 function Utils.parse_file(
@@ -84,8 +95,13 @@ function Utils.parse_file(
     occupancyfilter::Bool = false,
 )
     mmcif_dict = MMCIFDict(io)
-    
-    residues = select_residues(_parse_mmcif_to_pdbresidues(mmcif_dict, label), model=model, chain=chain, group=group)
+
+    residues = select_residues(
+        _parse_mmcif_to_pdbresidues(mmcif_dict, label),
+        model = model,
+        chain = chain,
+        group = group,
+    )
 
     for res in residues
         filter!(a -> _is(a.atom, atomname), res.atoms)
@@ -110,10 +126,14 @@ function _inscode(res::PDBResidue)
     return m === nothing ? "?" : m.match
 end
 
-function _pdbresidues_to_mmcifdict(residues::Vector{PDBResidue}; label::Bool = false, molecular_structures::Bool = false)
+function _pdbresidues_to_mmcifdict(
+    residues::Vector{PDBResidue};
+    label::Bool = false,
+    molecular_structures::Bool = false,
+)
     # Initialize MMCIFDict with the necessary fields
     mmcif_dict = MMCIFDict()
-    
+
     # Initialize fields as empty arrays
     if molecular_structures || !label
         mmcif_dict["_atom_site.auth_asym_id"] = String[]
@@ -145,11 +165,11 @@ function _pdbresidues_to_mmcifdict(residues::Vector{PDBResidue}; label::Bool = f
     end
 
     atom_id_counter = 1
-    
+
     for res in residues
         for atom in res.atoms
             if molecular_structures || !label
-                push!(mmcif_dict["_atom_site.auth_asym_id"], res.id.chain)            
+                push!(mmcif_dict["_atom_site.auth_asym_id"], res.id.chain)
                 push!(mmcif_dict["_atom_site.auth_comp_id"], res.id.name)
                 push!(mmcif_dict["_atom_site.auth_atom_id"], atom.atom)
             end
@@ -179,15 +199,16 @@ function _pdbresidues_to_mmcifdict(residues::Vector{PDBResidue}; label::Bool = f
             atom_id_counter += 1
         end
     end
-    
+
     return mmcif_dict
 end
 
 function Utils.print_file(
     io::IO,
     residues::AbstractVector{PDBResidue},
-    format::Type{MMCIFFile}; 
-    label::Bool = false)
-    mmcif_dict = _pdbresidues_to_mmcifdict(residues, label=label)
+    format::Type{MMCIFFile};
+    label::Bool = false,
+)
+    mmcif_dict = _pdbresidues_to_mmcifdict(residues, label = label)
     writemmcif(io, mmcif_dict)
 end

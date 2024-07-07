@@ -1,24 +1,25 @@
 """
-    query_alphafolddb(uniprot_id::String)
+    query_alphafolddb(uniprot_accession::String)
 
 This function queries the AlphaFoldDB API to retrieve structure information for
-a given `uniprot_id`. This function returns the structure information as a
-`JSON3.Object`.
+a given `uniprot_accession`, e.g. `"P00520"`. This function returns the structure
+information as a `JSON3.Object`.
 """
-function query_alphafolddb(uniprot_id::String)
+function query_alphafolddb(uniprot_accession::String)
     # Construct the URL for the AlphaFoldDB API request
-    url = "https://alphafold.ebi.ac.uk/api/prediction/$uniprot_id"
+    url = "https://alphafold.ebi.ac.uk/api/prediction/$uniprot_accession"
 
     body = IOBuffer()
     response = Downloads.request(url, method = "GET", output = body)
 
     if response.status == 200
-        JSON3.read(String(take!(body)))
+        # Use only to get the unique EntrySummary object in the Root list
+        only(JSON3.read(String(take!(body))))
     else
         error_type = response.status == 422 ? "Validation Error" : "Error"
         throw(
             ErrorException(
-                "$error_type ($(response.status)) fetching UniProt ID $uniprot_id from AlphaFoldDB.",
+                "$error_type ($(response.status)) fetching UniProt Accession $uniprot_accession from AlphaFoldDB.",
             ),
         )
     end
@@ -29,26 +30,27 @@ function _extract_filename_from_url(url::String)
     return split(url, "/")[end]
 end
 
-# Function to download the PDB or CIF file based on the UniProt ID
+# Function to download the PDB or CIF file based on the UniProt Accession
 """
-    download_alphafold_structure(uniprot_id::String; format::Type{T}=PDBFile) where T<:FileFormat
+    download_alphafold_structure(uniprot_accession::String; format::Type{T}=PDBFile) where T<:FileFormat
 
-This function downloads the structure file (PDB or CIF) for a given UniProt ID from AlphaFoldDB.
-The `uniprot_id` parameter specifies the UniProt ID of the protein.
-The `format` parameter specifies the file format to download, with the default being PDBFile.
+This function downloads the structure file (PDB or mmCIF) for a given UniProt Accession
+from AlphaFoldDB. The `uniprot_accession` parameter specifies the UniProt Accession of the
+protein, e.g. `"P00520"`. The `format` parameter specifies the file format to download,
+with the default being `PDBFile`. Set `format` to `MMCIFFile` to download the mmCIF file.
 """
 function download_alphafold_structure(
-    uniprot_id::String;
+    uniprot_accession::String;
     format::Type{T} = PDBFile,
 ) where {T<:FileFormat}
 
-    structure_info = query_alphafolddb(uniprot_id)
+    structure_info = query_alphafolddb(uniprot_accession)
 
     # Initialize the model URL based on the requested format
     if format === PDBFile
-        model_url = structure_info[1]["pdbUrl"]
-        # elseif format === CIF
-        #     model_url = structure_info[1]["cifUrl"]
+        model_url = structure_info["pdbUrl"]
+    elseif format === MMCIFFile
+        model_url = structure_info["cifUrl"]
     else
         throw(ArgumentError("Unsupported format: $format"))
     end
@@ -59,7 +61,9 @@ function download_alphafold_structure(
         download_file(model_url, file_name)
     catch
         throw(
-            ErrorException("Error downloading AlphaFold model for UniProt ID $uniprot_id"),
+            ErrorException(
+                "Error downloading AlphaFold model for UniProt Accession $uniprot_accession",
+            ),
         )
     end
 end

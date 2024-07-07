@@ -1,7 +1,7 @@
 # This file defines the functions to convert between MIToS.PDB and BioStructures types.
 
 function BioStructures.MolecularStructure(residues::Vector{PDBResidue})
-    mmcifdict = _pdbresidues_to_mmcifdict(residues, molecular_structures=true)
+    mmcifdict = _pdbresidues_to_mmcifdict(residues, molecular_structures = true)
     MolecularStructure(mmcifdict)
 end
 
@@ -36,21 +36,25 @@ function _create_pdbresidue(res, model::Model, chain::Chain)
         resname(res),
         ishetero(res) ? "HETATM" : "ATOM",
         string(modelnumber(model)),
-        chainid(chain)
+        chainid(chain),
     )
-    
+
     atoms = PDBAtom[]
-    
+
     for atom in collectatoms(res)
         atom_obj = PDBAtom(
-            Coordinates(BioStructures.x(atom), BioStructures.y(atom), BioStructures.z(atom)),
+            Coordinates(
+                BioStructures.x(atom),
+                BioStructures.y(atom),
+                BioStructures.z(atom),
+            ),
             atomname(atom),
             element(atom),
             occupancy(atom),
-            string(tempfactor(atom))
+            string(tempfactor(atom)),
         )
         push!(atoms, atom_obj)
     end
-    
+
     PDBResidue(residue_id, atoms)
 end

@@ -53,12 +53,7 @@ include("ThreeLetterResidues.jl")
 
 module Scripts
 
-    export run_single_script,
-        script,
-        open_output,
-        close_output,
-        readorparse,
-        loadedversion
+    export run_single_script, script, open_output, close_output, readorparse, loadedversion
 
     using Pkg
     using CodecZlib

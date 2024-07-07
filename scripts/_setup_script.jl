@@ -5,8 +5,8 @@ using Pkg
 # MIToS is imported before including this file
 const SCRIPTS_PATH = joinpath(pkgdir(MIToS), "scripts")
 
-Pkg.activate(SCRIPTS_PATH, io=devnull)
-Pkg.instantiate(io=devnull)
+Pkg.activate(SCRIPTS_PATH, io = devnull)
+Pkg.instantiate(io = devnull)
 
 using Distributed
 

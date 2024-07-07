@@ -273,10 +273,7 @@ function kullback_leibler(
 end
 
 # Method with positional argument for background
-function kullback_leibler(
-    p::Probabilities{T,N,A},
-    q::AbstractArray{T,N},
-) where {T,N,A}
+function kullback_leibler(p::Probabilities{T,N,A}, q::AbstractArray{T,N}) where {T,N,A}
     Base.depwarn(
         "kullback_leibler(p, q) is deprecated. Use kullback_leibler(p; background=q) instead.",
         :kullback_leibler,
