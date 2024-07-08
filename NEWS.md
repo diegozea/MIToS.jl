@@ -27,6 +27,9 @@ The MSA module now includes ways to read, write, and work with unaligned protein
   `getannotsequence(sequence, "feature_name")`. You still need to specify the sequence name
   when working with MSA objects.
 
+* *[Breaking change]* The `join` function for `AnnotatedMultipleSequenceAlignment` objects 
+  is deprecated in favor of the `join_msas` function.
+
 * *[Breaking change]* The scripts now have their project environment and the 
   `MIToS.Utils.Scripts` module does not longer export the `set_parallel`, 
   `parse_commandline` and `runscript` functions. Therefore, `ArgParse` and 

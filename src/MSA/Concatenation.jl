@@ -873,18 +873,18 @@ function _reorder_and_extract_unmatched_names(msa, positions, axis::Int)
 end
 
 """
-    join(msa_a::AnnotatedMultipleSequenceAlignment, 
-         msa_b::AnnotatedMultipleSequenceAlignment, 
-         pairing; 
-         kind::Symbol=:outer, 
-         axis::Int=1)::AnnotatedMultipleSequenceAlignment
+    join_msas(msa_a::AnnotatedMultipleSequenceAlignment, 
+        msa_b::AnnotatedMultipleSequenceAlignment, 
+        pairing; 
+        kind::Symbol=:outer, 
+        axis::Int=1)::AnnotatedMultipleSequenceAlignment
 
-    join(msa_a::AnnotatedMultipleSequenceAlignment, 
-         msa_b::AnnotatedMultipleSequenceAlignment, 
-         positions_a, 
-         positions_b; 
-         kind::Symbol=:outer, 
-         axis::Int=1)::AnnotatedMultipleSequenceAlignment
+    join_msas(msa_a::AnnotatedMultipleSequenceAlignment, 
+        msa_b::AnnotatedMultipleSequenceAlignment, 
+        positions_a, 
+        positions_b; 
+        kind::Symbol=:outer, 
+        axis::Int=1)::AnnotatedMultipleSequenceAlignment
 
 Join two Multiple Sequence Alignments (MSAs), `msa_a` and `msa_b`, based on specified
 matching positions or names. The function supports two formats: one takes a `pairing`
@@ -936,7 +936,7 @@ expected. `Dict` in Julia does not maintain the order of its elements, which mig
 unpredictable order of sequences/columns in the output MSA. To preserve order, it is
 recommended to use an `OrderedDict` or a list of `Pair`s objects.
 """
-function Base.join(
+function join_msas(
     msa_a::AnnotatedMultipleSequenceAlignment,
     msa_b::AnnotatedMultipleSequenceAlignment,
     pairing;
@@ -1044,7 +1044,7 @@ function Base.join(
     end
 end
 
-function Base.join(
+function join_msas(
     msa_a::AnnotatedMultipleSequenceAlignment,
     msa_b::AnnotatedMultipleSequenceAlignment,
     positions_a,
@@ -1056,5 +1056,19 @@ function Base.join(
         throw(ArgumentError("positions_a and positions_b must have the same length."))
     end
     pairing = zip(positions_a, positions_b)
-    join(msa_a, msa_b, pairing, kind = kind, axis = axis)
+    join_msas(msa_a, msa_b, pairing, kind = kind, axis = axis)
+end
+
+function Base.join(
+    msa_a::AnnotatedMultipleSequenceAlignment,
+    msa_b::AnnotatedMultipleSequenceAlignment,
+    args...;
+    kwargs...,
+)
+    Base.depwarn(
+        "The function `join` using AnnotatedMultipleSequenceAlignment objects is deprecated. Use `join_msas` instead.",
+        :join,
+        force = true,
+    )
+    join_msas(msa_a, msa_b, args...; kwargs...)
 end
