@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>MIToS&#39; Scripts · MIToS</title><meta name="title" content="MIToS&#39; Scripts · MIToS"/><meta property="og:title" content="MIToS&#39; Scripts · MIToS"/><meta property="twitter:title" content="MIToS&#39; Scripts · MIToS"/><meta name="description" content="Documentation for MIToS."/><meta property="og:description" content="Documentation for MIToS."/><meta property="twitter:description" content="Documentation for MIToS."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">MIToS</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../Installation/">Installation</a></li><li><a class="tocitem" href="../Example/">Example</a></li><li><span class="tocitem">Modules</span><ul><li><a class="tocitem" href="../MSA/">MSA</a></li><li><a class="tocitem" href="../Information/">Information</a></li><li><a class="tocitem" href="../SIFTS/">SIFTS</a></li><li><a class="tocitem" href="../PDB/">PDB</a></li><li><a class="tocitem" href="../Pfam/">Pfam</a></li></ul></li><li><span class="tocitem">Cookbook</span><ul><li><a class="tocitem" href="../01_Change_B_factors/">Change B-factors</a></li><li><a class="tocitem" href="../02_Linking_structural_and_evolutionary_information/">Linking structural and evolutionary information</a></li><li><a class="tocitem" href="../03_RMSF/">Root Mean Squared Fluctuation (RMSF)</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../MSA_API/">MSA</a></li><li><a class="tocitem" href="../Information_API/">Information</a></li><li><a class="tocitem" href="../SIFTS_API/">SIFTS</a></li><li><a class="tocitem" href="../PDB_API/">PDB</a></li><li><a class="tocitem" href="../Pfam_API/">Pfam</a></li><li><a class="tocitem" href="../Utils_API/">Utils</a></li></ul></li><li class="is-active"><a class="tocitem" href>MIToS&#39; Scripts</a><ul class="internal"><li><a class="tocitem" href="#Installation"><span>Installation</span></a></li><li><a class="tocitem" href="#Usage"><span>Usage</span></a></li><li><a class="tocitem" href="#Scripts"><span>Scripts</span></a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>MIToS&#39; Scripts</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>MIToS&#39; Scripts</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/diegozea/MIToS.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/diegozea/MIToS.jl/blob/master/docs/src/Scripts.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="MIToS&#39;-Scripts"><a class="docs-heading-anchor" href="#MIToS&#39;-Scripts">MIToS&#39; Scripts</a><a id="MIToS&#39;-Scripts-1"></a><a class="docs-heading-anchor-permalink" href="#MIToS&#39;-Scripts" title="Permalink"></a></h1><p>The <a href="https://github.com/MIToSOrg/MIToS_Scripts.jl">MIToS_Scripts.jl</a> package offers a set  of easy-to-use scripts for command-line execution without requiring Julia coding.  It includes several scripts designed for various bioinformatics tasks, such as measuring estimating residue conservation and inter-residue coevolution, calculating distances between residues in a protein structure, and more.</p><ul><li><a href="#MIToS&#39;-Scripts">MIToS&#39; Scripts</a></li><li class="no-marker"><ul><li><a href="#Installation">Installation</a></li><li><a href="#Usage">Usage</a></li><li><a href="#Scripts">Scripts</a></li><li class="no-marker"><ul><li><a href="#Buslje09.jl">Buslje09.jl</a></li><li><a href="#BLMI.jl">BLMI.jl</a></li><li><a href="#Conservation.jl">Conservation.jl</a></li><li><a href="#DownloadPDB.jl">DownloadPDB.jl</a></li><li><a href="#Distances.jl">Distances.jl</a></li><li><a href="#MSADescription.jl">MSADescription.jl</a></li><li><a href="#PercentIdentity.jl">PercentIdentity.jl</a></li><li><a href="#AlignedColumns.jl">AlignedColumns.jl</a></li><li><a href="#SplitStockholm.jl">SplitStockholm.jl</a></li></ul></li></ul></li></ul><h2 id="Installation"><a class="docs-heading-anchor" href="#Installation">Installation</a><a id="Installation-1"></a><a class="docs-heading-anchor-permalink" href="#Installation" title="Permalink"></a></h2><p>To install <strong>MIToS_Scripts.jl</strong>, you only need Julia 1.9 or later installed on your  system. Executing <code>julia</code> in the terminal to open the Julia REPL, and finally, run the  following command:</p><pre><code class="language-julia hljs">using Pkg
+Pkg.add(&quot;https://github.com/MIToSOrg/MIToS_Scripts.jl&quot;)</code></pre><p>Then, you can get the location of the installed scripts by running the following command:</p><pre><code class="language-julia hljs">using MIToS_Scripts
+joinpath(pkgdir(MIToS_Scripts), &quot;scripts&quot;)</code></pre><p>You can run them from that location or copy them to a directory in your <code>PATH</code>.</p><h2 id="Usage"><a class="docs-heading-anchor" href="#Usage">Usage</a><a id="Usage-1"></a><a class="docs-heading-anchor-permalink" href="#Usage" title="Permalink"></a></h2><p>You can execute each provided script from your command line. For example, to run the <code>Buslje09.jl</code>  script—if you are located in the folder where it is the scripts—use:</p><pre><code class="language-bash hljs">julia Buslje09.jl input_msa_file</code></pre><p>Refer to the documentation of each script for specific usage instructions; you can access  it by running the script with the <code>--help</code> or <code>-h</code> flag:</p><pre><code class="language-bash hljs">julia Buslje09.jl -h</code></pre><h2 id="Scripts"><a class="docs-heading-anchor" href="#Scripts">Scripts</a><a id="Scripts-1"></a><a class="docs-heading-anchor-permalink" href="#Scripts" title="Permalink"></a></h2><h3 id="Buslje09.jl"><a class="docs-heading-anchor" href="#Buslje09.jl">Buslje09.jl</a><a id="Buslje09.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Buslje09.jl" title="Permalink"></a></h3><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MIToS</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia = Base.julia_cmd(); # path to the julia executable</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; scripts_folder = joinpath(pkgdir(MIToS), &quot;scripts&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; script_path = joinpath(scripts_folder, &quot;Buslje09.jl&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/Buslje09.jl&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; run(`$julia --project=$scripts_folder $script_path -h`)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: SystemError: opening file &quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/Buslje09.jl&quot;: No such file or directory
+Stacktrace:
+  [1] systemerror(p::String, errno::Int32; extrainfo::Nothing)
+    @ Base ./error.jl:176
+  [2] systemerror
+    @ ./error.jl:175 [inlined]
+  [3] open(fname::String; lock::Bool, read::Nothing, write::Nothing, create::Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:293
+  [4] open
+    @ ./iostream.jl:275 [inlined]
+  [5] open(f::Base.var&quot;#433#434&quot;{String}, args::String; kwargs::@Kwargs{})
+    @ Base ./io.jl:394
+  [6] open
+    @ ./io.jl:393 [inlined]
+  [7] read
+    @ ./io.jl:486 [inlined]
+  [8] _include(mapexpr::Function, mod::Module, _path::String)
+    @ Base ./loading.jl:2132
+  [9] include(mod::Module, _path::String)
+    @ Base ./Base.jl:495
+ [10] exec_options(opts::Base.JLOptions)
+    @ Base ./client.jl:318
+ [11] _start()
+    @ Base ./client.jl:552
+ERROR: failed process: Process(`<span class="sgr4">/opt/hostedtoolcache/julia/1.10.4/x64/bin/julia</span> <span class="sgr4">-C</span> <span class="sgr4">native</span> <span class="sgr4">-J/opt/hostedtoolcache/julia/1.10.4/x64/lib/julia/sys.so</span> <span class="sgr4">-g1</span> <span class="sgr4">--project=/home/runner/work/MIToS.jl/MIToS.jl/scripts</span> <span class="sgr4">/home/runner/work/MIToS.jl/MIToS.jl/scripts/Buslje09.jl</span> <span class="sgr4">-h</span>`, ProcessExited(1)) [1]</code></pre><h3 id="BLMI.jl"><a class="docs-heading-anchor" href="#BLMI.jl">BLMI.jl</a><a id="BLMI.jl-1"></a><a class="docs-heading-anchor-permalink" href="#BLMI.jl" title="Permalink"></a></h3><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MIToS</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia = Base.julia_cmd(); # path to the julia executable</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; scripts_folder = joinpath(pkgdir(MIToS), &quot;scripts&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; script_path = joinpath(scripts_folder, &quot;BLMI.jl&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/BLMI.jl&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; run(`$julia --project=$scripts_folder $script_path -h`)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: SystemError: opening file &quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/BLMI.jl&quot;: No such file or directory
+Stacktrace:
+  [1] systemerror(p::String, errno::Int32; extrainfo::Nothing)
+    @ Base ./error.jl:176
+  [2] systemerror
+    @ ./error.jl:175 [inlined]
+  [3] open(fname::String; lock::Bool, read::Nothing, write::Nothing, create::Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:293
+  [4] open
+    @ ./iostream.jl:275 [inlined]
+  [5] open(f::Base.var&quot;#433#434&quot;{String}, args::String; kwargs::@Kwargs{})
+    @ Base ./io.jl:394
+  [6] open
+    @ ./io.jl:393 [inlined]
+  [7] read
+    @ ./io.jl:486 [inlined]
+  [8] _include(mapexpr::Function, mod::Module, _path::String)
+    @ Base ./loading.jl:2132
+  [9] include(mod::Module, _path::String)
+    @ Base ./Base.jl:495
+ [10] exec_options(opts::Base.JLOptions)
+    @ Base ./client.jl:318
+ [11] _start()
+    @ Base ./client.jl:552
+ERROR: failed process: Process(`<span class="sgr4">/opt/hostedtoolcache/julia/1.10.4/x64/bin/julia</span> <span class="sgr4">-C</span> <span class="sgr4">native</span> <span class="sgr4">-J/opt/hostedtoolcache/julia/1.10.4/x64/lib/julia/sys.so</span> <span class="sgr4">-g1</span> <span class="sgr4">--project=/home/runner/work/MIToS.jl/MIToS.jl/scripts</span> <span class="sgr4">/home/runner/work/MIToS.jl/MIToS.jl/scripts/BLMI.jl</span> <span class="sgr4">-h</span>`, ProcessExited(1)) [1]</code></pre><h3 id="Conservation.jl"><a class="docs-heading-anchor" href="#Conservation.jl">Conservation.jl</a><a id="Conservation.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Conservation.jl" title="Permalink"></a></h3><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MIToS</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia = Base.julia_cmd(); # path to the julia executable</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; scripts_folder = joinpath(pkgdir(MIToS), &quot;scripts&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; script_path = joinpath(scripts_folder, &quot;Conservation.jl&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/Conservation.jl&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; run(`$julia --project=$scripts_folder $script_path -h`)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: SystemError: opening file &quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/Conservation.jl&quot;: No such file or directory
+Stacktrace:
+  [1] systemerror(p::String, errno::Int32; extrainfo::Nothing)
+    @ Base ./error.jl:176
+  [2] systemerror
+    @ ./error.jl:175 [inlined]
+  [3] open(fname::String; lock::Bool, read::Nothing, write::Nothing, create::Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:293
+  [4] open
+    @ ./iostream.jl:275 [inlined]
+  [5] open(f::Base.var&quot;#433#434&quot;{String}, args::String; kwargs::@Kwargs{})
+    @ Base ./io.jl:394
+  [6] open
+    @ ./io.jl:393 [inlined]
+  [7] read
+    @ ./io.jl:486 [inlined]
+  [8] _include(mapexpr::Function, mod::Module, _path::String)
+    @ Base ./loading.jl:2132
+  [9] include(mod::Module, _path::String)
+    @ Base ./Base.jl:495
+ [10] exec_options(opts::Base.JLOptions)
+    @ Base ./client.jl:318
+ [11] _start()
+    @ Base ./client.jl:552
+ERROR: failed process: Process(`<span class="sgr4">/opt/hostedtoolcache/julia/1.10.4/x64/bin/julia</span> <span class="sgr4">-C</span> <span class="sgr4">native</span> <span class="sgr4">-J/opt/hostedtoolcache/julia/1.10.4/x64/lib/julia/sys.so</span> <span class="sgr4">-g1</span> <span class="sgr4">--project=/home/runner/work/MIToS.jl/MIToS.jl/scripts</span> <span class="sgr4">/home/runner/work/MIToS.jl/MIToS.jl/scripts/Conservation.jl</span> <span class="sgr4">-h</span>`, ProcessExited(1)) [1]</code></pre><h3 id="DownloadPDB.jl"><a class="docs-heading-anchor" href="#DownloadPDB.jl">DownloadPDB.jl</a><a id="DownloadPDB.jl-1"></a><a class="docs-heading-anchor-permalink" href="#DownloadPDB.jl" title="Permalink"></a></h3><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MIToS</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia = Base.julia_cmd(); # path to the julia executable</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; scripts_folder = joinpath(pkgdir(MIToS), &quot;scripts&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; script_path = joinpath(scripts_folder, &quot;DownloadPDB.jl&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/DownloadPDB.jl&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; run(`$julia --project=$scripts_folder $script_path -h`)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: SystemError: opening file &quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/DownloadPDB.jl&quot;: No such file or directory
+Stacktrace:
+  [1] systemerror(p::String, errno::Int32; extrainfo::Nothing)
+    @ Base ./error.jl:176
+  [2] systemerror
+    @ ./error.jl:175 [inlined]
+  [3] open(fname::String; lock::Bool, read::Nothing, write::Nothing, create::Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:293
+  [4] open
+    @ ./iostream.jl:275 [inlined]
+  [5] open(f::Base.var&quot;#433#434&quot;{String}, args::String; kwargs::@Kwargs{})
+    @ Base ./io.jl:394
+  [6] open
+    @ ./io.jl:393 [inlined]
+  [7] read
+    @ ./io.jl:486 [inlined]
+  [8] _include(mapexpr::Function, mod::Module, _path::String)
+    @ Base ./loading.jl:2132
+  [9] include(mod::Module, _path::String)
+    @ Base ./Base.jl:495
+ [10] exec_options(opts::Base.JLOptions)
+    @ Base ./client.jl:318
+ [11] _start()
+    @ Base ./client.jl:552
+ERROR: failed process: Process(`<span class="sgr4">/opt/hostedtoolcache/julia/1.10.4/x64/bin/julia</span> <span class="sgr4">-C</span> <span class="sgr4">native</span> <span class="sgr4">-J/opt/hostedtoolcache/julia/1.10.4/x64/lib/julia/sys.so</span> <span class="sgr4">-g1</span> <span class="sgr4">--project=/home/runner/work/MIToS.jl/MIToS.jl/scripts</span> <span class="sgr4">/home/runner/work/MIToS.jl/MIToS.jl/scripts/DownloadPDB.jl</span> <span class="sgr4">-h</span>`, ProcessExited(1)) [1]</code></pre><h3 id="Distances.jl"><a class="docs-heading-anchor" href="#Distances.jl">Distances.jl</a><a id="Distances.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Distances.jl" title="Permalink"></a></h3><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MIToS</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia = Base.julia_cmd(); # path to the julia executable</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; scripts_folder = joinpath(pkgdir(MIToS), &quot;scripts&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; script_path = joinpath(scripts_folder, &quot;Distances.jl&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/Distances.jl&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; run(`$julia --project=$scripts_folder $script_path -h`)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: SystemError: opening file &quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/Distances.jl&quot;: No such file or directory
+Stacktrace:
+  [1] systemerror(p::String, errno::Int32; extrainfo::Nothing)
+    @ Base ./error.jl:176
+  [2] systemerror
+    @ ./error.jl:175 [inlined]
+  [3] open(fname::String; lock::Bool, read::Nothing, write::Nothing, create::Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:293
+  [4] open
+    @ ./iostream.jl:275 [inlined]
+  [5] open(f::Base.var&quot;#433#434&quot;{String}, args::String; kwargs::@Kwargs{})
+    @ Base ./io.jl:394
+  [6] open
+    @ ./io.jl:393 [inlined]
+  [7] read
+    @ ./io.jl:486 [inlined]
+  [8] _include(mapexpr::Function, mod::Module, _path::String)
+    @ Base ./loading.jl:2132
+  [9] include(mod::Module, _path::String)
+    @ Base ./Base.jl:495
+ [10] exec_options(opts::Base.JLOptions)
+    @ Base ./client.jl:318
+ [11] _start()
+    @ Base ./client.jl:552
+ERROR: failed process: Process(`<span class="sgr4">/opt/hostedtoolcache/julia/1.10.4/x64/bin/julia</span> <span class="sgr4">-C</span> <span class="sgr4">native</span> <span class="sgr4">-J/opt/hostedtoolcache/julia/1.10.4/x64/lib/julia/sys.so</span> <span class="sgr4">-g1</span> <span class="sgr4">--project=/home/runner/work/MIToS.jl/MIToS.jl/scripts</span> <span class="sgr4">/home/runner/work/MIToS.jl/MIToS.jl/scripts/Distances.jl</span> <span class="sgr4">-h</span>`, ProcessExited(1)) [1]</code></pre><h3 id="MSADescription.jl"><a class="docs-heading-anchor" href="#MSADescription.jl">MSADescription.jl</a><a id="MSADescription.jl-1"></a><a class="docs-heading-anchor-permalink" href="#MSADescription.jl" title="Permalink"></a></h3><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MIToS</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia = Base.julia_cmd(); # path to the julia executable</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; scripts_folder = joinpath(pkgdir(MIToS), &quot;scripts&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; script_path = joinpath(scripts_folder, &quot;MSADescription.jl&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/MSADescription.jl&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; run(`$julia --project=$scripts_folder $script_path -h`)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: SystemError: opening file &quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/MSADescription.jl&quot;: No such file or directory
+Stacktrace:
+  [1] systemerror(p::String, errno::Int32; extrainfo::Nothing)
+    @ Base ./error.jl:176
+  [2] systemerror
+    @ ./error.jl:175 [inlined]
+  [3] open(fname::String; lock::Bool, read::Nothing, write::Nothing, create::Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:293
+  [4] open
+    @ ./iostream.jl:275 [inlined]
+  [5] open(f::Base.var&quot;#433#434&quot;{String}, args::String; kwargs::@Kwargs{})
+    @ Base ./io.jl:394
+  [6] open
+    @ ./io.jl:393 [inlined]
+  [7] read
+    @ ./io.jl:486 [inlined]
+  [8] _include(mapexpr::Function, mod::Module, _path::String)
+    @ Base ./loading.jl:2132
+  [9] include(mod::Module, _path::String)
+    @ Base ./Base.jl:495
+ [10] exec_options(opts::Base.JLOptions)
+    @ Base ./client.jl:318
+ [11] _start()
+    @ Base ./client.jl:552
+ERROR: failed process: Process(`<span class="sgr4">/opt/hostedtoolcache/julia/1.10.4/x64/bin/julia</span> <span class="sgr4">-C</span> <span class="sgr4">native</span> <span class="sgr4">-J/opt/hostedtoolcache/julia/1.10.4/x64/lib/julia/sys.so</span> <span class="sgr4">-g1</span> <span class="sgr4">--project=/home/runner/work/MIToS.jl/MIToS.jl/scripts</span> <span class="sgr4">/home/runner/work/MIToS.jl/MIToS.jl/scripts/MSADescription.jl</span> <span class="sgr4">-h</span>`, ProcessExited(1)) [1]</code></pre><h3 id="PercentIdentity.jl"><a class="docs-heading-anchor" href="#PercentIdentity.jl">PercentIdentity.jl</a><a id="PercentIdentity.jl-1"></a><a class="docs-heading-anchor-permalink" href="#PercentIdentity.jl" title="Permalink"></a></h3><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MIToS</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia = Base.julia_cmd(); # path to the julia executable</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; scripts_folder = joinpath(pkgdir(MIToS), &quot;scripts&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; script_path = joinpath(scripts_folder, &quot;PercentIdentity.jl&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/PercentIdentity.jl&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; run(`$julia --project=$scripts_folder $script_path -h`)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: SystemError: opening file &quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/PercentIdentity.jl&quot;: No such file or directory
+Stacktrace:
+  [1] systemerror(p::String, errno::Int32; extrainfo::Nothing)
+    @ Base ./error.jl:176
+  [2] systemerror
+    @ ./error.jl:175 [inlined]
+  [3] open(fname::String; lock::Bool, read::Nothing, write::Nothing, create::Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:293
+  [4] open
+    @ ./iostream.jl:275 [inlined]
+  [5] open(f::Base.var&quot;#433#434&quot;{String}, args::String; kwargs::@Kwargs{})
+    @ Base ./io.jl:394
+  [6] open
+    @ ./io.jl:393 [inlined]
+  [7] read
+    @ ./io.jl:486 [inlined]
+  [8] _include(mapexpr::Function, mod::Module, _path::String)
+    @ Base ./loading.jl:2132
+  [9] include(mod::Module, _path::String)
+    @ Base ./Base.jl:495
+ [10] exec_options(opts::Base.JLOptions)
+    @ Base ./client.jl:318
+ [11] _start()
+    @ Base ./client.jl:552
+ERROR: failed process: Process(`<span class="sgr4">/opt/hostedtoolcache/julia/1.10.4/x64/bin/julia</span> <span class="sgr4">-C</span> <span class="sgr4">native</span> <span class="sgr4">-J/opt/hostedtoolcache/julia/1.10.4/x64/lib/julia/sys.so</span> <span class="sgr4">-g1</span> <span class="sgr4">--project=/home/runner/work/MIToS.jl/MIToS.jl/scripts</span> <span class="sgr4">/home/runner/work/MIToS.jl/MIToS.jl/scripts/PercentIdentity.jl</span> <span class="sgr4">-h</span>`, ProcessExited(1)) [1]</code></pre><h3 id="AlignedColumns.jl"><a class="docs-heading-anchor" href="#AlignedColumns.jl">AlignedColumns.jl</a><a id="AlignedColumns.jl-1"></a><a class="docs-heading-anchor-permalink" href="#AlignedColumns.jl" title="Permalink"></a></h3><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MIToS</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia = Base.julia_cmd(); # path to the julia executable</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; scripts_folder = joinpath(pkgdir(MIToS), &quot;scripts&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; script_path = joinpath(scripts_folder, &quot;AlignedColumns.jl&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/AlignedColumns.jl&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; run(`$julia --project=$scripts_folder $script_path -h`)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: SystemError: opening file &quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/AlignedColumns.jl&quot;: No such file or directory
+Stacktrace:
+  [1] systemerror(p::String, errno::Int32; extrainfo::Nothing)
+    @ Base ./error.jl:176
+  [2] systemerror
+    @ ./error.jl:175 [inlined]
+  [3] open(fname::String; lock::Bool, read::Nothing, write::Nothing, create::Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:293
+  [4] open
+    @ ./iostream.jl:275 [inlined]
+  [5] open(f::Base.var&quot;#433#434&quot;{String}, args::String; kwargs::@Kwargs{})
+    @ Base ./io.jl:394
+  [6] open
+    @ ./io.jl:393 [inlined]
+  [7] read
+    @ ./io.jl:486 [inlined]
+  [8] _include(mapexpr::Function, mod::Module, _path::String)
+    @ Base ./loading.jl:2132
+  [9] include(mod::Module, _path::String)
+    @ Base ./Base.jl:495
+ [10] exec_options(opts::Base.JLOptions)
+    @ Base ./client.jl:318
+ [11] _start()
+    @ Base ./client.jl:552
+ERROR: failed process: Process(`<span class="sgr4">/opt/hostedtoolcache/julia/1.10.4/x64/bin/julia</span> <span class="sgr4">-C</span> <span class="sgr4">native</span> <span class="sgr4">-J/opt/hostedtoolcache/julia/1.10.4/x64/lib/julia/sys.so</span> <span class="sgr4">-g1</span> <span class="sgr4">--project=/home/runner/work/MIToS.jl/MIToS.jl/scripts</span> <span class="sgr4">/home/runner/work/MIToS.jl/MIToS.jl/scripts/AlignedColumns.jl</span> <span class="sgr4">-h</span>`, ProcessExited(1)) [1]</code></pre><h3 id="SplitStockholm.jl"><a class="docs-heading-anchor" href="#SplitStockholm.jl">SplitStockholm.jl</a><a id="SplitStockholm.jl-1"></a><a class="docs-heading-anchor-permalink" href="#SplitStockholm.jl" title="Permalink"></a></h3><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MIToS</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; julia = Base.julia_cmd(); # path to the julia executable</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; scripts_folder = joinpath(pkgdir(MIToS), &quot;scripts&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; script_path = joinpath(scripts_folder, &quot;SplitStockholm.jl&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/SplitStockholm.jl&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; run(`$julia --project=$scripts_folder $script_path -h`)</code><code class="nohighlight hljs ansi" style="display:block;">ERROR: SystemError: opening file &quot;/home/runner/work/MIToS.jl/MIToS.jl/scripts/SplitStockholm.jl&quot;: No such file or directory
+Stacktrace:
+  [1] systemerror(p::String, errno::Int32; extrainfo::Nothing)
+    @ Base ./error.jl:176
+  [2] systemerror
+    @ ./error.jl:175 [inlined]
+  [3] open(fname::String; lock::Bool, read::Nothing, write::Nothing, create::Nothing, truncate::Nothing, append::Nothing)
+    @ Base ./iostream.jl:293
+  [4] open
+    @ ./iostream.jl:275 [inlined]
+  [5] open(f::Base.var&quot;#433#434&quot;{String}, args::String; kwargs::@Kwargs{})
+    @ Base ./io.jl:394
+  [6] open
+    @ ./io.jl:393 [inlined]
+  [7] read
+    @ ./io.jl:486 [inlined]
+  [8] _include(mapexpr::Function, mod::Module, _path::String)
+    @ Base ./loading.jl:2132
+  [9] include(mod::Module, _path::String)
+    @ Base ./Base.jl:495
+ [10] exec_options(opts::Base.JLOptions)
+    @ Base ./client.jl:318
+ [11] _start()
+    @ Base ./client.jl:552
+ERROR: failed process: Process(`<span class="sgr4">/opt/hostedtoolcache/julia/1.10.4/x64/bin/julia</span> <span class="sgr4">-C</span> <span class="sgr4">native</span> <span class="sgr4">-J/opt/hostedtoolcache/julia/1.10.4/x64/lib/julia/sys.so</span> <span class="sgr4">-g1</span> <span class="sgr4">--project=/home/runner/work/MIToS.jl/MIToS.jl/scripts</span> <span class="sgr4">/home/runner/work/MIToS.jl/MIToS.jl/scripts/SplitStockholm.jl</span> <span class="sgr4">-h</span>`, ProcessExited(1)) [1]</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../Utils_API/">« Utils</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Monday 8 July 2024 22:21">Monday 8 July 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
