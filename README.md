@@ -49,26 +49,16 @@ in this package.
 
 #### Scripts
 
-**MIToS** implements several useful scripts for command line execution
-(without requiring Julia coding):
+The [MIToS_Scripts](https://github.com/MIToSOrg/MIToS_Scripts.jl) package offers a set of easy-to-use scripts to access some functionalities MIToS offers from the terminal. These scripts are designed for researchers familiar with command-line interfaces (CLI) but without experience coding in Julia. The available scripts include:
 
-* **Buslje09.jl** : Calculates the corrected MI/MIp described on Buslje et. al. 2009 [2].
-* **BLMI.jl** : Calculates corrected mutual information using BLOSUM62 based-pseudocounts.
-* **Conservation.jl** : Calculates the Shannon entropy and the Kullback-Leibler divergence
-of each MSA column.
-* **DownloadPDB.jl** : Downloads gzipped files from PDB.
-* **Distances.jl** : Calculates residues distances in a PDB file.
-* **SplitStockholm.jl** : Splits a Stockholm file with multiple alignments into one
-compressed file per MSA
-* **AlignedColumns.jl** : Creates a Stockholm file with the aligned columns from a Pfam
-Stockholm file (insertions are deleted) saving the mapping (residue number in UniProt)
-and the columns in the original MSA.
-* **PercentIdentity.jl** : Calculates the percentage identity between all the sequences
-of an MSA and saves mean, median, minimum, etc.
-* **MSADescription.jl** : Calculates the number of columns, sequences and clusters after
-Hobohm I clustering at 62% identity given a stockholm file as input [5]. It also gives the
-percent indentity mean and mean, standard deviation and quantiles of: sequence coverage of
-the MSA and gap percentage.
+* **Buslje09.jl**: Calculates corrected Mutual Information (MI/MIp) based on Buslje et al., 2009.
+* **BLMI.jl**: Computes corrected mutual information using BLOSUM62-based pseudocounts, as described in the MIToS publication (Zea et al., 2016).
+* **Conservation.jl**: Calculates Shannon entropy and Kullback-Leibler divergence for each MSA column.
+* **Distances.jl**: Computes inter-residue distances in a PDB file.
+* **PercentIdentity.jl**: Calculates the percentage identity between all sequences in an MSA and provides statistical summaries.
+* **MSADescription.jl**: Provides statistics for a given Stockholm file, including clustering information and sequence coverage.
+
+This list is not exhaustive; more scripts are available in the [MIToS_Scripts.jl repository](https://github.com/MIToSOrg/MIToS_Scripts.jl). Visit the repository for more details and to access these scripts.
 
 #### Citation  
 

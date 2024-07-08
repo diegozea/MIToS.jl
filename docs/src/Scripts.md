@@ -2,20 +2,58 @@
 @info "Scripts docs"
 ```
 
-# Scripts
+# MIToS' Scripts
 
-MIToS implements several useful scripts to **command line execution
-(without requiring Julia coding)**. All this scripts are located in the `scripts` folder
-of the MIToS directory. You can copy them to your working directory, use the path to
-their folder or put them in the path
-(look into the **Installation** section of this manual).  
+The [MIToS_Scripts.jl](https://github.com/MIToSOrg/MIToS_Scripts.jl) package offers a set 
+of easy-to-use scripts for command-line execution without requiring Julia coding. 
+It includes several scripts designed for various bioinformatics tasks, such as measuring
+estimating residue conservation and inter-residue coevolution, calculating distances between
+residues in a protein structure, and more.
 
 ```@contents
 Pages = ["Scripts.md"]
 Depth = 4
 ```   
 
-## Buslje09.jl
+## Installation
+
+To install **MIToS_Scripts.jl**, you only need Julia 1.9 or later installed on your 
+system. Executing `julia` in the terminal to open the Julia REPL, and finally, run the 
+following command:
+
+```julia
+using Pkg
+Pkg.add("https://github.com/MIToSOrg/MIToS_Scripts.jl")
+```
+
+Then, you can get the location of the installed scripts by running the following command:
+
+```julia
+using MIToS_Scripts
+joinpath(pkgdir(MIToS_Scripts), "scripts")
+```
+
+You can run them from that location or copy them to a directory in your `PATH`.
+
+## Usage
+
+You can execute each provided script from your command line. For example, to run the `Buslje09.jl` 
+script—if you are located in the folder where it is the scripts—use:
+
+```bash
+julia Buslje09.jl input_msa_file
+```
+
+Refer to the documentation of each script for specific usage instructions; you can access 
+it by running the script with the `--help` or `-h` flag:
+
+```bash
+julia Buslje09.jl -h
+```
+
+## Scripts
+
+### Buslje09.jl
 
 ```@repl
 using MIToS
@@ -25,7 +63,7 @@ script_path = joinpath(scripts_folder, "Buslje09.jl")
 run(`$julia --project=$scripts_folder $script_path -h`)
 ```  
 
-## BLMI.jl
+### BLMI.jl
 
 ```@repl
 using MIToS
@@ -35,7 +73,7 @@ script_path = joinpath(scripts_folder, "BLMI.jl")
 run(`$julia --project=$scripts_folder $script_path -h`)
 ```  
 
-## Conservation.jl
+### Conservation.jl
 
 ```@repl
 using MIToS
@@ -45,7 +83,7 @@ script_path = joinpath(scripts_folder, "Conservation.jl")
 run(`$julia --project=$scripts_folder $script_path -h`)
 ```  
 
-## DownloadPDB.jl
+### DownloadPDB.jl
 
 ```@repl
 using MIToS
@@ -55,7 +93,7 @@ script_path = joinpath(scripts_folder, "DownloadPDB.jl")
 run(`$julia --project=$scripts_folder $script_path -h`)
 ```  
 
-## Distances.jl
+### Distances.jl
 
 ```@repl
 using MIToS
@@ -65,7 +103,7 @@ script_path = joinpath(scripts_folder, "Distances.jl")
 run(`$julia --project=$scripts_folder $script_path -h`)
 ```  
 
-## MSADescription.jl
+### MSADescription.jl
 
 ```@repl
 using MIToS
@@ -75,7 +113,7 @@ script_path = joinpath(scripts_folder, "MSADescription.jl")
 run(`$julia --project=$scripts_folder $script_path -h`)
 ```  
 
-## PercentIdentity.jl
+### PercentIdentity.jl
 
 ```@repl
 using MIToS
@@ -85,7 +123,7 @@ script_path = joinpath(scripts_folder, "PercentIdentity.jl")
 run(`$julia --project=$scripts_folder $script_path -h`)
 ```  
 
-## AlignedColumns.jl
+### AlignedColumns.jl
 
 ```@repl
 using MIToS
@@ -95,7 +133,7 @@ script_path = joinpath(scripts_folder, "AlignedColumns.jl")
 run(`$julia --project=$scripts_folder $script_path -h`)
 ```  
 
-## SplitStockholm.jl
+### SplitStockholm.jl
 
 ```@repl
 using MIToS
