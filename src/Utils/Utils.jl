@@ -48,19 +48,4 @@ include("ThreeLetterResidues.jl")
 
 @deprecate deleteitems!(vector::Vector, items) filter!(x -> x ∉ items, vector)
 
-# COMMAND LINE: Scripts Module
-# ============================
-
-module Scripts
-
-    export run_single_script, script, open_output, close_output, readorparse, loadedversion
-
-    using Pkg
-    using CodecZlib
-    using MIToS.Utils # to use read_file
-
-    include("Scripts.jl")
-
-end # Scripts
-
 end # Utils

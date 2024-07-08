@@ -161,7 +161,8 @@ export  # Residue
     shuffle,
     shuffle!,
     # Concatenation
-    gethcatmapping
+    gethcatmapping,
+    join_msas
 
 include("Residues.jl")
 include("Alphabet.jl")

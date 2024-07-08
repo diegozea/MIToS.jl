@@ -82,9 +82,3 @@ end
 @testset verbose = true "Pfam" begin
     include("Pfam/Pfam.jl")
 end
-
-# Scripts
-@testset verbose = true "Scripts" begin
-    include("Scripts/Template.jl")
-    include("Scripts/Scripts.jl")
-end

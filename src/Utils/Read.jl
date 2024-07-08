@@ -39,11 +39,7 @@ Keyword arguments are are directly passed to to `Downloads.download`.
 ```jldoctest
 julia> using MIToS.Utils
 
-julia> download_file(
-           "http://www.uniprot.org/uniprot/P69905.fasta",
-           "seq.fasta",
-           headers = Dict("User-Agent" => "Mozilla/5.0 (compatible; MSIE 7.01; Windows NT 5.0)"),
-       )
+julia> download_file("https://www.uniprot.org/uniprot/P69905.fasta", "seq.fasta")
 "seq.fasta"
 ```
 """
