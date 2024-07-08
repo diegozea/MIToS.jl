@@ -23,8 +23,7 @@ const DATA = joinpath(@__DIR__, "data")
 
 @testset verbose = true "Aqua" begin
     # The ambiguities are not caused by MIToS
-    # Information.kullback_leibler breaks the unbound_args test
-    Aqua.test_all(MIToS, ambiguities = false, unbound_args = false)
+    Aqua.test_all(MIToS, ambiguities = false)
 end
 
 # Utils

@@ -190,6 +190,7 @@ function _gettablearray(
 ) where {T,N,A}
     gettablearray(table)
 end
+
 _gettablearray(table::Array{T,N}) where {T,N} = table
 
 const _DOC_KL_KARG = """
@@ -200,8 +201,8 @@ distribution must have the same size and alphabet as the probabilities. The defa
 """
 
 """
-    kullback_leibler(probabilities::Probabilities{T,N,A}, background::Union{Array{T,N}, 
-        Probabilities{T,N,A}, ContingencyTable{T,N,A}}=BLOSUM62_Pi, 
+    kullback_leibler(probabilities::Probabilities{T,N,A}, background::Union{
+        AbstractArray{T,N}, Probabilities{T,N,A}, ContingencyTable{T,N,A}}=BLOSUM62_Pi, 
         base::Number=ℯ)
 
 It calculates the Kullback-Leibler (KL) divergence from a table of `Probabilities`. 
@@ -209,9 +210,9 @@ $_DOC_KL_KARG
 """
 function kullback_leibler(
     probabilities::Probabilities{T,N,A};
-    background::Union{Array{T,N},Probabilities{T,N,A},ContingencyTable{T,N,A}} = BLOSUM62_Pi,
+    background::Union{AbstractArray{T,N},Probabilities{T,N,A},ContingencyTable{T,N,A}} = BLOSUM62_Pi,
     base::Number = ℯ,
-) where {T,N,A}
+) where {T<:Number,N,A<:ResidueAlphabet}
     p = getcontingencytable(probabilities)
     bg = _gettablearray(background)
     @assert size(background) == size(p) "probabilities and background must have the same size."
@@ -240,11 +241,11 @@ $_DOC_KL_KARG The other keyword arguments are passed to the [`mapfreq`](@ref) fu
 """
 function kullback_leibler(
     msa::AbstractArray{Residue};
-    background::Union{Array{T,N},Probabilities{T,N,A},ContingencyTable{T,N,A}} = BLOSUM62_Pi,
+    background::AbstractArray = BLOSUM62_Pi,
     base::Number = ℯ,
     rank::Int = 1,
     kargs...,
-) where {T,N,A}
+)
     @assert rank == 1 "rank must be 1 for kullback_leibler"
     mapfreq(
         kullback_leibler,
@@ -263,7 +264,7 @@ function kullback_leibler(
     p::Probabilities{T,N,A},
     q::AbstractArray{T,N},
     base::Real,
-) where {T,N,A}
+) where {T<:Number,N,A<:ResidueAlphabet}
     Base.depwarn(
         "kullback_leibler(p, q, base) is deprecated. Use kullback_leibler(p; background=q, base=base) instead.",
         :kullback_leibler,
