@@ -2,11 +2,11 @@
 
 ### Changes from v2.22.0 to v3.0.0
 
-MIToS v3.0.0 requires Julia v1.9 or higher, dropping support for older versions. This 
+**MIToS v3.0.0** requires Julia v1.9 or higher, dropping support for older versions. This 
 release introduces several breaking changes to improve the usability of the package. 
 When possible, deprecation warnings are used to inform you of the changes.
 
-## MIToS.MSA
+#### MIToS.MSA
 
 The MSA module now includes ways to read, write, and work with unaligned protein sequences:
 
@@ -35,7 +35,13 @@ Other changes in the MSA module are:
 * *[Breaking change]* The `join` function for `AnnotatedMultipleSequenceAlignment` objects 
   is deprecated in favor of the `join_msas` function.
 
-## MIToS.PDB
+* *[Breaking change]* The `Clusters` type is no longer a subtype of `ClusteringResult` from
+  the `Clustering.jl` package. Instead, the `Clusters` type is now a subtype of the new 
+  `AbstractCluster` type. Support for the `Clustering.jl` interface is still available 
+  through package extensions. You now need to load the `Clustering.jl` package to use the
+  `assignments`, `nclusters`, and `counts` functions.
+
+#### MIToS.PDB
 
 The PDB module now depends on the `BioStructures` package. The main changes in the PDB
 module are:
@@ -65,12 +71,12 @@ module are:
   `query_alphafolddb("P00520")[1]["uniprotId"]` would be replaced by
   `query_alphafolddb("P00520")["uniprotId"]`.
 
-## MIToS.Utils.Scripts
+#### MIToS.Utils.Scripts
 
-* *[Breaking change]* The scripts now have their project environment and the 
-  `MIToS.Utils.Scripts` module does not longer export the `set_parallel`, 
-  `parse_commandline` and `runscript` functions. Therefore, `ArgParse` and 
-  `Distributed` are no longer MIToS dependencies.
+* *[Breaking change]* The `MIToS.Utils.Scripts` module and the MIToS scripts have been 
+  moved to their package at [MIToS_Scripts.jl](https://github.com/MIToSOrg/MIToS_Scripts.jl). 
+  Therefore, the `MIToS.Utils.Scripts` module is no longer exported. This allows for a 
+  reduction in the number of MIToS dependencies and improved load time.
 
 ### Changes from v2.21.0 to v2.22.0
 
