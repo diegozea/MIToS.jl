@@ -1,41 +1,44 @@
 ## MIToS.jl Release Notes
 
-### Changes from v2.22.0 to master
+### Changes from v2.22.0 to v3.0.0
 
 MIToS v3.0.0 requires Julia v1.9 or higher, dropping support for older versions. This 
-release introduces several breaking changes to improve the usability of the package.
+release introduces several breaking changes to improve the usability of the package. 
+When possible, deprecation warnings are used to inform you of the changes.
+
+## MIToS.MSA
 
 The MSA module now includes ways to read, write, and work with unaligned protein sequences:
 
 * The `MSA` module now exports the `AnnotatedSequence` type to represent a single protein
- sequence with annotations. This type is a subtype of the new `AbstractSequence` type,
- a subtype of the new `AbstractResidueMatrix` type.
+  sequence with annotations. This type is a subtype of the new `AbstractSequence` type,
+  a subtype of the new `AbstractResidueMatrix` type.
 
 * The `MSA` module now exports the `sequence_id` function to get the identifier of a 
- sequence object.
+  sequence object.
 
 * The `MSA` module now defines the `FASTASequences`, `PIRSequences`, and `RawSequences` 
- file formats to read and write (unaligned) protein sequences in FASTA, PIR, and raw 
- formats, respectively.
+  file formats to read and write (unaligned) protein sequences in FASTA, PIR, and raw 
+  formats, respectively.
 
 * *[Breaking change]* The behavior of the `getannotresidue`, `getannotsequence`, 
-  `setannotresidue!`, and `setannotsequence!` functions have changed for sequences objects, 
+  `setannotresidue!`, and `setannotsequence!` functions have changed for sequences objects, 
   such as `AnnotatedSequence`, `AnnotatedAlignedSequence`, and `AlignedSequence`. Now, these 
   functions take the feature name, rather than the sequence name, as the second 
   positional argument. As an example of migration, 
-  `getannotsequence(sequence, "sequence_name", "feature_name")` should be replaced by 
-  `getannotsequence(sequence, "feature_name")`. You still need to specify the sequence name
+  `getannotsequence(sequence, "sequence_name", "feature_name")` should be replaced by 
+  `getannotsequence(sequence, "feature_name")`. You still need to specify the sequence name
   when working with MSA objects.
+
+Other changes in the MSA module are:
 
 * *[Breaking change]* The `join` function for `AnnotatedMultipleSequenceAlignment` objects 
   is deprecated in favor of the `join_msas` function.
 
-* *[Breaking change]* The scripts now have their project environment and the 
-  `MIToS.Utils.Scripts` module does not longer export the `set_parallel`, 
-  `parse_commandline` and `runscript` functions. Therefore, `ArgParse` and 
-  `Distributed` are no longer dependencies of MIToS.
+## MIToS.PDB
 
-The PDB module now depends on the `BioStructures` package. The main changes are:
+The PDB module now depends on the `BioStructures` package. The main changes in the PDB
+module are:
 
 * The `PDB` module now exports the `MMCIFFile` file format to read and write PDB files in 
   the mmCIF format (using `BioStructures` under the hood).
@@ -43,20 +46,31 @@ The PDB module now depends on the `BioStructures` package. The main changes are:
 * *[Breaking change]* The `download_alphafold_structure` function can now download the 
   predicted structures from the *AlphaFold Protein Structure Database* using the mmCIF 
   format (`format=MMCIFFile`). This is the new default format. Therefore, you should use
-  `format=PDBFile` to get a PDB file as before. For example,
-  `download_alphafold_structure("P00520")` in previous versions is the same as 
-  `download_alphafold_structure("P00520", format=PDBFile)` in this version.
-
-* *[Breaking change]* The `query_alphafolddb` function now returns the EntrySummary object 
-  of the returned JSON response instead of the Root list. Therefore, there is no need to 
-  take the first element of the list to get the requiered information. For example,
-  `query_alphafolddb("P00520")[1]["uniprotId"]` would be replaced by
-  `query_alphafolddb("P00520")["uniprotId"]`.
+  `format=PDBFile` to get a PDB file like before. For example,
+  `download_alphafold_structure("P00520")` in previous versions is the same as 
+  `download_alphafold_structure("P00520", format=PDBFile)` in this version.
 
 * *[Breaking change]* The `downloadpdb` function now returns a mmCIF file by default.
   Therefore, you should use `format=PDBML` to get a PDBML file. As an example of migration,
-  `downloadpdb("1IVO")` should be replaced by `downloadpdb("1IVO", format=PDBML)`, unless you
-  want to get a mmCIF file.
+  `downloadpdb("1IVO")` should be replaced by `downloadpdb("1IVO", format=PDBML)`, unless 
+  you want to get a mmCIF file.
+
+* *[Breaking change]* The `PDBAtom` type now adds two extra fields: `alt_id` and `charge`
+  to represent the alternative location indicator and the atom's charge, respectively. 
+  This improves the compatibility with the mmCIF format and the `BioStructures` package.
+
+* *[Breaking change]* The `query_alphafolddb` function now returns the EntrySummary object 
+  of the returned JSON response instead of the Root list. Therefore, there is no need to 
+  take the first element of the list to get the required information. For example,
+  `query_alphafolddb("P00520")[1]["uniprotId"]` would be replaced by
+  `query_alphafolddb("P00520")["uniprotId"]`.
+
+## MIToS.Utils.Scripts
+
+* *[Breaking change]* The scripts now have their project environment and the 
+  `MIToS.Utils.Scripts` module does not longer export the `set_parallel`, 
+  `parse_commandline` and `runscript` functions. Therefore, `ArgParse` and 
+  `Distributed` are no longer MIToS dependencies.
 
 ### Changes from v2.21.0 to v2.22.0
 

@@ -52,6 +52,8 @@ function _create_pdbresidue(res, model::Model, chain::Chain)
             element(atom),
             occupancy(atom),
             string(tempfactor(atom)),
+            string(altlocid(atom)),
+            strip(charge(atom, strip = false)),
         )
         push!(atoms, atom_obj)
     end

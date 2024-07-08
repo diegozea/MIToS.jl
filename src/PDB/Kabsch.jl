@@ -174,6 +174,8 @@ function change_coordinates(atom::PDBAtom, coordinates::Coordinates)
         identity(atom.element),
         copy(atom.occupancy),
         identity(atom.B),
+        identity(atom.alt_id),
+        identity(atom.charge),
     )
 end
 
@@ -227,6 +229,8 @@ function _change_B(atom::PDBAtom, B::String)
         copy(atom.element),
         copy(atom.occupancy),
         B,
+        copy(atom.alt_id),
+        copy(atom.charge),
     )
 end
 

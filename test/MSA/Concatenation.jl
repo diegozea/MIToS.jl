@@ -1000,7 +1000,8 @@ end
                         # Vector of vectors
                         @test ab == join_msas(msa62, msa62, [[1, 1], [6, 6]])
                         # Vector of named tuples
-                        @test ab == join_msas(msa62, msa62, [(a = 1, b = 1), (a = 6, b = 6)])
+                        @test ab ==
+                              join_msas(msa62, msa62, [(a = 1, b = 1), (a = 6, b = 6)])
                         # Tuple of pairs
                         @test ab == join_msas(msa62, msa62, (1 => 1, 6 => 6))
                         # Tuple of tuples
@@ -1008,16 +1009,20 @@ end
                         # Tuple of vectors
                         @test ab == join_msas(msa62, msa62, ([1, 1], [6, 6]))
                         # Tuple of named tuples
-                        @test ab == join_msas(msa62, msa62, ((a = 1, b = 1), (a = 6, b = 6)))
+                        @test ab ==
+                              join_msas(msa62, msa62, ((a = 1, b = 1), (a = 6, b = 6)))
 
                         # Sequence names
                         # --------------
                         # Vector of pairs
-                        @test ab == join_msas(msa62, msa62, ["SEQ1" => "SEQ1", "SEQ6" => "SEQ6"])
+                        @test ab ==
+                              join_msas(msa62, msa62, ["SEQ1" => "SEQ1", "SEQ6" => "SEQ6"])
                         # Vector of tuples
-                        @test ab == join_msas(msa62, msa62, [("SEQ1", "SEQ1"), ("SEQ6", "SEQ6")])
+                        @test ab ==
+                              join_msas(msa62, msa62, [("SEQ1", "SEQ1"), ("SEQ6", "SEQ6")])
                         # Vector of vectors
-                        @test ab == join_msas(msa62, msa62, [["SEQ1", "SEQ1"], ["SEQ6", "SEQ6"]])
+                        @test ab ==
+                              join_msas(msa62, msa62, [["SEQ1", "SEQ1"], ["SEQ6", "SEQ6"]])
                         # Vector of named tuples
                         @test ab == join_msas(
                             msa62,
@@ -1025,11 +1030,14 @@ end
                             [(a = "SEQ1", b = "SEQ1"), (a = "SEQ6", b = "SEQ6")],
                         )
                         # Tuple of pairs
-                        @test ab == join_msas(msa62, msa62, ("SEQ1" => "SEQ1", "SEQ6" => "SEQ6"))
+                        @test ab ==
+                              join_msas(msa62, msa62, ("SEQ1" => "SEQ1", "SEQ6" => "SEQ6"))
                         # Tuple of tuples
-                        @test ab == join_msas(msa62, msa62, (("SEQ1", "SEQ1"), ("SEQ6", "SEQ6")))
+                        @test ab ==
+                              join_msas(msa62, msa62, (("SEQ1", "SEQ1"), ("SEQ6", "SEQ6")))
                         # Tuple of vectors
-                        @test ab == join_msas(msa62, msa62, (["SEQ1", "SEQ1"], ["SEQ6", "SEQ6"]))
+                        @test ab ==
+                              join_msas(msa62, msa62, (["SEQ1", "SEQ1"], ["SEQ6", "SEQ6"]))
                         # Tuple of named tuples
                         @test ab == join_msas(
                             msa62,
@@ -1042,7 +1050,8 @@ end
                         # NOTE: join change its behavior depending on whether the pairing
                         # positions are sorted or not. Here, OrderedDict ensures that the 
                         # positions are sorted.
-                        @test ab == join_msas(msa62, msa62, OrderedDict{Int,Int}(1 => 1, 6 => 6))
+                        @test ab ==
+                              join_msas(msa62, msa62, OrderedDict{Int,Int}(1 => 1, 6 => 6))
                     end
                 end
 
@@ -1219,7 +1228,8 @@ end
                         # Vector of vectors
                         @test ab == join_msas(msa62, msa62, [[1, 2], [2, 5]])
                         # Vector of named tuples
-                        @test ab == join_msas(msa62, msa62, [(a = 1, b = 2), (a = 2, b = 5)])
+                        @test ab ==
+                              join_msas(msa62, msa62, [(a = 1, b = 2), (a = 2, b = 5)])
                         # Tuple of pairs
                         @test ab == join_msas(msa62, msa62, (1 => 2, 2 => 5))
                         # Tuple of tuples
@@ -1227,16 +1237,20 @@ end
                         # Tuple of vectors
                         @test ab == join_msas(msa62, msa62, ([1, 2], [2, 5]))
                         # Tuple of named tuples
-                        @test ab == join_msas(msa62, msa62, ((a = 1, b = 2), (a = 2, b = 5)))
+                        @test ab ==
+                              join_msas(msa62, msa62, ((a = 1, b = 2), (a = 2, b = 5)))
 
                         # Sequence names
                         # --------------
                         # Vector of pairs
-                        @test ab == join_msas(msa62, msa62, ["SEQ1" => "SEQ2", "SEQ2" => "SEQ5"])
+                        @test ab ==
+                              join_msas(msa62, msa62, ["SEQ1" => "SEQ2", "SEQ2" => "SEQ5"])
                         # Vector of tuples
-                        @test ab == join_msas(msa62, msa62, [("SEQ1", "SEQ2"), ("SEQ2", "SEQ5")])
+                        @test ab ==
+                              join_msas(msa62, msa62, [("SEQ1", "SEQ2"), ("SEQ2", "SEQ5")])
                         # Vector of vectors
-                        @test ab == join_msas(msa62, msa62, [["SEQ1", "SEQ2"], ["SEQ2", "SEQ5"]])
+                        @test ab ==
+                              join_msas(msa62, msa62, [["SEQ1", "SEQ2"], ["SEQ2", "SEQ5"]])
                         # Vector of named tuples
                         @test ab == join_msas(
                             msa62,
@@ -1244,11 +1258,14 @@ end
                             [(a = "SEQ1", b = "SEQ2"), (a = "SEQ2", b = "SEQ5")],
                         )
                         # Tuple of pairs
-                        @test ab == join_msas(msa62, msa62, ("SEQ1" => "SEQ2", "SEQ2" => "SEQ5"))
+                        @test ab ==
+                              join_msas(msa62, msa62, ("SEQ1" => "SEQ2", "SEQ2" => "SEQ5"))
                         # Tuple of tuples
-                        @test ab == join_msas(msa62, msa62, (("SEQ1", "SEQ2"), ("SEQ2", "SEQ5")))
+                        @test ab ==
+                              join_msas(msa62, msa62, (("SEQ1", "SEQ2"), ("SEQ2", "SEQ5")))
                         # Tuple of vectors
-                        @test ab == join_msas(msa62, msa62, (["SEQ1", "SEQ2"], ["SEQ2", "SEQ5"]))
+                        @test ab ==
+                              join_msas(msa62, msa62, (["SEQ1", "SEQ2"], ["SEQ2", "SEQ5"]))
                         # Tuple of named tuples
                         @test ab == join_msas(
                             msa62,
@@ -1258,7 +1275,8 @@ end
 
                         # OrderedDict
                         # -----------
-                        @test ab == join_msas(msa62, msa62, OrderedDict{Int,Int}(1 => 2, 2 => 5))
+                        @test ab ==
+                              join_msas(msa62, msa62, OrderedDict{Int,Int}(1 => 2, 2 => 5))
                         @test ab == join_msas(
                             msa62,
                             msa62,
@@ -1330,8 +1348,13 @@ end
                 end
 
                 @testset "columns" begin
-                    ab =
-                        join_msas(msa26, msa26, [1, 4, 2] .=> [3, 4, 2], kind = :inner, axis = 2)
+                    ab = join_msas(
+                        msa26,
+                        msa26,
+                        [1, 4, 2] .=> [3, 4, 2],
+                        kind = :inner,
+                        axis = 2,
+                    )
                     @test size(ab) == (4, 3)
                     @test all(ab .!= GAP)
                     @test sequencenames(ab) == ["1_SEQ1", "1_SEQ2", "2_SEQ1", "2_SEQ2"]
@@ -1354,7 +1377,13 @@ end
                 end
 
                 @testset "columns" begin
-                    ab = join_msas(msa26, msa26, [1, 4, 2] .=> [3, 4, 2], kind = :left, axis = 2)
+                    ab = join_msas(
+                        msa26,
+                        msa26,
+                        [1, 4, 2] .=> [3, 4, 2],
+                        kind = :left,
+                        axis = 2,
+                    )
                     @test size(ab) == (4, 6)
                     @test vec(sum(ab .== GAP, dims = 2)) == [0, 0, 3, 3]
                     @test vec(sum(ab .== GAP, dims = 1)) == [0, 0, 2, 0, 2, 2]
@@ -1377,8 +1406,13 @@ end
                 end
 
                 @testset "columns" begin
-                    ab =
-                        join_msas(msa26, msa26, [1, 4, 2] .=> [3, 4, 2], kind = :right, axis = 2)
+                    ab = join_msas(
+                        msa26,
+                        msa26,
+                        [1, 4, 2] .=> [3, 4, 2],
+                        kind = :right,
+                        axis = 2,
+                    )
                     @test size(ab) == (4, 6)
                     @test vec(sum(ab .== GAP, dims = 2)) == [3, 3, 0, 0]
                     @test vec(sum(ab .== GAP, dims = 1)) == [2, 0, 0, 0, 2, 2]
@@ -1425,8 +1459,13 @@ end
                 end
 
                 @testset "columns" begin
-                    ab =
-                        join_msas(msa26, msa26, [1, 4, 2] .=> [3, 4, 2], kind = :outer, axis = 2)
+                    ab = join_msas(
+                        msa26,
+                        msa26,
+                        [1, 4, 2] .=> [3, 4, 2],
+                        kind = :outer,
+                        axis = 2,
+                    )
                     @test size(ab) == (4, 9)
                     @test vec(sum(ab .== GAP, dims = 2)) == [3, 3, 3, 3]
                     @test vec(sum(ab .== GAP, dims = 1)) == [0, 0, 0, 2, 2, 2, 2, 2, 2]
@@ -1454,7 +1493,12 @@ end
             # axis is not 1 or 2
             @test_throws ArgumentError join_msas(msa62, msa62, [1, 2] .=> [3, 4], axis = 3)
             # kind is not :inner, :left, :right, or :outer
-            @test_throws ArgumentError join_msas(msa62, msa62, [1, 2] .=> [3, 4], kind = :iner)
+            @test_throws ArgumentError join_msas(
+                msa62,
+                msa62,
+                [1, 2] .=> [3, 4],
+                kind = :iner,
+            )
             # pairing is empty
             @test_throws ArgumentError join_msas(msa62, msa62, [])
             # each element of the pairing is not a pair
@@ -1466,8 +1510,20 @@ end
         @testset "Using two position lists instead of a list of pairs" begin
             for axis in [1, 2]
                 for kind in [:inner, :left, :right, :outer]
-                    @test join_msas(msa62, msa62, [1, 2], [2, 1], kind = kind, axis = axis) ==
-                          join_msas(msa62, msa62, [(1, 2), (2, 1)], kind = kind, axis = axis)
+                    @test join_msas(
+                        msa62,
+                        msa62,
+                        [1, 2],
+                        [2, 1],
+                        kind = kind,
+                        axis = axis,
+                    ) == join_msas(
+                        msa62,
+                        msa62,
+                        [(1, 2), (2, 1)],
+                        kind = kind,
+                        axis = axis,
+                    )
                 end
             end
         end

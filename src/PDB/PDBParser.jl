@@ -23,8 +23,14 @@ function _parse_pdbatom(line::String, atom_name, element)
     z = parse(Float64, SubString(line, 47, 54))
     occupancy = parse(Float64, SubString(line, 55, 60))
     B = String(strip(SubString(line, 61, 66), ' '))
+    alt_id = strip(String(SubString(line, 17, 17)))
+    if 80 ≤ ncodeunits(line)
+        charge = String(strip(SubString(line, 79, 80)))
+    else
+        charge = ""
+    end
 
-    PDBAtom(Coordinates(x, y, z), atom_name, element, occupancy, B)
+    PDBAtom(Coordinates(x, y, z), atom_name, element, occupancy, B, alt_id, charge)
 end
 
 """
@@ -229,7 +235,7 @@ function Utils.print_file(
         res.id.group,
         serial_number,
         length(atomname) <= 3 ? string(" ", atomname) : atomname, # It works with NACCESS
-        " ",
+        res.atoms[atom_index].alt_id,
         res.id.name,
         res.id.chain,
         number[1],
@@ -241,7 +247,7 @@ function Utils.print_file(
         res.atoms[atom_index].B,
         " ",
         res.atoms[atom_index].element,
-        " ",
+        res.atoms[atom_index].charge,
     )
     serial_number + 1
 end

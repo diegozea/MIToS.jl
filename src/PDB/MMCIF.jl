@@ -1,5 +1,7 @@
 struct MMCIFFile <: FileFormat end
 
+_clean_string(s::String) = replace(s, "." => "", "?" => "")
+
 function _parse_mmcif_to_pdbresidues(mmcif_dict::MMCIFDict, label::Bool)
     # Choose the correct prefix based on the label argument
     prefix = label ? "_atom_site.label" : "_atom_site.auth"
@@ -21,7 +23,8 @@ function _parse_mmcif_to_pdbresidues(mmcif_dict::MMCIFDict, label::Bool)
     elements = mmcif_dict["_atom_site.type_symbol"] # Element, e.g. "C"
     group_pdb = mmcif_dict["_atom_site.group_PDB"]  # Group type, "ATOM" or "HETATM"
     pdb_model = mmcif_dict["_atom_site.pdbx_PDB_model_num"]  # Model number
-
+    alt_ids = mmcif_dict["_atom_site.label_alt_id"] # Alternative location ID
+    formal_charges = mmcif_dict["_atom_site.pdbx_formal_charge"] # Formal charge
     ins_codes = mmcif_dict["_atom_site.pdbx_PDB_ins_code"] # Insertion codes
 
     residues = PDBResidue[]
@@ -29,8 +32,8 @@ function _parse_mmcif_to_pdbresidues(mmcif_dict::MMCIFDict, label::Bool)
     current_residue = PDBResidue(PDBResidueIdentifier("", "", "", "", "", ""), PDBAtom[])
 
     for i = 1:length(auth_seq_ids)
-        pdb_number = string(auth_seq_ids[i], replace(ins_codes[i], "?" => ""))
-        pdbe_number = replace(label_seq_ids[i], "." => "")
+        pdb_number = string(auth_seq_ids[i], _clean_string(ins_codes[i]))
+        pdbe_number = _clean_string(label_seq_ids[i])
         residue_id = PDBResidueIdentifier(
             pdbe_number,
             pdb_number,
@@ -58,6 +61,8 @@ function _parse_mmcif_to_pdbresidues(mmcif_dict::MMCIFDict, label::Bool)
             elements[i],
             parse(Float64, occupancies[i]),
             bfactors[i],
+            _clean_string(alt_ids[i]),
+            _clean_string(formal_charges[i]),
         )
 
         push!(current_residue.atoms, atom)
@@ -157,12 +162,8 @@ function _pdbresidues_to_mmcifdict(
     mmcif_dict["_atom_site.group_PDB"] = String[]
     mmcif_dict["_atom_site.pdbx_PDB_model_num"] = String[]
     mmcif_dict["_atom_site.pdbx_PDB_ins_code"] = String[]
-
-    # Dummy values to allow the convertion to BioStructures.MolecularStructure
-    if molecular_structures
-        mmcif_dict["_atom_site.label_alt_id"] = String[]
-        mmcif_dict["_atom_site.pdbx_formal_charge"] = String[]
-    end
+    mmcif_dict["_atom_site.label_alt_id"] = String[]
+    mmcif_dict["_atom_site.pdbx_formal_charge"] = String[]
 
     atom_id_counter = 1
 
@@ -190,12 +191,14 @@ function _pdbresidues_to_mmcifdict(
             push!(mmcif_dict["_atom_site.group_PDB"], res.id.group)
             push!(mmcif_dict["_atom_site.pdbx_PDB_model_num"], res.id.model)
             push!(mmcif_dict["_atom_site.pdbx_PDB_ins_code"], _inscode(res))
-
-            # Dummy values to allow the convertion to BioStructures.MolecularStructure
-            if molecular_structures
-                push!(mmcif_dict["_atom_site.label_alt_id"], ".")
-                push!(mmcif_dict["_atom_site.pdbx_formal_charge"], "?")
-            end
+            push!(
+                mmcif_dict["_atom_site.label_alt_id"],
+                isempty(atom.alt_id) ? "." : atom.alt_id,
+            )
+            push!(
+                mmcif_dict["_atom_site.pdbx_formal_charge"],
+                isempty(atom.charge) ? "?" : atom.charge,
+            )
             atom_id_counter += 1
         end
     end

@@ -5,22 +5,19 @@ Protein Data Bank Markup Language (PDBML), a representation of PDB data in XML f
 """
 struct PDBML <: FileFormat end
 
-function _get_text(elem, name)
+function _get_text(elem, name, default = nothing)
     sub = LightXML.find_element(elem, name)
     if sub !== nothing
         return (LightXML.content(sub))
     end
-    throw(ErrorException("There is not $name for $elem"))
-end
-
-function _get_ins_code(elem)
-    sub = LightXML.find_element(elem, "pdbx_PDB_ins_code")
-    if sub !== nothing
-        return (LightXML.content(sub))
+    if default === nothing
+        throw(ErrorException("There is not $name for $elem"))
     else
-        return ("")
+        default
     end
 end
+
+_get_ins_code(elem) = _get_text(elem, "pdbx_PDB_ins_code", "")
 
 function _get_atom_iterator(document::LightXML.XMLDocument)
     pdbroot = LightXML.root(document)
@@ -140,10 +137,12 @@ function Utils.parse_file(
         z = parse(Float64, _get_text(atom, "Cartn_z"))
         occupancy = parse(Float64, _get_text(atom, "occupancy"))
         B = _get_text(atom, "B_iso_or_equiv")
+        alt_id = _get_text(atom, "label_alt_id")
+        charge = _get_text(atom, "pdbx_formal_charge", "")
 
         push!(
             residues[end].atoms,
-            PDBAtom(Coordinates(x, y, z), atom_name, element, occupancy, B),
+            PDBAtom(Coordinates(x, y, z), atom_name, element, occupancy, B, alt_id, charge),
         )
     end
 

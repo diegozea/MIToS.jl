@@ -43,6 +43,8 @@ residue. It has the following fields that you can access at any moment for query
     - `element` : Element type of the atom, e.g. `"C"`.
     - `occupancy` : A float number with the occupancy, e.g. `1.0`.
     - `B` : B factor as a string, e.g. `"23.60"`.
+    - `alt_id` : Alternative location ID, e.g. `"A"`.
+    - `charge` : Charge of the atom, e.g. `"0"`.
 """
 @auto_hash_equals struct PDBAtom
     coordinates::Coordinates
@@ -50,6 +52,8 @@ residue. It has the following fields that you can access at any moment for query
     element::String
     occupancy::Float64
     B::String
+    alt_id::String
+    charge::String
 end
 
 """
@@ -394,12 +398,12 @@ end
 # ------------
 
 """
-    select_atoms(residue_list; model=All, chain=All, group=All, residue=All, atom=All)
+    select_atoms(residue_list; model=All, chain=All, group=All, residue=All, atom=All, alt_id=All, charge=All)
 
 This function returns a vector of `PDBAtom`s with the selected subset of atoms from a list
 of residues. The atoms are selected using the keyword arguments `model`, `chain`, `group`,
-`residue`, and `atom`. You can use the type `All` (default value) to avoid filtering at
-a particular level.
+`residue`, `atom`, `alt_id`, and `charge`. You can use the type `All` (default value) to avoid
+filtering at a particular level.
 """
 function select_atoms(
     residue_list::AbstractArray{PDBResidue,N};
@@ -408,12 +412,14 @@ function select_atoms(
     group::ResidueQueryTypes = All,
     residue::ResidueQueryTypes = All,
     atom::ResidueQueryTypes = All,
+    alt_id::ResidueQueryTypes = All,
+    charge::ResidueQueryTypes = All,
 ) where {N}
     atom_list = PDBAtom[]
     @inbounds for r in residue_list
         if isresidue(r, model = model, chain = chain, group = group, residue = residue)
             for a in r.atoms
-                if isatom(a, atom)
+                if isatom(a, atom) && _is(a.alt_id, alt_id) && _is(a.charge, charge)
                     push!(atom_list, a)
                 end
             end
@@ -933,10 +939,11 @@ end
 # ====================================
 
 const _Format_ResidueID = FormatExpr("{:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
-const _Format_ATOM = FormatExpr("{:>50} {:>15} {:>15} {:>15} {:>15}\n")
+const _Format_ATOM = FormatExpr("{:>50} {:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
 
 const _Format_ResidueID_Res = FormatExpr("\t\t{:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
-const _Format_ATOM_Res = FormatExpr("\t\t{:<10} {:>50} {:>15} {:>15} {:>15} {:>15}\n")
+const _Format_ATOM_Res =
+    FormatExpr("\t\t{:<10} {:>50} {:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
 
 function Base.show(io::IO, id::PDBResidueIdentifier)
     printfmt(
@@ -962,7 +969,17 @@ function Base.show(io::IO, id::PDBResidueIdentifier)
 end
 
 function Base.show(io::IO, atom::PDBAtom)
-    printfmt(io, _Format_ATOM, "coordinates", "atom", "element", "occupancy", "B")
+    printfmt(
+        io,
+        _Format_ATOM,
+        "coordinates",
+        "atom",
+        "element",
+        "occupancy",
+        "B",
+        "alt_id",
+        "charge",
+    )
     printfmt(
         io,
         _Format_ATOM,
@@ -971,6 +988,8 @@ function Base.show(io::IO, atom::PDBAtom)
         string('"', atom.element, '"'),
         atom.occupancy,
         string('"', atom.B, '"'),
+        string('"', atom.alt_id, '"'),
+        string('"', atom.charge, '"'),
     )
 end
 
@@ -1008,6 +1027,8 @@ function Base.show(io::IO, res::PDBResidue)
             "element",
             "occupancy",
             "B",
+            "alt_id",
+            "charge",
         )
         printfmt(
             io,
@@ -1018,6 +1039,8 @@ function Base.show(io::IO, res::PDBResidue)
             string('"', res.atoms[i].element, '"'),
             res.atoms[i].occupancy,
             string('"', res.atoms[i].B, '"'),
+            string('"', res.atoms[i].alt_id, '"'),
+            string('"', res.atoms[i].charge, '"'),
         )
     end
 end
