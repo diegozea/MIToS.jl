@@ -42,8 +42,17 @@ useful functions for parameter optimization using Pfam alignments.
 
 ### Installation
 
-To install MIToS, you need to execute `using Pkg; Pkg.add("MIToS")` in Julia. 
-To update your installed version, you can execute `using Pkg; Pkg.update("MIToS")`.  
+To install MIToS, you need to execute the following code in Julia:
+
+```julia
+using Pkg; Pkg.add("MIToS")
+```
+ 
+To update your installed version, you can execute:
+
+```julia
+using Pkg; Pkg.update("MIToS")`
+```
 
 ### Scripts
 The [MIToS_Scripts](https://github.com/MIToSOrg/MIToS_Scripts.jl) package offers a set of easy-to-use scripts to access some functionalities MIToS offers from the terminal. These scripts are designed for researchers familiar with command-line interfaces (CLI) but without experience coding in Julia. The available scripts include:
