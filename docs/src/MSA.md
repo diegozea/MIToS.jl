@@ -13,12 +13,12 @@ using MIToS.MSA # to load the MSA module
 
 ## Features
 
-- [**Read**](@ref Reading-MSA-files) and [**write**](@ref Writing-MSA-files) MSAs in `Stockholm`, `FASTA`, `PIR` or `Raw` format.
+- [**Read**](@ref Reading-MSA-files) and [**write**](@ref Writing-MSA-files) MSAs in `Stockholm`, `FASTA`, `A3M`, `A2M`, `PIR` or `Raw` format.
 - Handle [**MSA annotations**](@ref MSA-Annotations).
 - [**Edit the MSA**](@ref Editing-your-MSA), e.g. delete columns or sequences, change sequence order, shuffling...
 - [**Keep track of positions**](@ref Column-and-sequence-mappings) and annotations after modifications on the MSA.
 - [**Describe an MSA**](@ref Describing-your-MSA), e.g. mean percent identity, sequence coverage, gap percentage...
-- [**Sequence clustering**](@ref Sequence-clustering) with Hobohm I.
+- [**Sequence clustering**](@ref Sequence-clustering) with a fast implementation of the Hobohm I algorithm.
 
 ## Contents
 
@@ -39,7 +39,7 @@ arguments. It opens the file and uses the arguments to call the `parse_file` fun
 the file. You can `read_file` **gzipped files** if they have the `.gz` extension and
 also urls pointing to a **web file**.  
 The second argument of `read_file` and `parse_file` is the file `FileFormat`. The supported MSA formats
-at the moment are `Stockholm`, `FASTA`, `PIR` (NBRF) and `Raw`.  
+at the moment are `Stockholm`, `FASTA`, `PIR` (NBRF), `A3M`, `A2M`, and `Raw`.  
 For example, reading with MIToS the full Stockholm MSA of the Pfam family *PF09645* from 
 the MIToS test data will be:  
 
@@ -181,9 +181,15 @@ functions of the following list:
 - `adjustreference!` : Deletes columns with gaps in the first sequence of the MSA (reference).  
 - `gapstrip!` : This function first calls `adjustreference!`, then deletes sequences with low (user defined) MSA coverage and finally, columns with user defined % of gaps.  
 
-Also, there are several available funtions `shuffle_…!`. These functions are useful to
-generate random alignments. The `Information` module of `MIToS` uses them to calculate the
-Z scores of MI values.  
+There is also the `shuffle_msa!` function, which generates random alignments by scrambling 
+the sequences or columns within a multiple sequence alignment (MSA). This function 
+randomly permutes the residues along sequences (`dims=1`) or columns 
+(`dims=2`). The optional `subset` argument allows you to shuffle only a subset of them. 
+Additionally, the `fixedgaps` keyword argument specifies whether gaps should remain in 
+their positions, and the `fixed_reference` keyword argument indicates if the residues in 
+the first sequence should remain in their positions. This function is pretty useful to 
+generate the null distribution of a statistic. For example, it is used in the 
+`Information` module of `MIToS` uses them to calculate the Z scores of the MI values.  
 
 #### [Example: Deleting sequences](@id Example:-Deleting-sequences)
 

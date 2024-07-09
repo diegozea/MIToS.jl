@@ -76,5 +76,5 @@ package. This script reads a MSA file, and writes a file with the same base name
 input but with the `.BLMI.csv` extension.  
 
 ```
-BLMI.jl PF14972.stockholm.gz
+julia BLMI.jl PF14972.stockholm.gz
 ```
