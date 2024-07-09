@@ -7,33 +7,33 @@
 MIToS tools are separated into different modules for different tasks.
 
 - [MSA](@ref Module-MSA): This module defines multiple functions and types for dealing with 
-Multiple Sequence Alignments (MSAs) and their annotations. It also includes facilities 
-for sequence clustering and shuffling, among others.
+    Multiple Sequence Alignments (MSAs) and their annotations. It also includes facilities 
+    for sequence clustering and shuffling, among others.
 
 - [PDB](@ref Module-PDB): This module defines types and methods to work with protein 
-structures from different sources, such as the Protein Data Bank (PDB) or AlphaFold DB. 
-It includes functions to superpose structures, measure the distance between residues, and much more.
+    structures from different sources, such as the Protein Data Bank (PDB) or AlphaFold DB.     
+    It includes functions to superpose structures, measure the distance between residues, and much more.
 
 - [Information](@ref Module-Information): This module defines residue contingency tables and 
-methods on them to estimate information measures. This allow to measure evolutionary
-information on MSAs positions. It includes functions to estimate corrected mutual 
-information (ZMIp, ZBLMIp) between MSA columns, as well as conservation estimations using 
-Shannon entropy and the Kullback-Leibler divergence.
+    methods on them to estimate information measures. This allow to measure evolutionary
+    information on MSAs positions. It includes functions to estimate corrected mutual 
+    information (ZMIp, ZBLMIp) between MSA columns, as well as conservation estimations using 
+    Shannon entropy and the Kullback-Leibler divergence.
 
 - [SIFTS](@ref Module-SIFTS): This module allows access to SIFTS residue-level mapping of 
-UniProt, Pfam, and other databases with PDB entries.
+    UniProt, Pfam, and other databases with PDB entries.
 
 - [Pfam](@ref Module-Pfam): This module uses the previous modules to work with Pfam MSAs. 
-It also has useful parameter optimization functions to be used with Pfam alignments.
+    It also has useful parameter optimization functions to be used with Pfam alignments.
 
 - [Utils](@ref API-Utils): MIToS has also a Utils module with common utils functions and 
-types used in different modules of this package.
+    types used in different modules of this package.
 
 ## Citation  
 
 If you use MIToS, please cite:
 
-Diego J. Zea, Diego Anfossi, Morten Nielsen, Cristina Marino-Buslje; MIToS.jl: mutual information tools for protein sequence analysis in the Julia language, Bioinformatics, Volume 33, Issue 4, 15 February 2017, Pages 564–565, [https://doi.org/10.1093/bioinformatics/btw646](https://doi.org/10.1093/bioinformatics/btw646)  
+*Diego J. Zea, Diego Anfossi, Morten Nielsen, Cristina Marino-Buslje; MIToS.jl: mutual information tools for protein sequence analysis in the Julia language, Bioinformatics, Volume 33, Issue 4, 15 February 2017, Pages 564–565, [https://doi.org/10.1093/bioinformatics/btw646](https://doi.org/10.1093/bioinformatics/btw646)* 
 
 ## Older MIToS versions
 

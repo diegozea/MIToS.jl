@@ -70,9 +70,10 @@ rm(pfam_file) # clean up
 
 ## [MIToS in system command line](@id commandline)
 
-Calculate ZBLMIp on the system shell is easy using the MIToS script called `BLMI.jl`. This
-script reads a MSA file, and writes a file with the same base name of the input but with
-the `.BLMI.csv` extension.  
+Calculate ZBLMIp on the system shell is easy using the script called `BLMI.jl` in the 
+[MIToS_Scripts.jl![](./assets/external-link.png)](https://github.com/MIToSOrg/MIToS_Scripts.jl) 
+package. This script reads a MSA file, and writes a file with the same base name of the 
+input but with the `.BLMI.csv` extension.  
 
 ```
 BLMI.jl PF14972.stockholm.gz
