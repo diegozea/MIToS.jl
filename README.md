@@ -30,10 +30,11 @@ their annotations. It also includes facilities for sequence clustering and shuff
 - **PDB** This module defines types and methods to work with protein structures from
 different sources, such as PDB or AlphaFold DB. It includes functions to superpose structures,
 measure the distance between residues, and much more.
-- **Information** This module defines residue contingency tables and methods 
-to estimate information measures from MSAs. It includes functions to estimate corrected
-mutual information (ZMIp, ZBLMIp) between MSA columns, as well as conservation estimations
-using Shannon entropy and the Kullback-Leibler divergence.
+- **Information** This module defines residue contingency tables and methods on them to 
+estimate information measures. This allow to measure evolutionary information on MSAs 
+positions. It includes functions to estimate corrected mutual information (ZMIp, ZBLMIp) 
+between MSA columns, as well as conservation estimations using Shannon entropy and the 
+Kullback-Leibler divergence.
 - **SIFTS** This module allows access to SIFTS residue-level mapping of UniProt, Pfam, and
 other databases with PDB entries.
 - **Pfam** This module uses the previous modules to work with Pfam MSAs. It also offers

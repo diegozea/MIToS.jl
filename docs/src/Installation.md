@@ -18,30 +18,34 @@ If everything goes well with the installation, MIToS will be loaded without erro
 using MIToS
 ```
 
-You can optionally do an exhaustive test of your installed version of MIToS with `Pkg.test` (it takes few minutes):  
+To update MIToS to the latest version, you can run:  
 
 ```julia
 using Pkg
-Pkg.test("MIToS")
+Pkg.update("MIToS")
 ```
 
-!!! note
-    **Ways to run Julia**  
+!!! tip "Ways to run Julia"  
+    - **[Julia REPL ![](./assets/external-link.png)](https://docs.julialang.org/en/v1/stdlib/REPL/)**: Built-in Julia command line. Start a Julia interactive session (REPL) by double-clicking the Julia executable or running `julia` from the system command line.
+    - **[IJulia ![](./assets/external-link.png)](https://github.com/JuliaLang/IJulia.jl)**: *Jupyter/IPython notebook* for Julia.
+    - **[Pluto ![](./assets/external-link.png)](https://github.com/fonsp/Pluto.jl)**: A simple reactive notebook for Julia.
+    - **[VS Code Extension for Julia ![](./assets/external-link.png)](https://www.julia-vscode.org/)**: Integrated Development Environment (IDE) extension for Visual Studio Code.
 
-    *Option* | *Description*  
-    ---:| ---  
-    [Julia REPL![](./assets/external-link.png)](https://docs.julialang.org/en/v1/stdlib/REPL/) | Built-in Julia command line. Start an Julia interactive session (REPL) by double-clicking the Julia executable or running `julia` from the system command line.
-    [JuliaBox![](./assets/external-link.png)](https://juliabox.com/) | You can try Julia from your *web browser*. *No installation is required.*
-    [IJulia![](./assets/external-link.png)](https://github.com/JuliaLang/IJulia.jl) | *Jupyter/IPython notebook* for Julia.
-    [Juno![](./assets/external-link.png)](http://junolab.org/) | Integrated Development Environment (IDE).  
+!!! info "Running the test suite"
+    **Optionally**, you can run the test suite to ensure everything works as expected. 
+    The test suite is extensive and can take several minutes to run. It is the same test 
+    suite used for MIToS' continuous integration (CI), so everything should pass.
 
-
+    ```julia
+    using Pkg
+    Pkg.test("MIToS")
+    ``
 
 ## Plots installation
 
 Julia plotting capabilities are available through external packages. MIToS makes use of
  *RecipesBase* to define plot recipes, which can be plotted using
- [Plots![](./assets/external-link.png)](http://docs.juliaplots.org/latest/) and different
+ [Plots![](./assets/external-link.png)](http://docs.juliaplots.org/latest/) and its different
  backends. You need to [install Plots![](./assets/external-link.png)](http://docs.juliaplots.org/latest/install/)
  to plot MIToS objects:  
 
@@ -50,16 +54,8 @@ using Pkg
 Pkg.add("Plots")
 ```
 
-And you also need to install at least one of the following backends:  
-
-```julia
-using Pkg
-Pkg.add("GR") # Fast
-Pkg.add("PlotlyJS") # Interactive
-```
-
-You need to load Plots in order to use the `plot` function. There is more information about
-it in the [Plots documentation![](./assets/external-link.png)](http://docs.juliaplots.org/latest/).  
+Once it is installed, you need to load Plots in order to use the `plot` function. There is 
+more information about it in the [Plots documentation![](./assets/external-link.png)](http://docs.juliaplots.org/latest/).  
 
 ```julia
 using Plots
@@ -74,23 +70,4 @@ Pkg.add("GraphRecipes")
 using GraphRecipes
 ```
 
-## Scripts location
-
-The MIToS’ scripts are located in the `MIToS/scripts` folder and can be runned from your
-system command line. It’s possible to ask Julia for the location of the installed package
-using:
-
-
-```julia
-import MIToS
-joinpath(splitdir(dirname(pathof(MIToS)))[1], "scripts")
-```
-
-You might want to add this folder into your `PATH` to easily access MIToS’ scripts.  
-For example, in **bash** you can do it by adding the path of the MIToS script folder
-into the `~/.bashrc` file. The `println` output shows the line to add to that file:
-
-```julia
-import MIToS
-println("export PATH=\"\$PATH:", joinpath(splitdir(dirname(pathof(MIToS)))[1], "scripts"), "\"")
-```
+You can look for examples in the [GraphRecipes documentation![](./assets/external-link.png)](https://docs.juliaplots.org/stable/GraphRecipes/examples/).
