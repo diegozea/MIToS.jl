@@ -1,25 +1,18 @@
 [![MIToS](http://diegozea.github.io/MIToS.jl/latest/assets/MIToS_logo.png)](http://diegozea.github.io/MIToS.jl/)
 ### Mutual Information Tools for protein Sequence analysis
 
-Julia 1.0 or higher: **MIToS v2**  
-
-
 Linux, OSX & Windows: [![Status](https://github.com/diegozea/MIToS.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/diegozea/MIToS.jl/actions?query=workflow%3A%22CI%22+branch%3Amaster)
-
 
 Code Coverage:
 [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/diegozea/MIToS.jl?branch=master) [![codecov.io](http://codecov.io/github/diegozea/MIToS.jl/coverage.svg?branch=master)](http://codecov.io/github/diegozea/MIToS.jl?branch=master)
 
-**NOTE:** [Julia has reached a stable 1.0 version](https://julialang.org/blog/2018/08/one-point-zero) and **MIToS v2** supports it. You need to do `using Pkg; Pkg.add("MIToS")` to **install** MIToS on Julia v1 or `using Pkg; Pkg.update()` to update your installed version.  
+**Documentation:** [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://diegozea.github.io/MIToS.jl/stable) [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://diegozea.github.io/MIToS.jl/latest)  
 
-Some breaking changes were introduced in MIToS v2.3. See the [NEWS.md](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
-file and the [documentation](https://diegozea.github.io/MIToS.jl/stable) to migrate code from an old version
-of MIToS. If you need more help to migrate code from MIToS 1.0 in Julia 0.4 to the newer MIToS v2 in Julia v1, you can
-write a mail to diegozea at gmail dot com asking for assistance.  
 
-**DOCUMENTATION**:  
-Documentation for [MIToS 1.0 in Julia 0.4](https://diegozea.github.io/mitosghpage-legacy/)  
-Documentation for MIToS v2 or greater in Julia 0.5 or greater: [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://diegozea.github.io/MIToS.jl/stable) [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://diegozea.github.io/MIToS.jl/latest)  
+**NOTE:**  Some **breaking changes** were introduced between **MIToS 2.15** and **MIToS 3.0**, inclusive. See the [NEWS.md](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
+file to migrate code from an old version
+of MIToS. Most of the breaking changes will show a depreciation warning with a hint on how to perform the migration. If you need more help migrating code towards MIToS v3, you can
+write a email to diegozea at gmail dot com asking for assistance.
 
 MIToS is an environment for Mutual Information (MI) analysis and implements several useful
 tools for Multiple Sequence Alignments (MSAs) and PDB structures management in the Julia
@@ -30,6 +23,8 @@ MIToS starting point was an improvement of the algorithm published by Buslje et.
 a better performance in the range of MSAs with low number of sequences. **MIToS** offers
 all the necessary tools for using, developing and testing MI based scores, in different
 modules.
+
+**NOTE:** [Julia has reached a stable 1.0 version](https://julialang.org/blog/2018/08/one-point-zero) and **MIToS v2** supports it. You need to do `using Pkg; Pkg.add("MIToS")` to **install** MIToS on Julia v1 or `using Pkg; Pkg.update()` to update your installed version.  
 
 #### Modules
 MIToS tools are separated on different modules, related to different tasks.
@@ -48,7 +43,6 @@ optimization functions to be used with Pfam alignments.
 in this package.
 
 #### Scripts
-
 The [MIToS_Scripts](https://github.com/MIToSOrg/MIToS_Scripts.jl) package offers a set of easy-to-use scripts to access some functionalities MIToS offers from the terminal. These scripts are designed for researchers familiar with command-line interfaces (CLI) but without experience coding in Julia. The available scripts include:
 
 * **Buslje09.jl**: Calculates corrected Mutual Information (MI/MIp) based on Buslje et al., 2009.
@@ -60,8 +54,11 @@ The [MIToS_Scripts](https://github.com/MIToSOrg/MIToS_Scripts.jl) package offers
 
 This list is not exhaustive; more scripts are available in the [MIToS_Scripts.jl repository](https://github.com/MIToSOrg/MIToS_Scripts.jl). Visit the repository for more details and to access these scripts.
 
-#### Citation  
+#### Order versions
+MIToS 3.0 requires Julia 1.9 or higher. You are recommended to use these versions to get the best experience coding with Julia and MIToS.
+If for some reason you need to use a MIToS in a version of Julia lower than 1.0, you will need to look at the [older MIToS v1 documentation](https://diegozea.github.io/mitosghpage-legacy/).
 
+#### Citation  
 If you use MIToS, please cite:
 
 Diego J. Zea, Diego Anfossi, Morten Nielsen, Cristina Marino-Buslje; **MIToS.jl: mutual information tools for protein sequence analysis in the Julia language**, Bioinformatics, Volume 33, Issue 4, 15 February 2017, Pages 564–565, [https://doi.org/10.1093/bioinformatics/btw646](https://doi.org/10.1093/bioinformatics/btw646)
