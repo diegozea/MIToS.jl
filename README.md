@@ -1,18 +1,17 @@
 [![MIToS](http://diegozea.github.io/MIToS.jl/latest/assets/MIToS_logo.png)](http://diegozea.github.io/MIToS.jl/)
-### Mutual Information Tools for protein Sequence analysis
+# MIToS: Mutual Information Tools for protein Sequence analysis
+
+*A Julia package to analyze protein sequences, structures, and evolutionary information.*
+
+**Documentation:** [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://diegozea.github.io/MIToS.jl/stable) [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://diegozea.github.io/MIToS.jl/latest)  
 
 Linux, OSX & Windows: [![Status](https://github.com/diegozea/MIToS.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/diegozea/MIToS.jl/actions?query=workflow%3A%22CI%22+branch%3Amaster)
 
 Code Coverage:
 [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/diegozea/MIToS.jl?branch=master) [![codecov.io](http://codecov.io/github/diegozea/MIToS.jl/coverage.svg?branch=master)](http://codecov.io/github/diegozea/MIToS.jl?branch=master)
 
-**Documentation:** [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://diegozea.github.io/MIToS.jl/stable) [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://diegozea.github.io/MIToS.jl/latest)  
-
-
-**NOTE:**  Some **breaking changes** were introduced between **MIToS 2.15** and **MIToS 3.0**, inclusive. See the [NEWS.md](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md)
-file to migrate code from an old version
-of MIToS. Most of the breaking changes will show a depreciation warning with a hint on how to perform the migration. If you need more help migrating code towards MIToS v3, you can
-write a email to diegozea at gmail dot com asking for assistance.
+> **NOTE:**  Some **breaking changes** were introduced between **MIToS 2.15** and **MIToS 3.0**, inclusive. See the [NEWS.md](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md) file to migrate code from an old version
+of MIToS. Most breaking changes will show a deprecation warning with a hint on how to perform the migration. If you need more help migrating code towards MIToS v3, you can write an email to diegozea at gmail dot com asking for assistance.
 
 MIToS is an environment for Mutual Information (MI) analysis and implements several useful
 tools for Multiple Sequence Alignments (MSAs) and PDB structures management in the Julia
