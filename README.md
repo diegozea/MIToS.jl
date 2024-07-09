@@ -20,28 +20,30 @@ MI-derived scores are good predictors of inter-residue contacts in a protein str
 To allow such analysis, MIToS also implements several useful tools for working with protein structures, such as those available in the **Protein Data Bank (PDB)** or predicted by AlphaFold 2.
 
 MIToS starting point was an improvement of the algorithm published by Buslje et al. [2]. 
-A BLOSUM62-based pseudocount strategy, similar to Altschul et. al.[4], was implemented for a better performance in the range of MSAs with a low number of sequences [1]. 
+A BLOSUM62-based pseudo-count strategy, similar to Altschul et al.[4], , was implemented to improve performance in the range of MSAs with a low number of sequences [1]. 
 **MIToS** offers all the tools for using, developing, and testing MI-based scores—in fact, any measure based on reside frequencies in an MSA—in different modules.
+
+### Modules
+MIToS tools are separated into different modules for different tasks.
+- **MSA** This module defines multiple functions and types for dealing with MSAs and
+their annotations. It also includes facilities for sequence clustering and shuffling, among others.
+- **PDB** This module defines types and methods to work with protein structures from
+different sources, such as PDB or AlphaFold DB. It includes functions to superpose structures,
+measure the distance between residues, and much more.
+- **Information** This module defines residue contingency tables and methods 
+to estimate information measures from MSAs. It includes functions to estimate corrected
+mutual information (ZMIp, ZBLMIp) between MSA columns, as well as conservation estimations
+using Shannon entropy and the Kullback-Leibler divergence.
+- **SIFTS** This module allows access to SIFTS residue-level mapping of UniProt, Pfam, and
+other databases with PDB entries.
+- **Pfam** This module uses the previous modules to work with Pfam MSAs. It also offers
+useful functions for parameter optimization using Pfam alignments.
+- **Utils** It exports common utils functions and types used in different modules of this package.
 
 **NOTE:** [Julia has reached a stable 1.0 version](https://julialang.org/blog/2018/08/one-point-zero) and **MIToS v2** supports it. You need to do `using Pkg; Pkg.add("MIToS")` to **install** MIToS on Julia v1 or `using Pkg; Pkg.update()` to update your installed version.  
 
-#### Modules
-MIToS tools are separated on different modules, related to different tasks.
-- **MSA** This module defines multiple functions and types for dealing with MSAs and
-their annotations. It also includes facilities for sequence clustering.
-- **PDB** This module defines types and methods to work with protein structures from PDB.
-- **SIFTS** This module allows access to SIFTS residue-level mapping of UniProt, Pfam and
-other databases with PDB entries.
-- **Information** This module defines residue contingency tables and methods on them
-to estimate information measure from MSAs. It includes functions to estimate corrected
-mutual information (ZMIp, ZBLMIp) between MSA columns.
-- **Pfam**
-This module use the previous modules to work with Pfam MSAs. It also has useful parameter
-optimization functions to be used with Pfam alignments.
-- **Utils** MIToS has also an Utils module with common utils functions and types used
-in this package.
 
-#### Scripts
+### Scripts
 The [MIToS_Scripts](https://github.com/MIToSOrg/MIToS_Scripts.jl) package offers a set of easy-to-use scripts to access some functionalities MIToS offers from the terminal. These scripts are designed for researchers familiar with command-line interfaces (CLI) but without experience coding in Julia. The available scripts include:
 
 * **Buslje09.jl**: Calculates corrected Mutual Information (MI/MIp) based on Buslje et al., 2009.
@@ -53,16 +55,16 @@ The [MIToS_Scripts](https://github.com/MIToSOrg/MIToS_Scripts.jl) package offers
 
 This list is not exhaustive; more scripts are available in the [MIToS_Scripts.jl repository](https://github.com/MIToSOrg/MIToS_Scripts.jl). Visit the repository for more details and to access these scripts.
 
-#### Order versions
+### Order versions
 MIToS 3.0 requires Julia 1.9 or higher. You are recommended to use these versions to get the best experience coding with Julia and MIToS.
 If for some reason you need to use a MIToS in a version of Julia lower than 1.0, you will need to look at the [older MIToS v1 documentation](https://diegozea.github.io/mitosghpage-legacy/).
 
-#### Citation  
+### Citation  
 If you use MIToS, please cite:
 
 Diego J. Zea, Diego Anfossi, Morten Nielsen, Cristina Marino-Buslje; **MIToS.jl: mutual information tools for protein sequence analysis in the Julia language**, Bioinformatics, Volume 33, Issue 4, 15 February 2017, Pages 564–565, [https://doi.org/10.1093/bioinformatics/btw646](https://doi.org/10.1093/bioinformatics/btw646)
 
-#### References
+### References
 
 1. Zea, Diego Javier, et al. "MIToS. jl: mutual information tools for protein sequence
 analysis in the Julia language." Bioinformatics 33, no. 4 (2016): 564-565.
