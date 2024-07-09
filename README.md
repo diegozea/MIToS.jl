@@ -13,15 +13,15 @@ Linux, OSX & Windows: [![Status](https://github.com/diegozea/MIToS.jl/actions/wo
 > **NOTE:**  Some **breaking changes** were introduced between **MIToS 2.15** and **MIToS 3.0**, inclusive. See the [NEWS.md](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md) file to migrate code from an old version
 of MIToS. Most breaking changes will show a deprecation warning with a hint on how to perform the migration. If you need more help migrating code towards MIToS v3, you can write an email to diegozea at gmail dot com asking for assistance.
 
-MIToS is an environment for Mutual Information (MI) analysis and implements several useful
-tools for Multiple Sequence Alignments (MSAs) and PDB structures management in the Julia
-language [1]. MI allows determining covariation between positions in a MSA. MI derived scores
-are good predictors of residue contacts and functional sites in proteins [2,3].
+MIToS provides a comprehensive suite of tools for the analysis of protein sequences and structures.
+It allows working with **Multiple Sequence Alignments (MSAs)** to obtain evolutionary information in the Julia language [1].
+In particular, it eases the analysis of coevoling position in an MSA using **Mutual Information (MI)**, a measure of covariation.
+MI-derived scores are good predictors of inter-residue contacts in a protein structure and functional sites in proteins [2,3].
+To allow such analysis, MIToS also implements several useful tools for working with protein structures, such as those available in the **Protein Data Bank (PDB)** or predicted by AlphaFold 2.
 
-MIToS starting point was an improvement of the algorithm published by Buslje et. al. [2]. A BLOSUM62-based pseudocount strategy, similar to Altschul et. al.[4], was implemented for
-a better performance in the range of MSAs with low number of sequences. **MIToS** offers
-all the necessary tools for using, developing and testing MI based scores, in different
-modules.
+MIToS starting point was an improvement of the algorithm published by Buslje et al. [2]. 
+A BLOSUM62-based pseudocount strategy, similar to Altschul et. al.[4], was implemented for a better performance in the range of MSAs with a low number of sequences [1]. 
+**MIToS** offers all the tools for using, developing, and testing MI-based scores—in fact, any measure based on reside frequencies in an MSA—in different modules.
 
 **NOTE:** [Julia has reached a stable 1.0 version](https://julialang.org/blog/2018/08/one-point-zero) and **MIToS v2** supports it. You need to do `using Pkg; Pkg.add("MIToS")` to **install** MIToS on Julia v1 or `using Pkg; Pkg.update()` to update your installed version.  
 
