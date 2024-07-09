@@ -14,7 +14,8 @@ using MIToS.PDB # to load the PDB module
 
 ## Features  
 
-- [**Read and parse**](@ref Read-and-parse-PDB-files) PDB and PDBML files.
+- [**Read and parse**](@ref Read-and-parse-PDB-files) mmCIF, PDB, and PDBML files.
+- Download structures from the PDB and AlphaFold databases.
 - Calculate distance and contacts between atoms or residues.
 - Determine interaction between residues.
 
@@ -28,9 +29,10 @@ Depth = 4
 ## Retrieve information from PDB database  
 
 This module exports the `downloadpdb` function, to retrieve a PDB file from  
-[PDB database![](./assets/external-link.png)](http://www.rcsb.org/pdb/home/home.do). This
-function downloads a gzipped `MMCIFFile` file, which could be easily read it with MIToS
-by default, but you are able to determine the `format` as `PDBFile` if you want it.  
+[PDB database![](./assets/external-link.png)](http://www.rcsb.org/pdb/home/home.do). 
+By default, this function downloads a gzipped mmCIF file (`format=MMCIFFile`), which could 
+be easily read by MIToS. You are able to determine the `format` as `PDBFile` if you want to
+download a PDB file instead.    
 
 ```@example pdb_io
 using MIToS.PDB
@@ -44,6 +46,35 @@ PDB entry.
 ```@example pdb_io
 getpdbdescription("1IVO")
 ```  
+
+## Retrieve information from AlphaFold database
+
+This module provides functions to download and query protein structures from AlphaFold DB. 
+
+The `download_alphafold_structure` function downloads the structure file, in mmCIF format 
+by default, for a given UniProt Accession ID. You can set `format` to `PDBFile` to download
+a PDB file instead. 
+
+```@example alphafold_io
+using MIToS.PDB
+
+# Get the structure for the human insulin
+file = download_alphafold_structure("P01308")
+```
+
+If you need more information about that entry, you can use the `query_alphafolddb` function.
+The `query_alphafolddb` function returns an `JSON3.Object` that works like a dictionary.
+
+```@example alphafold_io
+json_result = query_alphafolddb("P01308")
+```
+
+You can access the information in the `JSON3.Object` using the keys. For example, to get 
+the URL to the PAE matrix image:
+
+```@example alphafold_io
+pae_image_url = json_result["paeImageUrl"]
+```
 
 ## [Read and parse PDB files](@id Read-and-parse-PDB-files)  
 
