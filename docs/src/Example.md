@@ -17,19 +17,13 @@ work with Pfam MSAs. In this case, we are going to use it for download a
 [Stockholm![](./assets/external-link.png)](https://en.wikipedia.org/wiki/Stockholm_format)
 MSA from the Pfam website and read it into Julia.  
 
-```@setup juliarepl
-using Plots
-gr() # Just to avoid warnings in the output
-```
-
 ```@example juliarepl
 using MIToS.Pfam
 pfam_file = downloadpfam("PF10660")
 msa = read_file(pfam_file, Stockholm, generatemapping=true, useidcoordinates=true)
 ```
 
-!!! note
-    **Generation of sequence and column mappings**  
+!!! note "Generation of sequence and column mappings"  
     The keyword argument `generatemapping` of `read_file` allows to generate sequence and column
     mappings for the MSA. *Column mapping* is the map between of each column on the MSA
     object and the column number in the file. *Sequence mappings* will use the start and
@@ -40,7 +34,6 @@ You can plot this MSA and other MIToS’ objects using the [Plots![](./assets/ex
 
 ```@example juliarepl
 using Plots
-gr()
 plot(msa)
 png("msa.png") # hide
 nothing # hide
@@ -50,7 +43,7 @@ nothing # hide
 
 The `Information` module of `MIToS` has functions to calculate measures from the
 [Information Theory![](./assets/external-link.png)](https://en.wikipedia.org/wiki/Information_theory),
-such as Entropy and Mutual Information (MI), on a MSA. In this example, we will estimate
+such as Shannon Entropy and Mutual Information (MI), on a MSA. In this example, we will estimate
 covariation between columns of the MSA with a corrected **MI** that use the BLOSUM62 matrix
 for calculate pseudo frequencies (`BLMI`).  
 
