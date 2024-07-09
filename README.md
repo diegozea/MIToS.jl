@@ -40,14 +40,16 @@ other databases with PDB entries.
 useful functions for parameter optimization using Pfam alignments.
 - **Utils** It exports common utils functions and types used in different modules of this package.
 
-**NOTE:** [Julia has reached a stable 1.0 version](https://julialang.org/blog/2018/08/one-point-zero) and **MIToS v2** supports it. You need to do `using Pkg; Pkg.add("MIToS")` to **install** MIToS on Julia v1 or `using Pkg; Pkg.update()` to update your installed version.  
+### Installation
 
+To install MIToS, you need to execute `using Pkg; Pkg.add("MIToS")` in Julia. 
+To update your installed version, you can execute `using Pkg; Pkg.update("MIToS")`.  
 
 ### Scripts
 The [MIToS_Scripts](https://github.com/MIToSOrg/MIToS_Scripts.jl) package offers a set of easy-to-use scripts to access some functionalities MIToS offers from the terminal. These scripts are designed for researchers familiar with command-line interfaces (CLI) but without experience coding in Julia. The available scripts include:
 
 * **Buslje09.jl**: Calculates corrected Mutual Information (MI/MIp) based on Buslje et al., 2009.
-* **BLMI.jl**: Computes corrected mutual information using BLOSUM62-based pseudocounts, as described in the MIToS publication (Zea et al., 2016).
+* **BLMI.jl**: Computes corrected mutual information using BLOSUM62-based pseudo-counts, as described in the MIToS publication [1].
 * **Conservation.jl**: Calculates Shannon entropy and Kullback-Leibler divergence for each MSA column.
 * **Distances.jl**: Computes inter-residue distances in a PDB file.
 * **PercentIdentity.jl**: Calculates the percentage identity between all sequences in an MSA and provides statistical summaries.
@@ -56,8 +58,8 @@ The [MIToS_Scripts](https://github.com/MIToSOrg/MIToS_Scripts.jl) package offers
 This list is not exhaustive; more scripts are available in the [MIToS_Scripts.jl repository](https://github.com/MIToSOrg/MIToS_Scripts.jl). Visit the repository for more details and to access these scripts.
 
 ### Order versions
-MIToS 3.0 requires Julia 1.9 or higher. You are recommended to use these versions to get the best experience coding with Julia and MIToS.
-If for some reason you need to use a MIToS in a version of Julia lower than 1.0, you will need to look at the [older MIToS v1 documentation](https://diegozea.github.io/mitosghpage-legacy/).
+MIToS 3.0 requires Julia 1.9 or higher. It is recommended that you use these versions to get the best experience coding with Julia and MIToS.
+If you need to use MIToS in a Julia version lower than 1.0, you will need to look at the [older MIToS v1 documentation](https://diegozea.github.io/mitosghpage-legacy/).
 
 ### Citation  
 If you use MIToS, please cite:
@@ -76,8 +78,6 @@ structural proximity of catalytic sites: implications for catalytic residue
 identification." PLoS Comput Biol 6.11 (2010): e1000978.
 4. Altschul, Stephen F., et al. "Gapped BLAST and PSI-BLAST: a new generation of protein
 database search programs." Nucleic acids research 25.17 (1997): 3389-3402.
-5. Hobohm, Uwe, et al. "Selection of representative protein data sets." Protein Science
-1.3 (1992): 409-417.
 
-#### Structural Bioinformatics Unit
+### Structural Bioinformatics Unit
 [![FIL](http://mistic.leloir.org.ar/imgs/logo_horizontal.png)](http://www.leloir.org.ar/)
