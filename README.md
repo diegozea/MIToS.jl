@@ -1,5 +1,5 @@
 [![MIToS](http://diegozea.github.io/MIToS.jl/latest/assets/MIToS_logo.png)](http://diegozea.github.io/MIToS.jl/)
-# 🐉 MIToS: Mutual Information Tools for protein Sequence analysis
+## 🐉 MIToS: Mutual Information Tools for protein Sequence analysis
 
 *A Julia Package to Analyze Protein Sequences, Structures, and Evolutionary Information*
 
