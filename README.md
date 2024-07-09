@@ -1,13 +1,13 @@
 [![MIToS](http://diegozea.github.io/MIToS.jl/latest/assets/MIToS_logo.png)](http://diegozea.github.io/MIToS.jl/)
-# MIToS: Mutual Information Tools for protein Sequence analysis
+# 🐉 MIToS: Mutual Information Tools for protein Sequence analysis
 
-*A Julia package to analyze protein sequences, structures, and evolutionary information.*
+*A Julia Package to Analyze Protein Sequences, Structures, and Evolutionary Information*
 
-**Documentation:** [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://diegozea.github.io/MIToS.jl/stable) [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://diegozea.github.io/MIToS.jl/latest)  
+<br>
 
-Linux, OSX & Windows: [![Status](https://github.com/diegozea/MIToS.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/diegozea/MIToS.jl/actions?query=workflow%3A%22CI%22+branch%3Amaster)
+**DOCUMENTATION:** [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://diegozea.github.io/MIToS.jl/stable) [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://diegozea.github.io/MIToS.jl/latest)  
 
-Code Coverage:
+Linux, OSX & Windows: [![Status](https://github.com/diegozea/MIToS.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/diegozea/MIToS.jl/actions?query=workflow%3A%22CI%22+branch%3Amaster) Code Coverage:
 [![Coverage Status](https://coveralls.io/repos/diegozea/MIToS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/diegozea/MIToS.jl?branch=master) [![codecov.io](http://codecov.io/github/diegozea/MIToS.jl/coverage.svg?branch=master)](http://codecov.io/github/diegozea/MIToS.jl?branch=master)
 
 > **NOTE:**  Some **breaking changes** were introduced between **MIToS 2.15** and **MIToS 3.0**, inclusive. See the [NEWS.md](https://github.com/diegozea/MIToS.jl/blob/master/NEWS.md) file to migrate code from an old version
