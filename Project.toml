@@ -1,6 +1,6 @@
 name = "MIToS"
 uuid = "51bafb47-8a16-5ded-8b04-24ef4eede0b5"
-version = "3.0.1"
+version = "3.0.2"
 
 [deps]
 AutoHashEquals = "15f4f7f2-30c1-5605-9d31-71845cf9641f"

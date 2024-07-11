@@ -823,7 +823,7 @@ end
 
 function getsequencemapping(seq::Union{AnnotatedAlignedSequence,AnnotatedSequence})
     seq_id = sequence_id(seq)
-    _str2int_mapping(getannotsequence(seq, seq_id, "SeqMap"))
+    _str2int_mapping(getannotsequence(seq, "SeqMap"))
 end
 
 # Sequences as strings
