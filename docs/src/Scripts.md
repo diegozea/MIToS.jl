@@ -21,14 +21,14 @@ To install **MIToS_Scripts.jl**, you only need Julia 1.9 or later installed on y
 system. Executing `julia` in the terminal to open the Julia REPL, and finally, run the 
 following command:
 
-```@example scripts
+```julia
 using Pkg
 Pkg.add(url="https://github.com/MIToSOrg/MIToS_Scripts.jl")
 ```
 
 Then, you can get the location of the installed scripts by running the following command:
 
-```@example scripts
+```julia
 using MIToS_Scripts
 scripts_folder = joinpath(pkgdir(MIToS_Scripts), "scripts")
 ```
@@ -53,11 +53,21 @@ julia Buslje09.jl -h
 
 ## Scripts
 
+```@setup scripts
+using Pkg
+project_folder = "MIToS_Scripts_Project"
+isdir(project_folder) || mkdir(project_folder)
+Pkg.activate(project_folder)
+Pkg.add(url="https://github.com/MIToSOrg/MIToS_Scripts.jl")
+using MIToS_Scripts
+scripts_folder = joinpath(pkgdir(MIToS_Scripts), "scripts")
+```
+
 ### Buslje09.jl
 
-```@repl scripts
-script_path = joinpath(scripts_folder, "Buslje09.jl") # path to the script
-run(`$(Base.julia_cmd()) $script_path -h`)
+```@example scripts
+script_path = joinpath(scripts_folder, "Buslje09.jl") # hide
+run(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`) #hide
 ```  
 
 ### BLMI.jl
