@@ -67,7 +67,7 @@ scripts_folder = joinpath(pkgdir(MIToS_Scripts), "scripts")
 
 ```@example scripts
 script_path = joinpath(scripts_folder, "Buslje09.jl") # hide
-run(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`) #hide
+println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
 ```  
 
 ### BLMI.jl
