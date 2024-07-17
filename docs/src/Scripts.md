@@ -23,7 +23,7 @@ following command:
 
 ```@example scripts
 using Pkg
-Pkg.add("https://github.com/MIToSOrg/MIToS_Scripts.jl")
+Pkg.add(url="https://github.com/MIToSOrg/MIToS_Scripts.jl")
 ```
 
 Then, you can get the location of the installed scripts by running the following command:
@@ -57,7 +57,7 @@ julia Buslje09.jl -h
 
 ```@example scripts
 script_path = joinpath(scripts_folder, "Buslje09.jl") # path to the script
-run(`$(Base.julia_cmd()) --project=$scripts_folder $script_path -h`)
+run(`$(Base.julia_cmd()) $script_path -h`)
 ```  
 
 ### BLMI.jl
