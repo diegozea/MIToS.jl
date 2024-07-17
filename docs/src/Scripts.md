@@ -56,10 +56,10 @@ julia Buslje09.jl -h
 ### Buslje09.jl
 
 ```@repl
-using MIToS
+using MIToS_Scripts
 julia = Base.julia_cmd(); # path to the julia executable
-scripts_folder = joinpath(pkgdir(MIToS), "scripts")
-script_path = joinpath(scripts_folder, "Buslje09.jl")
+scripts_folder = joinpath(pkgdir(MIToS_Scripts), "scripts"); # path to the scripts folder
+script_path = joinpath(scripts_folder, "Buslje09.jl"); # path to the script
 run(`$julia --project=$scripts_folder $script_path -h`)
 ```  
 

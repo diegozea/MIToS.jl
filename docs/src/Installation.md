@@ -61,6 +61,7 @@ To generate **graph** (network), **arc** and **chord** (circo) **plots**, you al
 install and load [GraphRecipes![](./assets/external-link.png)](https://github.com/JuliaPlots/GraphRecipes.jl).  
 
 ```julia  
+using Pkg
 Pkg.add("GraphRecipes")
 
 using GraphRecipes
