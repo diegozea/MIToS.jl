@@ -72,81 +72,57 @@ println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, St
 
 ### BLMI.jl
 
-```@repl
-using MIToS
-julia = Base.julia_cmd(); # path to the julia executable
-scripts_folder = joinpath(pkgdir(MIToS), "scripts")
-script_path = joinpath(scripts_folder, "BLMI.jl")
-run(`$julia --project=$scripts_folder $script_path -h`)
+```@example scripts
+script_path = joinpath(scripts_folder, "BLMI.jl") # hide
+println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+
 ```  
 
 ### Conservation.jl
 
-```@repl
-using MIToS
-julia = Base.julia_cmd(); # path to the julia executable
-scripts_folder = joinpath(pkgdir(MIToS), "scripts")
-script_path = joinpath(scripts_folder, "Conservation.jl")
-run(`$julia --project=$scripts_folder $script_path -h`)
+```@example scripts
+script_path = joinpath(scripts_folder, "Conservation.jl") # hide
+println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
 ```  
 
 ### DownloadPDB.jl
 
-```@repl
-using MIToS
-julia = Base.julia_cmd(); # path to the julia executable
-scripts_folder = joinpath(pkgdir(MIToS), "scripts")
-script_path = joinpath(scripts_folder, "DownloadPDB.jl")
-run(`$julia --project=$scripts_folder $script_path -h`)
-```  
+```@example scripts
+script_path = joinpath(scripts_folder, "DownloadPDB.jl") # hide
+println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+```
 
 ### Distances.jl
 
-```@repl
-using MIToS
-julia = Base.julia_cmd(); # path to the julia executable
-scripts_folder = joinpath(pkgdir(MIToS), "scripts")
-script_path = joinpath(scripts_folder, "Distances.jl")
-run(`$julia --project=$scripts_folder $script_path -h`)
-```  
+```@example scripts
+script_path = joinpath(scripts_folder, "Distances.jl") # hide
+println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+```
 
 ### MSADescription.jl
 
-```@repl
-using MIToS
-julia = Base.julia_cmd(); # path to the julia executable
-scripts_folder = joinpath(pkgdir(MIToS), "scripts")
-script_path = joinpath(scripts_folder, "MSADescription.jl")
-run(`$julia --project=$scripts_folder $script_path -h`)
-```  
+```@example scripts
+script_path = joinpath(scripts_folder, "MSADescription.jl") # hide
+println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+```
 
 ### PercentIdentity.jl
 
-```@repl
-using MIToS
-julia = Base.julia_cmd(); # path to the julia executable
-scripts_folder = joinpath(pkgdir(MIToS), "scripts")
-script_path = joinpath(scripts_folder, "PercentIdentity.jl")
-run(`$julia --project=$scripts_folder $script_path -h`)
-```  
+```@example scripts
+script_path = joinpath(scripts_folder, "PercentIdentity.jl") # hide
+println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+```
 
 ### AlignedColumns.jl
 
-```@repl
-using MIToS
-julia = Base.julia_cmd(); # path to the julia executable
-scripts_folder = joinpath(pkgdir(MIToS), "scripts")
-script_path = joinpath(scripts_folder, "AlignedColumns.jl")
-run(`$julia --project=$scripts_folder $script_path -h`)
-```  
+```@example scripts
+script_path = joinpath(scripts_folder, "AlignedColumns.jl") # hide
+println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+```
 
 ### SplitStockholm.jl
 
-```@repl
-using MIToS
-julia = Base.julia_cmd(); # path to the julia executable
-scripts_folder = joinpath(pkgdir(MIToS), "scripts")
-script_path = joinpath(scripts_folder, "SplitStockholm.jl")
-run(`$julia --project=$scripts_folder $script_path -h`)
+```@example scripts
+script_path = joinpath(scripts_folder, "SplitStockholm.jl") # hide
+println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
 ```
-
