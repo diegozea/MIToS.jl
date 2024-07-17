@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>PDB · MIToS</title><meta name="title" content="PDB · MIToS"/><meta property="og:title" content="PDB · MIToS"/><meta property="twitter:title" content="PDB · MIToS"/><meta name="description" content="Documentation for MIToS."/><meta property="og:description" content="Documentation for MIToS."/><meta property="twitter:description" content="Documentation for MIToS."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">MIToS</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../Installation/">Installation</a></li><li><a class="tocitem" href="../Example/">Example</a></li><li><span class="tocitem">Modules</span><ul><li><a class="tocitem" href="../MSA/">MSA</a></li><li><a class="tocitem" href="../Information/">Information</a></li><li><a class="tocitem" href="../SIFTS/">SIFTS</a></li><li class="is-active"><a class="tocitem" href>PDB</a><ul class="internal"><li><a class="tocitem" href="#Features"><span>Features</span></a></li><li><a class="tocitem" href="#Contents"><span>Contents</span></a></li><li><a class="tocitem" href="#Retrieve-information-from-PDB-database"><span>Retrieve information from PDB database</span></a></li><li><a class="tocitem" href="#Retrieve-information-from-AlphaFold-database"><span>Retrieve information from AlphaFold database</span></a></li><li><a class="tocitem" href="#Read-and-parse-PDB-files"><span>Read and parse PDB files</span></a></li><li><a class="tocitem" href="#Looking-for-particular-residues"><span>Looking for particular residues</span></a></li><li><a class="tocitem" href="#Protein-contact-map"><span>Protein contact map</span></a></li><li><a class="tocitem" href="#Structural-superposition"><span>Structural superposition</span></a></li></ul></li><li><a class="tocitem" href="../Pfam/">Pfam</a></li></ul></li><li><span class="tocitem">Cookbook</span><ul><li><a class="tocitem" href="../01_Change_B_factors/">Change B-factors</a></li><li><a class="tocitem" href="../02_Linking_structural_and_evolutionary_information/">Linking structural and evolutionary information</a></li><li><a class="tocitem" href="../03_RMSF/">Root Mean Squared Fluctuation (RMSF)</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../MSA_API/">MSA</a></li><li><a class="tocitem" href="../Information_API/">Information</a></li><li><a class="tocitem" href="../SIFTS_API/">SIFTS</a></li><li><a class="tocitem" href="../PDB_API/">PDB</a></li><li><a class="tocitem" href="../Pfam_API/">Pfam</a></li><li><a class="tocitem" href="../Utils_API/">Utils</a></li></ul></li><li><a class="tocitem" href="../Scripts/">MIToS&#39; Scripts</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Modules</a></li><li class="is-active"><a href>PDB</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>PDB</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/diegozea/MIToS.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/diegozea/MIToS.jl/blob/master/docs/src/PDB.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Module-PDB"><a class="docs-heading-anchor" href="#Module-PDB">PDB</a><a id="Module-PDB-1"></a><a class="docs-heading-anchor-permalink" href="#Module-PDB" title="Permalink"></a></h1><p>The module <code>PDB</code> defines types and methods to work with protein structures inside Julia. It is useful to link structural and sequential information, and needed for measure the predictive performance at protein contact prediction of mutual information scores.  </p><pre><code class="language-julia hljs">using MIToS.PDB # to load the PDB module</code></pre><h2 id="Features"><a class="docs-heading-anchor" href="#Features">Features</a><a id="Features-1"></a><a class="docs-heading-anchor-permalink" href="#Features" title="Permalink"></a></h2><ul><li><a href="#Read-and-parse-PDB-files"><strong>Read and parse</strong></a> mmCIF, PDB, and PDBML files.</li><li>Download structures from the PDB and AlphaFold databases.</li><li>Calculate distance and contacts between atoms or residues.</li><li>Determine interaction between residues.</li></ul><h2 id="Contents"><a class="docs-heading-anchor" href="#Contents">Contents</a><a id="Contents-1"></a><a class="docs-heading-anchor-permalink" href="#Contents" title="Permalink"></a></h2><ul><li><a href="#Module-PDB">PDB</a></li><li class="no-marker"><ul><li><a href="#Features">Features</a></li><li><a href="#Contents">Contents</a></li><li><a href="#Retrieve-information-from-PDB-database">Retrieve information from PDB database</a></li><li><a href="#Retrieve-information-from-AlphaFold-database">Retrieve information from AlphaFold database</a></li><li><a href="#Read-and-parse-PDB-files">Read and parse PDB files</a></li><li><a href="#Looking-for-particular-residues">Looking for particular residues</a></li><li class="no-marker"><ul><li><a href="#Getting-a-Dict-of-PDBResidues">Getting a <code>Dict</code> of <code>PDBResidue</code>s</a></li><li><a href="#Select-particular-residues">Select particular residues</a></li><li><a href="#Select-particular-atoms">Select particular atoms</a></li></ul></li><li><a href="#Protein-contact-map">Protein contact map</a></li><li><a href="#Structural-superposition">Structural superposition</a></li></ul></li></ul><h2 id="Retrieve-information-from-PDB-database"><a class="docs-heading-anchor" href="#Retrieve-information-from-PDB-database">Retrieve information from PDB database</a><a id="Retrieve-information-from-PDB-database-1"></a><a class="docs-heading-anchor-permalink" href="#Retrieve-information-from-PDB-database" title="Permalink"></a></h2><p>This module exports the <code>downloadpdb</code> function, to retrieve a PDB file from   <a href="http://www.rcsb.org/pdb/home/home.do">PDB database<img src="../assets/external-link.png" alt/></a>.  By default, this function downloads a gzipped mmCIF file (<code>format=MMCIFFile</code>), which could  be easily read by MIToS. You are able to determine the <code>format</code> as <code>PDBFile</code> if you want to download a PDB file instead.    </p><pre><code class="language-julia hljs">using MIToS.PDB
+
+pdbfile = downloadpdb(&quot;1IVO&quot;, format=PDBFile)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;1IVO.pdb.gz&quot;</code></pre><p><code>PDB</code> module also exports a <code>getpdbdescription</code> to access the header information of a PDB entry.  </p><pre><code class="language-julia hljs">getpdbdescription(&quot;1IVO&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">JSON3.Object{Base.CodeUnits{UInt8, String}, SubArray{UInt64, 1, Vector{UInt64}, Tuple{UnitRange{Int64}}, true}} with 4 entries:
+  :entry               =&gt; {…
+  :rcsb_entry_info     =&gt; {…
+  :rcsb_accession_info =&gt; {…
+  :polymer_entities    =&gt; Object[{…</code></pre><h2 id="Retrieve-information-from-AlphaFold-database"><a class="docs-heading-anchor" href="#Retrieve-information-from-AlphaFold-database">Retrieve information from AlphaFold database</a><a id="Retrieve-information-from-AlphaFold-database-1"></a><a class="docs-heading-anchor-permalink" href="#Retrieve-information-from-AlphaFold-database" title="Permalink"></a></h2><p>This module provides functions to download and query protein structures from AlphaFold DB. </p><p>The <code>download_alphafold_structure</code> function downloads the structure file, in mmCIF format  by default, for a given UniProt Accession ID. You can set <code>format</code> to <code>PDBFile</code> to download a PDB file instead. </p><pre><code class="language-julia hljs">using MIToS.PDB
+
+# Get the structure for the human insulin
+file = download_alphafold_structure(&quot;P01308&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;AF-P01308-F1-model_v4.cif&quot;</code></pre><p>If you need more information about that entry, you can use the <code>query_alphafolddb</code> function. The <code>query_alphafolddb</code> function returns an <code>JSON3.Object</code> that works like a dictionary.</p><pre><code class="language-julia hljs">json_result = query_alphafolddb(&quot;P01308&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">JSON3.Object{Base.CodeUnits{UInt8, String}, SubArray{UInt64, 1, Vector{UInt64}, Tuple{UnitRange{Int64}}, true}} with 23 entries:
+  :entryId                =&gt; &quot;AF-P01308-F1&quot;
+  :gene                   =&gt; &quot;INS&quot;
+  :uniprotAccession       =&gt; &quot;P01308&quot;
+  :uniprotId              =&gt; &quot;INS_HUMAN&quot;
+  :uniprotDescription     =&gt; &quot;Insulin&quot;
+  :taxId                  =&gt; 9606
+  :organismScientificName =&gt; &quot;Homo sapiens&quot;
+  :uniprotStart           =&gt; 1
+  :uniprotEnd             =&gt; 110
+  :uniprotSequence        =&gt; &quot;MALWMRLLPLLALLALWGPDPAAAFVNQHLCGSHLVEALYLVCGERGFF…
+  :modelCreatedDate       =&gt; &quot;2022-06-01&quot;
+  :latestVersion          =&gt; 4
+  :allVersions            =&gt; [1, 2, 3, 4]
+  :isReviewed             =&gt; true
+  :isReferenceProteome    =&gt; true
+  :cifUrl                 =&gt; &quot;https://alphafold.ebi.ac.uk/files/AF-P01308-F1-mo…
+  :bcifUrl                =&gt; &quot;https://alphafold.ebi.ac.uk/files/AF-P01308-F1-mo…
+  :pdbUrl                 =&gt; &quot;https://alphafold.ebi.ac.uk/files/AF-P01308-F1-mo…
+  :paeImageUrl            =&gt; &quot;https://alphafold.ebi.ac.uk/files/AF-P01308-F1-pr…
+  ⋮                       =&gt; ⋮</code></pre><p>You can access the information in the <code>JSON3.Object</code> using the keys. For example, to get  the URL to the PAE matrix image:</p><pre><code class="language-julia hljs">pae_image_url = json_result[&quot;paeImageUrl&quot;]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;https://alphafold.ebi.ac.uk/files/AF-P01308-F1-predicted_aligned_error_v4.png&quot;</code></pre><h2 id="Read-and-parse-PDB-files"><a class="docs-heading-anchor" href="#Read-and-parse-PDB-files">Read and parse PDB files</a><a id="Read-and-parse-PDB-files-1"></a><a class="docs-heading-anchor-permalink" href="#Read-and-parse-PDB-files" title="Permalink"></a></h2><p>This is easy using the <code>read_file</code> and <code>parse_file</code> functions, indicating the filename and the <code>FileFormat</code>: <code>PDBML</code> for PDB XML files or <code>PDBFile</code> for usual PDB files. These functions returns a <code>Vector</code> of <code>PDBResidue</code> objects with all the residues in the PDB.   To return only a specific subset of residues/atoms you can use any of the following keyword arguments:  </p><table><tr><th style="text-align: right">keyword arguments</th><th style="text-align: right">default</th><th style="text-align: right">returns only ...</th></tr><tr><td style="text-align: right"><code>chain</code></td><td style="text-align: right"><code>All</code></td><td style="text-align: right">residues from a PDB chain, i.e. <code>&quot;A&quot;</code></td></tr><tr><td style="text-align: right"><code>model</code></td><td style="text-align: right"><code>All</code></td><td style="text-align: right">residues from a determined model, i.e. <code>&quot;1&quot;</code></td></tr><tr><td style="text-align: right"><code>group</code></td><td style="text-align: right"><code>All</code></td><td style="text-align: right">residues from a group: <code>&quot;ATOM&quot;</code>, <code>&quot;HETATM&quot;</code> or <code>All</code> for both</td></tr><tr><td style="text-align: right"><code>atomname</code></td><td style="text-align: right"><code>All</code></td><td style="text-align: right">atoms with a specific name, i.e. <code>&quot;CA&quot;</code></td></tr><tr><td style="text-align: right"><code>onlyheavy</code></td><td style="text-align: right"><code>false</code></td><td style="text-align: right">heavy atoms (not hydrogens) if it&#39;s <code>true</code></td></tr><tr><td style="text-align: right"><code>occupancyfilter</code></td><td style="text-align: right"><code>false</code></td><td style="text-align: right">only the atoms with the best occupancy are returned if it&#39;s <code>true</code></td></tr></table><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p><strong>For PDBML files</strong> it is possible to use the keyword argument <code>label</code> to <code>false</code> (default to <code>true</code>) to get the <strong>auth_</strong> attributes instead of the <strong>label_</strong> attributes for <code>chain</code>, <code>atom</code> and residue <code>name</code> fields. The <strong>auth_</strong> attributes are alternatives provided by an author in order to match the identification/values used in the publication that describes the structure.  </p></div></div><pre><code class="language-julia hljs"># Read α carbon of each residue from the 1ivo pdb file, in the model 1, chain A and in the ATOM group.
+CA_1ivo = read_file(pdbfile, PDBFile, model=&quot;1&quot;, chain=&quot;A&quot;, group=&quot;ATOM&quot;, atomname=&quot;CA&quot;)
+
+CA_1ivo[1] # First residue. It has only the α carbon.</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">PDBResidue:
+	id::PDBResidueIdentifier
+		    PDBe_number          number            name           group           model           chain
+		             &quot;&quot;             &quot;2&quot;           &quot;GLU&quot;          &quot;ATOM&quot;             &quot;1&quot;             &quot;A&quot;
+	atoms::Vector{PDBAtom}	length: 1
+		                                                  coordinates            atom         element       occupancy               B          alt_id          charge
+		1:                                   [92.793, 69.578, 31.657]            &quot;CA&quot;             &quot;C&quot;             1.0        &quot;151.39&quot;              &quot;&quot;              &quot;&quot;
+</code></pre><h2 id="Looking-for-particular-residues"><a class="docs-heading-anchor" href="#Looking-for-particular-residues">Looking for particular residues</a><a id="Looking-for-particular-residues-1"></a><a class="docs-heading-anchor-permalink" href="#Looking-for-particular-residues" title="Permalink"></a></h2><p>MIToS parse PDB files to vector of residues, instead of using a hierarchical structure like other packages. This approach makes the search and selection of residues or atoms a little different. To make it easy, this module exports the <code>select_residues</code> and <code>select_atoms</code> functions.  Given the fact that residue numbers from different chains, models, etc. can collide, we can indicate the <code>model</code>, <code>chain</code>, <code>group</code>, <code>residue</code> number and <code>atom</code> name using the  keyword arguments of those functions. If you want to select all the residues in one of the  categories, you are able to use the type <code>All</code> (this is the default value of such arguments). You can also use regular expressions or functions to make the selections.</p><pre><code class="language-julia hljs">using MIToS.PDB
+pdbfile = downloadpdb(&quot;1IVO&quot;, format=PDBFile)
+residues_1ivo = read_file(pdbfile, PDBFile)
+# Select residue number 9 from model 1 and chain B (it looks in both ATOM and HETATM groups)
+select_residues(residues_1ivo, model=&quot;1&quot;, chain=&quot;B&quot;, residue=&quot;9&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1-element Vector{MIToS.PDB.PDBResidue}:
+ PDBResidue:
+	id::PDBResidueIdentifier
+		    PDBe_number          number            name           group           model           chain
+		             &quot;&quot;             &quot;9&quot;           &quot;GLY&quot;          &quot;ATOM&quot;             &quot;1&quot;             &quot;B&quot;
+	atoms::Vector{PDBAtom}	length: 4
+		                                                  coordinates            atom         element       occupancy               B          alt_id          charge
+		1:                                   [53.449, 49.375, 55.663]             &quot;N&quot;             &quot;N&quot;             1.0         &quot;28.86&quot;              &quot;&quot;              &quot;&quot;
+		                                                  coordinates            atom         element       occupancy               B          alt_id          charge
+		2:                                   [52.736, 49.613, 54.425]            &quot;CA&quot;             &quot;C&quot;             1.0         &quot;65.57&quot;              &quot;&quot;              &quot;&quot;
+		                                                  coordinates            atom         element       occupancy               B          alt_id          charge
+		3:                                   [52.382, 48.332, 53.719]             &quot;C&quot;             &quot;C&quot;             1.0         &quot;21.73&quot;              &quot;&quot;              &quot;&quot;
+		                                                  coordinates            atom         element       occupancy               B          alt_id          charge
+		4:                                   [53.261, 47.591, 53.294]             &quot;O&quot;             &quot;O&quot;             1.0         &quot;79.88&quot;              &quot;&quot;              &quot;&quot;
+</code></pre><h3 id="Getting-a-Dict-of-PDBResidues"><a class="docs-heading-anchor" href="#Getting-a-Dict-of-PDBResidues">Getting a <code>Dict</code> of <code>PDBResidue</code>s</a><a id="Getting-a-Dict-of-PDBResidues-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-a-Dict-of-PDBResidues" title="Permalink"></a></h3><p>If you prefer a <code>Dict</code> of <code>PDBResidue</code>, indexed by their residue numbers, you can use the <code>residuedict</code> function.  </p><pre><code class="language-julia hljs"># Dict of residues from the model 1, chain A and from the ATOM group
+chain_a = residuesdict(residues_1ivo, model=&quot;1&quot;, chain=&quot;A&quot;, group=&quot;ATOM&quot;)
+chain_a[&quot;9&quot;]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">PDBResidue:
+	id::PDBResidueIdentifier
+		    PDBe_number          number            name           group           model           chain
+		             &quot;&quot;             &quot;9&quot;           &quot;GLY&quot;          &quot;ATOM&quot;             &quot;1&quot;             &quot;A&quot;
+	atoms::Vector{PDBAtom}	length: 4
+		                                                  coordinates            atom         element       occupancy               B          alt_id          charge
+		1:                                  [109.607, 71.943, 41.924]             &quot;N&quot;             &quot;N&quot;             1.0         &quot;50.08&quot;              &quot;&quot;              &quot;&quot;
+		                                                  coordinates            atom         element       occupancy               B          alt_id          charge
+		2:                                    [109.641, 73.162, 42.7]            &quot;CA&quot;             &quot;C&quot;             1.0         &quot;62.78&quot;              &quot;&quot;              &quot;&quot;
+		                                                  coordinates            atom         element       occupancy               B          alt_id          charge
+		3:                                  [110.753, 73.103, 43.722]             &quot;C&quot;             &quot;C&quot;             1.0         &quot;23.60&quot;              &quot;&quot;              &quot;&quot;
+		                                                  coordinates            atom         element       occupancy               B          alt_id          charge
+		4:                                   [110.778, 72.21, 44.568]             &quot;O&quot;             &quot;O&quot;             1.0         &quot;83.70&quot;              &quot;&quot;              &quot;&quot;
+</code></pre><h3 id="Select-particular-residues"><a class="docs-heading-anchor" href="#Select-particular-residues">Select particular residues</a><a id="Select-particular-residues-1"></a><a class="docs-heading-anchor-permalink" href="#Select-particular-residues" title="Permalink"></a></h3><p>Use the <code>select_residues</code> function to collect specific residues. It&#39;s possible to use a single <strong>residue number</strong> (i.e. <code>&quot;2&quot;</code>) or even a <strong>function</strong> which should return true for the selected residue numbers. Also <strong>regular expressions</strong> can be used to select residues. Use <code>All</code> to select all the residues.  </p><pre><code class="language-julia hljs">residue_list = map(string, 2:5)
+
+# If the list is large, you can use a `Set` to gain performance
+# residue_set = Set(map(string, 2:5))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">4-element Vector{String}:
+ &quot;2&quot;
+ &quot;3&quot;
+ &quot;4&quot;
+ &quot;5&quot;</code></pre><pre><code class="language-julia hljs">first_res = select_residues(residues_1ivo, model=&quot;1&quot;, chain=&quot;A&quot;, group=&quot;ATOM&quot;, residue=resnum -&gt; resnum in residue_list)
+
+for res in first_res
+    println(res.id.name, &quot; &quot;, res.id.number)
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">GLU 2
+GLU 3
+LYS 4
+LYS 5</code></pre><p>A more complex example using an anonymous function:  </p><pre><code class="language-julia hljs"># Select all the residues of the model 1, chain A of the ATOM group with residue number less than 5
+
+first_res = select_residues(residues_1ivo, model=&quot;1&quot;, chain=&quot;A&quot;, group=&quot;ATOM&quot;,
+    residue = x -&gt; parse(Int, match(r&quot;^(\d+)&quot;, x)[1]) &lt;= 5 )
+# The anonymous function takes the residue number (string) and use a regular expression
+# to extract the number (without insertion code).
+# It converts the number to `Int` to test if the it is `&lt;= 5`.
+
+for res in first_res
+    println(res.id.name, &quot; &quot;, res.id.number)
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">GLU 2
+GLU 3
+LYS 4
+LYS 5</code></pre><h3 id="Select-particular-atoms"><a class="docs-heading-anchor" href="#Select-particular-atoms">Select particular atoms</a><a id="Select-particular-atoms-1"></a><a class="docs-heading-anchor-permalink" href="#Select-particular-atoms" title="Permalink"></a></h3><p>The <code>select_atoms</code> function allow to select a particular set of atoms.</p><pre><code class="language-julia hljs"># Select all the atoms with name starting with &quot;C&quot; using a regular expression
+# from all the residues of the model 1, chain A of the ATOM group
+
+carbons = select_atoms(residues_1ivo, model=&quot;1&quot;, chain=&quot;A&quot;, group=&quot;ATOM&quot;, residue=All, atom=r&quot;C.+&quot;)
+
+carbons[1]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">                                       coordinates            atom         element       occupancy               B          alt_id          charge
+                          [92.793, 69.578, 31.657]            &quot;CA&quot;             &quot;C&quot;             1.0        &quot;151.39&quot;              &quot;&quot;              &quot;&quot;
+</code></pre><h2 id="Protein-contact-map"><a class="docs-heading-anchor" href="#Protein-contact-map">Protein contact map</a><a id="Protein-contact-map-1"></a><a class="docs-heading-anchor-permalink" href="#Protein-contact-map" title="Permalink"></a></h2><p>The PDB module offers a number of functions to measure <code>distance</code>s between atoms or residues, to detect possible interactions or <code>contact</code>s. In particular the <code>contact</code> function calls the <code>distance</code> function using a threshold or limit in an optimized way. The measure can be done between alpha carbons (<code>&quot;CA&quot;</code>), beta carbons (<code>&quot;CB&quot;</code>) (alpha carbon for glycine), any heavy atom (<code>&quot;Heavy&quot;</code>) or any (<code>&quot;All&quot;</code>) atom of the residues.</p><p>In the following <strong>example</strong>, whe are going to plot a contact map for the <em>1ivo</em> chain A. Two residues will be considered in contact if their β carbons (α carbon for glycine) have a distance of 8Å or less.  </p><pre><code class="language-julia hljs">using MIToS.PDB
+
+pdbfile = downloadpdb(&quot;1IVO&quot;, format=PDBFile)
+
+residues_1ivo = read_file(pdbfile, PDBFile)
+
+pdb = select_residues(residues_1ivo, model=&quot;1&quot;, chain=&quot;A&quot;, group=&quot;ATOM&quot;)
+
+dmap = distance(pdb, criteria=&quot;All&quot;) # Minimum distance between residues using all their atoms</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">511×511 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
+ Res1 ╲ Res2 │   1_A_ATOM_2    1_A_ATOM_3  …  1_A_ATOM_511  1_A_ATOM_512
+─────────────┼──────────────────────────────────────────────────────────
+1_A_ATOM_2   │          0.0       1.32963  …        48.112       52.4859
+1_A_ATOM_3   │      1.32963           0.0          42.5701       46.9381
+1_A_ATOM_4   │      3.90659       1.32843          44.8597       49.0519
+1_A_ATOM_5   │      7.48169       4.45375          45.0295       48.9502
+1_A_ATOM_6   │      8.56892       7.00906          41.7069       45.8367
+1_A_ATOM_7   │      12.7101        10.681          42.7762       46.6884
+1_A_ATOM_8   │      15.8327       13.7432          38.2741       42.2592
+1_A_ATOM_9   │      17.6834       16.0752          43.4541       47.2341
+⋮                         ⋮             ⋮  ⋱             ⋮             ⋮
+1_A_ATOM_505 │      48.2444       42.6696          5.52601       5.34234
+1_A_ATOM_506 │      49.1067        43.611          3.27264       3.18892
+1_A_ATOM_507 │       51.003       45.5613          4.57506       5.21453
+1_A_ATOM_508 │      50.1635       44.8346          5.83251       8.07726
+1_A_ATOM_509 │      47.1567       41.8096          4.63848        7.9661
+1_A_ATOM_510 │      49.0161       43.6277           1.3263       3.96007
+1_A_ATOM_511 │       48.112       42.5701              0.0       1.32624
+1_A_ATOM_512 │      52.4859       46.9381  …       1.32624           0.0</code></pre><p>Use the <code>contact</code> function to get a contact map:  </p><pre><code class="language-julia hljs">cmap = contact(pdb, 8.0, criteria=&quot;CB&quot;) # Contact map</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">511×511 Named PairwiseListMatrices.PairwiseListMatrix{Bool, false, Vector{Bool}}
+ Res1 ╲ Res2 │   1_A_ATOM_2    1_A_ATOM_3  …  1_A_ATOM_511  1_A_ATOM_512
+─────────────┼──────────────────────────────────────────────────────────
+1_A_ATOM_2   │         true          true  …         false         false
+1_A_ATOM_3   │         true          true            false         false
+1_A_ATOM_4   │         true          true            false         false
+1_A_ATOM_5   │        false         false            false         false
+1_A_ATOM_6   │        false         false            false         false
+1_A_ATOM_7   │        false         false            false         false
+1_A_ATOM_8   │        false         false            false         false
+1_A_ATOM_9   │        false         false            false         false
+⋮                         ⋮             ⋮  ⋱             ⋮             ⋮
+1_A_ATOM_505 │        false         false            false         false
+1_A_ATOM_506 │        false         false             true          true
+1_A_ATOM_507 │        false         false            false         false
+1_A_ATOM_508 │        false         false            false         false
+1_A_ATOM_509 │        false         false            false         false
+1_A_ATOM_510 │        false         false             true          true
+1_A_ATOM_511 │        false         false             true          true
+1_A_ATOM_512 │        false         false  …          true          true</code></pre><pre><code class="language-julia hljs">using Plots
+gr()
+
+heatmap(dmap, grid=false, yflip=true, ratio=:equal)</code></pre><p><img src="../pdb_dmap.png" alt/>  </p><pre><code class="language-julia hljs">heatmap(cmap, grid=false, yflip=true, ratio=:equal)</code></pre><p><img src="../pdb_cmap.png" alt/>  </p><h2 id="Structural-superposition"><a class="docs-heading-anchor" href="#Structural-superposition">Structural superposition</a><a id="Structural-superposition-1"></a><a class="docs-heading-anchor-permalink" href="#Structural-superposition" title="Permalink"></a></h2><pre><code class="language-julia hljs">using MIToS.PDB
+
+pdbfile = downloadpdb(&quot;2HHB&quot;)
+
+res_2hhb = read_file(pdbfile, MMCIFFile)
+
+chain_A = select_residues(res_2hhb, model=&quot;1&quot;, chain=&quot;A&quot;, group=&quot;ATOM&quot;, residue=All)
+chain_C = select_residues(res_2hhb, model=&quot;1&quot;, chain=&quot;C&quot;, group=&quot;ATOM&quot;, residue=All)
+
+using Plots
+gr()
+
+scatter3d(chain_A, label=&quot;A&quot;, alpha=0.5)
+scatter3d!(chain_C, label=&quot;C&quot;, alpha=0.5)</code></pre><p><img src="../pdb_unaligned.png" alt/>  </p><pre><code class="language-julia hljs">superimposed_A, superimposed_C, RMSD = superimpose(chain_A, chain_C)
+
+RMSD</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">0.23000472638958339</code></pre><pre><code class="language-julia hljs">scatter3d(superimposed_A, label=&quot;A&quot;, alpha=0.5)
+scatter3d!(superimposed_C, label=&quot;C&quot;, alpha=0.5)</code></pre><p><img src="../pdb_aligned.png" alt/>  </p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../SIFTS/">« SIFTS</a><a class="docs-footer-nextpage" href="../Pfam/">Pfam »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Wednesday 17 July 2024 21:18">Wednesday 17 July 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
