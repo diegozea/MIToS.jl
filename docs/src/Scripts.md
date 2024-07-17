@@ -33,7 +33,9 @@ using MIToS_Scripts
 scripts_folder = joinpath(pkgdir(MIToS_Scripts), "scripts")
 ```
 
-You can run them from that location or copy them to a directory in your `PATH`.
+You can run them from that location. Alternatively, you can add the location to your 
+`PATH` environment variable, or copy the scripts to a folder already in your `PATH` to 
+run them from anywhere.
 
 ## Usage
 
