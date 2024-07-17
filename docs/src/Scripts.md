@@ -55,7 +55,7 @@ julia Buslje09.jl -h
 
 ### Buslje09.jl
 
-```@example scripts
+```@repl scripts
 script_path = joinpath(scripts_folder, "Buslje09.jl") # path to the script
 run(`$(Base.julia_cmd()) $script_path -h`)
 ```  
