@@ -255,11 +255,11 @@ version = "3.0.3"
 
 [[deps.MIToS_Scripts]]
 deps = ["ArgParse", "CodecZlib", "Dates", "DelimitedFiles", "Distributed", "MIToS", "PairwiseListMatrices", "Pkg", "ProgressMeter", "Reexport", "Statistics"]
-git-tree-sha1 = "74300bbad3321cd802c02b731981f606dee817fe"
+git-tree-sha1 = "3d626478c22f705bea84301658f72b8ddd240c7e"
 repo-rev = "main"
 repo-url = "https://github.com/MIToSOrg/MIToS_Scripts.jl"
 uuid = "d2e61ca9-32c8-4558-a4be-bbb3dc108fad"
-version = "3.0.0"
+version = "3.0.3"
 
 [[deps.Markdown]]
 deps = ["Base64"]
