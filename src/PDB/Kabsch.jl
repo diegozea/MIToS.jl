@@ -225,12 +225,12 @@ Returns a new `PDBAtom` but with a `B` as B-factor
 function _change_B(atom::PDBAtom, B::String)
     PDBAtom(
         copy(atom.coordinates),
-        copy(atom.atom),
-        copy(atom.element),
+        deepcopy(atom.atom),
+        deepcopy(atom.element),
         copy(atom.occupancy),
         B,
-        copy(atom.alt_id),
-        copy(atom.charge),
+        deepcopy(atom.alt_id),
+        deepcopy(atom.charge),
     )
 end
 

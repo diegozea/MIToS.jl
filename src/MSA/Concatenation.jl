@@ -636,20 +636,20 @@ function _fix_msa_numbers(original_msa, int_position, gap_block_columns, gapped_
             gap_block_colnames,
             original_msa_column_names[int_position:end],
         )
-    end
+    end::Vector{String}
     # 4. update the names and annotations
     # NOTE: We call _renumber_column_gaps to avoid the problem of duplicated names where
     # more than one gap block is inserted
     renamed_colnames = _renumber_column_gaps(new_colnames)
     setnames!(namedmatrix(gapped_msa), renamed_colnames, 2)
     prev_file_annotations = annotations(original_msa).file
-    new_file_annotations = annotations(gapped_msa).file
     if haskey(prev_file_annotations, "HCat")
-        _set_hcat_annotfile!(new_file_annotations, renamed_colnames)
+        _set_hcat_annotfile!(annotations(gapped_msa), renamed_colnames)
     else
         # do not add the HCat annotation if it was not present in the original MSA
-        delete!(new_file_annotations, "HCat")
+        delete!(annotations(gapped_msa).file, "HCat")
     end
+    new_file_annotations = annotations(gapped_msa).file
     for key in keys(new_file_annotations)
         if startswith(key, "MIToS_") && !haskey(prev_file_annotations, key)
             # delete new MIToS annotated modifications

@@ -70,6 +70,37 @@ end
 
 Base.length(res::PDBResidue) = length(res.atoms)
 
+# Copy
+# ====
+
+# copy is not defined for String objects, using deepcopy instead
+
+for f in (:copy, :deepcopy)
+
+    @eval Base.$(f)(res::PDBResidueIdentifier) = PDBResidueIdentifier(
+        deepcopy(res.PDBe_number),
+        deepcopy(res.number),
+        deepcopy(res.name),
+        deepcopy(res.group),
+        deepcopy(res.model),
+        deepcopy(res.chain),
+    )
+    @eval Base.$(f)(res::Coordinates) = Coordinates($(f)(res.x), $(f)(res.y), $(f)(res.z))
+
+    @eval Base.$(f)(res::PDBAtom) = PDBAtom(
+        $(f)(res.coordinates),
+        deepcopy(res.atom),
+        deepcopy(res.element),
+        $(f)(res.occupancy),
+        deepcopy(res.B),
+        deepcopy(res.alt_id),
+        deepcopy(res.charge),
+    )
+
+    @eval Base.$(f)(res::PDBResidue) = PDBResidue($(f)(res.id), $(f)(res.atoms))
+
+end
+
 # Coordinates
 # ===========
 
@@ -798,7 +829,7 @@ function residuepairsmatrix(
 end
 
 function residuepairsmatrix(residue_list::Vector{PDBResidue})
-    sequencepairsmatrix(residue_list, Float64, Val{false}, NaN)
+    residuepairsmatrix(residue_list, Float64, Val{false}, NaN)
 end
 
 # Contacts and distances

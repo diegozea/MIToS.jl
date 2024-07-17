@@ -39,8 +39,8 @@ function _pre_readpir(io::Union{IO,AbstractString})
             finished = false
             m = match(r"^>([A-Z][A-Z0-9]);(.+)$", line) # e.g. >P1;5fd1
             if m !== nothing
-                seq_type = m[1]
-                seq_id = rstrip(m[2]) # remove trailing whitespaces
+                seq_type = m[1] === nothing ? "" : m[1]
+                seq_id = m[2] === nothing ? "" : rstrip(m[2]::SubString)
                 push!(IDS, seq_id)
                 push!(GS, (seq_id, "Type") => seq_type)
                 if seq_type in nucleic_types

@@ -102,6 +102,8 @@ function _get_selected_sequences(msa, selector)
             Bool[i in to_select for i = 1:nsequences(msa)]
         elseif type <: AbstractString
             Bool[i in to_select for i in sequencenames(msa)]
+        else
+            throw(ArgumentError("$type is not a valid element type for the selector."))
         end
     end
 end
@@ -164,7 +166,7 @@ end
 
 function Base.getindex(seq::AnnotatedAlignedSequence, cols::AbstractArray)
     seq_copy = copy(seq)
-    col_selector = _column_indices(msa, cols)
+    col_selector = _column_indices(seq, cols)
     filtercolumns!(seq_copy, col_selector)
     _annotate_col_modification!(seq_copy, col_selector)
     seq_copy

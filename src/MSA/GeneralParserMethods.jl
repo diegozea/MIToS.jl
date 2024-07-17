@@ -363,7 +363,7 @@ function deletefullgapcolumns(msa::AbstractMatrix{Residue})
 end
 
 function deletefullgapcolumns(msa::AbstractMultipleSequenceAlignment, annotate::Bool = true)
-    deletefullgapcolumns!(copy(msa), annotate)
+    deletefullgapcolumns!(copy(msa)::AbstractMultipleSequenceAlignment, annotate)
 end
 
 @doc """

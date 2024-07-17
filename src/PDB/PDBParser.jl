@@ -220,6 +220,14 @@ const _Format_PDB_TER = FormatExpr(
     "TER   {:>5d}      {:>3} {:>1}{:>4}{:>1}\n",
 )
 
+function _get_residue_number(res::PDBResidue)
+    number = match(r"(-?\d+)(\D?)", res.id.number)
+    if number === nothing
+        throw(ErrorException("Invalid residue number: $(res.id.number)"))
+    end
+    number
+end
+
 function Utils.print_file(
     io::IO,
     res::PDBResidue,
@@ -227,7 +235,7 @@ function Utils.print_file(
     atom_index::Int,
     serial_number::Int,
 )
-    number = match(r"(-?\d+)(\D?)", res.id.number)
+    number = _get_residue_number(res)
     atomname = res.atoms[atom_index].atom
     printfmt(
         io,
@@ -295,7 +303,7 @@ function Utils.print_file(
         if resindex > 1
             previous_res = reslist[resindex-1]
             if (previous_res.id.group == "ATOM") && (previous_res.id.chain != res.id.chain)
-                number = match(r"(\d+)(\D?)", previous_res.id.number)
+                number = _get_residue_number(previous_res)
                 printfmt(
                     io,
                     _Format_PDB_TER,

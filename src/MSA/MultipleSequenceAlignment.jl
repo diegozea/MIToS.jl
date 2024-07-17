@@ -309,7 +309,9 @@ sequence. If the object is not annotated, it returns an empty `Annotations` obje
 The `namedmatrix` function returns the `NamedResidueMatrix{Array{Residue,2}}` stored in an
 MSA or aligned sequence.
 """
-@inline namedmatrix(x::AbstractResidueMatrix) = x.matrix
+@inline function namedmatrix(x::AbstractResidueMatrix)
+    x.matrix::NamedResidueMatrix{Array{Residue,2}}
+end
 
 NamedArrays.dimnames(x::AbstractResidueMatrix) = dimnames(namedmatrix(x))
 
