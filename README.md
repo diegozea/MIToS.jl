@@ -89,5 +89,21 @@ identification." PLoS Comput Biol 6.11 (2010): e1000978.
 4. Altschul, Stephen F., et al. "Gapped BLAST and PSI-BLAST: a new generation of protein
 database search programs." Nucleic acids research 25.17 (1997): 3389-3402.
 
-### Structural Bioinformatics Unit
-[![FIL](http://mistic.leloir.org.ar/imgs/logo_horizontal.png)](http://www.leloir.org.ar/)
+### Acknowledgments
+MIToS was initially developed at the *Structural Bioinformatics Unit* of the 
+*Fundación Instituto Leloir* in Argentina. Its development now continues at the
+ *Molecular Assemblies and Genome Integrity* group of the 
+ *Institute for Integrative Biology of the Cell* (*I2BC*) in France.
+
+We want to thank all [**contributors**](https://github.com/diegozea/MIToS.jl/graphs/contributors) 
+who have helped improve MIToS. We also thank the Julia community and all the MIToS users 
+for their feedback and support.
+
+<p align="center">
+  <a href="https://www.leloir.org.ar/">
+    <img src="https://github.com/user-attachments/assets/88f17543-10ae-4368-ac60-ff188abdf241" alt="FIL" height="80" style="margin-right: 50px;">
+  </a>
+  <a href="https://www.i2bc.paris-saclay.fr/">
+    <img src="https://github.com/user-attachments/assets/23b0965b-e88e-4fe7-b50b-4e91e5e2758a" alt="I2BC" height="80" style="margin-left: 50px;">
+  </a>
+</p>

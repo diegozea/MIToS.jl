@@ -42,7 +42,22 @@ older version available is MIToS 2.0. If you are using MIToS v1 in a version of 
 pre-1.0, please read [this older documentation](https://diegozea.github.io/mitosghpage-legacy/) instead.  
 
 
-![Leloir Institute Foundation](./assets/FIL_logo.png)  
+### Acknowledgments
 
-Structural Bioinformatics Unit, Leloir Institute Foundation.
-Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina
+MIToS was initially developed at the *Structural Bioinformatics Unit* of the 
+*Fundación Instituto Leloir* (*FIL*) in Argentina. Its development now continues at the
+ *Molecular Assemblies and Genome Integrity* group of the 
+ *Institute for Integrative Biology of the Cell* (*I2BC*) in France.
+
+We want to thank all [**contributors**](https://github.com/diegozea/MIToS.jl/graphs/contributors) 
+who have helped improve MIToS. We also thank the Julia community and all the MIToS users 
+for their feedback and support.
+
+<p align="center">
+  <a href="https://www.leloir.org.ar/">
+    <img src="https://github.com/user-attachments/assets/88f17543-10ae-4368-ac60-ff188abdf241" alt="FIL" height="80" style="margin-right: 50px;">
+  </a>
+  <a href="https://www.i2bc.paris-saclay.fr/">
+    <img src="https://github.com/user-attachments/assets/23b0965b-e88e-4fe7-b50b-4e91e5e2758a" alt="I2BC" height="80" style="margin-left: 50px;">
+  </a>
+</p>
