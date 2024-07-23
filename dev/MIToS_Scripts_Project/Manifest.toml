@@ -241,9 +241,9 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[deps.MIToS]]
 deps = ["AutoHashEquals", "BioStructures", "CodecZlib", "Dates", "Downloads", "FastaIO", "Format", "JSON3", "LightXML", "LinearAlgebra", "Logging", "Markdown", "NamedArrays", "OrderedCollections", "PairwiseListMatrices", "Pkg", "Random", "RecipesBase", "Serialization", "StaticArrays", "Statistics", "StatsBase", "TranscodingStreams"]
-git-tree-sha1 = "11eed52138725f55a15b597f97139397c54ebb07"
+git-tree-sha1 = "395b2d415ffcc7dcceeeadf744aab313d34c9084"
 uuid = "51bafb47-8a16-5ded-8b04-24ef4eede0b5"
-version = "3.0.3"
+version = "3.0.4"
 
     [deps.MIToS.extensions]
     MIToSClusteringExt = "Clustering"
@@ -338,9 +338,9 @@ uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [[deps.ProgressMeter]]
 deps = ["Distributed", "Printf"]
-git-tree-sha1 = "80686d28ecb3ee7fb3ac5371cacaa0d673eb0d4a"
+git-tree-sha1 = "8f6bc219586aef8baf0ff9a5fe16ee9c70cb65e4"
 uuid = "92933f4c-e287-5a05-a399-4b506db050ca"
-version = "1.10.1"
+version = "1.10.2"
 
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
@@ -451,9 +451,9 @@ uuid = "b718987f-49a8-5099-9789-dcd902bef87d"
 version = "1.0.2"
 
 [[deps.TranscodingStreams]]
-git-tree-sha1 = "60df3f8126263c0d6b357b9a1017bb94f53e3582"
+git-tree-sha1 = "96612ac5365777520c3c5396314c8cf7408f436a"
 uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
-version = "0.11.0"
+version = "0.11.1"
 
     [deps.TranscodingStreams.extensions]
     TestExt = ["Test", "Random"]
