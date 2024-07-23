@@ -101,17 +101,12 @@ for their feedback and support.
 
 <br>
 
-<table align="center" style="padding: 20px; background-color: white;">
-  <tr>
-    <td style="padding-right: 40px;">
-      <a href="https://www.leloir.org.ar/">
-        <img src="https://github.com/user-attachments/assets/88f17543-10ae-4368-ac60-ff188abdf241" alt="FIL" style="max-height: 70px;">
-      </a>
-    </td>
-    <td style="padding-left: 40px;">
-      <a href="https://www.i2bc.paris-saclay.fr/">
-        <img src="https://github.com/user-attachments/assets/23b0965b-e88e-4fe7-b50b-4e91e5e2758a" alt="I2BC" style="max-height: 70px;">
-      </a>
-    </td>
-  </tr>
-</table>
+<div align="center" style="padding: 20px; background-color: white;">
+  <a href="https://www.leloir.org.ar/" style="margin-right: 40px;">
+    <img src="https://github.com/user-attachments/assets/88f17543-10ae-4368-ac60-ff188abdf241" alt="FIL" style="max-height: 60px; height: 60px;">
+  </a>
+  &nbsp;
+  <a href="https://www.i2bc.paris-saclay.fr/" style="margin-left: 40px;">
+    <img src="https://github.com/user-attachments/assets/23b0965b-e88e-4fe7-b50b-4e91e5e2758a" alt="I2BC" style="max-height: 60px; height: 60px;">
+  </a>
+</div>
