@@ -99,12 +99,11 @@ We want to thank all [**contributors**](https://github.com/diegozea/MIToS.jl/gra
 who have helped improve MIToS. We also thank the Julia community and all the MIToS users 
 for their feedback and support.
 
-
-<div style="background-color: white; display: flex; justify-content: center; align-items: center; padding: 20px;">
-  <a href="https://www.leloir.org.ar/" style="margin-right: 20px;">
+<div style="display: flex; justify-content: center; align-items: center; padding: 20px; background-color: white;">
+  <a href="https://www.leloir.org.ar/" style="margin-right: 40px;">
     <img src="https://github.com/user-attachments/assets/88f17543-10ae-4368-ac60-ff188abdf241" alt="FIL" style="max-height: 60px;">
   </a>
-  <a href="https://www.i2bc.paris-saclay.fr/" style="margin-left: 20px;">
+  <a href="https://www.i2bc.paris-saclay.fr/" style="margin-left: 40px;">
     <img src="https://github.com/user-attachments/assets/23b0965b-e88e-4fe7-b50b-4e91e5e2758a" alt="I2BC" style="max-height: 60px;">
   </a>
 </div>
