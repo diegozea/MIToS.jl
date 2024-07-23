@@ -1,5 +1,11 @@
 using Documenter, MIToS
 
+const WARNONLY = [:missing_docs]
+if get(ENV, "CI", nothing) === nothing
+    @info "Running locally, adding :cross_references to WARNONLY"
+    push!(WARNONLY, :cross_references)
+end
+
 DocMeta.setdocmeta!(MIToS, :DocTestSetup, :(using MIToS); recursive = true)
 
 include("literate.jl")
@@ -30,7 +36,7 @@ makedocs(
         ],
         "Scripts.md",
     ],
-    warnonly = :missing_docs,
+    warnonly = WARNONLY,
 )
 
 deploydocs(
