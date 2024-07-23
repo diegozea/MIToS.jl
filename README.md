@@ -101,7 +101,7 @@ for their feedback and support.
 
 <br>
 
-<div align="center" style="padding: 20px; background-color: white;">
+<div align="center" style="padding: 20px; background-color: white; display: inline-block;">
   <a href="https://www.leloir.org.ar/" style="margin-right: 40px;">
     <img src="https://github.com/user-attachments/assets/88f17543-10ae-4368-ac60-ff188abdf241" alt="FIL" style="max-height: 60px; height: 60px;">
   </a>
