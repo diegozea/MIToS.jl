@@ -99,6 +99,9 @@ We want to thank all [**contributors**](https://github.com/diegozea/MIToS.jl/gra
 who have helped improve MIToS. We also thank the Julia community and all the MIToS users 
 for their feedback and support.
 
+
+
+
 <br>
 
 <div align="center" style="padding: 20px; background-color: white;">
@@ -107,6 +110,7 @@ for their feedback and support.
   </a>
   &nbsp; &nbsp; &nbsp;
   <a href="https://www.i2bc.paris-saclay.fr/" style="margin-left: 40px;">
-    <img src="https://github.com/user-attachments/assets/23b0965b-e88e-4fe7-b50b-4e91e5e2758a" alt="I2BC" style="max-height: 60px; height: 60px;">
+    <img src="https://github.com/user-attachments/assets/4f46526b-7565-4307-93f8-a72f93a75993#gh-dark-mode-only" alt="I2BC" style="max-height: 60px; height: 60px;">
+    <img src="https://github.com/user-attachments/assets/23b0965b-e88e-4fe7-b50b-4e91e5e2758a#gh-light-mode-only" alt="I2BC" style="max-height: 60px; height: 60px;">
   </a>
 </div>
