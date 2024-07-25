@@ -1,4 +1,5 @@
-[![MIToS](http://diegozea.github.io/MIToS.jl/latest/assets/MIToS_logo.png)](http://diegozea.github.io/MIToS.jl/)
+[![MIToS](https://github.com/user-attachments/assets/ac2c124a-bb24-4766-aada-7a491139c6da#gh-light-mode-only)](http://diegozea.github.io/MIToS.jl/)
+[![MIToS](https://github.com/user-attachments/assets/6035aa91-3e34-431e-b823-ac9928964b9d#gh-dark-mode-only)](http://diegozea.github.io/MIToS.jl/)
 ## 🐉 MIToS: Mutual Information Tools for protein Sequence analysis
 
 *A Julia Package to Analyze Protein Sequences, Structures, and Evolutionary Information*
@@ -91,26 +92,14 @@ database search programs." Nucleic acids research 25.17 (1997): 3389-3402.
 
 ### Acknowledgments
 MIToS was initially developed at the *Structural Bioinformatics Unit* of the 
-*Fundación Instituto Leloir* in Argentina. Its development now continues at the
- *Molecular Assemblies and Genome Integrity* group of the 
- *Institute for Integrative Biology of the Cell* (*I2BC*) in France.
+[*Fundación Instituto Leloir*](https://www.leloir.org.ar/) (*FIL*) in Argentina. 
+Its development now continues at the [*Molecular Assemblies and Genome Integrity*](https://www.i2bc.paris-saclay.fr/molecular-assemblies-and-genome-integrity/) 
+group of the [*Institute for Integrative Biology of the Cell*](https://www.i2bc.paris-saclay.fr/) 
+(*I2BC*) in France.
 
 We want to thank all [**contributors**](https://github.com/diegozea/MIToS.jl/graphs/contributors) 
 who have helped improve MIToS. We also thank the Julia community and all the MIToS users 
 for their feedback and support.
 
-
-
-
-<br>
-
-<div align="center" style="padding: 20px; background-color: white;">
-  <a href="https://www.leloir.org.ar/" style="margin-right: 40px;">
-    <img src="https://github.com/user-attachments/assets/88f17543-10ae-4368-ac60-ff188abdf241" alt="FIL" style="max-height: 60px; height: 60px;">
-  </a>
-  &nbsp; &nbsp; &nbsp;
-  <a href="https://www.i2bc.paris-saclay.fr/" style="margin-left: 40px;">
-    <img src="https://github.com/user-attachments/assets/4f46526b-7565-4307-93f8-a72f93a75993#gh-dark-mode-only" alt="I2BC" style="max-height: 60px; height: 60px;">
-    <img src="https://github.com/user-attachments/assets/23b0965b-e88e-4fe7-b50b-4e91e5e2758a#gh-light-mode-only" alt="I2BC" style="max-height: 60px; height: 60px;">
-  </a>
-</div>
+![FIL and I2BC](https://github.com/user-attachments/assets/9559c4bc-2678-48cf-ba8b-6bda8b66f02e#gh-light-mode-only)
+![FIL and I2BC](https://github.com/user-attachments/assets/48f6dd93-b089-4edd-a33c-91e1afab4e4b#gh-dark-mode-only)
