@@ -1,5 +1,5 @@
-[![MIToS](https://github.com/user-attachments/assets/ac2c124a-bb24-4766-aada-7a491139c6da#gh-light-mode-only)](http://diegozea.github.io/MIToS.jl/)
-[![MIToS](https://github.com/user-attachments/assets/6035aa91-3e34-431e-b823-ac9928964b9d#gh-dark-mode-only)](http://diegozea.github.io/MIToS.jl/)
+![MIToS](https://github.com/user-attachments/assets/ac2c124a-bb24-4766-aada-7a491139c6da#gh-light-mode-only)
+![MIToS](https://github.com/user-attachments/assets/6035aa91-3e34-431e-b823-ac9928964b9d#gh-dark-mode-only)
 ## 🐉 MIToS: Mutual Information Tools for protein Sequence analysis
 
 *A Julia Package to Analyze Protein Sequences, Structures, and Evolutionary Information*
