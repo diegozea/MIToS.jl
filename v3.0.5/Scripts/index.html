@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>MIToS&#39; Scripts · MIToS</title><meta name="title" content="MIToS&#39; Scripts · MIToS"/><meta property="og:title" content="MIToS&#39; Scripts · MIToS"/><meta property="twitter:title" content="MIToS&#39; Scripts · MIToS"/><meta name="description" content="Documentation for MIToS."/><meta property="og:description" content="Documentation for MIToS."/><meta property="twitter:description" content="Documentation for MIToS."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/extra_styles.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">MIToS</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../Installation/">Installation</a></li><li><a class="tocitem" href="../Example/">Example</a></li><li><span class="tocitem">Modules</span><ul><li><a class="tocitem" href="../MSA/">MSA</a></li><li><a class="tocitem" href="../Information/">Information</a></li><li><a class="tocitem" href="../SIFTS/">SIFTS</a></li><li><a class="tocitem" href="../PDB/">PDB</a></li><li><a class="tocitem" href="../Pfam/">Pfam</a></li></ul></li><li><span class="tocitem">Cookbook</span><ul><li><a class="tocitem" href="../01_Change_B_factors/">Change B-factors</a></li><li><a class="tocitem" href="../02_Linking_structural_and_evolutionary_information/">Linking structural and evolutionary information</a></li><li><a class="tocitem" href="../03_RMSF/">Root Mean Squared Fluctuation (RMSF)</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../MSA_API/">MSA</a></li><li><a class="tocitem" href="../Information_API/">Information</a></li><li><a class="tocitem" href="../SIFTS_API/">SIFTS</a></li><li><a class="tocitem" href="../PDB_API/">PDB</a></li><li><a class="tocitem" href="../Pfam_API/">Pfam</a></li><li><a class="tocitem" href="../Utils_API/">Utils</a></li></ul></li><li class="is-active"><a class="tocitem" href>MIToS&#39; Scripts</a><ul class="internal"><li><a class="tocitem" href="#Installation"><span>Installation</span></a></li><li><a class="tocitem" href="#Usage"><span>Usage</span></a></li><li><a class="tocitem" href="#Scripts"><span>Scripts</span></a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>MIToS&#39; Scripts</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>MIToS&#39; Scripts</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/diegozea/MIToS.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/diegozea/MIToS.jl/blob/master/docs/src/Scripts.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="MIToS&#39;-Scripts"><a class="docs-heading-anchor" href="#MIToS&#39;-Scripts">MIToS&#39; Scripts</a><a id="MIToS&#39;-Scripts-1"></a><a class="docs-heading-anchor-permalink" href="#MIToS&#39;-Scripts" title="Permalink"></a></h1><p>The <a href="https://github.com/MIToSOrg/MIToS_Scripts.jl">MIToS_Scripts.jl</a> package offers a set  of easy-to-use scripts for command-line execution without requiring Julia coding.  It includes several scripts designed for various bioinformatics tasks, such as measuring estimating residue conservation and inter-residue coevolution, calculating distances between residues in a protein structure, and more.</p><ul><li><a href="#MIToS&#39;-Scripts">MIToS&#39; Scripts</a></li><li class="no-marker"><ul><li><a href="#Installation">Installation</a></li><li><a href="#Usage">Usage</a></li><li><a href="#Scripts">Scripts</a></li><li class="no-marker"><ul><li><a href="#Buslje09.jl">Buslje09.jl</a></li><li><a href="#BLMI.jl">BLMI.jl</a></li><li><a href="#Conservation.jl">Conservation.jl</a></li><li><a href="#DownloadPDB.jl">DownloadPDB.jl</a></li><li><a href="#Distances.jl">Distances.jl</a></li><li><a href="#MSADescription.jl">MSADescription.jl</a></li><li><a href="#PercentIdentity.jl">PercentIdentity.jl</a></li><li><a href="#AlignedColumns.jl">AlignedColumns.jl</a></li><li><a href="#SplitStockholm.jl">SplitStockholm.jl</a></li></ul></li></ul></li></ul><h2 id="Installation"><a class="docs-heading-anchor" href="#Installation">Installation</a><a id="Installation-1"></a><a class="docs-heading-anchor-permalink" href="#Installation" title="Permalink"></a></h2><p>To install <strong>MIToS_Scripts.jl</strong>, you only need Julia 1.9 or later installed on your  system. Executing <code>julia</code> in the terminal to open the Julia REPL, and finally, run the  following command:</p><pre><code class="language-julia hljs">using Pkg
+Pkg.add(url=&quot;https://github.com/MIToSOrg/MIToS_Scripts.jl&quot;)</code></pre><p>Then, you can get the location of the installed scripts by running the following command:</p><pre><code class="language-julia hljs">using MIToS_Scripts
+scripts_folder = joinpath(pkgdir(MIToS_Scripts), &quot;scripts&quot;)</code></pre><p>You can run them from that location. Alternatively, you can add the location to your  <code>PATH</code> environment variable, or copy the scripts to a folder already in your <code>PATH</code> to  run them from anywhere.</p><h2 id="Usage"><a class="docs-heading-anchor" href="#Usage">Usage</a><a id="Usage-1"></a><a class="docs-heading-anchor-permalink" href="#Usage" title="Permalink"></a></h2><p>You can execute each provided script from your command line. For example, to run the <code>Buslje09.jl</code>  script—if you are located in the folder where it is the scripts—use:</p><pre><code class="language-bash hljs">julia Buslje09.jl input_msa_file</code></pre><p>Refer to the documentation of each script for specific usage instructions; you can access  it by running the script with the <code>--help</code> or <code>-h</code> flag:</p><pre><code class="language-bash hljs">julia Buslje09.jl -h</code></pre><h2 id="Scripts"><a class="docs-heading-anchor" href="#Scripts">Scripts</a><a id="Scripts-1"></a><a class="docs-heading-anchor-permalink" href="#Scripts" title="Permalink"></a></h2><h3 id="Buslje09.jl"><a class="docs-heading-anchor" href="#Buslje09.jl">Buslje09.jl</a><a id="Buslje09.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Buslje09.jl" title="Permalink"></a></h3><pre class="documenter-example-output"><code class="nohighlight hljs ansi">usage: Buslje09.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT]
+                   [-L LAMBDA] [-c] [-i THRESHOLD] [-g MAXGAP] [-a]
+                   [-s SAMPLES] [-G] [-F] [--version] [-h] [FILE]
+
+This takes a MSA file as input. It calculates and saves on
+*.buslje09.csv a Z score and a corrected MI/MIp as described on:
+Buslje, C. M., Santos, J., Delfino, J. M., &amp; Nielsen, M. (2009).
+Correction for phylogeny, small number of observations and data
+redundancy improves the identification of coevolving amino acid pairs
+using mutual information. Bioinformatics, 25(9), 1125-1131.
+
+positional arguments:
+  FILE                  File name. If it is not used, the script reads
+                        from STDIN.
+
+optional arguments:
+  -l, --list            The input is a list of file names. If -p is
+                        used, files will be processed in parallel.
+  -o, --output OUTPUT   Name of the output file. Output will be gzip
+                        if the extension is &quot;.gz&quot;. If it starts with a
+                        dot, the name is used as a suffix or extension
+                        of the input filename. If it ends with a dot,
+                        is used as a prefix. If the output name starts
+                        and ends with dots, it&#39;s used as an interfix
+                        before the extension.If a single file is used
+                        and there is not a file name (STDIN), the
+                        output will be print into STDOUT, unless a
+                        output filename is used. You can use &quot;STDOUT&quot;
+                        to force print into STDOUT. STDOUT can not be
+                        use with --list. (default: &quot;.buslje09.csv&quot;)
+  -p, --parallel PARALLEL
+                        Number of worker processes. (type: Int64,
+                        default: 1)
+  -f, --format FORMAT   Format of the MSA: Stockholm, Raw or FASTA
+                        (default: &quot;Stockholm&quot;)
+  -L, --lambda LAMBDA   Low count value (type: Float64, default: 0.05)
+  -c, --clustering      Sequence clustering (Hobohm I)
+  -i, --threshold THRESHOLD
+                        Percent identity threshold for sequence
+                        clustering (Hobohm I) (type: Float64, default:
+                        62.0)
+  -g, --maxgap MAXGAP   Maximum fraction of gaps in positions included
+                        in calculation (type: Float64, default: 0.5)
+  -a, --apc             Use APC correction (MIp)
+  -s, --samples SAMPLES
+                        Number of samples for Z-score (type: Int64,
+                        default: 100)
+  -G, --usegap          Use gaps on statistics
+  -F, --fixedgaps       Fix gaps positions for the random samples
+  --version             show version information and exit
+  -h, --help            show this help message and exit
+
+
+MIToS 3.0.4
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h3 id="BLMI.jl"><a class="docs-heading-anchor" href="#BLMI.jl">BLMI.jl</a><a id="BLMI.jl-1"></a><a class="docs-heading-anchor-permalink" href="#BLMI.jl" title="Permalink"></a></h3><pre class="documenter-example-output"><code class="nohighlight hljs ansi">usage: BLMI.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT] [-b BETA]
+               [-i THRESHOLD] [-g MAXGAP] [-a] [-s SAMPLES] [-F]
+               [--version] [-h] [FILE]
+
+This takes a MSA file as input. Calculates and saves on *.BLMI.csv a Z
+score and a corrected MI/MIp. The script uses BLOSUM62 based pseudo
+frequencies and sequences clustering (Hobohm I).
+
+positional arguments:
+  FILE                  File name. If it is not used, the script reads
+                        from STDIN.
+
+optional arguments:
+  -l, --list            The input is a list of file names. If -p is
+                        used, files will be processed in parallel.
+  -o, --output OUTPUT   Name of the output file. Output will be gzip
+                        if the extension is &quot;.gz&quot;. If it starts with a
+                        dot, the name is used as a suffix or extension
+                        of the input filename. If it ends with a dot,
+                        is used as a prefix. If the output name starts
+                        and ends with dots, it&#39;s used as an interfix
+                        before the extension.If a single file is used
+                        and there is not a file name (STDIN), the
+                        output will be print into STDOUT, unless a
+                        output filename is used. You can use &quot;STDOUT&quot;
+                        to force print into STDOUT. STDOUT can not be
+                        use with --list. (default: &quot;.BLMI.csv&quot;)
+  -p, --parallel PARALLEL
+                        Number of worker processes. (type: Int64,
+                        default: 1)
+  -f, --format FORMAT   Format of the MSA: Stockholm, Raw or FASTA
+                        (default: &quot;Stockholm&quot;)
+  -b, --beta BETA       β for BLOSUM62 pseudo frequencies (type:
+                        Float64, default: 8.512)
+  -i, --threshold THRESHOLD
+                        Percent identity threshold for sequence
+                        clustering (Hobohm I) (type: Float64, default:
+                        62.0)
+  -g, --maxgap MAXGAP   Maximum fraction of gaps in positions included
+                        in calculation (type: Float64, default: 0.5)
+  -a, --apc             Use APC correction (MIp)
+  -s, --samples SAMPLES
+                        Number of samples for Z-score (type: Int64,
+                        default: 50)
+  -F, --fixedgaps       Fix gaps positions for the random samples
+  --version             show version information and exit
+  -h, --help            show this help message and exit
+
+
+MIToS 3.0.4
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h3 id="Conservation.jl"><a class="docs-heading-anchor" href="#Conservation.jl">Conservation.jl</a><a id="Conservation.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Conservation.jl" title="Permalink"></a></h3><pre class="documenter-example-output"><code class="nohighlight hljs ansi">usage: Conservation.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT] [-c]
+                       [-i THRESHOLD] [--version] [-h] [FILE]
+
+This takes a MSA file as input and it calculates and saves on
+*.conservation.csv the Shannon entropy (H) and Kullback-Leibler
+divergence (KL) values for each column (Johansson and Toh 2010).
+It is possible to do a sequence clustering using the Hobohm I
+algorithm to avoid the effect of sequence redundancy in the
+conservation scores. Each sequence in a cluster is weighted using the
+inverse of the number of elements in that cluster.
+Shannon entropy is a common measure of the residue variability of a
+particular MSA column. For each column, we consider the frequency of
+the 20 natural protein residues. This uses the Euler&#39;s number e as the
+base of the logarithm, so the entropy is measured in nats.
+The Kullback-Leibler divergence, also called relative entropy, is a
+measure of residue conservation. It measures how much a probability
+distribution differs from a background distribution. In particular,
+this implementation measures the divergence between the residue
+distribution of an MSA column and the probabilities derived from the
+BLOSUM62 substitution matrix.
+Johansson, F., Toh, H., 2010. A comparative study of conservation and
+variation scores. BMC Bioinformatics 11, 388.
+
+positional arguments:
+  FILE                  File name. If it is not used, the script reads
+                        from STDIN.
+
+optional arguments:
+  -l, --list            The input is a list of file names. If -p is
+                        used, files will be processed in parallel.
+  -o, --output OUTPUT   Name of the output file. Output will be gzip
+                        if the extension is &quot;.gz&quot;. If it starts with a
+                        dot, the name is used as a suffix or extension
+                        of the input filename. If it ends with a dot,
+                        is used as a prefix. If the output name starts
+                        and ends with dots, it&#39;s used as an interfix
+                        before the extension.If a single file is used
+                        and there is not a file name (STDIN), the
+                        output will be print into STDOUT, unless a
+                        output filename is used. You can use &quot;STDOUT&quot;
+                        to force print into STDOUT. STDOUT can not be
+                        use with --list. (default:
+                        &quot;.conservation.csv&quot;)
+  -p, --parallel PARALLEL
+                        Number of worker processes. (type: Int64,
+                        default: 1)
+  -f, --format FORMAT   Format of the MSA: Stockholm, Raw or FASTA
+                        (default: &quot;Stockholm&quot;)
+  -c, --clustering      Sequence clustering (Hobohm I)
+  -i, --threshold THRESHOLD
+                        Percent identity threshold for sequence
+                        clustering (Hobohm I) (type: Float64, default:
+                        62.0)
+  --version             show version information and exit
+  -h, --help            show this help message and exit
+
+
+MIToS 3.0.4
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h3 id="DownloadPDB.jl"><a class="docs-heading-anchor" href="#DownloadPDB.jl">DownloadPDB.jl</a><a id="DownloadPDB.jl-1"></a><a class="docs-heading-anchor-permalink" href="#DownloadPDB.jl" title="Permalink"></a></h3><pre class="documenter-example-output"><code class="nohighlight hljs ansi">usage: DownloadPDB.jl [-c CODE] [-l LIST] [-f FORMAT] [--version] [-h]
+
+Download gzipped files from PDB.
+
+optional arguments:
+  -c, --code CODE      PDB code
+  -l, --list LIST      File with a list of PDB codes (one per line)
+  -f, --format FORMAT  Format. It should be PDBFile (pdb) or PDBML
+                       (xml) (default: &quot;PDBML&quot;)
+  --version            show version information and exit
+  -h, --help           show this help message and exit
+
+
+MIToS 3.0.4
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h3 id="Distances.jl"><a class="docs-heading-anchor" href="#Distances.jl">Distances.jl</a><a id="Distances.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Distances.jl" title="Permalink"></a></h3><pre class="documenter-example-output"><code class="nohighlight hljs ansi">usage: Distances.jl [-l] [-o OUTPUT] [-p PARALLEL] [-d DISTANCE]
+                    [-f FORMAT] [-m MODEL] [-c CHAIN] [-g GROUP] [-i]
+                    [--version] [-h] [FILE]
+
+Calculates residues distance and writes them into a *.distances.csv.gz
+gzipped file.
+
+positional arguments:
+  FILE                  File name. If it is not used, the script reads
+                        from STDIN.
+
+optional arguments:
+  -l, --list            The input is a list of file names. If -p is
+                        used, files will be processed in parallel.
+  -o, --output OUTPUT   Name of the output file. Output will be gzip
+                        if the extension is &quot;.gz&quot;. If it starts with a
+                        dot, the name is used as a suffix or extension
+                        of the input filename. If it ends with a dot,
+                        is used as a prefix. If the output name starts
+                        and ends with dots, it&#39;s used as an interfix
+                        before the extension.If a single file is used
+                        and there is not a file name (STDIN), the
+                        output will be print into STDOUT, unless a
+                        output filename is used. You can use &quot;STDOUT&quot;
+                        to force print into STDOUT. STDOUT can not be
+                        use with --list. (default:
+                        &quot;.distances.csv.gz&quot;)
+  -p, --parallel PARALLEL
+                        Number of worker processes. (type: Int64,
+                        default: 1)
+  -d, --distance DISTANCE
+                        The distance to be calculated, options: All,
+                        Heavy, CA, CB (default: &quot;All&quot;)
+  -f, --format FORMAT   Format of the PDB file: It should be PDBFile
+                        or PDBML (default: &quot;PDBFile&quot;)
+  -m, --model MODEL     The model to be used, use All for all
+                        (default: &quot;1&quot;)
+  -c, --chain CHAIN     The chain to be used, use All for all
+                        (default: &quot;All&quot;)
+  -g, --group GROUP     Group of atoms to be used, should be ATOM,
+                        HETATM or All for all (default: &quot;All&quot;)
+  -i, --inter           Calculate inter chain distances
+  --version             show version information and exit
+  -h, --help            show this help message and exit
+
+
+MIToS 3.0.4
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h3 id="MSADescription.jl"><a class="docs-heading-anchor" href="#MSADescription.jl">MSADescription.jl</a><a id="MSADescription.jl-1"></a><a class="docs-heading-anchor-permalink" href="#MSADescription.jl" title="Permalink"></a></h3><pre class="documenter-example-output"><code class="nohighlight hljs ansi">usage: MSADescription.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT]
+                        [-e] [--version] [-h] [FILE]
+
+Creates an *.description.csv from a Stockholm file with: the number of
+columns, sequences, clusters after Hobohm clustering at 62% identity
+and mean percent identity. Also the mean, standard deviation and
+quantiles of: sequence coverage of the MSA, gap percentage.
+
+positional arguments:
+  FILE                  File name. If it is not used, the script reads
+                        from STDIN.
+
+optional arguments:
+  -l, --list            The input is a list of file names. If -p is
+                        used, files will be processed in parallel.
+  -o, --output OUTPUT   Name of the output file. Output will be gzip
+                        if the extension is &quot;.gz&quot;. If it starts with a
+                        dot, the name is used as a suffix or extension
+                        of the input filename. If it ends with a dot,
+                        is used as a prefix. If the output name starts
+                        and ends with dots, it&#39;s used as an interfix
+                        before the extension.If a single file is used
+                        and there is not a file name (STDIN), the
+                        output will be print into STDOUT, unless a
+                        output filename is used. You can use &quot;STDOUT&quot;
+                        to force print into STDOUT. STDOUT can not be
+                        use with --list. (default: &quot;.description.csv&quot;)
+  -p, --parallel PARALLEL
+                        Number of worker processes. (type: Int64,
+                        default: 1)
+  -f, --format FORMAT   Format of the MSA: Stockholm, Raw or FASTA
+                        (default: &quot;Stockholm&quot;)
+  -e, --exact           If it&#39;s true, the mean percent identity is
+                        exact (using all the pairwise comparisons).
+  --version             show version information and exit
+  -h, --help            show this help message and exit
+
+
+MIToS 3.0.4
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h3 id="PercentIdentity.jl"><a class="docs-heading-anchor" href="#PercentIdentity.jl">PercentIdentity.jl</a><a id="PercentIdentity.jl-1"></a><a class="docs-heading-anchor-permalink" href="#PercentIdentity.jl" title="Permalink"></a></h3><pre class="documenter-example-output"><code class="nohighlight hljs ansi">usage: PercentIdentity.jl [-l] [-o OUTPUT] [-p PARALLEL] [-f FORMAT]
+                        [-s] [--version] [-h] [FILE]
+
+Calculates the percentage identity between all the sequences of an MSA
+and creates an *.pidstats.csv file with: The number of columns and
+sequences. The mean, standard deviation, median, minimum and maximum
+values and first and third quantiles of the percentage identity. It
+could also create and pidlist.csv file with the percentage identity
+for each pairwise comparison.
+
+positional arguments:
+  FILE                  File name. If it is not used, the script reads
+                        from STDIN.
+
+optional arguments:
+  -l, --list            The input is a list of file names. If -p is
+                        used, files will be processed in parallel.
+  -o, --output OUTPUT   Name of the output file. Output will be gzip
+                        if the extension is &quot;.gz&quot;. If it starts with a
+                        dot, the name is used as a suffix or extension
+                        of the input filename. If it ends with a dot,
+                        is used as a prefix. If the output name starts
+                        and ends with dots, it&#39;s used as an interfix
+                        before the extension.If a single file is used
+                        and there is not a file name (STDIN), the
+                        output will be print into STDOUT, unless a
+                        output filename is used. You can use &quot;STDOUT&quot;
+                        to force print into STDOUT. STDOUT can not be
+                        use with --list. (default: &quot;.pidstats.csv&quot;)
+  -p, --parallel PARALLEL
+                        Number of worker processes. (type: Int64,
+                        default: 1)
+  -f, --format FORMAT   Format of the MSA: Stockholm, Raw or FASTA
+                        (default: &quot;Stockholm&quot;)
+  -s, --savelist        Create and pidlist.csv file with the
+                        percentage identity for each pairwise
+                        comparison.
+  --version             show version information and exit
+  -h, --help            show this help message and exit
+
+
+MIToS 3.0.4
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h3 id="AlignedColumns.jl"><a class="docs-heading-anchor" href="#AlignedColumns.jl">AlignedColumns.jl</a><a id="AlignedColumns.jl-1"></a><a class="docs-heading-anchor-permalink" href="#AlignedColumns.jl" title="Permalink"></a></h3><pre class="documenter-example-output"><code class="nohighlight hljs ansi">usage: AlignedColumns.jl [-l] [-o OUTPUT] [-p PARALLEL] [--version]
+                        [-h] [FILE]
+
+Creates a file in Stockholm format with the aligned columns from a
+Pfam Stockholm file. Insertions are deleted, as they are unaligned in
+a proﬁle HMM. The output file *.aligned.* contains UniProt residue
+numbers and original column numbers in its annotations.
+
+positional arguments:
+  FILE                  File name. If it is not used, the script reads
+                        from STDIN.
+
+optional arguments:
+  -l, --list            The input is a list of file names. If -p is
+                        used, files will be processed in parallel.
+  -o, --output OUTPUT   Name of the output file. Output will be gzip
+                        if the extension is &quot;.gz&quot;. If it starts with a
+                        dot, the name is used as a suffix or extension
+                        of the input filename. If it ends with a dot,
+                        is used as a prefix. If the output name starts
+                        and ends with dots, it&#39;s used as an interfix
+                        before the extension.If a single file is used
+                        and there is not a file name (STDIN), the
+                        output will be print into STDOUT, unless a
+                        output filename is used. You can use &quot;STDOUT&quot;
+                        to force print into STDOUT. STDOUT can not be
+                        use with --list. (default: &quot;.aligned.&quot;)
+  -p, --parallel PARALLEL
+                        Number of worker processes. (type: Int64,
+                        default: 1)
+  --version             show version information and exit
+  -h, --help            show this help message and exit
+
+
+MIToS
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre><h3 id="SplitStockholm.jl"><a class="docs-heading-anchor" href="#SplitStockholm.jl">SplitStockholm.jl</a><a id="SplitStockholm.jl-1"></a><a class="docs-heading-anchor-permalink" href="#SplitStockholm.jl" title="Permalink"></a></h3><pre class="documenter-example-output"><code class="nohighlight hljs ansi">usage: SplitStockholm.jl [-p PATH] [--hideprogress] [--version] [-h]
+                        file
+
+Splits a file with multiple sequence alignments in Stockholm format,
+creating one compressed file per MSA in Stockholm format:
+accessionumber.gz
+
+positional arguments:
+  file             Input file
+
+optional arguments:
+  -p, --path PATH  Path for the output files [default: execution
+                   directory] (default: &quot;&quot;)
+  --hideprogress   Hide the progress bar
+  --version        show version information and exit
+  -h, --help       show this help message and exit
+
+
+MIToS 3.0.4
+
+Bioinformatics Unit
+Leloir Institute Foundation
+Av. Patricias Argentinas 435, CP C1405BWE, Buenos Aires, Argentina</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../Utils_API/">« Utils</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Friday 26 July 2024 14:11">Friday 26 July 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
