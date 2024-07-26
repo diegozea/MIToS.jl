@@ -1,6 +1,6 @@
 ```@raw html
-<img class="display-light-only" src="https://github.com/user-attachments/assets/ac2c124a-bb24-4766-aada-7a491139c6da" alt="MIToS"/>
-<img class="display-dark-only" src="https://github.com/user-attachments/assets/6035aa91-3e34-431e-b823-ac9928964b9d" alt="MIToS"/>
+<img class="display-light-only" src="./assets/mitos-logo.png" alt="MIToS"/>
+<img class="display-dark-only" src="./assets/mitos-logo-dark.png" alt="MIToS"/>
 ```
 
 *A Julia Package to Analyze Protein Sequences, Structures, and Evolutionary Information*
@@ -45,7 +45,7 @@ older version available is MIToS 2.0. If you are using MIToS v1 in a version of 
 pre-1.0, please read [this older documentation](https://diegozea.github.io/mitosghpage-legacy/) instead.  
 
 
-### Acknowledgments
+## Acknowledgments
 
 MIToS was initially developed at the *Structural Bioinformatics Unit* of the 
 [*Fundación Instituto Leloir*](https://www.leloir.org.ar/) (*FIL*) in Argentina. 
@@ -58,6 +58,6 @@ who have helped improve MIToS. We also thank the Julia community and all the MIT
 for their feedback and support.
 
 ```@raw html
-<img class="display-light-only" src="https://github.com/user-attachments/assets/9559c4bc-2678-48cf-ba8b-6bda8b66f02e" alt="FIL and I2BC logos"/>
-<img class="display-dark-only" src="https://github.com/user-attachments/assets/48f6dd93-b089-4edd-a33c-91e1afab4e4b" alt="FIL and I2BC logos"/>
+<img class="display-light-only" src="./assets/FIL_I2BC.png" alt="FIL and I2BC logos"/>
+<img class="display-dark-only" src="./assets/FIL_I2BC_dark.png" alt="FIL and I2BC logos"/>
 ```
