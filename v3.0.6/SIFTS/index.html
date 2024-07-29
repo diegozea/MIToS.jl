@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>SIFTS · MIToS</title><meta name="title" content="SIFTS · MIToS"/><meta property="og:title" content="SIFTS · MIToS"/><meta property="twitter:title" content="SIFTS · MIToS"/><meta name="description" content="Documentation for MIToS."/><meta property="og:description" content="Documentation for MIToS."/><meta property="twitter:description" content="Documentation for MIToS."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/extra_styles.css" rel="stylesheet" type="text/css"/><link href="../assets/citations.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">MIToS</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../Installation/">Installation</a></li><li><a class="tocitem" href="../Example/">Example</a></li><li><span class="tocitem">Modules</span><ul><li><a class="tocitem" href="../MSA/">MSA</a></li><li><a class="tocitem" href="../Information/">Information</a></li><li class="is-active"><a class="tocitem" href>SIFTS</a><ul class="internal"><li><a class="tocitem" href="#Features"><span>Features</span></a></li><li><a class="tocitem" href="#Contents"><span>Contents</span></a></li><li><a class="tocitem" href="#Simplest-residue-level-mapping"><span>Simplest residue-level mapping</span></a></li><li><a class="tocitem" href="#Storing-residue-level-mapping"><span>Storing residue-level mapping</span></a></li></ul></li><li><a class="tocitem" href="../PDB/">PDB</a></li><li><a class="tocitem" href="../Pfam/">Pfam</a></li></ul></li><li><span class="tocitem">Cookbook</span><ul><li><a class="tocitem" href="../01_Change_B_factors/">Change B-factors</a></li><li><a class="tocitem" href="../02_Linking_structural_and_evolutionary_information/">Linking structural and evolutionary information</a></li><li><a class="tocitem" href="../03_RMSF/">Root Mean Squared Fluctuation (RMSF)</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../MSA_API/">MSA</a></li><li><a class="tocitem" href="../Information_API/">Information</a></li><li><a class="tocitem" href="../SIFTS_API/">SIFTS</a></li><li><a class="tocitem" href="../PDB_API/">PDB</a></li><li><a class="tocitem" href="../Pfam_API/">Pfam</a></li><li><a class="tocitem" href="../Utils_API/">Utils</a></li></ul></li><li><a class="tocitem" href="../Scripts/">MIToS&#39; Scripts</a></li><li><a class="tocitem" href="../References/">References</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Modules</a></li><li class="is-active"><a href>SIFTS</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>SIFTS</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/diegozea/MIToS.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/diegozea/MIToS.jl/blob/master/docs/src/SIFTS.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Module-SIFTS"><a class="docs-heading-anchor" href="#Module-SIFTS">SIFTS</a><a id="Module-SIFTS-1"></a><a class="docs-heading-anchor-permalink" href="#Module-SIFTS" title="Permalink"></a></h1><p>The <code>SIFTS</code> module of MIToS allows to obtain the residue-level mapping between databases stored in the SIFTS XML files. It makes easy to assign PDB residues to UniProt/Pfam positions. Given the fact that pairwise alignments can lead to misleading association between residues in both sequences, SIFTS offers  more reliable association between sequence and structure residue numbers.</p><pre><code class="language-julia hljs">using MIToS.SIFTS # to load the SIFTS module</code></pre><h2 id="Features"><a class="docs-heading-anchor" href="#Features">Features</a><a id="Features-1"></a><a class="docs-heading-anchor-permalink" href="#Features" title="Permalink"></a></h2><ul><li>Download and parse SIFTS XML files</li><li>Store residue-level mapping in Julia</li><li>Easy generation of <code>Dict</code>s between residues numbers</li></ul><h2 id="Contents"><a class="docs-heading-anchor" href="#Contents">Contents</a><a id="Contents-1"></a><a class="docs-heading-anchor-permalink" href="#Contents" title="Permalink"></a></h2><ul><li><a href="#Module-SIFTS">SIFTS</a></li><li class="no-marker"><ul><li><a href="#Features">Features</a></li><li><a href="#Contents">Contents</a></li><li><a href="#Simplest-residue-level-mapping">Simplest residue-level mapping</a></li><li><a href="#Storing-residue-level-mapping">Storing residue-level mapping</a></li><li class="no-marker"><ul><li><a href="#Accessing-residue-level-cross-references">Accessing residue-level cross references</a></li><li class="no-marker"><ul><li><a href="#Example:-Which-residues-are-missing-in-the-PDB-structure">Example: Which residues are missing in the PDB structure</a></li></ul></li></ul></li></ul></li></ul><h2 id="Simplest-residue-level-mapping"><a class="docs-heading-anchor" href="#Simplest-residue-level-mapping">Simplest residue-level mapping</a><a id="Simplest-residue-level-mapping-1"></a><a class="docs-heading-anchor-permalink" href="#Simplest-residue-level-mapping" title="Permalink"></a></h2><p>This module export the function <code>siftsmapping</code> to generate a <code>Dict</code> between residue numbers. This function takes 5 positional arguments.</p><ol><li>The name of the SIFTS XML file to parse,</li><li>the source database,</li><li>the source protein/structure identifier,</li><li>the destiny database and,</li><li>the destiny protein/structure identifier. Optionally it’s possible to indicate a particular PDB <code>chain</code> and if <code>missings</code> will be used.</li></ol><p>Databases should be indicated using an available sub-type of <code>DataBase</code>. Keys and values types will be depend on the residue number type in that database.</p><table><tr><th style="text-align: left">Type <code>db...</code></th><th style="text-align: left">Database</th><th style="text-align: left">Residue number type</th></tr><tr><td style="text-align: left"><code>dbPDBe</code></td><td style="text-align: left"><strong>PDBe</strong> (Protein Data Bank in Europe)</td><td style="text-align: left"><code>Int</code></td></tr><tr><td style="text-align: left"><code>dbInterPro</code></td><td style="text-align: left"><strong>InterPro</strong></td><td style="text-align: left"><code>String</code></td></tr><tr><td style="text-align: left"><code>dbUniProt</code></td><td style="text-align: left"><strong>UniProt</strong></td><td style="text-align: left"><code>Int</code></td></tr><tr><td style="text-align: left"><code>dbPfam</code></td><td style="text-align: left"><strong>Pfam</strong> (Protein families database)</td><td style="text-align: left"><code>Int</code></td></tr><tr><td style="text-align: left"><code>dbNCBI</code></td><td style="text-align: left"><strong>NCBI</strong> (National Center for Biotechnology Information)</td><td style="text-align: left"><code>Int</code></td></tr><tr><td style="text-align: left"><code>dbPDB</code></td><td style="text-align: left"><strong>PDB</strong> (Protein Data Bank)</td><td style="text-align: left"><code>String</code></td></tr><tr><td style="text-align: left"><code>dbCATH</code></td><td style="text-align: left"><strong>CATH</strong></td><td style="text-align: left"><code>String</code></td></tr><tr><td style="text-align: left"><code>dbSCOP</code></td><td style="text-align: left"><strong>SCOP</strong> (Structural Classification of Proteins)</td><td style="text-align: left"><code>String</code></td></tr><tr><td style="text-align: left"><code>dbEnsembl</code></td><td style="text-align: left"><strong>Ensembl</strong></td><td style="text-align: left"><code>String</code></td></tr></table><p>To download the XML SIFTS file of a determined PDB use the <code>downloadsifts</code> function.</p><pre><code class="language-julia hljs">using MIToS.SIFTS</code></pre><pre><code class="language-julia hljs">siftsfile = downloadsifts(&quot;1IVO&quot;)</code></pre><p>The following example, shows the residue number mapping between <em>Pfam</em> and <em>PDB</em>. <em>Pfam</em> uses <em>UniProt</em> coordinates and <em>PDB</em> uses their own residue numbers with insertion codes. Note that <strong>the <code>siftsmapping</code> function is case sensitive</strong>, and that <strong>SIFTS stores PDB identifiers using lowercase characters</strong>.</p><pre><code class="language-julia hljs">siftsmap = siftsmapping(
+    siftsfile,
+    dbPfam,
+    &quot;PF00757&quot;,
+    dbPDB,
+    &quot;1ivo&quot;, # SIFTS stores PDB identifiers in lowercase
+    chain = &quot;A&quot;, # In this example we are only using the chain A of the PDB
+    missings = false,
+) # Residues without coordinates aren&#39;t used in the mapping</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{String, String} with 162 entries:
+  &quot;177&quot; =&gt; &quot;153&quot;
+  &quot;178&quot; =&gt; &quot;154&quot;
+  &quot;179&quot; =&gt; &quot;155&quot;
+  &quot;180&quot; =&gt; &quot;156&quot;
+  &quot;181&quot; =&gt; &quot;157&quot;
+  &quot;182&quot; =&gt; &quot;158&quot;
+  &quot;183&quot; =&gt; &quot;159&quot;
+  &quot;184&quot; =&gt; &quot;160&quot;
+  &quot;185&quot; =&gt; &quot;161&quot;
+  &quot;186&quot; =&gt; &quot;162&quot;
+  &quot;187&quot; =&gt; &quot;163&quot;
+  &quot;188&quot; =&gt; &quot;164&quot;
+  &quot;189&quot; =&gt; &quot;165&quot;
+  &quot;190&quot; =&gt; &quot;166&quot;
+  &quot;191&quot; =&gt; &quot;167&quot;
+  &quot;192&quot; =&gt; &quot;168&quot;
+  &quot;193&quot; =&gt; &quot;169&quot;
+  &quot;194&quot; =&gt; &quot;170&quot;
+  &quot;195&quot; =&gt; &quot;171&quot;
+  ⋮     =&gt; ⋮</code></pre><h2 id="Storing-residue-level-mapping"><a class="docs-heading-anchor" href="#Storing-residue-level-mapping">Storing residue-level mapping</a><a id="Storing-residue-level-mapping-1"></a><a class="docs-heading-anchor-permalink" href="#Storing-residue-level-mapping" title="Permalink"></a></h2><p>If you need more than the residue number mapping between two databases, you could access all the residue-level cross references using the function <code>read_file</code> in the <code>SIFTSXML</code><code>File.Format</code> file. The <code>parse_file</code> function (and therefore the <code>read_file</code> function) for the <code>SIFTSXML</code> format, also takes the keyword arguments <code>chain</code> and <code>missings</code>. The <code>read_file</code>/<code>parse_file</code> function returns a <code>Vector</code> of <code>SIFTSResidue</code>s objects that stores the cross references between residues in each database.</p><p>You are free to access the <code>SIFTSResidue</code> fields in order to get the desired information. <code>SIFTSResidue</code> objects contain <code>db...</code> objects (sub-types of <code>DataBase</code>), with the cross referenced information. You should note that, except for the <code>PDBe</code> and <code>InterPro</code> fields, the field values can be <code>missing</code>. The <code>ismissing</code> function is helpful to know if there is a <code>db...</code> object. For example, getting the UniProt residue name (one letter code of the amino acid) would be:</p><pre><code class="language-julia hljs">ismissing(residue_data.UniProt) ? &quot;&quot; : residue_data.UniProt.name</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;C&quot;</code></pre><p>That line of code returns an empty string if the UniProt field is <code>missing</code>. Otherwise, it returns a string with the name of the residue in UniProt. Because that way of access values in a SIFT residue is too verbose, MIToS defines a more complex signature for <code>get</code>. Using MIToS <code>get</code> the previous line of code will be:</p><pre><code class="language-julia hljs">#   SIFTSResidue  database   field  default
+get(residue_data, dbUniProt, :name, &quot;&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;C&quot;</code></pre><p>The is not need to use the full signature. Other signatures are possible depending on the value you want to access. In particular, a <code>missing</code> object is returned if a default value is not given at the end of the signature and the value to access is missing:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; get(residue_data, dbUniProt) # get takes the database type (`db...`)</code><code class="nohighlight hljs ansi" style="display:block;">MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;325&quot;, &quot;K&quot;)</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; get(residue_data, dbUniProt, :name) # and can also take a field name (Symbol)</code><code class="nohighlight hljs ansi" style="display:block;">&quot;K&quot;</code></pre><p>But you don&#39;t need the <code>get</code> function to access the three letter code of the residue in <code>PDBe</code> because the <code>PDBe</code> field can not be <code>missing</code>.</p><pre><code class="language-julia hljs">residue_data.PDBe.name</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&quot;CYS&quot;</code></pre><p><code>SIFTSResidue</code> also store information about if that residue is <code>missing</code> (i.e. not resolved) in the PDB structure and the information about the secondary structure (<code>sscode</code> and <code>ssname</code>):</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; residue_data.missing</code><code class="nohighlight hljs ansi" style="display:block;">false</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; residue_data.sscode</code><code class="nohighlight hljs ansi" style="display:block;">&quot;T&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; residue_data.ssname</code><code class="nohighlight hljs ansi" style="display:block;">&quot;loop&quot;</code></pre><h3 id="Accessing-residue-level-cross-references"><a class="docs-heading-anchor" href="#Accessing-residue-level-cross-references">Accessing residue-level cross references</a><a id="Accessing-residue-level-cross-references-1"></a><a class="docs-heading-anchor-permalink" href="#Accessing-residue-level-cross-references" title="Permalink"></a></h3><p>You can ask for particular values in a single <code>SIFTSResidue</code> using the <code>get</code> function.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MIToS.SIFTS</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; residue_data = read_file(siftsfile, SIFTSXML)[301]
+       # Is the UniProt residue name in the list of basic amino acids [&quot;H&quot;, &quot;K&quot;, &quot;R&quot;]?</code><code class="nohighlight hljs ansi" style="display:block;">SIFTSResidue with secondary structure code (sscode): &quot;T&quot; and name (ssname): &quot;loop&quot;
+  PDBe:
+    number: 301
+    name: LYS
+  UniProt :
+    id: P00533
+    number: 325
+    name: K
+  Pfam :
+    id: PF00757
+    number: 325
+    name: K
+  NCBI :
+    id: 9606
+    number: 325
+    name: K
+  PDB :
+    id: 1ivo
+    number: 301
+    name: LYS
+    chain: A
+  SCOP :
+    id: 76847
+    number: 301
+    name: LYS
+    chain: A
+  CATH :
+    id: 2.10.220.10
+    number: 301
+    name: LYS
+    chain: A
+  InterPro: MIToS.SIFTS.dbInterPro[MIToS.SIFTS.dbInterPro(&quot;IPR006211&quot;, &quot;301&quot;, &quot;LYS&quot;, &quot;PF00757&quot;), MIToS.SIFTS.dbInterPro(&quot;IPR009030&quot;, &quot;301&quot;, &quot;LYS&quot;, &quot;SSF57184&quot;)]
+  Ensembl: MIToS.SIFTS.dbEnsembl[MIToS.SIFTS.dbEnsembl(&quot;ENSG00000146648&quot;, &quot;325&quot;, &quot;K&quot;, &quot;ENST00000275493&quot;, &quot;ENSP00000275493&quot;, &quot;ENSE00001751179&quot;)]</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; get(residue_data, dbUniProt, :name, &quot;&quot;) in [&quot;H&quot;, &quot;K&quot;, &quot;R&quot;]</code><code class="nohighlight hljs ansi" style="display:block;">true</code></pre><p>Use higher order functions and lambda expressions (anonymous functions) or list comprehension to easily ask for information on the <code>Vector{SIFTSResidue}</code>. You can use <code>get</code> with the previous signature or simple direct field access and <code>ismissing</code>.</p><pre><code class="language-julia hljs"># Captures PDB residue numbers if the Pfam id is &quot;PF00757&quot;
+resnums = [
+    res.PDB.number for res in siftsresidues if
+    !ismissing(res.PDB) &amp;&amp; get(res, dbPfam, :id, &quot;&quot;) == &quot;PF00757&quot;
+]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">162-element Vector{String}:
+ &quot;153&quot;
+ &quot;154&quot;
+ &quot;155&quot;
+ &quot;156&quot;
+ &quot;157&quot;
+ &quot;158&quot;
+ &quot;159&quot;
+ &quot;160&quot;
+ &quot;161&quot;
+ &quot;162&quot;
+ ⋮
+ &quot;306&quot;
+ &quot;307&quot;
+ &quot;308&quot;
+ &quot;309&quot;
+ &quot;310&quot;
+ &quot;311&quot;
+ &quot;312&quot;
+ &quot;313&quot;
+ &quot;314&quot;</code></pre><p><strong>Useful higher order functions are:</strong></p><p><strong><code>findall</code></strong></p><pre><code class="language-julia hljs"># Which of the residues have UniProt residue names in the list [&quot;H&quot;, &quot;K&quot;, &quot;R&quot;]? (basic residues)
+indexes = findall(res -&gt; get(res, dbUniProt, :name, &quot;&quot;) in [&quot;H&quot;, &quot;K&quot;, &quot;R&quot;], siftsresidues)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">69-element Vector{Int64}:
+   3
+   4
+  12
+  22
+  28
+  47
+  55
+  73
+  83
+ 104
+   ⋮
+ 462
+ 464
+ 469
+ 475
+ 482
+ 496
+ 502
+ 506
+ 508</code></pre><p><strong><code>map</code></strong></p><pre><code class="language-julia hljs">map(i -&gt; siftsresidues[i].UniProt, indexes) # UniProt data of the basic residues</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">69-element Vector{MIToS.SIFTS.dbUniProt}:
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;28&quot;, &quot;K&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;29&quot;, &quot;K&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;37&quot;, &quot;K&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;47&quot;, &quot;H&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;53&quot;, &quot;R&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;72&quot;, &quot;R&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;80&quot;, &quot;K&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;98&quot;, &quot;R&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;108&quot;, &quot;R&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;129&quot;, &quot;K&quot;)
+ ⋮
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;487&quot;, &quot;K&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;489&quot;, &quot;K&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;494&quot;, &quot;R&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;500&quot;, &quot;K&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;507&quot;, &quot;H&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;521&quot;, &quot;R&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;527&quot;, &quot;R&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;531&quot;, &quot;R&quot;)
+ MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;533&quot;, &quot;R&quot;)</code></pre><p><strong><code>filter</code></strong></p><pre><code class="language-julia hljs"># SIFTSResidues with UniProt names in [&quot;H&quot;, &quot;K&quot;, &quot;R&quot;]
+basicresidues =
+    filter(res -&gt; get(res, dbUniProt, :name, &quot;&quot;) in [&quot;H&quot;, &quot;K&quot;, &quot;R&quot;], siftsresidues)
+
+basicresidues[1].UniProt # UniProt data of the first basic residue</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">MIToS.SIFTS.dbUniProt(&quot;P00533&quot;, &quot;28&quot;, &quot;K&quot;)</code></pre><h4 id="Example:-Which-residues-are-missing-in-the-PDB-structure"><a class="docs-heading-anchor" href="#Example:-Which-residues-are-missing-in-the-PDB-structure">Example: Which residues are missing in the PDB structure</a><a id="Example:-Which-residues-are-missing-in-the-PDB-structure-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Which-residues-are-missing-in-the-PDB-structure" title="Permalink"></a></h4><p>Given that <code>SIFTSResidue</code> objects store a <code>missing</code> residue flag, it’s easy to get a vector where there is a <code>true</code> value if the residue is missing in the structure.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MIToS.SIFTS</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; sifts_1ivo = read_file(siftsfile, SIFTSXML, chain = &quot;A&quot;); # SIFTSResidues of the 1IVO chain A</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; [res.missing for res in sifts_1ivo]</code><code class="nohighlight hljs ansi" style="display:block;">622-element Vector{Bool}:
+ 1
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ ⋮
+ 1
+ 1
+ 1
+ 1
+ 1
+ 1
+ 1
+ 1
+ 1</code></pre><p>However, if you need to filter using other conditions, you’ll find useful the <code>get</code> function. In this example, we are going to ask for the <em>UniProt id</em> (to avoid problems with fragments, tags or chimeric/fusion proteins). We are also using <code>get</code> to select an specific PDB chain.</p><pre><code class="language-julia hljs">siftsfile = downloadsifts(&quot;1JQZ&quot;)</code></pre><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MIToS.SIFTS</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; sifts_1jqz = read_file(siftsfile, SIFTSXML); # It has an amino terminal his tag</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; missings = [
+           (
+               (get(res, dbUniProt, :id, &quot;&quot;) == &quot;P05230&quot;) &amp;
+               (get(res, dbPDB, :chain, &quot;&quot;) == &quot;A&quot;) &amp;
+               res.missing
+           ) for res in sifts_1jqz
+       ];</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; println(
+           &quot;There are only &quot;,
+           sum(missings),
+           &quot; missing residues in the chain A, associated to UniProt P05230&quot;,
+       )</code><code class="nohighlight hljs ansi" style="display:block;">There are only 3 missing residues in the chain A, associated to UniProt P05230</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; println(
+           &quot;But there are &quot;,
+           sum([res.missing for res in sifts_1jqz]),
+           &quot; missing residues in the PDB file.&quot;,
+       )</code><code class="nohighlight hljs ansi" style="display:block;">But there are 10 missing residues in the PDB file.</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../Information/">« Information</a><a class="docs-footer-nextpage" href="../PDB/">PDB »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Monday 29 July 2024 16:21">Monday 29 July 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
