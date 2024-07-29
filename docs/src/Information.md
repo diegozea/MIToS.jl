@@ -183,13 +183,12 @@ nothing # hide
 ## Low count corrections
 
 Low number of observations can lead to sparse contingency tables, that lead to wrong
-probability estimations. It is shown in
-[*Buslje et. al. 2009*![](./assets/external-link.png)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2672635/)
+probability estimations. It is shown in [buslje2009correction](@citet)
 that low-count corrections, can lead to improvements in the contact prediction capabilities
 of the Mutual Information. The Information module has available two low-count corrections:
 
- 1. [Additive Smoothing![](./assets/external-link.png)](https://en.wikipedia.org/wiki/Additive_smoothing); the constant value pseudocount described in [*Buslje et. al. 2009*![](./assets/external-link.png)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2672635/).
- 2. BLOSUM62 based pseudo frequencies of residues pairs, similar to [altschul2012gapped](@citet).
+ 1. [Additive Smoothing![](./assets/external-link.png)](https://en.wikipedia.org/wiki/Additive_smoothing); the constant value pseudocount described in [buslje2009correction](@citet).
+ 2. BLOSUM62 based pseudo frequencies of residues pairs, similar to [altschul1997gapped](@citet).
 
 ```@example inf_msa
 using MIToS.MSA
@@ -422,13 +421,12 @@ nothing # hide
 ## Corrected Mutual Information
 
 MIToS ships with two methods to easily calculate corrected mutual information.
-The first is the algorithm described in [*Buslje et. al. 2009*![](./assets/external-link.png)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2672635/).
+The first is the algorithm described in [buslje2009correction](@citet).
 This algorithm can be accessed through the `buslje09` function and includes:
 
  1. Low count correction using `AdditiveSmoothing`
- 2. Sequence weighting after a `hobohmI` clustering
- 3. Average Product Correction (APC) proposed by
-    [Dunn et. al. 2008![](./assets/external-link.png)](http://bioinformatics.oxfordjournals.org/content/24/3/333),
+ 2. Sequence weighting after a `hobohmI` clustering [hobohm1992selection](@cite)
+ 3. Average Product Correction (APC) proposed by [dunn2008mutual](@citet),
     through the `APC!` function that takes a MI matrix.
  4. Z score correction using the functions `shuffle_msa!` from the MSA module and `zscore`
     from the `PairwiseListMatrices` package.

@@ -19,7 +19,13 @@ function _mean_total(mi::Matrix{T}) where {T}
 end
 
 """
-APC (Dunn et. al. 2008)
+APC
+
+# References
+
+  - [Dunn, Stanley D., Lindi M. Wahl, and Gregory B. Gloor. "Mutual information without
+    the influence of phylogeny or entropy dramatically improves residue contact prediction."
+    Bioinformatics 24.3 (2008): 333-340.](@cite dunn2008mutual)
 """
 function APC!(MI::Matrix{T}) where {T}
     nrow, ncol = size(MI)

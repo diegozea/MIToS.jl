@@ -650,8 +650,8 @@ nothing # hide
 
 The `MSA` module allows to clusterize sequences in an MSA. The `hobohmI` function takes as
 input an MSA followed by an identity threshold value, and returns a `Clusters` type
-with the result of a [Hobohm I![](./assets/external-link.png)](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2142204/)
-sequence clustering. The Hobohm I algorithm will add a sequence to an existing cluster, if
+with the result of a Hobohm I sequence clustering [hobohm1992selection](@cite).
+The Hobohm I algorithm will add a sequence to an existing cluster, if
 the percentage of identity is equal or greater than the threshold.
 The `Clusters` is sub-type of `ClusteringResult` from the [Clustering.jl![](./assets/external-link.png)](http://clusteringjl.readthedocs.org/en/latest/index.html)
 package. One advantage of use a sub-type of `ClusteringResult`is that you are able to use
