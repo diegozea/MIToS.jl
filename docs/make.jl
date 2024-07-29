@@ -1,4 +1,9 @@
-using Documenter, MIToS
+using Documenter
+using DocumenterCitations
+
+using MIToS
+
+const BIB = CitationBibliography(joinpath(@__DIR__, "src", "refs.bib"))
 
 const WARNONLY = [:missing_docs]
 if get(ENV, "CI", nothing) === nothing
@@ -14,7 +19,7 @@ makedocs(
     doctest = true,
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
-        assets = ["assets/extra_styles.css"],
+        assets = String["assets/extra_styles.css", "assets/citations.css"],
     ),
     sitename = "MIToS",
     authors = "Diego Javier Zea",
@@ -38,8 +43,10 @@ makedocs(
             "Utils_API.md",
         ],
         "Scripts.md",
+        "References.md",
     ],
     warnonly = WARNONLY,
+    plugins = [BIB],
 )
 
 deploydocs(

@@ -878,13 +878,14 @@ multiple alignments vertically.
 ### Joining MSAs
 
 Sometimes, you may need to join or merge two MSAs, having different number of sequences or
-columns. For such cases, MIToS provides the [`join_msas`](@ref) function. This function
-allows you to join two MSAs based on specified matching positions or names. It supports
-different types of joins: inner, outer, left, and right. You can indicate the positions or 
-names to match using an iterable of pairs or separate lists of positions or names. For 
-example, using a `OrderedDict` from the `OrderedCollections` package, you can identify 
-which positions on the first MSA (the keys) should match with which positions on the 
-second MSA (the values). Let's see that in one fictional example:
+columns. For such cases, MIToS provides the [`join_msas`](@ref MIToS.MSA.join_msas)
+function. This function allows you to join two MSAs based on specified matching positions
+or names. It supports different types of joins: inner, outer, left, and right.
+You can indicate the positions or names to match using an iterable of pairs or separate
+lists of positions or names. For example, using a `OrderedDict` from the
+`OrderedCollections` package, you can identify which positions on the first MSA (the keys)
+should match with which positions on the second MSA (the values).
+Let's see that in one fictional example:
 
 ```@repl msa_join
 using MIToS.MSA, OrderedCollections

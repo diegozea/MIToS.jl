@@ -402,16 +402,20 @@ end
 # ===
 
 """
-`cumulative` allows to calculate cumulative scores (i.e. cMI) as defined in Buslje et. al. 2010
+`cumulative` allows to calculate cumulative scores (i.e. cMI) as defined
+in  Marino Buslje et al.:
 
-*"We calculated a cumulative mutual information score (cMI) for each residue as the sum of
-MI values above a certain threshold for every amino acid pair where the particular residue
-appears. This value defines to what degree a given amino acid takes part in a mutual
-information network."*
-Buslje, Cristina Marino, Elin Teppa, Tomas Di Doménico, José María Delfino, and Morten
-Nielsen. *Networks of high mutual information define the structural proximity of catalytic
-sites: implications for catalytic residue identification.* PLoS Comput Biol 6, no. 11
-(2010): e1000978.
+> "We calculated a cumulative mutual information score (cMI) for each residue as the
+> sum of MI values above a certain threshold for every amino acid pair where the particular
+> residue appears. This value defines to what degree a given amino acid takes part in a
+> mutual information network."
+
+# References
+
+  - [Marino Buslje, Cristina, et al. "Networks of high mutual information define the
+    structural proximity of catalytic sites: implications for catalytic residue
+    identification." PLoS computational biology 6.11 (2010):
+    e1000978.](@cite marino2010networks)
 """
 function cumulative(plm::PairwiseListMatrix{T,D,VT}, threshold::T) where {T,D,VT}
     N = size(plm, 1)

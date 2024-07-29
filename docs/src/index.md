@@ -12,7 +12,6 @@ MIToS tools are separated into different modules for different tasks.
   - [MSA](@ref Module-MSA): This module defines multiple functions and types for dealing with
     Multiple Sequence Alignments (MSAs) and their annotations. It also includes facilities
     for sequence clustering and shuffling, among others.
-
   - [PDB](@ref Module-PDB): This module defines types and methods to work with protein
     structures from different sources, such as the Protein Data Bank (PDB) or AlphaFold DB.
     It includes functions to superpose structures, measure the distance between residues, and much more.
@@ -30,7 +29,7 @@ MIToS tools are separated into different modules for different tasks.
 
 ## Citation
 
-If you use MIToS, please cite:
+If you use MIToS [zea2017mitos](@cite), please cite:
 
 *Diego J. Zea, Diego Anfossi, Morten Nielsen, Cristina Marino-Buslje; MIToS.jl: mutual information tools for protein sequence analysis in the Julia language, Bioinformatics, Volume 33, Issue 4, 15 February 2017, Pages 564–565, [https://doi.org/10.1093/bioinformatics/btw646](https://doi.org/10.1093/bioinformatics/btw646)*
 
