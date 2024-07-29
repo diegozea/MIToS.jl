@@ -403,7 +403,7 @@ end
 
 """
 `cumulative` allows to calculate cumulative scores (i.e. cMI) as defined
-in  Marino Buslje et al.:
+in  *Marino Buslje et al. 2010*:
 
 > "We calculated a cumulative mutual information score (cMI) for each residue as the
 > sum of MI values above a certain threshold for every amino acid pair where the particular

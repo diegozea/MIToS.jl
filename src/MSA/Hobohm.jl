@@ -51,10 +51,12 @@ function _get_sequence_weight(clustersize, cluster)
 end
 
 """
-Sequence clustering using the Hobohm I method from Hobohm et. al. 1992.
+Sequence clustering using the Hobohm I method from Hobohm et. al.
 
-*Hobohm, Uwe, et al. "Selection of representative protein data sets."
-Protein Science 1.3 (1992): 409-417.*
+# References
+
+  - [Hobohm, Uwe, et al. "Selection of representative protein data sets."
+    Protein Science 1.3 (1992): 409-417.](@cite hobohm1992selection)
 """
 function hobohmI(msa::AbstractMatrix{Residue}, threshold)
     aln = getresiduesequences(msa)

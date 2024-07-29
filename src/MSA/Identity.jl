@@ -186,7 +186,7 @@ are considered unique residues.
 
 **Other residue groups/alphabets:**
 
-**SMS (Sequence Manipulation Suite)** Ident and Sim:
+**SMS (Sequence Manipulation Suite)** Ident and Sim *(Stothard Paul. 2000)*:
 
 ```julia
 ReducedAlphabet("(GAVLI)(FYW)(ST)(KRH)(DENQ)P(CM)")
@@ -195,13 +195,19 @@ ReducedAlphabet("(GAVLI)(FYW)(ST)(KRH)(DENQ)P(CM)")
 *Stothard P (2000) The Sequence Manipulation Suite: JavaScript programs for analyzing and
 formatting protein and DNA sequences. Biotechniques 28:1102-1104.*
 
-**Bio3D 2.2** seqidentity:
+**Bio3D 2.2** seqidentity *(Grant, Barry J., et al. 2006)*:
 
 ```julia
 ReducedAlphabet("(GA)(MVLI)(FYW)(ST)(KRH)(DE)(NQ)PC")
 ```
 
-*Grant, B.J. et al. (2006) Bioinformatics 22, 2695--2696.*
+# References
+
+  - [Stothard, Paul. "The sequence manipulation suite: JavaScript programs for analyzing
+    and formatting protein and DNA sequences."
+    Biotechniques 28.6 (2000): 1102-1104.](@cite stothard2000sequence)
+  - [Grant, Barry J., et al. "Bio3d: an R package for the comparative analysis of protein
+    structures." Bioinformatics 22.21 (2006): 2695-2696.](@cite grant2006bio3d)
 """
 function percentsimilarity(
     seq1::Vector{Residue},
