@@ -3,3 +3,4 @@ indent = 4
 format_docstrings = true
 indent_submodule = true
 yas_style_nesting = true
+ignore = ["README.md"]

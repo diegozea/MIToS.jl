@@ -13,7 +13,7 @@ MIToS.PDB
 ```@contents
 Pages = ["PDB_API.md"]
 Depth = 2
-```  
+```
 
 ## Types
 

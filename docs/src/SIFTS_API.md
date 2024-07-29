@@ -13,7 +13,7 @@ MIToS.SIFTS
 ```@contents
 Pages = ["SIFTS_API.md"]
 Depth = 2
-```  
+```
 
 ## Types
 

@@ -12,8 +12,10 @@ include("literate.jl")
 
 makedocs(
     doctest = true,
-    format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true", 
-        assets = ["assets/extra_styles.css"]),
+    format = Documenter.HTML(
+        prettyurls = get(ENV, "CI", nothing) == "true",
+        assets = ["assets/extra_styles.css"],
+    ),
     sitename = "MIToS",
     authors = "Diego Javier Zea",
     modules = [MIToS],

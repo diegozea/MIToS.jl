@@ -13,7 +13,7 @@ MIToS.MSA
 ```@contents
 Pages = ["MSA_API.md"]
 Depth = 2
-```  
+```
 
 ## Types
 

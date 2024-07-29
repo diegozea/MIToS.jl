@@ -13,7 +13,7 @@ MIToS.Utils
 ```@contents
 Pages = ["Utils_API.md"]
 Depth = 2
-```  
+```
 
 ## Types
 

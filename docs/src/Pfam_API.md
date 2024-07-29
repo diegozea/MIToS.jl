@@ -13,7 +13,7 @@ MIToS.Pfam
 ```@contents
 Pages = ["Pfam_API.md"]
 Depth = 2
-```  
+```
 
 ## Types
 

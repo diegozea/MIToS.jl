@@ -13,7 +13,7 @@ MIToS.Information
 ```@contents
 Pages = ["Information_API.md"]
 Depth = 2
-```  
+```
 
 ## Types
 
