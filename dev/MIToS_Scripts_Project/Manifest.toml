@@ -34,9 +34,9 @@ version = "0.1.5"
 
 [[deps.BioStructures]]
 deps = ["BioGenerics", "BioSymbols", "CodecZlib", "Downloads", "Format", "LinearAlgebra", "PrecompileTools", "RecipesBase", "Statistics"]
-git-tree-sha1 = "5bc9736b06063d04bc664a0e2445cbc3412012d0"
+git-tree-sha1 = "4326bae6741b7f929b67ea8a1987782001c8b1dd"
 uuid = "de9282ab-8554-53be-b2d6-f6c222edabfc"
-version = "4.0.0"
+version = "4.1.0"
 
     [deps.BioStructures.extensions]
     BioStructuresBioAlignmentsExt = ["BioSequences", "BioAlignments"]
@@ -241,9 +241,9 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[deps.MIToS]]
 deps = ["AutoHashEquals", "BioStructures", "CodecZlib", "Dates", "Downloads", "FastaIO", "Format", "JSON3", "LightXML", "LinearAlgebra", "Logging", "Markdown", "NamedArrays", "OrderedCollections", "PairwiseListMatrices", "Pkg", "Random", "RecipesBase", "Serialization", "StaticArrays", "Statistics", "StatsBase", "TranscodingStreams"]
-git-tree-sha1 = "395b2d415ffcc7dcceeeadf744aab313d34c9084"
+git-tree-sha1 = "db6924782bc86567b8d01be0dbc44a2128a53912"
 uuid = "51bafb47-8a16-5ded-8b04-24ef4eede0b5"
-version = "3.0.4"
+version = "3.0.5"
 
     [deps.MIToS.extensions]
     MIToSClusteringExt = "Clustering"
