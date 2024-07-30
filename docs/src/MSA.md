@@ -80,11 +80,10 @@ those functions are:
 
 !!! note
     
-
-**If you want to keep the insert columns...**  Use the keyword argument `keepinserts`
-to `true` in `read_file`/`parse_file`. This only works with an `AnnotatedMultipleSequenceAlignment`
-output. A column annotation (`"Aligned"`) is stored in the annotations, where insert
-columns are marked with `0` and aligned columns with `1`.
+    **If you want to keep the insert columns...**  Use the keyword argument `keepinserts`
+    to `true` in `read_file`/`parse_file`. This only works with an `AnnotatedMultipleSequenceAlignment`
+    output. A column annotation (`"Aligned"`) is stored in the annotations, where insert
+    columns are marked with `0` and aligned columns with `1`.
 
 When `read_file` returns an `AnnotatedMultipleSequenceAlignment`, it uses the MSA `Annotations`
 to keep track of performed modifications. To access these notes, use `printmodifications`:
@@ -650,7 +649,7 @@ nothing # hide
 
 The `MSA` module allows to clusterize sequences in an MSA. The `hobohmI` function takes as
 input an MSA followed by an identity threshold value, and returns a `Clusters` type
-with the result of a Hobohm I sequence clustering [hobohm1992selection](@cite).
+with the result of a Hobohm I sequence clustering [10.1002/pro.5560010313](@cite).
 The Hobohm I algorithm will add a sequence to an existing cluster, if
 the percentage of identity is equal or greater than the threshold.
 The `Clusters` is sub-type of `ClusteringResult` from the [Clustering.jl![](./assets/external-link.png)](http://clusteringjl.readthedocs.org/en/latest/index.html)
@@ -882,13 +881,13 @@ columns. For such cases, MIToS provides the [`join_msas`](@ref MIToS.MSA.join_ms
 function. This function allows you to join two MSAs based on specified matching positions
 or names. It supports different types of joins: inner, outer, left, and right.
 You can indicate the positions or names to match using an iterable of pairs or separate
-lists of positions or names. For example, using a `OrderedDict` from the
-`OrderedCollections` package, you can identify which positions on the first MSA (the keys)
-should match with which positions on the second MSA (the values).
+lists of positions or names. For example, using a vector of `Pair` objects, you can
+identify which positions on the first MSA (the first element of the pair)
+should match with which positions on the second MSA (the second element of the pair).
 Let's see that in one fictional example:
 
 ```@repl msa_join
-using MIToS.MSA, OrderedCollections
+using MIToS.MSA
 msa_a = AnnotatedMultipleSequenceAlignment(Residue[
     'A' 'R' 'D'
     'G' 'K' 'E'
@@ -901,7 +900,7 @@ msa_b = AnnotatedMultipleSequenceAlignment(Residue[
     'E' 'A'
 ]);
 rename_sequences!(msa_b, ["AA_HUMAN", "BB_MOUSE", "CC_SHEEP"])
-pairing = OrderedDict("aa_HUMAN" => "AA_HUMAN", "bb_MOUSE" => "BB_MOUSE")
+pairing = ["aa_HUMAN" => "AA_HUMAN", "bb_MOUSE" => "BB_MOUSE"]
 join_msas(msa_a, msa_b, pairing)
 ```
 

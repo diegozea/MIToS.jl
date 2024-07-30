@@ -25,12 +25,11 @@ msa = read_file(pfam_file, Stockholm, generatemapping = true, useidcoordinates =
 
 !!! note "Generation of sequence and column mappings"
     
-
-The keyword argument `generatemapping` of `read_file` allows to generate sequence and column
-mappings for the MSA. *Column mapping* is the map between of each column on the MSA
-object and the column number in the file. *Sequence mappings* will use the start and
-end coordinates in the sequence ids for enumerate each residue in the sequence if
-`useidcoordinates` is `true`.
+    The keyword argument `generatemapping` of `read_file` allows to generate sequence and column
+    mappings for the MSA. *Column mapping* is the map between of each column on the MSA
+    object and the column number in the file. *Sequence mappings* will use the start and
+    end coordinates in the sequence ids for enumerate each residue in the sequence if
+    `useidcoordinates` is `true`.
 
 You can plot this MSA and other MIToS’ objects using the [Plots![](./assets/external-link.png)](https://juliaplots.github.io/) package. The installation of *Plots* is described in the *Installation* section of this site:
 

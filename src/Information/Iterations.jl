@@ -415,7 +415,7 @@ in  *Marino Buslje et al. 2010*:
   - [Marino Buslje, Cristina, et al. "Networks of high mutual information define the
     structural proximity of catalytic sites: implications for catalytic residue
     identification." PLoS computational biology 6.11 (2010):
-    e1000978.](@cite marino2010networks)
+    e1000978.](@cite 10.1371/journal.pcbi.1000978)
 """
 function cumulative(plm::PairwiseListMatrix{T,D,VT}, threshold::T) where {T,D,VT}
     N = size(plm, 1)

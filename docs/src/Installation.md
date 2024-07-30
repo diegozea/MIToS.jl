@@ -27,11 +27,10 @@ Pkg.update("MIToS")
 
 !!! tip "Ways to run Julia"
     
-
-  - **[Julia REPL ![](./assets/external-link.png)](https://docs.julialang.org/en/v1/stdlib/REPL/):** Built-in Julia command line. Start a Julia interactive session (REPL) by double-clicking the Julia executable or running `julia` from the system command line.
-  - **[IJulia ![](./assets/external-link.png)](https://github.com/JuliaLang/IJulia.jl):** *Jupyter/IPython notebook* for Julia.
-  - **[Pluto ![](./assets/external-link.png)](https://github.com/fonsp/Pluto.jl):** A simple reactive notebook for Julia.
-  - **[VS Code Extension for Julia ![](./assets/external-link.png)](https://www.julia-vscode.org/):** The Julia's Integrated Development Environment (IDE).
+      - **[Julia REPL ![](./assets/external-link.png)](https://docs.julialang.org/en/v1/stdlib/REPL/):** Built-in Julia command line. Start a Julia interactive session (REPL) by double-clicking the Julia executable or running `julia` from the system command line.
+      - **[IJulia ![](./assets/external-link.png)](https://github.com/JuliaLang/IJulia.jl):** *Jupyter/IPython notebook* for Julia.
+      - **[Pluto ![](./assets/external-link.png)](https://github.com/fonsp/Pluto.jl):** A simple reactive notebook for Julia.
+      - **[VS Code Extension for Julia ![](./assets/external-link.png)](https://www.julia-vscode.org/):** The Julia's Integrated Development Environment (IDE).
 
 !!! info "Running the test suite"
     

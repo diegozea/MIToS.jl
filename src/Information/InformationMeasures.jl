@@ -424,7 +424,7 @@ $_DOC_LOG_BASE The minimum value for `rank` is 2 (the default value). By defualt
 uses counts/frequencies to calculate the MI, as it's faster. You can use the keyword
 argument `probabilities = true` to calculate the MI from probabilities.
 
-```jldoctest
+```jldoctest  
 julia> using Random, MIToS.MSA, MIToS.Information
 
 julia> msa = rand(Random.MersenneTwister(37), Residue, 3, 4)
@@ -433,7 +433,7 @@ julia> msa = rand(Random.MersenneTwister(37), Residue, 3, 4)
  S  H  C  I
  G  G  R  V
 
-julia> mutual_information(msa)
+julia> mi = mutual_information(msa)
 4×4 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
 Col1 ╲ Col2 │       1        2        3        4
 ────────────┼───────────────────────────────────
@@ -442,7 +442,7 @@ Col1 ╲ Col2 │       1        2        3        4
 3           │ 1.09861  1.09861      NaN  1.09861
 4           │ 1.09861  1.09861  1.09861      NaN
 
-````
+```
 """
 function mutual_information(
     msa::AbstractArray{Residue};

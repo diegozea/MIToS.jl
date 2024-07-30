@@ -96,11 +96,10 @@ Nij[Residue('R'), Residue('R')] # Use Residue to index the table
 
 !!! warning
     
-
-The number makes reference to the specific index in the table e.g `[2,2]` references
-the second row and the second column. The use of the number used to encode the residue
-to index the table is dangerous. The equivalent index number of a residue depends on
-the used alphabet and `Int(Residue('X'))` will be always out of bounds.
+    The number makes reference to the specific index in the table e.g `[2,2]` references
+    the second row and the second column. The use of the number used to encode the residue
+    to index the table is dangerous. The equivalent index number of a residue depends on
+    the used alphabet and `Int(Residue('X'))` will be always out of bounds.
 
 Indexing with `Residue`s works as expected. It uses the alphabet of the contingency table
 to find the index of the `Residue`.
@@ -183,12 +182,12 @@ nothing # hide
 ## Low count corrections
 
 Low number of observations can lead to sparse contingency tables, that lead to wrong
-probability estimations. It is shown in [buslje2009correction](@citet)
+probability estimations. It is shown in [10.1093/bioinformatics/btp135](@citet)
 that low-count corrections, can lead to improvements in the contact prediction capabilities
 of the Mutual Information. The Information module has available two low-count corrections:
 
- 1. [Additive Smoothing![](./assets/external-link.png)](https://en.wikipedia.org/wiki/Additive_smoothing); the constant value pseudocount described in [buslje2009correction](@citet).
- 2. BLOSUM62 based pseudo frequencies of residues pairs, similar to [altschul1997gapped](@citet).
+ 1. [Additive Smoothing![](./assets/external-link.png)](https://en.wikipedia.org/wiki/Additive_smoothing); the constant value pseudocount described in [10.1093/bioinformatics/btp135](@citet).
+ 2. BLOSUM62 based pseudo frequencies of residues pairs, similar to [10.1093/nar/25.17.3389](@citet).
 
 ```@example inf_msa
 using MIToS.MSA
@@ -421,12 +420,12 @@ nothing # hide
 ## Corrected Mutual Information
 
 MIToS ships with two methods to easily calculate corrected mutual information.
-The first is the algorithm described in [buslje2009correction](@citet).
+The first is the algorithm described in [10.1093/bioinformatics/btp135](@citet).
 This algorithm can be accessed through the `buslje09` function and includes:
 
  1. Low count correction using `AdditiveSmoothing`
- 2. Sequence weighting after a `hobohmI` clustering [hobohm1992selection](@cite)
- 3. Average Product Correction (APC) proposed by [dunn2008mutual](@citet),
+ 2. Sequence weighting after a `hobohmI` clustering [10.1002/pro.5560010313](@cite)
+ 3. Average Product Correction (APC) proposed by [10.1093/bioinformatics/btm604](@citet),
     through the `APC!` function that takes a MI matrix.
  4. Z score correction using the functions `shuffle_msa!` from the MSA module and `zscore`
     from the `PairwiseListMatrices` package.

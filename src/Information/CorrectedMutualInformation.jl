@@ -1,4 +1,4 @@
-# Busjle et. al. 2009
+# Busjle et al. 2009
 # ===================
 
 const _MI_MAT_TYPE = NamedArray{
@@ -26,7 +26,7 @@ end
 
 """
 `buslje09` takes a MSA and calculates a Z score and a corrected MI/MIp as described
-on **Busjle et. al. 2009**.
+on *Busjle et al. 2009*.
 
 keyword argument, type, default value and descriptions:
 
@@ -111,7 +111,7 @@ end
 
 """
 `BLMI` takes an MSA and calculates a Z score (ZBLMI) and a corrected MI/MIp as described
-on **Busjle et. al. 2009** but using using BLOSUM62 pseudo frequencies instead of a
+on **Busjle et al. 2009** but using using BLOSUM62 pseudo frequencies instead of a
 fixed pseudocount.
 
 Keyword argument, type, default value and descriptions:
@@ -132,6 +132,13 @@ This function returns:
   - Z score (ZBLMI)
   - MI or MIp using BLOSUM62 pseudo frequencies (BLMI/BLMIp)
 ```
+
+# References
+
+  - [Buslje, Cristina Marino, et al. "Correction for phylogeny, small number of
+    observations and data redundancy improves the identification of coevolving
+    amino acid pairs using mutual information."
+    Bioinformatics 25.9 (2009): 1125-1131.](@cite 10.1093/bioinformatics/btp135)
 """
 function BLMI(
     aln::AbstractMatrix{Residue};

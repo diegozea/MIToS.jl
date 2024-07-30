@@ -19,9 +19,9 @@ struct NoPseudocount <: Pseudocount{Float64} end
 Common values of `λ` are:
 
   - `0` : No cell frequency prior, gives you the maximum likelihood estimator.
-  - `0.05` is the optimum value for `λ` found in *Buslje et. al. 2009*, similar results was obtained for `λ` in the range [0.025, 0.075].
-  - `1 / p` : Perks prior (Perks, 1947) where `p` the number of parameters (i.e. residues, pairs of residues) to estimate. If `p` is the number of residues (`20` without counting gaps), this gives you `0.05`.
-  - `sqrt(n) / p` : Minimax prior (Trybula, 1958) where `n` is the number of samples and `p` the number of parameters to estimate. If the number of samples `n` is 400 (minimum number of sequence clusters for achieve good performance in *Buslje et. al. 2009*) for estimating 400 parameters (pairs of residues without counting gaps) this gives you `0.05`.
+  - `0.05` is the optimum value for `λ` found in *Buslje et al. 2009*, similar results was obtained for `λ` in the range [0.025, 0.075].
+  - `1 / p` : Perks prior (*Perks, 1947*) where `p` the number of parameters (i.e. residues, pairs of residues) to estimate. If `p` is the number of residues (`20` without counting gaps), this gives you `0.05`.
+  - `sqrt(n) / p` : Minimax prior (*Trybula, 1958*) where `n` is the number of samples and `p` the number of parameters to estimate. If the number of samples `n` is 400 (minimum number of sequence clusters for achieve good performance in *Buslje et al. 2009*) for estimating 400 parameters (pairs of residues without counting gaps) this gives you `0.05`.
   - `0.5` : Jeffreys prior (Jeffreys, 1946).
   - `1` : Bayes-Laplace uniform prior, aka. Laplace smoothing.
 
@@ -30,7 +30,15 @@ Common values of `λ` are:
   - [Buslje, Cristina Marino, et al. "Correction for phylogeny, small number of
     observations and data redundancy improves the identification of coevolving
     amino acid pairs using mutual information."
-    Bioinformatics 25.9 (2009): 1125-1131.](@cite buslje2009correction)
+    Bioinformatics 25.9 (2009): 1125-1131.](@cite 10.1093/bioinformatics/btp135)
+  - [Perks, Wilfred. "Some observations on inverse probability including a new
+    indifference rule." Journal of the Institute of Actuaries
+    73.2 (1947): 285-334.](@cite 10.1017/S0020268100012270)
+  - [Trybula, Stanislaw. "Some problems of simultaneous minimax estimation." The Annals
+    of Mathematical Statistics 29.1 (1958): 245-253.](@cite 10.1214/aoms/1177706722)
+  - [Jeffreys, Harold. "An invariant form for the prior probability in estimation 
+    problems." Proceedings of the Royal Society of London. Series A. Mathematical and 
+    Physical Sciences 186.1007 (1946): 453-461.](@cite 10.1098/rspa.1946.0056)
 """
 struct AdditiveSmoothing{T} <: Pseudocount{T}
     λ::T

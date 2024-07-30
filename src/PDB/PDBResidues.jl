@@ -887,14 +887,14 @@ score (from a `scores` list) of all the residues within a certain physical dista
 given amino acid. The score of that residue is not included in the mean unless you set
 `include` to `true`. The default values are 6.05 for the distance threshold/`limit` and
 `"Heavy"` for the `criteria` keyword argument. This function allows to calculate pMI
-(proximity mutual information) and pC (proximity conservation) as in *Buslje et. al. 2010*.
+(proximity mutual information) and pC (proximity conservation) as in *Buslje et al.*.
 
 # References
 
   - [Marino Buslje, Cristina, et al. "Networks of high mutual information define the
     structural proximity of catalytic sites: implications for catalytic residue
     identification." PLoS computational biology 6.11 (2010):
-    e1000978.](@cite marino2010networks)
+    e1000978.](@cite 10.1371/journal.pcbi.1000978)
 """
 function proximitymean(
     residues::Vector{PDBResidue},

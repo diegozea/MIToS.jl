@@ -1,14 +1,16 @@
 """
-Covalent radius in Å of each element from the Additional file 1 of PICCOLO [1].
-Hydrogen was updated using the value on Table 2 from Cordero et. al. [2].
+Covalent radius in Å of each element from the Additional file 1 of PICCOLO
+(*Bickerton et al.*). Hydrogen was updated using the value on Table 2 from
+(*Cordero et al.*).
 
- 1. Bickerton, G. R., Higueruelo, A. P., & Blundell, T. L. (2011).
-    Comprehensive, atomic-level characterization of structurally
-    characterized protein-protein interactions: the PICCOLO database.
-    BMC bioinformatics, 12(1), 313.
- 2. Cordero, B., Gómez, V., Platero-Prats, A. E., Revés, M.,
-    Echeverría, J., Cremades, E., ... & Alvarez, S. (2008).
-    Covalent radii revisited. Dalton Transactions, (21), 2832-2838.
+# References
+
+    - [Bickerton, George R., Alicia P. Higueruelo, and Tom L. Blundell. "Comprehensive, 
+      atomic-level characterization of structurally characterized protein-protein 
+      interactions: the PICCOLO database." BMC bioinformatics 
+      12 (2011): 1-15.](@cite 10.1186/1471-2105-12-313)
+    - [Cordero, Beatriz, et al. "Covalent radii revisited." Dalton Transactions 
+      21 (2008): 2832-2838.](@cite 10.1039/B801115J)
 """
 const covalentradius =
     Dict{String,Float64}("C" => 0.77, "N" => 0.70, "O" => 0.66, "S" => 1.04, "H" => 0.31)
@@ -37,11 +39,14 @@ const _3_letter_aa = String[
 ]
 
 """
-van der Waals radius in Å from the Additional file 1 of Bickerton et. al. 2011
+van der Waals radius in Å from the Additional file 1 of *Bickerton et al.*
 
-  - Bickerton, G. R., Higueruelo, A. P., & Blundell, T. L. (2011).
-    Comprehensive, atomic-level characterization of structurally characterized protein-protein interactions: the PICCOLO database.
-    BMC bioinformatics, 12(1), 313.
+# References
+
+    - [Bickerton, George R., Alicia P. Higueruelo, and Tom L. Blundell. "Comprehensive, 
+      atomic-level characterization of structurally characterized protein-protein 
+      interactions: the PICCOLO database." BMC bioinformatics 
+      12 (2011): 1-15.](@cite 10.1186/1471-2105-12-313)
 """
 const vanderwaalsradius = Dict{Tuple{String,String},Float64}(
     ("ALA", "C") => 1.61,
@@ -344,9 +349,16 @@ const _anionic = Set{Tuple{String,String}}([
 _add_CTER_O!(_anionic)
 
 """
-Keys come from Table 1 of Bickerton et. al. 2011,
+Keys come from Table 1 of *Bickerton et al.*,
 The hydrogen names of the donor comes from: http://biomachina.org/courses/modeling/download/topallh22x.pro
 Synonyms come from: http://www.bmrb.wisc.edu/ref_info/atom_nom.tbl
+
+# References
+
+    - [Bickerton, George R., Alicia P. Higueruelo, and Tom L. Blundell. "Comprehensive, 
+      atomic-level characterization of structurally characterized protein-protein 
+      interactions: the PICCOLO database." BMC bioinformatics 
+      12 (2011): 1-15.](@cite 10.1186/1471-2105-12-313)
 """
 const _hbond_donor = Dict{Tuple{String,String},Vector{String}}(
     ("ALA", "N") => [
@@ -671,9 +683,16 @@ const _hbond_donor = Dict{Tuple{String,String},Vector{String}}(
 # Proline N-Terminal (RESIDUE PROP)
 
 """
-Keys come from Table 1 of Bickerton et. al. 2011,
+Keys come from Table 1 of *Bickerton et al.*
 Antecedents come from come from: http://biomachina.org/courses/modeling/download/topallh22x.pro
 Synonyms come from: http://www.bmrb.wisc.edu/ref_info/atom_nom.tbl
+
+# References
+
+    - [Bickerton, George R., Alicia P. Higueruelo, and Tom L. Blundell. "Comprehensive, 
+      atomic-level characterization of structurally characterized protein-protein 
+      interactions: the PICCOLO database." BMC bioinformatics 
+      12 (2011): 1-15.](@cite 10.1186/1471-2105-12-313)
 """
 const _hbond_acceptor = Dict{Tuple{String,String},Vector{String}}(
     ("ALA", "O") => ["C"],

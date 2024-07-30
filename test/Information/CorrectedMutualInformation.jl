@@ -7,7 +7,7 @@
         joinpath(DATA, filename)
     end
 
-    ## Column numbers for the output of Buslje et. al. 2009
+    ## Column numbers for the output of Buslje et al. 2009
     SCORE = 9
     ZSCORE = 12
 
@@ -282,7 +282,7 @@
         end
     end
 
-    @testset "Results from Buslje et. al. 2009" begin
+    @testset "Results from Buslje et al. 2009" begin
 
         @testset "Simple" begin
             data = readdlm(

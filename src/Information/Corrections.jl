@@ -1,5 +1,5 @@
 """
-Mean mutual information of column a (Dunn et. al. 2008).
+Mean mutual information of column a (Dunn et al. 2008).
 Summation is over j=1 to N, j ≠ a. Total is N-1.
 """
 function _mean_column(mi::Matrix{T}) where {T}
@@ -7,10 +7,10 @@ function _mean_column(mi::Matrix{T}) where {T}
 end
 
 """
-Mean mutual information of column a (Dunn et. al. 2008).
+Mean mutual information of column a (Dunn et al. 2008).
 Summation is over j=1 to N, j ≠ a. Total is N-1.
 
-Overall mean mutual information (Dunn et. al. 2008).
+Overall mean mutual information (Dunn et al. 2008).
 2/(N*(N-1)) by the sum of MI where the indices run i=1 to N-1, j=i+1 to N (triu).
 """
 function _mean_total(mi::Matrix{T}) where {T}
@@ -25,7 +25,7 @@ APC
 
   - [Dunn, Stanley D., Lindi M. Wahl, and Gregory B. Gloor. "Mutual information without
     the influence of phylogeny or entropy dramatically improves residue contact prediction."
-    Bioinformatics 24.3 (2008): 333-340.](@cite dunn2008mutual)
+    Bioinformatics 24.3 (2008): 333-340.](@cite 10.1093/bioinformatics/btm604)
 """
 function APC!(MI::Matrix{T}) where {T}
     nrow, ncol = size(MI)
