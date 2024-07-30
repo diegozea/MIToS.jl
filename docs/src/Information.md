@@ -8,26 +8,31 @@ CurrentModule = MIToS.Information
 
 # [Information](@id Module-Information)
 
-The `Information` module of MIToS defines types and functions useful to calculate
-information measures (e.g. *Mutual Information* (MI) and *Entropy*) over a Multiple
-Sequence Alignment (MSA). This module was designed to count `Residue`s
-(defined in the `MSA` module) in special contingency tables (as fast as possible) and to
-derive probabilities from these counts. Also, includes methods for applying corrections
-to those tables, e.g. pseudocounts and pseudo frequencies. Finally, `Information` allows
-to use these probabilities and counts to estimate information measures and other
-frequency based values.
+Extracting evolutionary signals, such as conservation and coevolution, from 
+Multiple Sequence Alignments (MSAs) is a common task in bioinformatics. There are
+several methods to estimate these signals, including information measures like
+*Shannon Entropy*—to assess the conservation of a position—and *Mutual Information*—to
+assess the coevolution between two positions. The `Information` module of MIToS defines 
+types and functions useful for calculating those information measures over an MSA. 
+This module was designed to count `Residue`s (defined in the `MSA` module) in special 
+contingency tables (as fast as possible) and to derive probabilities from these counts. 
+It also includes methods for applying corrections to those tables, e.g., pseudo counts and 
+pseudo frequencies. Finally, `Information` allows using probabilities and counts 
+to estimate information measures and other frequency-based values.
 
 ```julia
 using MIToS.Information # to load the Information module
 ```
 
-## Features
+## Features 
 
-  - Estimate multi dimensional frequencies and probability tables from sequences, MSAs, etc...
-  - Correction for small number of observations
-  - Correction for data redundancy on a MSA
-  - Estimate information measures
+  - Estimate multi-dimensional frequencies (counts) and probability tables from sequences, 
+    MSA columns, etc...
+  - Corrections for a small number of observations
+  - Corrections for data redundancy on an MSA
+  - Estimate information measures such as Shannon entropy, mutual information, etc...
   - Calculate corrected mutual information between residues
+
 
 ## Contents
 
@@ -489,7 +494,7 @@ nothing # hide
 
 ZMIp is a Z score of the corrected MIp against its distribution on a random MSA
 (shuffling the residues in each sequence), so pairs with highest values are more likely
-to co-evolve. Here, we are going to use the top 1% pairs of MSA columns.
+to coevolve. Here, we are going to use the top 1% pairs of MSA columns.
 
 ```@example inf_buslje09
 using PairwiseListMatrices # to use getlist

@@ -91,6 +91,7 @@ julia> shannon_entropy(msa)
 ────────────────┼─────────────────
 shannon_entropy │     0.0  1.09861
 
+```
 """
 function shannon_entropy(
     msa::AbstractArray{Residue};
