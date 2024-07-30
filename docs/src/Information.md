@@ -8,31 +8,30 @@ CurrentModule = MIToS.Information
 
 # [Information](@id Module-Information)
 
-Extracting evolutionary signals, such as conservation and coevolution, from 
+Extracting evolutionary signals, such as conservation and coevolution, from
 Multiple Sequence Alignments (MSAs) is a common task in bioinformatics. There are
 several methods to estimate these signals, including information measures like
 *Shannon Entropy*—to assess the conservation of a position—and *Mutual Information*—to
-assess the coevolution between two positions. The `Information` module of MIToS defines 
-types and functions useful for calculating those information measures over an MSA. 
-This module was designed to count `Residue`s (defined in the `MSA` module) in special 
-contingency tables (as fast as possible) and to derive probabilities from these counts. 
-It also includes methods for applying corrections to those tables, e.g., pseudo counts and 
-pseudo frequencies. Finally, `Information` allows using probabilities and counts 
+assess the coevolution between two positions. The `Information` module of MIToS defines
+types and functions useful for calculating those information measures over an MSA.
+This module was designed to count `Residue`s (defined in the `MSA` module) in special
+contingency tables (as fast as possible) and to derive probabilities from these counts.
+It also includes methods for applying corrections to those tables, e.g., pseudo counts and
+pseudo frequencies. Finally, `Information` allows using probabilities and counts
 to estimate information measures and other frequency-based values.
 
 ```julia
 using MIToS.Information # to load the Information module
 ```
 
-## Features 
+## Features
 
-  - Estimate multi-dimensional frequencies (counts) and probability tables from sequences, 
+  - Estimate multi-dimensional frequencies (counts) and probability tables from sequences,
     MSA columns, etc...
   - Corrections for a small number of observations
   - Corrections for data redundancy on an MSA
   - Estimate information measures such as Shannon entropy, mutual information, etc...
   - Calculate corrected mutual information between residues
-
 
 ## Contents
 
@@ -43,34 +42,12 @@ Depth = 4
 
 ## Counting residues
 
-MIToS Information module defines a multidimensional `ContingencyTable` type and two types
-wrapping it, `Frequencies` and `Probabilities`, to store occurrences or probabilities.
-The `ContingencyTable` type stores the contingency matrix, its marginal values and total.
-These types are parametric, taking three ordered parameters:
-
-  - `T` : The type used for storing the counts or probabilities, e.g. `Float64`. It's possible to use `BigFloat` if more precision it's needed.
-  - `N` : It's the dimension of the table and should be an `Int`.
-  - `A` : This should be a type, subtype of `ResidueAlphabet`, i.e.: `UngappedAlphabet`, `GappedAlphabet` or `ReducedAlphabet`.
-
-!!! note
-    
-    `ContingencyTable` can be used for storing probabilities or counts. The wrapper types
-    `Probabilities` and `Frequencies` are mainly intended to dispatch in methods that need to
-    know if the matrix has probabilities or counts, e.g. `shannon_entropy`. In general,
-    the use of `ContingencyTable` is recommended over the use of `Probabilities` and `Frequencies`.
-
-In this way, a matrix for storing pairwise probabilities of residues (without gaps) can be
-initialized using:
-
-```@example inf_zeros
-using MIToS.Information
-
-Pij = ContingencyTable(Float64, Val{2}, UngappedAlphabet())
-```
-
-**[High level interface]** It is possible to use the functions `frequencies` and `probabilities`
-to easily calculate the frequencies of sequences or columns of a MSA, where the number of
-sequences/columns determine the dimension of the resulting table.
+You can use the `frequencies` and `probabilities` functions to easily calculate the
+amino acid frequencies or probabilities of a sequence or a column of an MSA. The number of
+sequences/columns determines the dimension of the resulting table. Let's see an example
+using the `frequencies` function to calculate the frequencies of each pair of residues in
+two columns of an MSA. The resulting `Frequencies` object contains the bidimensional 
+contingency table, the marginal values, and the total.
 
 ```@example inf_count
 using MIToS.Information
@@ -78,7 +55,7 @@ using MIToS.MSA # to use res"..." to create Vector{Residue}
 
 column_i = res"AARANHDDRDC-"
 column_j = res"-ARRNHADRAVY"
-#   Nij[R,R] =   1     1   = 2
+#   Nij[R,R] =   1     1   = 2
 
 Nij = frequencies(column_i, column_j)
 ```
@@ -86,28 +63,40 @@ Nij = frequencies(column_i, column_j)
 You can use `sum` to get the stored total:
 
 ```@example inf_count
-sum(Nij) # There are 12 Residues, but 2 are gaps
+sum(Nij)
 ```
 
-Contingency tables can be indexed using `Int` or `Residue`s:
+Here, the total is `10.0`, because there are `12` residues on each column, but `2` are gaps. Since the default alphabet used by `frequency` is `UngappedAlphabet()`, the gaps are 
+not counted.
+
+Contingency tables can be indexed using `Int` (the coordinates in the table)
+or `Residue`s. For example, to get the number of times an arginine (*R*) is
+found in the same sequence in both columns, you can use:
 
 ```@example inf_count
-Nij[2, 2] # Use Int to index the table
+Nij[Residue('R'), Residue('R')]
 ```
+
+Or, since the arginine is in the second row and the second column of the table—this is 
+because the arginine is the second residue in the `UngappedAlphabet()`—you can use:
 
 ```@example inf_count
-Nij[Residue('R'), Residue('R')] # Use Residue to index the table
+Nij[2, 2]
 ```
 
-!!! warning
+!!! warning "Indexing with `Int`"
     
-    The number makes reference to the specific index in the table e.g `[2,2]` references
-    the second row and the second column. The use of the number used to encode the residue
-    to index the table is dangerous. The equivalent index number of a residue depends on
-    the used alphabet and `Int(Residue('X'))` will be always out of bounds.
+    The index refers to the specific position in the table, e.g., `[2,2]` references the 
+    second row and the second column. For `GappedAlphabet()` and `UngappedAlphabet()`, 
+    the index is the same as the position of the residue in the alphabet. 
+    However, for `ReducedAlphabet()`, the index will be the number of the group to which 
+    the residue belongs. For example, if the alphabet is 
+    `ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP")`, the index of the arginine (*R*) 
+    will be `3` rather than `2`. Therefore, **it is recommended** that you use a `Residue` 
+    object to index the table to avoid subtle bugs if the alphabet changes.
 
-Indexing with `Residue`s works as expected. It uses the alphabet of the contingency table
-to find the index of the `Residue`.
+You can change the alphabet used to count residues by setting the `alphabet` keyword
+of the `frequencies` function. Let's see an example with an reduced alphabet:
 
 ```@example inf_reduced
 using MIToS.Information
@@ -123,23 +112,15 @@ Fij = frequencies(column_i, column_j, alphabet = alphabet)
 ```
 
 ```@example inf_reduced
-Fij[Residue('R'), Residue('R')] # Use Residue to index the table
+Fij[Residue('R'), Residue('R')]
 ```
 
-The function `getcontingencytable` allows to access the wrapped `ContingencyTable` in a
-`Frequencies` object. You can use it, in combination with `normalize` to get a contingency table
-of probabilities. The result can be wrapped inside a `Probabilities` object:
+### Example: Plotting the probabilities of each residue in a sequence
 
-```@example inf_reduced
-Probabilities(normalize(getcontingencytable(Fij)))
-```
-
-#### Example: Plotting the probabilities of each residue in a sequence
-
-Similar to the `frequencies` function, the `probabilities` function can take at least one
-sequence (vector of residues) and returns the probabilities of each residue. Optionally,
-the keyword argument `alphabet` could be used to count some residues in the same cell
-of the table.
+Like the `frequencies` function, the `probabilities` function can take at least one
+sequence or column (a vector of `Residue` objects) and return the probabilities of each 
+residue. Optionally, as before, the keyword argument `alphabet` could be used to count 
+some residues in the same table cell.
 
 ```@example inf_reduced
 probabilities(res"AARANHDDRDC", alphabet = alphabet)
@@ -148,27 +129,22 @@ probabilities(res"AARANHDDRDC", alphabet = alphabet)
 Here, we are going to use the `probabilities` function to get the residue probabilities of a
 particular sequence from *UniProt*.
 
-use the `getsequence` function, from the `MSA` module, to get the sequence from a `FASTA` downloaded from UniProt.
-
-```@repl
-using MIToS.Information # to use the probabilities function
-using MIToS.MSA # to use getsequence on the one sequence FASTA (canonical) from UniProt
-seq = read_file("http://www.uniprot.org/uniprot/P29374.fasta", FASTA) # Small hack: read the single sequence as a MSA
-probabilities(seq[1, :]) # Select the single sequence and calculate the probabilities
-```
-
 ```@setup inf_plotfreq
 @info "Information: Plots"
 using Plots
 gr(size=(600,300))
-using MIToS.Information # to use the probabilities function
-using MIToS.MSA # to use getsequence on the one sequence FASTA (canonical) from UniProt
-seq = read_file("http://www.uniprot.org/uniprot/P29374.fasta", FASTA) # Small hack: read the single sequence as a MSA
-Pa = probabilities(seq[1,:]) # Select the single sequence and calculate the probabilities
+```
+
+```@repl inf_plotfreq
+using MIToS.Information
+using MIToS.MSA
+file_name = "http://www.uniprot.org/uniprot/P29374.fasta"
+sequences = read_file(file_name, FASTASequences)
+Pa = probabilities(sequences[1])
 ```
 
 ```@example inf_plotfreq
-using Plots # We choose Plots because it's intuitive, concise and backend independent
+using Plots # We choose Plots because it's intuitive and concise
 gr(size = (600, 300))
 ```
 
@@ -184,63 +160,126 @@ nothing # hide
 
 ![](inf_plotfreq.png)
 
+### Low-level interface
+
+You can work directly with the `ContingencyTable` type if you want performance.
+The MIToS Information module also defines two types wrapping this multi-dimensional array;
+`Frequencies` and `Probabilities`, to store occurrences or probabilities, respectively.
+The `ContingencyTable` type stores the contingency matrix, its marginal values, and its total.
+These three types are parametric, taking three ordered parameters:
+
+  - `T`: The type used for storing the counts or probabilities, e.g., `Float64`. If more  precision is needed, `BigFloat` is possible.
+  - `N`: It's the dimension of the table and should be an `Int`.
+  - `A`: This should be a type, subtype of `ResidueAlphabet`, i.e.: `UngappedAlphabet`, `GappedAlphabet`, or `ReducedAlphabet`.
+
+!!! note
+
+    `ContingencyTable` can be used to store probabilities or counts. The wrapper types
+    `Probabilities` and `Frequencies` are mainly intended to dispatch in methods that need
+    to know if the matrix has probabilities or counts. For example, the implementation of `shannon_entropy` is faster when the table is a `Frequencies` object.
+
+In this way, a matrix for storing pairwise probabilities of residues (without gaps) can be
+initialized using:
+
+```@example inf_zeros
+using MIToS.Information
+
+Pij = ContingencyTable(Float64, Val{2}, UngappedAlphabet())
+```
+
+Note that the dimension of the table is indicated using `Val{2}` rather than `2`, so that Julia knows that the table is two-dimensional at compile time.
+
+You can also obtain the `ContingencyTable` wrapped in a `Frequencies` object using 
+the `getcontingencytable` function. For example, you can take a table of counts and 
+normalize it using the `normalize` function to get a table of probabilities that you can 
+later wrap in a `Probabilities` object:
+
+```@example inf_convert
+using MIToS.MSA
+using MIToS.Information
+column_i = res"AARANHDDRDC-"
+column_j = res"-ARRNHADRAVY"
+Fij = frequencies(column_i, column_j)
+Pij = Probabilities(normalize(getcontingencytable(Fij)))
+```
+
 ## Low count corrections
 
-Low number of observations can lead to sparse contingency tables, that lead to wrong
+A low number of observations can lead to sparse contingency tables that lead to wrong
 probability estimations. It is shown in [10.1093/bioinformatics/btp135](@citet)
 that low-count corrections, can lead to improvements in the contact prediction capabilities
-of the Mutual Information. The Information module has available two low-count corrections:
+of the mutual information. The Information module has available two low-count corrections:
 
- 1. [Additive Smoothing![](./assets/external-link.png)](https://en.wikipedia.org/wiki/Additive_smoothing); the constant value pseudocount described in [10.1093/bioinformatics/btp135](@citet).
- 2. BLOSUM62 based pseudo frequencies of residues pairs, similar to [10.1093/nar/25.17.3389](@citet).
+  1. [`AdditiveSmoothing`](@ref): [Additive smoothing![]
+     (./assets/external-link.png)](https://en.wikipedia.org/wiki/Additive_smoothing) 
+     corrects the frequencies by adding a constant value to each cell of the table.
+     It can be used to represent the constant value pseudocount described in [10.1093/bioinformatics/btp135](@citet). For example: `AdditiveSmoothing(1.0)` can be used to 
+     add `1.0` to each cell of the table.
+  2. [`BLOSUM_Pseudofrequencies`](@ref): BLOSUM62-based pseudo frequencies for residues pairs, 
+     similar to [10.1093/nar/25.17.3389](@citet) and described in 
+     [10.1093/bioinformatics/btw646](@cite)
+
+The `frequencies` and `probabilities` functions have a `pseudocounts` keyword argument that
+can take an `AdditiveSmoothing` value to calculate occurrences and probabilities with 
+pseudo counts.
+
+```@example inf_pseudocounts
+using MIToS.MSA
+using MIToS.Information
+seq = res"AAAVRNHDDRDCPPPGGPPG"
+frequencies(seq, pseudocounts = AdditiveSmoothing(1.0))
+```
+
+The `probabilities` function can also take a `pseudofrequencies` keyword argument that can
+take a `BLOSUM_Pseudofrequencies` object to calculate probabilities with pseudo 
+frequencies. Note that these pseudofrequencies can only be used on bidimensional tables, 
+i.e. passing only two sequences or columns to the `probabilities` function, and using `UngappedAlphabet()` (the default alphabet).
+
+```@example inf_pseudofrequencies
+using MIToS.MSA
+using MIToS.Information
+column_i = res"ARANHDDRDC"
+column_j = res"-RRNHADRAV"
+probabilities(column_i, column_j, pseudofrequencies = BLOSUM_Pseudofrequencies(10, 8.512))
+```
+
+### Low-level interface
+
+If you have a preallocated `ContingencyTable`, for performance
+reasons, you can use `frequencies!` or the `probabilities!` functions to fill it. That 
+prevents the creation of a new table as `frequencies` and `probabilities` do. However, you
+should note that `frequencies!` and `probabilities!` **add the new counts to the pre-existing values**. Therefore, you can use the `cleanup!` function to set the table to zero 
+before filling it. 
+
+Let's see an example, in this case we start with a table of zeros, `Nij`, and fill it 
+with the counts of the residues in the columns `column_i` and `column_j` using the
+`frequencies!` function. Since we start with a new table, we don't need to use `cleanup!`.
 
 ```@example inf_msa
 using MIToS.MSA
+using MIToS.Information
 
-msa = read_file(
-    "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz",
-    Stockholm,
-)
+file_name = "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz"
 
-filtercolumns!(msa, columngapfraction(msa) .< 0.5) # delete columns with 50% gaps or more
+msa = read_file(file_name, Stockholm)
 
 column_i = msa[:, 1]
 column_j = msa[:, 2]
-```
 
-If you have a preallocated `ContingencyTable` you can use `frequencies!` to fill it, this prevent
-to create a new table as `frequencies` do. However, you should note that `frequencies!` **adds the new
-counts to the pre existing values**, so in this case, we want to start with a table
-initialized with zeros.
+const ALPHABET = ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP")
 
-```@example inf_msa
-using MIToS.Information
+Nij = ContingencyTable(Float64, Val{2}, ALPHABET)
 
-const alphabet = ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP")
-
-Nij = ContingencyTable(Float64, Val{2}, alphabet)
-```
-
-```@example inf_msa
 frequencies!(Nij, column_i, column_j)
 ```
 
-In cases like the above, where there are few observations, it is possible to apply a
-constant pseudocount to the counting table.  This module defines the type
-`AdditiveSmoothing` and the correspond `fill!` and  `apply_pseudocount!` methods to
-efficiently add or fill with a constant value each element of the table.
+In cases like the above, where there are few observations, applying a constant pseudocount 
+to the contingency table could be beneficial. This module defines the type
+`AdditiveSmoothing` and the corresponding `fill!` and  `apply_pseudocount!` methods to
+efficiently fill or add a constant value to each element of the table.
 
 ```@example inf_msa
 apply_pseudocount!(Nij, AdditiveSmoothing(1.0))
-```
-
-**[High level interface.]** The `frequencies` and `frequencies!` function has a
-`pseudocounts` keyword argument that can take a `AdditiveSmoothing` value to easily
-calculate occurrences with pseudocounts. Also their `alphabet` keyword argument can be
-used to chage the default alphabet.
-
-```@example inf_msa
-frequencies(column_i, column_j, pseudocounts = AdditiveSmoothing(1.0), alphabet = alphabet)
 ```
 
 To use the conditional probability matrix `BLOSUM62_Pij` in the calculation of pseudo
