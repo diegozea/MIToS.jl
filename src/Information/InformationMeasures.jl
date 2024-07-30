@@ -436,7 +436,7 @@ julia> msa = rand(Random.MersenneTwister(37), Residue, 3, 4)
 julia> mi = mutual_information(msa);
 
 julia> mi[1, 2]
-1.09861
+1.0986122886681098
 
 ```
 """
