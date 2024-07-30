@@ -275,56 +275,55 @@ frequencies!(Nij, column_i, column_j)
 
 In cases like the above, where there are few observations, applying a constant pseudocount 
 to the contingency table could be beneficial. This module defines the type
-`AdditiveSmoothing` and the corresponding `fill!` and  `apply_pseudocount!` methods to
-efficiently fill or add a constant value to each element of the table.
+`AdditiveSmoothing` and the corresponding `fill!` and  [`apply_pseudocount!`](@ref) methods 
+to efficiently fill or add a constant value to each element of the table.
 
 ```@example inf_msa
 apply_pseudocount!(Nij, AdditiveSmoothing(1.0))
 ```
 
-To use the conditional probability matrix `BLOSUM62_Pij` in the calculation of pseudo
-frequencies $G$ for the pair of residues $a$, $b$, it should be calculated first the real
-frequencies/probabilities $p_{a,b}$. The observed probabilities are then used to estimate
-the pseudo frequencies.
+
+If we work with a normalized contingency table or a `Probabilities` object and use the 
+`UnappedAlphabet()`, we can apply the BLOSUM62-based pseudo frequencies to the table. 
+For that, we can use the `BLOSUM_Pseudofrequencies` type and the `apply_pseudofrequencies!` 
+function. That function first needs to calculate the actual probabilities $p_{a,b}$ for 
+each pair of residues $a$, $b$. Then, it uses the conditional probability matrix 
+`BLOSUM62_Pij` and the observed probabilities to calculate pseudo frequencies $G$.
 
 $$G_{ab} = \sum_{cd}  p_{cd} \cdot BLOSUM62( a | c ) \cdot BLOSUM62( b | d )$$
 
-Finally, the probability $P$ of each pair of residues $a$, $b$ between the columns
-$i$, $j$ is the weighted mean between the observed frequency $p$ and BLOSUM62-based
-pseudo frequency $G$, where α is generally the number of clusters or the number of
-sequences of the MSA and β is an empiric weight value. β was determined to be close
-to `8.512`.
+The `apply_pseudofrequencies!` function calculates the probability $P$ of each pair of 
+residues $a$, $b$ between the columns $i$, $j$ as the weighted mean between the observed 
+frequency $p$ and BLOSUM62-based pseudo frequency $G$. The former has α as weight, and the 
+latter has the parameter β. We use the number of sequences or sequence clusters as α, and 
+β is an empiric weight value that we determined to be close to `8.512`.
 
 $$P_{ab} = \frac{\alpha \cdot p_{ab} + \beta \cdot G_{ab} }{\alpha + \beta}$$
 
-This could be easily achieved using the `pseudofrequencies` keyword argument of the
-`probabilities` function. That argument can take a `BLOSUM_Pseudofrequencies` object that
-is created with α and β as first and second argument, respectively.
+The `BLOSUM_Pseudofrequencies` type is defined with two parameters, α and β, that are 
+set using the positional arguments of the constructor.
 
-```@example inf_msa
-Pij = probabilities(
-    column_i,
-    column_j,
-    pseudofrequencies = BLOSUM_Pseudofrequencies(nsequences(msa), 8.512),
-)
+```@example inf_pseudofrequencies
+using MIToS.MSA
+using MIToS.Information
+column_i = res"ARANHDDRDC"
+column_j = res"-RRNHADRAV"
+Pij = ContingencyTable(Float64, Val{2}, UngappedAlphabet())
+probabilities!(Pij, column_i, column_j)
+α = 10
+β = 8.512
+apply_pseudofrequencies!(Pij, BLOSUM_Pseudofrequencies(α, β))
 ```
-
-You can also use `apply_pseudofrequencies!` in a previously filled probability contingency
-table. i.e. `apply_pseudofrequencies!(Pij, BLOSUM_Pseudofrequencies(α, β))`
-
-!!! warning
-    
-    `BLOSUM_Pseudofrequencies` can be only be applied in **normalized/probability** tables
-    with `UngappedAlphabet`.
 
 ## Correction for data redundancy in a MSA
 
-A simple way to reduce redundancy in a MSA without losing sequences, is clusterization and
-sequence weighting. The weight of each sequence should be 1/N, where N is the number of
-sequences in its cluster. The `Clusters` type of the `MSA` module stores the
-weights. This vector of weights can be extracted (with the `getweight` function) and used
-by the `frequencies` and `probabilities` functions with the keyword argument `weights`. Also it's
-possible to use the `Clusters` as second argument of the function `frequencies!`.
+A simple way to reduce redundancy in an MSA without losing sequences is through 
+clusterization and sequence weighting. The weight of each sequence should be $1/N$, 
+where $N$ is the number of sequences in its cluster. The `Clusters` type of the `MSA` 
+module stores the weights. This vector of weights can be extracted 
+(with the `getweight` function) and used by the `frequencies` and `probabilities` functions 
+with the keyword argument `weights`. Also, using the `Clusters` as the second argument of 
+the function `frequencies!` is possible.
 
 ```@example inf_msa
 clusters = hobohmI(msa, 62) # from MIToS.MSA
