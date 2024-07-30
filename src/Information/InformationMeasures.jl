@@ -433,14 +433,10 @@ julia> msa = rand(Random.MersenneTwister(37), Residue, 3, 4)
  S  H  C  I
  G  G  R  V
 
-julia> mi = mutual_information(msa)
-4×4 Named PairwiseListMatrix{Float64, false, Vector{Float64}}
-Col1 ╲ Col2 │       1        2        3        4
-────────────┼───────────────────────────────────
-1           │     NaN  1.09861  1.09861  1.09861
-2           │ 1.09861      NaN  1.09861  1.09861
-3           │ 1.09861  1.09861      NaN  1.09861
-4           │ 1.09861  1.09861  1.09861      NaN
+julia> mi = mutual_information(msa);
+
+julia> mi[1, 2]
+1.09861
 
 ```
 """

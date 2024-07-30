@@ -36,8 +36,8 @@ Common values of `λ` are:
     73.2 (1947): 285-334.](@cite 10.1017/S0020268100012270)
   - [Trybula, Stanislaw. "Some problems of simultaneous minimax estimation." The Annals
     of Mathematical Statistics 29.1 (1958): 245-253.](@cite 10.1214/aoms/1177706722)
-  - [Jeffreys, Harold. "An invariant form for the prior probability in estimation 
-    problems." Proceedings of the Royal Society of London. Series A. Mathematical and 
+  - [Jeffreys, Harold. "An invariant form for the prior probability in estimation
+    problems." Proceedings of the Royal Society of London. Series A. Mathematical and
     Physical Sciences 186.1007 (1946): 453-461.](@cite 10.1098/rspa.1946.0056)
 """
 struct AdditiveSmoothing{T} <: Pseudocount{T}
