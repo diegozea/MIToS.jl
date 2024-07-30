@@ -241,9 +241,9 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[deps.MIToS]]
 deps = ["AutoHashEquals", "BioStructures", "CodecZlib", "Dates", "Downloads", "FastaIO", "Format", "JSON3", "LightXML", "LinearAlgebra", "Logging", "Markdown", "NamedArrays", "OrderedCollections", "PairwiseListMatrices", "Pkg", "Random", "RecipesBase", "Serialization", "StaticArrays", "Statistics", "StatsBase", "TranscodingStreams"]
-git-tree-sha1 = "db6924782bc86567b8d01be0dbc44a2128a53912"
+git-tree-sha1 = "8995effa332b70686f53d0dca35a29950f418df7"
 uuid = "51bafb47-8a16-5ded-8b04-24ef4eede0b5"
-version = "3.0.5"
+version = "3.0.6"
 
     [deps.MIToS.extensions]
     MIToSClusteringExt = "Clustering"

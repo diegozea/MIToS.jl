@@ -15,7 +15,7 @@
 # *ATOM*). The problem with this approach is that the sequences can have
 # missing regions and standard pairwise alignment algorithms often yield
 # incorrect assignations around those regions
-# [(Velankar et.al. 2013)](https://doi.org/10.1093/nar/gks1258). This is
+# (Velankar et.al. 2013 [10.1093/nar/gks1258](@cite)). This is
 # particularly important when aligning *PDB* sequences, that can have missing
 # residues, and sequences coming from multiple sequence alignments, that can be
 # incomplete or have unaligned regions (e.g. insert states).
