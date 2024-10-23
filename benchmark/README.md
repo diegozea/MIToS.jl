@@ -1,4 +1,4 @@
-To run the benchmark suite, you need to have the `PkgBenchmark` package installed. 
+To run the benchmark suite, you must have `PkgBenchmark` and `BenchmarkTools` installed. 
 Then, you can run the following code in the Julia REPL:
 
 ```julia
