@@ -384,20 +384,23 @@ end
 It calculates Mutual Information (MI) from a table of `Frequencies` or `Probabilities` with three
 dimensions. $_DOC_LOG_BASE
 
-```jldoctest
-julia> using Random, MIToS.MSA, MIToS.Information
+# Example
 
-julia> msa = rand(Random.MersenneTwister(37), Residue, 3, 4)
+```jldoctest
+julia> using MIToS.MSA, MIToS.Information
+
+julia> msa = Residue['V' 'Q' 'W' 'E';
+                     'D' 'T' 'Q' 'F';
+                     'G' 'T' 'R' 'C']
 3×4 Matrix{Residue}:
- T  R  F  K
- S  H  C  I
- G  G  R  V
+ V  Q  W  E
+ D  T  Q  F
+ G  T  R  C
 
 julia> Nxyz = frequencies(msa[:, 1], msa[:, 2], msa[:, 3]);
 
 julia> mutual_information(Nxyz)
-1.0986122886681093
-
+0.6365141682948132
 ```
 """
 function mutual_information(
@@ -425,20 +428,23 @@ $_DOC_LOG_BASE The minimum value for `rank` is 2 (the default value). By defualt
 uses counts/frequencies to calculate the MI, as it's faster. You can use the keyword
 argument `probabilities = true` to calculate the MI from probabilities.
 
-```jldoctest  
-julia> using Random, MIToS.MSA, MIToS.Information
+# Example
 
-julia> msa = rand(Random.MersenneTwister(37), Residue, 3, 4)
+```jldoctest 
+julia> using MIToS.MSA, MIToS.Information
+
+julia> msa = Residue['V' 'Q' 'W' 'E';
+                     'D' 'T' 'Q' 'F';
+                     'G' 'T' 'R' 'C']
 3×4 Matrix{Residue}:
- T  R  F  K
- S  H  C  I
- G  G  R  V
+ V  Q  W  E
+ D  T  Q  F
+ G  T  R  C
 
 julia> mi = mutual_information(msa);
 
 julia> mi[1, 2]
-1.0986122886681098
-
+0.6365141682948129
 ```
 """
 function mutual_information(

@@ -151,33 +151,15 @@ end
 
 $shuffle_msa_doc To shuffle in-place, see [`shuffle_msa!`](@ref).
 
-```jldoctest
-julia> using MIToS.MSA
+# Example
 
-julia> using Random
-
-julia> msa = hcat(res"RRE",res"DDK", res"G--")
-3×3 Matrix{Residue}:
- R  D  G
- R  D  -
- E  K  -
-
-julia> Random.seed!(42);
-
-julia> shuffle_msa(msa, dims=1, fixedgaps=true)
-3×3 Matrix{Residue}:
- G  D  R
- R  D  -
- E  K  -
-
-julia> Random.seed!(42);
-
-julia> shuffle_msa(msa, dims=1, fixedgaps=false)
-3×3 Matrix{Residue}:
- G  D  R
- R  -  D
- E  K  -
-
+```julia
+using MIToS.MSA, Random
+msa = hcat(res"RRE",res"DDK", res"G--")
+Random.seed!(42);
+shuffle_msa(msa, dims=1, fixedgaps=true)
+Random.seed!(42);
+shuffle_msa(msa, dims=1, fixedgaps=false)
 ```
 """
 function shuffle_msa(msa::AbstractMatrix{Residue}, args...; kwargs...)

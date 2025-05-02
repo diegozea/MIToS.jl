@@ -293,26 +293,31 @@ $_mapfreq_kargs_doc
 
 Note that the `pseudofrequencies` argument is only valid if `probabilities = true`. All the 
 other keyword arguments are passed to the function `f`.
-```jldoctest
-julia> using Random, MIToS.MSA, MIToS.Information
 
-julia> msa = rand(Random.MersenneTwister(1), Residue, 3, 6) # random MSA as an example
-3×6 Matrix{Residue}:
- F  A  F  D  E  V
- T  R  R  G  F  I
- N  V  S  W  Q  T
+# Example
+
+```jldoctest
+julia> using MIToS.MSA, MIToS.Information
+
+julia> msa = Residue['V' 'Q' 'W' 'E';
+                     'D' 'T' 'Q' 'F';
+                     'G' 'T' 'R' 'C']
+3×4 Matrix{Residue}:
+ V  Q  W  E
+ D  T  Q  F
+ G  T  R  C
 
 julia> mapfreq(sum, msa) # default: rank=1, dims=2, probabilities=true
-1×6 Named Matrix{Float64}
-Function ╲ Col │   1    2    3    4    5    6
-───────────────┼─────────────────────────────
-sum            │ 1.0  1.0  1.0  1.0  1.0  1.0
+1×4 Named Matrix{Float64}
+Function ╲ Col │   1    2    3    4
+───────────────┼───────────────────
+sum            │ 1.0  1.0  1.0  1.0
 
 julia> mapfreq(sum, msa, probabilities=false)
-1×6 Named Matrix{Float64}
-Function ╲ Col │   1    2    3    4    5    6
-───────────────┼─────────────────────────────
-sum            │ 3.0  3.0  3.0  3.0  3.0  3.0
+1×4 Named Matrix{Float64}
+Function ╲ Col │   1    2    3    4
+───────────────┼───────────────────
+sum            │ 3.0  3.0  3.0  3.0
 
 julia> mapfreq(sum, msa, dims=1)
 3×1 Named Matrix{Float64}

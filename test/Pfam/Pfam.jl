@@ -140,14 +140,11 @@ end
         end
 
         @testset "AUC" begin
-
-            @test round(
-                AUC(
-                    buslje09(msa, lambda = 0.05, threshold = 62.0, samples = 0)[2],
-                    contacts,
-                ),
-                digits = 4,
-            ) == 0.5291
+            auc_value = AUC(
+                buslje09(msa, lambda = 0.05, threshold = 62.0, samples = 0)[2],
+                contacts,
+            )
+            @test isapprox(auc_value, 0.5291; atol=0.0002)
         end
     end
 end

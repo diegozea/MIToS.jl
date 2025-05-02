@@ -146,32 +146,31 @@ end
 # Disambiguate Sequences
 # ----------------------
 
-function _disambiguate_sequences(IDS::Vector{String})
-    old2new = Dict{String,Vector{String}}()
-    seen = OrderedSet{String}()
+_candidate_name(base_name, count) = string(base_name, "(", count, ")")
 
-    for original in IDS
-        current_name = original
-        count = length(get(old2new, current_name, []))
-        new_name = current_name
-        if count > 0
-            new_name = _propose_name(current_name, count)
+function _disambiguate_sequences(ids::Vector{String})
+    old2new = Dict{String, Vector{String}}()
+    seen    = Set{String}(ids)
+
+    for id in ids
+        buf = get!(old2new, id, String[])
+        n   = length(buf)
+        if n == 0
+            push!(buf, id)
+            continue
         end
-        while new_name in seen
-            count += 1
-            new_name = _propose_name(current_name, count)
+        candidate = _candidate_name(id, n)
+        while candidate in seen
+            n += 1
+            candidate = _candidate_name(id, n)
         end
-        push!(seen, new_name)
-        if haskey(old2new, original)
-            push!(old2new[original], new_name)
-        else
-            old2new[original] = [new_name]
-        end
+        push!(buf, candidate)
+        push!(seen, candidate)
     end
-    return old2new, collect(seen)
+    old2new_changes = deepcopy(old2new)
+    new_ids = [popfirst!(old2new[id]) for id in ids]
+    return old2new_changes, new_ids
 end
-
-_propose_name(base::String, count::Int)::String = "$(base)($(count))"
 
 # NamedArray{Residue,2} and AnnotatedMultipleSequenceAlignment generation
 # -----------------------------------------------------------------------
