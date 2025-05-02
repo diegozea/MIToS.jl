@@ -568,19 +568,25 @@
         end
     end
 
-    @testset "Disambiguate Sequences Tests" begin
+    @testset "Disambiguate Sequences (online) Tests" begin
+        function run_online(ids)
+            od = MSA.OnlineSequenceNameDisambiguator()
+            new_ids = [MSA._disambiguate_seqname!(od, id) for id in ids]
+            return od.old2new, new_ids
+        end
+
         IDS = ["seq", "seq", "seq"]
-        old2new, new_IDS = MIToS.MSA._disambiguate_sequences(IDS)
+        old2new, new_IDS = run_online(IDS)
         @test new_IDS == ["seq", "seq(1)", "seq(2)"]
         @test old2new == Dict("seq" => ["seq", "seq(1)", "seq(2)"])
 
         IDS = ["a", "a", "b", "b", "b"]
-        old2new, new_IDS = MIToS.MSA._disambiguate_sequences(IDS)
+        old2new, new_IDS = run_online(IDS)
         @test new_IDS == ["a", "a(1)", "b", "b(1)", "b(2)"]
         @test old2new == Dict("a" => ["a", "a(1)"], "b" => ["b", "b(1)", "b(2)"])
 
         IDS = ["item", "item(1)", "item(1)", "item(2)"]
-        old2new, new_IDS = MIToS.MSA._disambiguate_sequences(IDS)
+        old2new, new_IDS = run_online(IDS)
         @test new_IDS == ["item", "item(1)", "item(1)(1)", "item(2)"]
         @test old2new == Dict(
             "item" => ["item"],
@@ -589,8 +595,9 @@
         )
 
         IDS = ["x", "x", "x", "x(1)", "x(1)"]
-        old2new, new_IDS = MIToS.MSA._disambiguate_sequences(IDS)
-        @test new_IDS == ["x", "x(2)", "x(3)", "x(1)", "x(1)(1)"]
-        @test old2new == Dict("x" => ["x", "x(2)", "x(3)"], "x(1)" => ["x(1)", "x(1)(1)"])
+        old2new, new_IDS = run_online(IDS)
+        @test new_IDS == ["x", "x(1)", "x(2)", "x(1)(1)", "x(1)(2)"]
+        @test old2new ==
+              Dict("x" => ["x", "x(1)", "x(2)"], "x(1)" => ["x(1)(1)", "x(1)(2)"])
     end
 end

@@ -146,30 +146,77 @@ end
 # Disambiguate Sequences
 # ----------------------
 
-_candidate_name(base_name, count) = string(base_name, "(", count, ")")
+"""
+    OnlineSequenceNameDisambiguator
 
-function _disambiguate_sequences(ids::Vector{String})
-    old2new = Dict{String, Vector{String}}()
-    seen    = Set{String}(ids)
+A state-holding object that can *disambiguate raw sequence identifiers
+one-by-one* while you stream a MSA or sequence file.
 
-    for id in ids
-        buf = get!(old2new, id, String[])
-        n   = length(buf)
-        if n == 0
-            push!(buf, id)
-            continue
-        end
-        candidate = _candidate_name(id, n)
-        while candidate in seen
-            n += 1
-            candidate = _candidate_name(id, n)
-        end
-        push!(buf, candidate)
-        push!(seen, candidate)
+It remembers every name that has already been handed out (`seen`) and, for each
+*original* identifier, the list of *all* concrete names generated from it
+(`old2new`).  This allows you to recover the full mapping once parsing is over.
+
+# Fields
+
+  - `old2new::Dict{String,Vector{String}}` ― mapping *raw id → generated names*
+  - `seen::Set{String}` ― every identifier that has already been issued
+"""
+mutable struct OnlineSequenceNameDisambiguator
+    old2new::Dict{String,Vector{String}} # mapping raw id to a list of generated names
+    seen::Set{String} # every name already handed out
+end
+
+function OnlineSequenceNameDisambiguator()
+    OnlineSequenceNameDisambiguator(Dict{String,Vector{String}}(), Set{String}())
+end
+
+function _candidate_seqname(base_name, count)
+    if count == 0
+        base_name
+    else
+        string(base_name, "(", count, ")")
     end
-    old2new_changes = deepcopy(old2new)
-    new_ids = [popfirst!(old2new[id]) for id in ids]
-    return old2new_changes, new_ids
+end
+
+"""
+    _disambiguate_seqname!(od::OnlineSequenceNameDisambiguator, raw_id::String)
+
+Given a `raw_id` (as it appears in the file) return a **unique** identifier and
+record the choice inside `od`.
+
+The algorithm tries the bare name first, then appends monotonically increasing
+suffixes `(1)`, `(2)`, ... until it finds one that has never been issued before.
+
+It return the unique, collision-free identifier to use for the record.
+
+# Example
+
+```jldoctest
+julia> import MIToS
+
+julia> od = MIToS.MSA.OnlineSequenceNameDisambiguator();
+
+julia> [MIToS.MSA._disambiguate_seqname!(od, id) for id in ["x", "x", "x(1)", "x(1)"]]
+4-element Vector{String}:
+ "x"
+ "x(1)"
+ "x(1)(1)"
+ "x(1)(2)"
+```
+"""
+function _disambiguate_seqname!(od::OnlineSequenceNameDisambiguator, id::String)
+    buf = get!(od.old2new, id, String[])        # names derived from this id
+
+    n = 0                                 # start with the bare name
+    name = _candidate_seqname(id, n)
+    while name ∈ od.seen                        # bump until unique
+        n += 1
+        name = _candidate_seqname(id, n)
+    end
+
+    push!(buf, name)                            # bookkeeping
+    push!(od.seen, name)
+    return name
 end
 
 # NamedArray{Residue,2} and AnnotatedMultipleSequenceAlignment generation
