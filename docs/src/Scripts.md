@@ -57,10 +57,8 @@ julia Buslje09.jl -h
 
 ```@setup scripts
 using Pkg
-project_folder = "MIToS_Scripts_Project"
-isdir(project_folder) || mkdir(project_folder)
-Pkg.activate(project_folder)
-Pkg.add(url="https://github.com/MIToSOrg/MIToS_Scripts.jl")
+project_file   = Base.active_project()
+project_folder = dirname(project_file)
 using MIToS_Scripts
 scripts_folder = joinpath(pkgdir(MIToS_Scripts), "scripts")
 ```
