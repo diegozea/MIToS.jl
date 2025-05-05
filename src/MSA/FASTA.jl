@@ -13,6 +13,7 @@ function _pre_readfasta(string::AbstractString)
         IDS[i] = fields[1]
         SEQS[i] = replace(join(fields[2:end]), r"\s+" => "")
     end
+
     (IDS, SEQS)
 end
 
@@ -35,7 +36,9 @@ function _load_sequences(
     create_annotations::Bool = false,
 )
     IDS, SEQS = _pre_readfasta(io)
-    return IDS, SEQS, Annotations()
+    annot = Annotations()
+    _disambiguate_seqnames!(IDS, annot)
+    return IDS, SEQS, annot
 end
 
 # Print FASTA

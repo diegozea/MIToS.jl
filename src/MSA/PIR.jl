@@ -15,6 +15,7 @@ function _pre_readpir(io::Union{IO,AbstractString})
     IDS = String[]
     SEQS = String[]
     GS = Dict{Tuple{String,String},String}()
+    disambiguator = OnlineSequenceNameDisambiguator()
 
     # Sequence types from http://iubio.bio.indiana.edu/soft/molbio/readseq/classic/src/Formats
     nucleic_types = Set([
@@ -40,8 +41,12 @@ function _pre_readpir(io::Union{IO,AbstractString})
             m = match(r"^>([A-Z][A-Z0-9]);(.+)$", line) # e.g. >P1;5fd1
             if m !== nothing
                 seq_type = m[1] === nothing ? "" : m[1]
-                seq_id = m[2] === nothing ? "" : rstrip(m[2]::SubString)
+                original_seq_id = m[2] === nothing ? "" : rstrip(m[2]::SubString)
+                seq_id = _disambiguate_seqname!(disambiguator, original_seq_id)
                 push!(IDS, seq_id)
+                if seq_id != original_seq_id
+                    push!(GS, (seq_id, "OriginalSeqName") => original_seq_id)
+                end
                 push!(GS, (seq_id, "Type") => seq_type)
                 if seq_type in nucleic_types
                     @warn("Type $seq_type indicates that $seq_id is a nucleic acid.")

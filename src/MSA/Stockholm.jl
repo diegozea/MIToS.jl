@@ -1,5 +1,12 @@
 struct Stockholm <: MSAFormat end
 
+# NOTE: Sequence‑Name Disambiguation
+# We do not support sequence‑name disambiguation via the `OnlineSequenceNameDisambiguator`
+# in Stockholm format, because duplicate sequence names are not permitted.
+# Long sequences are split across multiple blocks, and the name is used to
+# reassemble the fragments and to key per‑sequence annotations. An example of
+# file with multiple blocks is at test/data/clustalo-I20240512-trunc.aln-stockholm
+
 @inline function _fill_with_sequence_line!(IDS, SEQS, line)
     if !startswith(line, '#') && !startswith(line, "//")
         words = get_n_words(line, 2)

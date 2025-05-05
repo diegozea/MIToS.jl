@@ -320,6 +320,17 @@
                 @test getsequencemapping(seqs, 1) == getsequencemapping(seqs, i)
             end
         end
+
+        @testset "Duplicated identifiers" begin
+
+            duplicated_ids_file = joinpath(DATA, "duplicated_ids.fasta")
+            msa = read_file(duplicated_ids_file, FASTA)
+            @test sequencenames(msa) == ["SEQUENCE", "SEQUENCE(1)", " SEQUENCE"]
+            for seqname in ["SEQUENCE", " SEQUENCE"]
+                @test getannotsequence(msa, seqname, "OriginalSeqName", "") == ""
+            end
+            @test getannotsequence(msa, "SEQUENCE(1)", "OriginalSeqName", "") == "SEQUENCE"
+        end
     end
 
     @testset "Raw" begin
@@ -501,7 +512,14 @@
         @testset "Duplicated identifiers" begin
 
             duplicated_ids_file = joinpath(DATA, "duplicated_ids.pir")
-            @test_throws ArgumentError read_file(duplicated_ids_file, PIR)
+            msa = read_file(duplicated_ids_file, PIR)
+            @test sequencenames(msa) == ["256bb", "dupl", "dupl(1)"]
+            for annot_name in ["Type", "Title"]
+                @test getannotsequence(msa, "dupl", annot_name) ==
+                      getannotsequence(msa, "dupl(1)", annot_name)
+            end
+            @test getannotsequence(msa, "dupl", "OriginalSeqName", "") == ""
+            @test getannotsequence(msa, "dupl(1)", "OriginalSeqName", "") == "dupl"
         end
     end
 
@@ -566,6 +584,16 @@
                 end
             end
         end
-    end
 
+        @testset "Duplicated identifiers" begin
+
+            duplicated_ids_file = joinpath(DATA, "duplicated_ids.a3m")
+            msa = read_file(duplicated_ids_file, A3M)
+            @test sequencenames(msa) == ["query", "SEQUENCE", "SEQUENCE(1)", " SEQUENCE"]
+            for seqname in ["query", "SEQUENCE", " SEQUENCE"]
+                @test getannotsequence(msa, seqname, "OriginalSeqName", "") == ""
+            end
+            @test getannotsequence(msa, "SEQUENCE(1)", "OriginalSeqName", "") == "SEQUENCE"
+        end
+    end
 end

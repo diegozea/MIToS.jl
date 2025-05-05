@@ -150,21 +150,21 @@ end
     OnlineSequenceNameDisambiguator
 
 A state-holding object that can *disambiguate raw sequence identifiers
-one-by-one* while you stream a MSA or sequence file.
+one-by-one* while you stream an MSA or sequence file.
 
 It remembers every generated name (`new2old`), mapping each new name to
-its original raw ID, and tracks the next suffix count for each raw ID
-via `old2count`. This lets you both check for collisions in O(1) and
-reconstruct the full raw→new mapping afterwards.
+its original sequence name, and tracks the next suffix count for each 
+original name via `old2count`. This lets you both check for collisions 
+in O(1) and reconstruct the full original → new name mapping afterward.
 
 # Fields
 
-  - `new2old::Dict{String,String}` ― map *generated name → original raw id*
-  - `old2count::Dict{String,Int}` ― next suffix counter per raw id
+  - `new2old::Dict{String,String}` ― map *generated name → original sequence name*
+  - `old2count::Dict{String,Int}` ― next suffix counter per original sequence name
 """
 mutable struct OnlineSequenceNameDisambiguator
-    new2old::OrderedDict{String,String}   # maps each issued name to its raw identifier
-    old2count::Dict{String,Int}    # next “(n)” suffix to try for each raw id
+    new2old::OrderedDict{String,String}   # maps each issued name to its original sequence name
+    old2count::Dict{String,Int}           # next “(n)” suffix to try for each original sequence name
 end
 
 function OnlineSequenceNameDisambiguator()
@@ -172,40 +172,80 @@ function OnlineSequenceNameDisambiguator()
 end
 
 # build “base” or “base(n)” given a count
-function _candidate_seqname(base_name::String, count::Int)
+function _candidate_seqname(base_name, count::Int)
     count == 0 ? base_name : string(base_name, "(", count, ")")
 end
 
 """
-    _disambiguate_seqname!(od::OnlineSequenceNameDisambiguator, raw_id::String)
+    _disambiguate_seqname!(disambiguator::OnlineSequenceNameDisambiguator, original_seqname)
 
-Given a `raw_id` (as it appears in the file), return a **unique** identifier
-and record the choice inside `od`.
+Given an `original_seqname` (as it appears in the input), return a **unique** identifier
+and record the choice inside `disambiguator`.
 
 The algorithm tries the bare name first, then appends monotonically increasing
 suffixes `(1)`, `(2)`, ... until it finds one that hasn't been used yet.
 
 Returns the collision-free identifier for use in your alignment or output.
 """
-function _disambiguate_seqname!(od::OnlineSequenceNameDisambiguator, raw_id::String)
+function _disambiguate_seqname!(disambiguator::OnlineSequenceNameDisambiguator, original_seqname)
     # start with whatever counter we’ve already recorded (0 if first time)
-    n = get!(od.old2count, raw_id, 0)
-    name = _candidate_seqname(raw_id, n)
+    n = get!(disambiguator.old2count, original_seqname, 0)
+    name = _candidate_seqname(original_seqname, n)
 
     # bump until we find an unused name
-    while haskey(od.new2old, name)
+    while haskey(disambiguator.new2old, name)
         n += 1
-        name = _candidate_seqname(raw_id, n)
+        name = _candidate_seqname(original_seqname, n)
     end
 
     # record both the next counter *and* the generated name
-    od.old2count[raw_id] = n + 1
-    od.new2old[name] = raw_id
-    if raw_id != name
-        @warn "Sequence identifier $raw_id is taken; using $name instead."
+    disambiguator.old2count[original_seqname] = n + 1
+    disambiguator.new2old[name] = original_seqname
+    if original_seqname != name
+        @warn "Sequence identifier $original_seqname is taken; using $name instead."
     end
 
     return name
+end
+
+"""
+    _annotate_seqname_changes!(disambiguator::OnlineSequenceNameDisambiguator, annotations::Annotations)
+
+Adds `"OriginalSeqName"` annotations for all disambiguated sequence names.
+
+For each sequence name that was changed (i.e., disambiguated), this function
+adds an annotation associating the new name with its original input name.
+
+Returns the updated `annotations` object.
+"""
+function _annotate_seqname_changes!(disambiguator::OnlineSequenceNameDisambiguator, annotations::Annotations)
+    for (new_name, original_seqname) in disambiguator.new2old
+        if new_name != original_seqname
+            # add the new name to the annotations
+            setannotsequence!(annotations, new_name, "OriginalSeqName", original_seqname)
+        end
+    end
+    annotations
+end
+
+"""
+    _disambiguate_seqnames!(ids::Vector{String}, annotations::Annotations)
+
+Takes a list of sequence identifiers (`ids`) and disambiguates them in-place,
+ensuring that all names are unique by appending suffixes as needed.
+
+Also annotates all renamed sequences with their original names under the key
+`"OriginalSeqName"` in the provided `annotations` object.
+
+Returns a tuple: the updated list of unique IDs and the updated annotations.
+"""
+function _disambiguate_seqnames!(ids::Vector{String}, annotations::Annotations)
+    disambiguator = OnlineSequenceNameDisambiguator()
+    for i in eachindex(ids)
+        ids[i] = _disambiguate_seqname!(disambiguator, ids[i])
+    end
+    _annotate_seqname_changes!(disambiguator, annotations)
+    return ids, annotations
 end
 
 # NamedArray{Residue,2} and AnnotatedMultipleSequenceAlignment generation

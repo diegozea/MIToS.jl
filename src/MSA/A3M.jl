@@ -50,7 +50,9 @@ function _load_sequences(
     catch
         SEQS = _add_insert_gaps!(SEQS)
     end
-    return IDS, SEQS, Annotations()
+    annot = Annotations()
+    _disambiguate_seqnames!(IDS, annot)
+    return IDS, SEQS, annot
 end
 
 # A2M is similar to FASTA but uses lowercase letters and dots for inserts. In the A2M 

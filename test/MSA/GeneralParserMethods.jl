@@ -72,50 +72,81 @@
     @testset "Disambiguate Sequences (online) Tests" begin
         # helper that returns both the disambiguator and the list of new IDs
         function run_online(ids)
-            od = MSA.OnlineSequenceNameDisambiguator()
-            new_ids = [MSA._disambiguate_seqname!(od, id) for id in ids]
-            return od, new_ids
+            disambiguator = MSA.OnlineSequenceNameDisambiguator()
+            new_ids = [MSA._disambiguate_seqname!(disambiguator, id) for id in ids]
+            return disambiguator, new_ids
         end
-    
+        
+        run_bulk(ids) = MSA._disambiguate_seqnames!(copy(ids), Annotations()) # new_ids, annot
+
         ## Test 1: single raw_id repeated
-        od, new_IDS = run_online(["seq", "seq", "seq"])
-        @test new_IDS == ["seq", "seq(1)", "seq(2)"]
-        @test od.new2old == OrderedDict(
+        ids = ["seq", "seq", "seq"]
+        disambiguator, new_ids = run_online(ids)
+        @test new_ids == ["seq", "seq(1)", "seq(2)"]
+        @test disambiguator.new2old == OrderedDict(
             "seq"    => "seq",
             "seq(1)" => "seq",
             "seq(2)" => "seq"
         )
+        new_ids, annot = run_bulk(ids)
+        @test new_ids == ["seq", "seq(1)", "seq(2)"]
+        @test getannotsequence(annot, "seq", "OriginalSeqName", "") == ""
+        @test getannotsequence(annot, "seq(1)", "OriginalSeqName", "") == "seq"
+        @test getannotsequence(annot, "seq(2)", "OriginalSeqName", "") == "seq"
     
         ## Test 2: two raw_ids interleaved
-        od, new_IDS = run_online(["a", "a", "b", "b", "b"])
-        @test new_IDS == ["a", "a(1)", "b", "b(1)", "b(2)"]
-        @test od.new2old == OrderedDict(
+        ids = ["a", "a", "b", "b", "b"]
+        disambiguator, new_ids = run_online(ids)
+        @test new_ids == ["a", "a(1)", "b", "b(1)", "b(2)"]
+        @test disambiguator.new2old == OrderedDict(
             "a"     => "a",
             "a(1)"  => "a",
             "b"     => "b",
             "b(1)"  => "b",
             "b(2)"  => "b"
         )
+        new_ids, annot = run_bulk(ids)
+        @test new_ids == ["a", "a(1)", "b", "b(1)", "b(2)"]
+        @test getannotsequence(annot, "a", "OriginalSeqName", "") == ""
+        @test getannotsequence(annot, "a(1)", "OriginalSeqName", "") == "a"
+        @test getannotsequence(annot, "b", "OriginalSeqName", "") == ""
+        @test getannotsequence(annot, "b(1)", "OriginalSeqName", "") == "b"
+        @test getannotsequence(annot, "b(2)", "OriginalSeqName", "") == "b"
     
         ## Test 3: names that already contain suffixes
-        od, new_IDS = run_online(["item", "item(1)", "item(1)", "item(2)"])
-        @test new_IDS == ["item", "item(1)", "item(1)(1)", "item(2)"]
-        @test od.new2old == OrderedDict(
+        ids = ["item", "item(1)", "item(1)", "item(2)"]
+        disambiguator, new_ids = run_online(ids)
+        @test new_ids == ["item", "item(1)", "item(1)(1)", "item(2)"]
+        @test disambiguator.new2old == OrderedDict(
             "item"       => "item",
             "item(1)"    => "item(1)",
             "item(1)(1)" => "item(1)",
             "item(2)"    => "item(2)"
         )
+        new_ids, annot = run_bulk(ids)
+        @test new_ids == ["item", "item(1)", "item(1)(1)", "item(2)"]
+        @test getannotsequence(annot, "item", "OriginalSeqName", "") == ""
+        @test getannotsequence(annot, "item(1)", "OriginalSeqName", "") == ""
+        @test getannotsequence(annot, "item(1)(1)", "OriginalSeqName", "") == "item(1)"
+        @test getannotsequence(annot, "item(2)", "OriginalSeqName", "") == ""
     
         ## Test 4: nested suffix collision
-        od, new_IDS = run_online(["x", "x", "x", "x(1)", "x(1)"])
-        @test new_IDS == ["x", "x(1)", "x(2)", "x(1)(1)", "x(1)(2)"]
-        @test od.new2old == OrderedDict(
+        ids = ["x", "x", "x", "x(1)", "x(1)"]
+        disambiguator, new_ids = run_online(ids)
+        @test new_ids == ["x", "x(1)", "x(2)", "x(1)(1)", "x(1)(2)"]
+        @test disambiguator.new2old == OrderedDict(
             "x"        => "x",
             "x(1)"     => "x",
             "x(2)"     => "x",
             "x(1)(1)"  => "x(1)",
             "x(1)(2)"  => "x(1)"
         )
+        new_ids, annot = run_bulk(ids)
+        @test new_ids == ["x", "x(1)", "x(2)", "x(1)(1)", "x(1)(2)"]
+        @test getannotsequence(annot, "x", "OriginalSeqName", "") == ""
+        @test getannotsequence(annot, "x(1)", "OriginalSeqName", "") == "x"
+        @test getannotsequence(annot, "x(2)", "OriginalSeqName", "") == "x"
+        @test getannotsequence(annot, "x(1)(1)", "OriginalSeqName", "") == "x(1)"
+        @test getannotsequence(annot, "x(1)(2)", "OriginalSeqName", "") == "x(1)"
     end
 end
