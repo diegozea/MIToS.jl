@@ -152,70 +152,56 @@ end
 A state-holding object that can *disambiguate raw sequence identifiers
 one-by-one* while you stream a MSA or sequence file.
 
-It remembers every name that has already been handed out (`seen`) and, for each
-*original* identifier, the list of *all* concrete names generated from it
-(`old2new`).  This allows you to recover the full mapping once parsing is over.
+It remembers every generated name (`new2old`), mapping each new name to
+its original raw ID, and tracks the next suffix count for each raw ID
+via `old2count`. This lets you both check for collisions in O(1) and
+reconstruct the full raw→new mapping afterwards.
 
 # Fields
 
-  - `old2new::Dict{String,Vector{String}}` ― mapping *raw id → generated names*
-  - `seen::Set{String}` ― every identifier that has already been issued
+  - `new2old::Dict{String,String}` ― map *generated name → original raw id*
+  - `old2count::Dict{String,Int}` ― next suffix counter per raw id
 """
 mutable struct OnlineSequenceNameDisambiguator
-    old2new::Dict{String,Vector{String}} # mapping raw id to a list of generated names
-    seen::Set{String} # every name already handed out
+    new2old::OrderedDict{String,String}   # maps each issued name to its raw identifier
+    old2count::Dict{String,Int}    # next “(n)” suffix to try for each raw id
 end
 
 function OnlineSequenceNameDisambiguator()
-    OnlineSequenceNameDisambiguator(Dict{String,Vector{String}}(), Set{String}())
+    OnlineSequenceNameDisambiguator(OrderedDict{String,String}(), Dict{String,Int}())
 end
 
-function _candidate_seqname(base_name, count)
-    if count == 0
-        base_name
-    else
-        string(base_name, "(", count, ")")
-    end
+# build “base” or “base(n)” given a count
+function _candidate_seqname(base_name::String, count::Int)
+    count == 0 ? base_name : string(base_name, "(", count, ")")
 end
 
 """
     _disambiguate_seqname!(od::OnlineSequenceNameDisambiguator, raw_id::String)
 
-Given a `raw_id` (as it appears in the file) return a **unique** identifier and
-record the choice inside `od`.
+Given a `raw_id` (as it appears in the file), return a **unique** identifier
+and record the choice inside `od`.
 
 The algorithm tries the bare name first, then appends monotonically increasing
-suffixes `(1)`, `(2)`, ... until it finds one that has never been issued before.
+suffixes `(1)`, `(2)`, ... until it finds one that hasn't been used yet.
 
-It return the unique, collision-free identifier to use for the record.
-
-# Example
-
-```jldoctest
-julia> import MIToS
-
-julia> od = MIToS.MSA.OnlineSequenceNameDisambiguator();
-
-julia> [MIToS.MSA._disambiguate_seqname!(od, id) for id in ["x", "x", "x(1)", "x(1)"]]
-4-element Vector{String}:
- "x"
- "x(1)"
- "x(1)(1)"
- "x(1)(2)"
-```
+Returns the collision-free identifier for use in your alignment or output.
 """
-function _disambiguate_seqname!(od::OnlineSequenceNameDisambiguator, id::String)
-    buf = get!(od.old2new, id, String[])        # names derived from this id
+function _disambiguate_seqname!(od::OnlineSequenceNameDisambiguator, raw_id::String)
+    # start with whatever counter we’ve already recorded (0 if first time)
+    n = get!(od.old2count, raw_id, 0)
+    name = _candidate_seqname(raw_id, n)
 
-    n = 0                                 # start with the bare name
-    name = _candidate_seqname(id, n)
-    while name ∈ od.seen                        # bump until unique
+    # bump until we find an unused name
+    while haskey(od.new2old, name)
         n += 1
-        name = _candidate_seqname(id, n)
+        name = _candidate_seqname(raw_id, n)
     end
 
-    push!(buf, name)                            # bookkeeping
-    push!(od.seen, name)
+    # record both the next counter *and* the generated name
+    od.old2count[raw_id] = n + 1
+    od.new2old[name] = raw_id
+
     return name
 end
 

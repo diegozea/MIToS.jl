@@ -7,10 +7,16 @@ dependencies, `Documenter` and `ROCAnalysis`, outside the MIToS environment:
 
 ```julia
 using Pkg
+Pkg.activate() # Don't use the MIToS environment
 Pkg.add("ReTest")
 Pkg.add("Revise")
+Pkg.add("Aqua") # Install the needed test dependencies
 Pkg.add("Documenter")
+Pkg.add("Clustering")
 Pkg.add("ROCAnalysis")
+Pkg.add("OrderedCollections")
+Pkg.add("NamedArrays")
+Pkg.add("PairwiseListMatrices")
 ```
 
 An example of usage if you want to run the `hcat` tests from the `MSA` module:
@@ -18,12 +24,12 @@ An example of usage if you want to run the `hcat` tests from the `MSA` module:
 ```julia
 push!(LOAD_PATH, joinpath(homedir(), ".julia", "dev", "MIToS", "test"))
 using Revise, MIToSTests
-MIToSTests.retest("MSA")
-MIToSTests.retest("hcat")
+MIToSTests.retest("MSA") # warm up
+MIToSTests.retest("test name") # specific tests
 ```
 
-Note that we need to fisrt run the most general test and then the specific one. Otherwise,
-`ReTest` will not be able to find the `hcat` test.
+Note that we need to first warm up using the most general test and then the specific one. 
+Otherwise, `ReTest` will not be able to find the specific one.
 
 NOTE: For some reason, after modifying the tests, `Revise` does not detect the changes
 automatically. However, runing `retest` again for the whole module looks to do the trick.

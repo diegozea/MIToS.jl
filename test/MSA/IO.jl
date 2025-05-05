@@ -569,35 +569,52 @@
     end
 
     @testset "Disambiguate Sequences (online) Tests" begin
+        # helper that returns both the disambiguator and the list of new IDs
         function run_online(ids)
             od = MSA.OnlineSequenceNameDisambiguator()
             new_ids = [MSA._disambiguate_seqname!(od, id) for id in ids]
-            return od.old2new, new_ids
+            return od, new_ids
         end
-
-        IDS = ["seq", "seq", "seq"]
-        old2new, new_IDS = run_online(IDS)
+    
+        ## Test 1: single raw_id repeated
+        od, new_IDS = run_online(["seq", "seq", "seq"])
         @test new_IDS == ["seq", "seq(1)", "seq(2)"]
-        @test old2new == Dict("seq" => ["seq", "seq(1)", "seq(2)"])
-
-        IDS = ["a", "a", "b", "b", "b"]
-        old2new, new_IDS = run_online(IDS)
-        @test new_IDS == ["a", "a(1)", "b", "b(1)", "b(2)"]
-        @test old2new == Dict("a" => ["a", "a(1)"], "b" => ["b", "b(1)", "b(2)"])
-
-        IDS = ["item", "item(1)", "item(1)", "item(2)"]
-        old2new, new_IDS = run_online(IDS)
-        @test new_IDS == ["item", "item(1)", "item(1)(1)", "item(2)"]
-        @test old2new == Dict(
-            "item" => ["item"],
-            "item(1)" => ["item(1)", "item(1)(1)"],
-            "item(2)" => ["item(2)"],
+        @test od.new2old == OrderedDict(
+            "seq"    => "seq",
+            "seq(1)" => "seq",
+            "seq(2)" => "seq"
         )
-
-        IDS = ["x", "x", "x", "x(1)", "x(1)"]
-        old2new, new_IDS = run_online(IDS)
+    
+        ## Test 2: two raw_ids interleaved
+        od, new_IDS = run_online(["a", "a", "b", "b", "b"])
+        @test new_IDS == ["a", "a(1)", "b", "b(1)", "b(2)"]
+        @test od.new2old == OrderedDict(
+            "a"     => "a",
+            "a(1)"  => "a",
+            "b"     => "b",
+            "b(1)"  => "b",
+            "b(2)"  => "b"
+        )
+    
+        ## Test 3: names that already contain suffixes
+        od, new_IDS = run_online(["item", "item(1)", "item(1)", "item(2)"])
+        @test new_IDS == ["item", "item(1)", "item(1)(1)", "item(2)"]
+        @test od.new2old == OrderedDict(
+            "item"       => "item",
+            "item(1)"    => "item(1)",
+            "item(1)(1)" => "item(1)",
+            "item(2)"    => "item(2)"
+        )
+    
+        ## Test 4: nested suffix collision
+        od, new_IDS = run_online(["x", "x", "x", "x(1)", "x(1)"])
         @test new_IDS == ["x", "x(1)", "x(2)", "x(1)(1)", "x(1)(2)"]
-        @test old2new ==
-              Dict("x" => ["x", "x(1)", "x(2)"], "x(1)" => ["x(1)(1)", "x(1)(2)"])
+        @test od.new2old == OrderedDict(
+            "x"        => "x",
+            "x(1)"     => "x",
+            "x(2)"     => "x",
+            "x(1)(1)"  => "x(1)",
+            "x(1)(2)"  => "x(1)"
+        )
     end
 end
