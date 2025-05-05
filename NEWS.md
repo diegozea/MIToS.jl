@@ -1,5 +1,13 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.0.6 to v3.1.0
+
+- When reading MSA files with duplicated sequence names, we previously raised an error. 
+  Now, duplicated names are automatically disambiguated by appending suffixes 
+  (e.g., `(1)`, `(2)`), and the original names are preserved in the `"OriginalSeqName"` 
+  sequence annotation. This behavior is implemented for FASTA, A3M, A2M, and PIR formats.
+  However, duplicated names still raise an error when reading Stockholm files.
+
 ### Changes from v2.22.0 to v3.0.0
 
 **MIToS v3.0.0** requires Julia v1.9 or higher, dropping support for older versions. This
