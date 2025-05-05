@@ -201,6 +201,9 @@ function _disambiguate_seqname!(od::OnlineSequenceNameDisambiguator, raw_id::Str
     # record both the next counter *and* the generated name
     od.old2count[raw_id] = n + 1
     od.new2old[name] = raw_id
+    if raw_id != name
+        @warn "Sequence identifier $raw_id is taken; using $name instead."
+    end
 
     return name
 end
