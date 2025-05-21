@@ -1,0 +1,18 @@
+REMARK Output of the program extract_from_pdb
+REMARK Legal PDB format not Guaranteed
+ATOM      1  N   ALA A   1      27.359  16.758  30.798  1.00 20.00      
+ATOM      2  CA  ALA A   1      28.310  15.696  30.418  1.00 21.00      
+ATOM      3  C   ALA A   1      29.598  16.163  29.750  1.00 20.50      
+ATOM      4  O   ALA A   1      30.024  17.292  29.902  1.00 22.00      
+ATOM      5  CB  ALA A   1      28.000  14.819  29.221  1.00 19.00      
+ATOM      6  N   GLY A   2      30.248  15.332  28.990  1.00 23.00      
+ATOM      7  CA  GLY A   2      31.448  15.620  28.248  1.00 24.00      
+ATOM      8  C   GLY A   2      32.478  14.576  28.264  1.00 23.50      
+ATOM      9  O   GLY A   2      32.863  14.110  27.211  1.00 25.00      
+ATOM     10  N   LEU A   3      32.970  14.175  29.406  1.00 20.00      
+ATOM     11  CA  LEU A   3      33.990  13.199  29.500  1.00 18.00      
+ATOM     12  C   LEU A   3      33.460  12.000  30.242  1.00 19.50      
+ATOM     13  O   LEU A   3      32.250  11.900  30.500  1.00 21.00      
+ATOM     14  CB  LEU A   3      35.100  13.500  30.500  0.50 15.00      
+ATOM     15  CG  LEU A   3      36.000  12.500  31.000  0.50 12.00      
+END

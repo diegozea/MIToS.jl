@@ -426,6 +426,85 @@
             @test atom.B == "0.00"
         end
     end
+
+    @testset "Parse PDB with short ATOM lines (66 chars)" begin
+        filepath = joinpath(DATA, "short_atom_lines.pdb")
+
+        # Helper to count atoms
+        countatoms(structure) = sum(length(res.atoms) for res in structure; init=0)
+
+        # Test basic parsing
+        struc = read_file(filepath, PDBFile)
+        @test length(struc) == 3 # ALA, GLY, LEU
+        @test countatoms(struc) == 15 # 5 (ALA) + 4 (GLY) + 6 (LEU)
+
+        # Test specific atom data for ALA CA (Residue 1, Atom 2: N, CA, C, O, CB)
+        ala_ca = struc[1].atoms[2]
+        @test ala_ca.atom == "CA"
+        @test ala_ca.coordinates.x == 28.310
+        @test ala_ca.coordinates.y == 15.696
+        @test ala_ca.coordinates.z == 30.418
+        @test ala_ca.occupancy == 1.00
+        @test ala_ca.B == "21.00" # B-factor is a string
+        @test ala_ca.element == "" # Element is missing
+        @test ala_ca.charge == ""  # Charge is missing
+
+        # Test specific atom data for LEU CB (Residue 3, Atom 5: N, CA, C, O, CB, CG)
+        # This atom has occupancy 0.50
+        leu_cb = struc[3].atoms[5]
+        @test leu_cb.atom == "CB"
+        @test leu_cb.coordinates.x == 35.100
+        @test leu_cb.coordinates.y == 13.500
+        @test leu_cb.coordinates.z == 30.500
+        @test leu_cb.occupancy == 0.50
+        @test leu_cb.B == "15.00"
+        @test leu_cb.element == ""
+        @test leu_cb.charge == ""
+
+        # Test with atomname filter
+        ca_atoms_struc = read_file(filepath, PDBFile, atomname="CA")
+        @test length(ca_atoms_struc) == 3
+        @test countatoms(ca_atoms_struc) == 3
+        @test all(res -> length(res.atoms) == 1 && res.atoms[1].atom == "CA", ca_atoms_struc)
+
+        # Test with model filter (should still load all, as there's only one model)
+        model_filt_struc = read_file(filepath, PDBFile, model="1")
+        @test length(model_filt_struc) == 3
+        @test countatoms(model_filt_struc) == 15
+
+        # Test with chain filter
+        chain_filt_struc = read_file(filepath, PDBFile, chain="A")
+        @test length(chain_filt_struc) == 3
+        @test countatoms(chain_filt_struc) == 15
+
+        # Test with group filter (ATOM)
+        group_filt_struc = read_file(filepath, PDBFile, group="ATOM")
+        @test length(group_filt_struc) == 3
+        @test countatoms(group_filt_struc) == 15
+        
+        # Test with group filter (HETATM - should be empty)
+        hetatm_struc = read_file(filepath, PDBFile, group="HETATM")
+        @test length(hetatm_struc) == 0
+        @test countatoms(hetatm_struc) == 0
+
+        # Test with onlyheavy filter (should not change anything as no H present)
+        heavy_struc = read_file(filepath, PDBFile, onlyheavy=true)
+        @test length(heavy_struc) == 3
+        @test countatoms(heavy_struc) == 15
+
+        # Test with occupancyfilter=true
+        # This file does not have alternate locations, so bestoccupancy won't filter out atoms.
+        # The main purpose here is to ensure this filter path works with the fallback parser.
+        occ_filtered_struc = read_file(filepath, PDBFile, occupancyfilter=true)
+        @test length(occ_filtered_struc) == 3
+        @test countatoms(occ_filtered_struc) == 15
+
+        # Test a combination of filters
+        combo_filt_struc = read_file(filepath, PDBFile, chain="A", atomname="N", model="1")
+        @test length(combo_filt_struc) == 3 # 3 residues, each should have an N atom
+        @test countatoms(combo_filt_struc) == 3
+        @test all(res -> length(res.atoms) == 1 && res.atoms[1].atom == "N", combo_filt_struc)
+    end
 end
 
 @testset "RESTful PDB Interface" begin
