@@ -361,6 +361,22 @@
             @test parse_file(raw_string, Raw) == raw
         end
 
+        @testset "Parse with special characters" begin
+            raw_string_with_special_chars = """
+            #     P D K Q L D E R E H T I E
+            #     P D A Q R I K A K R N A K
+            """
+            expected_sequences = [
+                "PDKQLDEREHTIE",
+                "PDAQRIKAKRNAK"
+            ]
+            parsed_msa = parse_file(raw_string_with_special_chars, Raw)
+            @test nsequences(parsed_msa) == length(expected_sequences)
+            for i in 1:length(expected_sequences)
+                @test stringsequence(parsed_msa, i) == expected_sequences[i]
+            end
+        end
+
         @testset "Print" begin
 
             buffer = IOBuffer()

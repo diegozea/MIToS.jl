@@ -10,8 +10,13 @@ function _load_sequences(
 )
     SEQS = String[]
     IDS = String[]
-    for (i, line::String) in enumerate(lineiterator(io))
-        push!(SEQS, line)
+    for (i, original_line::String) in enumerate(lineiterator(io))
+        processed_line = strip(original_line) # Step 1: Remove leading/trailing whitespace
+        if startswith(processed_line, "#")
+            processed_line = processed_line[2:end] # Step 2: Remove '#' if it's at the start
+        end
+        processed_line = replace(processed_line, " " => "") # Step 3: Remove all spaces
+        push!(SEQS, processed_line) # Step 4: Push the processed line
         push!(IDS, string(i))
     end
     return IDS, SEQS, Annotations()
