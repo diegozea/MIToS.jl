@@ -1,3 +1,14 @@
+"""
+    FASTA <: MSAFormat
+
+Represents the FASTA multiple sequence alignment format. In this format, each sequence
+is preceded by a header line starting with `>` followed by the sequence identifier and
+an optional description. The sequence itself can span multiple lines.
+
+MIToS uses `FastaIO.jl` for efficient parsing of FASTA files. When reading, sequence
+identifiers are disambiguated if necessary (e.g., if duplicates exist) by appending
+suffixes like `(1)`, `(2)`, etc. The original name is stored in annotations if changed.
+"""
 struct FASTA <: MSAFormat end
 
 # FASTA Parser
@@ -44,6 +55,27 @@ end
 # Print FASTA
 # ===========
 
+"""
+    Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{FASTA})
+
+Prints the multiple sequence alignment `msa` to the stream `io` in FASTA format.
+Each sequence is preceded by a header line `>` followed by its sequence identifier.
+The sequence itself is printed on the next line.
+
+```jldoctest
+julia> using MIToS.MSA
+
+julia> msa_matrix = Residue[Residue('A') Residue('R'); Residue('C') Residue('D')];
+
+julia> named_msa = MultipleSequenceAlignment(NamedArray(msa_matrix, (["seq1", "seq2"], ["col1", "col2"])));
+
+julia> print_file(stdout, named_msa, FASTA)
+>seq1
+AR
+>seq2
+CD
+```
+"""
 function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{FASTA})
     seqnames = sequencenames(msa)
     for i = 1:nsequences(msa)

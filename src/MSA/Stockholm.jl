@@ -1,3 +1,16 @@
+"""
+    Stockholm <: MSAFormat
+
+Represents the Stockholm multiple sequence alignment format. This format can store
+sequence alignments along with various types of annotations for the file itself (GF),
+sequences (GS), columns (GC), and residues (GR).
+
+MIToS parses these annotations into an `Annotations` object, typically stored within
+an `AnnotatedMultipleSequenceAlignment`. When printing, MIToS can also write out
+these annotations in the Stockholm format. Sequences are expected to be aligned,
+and may be split across multiple blocks in the file, keyed by sequence names.
+MIToS handles the reassembly of such fragmented sequences.
+"""
 struct Stockholm <: MSAFormat end
 
 # NOTE: Sequence‑Name Disambiguation
@@ -114,6 +127,56 @@ function _to_sequence_dict(annotation::Dict{Tuple{String,String},String})
     sizehint!(seq_dict, length(seq_dict))
 end
 
+"""
+    Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{Stockholm})
+
+Prints the multiple sequence alignment `msa` to the stream `io` in Stockholm format.
+
+If `msa` is an `AnnotatedAlignedObject` (e.g., `AnnotatedMultipleSequenceAlignment`),
+its annotations are printed:
+- File annotations (`#=GF`)
+- Sequence annotations (`#=GS`)
+- Residue annotations (`#=GR`), grouped by sequence.
+- Column annotations (`#=GC`)
+
+Sequences are printed with their identifiers. If an "Aligned" column annotation
+exists (typically indicating insert columns from HMM profiles), residues in
+insert columns are printed in lowercase, and gap characters in insert columns
+can be represented as '.' if `keep_insert_gaps` was true during parsing (though this
+print function currently implies `keep_insert_gaps=true` for output formatting of inserts).
+
+The output is terminated by `//`.
+
+```jldoctest
+julia> using MIToS.MSA
+
+julia> msa = AnnotatedMultipleSequenceAlignment(NamedArray(Residue["AR"; "CD"]))
+AnnotatedMultipleSequenceAlignment with 0 annotations : 2×2 Named Matrix{Residue}
+Seq │ Col
+─── │ ──────
+    │ 1   2
+─── │ ───────
+1   │ A   R
+2   │ C   D
+
+julia> setannotfile!(msa, "ID", "ExamplePfam");
+
+julia> setannotsequence!(msa, "1", "AC", "PF00000");
+
+julia> setannotresidue!(msa, "2", "SS", "HH");
+
+julia> setannotcolumn!(msa, "CONS", "..");
+
+julia> print_file(stdout, msa, Stockholm)
+#=GF ID	ExamplePfam
+#=GS 1	AC	PF00000
+1			AR
+2			CD
+#=GR 2	SS	HH
+#=GC CONS			..
+//
+```
+"""
 function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{Stockholm})
     has_annotations = isa(msa, AnnotatedAlignedObject) && !isempty(msa.annotations)
     if has_annotations

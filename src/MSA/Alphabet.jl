@@ -201,11 +201,27 @@ const _UngappedAlphabet_Names =
     OrderedDict{String,Int}(string(Residue(i)) => i for i = 1:20)
 const _GappedAlphabet_Names = OrderedDict{String,Int}(string(Residue(i)) => i for i = 1:21)
 
+"""
+    getnamedict(alphabet::UngappedAlphabet)
+
+Returns an `OrderedDict` mapping the string representation of each standard amino acid
+(e.g., "A", "R") to its integer position (1-20) in the ungapped alphabet.
+"""
 @inline getnamedict(alphabet::UngappedAlphabet) = _UngappedAlphabet_Names
+
+"""
+    getnamedict(alphabet::GappedAlphabet)
+
+Returns an `OrderedDict` mapping the string representation of each standard amino acid
+and the gap character (e.g., "A", "R", "-") to its integer position (1-21) in the
+gapped alphabet.
+"""
 @inline getnamedict(alphabet::GappedAlphabet) = _GappedAlphabet_Names
 
 """
-It takes a `ResidueAlphabet` and returns a dictionary from group name to group position.
+    getnamedict(alphabet::ReducedAlphabet)
+
+It takes a `ReducedAlphabet` and returns a dictionary from group name to group position.
 
 ```jldoctest
 julia> using MIToS.MSA

@@ -168,6 +168,24 @@ function Base.parse(
     parse_file(io, format, args...; kargs...)
 end
 
-# A placeholder to define the function name so that other modules can add their own 
+# A placeholder to define the function name so that other modules can add their own
 # definition of parse_file for their own `FileFormat`s
+"""
+    parse_file(io::Union{IO,AbstractString}, format::Type{T}, args...; kargs...) where T<:FileFormat
+
+Parses the content of an `IO` stream or an `AbstractString` according to the specified `FileFormat`.
+This is a generic function, and specific implementations should be provided by modules
+that define concrete subtypes of `FileFormat`.
+
+The `args...` and `kargs...` are passed to the specific parsing method.
+
+Other modules should extend this function with methods like:
+```julia
+# In another module:
+# struct MyFormat <: FileFormat end
+# function MIToS.Utils.parse_file(io::IO, ::Type{MyFormat}, ...)
+#   # Custom parsing logic here
+# end
+```
+"""
 function parse_file end

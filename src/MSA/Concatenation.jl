@@ -224,6 +224,38 @@ function _set_hcat_annotfile!(annot::Annotations, colnames)
     annot
 end
 
+"""
+    hcat(msa_1::T, msa_2::T, ...) where T<:AnnotatedAlignedObject -> T
+
+Horizontally concatenates two or more `AnnotatedAlignedObject`s (e.g.,
+`AnnotatedMultipleSequenceAlignment`, `AnnotatedAlignedSequence`).
+
+**Sequence Names:**
+Sequence names are concatenated if they differ across MSAs, using `_&_` as a delimiter.
+If a sequence name is present in the first MSA and identical in subsequent MSAs,
+it remains unchanged. This implies an expectation that sequences at the same row index
+across MSAs correspond to each other.
+
+**Column Names:**
+Column names are made unique by prefixing them with an MSA number (e.g., `1_colA`, `2_colA`).
+If column names already have a numerical prefix (e.g., from a previous `hcat` or `vcat`),
+the MSA number is incremented based on changes in these prefixes.
+
+**Annotations:**
+- File annotations (`GF`): Values for shared keys are concatenated with `_&_`. `ColMap`
+  annotations are concatenated with `,`. New keys are added.
+- Sequence annotations (`GS`): Values for shared sequence/feature keys are concatenated
+  (using `_&_` or `,` for "SeqMap"). Annotations for sequences unique to one input MSA
+  are carried over. Relies on the sequence name mapping derived from `_h_concatenated_seq_names`.
+- Column annotations (`GC`): Concatenated based on the new column structure, padding with
+  spaces if an annotation is missing in some MSAs.
+- Residue annotations (`GR`): Concatenated similarly to column annotations, keyed by the
+  (potentially concatenated) sequence name.
+- An "HCat" file annotation is added/updated to map new column names to their source MSA index.
+- "SeqMap" annotations are cleaned if their length doesn't match the new MSA column count.
+
+The type of the first MSA determines the output type.
+"""
 function Base.hcat(msa::T...) where {T<:AnnotatedAlignedObject}
     seqnames = _h_concatenated_seq_names(msa...)
     colnames = _h_concatenated_col_names(msa...)
@@ -243,6 +275,26 @@ function Base.hcat(msa::T...) where {T<:AnnotatedAlignedObject}
     _clean_sequence_mapping!(new_msa)
 end
 
+"""
+    hcat(msa_1::T, msa_2::T, ...) where T<:UnannotatedAlignedObject -> T
+
+Horizontally concatenates two or more `UnannotatedAlignedObject`s (e.g.,
+`MultipleSequenceAlignment`, `AlignedSequence`).
+
+**Sequence Names:**
+Sequence names are concatenated if they differ across MSAs, using `_&_` as a delimiter.
+If a sequence name is present in the first MSA and identical in subsequent MSAs,
+it remains unchanged. This implies an expectation that sequences at the same row index
+across MSAs correspond to each other.
+
+**Column Names:**
+Column names are made unique by prefixing them with an MSA number (e.g., `1_colA`, `2_colA`).
+If column names already have a numerical prefix (e.g., from a previous `hcat` or `vcat`),
+the MSA number is incremented based on changes in these prefixes.
+
+No annotations are handled as these types do not store them.
+The type of the first MSA determines the output type.
+"""
 function Base.hcat(msa::T...) where {T<:UnannotatedAlignedObject}
     concatenated_matrix = reduce(hcat, getresidues.(msa))
     seqnames = _h_concatenated_seq_names(msa...)
@@ -409,6 +461,35 @@ function _v_concatenate_annotresidue(concatenated_seqnames, data::Annotations...
     annotresidue
 end
 
+"""
+    vcat(msa_1::T, msa_2::T, ...) where T<:AnnotatedAlignedObject -> T
+
+Vertically concatenates two or more `AnnotatedAlignedObject`s (e.g.,
+`AnnotatedMultipleSequenceAlignment`, `AnnotatedAlignedSequence`).
+This implies that all MSAs must have the same number of columns and compatible
+column naming/mapping.
+
+**Sequence Names:**
+Sequence names are made unique by prefixing them with an MSA number (e.g., `1_seqA`, `2_seqA`).
+If a sequence name already has a numerical prefix (e.g., from a previous `vcat`),
+the new MSA number prefix is determined by a mapping (`label_mapping`) created during
+the name generation to ensure consistent numbering relative to the input MSAs.
+
+**Column Names:**
+Column names are taken from the first MSA. It's assumed that columns align meaningfully
+across the MSAs being concatenated.
+
+**Annotations:**
+- File annotations (`GF`): Prefixed with their source MSA number (e.g., `1_ID`, `2_ID`)
+  to avoid clashes. If an annotation name already has a numerical prefix, that prefix is
+  updated based on the `label_mapping`.
+- Sequence annotations (`GS`): Re-keyed to the new prefixed sequence names.
+- Column annotations (`GC`): Prefixed with their source MSA number (similar to file annotations).
+- Residue annotations (`GR`): Re-keyed to the new prefixed sequence names.
+
+The type of the first MSA determines the output type. No "VCat" annotation is added,
+as source MSA information is embedded in prefixed names.
+"""
 function Base.vcat(msa::T...) where {T<:AnnotatedAlignedObject}
     seqnames, label_mapping = _v_concatenated_seq_names(msa...; fill_mapping = true)
     colnames = columnname_iterator(msa[1])
@@ -427,6 +508,25 @@ function Base.vcat(msa::T...) where {T<:AnnotatedAlignedObject}
     T(concatenated_msa, new_annot)
 end
 
+"""
+    vcat(msa_1::T, msa_2::T, ...) where T<:UnannotatedAlignedObject -> T
+
+Vertically concatenates two or more `UnannotatedAlignedObject`s (e.g.,
+`MultipleSequenceAlignment`, `AlignedSequence`).
+This implies that all MSAs must have the same number of columns.
+
+**Sequence Names:**
+Sequence names are made unique by prefixing them with an MSA number (e.g., `1_seqA`, `2_seqA`).
+If a sequence name already has a numerical prefix, the new MSA number prefix is determined
+to ensure consistent numbering relative to the input MSAs.
+
+**Column Names:**
+Column names are taken from the first MSA. It's assumed that columns align meaningfully
+across the MSAs being concatenated.
+
+No annotations are handled as these types do not store them.
+The type of the first MSA determines the output type.
+"""
 function Base.vcat(msa::T...) where {T<:UnannotatedAlignedObject}
     concatenated_matrix = reduce(vcat, getresidues.(msa))
     seqnames, _ = _v_concatenated_seq_names(msa...)

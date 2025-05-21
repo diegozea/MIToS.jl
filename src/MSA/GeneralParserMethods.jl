@@ -1,10 +1,30 @@
 # File Formats
 # ============
 
+"""
+    AbstractSequenceFormat
+
+Abstract supertype for all sequence file formats within MIToS, whether they represent
+multiple sequence alignments (MSAs) or individual sequences. This type is a subtype of
+`MIToS.Utils.FileFormat`.
+"""
 abstract type AbstractSequenceFormat <: FileFormat end
 
+"""
+    MSAFormat <: AbstractSequenceFormat
+
+Abstract type for multiple sequence alignment (MSA) file formats, such as Stockholm,
+FASTA (for alignments), A3M, etc. It indicates that the file contains an alignment
+of multiple sequences.
+"""
 abstract type MSAFormat <: AbstractSequenceFormat end
 
+"""
+    SequenceFormat <: AbstractSequenceFormat
+
+Abstract type for file formats that typically represent individual, unaligned sequences,
+or collections of unaligned sequences (e.g., FASTA for single sequences, Raw sequence strings).
+"""
 abstract type SequenceFormat <: AbstractSequenceFormat end
 
 # Mappings

@@ -29,6 +29,18 @@ abstract type AbstractSequence <: AbstractResidueMatrix end
 # Multiple Sequence Alignment
 # ===========================
 
+"""
+    NamedResidueMatrix{AT}
+
+A type alias for a `NamedArray` that stores a 2-dimensional array (`AT`, typically
+`Matrix{Residue}`) of `Residue`s. The dimensions are named "Seq" and "Col"
+(or "Seq" and "Pos" for unaligned sequences), and their names (sequence identifiers
+and column/position numbers) are stored as `String`s in `OrderedDict`s.
+
+This is the core data structure used internally by various MSA and sequence types
+like `MultipleSequenceAlignment`, `AlignedSequence`, and `AnnotatedSequence` to
+hold the residue data along with sequence and column/position names.
+"""
 const NamedResidueMatrix{AT} =
     NamedArray{Residue,2,AT,Tuple{OrderedDict{String,Int},OrderedDict{String,Int}}}
 
@@ -282,9 +294,23 @@ AnnotatedSequence(seq::AnnotatedSequence) = seq
 # AnnotatedAlignedObject
 # ----------------------
 
+"""
+    AnnotatedAlignedObject
+
+A union type representing either an `AnnotatedMultipleSequenceAlignment` or an
+`AnnotatedAlignedSequence`. This is useful for functions that can operate on
+both annotated MSAs and annotated single aligned sequences.
+"""
 const AnnotatedAlignedObject =
     Union{AnnotatedMultipleSequenceAlignment,AnnotatedAlignedSequence}
 
+"""
+    UnannotatedAlignedObject
+
+A union type representing either a `MultipleSequenceAlignment` or an `AlignedSequence`
+that does not carry explicit `Annotations`. This is useful for functions that can
+operate on both unannotated MSAs and unannotated single aligned sequences.
+"""
 const UnannotatedAlignedObject = Union{MultipleSequenceAlignment,AlignedSequence}
 
 # Matrices

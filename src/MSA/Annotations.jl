@@ -29,6 +29,25 @@ Annotations() = Annotations(
 # Length
 # ------
 
+"""
+    Base.length(a::Annotations)
+
+Calculates the total number of individual annotations stored within the `Annotations` object.
+This is the sum of the number of file, sequence, column, and residue annotations.
+
+```jldoctest
+julia> using MIToS.MSA
+
+julia> ann = Annotations();
+
+julia> setannotfile!(ann, "INFO", "Example annotation");
+
+julia> setannotcolumn!(ann, "CONS", "XXX");
+
+julia> length(ann)
+2
+```
+"""
 function Base.length(a::Annotations)
     length(a.file) + length(a.sequences) + length(a.columns) + length(a.residues)
 end
@@ -130,17 +149,41 @@ end
 # Copy, deepcopy and empty!
 # -------------------------
 
-for fun in [:copy, :deepcopy]
-    @eval begin
-        Base.$(fun)(ann::Annotations) = Annotations(
-            $(fun)(ann.file),
-            $(fun)(ann.sequences),
-            $(fun)(ann.columns),
-            $(fun)(ann.residues),
-        )
-    end
-end
+"""
+    Base.copy(ann::Annotations)
 
+Creates a shallow copy of the `Annotations` object `ann`.
+The internal dictionaries for file, sequences, columns, and residues are themselves
+shallow copied.
+"""
+Base.copy(ann::Annotations) = Annotations(
+    copy(ann.file),
+    copy(ann.sequences),
+    copy(ann.columns),
+    copy(ann.residues),
+)
+
+"""
+    Base.deepcopy(ann::Annotations)
+
+Creates a deep copy of the `Annotations` object `ann`.
+The internal dictionaries for file, sequences, columns, and residues are themselves
+deep copied.
+"""
+Base.deepcopy(ann::Annotations) = Annotations(
+    deepcopy(ann.file),
+    deepcopy(ann.sequences),
+    deepcopy(ann.columns),
+    deepcopy(ann.residues),
+)
+
+"""
+    Base.empty!(ann::Annotations)
+
+Removes all annotations from `ann`, modifying it in place.
+All four internal dictionaries (file, sequences, columns, residues) are emptied.
+Returns the emptied `Annotations` object.
+"""
 function Base.empty!(ann::Annotations)
     empty!(ann.file)
     empty!(ann.sequences)
@@ -149,6 +192,13 @@ function Base.empty!(ann::Annotations)
     ann
 end
 
+"""
+    Base.isempty(ann::Annotations) -> Bool
+
+Checks if the `Annotations` object `ann` contains any annotations.
+Returns `true` if all internal dictionaries (file, sequences, columns, and residues)
+are empty, and `false` otherwise.
+"""
 Base.isempty(ann::Annotations) =
     isempty(ann.file) &&
     isempty(ann.sequences) &&
@@ -427,6 +477,28 @@ function Base.print(io::IO, ann::Annotations)
     _printcolumnsannotations(io, ann)
 end
 
+"""
+    Base.print(io::IO, ann::Annotations)
+
+Prints the annotations stored in `ann` to the stream `io` in a format similar
+to Stockholm file annotations.
+- File annotations are printed as `#=GF <feature> <value>`
+- Sequence annotations are printed as `#=GS <seqname> <feature> <value>`
+- Residue annotations are printed as `#=GR <seqname> <feature> <value>`
+- Column annotations are printed as `#=GC <feature> <value>`
+"""
+Base.print(io::IO, ann::Annotations) = begin
+    _printfileannotations(io, ann)
+    _printsequencesannotations(io, ann)
+    _printresiduesannotations(io, ann)
+    _printcolumnsannotations(io, ann)
+end
+
+"""
+    Base.show(io::IO, ann::Annotations)
+
+Prints the annotations to the stream `io`. This is equivalent to `print(io, ann)`.
+"""
 Base.show(io::IO, ann::Annotations) = print(io, ann)
 
 # Rename sequences

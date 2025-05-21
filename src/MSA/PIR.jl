@@ -1,3 +1,17 @@
+"""
+    PIR <: MSAFormat
+
+Represents the PIR (Protein Information Resource) or NBRF (National Biomedical Research
+Foundation) sequence alignment format. This format has a specific structure for its
+header line, indicating sequence type and identifier, followed by a title line, and
+then the sequence itself, which can be interrupted by newlines and ends with an asterisk (`*`).
+
+MIToS parses the sequence type and identifier from the header (e.g., `>P1;ID`),
+the title from the second line, and the sequence data. Sequence type and title are
+stored as sequence annotations if an `AnnotatedMultipleSequenceAlignment` is created.
+When printing, if these annotations are not available, default values (e.g., "XX" for
+sequence type) are used.
+"""
 struct PIR <: MSAFormat end
 
 # PIR Parser
@@ -118,6 +132,45 @@ function _get_pir_annotations(sequence_annotations, seq_id::String)
     seq_type, seq_title
 end
 
+"""
+    Utils.print_file(io::IO, msa::Union{AbstractMatrix{Residue}, AnnotatedMultipleSequenceAlignment}, format::Type{PIR})
+
+Prints the multiple sequence alignment `msa` to the stream `io` in PIR/NBRF format.
+
+Each sequence is printed in the PIR format:
+1.  A header line: `>{seq_type};{seq_id}`
+2.  A title line.
+3.  The sequence, printed with up to 80 characters per line, terminated by an asterisk (`*`).
+
+If `msa` is an `AnnotatedMultipleSequenceAlignment` and contains "Type" and "Title"
+sequence annotations for a sequence, these are used for `{seq_type}` and the title line.
+Otherwise, `{seq_type}` defaults to "XX" (Unknown) and the title line is empty.
+
+```jldoctest
+julia> using MIToS.MSA
+
+julia> msa = AnnotatedMultipleSequenceAlignment(NamedArray(Residue["AR"; "CD"]))
+AnnotatedMultipleSequenceAlignment with 0 annotations : 2×2 Named Matrix{Residue}
+Seq │ Col
+─── │ ──────
+    │ 1   2
+─── │ ───────
+1   │ A   R
+2   │ C   D
+
+julia> setannotsequence!(msa, "1", "Type", "P1");
+
+julia> setannotsequence!(msa, "1", "Title", "Protein 1");
+
+julia> print_file(stdout, msa, PIR)
+>P1;1
+Protein 1
+AR*
+>XX;2
+
+CD*
+```
+"""
 function Utils.print_file(
     io::IO,
     msa::AnnotatedMultipleSequenceAlignment,

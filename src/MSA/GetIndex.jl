@@ -59,7 +59,24 @@ end
 
 # If the user already gives a position, return the same position.
 
+"""
+    sequence_index(msa, sequence_index::Int) -> Int
+
+If `sequence_index` is an `Int`, this method returns the integer itself.
+This allows functions accepting a sequence name (String) or index (Int) to
+use `sequence_index` uniformly. No validation is performed to check if the
+integer is a valid index for `msa`.
+"""
 sequence_index(msa, sequence_index::Int) = sequence_index
+
+"""
+    column_index(msa, column_index::Int) -> Int
+
+If `column_index` is an `Int`, this method returns the integer itself.
+This allows functions accepting a column name (String) or index (Int) to
+use `column_index` uniformly. No validation is performed to check if the
+integer is a valid index for `msa`.
+"""
 column_index(msa, column_index::Int) = column_index
 
 # ---

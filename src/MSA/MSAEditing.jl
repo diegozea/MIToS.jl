@@ -99,7 +99,42 @@ end
 # ----------------
 
 """
-It's similar to `filtersequences!` but for an `AbstractMatrix{Residue}`
+    filtersequences(msa::AbstractMatrix{Residue}, mask) -> AbstractMatrix{Residue}
+
+Filters the sequences of an MSA (represented as an `AbstractMatrix{Residue}`)
+based on the provided `mask`. The `mask` can be:
+- A boolean vector, where `false` elements indicate sequences to remove.
+- A vector of indices of sequences to keep.
+- A function that takes a sequence (a row of the MSA) and returns `true` (keep) or `false` (remove).
+
+Returns a new matrix containing only the selected sequences. This function does not
+modify the original `msa` and does not handle annotations.
+
+```jldoctest
+julia> using MIToS.MSA
+
+julia> m = res"ARNDCGQEHILKMFPSTWYV"
+1×20 Matrix{Residue}:
+ A  R  N  D  C  G  Q  E  H  I  L  K  M  F  P  S  T  W  Y  V
+
+julia> msa = vcat(m, m, m);
+
+julia> sequencenames(msa) # Default names
+3-element Vector{String}:
+ "1"
+ "2"
+ "3"
+
+julia> filtersequences(msa, [true, false, true])
+2×20 Matrix{Residue}:
+ A  R  N  D  C  G  Q  E  H  I  L  K  M  F  P  S  T  W  Y  V
+ A  R  N  D  C  G  Q  E  H  I  L  K  M  F  P  S  T  W  Y  V
+
+julia> filtersequences(msa, [1,3]) # Keep first and third sequence
+2×20 Matrix{Residue}:
+ A  R  N  D  C  G  Q  E  H  I  L  K  M  F  P  S  T  W  Y  V
+ A  R  N  D  C  G  Q  E  H  I  L  K  M  F  P  S  T  W  Y  V
+```
 """
 filtersequences(msa::AbstractMatrix{Residue}, mask) = msa[_sequence_mask(mask, msa), :]
 
@@ -131,6 +166,19 @@ function filtersequences!(msa::MultipleSequenceAlignment, mask, annotate::Bool =
     msa
 end
 
+"""
+    filtersequences(msa::Union{AnnotatedMultipleSequenceAlignment, MultipleSequenceAlignment}, mask, annotate::Bool=true) -> Union{AnnotatedMultipleSequenceAlignment, MultipleSequenceAlignment}
+
+Creates a new MSA by filtering the sequences of the input `msa` based on the `mask`.
+This function first creates a deep copy of `msa` and then calls the mutating version
+`filtersequences!` on the copy.
+
+The `mask` can be a boolean vector, a vector of indices, or a function.
+If `msa` is an `AnnotatedMultipleSequenceAlignment`, annotations are updated in the
+new MSA if `annotate` is `true` (default).
+
+Returns a new, filtered MSA object.
+"""
 function filtersequences(
     msa::Union{AnnotatedMultipleSequenceAlignment,MultipleSequenceAlignment},
     args...,
@@ -142,7 +190,76 @@ end
 # --------------
 
 """
-It's similar to `filtercolumns!` but for an `AbstractMatrix{Residue}`
+    filtercolumns(msa::AbstractMatrix{Residue}, mask) -> AbstractMatrix{Residue}
+
+Filters the columns of an MSA (represented as an `AbstractMatrix{Residue}`)
+based on the provided `mask`. The `mask` can be:
+- A boolean vector, where `false` elements indicate columns to remove.
+- A vector of indices of columns to keep.
+- A function that takes a column (a column of the MSA) and returns `true` (keep) or `false` (remove).
+
+Returns a new matrix containing only the selected columns. This function does not
+modify the original `msa` and does not handle annotations.
+
+```jldoctest
+julia> using MIToS.MSA
+
+julia> m = permutedims(res"ARNDCGQEHILKMFPSTWYV"); # Create a 20x1 MSA
+
+julia> msa = hcat(m, m, m); # 20x3 MSA
+
+julia> columnnames(msa) # Default names
+3-element Vector{String}:
+ "1"
+ "2"
+ "3"
+
+julia> filtercolumns(msa, [true, false, true]) # Keep first and third columns
+20×2 Matrix{Residue}:
+ A  A
+ R  R
+ N  N
+ D  D
+ C  C
+ G  G
+ Q  Q
+ E  E
+ H  H
+ I  I
+ L  L
+ K  K
+ M  M
+ F  F
+ P  P
+ S  S
+ T  T
+ W  W
+ Y  Y
+ V  V
+
+julia> filtercolumns(msa, [1,3])
+20×2 Matrix{Residue}:
+ A  A
+ R  R
+ N  N
+ D  D
+ C  C
+ G  G
+ Q  Q
+ E  E
+ H  H
+ I  I
+ L  L
+ K  K
+ M  M
+ F  F
+ P  P
+ S  S
+ T  T
+ W  W
+ Y  Y
+ V  V
+```
 """
 function filtercolumns(msa::AbstractMatrix{Residue}, mask)
     msa[:, _column_mask(mask, msa)]
@@ -174,6 +291,19 @@ function filtercolumns!(x::UnannotatedAlignedObject, mask, annotate::Bool = fals
     x
 end
 
+"""
+    filtercolumns(x::AbstractResidueMatrix, mask, annotate::Bool=true) -> AbstractResidueMatrix
+
+Creates a new MSA or aligned sequence by filtering the columns/positions of the input `x`
+based on the `mask`. This function first creates a deep copy of `x` and then calls the
+mutating version `filtercolumns!` on the copy.
+
+The `mask` can be a boolean vector, a vector of indices, or a function.
+If `x` is an `AnnotatedMultipleSequenceAlignment`, `AnnotatedAlignedSequence`, or
+`AnnotatedSequence`, annotations are updated in the new object if `annotate` is `true` (default).
+
+Returns a new, filtered MSA or sequence object.
+"""
 filtercolumns(x::AbstractResidueMatrix, args...) = filtercolumns!(deepcopy(x), args...)
 
 # Util function
