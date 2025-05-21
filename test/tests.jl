@@ -71,6 +71,7 @@ end
     include("PDB/Internals.jl")
     include("PDB/Sequences.jl")
     include("PDB/AlphaFoldDB.jl")
+    include("PDB/BioStructures.jl")
 end
 
 # SIFTS
