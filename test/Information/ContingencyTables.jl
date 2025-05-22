@@ -44,32 +44,99 @@
         end
     end
 
-    @testset "Show" begin
+    @testset "ContingencyTable Show Methods" begin
+        # This testset covers show(io, ::MIME"text/plain", ...) for ContingencyTable,
+        # Probabilities, and Frequencies.
 
-        out = IOBuffer()
+        alpha = UngappedAlphabet()
 
-        d1 = ContingencyTable(Float64, Val{1}, UngappedAlphabet())
-        d2 = ContingencyTable(Float64, Val{2}, UngappedAlphabet())
+        @testset "ContingencyTable show" begin
+            # Test N=1
+            ct1 = ContingencyTable(Float64, Val{1}, alpha)
+            ct1[Residue('A')] = 5.0
+            ct1[Residue('R')] = 3.0
+            # update_marginals! for N=1 just updates the total based on the table.
+            # The `marginals` field itself is not used in the same way as N>1.
+            # The `show` method for N=1 does not print a "marginals :" section.
+            # We need to ensure total is calculated for the show method.
+            # The show method calls `gettotal(table)`, which should be up-to-date if table is modified.
+            # Let's assume direct modification of `table.table` and `table.total` or use of internal updates if available.
+            # For testing `show`, it's best to have a fully consistent table.
+            # `update_marginals!(ct)` is the public API to ensure this.
+            update_marginals!(ct1) # Ensures total is correct.
 
-        show(out, MIME"text/plain"(), d1)
-        d1_str = String(take!(out))
+            str_out_ct1 = sprint((io, x) -> show(io, MIME"text/plain"(), x), ct1)
 
-        show(out, MIME"text/plain"(), d2)
-        d2_str = String(take!(out))
+            @test occursin("ContingencyTable{Float64, 1, UngappedAlphabet} :", str_out_ct1)
+            @test occursin("\ntable :", str_out_ct1)
+            @test occursin("Named Array", str_out_ct1) # Check if NamedArray show is part of it
+            @test occursin("Dim_1", str_out_ct1) # Default NamedArray dimension name
+            @test occursin(string(Residue('A')), str_out_ct1) # Check for a residue name
+            @test !occursin("\n\nmarginals :", str_out_ct1) # Key: No marginals section for N=1
+            @test occursin("\n\ntotal : $(gettotal(ct1))", str_out_ct1)
+            @test occursin("\n\ntotal : 8.0", str_out_ct1)
 
-        @test startswith(d1_str, r"ContingencyTable{Float64,\s?1,\s?UngappedAlphabet} :")
-        @test occursin("table :", d1_str)
-        @test occursin("Dim_1", d1_str)
-        @test !occursin("Dim_2", d1_str)
-        @test !occursin("marginals :", d1_str)
-        @test occursin("total :", d1_str)
 
-        @test startswith(d2_str, r"ContingencyTable{Float64,\s?2,\s?UngappedAlphabet} :")
-        @test occursin("table :", d2_str)
-        @test occursin("Dim_1", d2_str)
-        @test occursin("Dim_2", d2_str)
-        @test occursin("marginals :", d2_str)
-        @test occursin("total :", d2_str)
+            # Test N=2
+            ct2 = ContingencyTable(Float64, Val{2}, alpha)
+            ct2[Residue('A'), Residue('C')] = 2.0
+            ct2[Residue('G'), Residue('T')] = 4.0
+            update_marginals!(ct2)
+
+            str_out_ct2 = sprint((io, x) -> show(io, MIME"text/plain"(), x), ct2)
+
+            @test occursin("ContingencyTable{Float64, 2, UngappedAlphabet} :", str_out_ct2)
+            @test occursin("\ntable :", str_out_ct2)
+            @test occursin("Named Array", str_out_ct2)
+            @test occursin("Dim_1", str_out_ct2)
+            @test occursin(string(Residue('A')), str_out_ct2)
+            @test occursin("\n\nmarginals :", str_out_ct2) # Marginals section for N=2
+            # Check for part of marginals NamedArray output
+            @test countlines(IOBuffer(str_out_ct2)) > countlines(IOBuffer(str_out_ct1)) # More content due to marginals
+            @test occursin("\n\ntotal : $(gettotal(ct2))", str_out_ct2)
+            @test occursin("\n\ntotal : 6.0", str_out_ct2)
+        end
+
+        @testset "Probabilities show" begin
+            ct_for_prob = ContingencyTable(Float64, Val{2}, alpha)
+            ct_for_prob[Residue('A'), Residue('A')] = 10.0
+            update_marginals!(ct_for_prob)
+            
+            # Probabilities constructor normalizes the table.
+            prob = Probabilities(ct_for_prob, false) # false to not use pseudocounts for simplicity
+
+            str_out_prob = sprint((io, x) -> show(io, MIME"text/plain"(), x), prob)
+            str_out_ct_internal = sprint((io, x) -> show(io, MIME"text/plain"(), x), prob.table) # Get show string of internal CT
+
+            expected_prefix = "Probabilities{Float64, 2, UngappedAlphabet} wrapping a "
+            @test startswith(str_out_prob, expected_prefix)
+            # The rest of the string should be the show output of the wrapped ContingencyTable
+            @test strip(str_out_prob[length(expected_prefix)+1:end]) == strip(str_out_ct_internal)
+            
+            # Verify that the total of the internal CT (which is now probabilities) is 1.0
+            @test occursin("\n\ntotal : 1.0", str_out_prob)
+        end
+
+        @testset "Frequencies show" begin
+            ct_for_freq = ContingencyTable(Int, Val{1}, alpha) # Frequencies often use Int
+            ct_for_freq[Residue('T')] = 5
+            ct_for_freq[Residue('G')] = 15
+            update_marginals!(ct_for_freq)
+            
+            # Frequencies constructor just wraps the ContingencyTable
+            freq = Frequencies(ct_for_freq)
+
+            str_out_freq = sprint((io, x) -> show(io, MIME"text/plain"(), x), freq)
+            str_out_ct_internal_freq = sprint((io, x) -> show(io, MIME"text/plain"(), x), freq.table)
+
+            expected_prefix_freq = "Frequencies{Int64, 1, UngappedAlphabet} wrapping a " # Note Int64
+            @test startswith(str_out_freq, expected_prefix_freq)
+            @test strip(str_out_freq[length(expected_prefix_freq)+1:end]) == strip(str_out_ct_internal_freq)
+
+            # Verify total from the original counts
+            @test occursin("\n\ntotal : $(gettotal(ct_for_freq))", str_out_freq)
+            @test occursin("\n\ntotal : 20", str_out_freq)
+        end
     end
 
     @testset "Indexing" begin

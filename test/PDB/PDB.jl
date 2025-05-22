@@ -1,3 +1,6 @@
+using StaticArrays # For Coordinates in PDBAtom
+using Format # For Format.format in show methods
+
 @testset "Parse PDB and PDBML" begin
 
     txt(code) = joinpath(DATA, string(uppercase(code), ".pdb"))
@@ -427,6 +430,156 @@
         end
     end
 end
+
+@testset "PDB Show Methods" begin
+    using StaticArrays # For Coordinates
+    using Format # For Format.format
+
+    @testset "PDBResidueIdentifier show" begin
+        pdb_id = PDBResidueIdentifier("10A", "10", "ALA", "ATOM", "1", "A")
+        
+        # Expected output construction
+        # Line 1: Header
+        line1 = Format.format(MIToS.PDB._Format_ResidueID, "PDBe_number", "number", "name", "group", "model", "chain")
+        # Line 2: Values
+        line2 = Format.format(MIToS.PDB._Format_ResidueID, 
+                              string('"', pdb_id.PDBe_number, '"'), 
+                              string('"', pdb_id.number, '"'), 
+                              string('"', pdb_id.name, '"'), 
+                              string('"', pdb_id.group, '"'), 
+                              string('"', pdb_id.model, '"'), 
+                              string('"', pdb_id.chain, '"'))
+        expected_output = line1 * line2
+        
+        captured_output = sprint(show, pdb_id)
+        @test captured_output == expected_output
+    end
+
+    @testset "PDBAtom show" begin
+        atom = PDBAtom(Coordinates(1.0, 2.0, 3.0), "CA", "C", 1.00, "20.0", "A", "+1")
+        
+        # Expected output construction
+        # Line 1: Header
+        line1 = Format.format(MIToS.PDB._Format_ATOM, "coordinates", "atom", "element", "occupancy", "B", "alt_id", "charge")
+        # Line 2: Values
+        line2 = Format.format(MIToS.PDB._Format_ATOM, 
+                              atom.coordinates, # Coordinates show themselves as "Coordinates(1.0, 2.0, 3.0)"
+                              string('"', atom.atom, '"'), 
+                              string('"', atom.element, '"'), 
+                              atom.occupancy, 
+                              string('"', atom.B, '"'), 
+                              string('"', atom.alt_id, '"'), 
+                              string('"', atom.charge, '"'))
+        expected_output = line1 * line2
+        
+        captured_output = sprint(show, atom)
+        @test captured_output == expected_output
+    end
+
+    @testset "PDBResidue show" begin
+        # PDBResidue with atoms
+        pdb_residue_id = PDBResidueIdentifier("10B", "10", "LYS", "ATOM", "1", "B")
+        atom1 = PDBAtom(Coordinates(1.1, 2.2, 3.3), "N", "N", 1.00, "22.0", "", "")
+        atom2 = PDBAtom(Coordinates(4.4, 5.5, 6.6), "CA", "C", 0.50, "23.5", "B", "")
+        residue_with_atoms = PDBResidue(pdb_residue_id, [atom1, atom2])
+        
+        # Expected output construction for residue_with_atoms
+        expected_str_builder = IOBuffer()
+        print(expected_str_builder, "PDBResidue:\n\tid::PDBResidueIdentifier\n")
+        print(expected_str_builder, Format.format(MIToS.PDB._Format_ResidueID_Res, "PDBe_number", "number", "name", "group", "model", "chain"))
+        print(expected_str_builder, Format.format(MIToS.PDB._Format_ResidueID_Res, 
+                                 string('"', residue_with_atoms.id.PDBe_number, '"'), 
+                                 string('"', residue_with_atoms.id.number, '"'), 
+                                 string('"', residue_with_atoms.id.name, '"'), 
+                                 string('"', residue_with_atoms.id.group, '"'), 
+                                 string('"', residue_with_atoms.id.model, '"'), 
+                                 string('"', residue_with_atoms.id.chain, '"')))
+        print(expected_str_builder, "\tatoms::Vector{PDBAtom}\tlength: $(length(residue_with_atoms.atoms))\n")
+        print(expected_str_builder, Format.format(MIToS.PDB._Format_ATOM_Res, "", "coordinates", "atom", "element", "occupancy", "B", "alt_id", "charge"))
+        for (k, atom_k) in enumerate(residue_with_atoms.atoms)
+            print(expected_str_builder, Format.format(MIToS.PDB._Format_ATOM_Res, 
+                                     string(k, ":"), 
+                                     atom_k.coordinates, 
+                                     string('"', atom_k.atom, '"'), 
+                                     string('"', atom_k.element, '"'), 
+                                     atom_k.occupancy, 
+                                     string('"', atom_k.B, '"'), 
+                                     string('"', atom_k.alt_id, '"'), 
+                                     string('"', atom_k.charge, '"')))
+        end
+        expected_output_with_atoms = String(take!(expected_str_builder))
+        
+        captured_output_with_atoms = sprint(show, residue_with_atoms)
+        @test captured_output_with_atoms == expected_output_with_atoms
+
+        # PDBResidue with zero atoms
+        residue_no_atoms_id = PDBResidueIdentifier("11C", "11", "GLY", "HETATM", "2", "C")
+        residue_no_atoms = PDBResidue(residue_no_atoms_id, PDBAtom[])
+
+        # Expected output construction for residue_no_atoms
+        print(expected_str_builder, "PDBResidue:\n\tid::PDBResidueIdentifier\n")
+        print(expected_str_builder, Format.format(MIToS.PDB._Format_ResidueID_Res, "PDBe_number", "number", "name", "group", "model", "chain"))
+        print(expected_str_builder, Format.format(MIToS.PDB._Format_ResidueID_Res, 
+                                 string('"', residue_no_atoms.id.PDBe_number, '"'), 
+                                 string('"', residue_no_atoms.id.number, '"'), 
+                                 string('"', residue_no_atoms.id.name, '"'), 
+                                 string('"', residue_no_atoms.id.group, '"'), 
+                                 string('"', residue_no_atoms.id.model, '"'), 
+                                 string('"', residue_no_atoms.id.chain, '"')))
+        print(expected_str_builder, "\tatoms::Vector{PDBAtom}\tlength: $(length(residue_no_atoms.atoms))\n")
+        # The header for atoms is printed even if there are no atoms, as per current show impl.
+        print(expected_str_builder, Format.format(MIToS.PDB._Format_ATOM_Res, "", "coordinates", "atom", "element", "occupancy", "B", "alt_id", "charge"))
+        # Loop for atoms will not run.
+        expected_output_no_atoms = String(take!(expected_str_builder))
+
+        captured_output_no_atoms = sprint(show, residue_no_atoms)
+        @test captured_output_no_atoms == expected_output_no_atoms
+    end
+end
+
+# Need to add using StaticArrays and using Format at the top of the main PDB.jl test file.
+# This diff assumes they will be added there.
+# If they are already there or should be local to the testset, this can be adjusted.
+# For now, adding them locally to the testset as shown in the plan.
+# The change below is to add them to the top of the file if that's preferred.
+# Let's assume they are added at the top of test/PDB/PDB.jl if they are not already there.
+# I will make a separate tool call for that if needed, after this one.
+# The prompt says "Ensure all necessary using statements are present at the top of test/PDB/PDB.jl"
+# I'll first check if they are there.
+# If not, I'll add them. For now, the testset includes them locally.
+# The current diff will put them inside the testset.
+# To put them at the top of the file, I'd need to know the full file content or make a targeted insertion.
+
+# Re-checking the plan: "Ensure all necessary using statements are present at the top of test/PDB/PDB.jl."
+# This means I should modify the top of the file.
+# The current diff only adds them to the new testset.
+# I will make a second `replace_with_git_merge_diff` call to add `using StaticArrays` and `using Format`
+# to the top of `test/PDB/PDB.jl` if they are not there.
+
+# Let's first apply this diff which creates the tests with local usings.
+# Then I will check the top of the file and add them if necessary.
+# This is safer than trying to prepend to a file whose full content I haven't just read for this specific purpose.
+# However, the instructions are clear to add them to the top.
+# I will modify this diff to attempt to add them at the top, assuming a common structure.
+# This is risky. A safer way is to first read, then prepend.
+# Given the tool limitations, I'll try a common pattern for adding imports.
+
+# Safer approach:
+# 1. Apply the tests with local usings (this diff).
+# 2. Read the file.
+# 3. If `using StaticArrays; using Format;` are missing, add them.
+
+# For now, this diff adds the tests with local `using` statements.
+# The next step will be to adjust the main file's imports.
+# The prompt implies these should be top-level in the file.
+# The current diff block does not modify the top-level `using` statements.
+# It adds them locally to the new testset. This is fine for the tests to pass.
+# I will address the top-level `using` statements in the next step if needed.
+# The provided solution in the prompt puts them inside the testset, so I'll follow that.
+# `using StaticArrays # For Coordinates`
+# `using Format # For Format.format`
+# are inside `@testset "PDB Show Methods" begin ... end`
+# This is acceptable.
 
 @testset "RESTful PDB Interface" begin
 
