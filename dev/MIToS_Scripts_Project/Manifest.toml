@@ -41,9 +41,9 @@ version = "0.1.5"
 
 [[deps.BioStructures]]
 deps = ["BioGenerics", "BioSymbols", "CodecZlib", "Downloads", "Format", "LinearAlgebra", "PrecompileTools", "RecipesBase", "Statistics"]
-git-tree-sha1 = "ca9ebccc15ceab7608e226a59ee322439c91448d"
+git-tree-sha1 = "c18b98259677a40c4f747740098e16e989b91615"
 uuid = "de9282ab-8554-53be-b2d6-f6c222edabfc"
-version = "4.4.2"
+version = "4.5.0"
 
     [deps.BioStructures.extensions]
     BioStructuresBioAlignmentsExt = ["BioSequences", "BioAlignments"]
@@ -177,9 +177,9 @@ version = "1.7.0"
 
 [[deps.JSON3]]
 deps = ["Dates", "Mmap", "Parsers", "PrecompileTools", "StructTypes", "UUIDs"]
-git-tree-sha1 = "196b41e5a854b387d99e5ede2de3fcb4d0422aae"
+git-tree-sha1 = "411eccfe8aba0814ffa0fdf4860913ed09c34975"
 uuid = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
-version = "1.14.2"
+version = "1.14.3"
 
     [deps.JSON3.extensions]
     JSON3ArrowExt = ["ArrowTypes"]
@@ -254,10 +254,10 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 version = "1.11.0"
 
 [[deps.MIToS]]
-deps = ["AutoHashEquals", "BioStructures", "CodecZlib", "Dates", "Downloads", "FastaIO", "Format", "JSON3", "LightXML", "LinearAlgebra", "Logging", "Markdown", "NamedArrays", "OrderedCollections", "PairwiseListMatrices", "Pkg", "Random", "RecipesBase", "Serialization", "StaticArrays", "Statistics", "StatsBase", "TranscodingStreams"]
-git-tree-sha1 = "8995effa332b70686f53d0dca35a29950f418df7"
+deps = ["AutoHashEquals", "BioStructures", "CodecZlib", "Dates", "Downloads", "FastaIO", "Format", "JSON3", "LightXML", "LinearAlgebra", "Logging", "Markdown", "NamedArrays", "OrderedCollections", "PairwiseListMatrices", "Random", "RecipesBase", "Serialization", "StaticArrays", "Statistics", "StatsBase", "TranscodingStreams"]
+git-tree-sha1 = "a6e5da63f8b6900cfa5838fad1374a5fd7ce6d62"
 uuid = "51bafb47-8a16-5ded-8b04-24ef4eede0b5"
-version = "3.0.6"
+version = "3.1.0"
 
     [deps.MIToS.extensions]
     MIToSClusteringExt = "Clustering"
@@ -301,9 +301,9 @@ version = "2023.12.12"
 
 [[deps.NamedArrays]]
 deps = ["Combinatorics", "DataStructures", "DelimitedFiles", "InvertedIndices", "LinearAlgebra", "Random", "Requires", "SparseArrays", "Statistics"]
-git-tree-sha1 = "58e317b3b956b8aaddfd33ff4c3e33199cd8efce"
+git-tree-sha1 = "b0219babbb69e4f0b292a11ad7f33520bdfcea8f"
 uuid = "86f7a689-2022-50b4-a561-43c23ac3c673"
-version = "0.10.3"
+version = "0.10.4"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
@@ -315,9 +315,9 @@ uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
 version = "0.3.27+1"
 
 [[deps.OrderedCollections]]
-git-tree-sha1 = "cc4054e898b852042d7b503313f7ad03de99c3dd"
+git-tree-sha1 = "05868e21324cede2207c6f0f466b4bfef6d5e7ee"
 uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
-version = "1.8.0"
+version = "1.8.1"
 
 [[deps.PairwiseListMatrices]]
 deps = ["DelimitedFiles", "LinearAlgebra", "NamedArrays", "RecipesBase", "Statistics"]
@@ -446,9 +446,9 @@ weakdeps = ["SparseArrays"]
 
 [[deps.StatsAPI]]
 deps = ["LinearAlgebra"]
-git-tree-sha1 = "1ff449ad350c9c4cbc756624d6f8a8c3ef56d3ed"
+git-tree-sha1 = "9d72a13a3f4dd3795a195ac5a44d7d6ff5f552ff"
 uuid = "82ae8749-77ed-4fe6-ae5f-f523153014b0"
-version = "1.7.0"
+version = "1.7.1"
 
 [[deps.StatsBase]]
 deps = ["AliasTables", "DataAPI", "DataStructures", "LinearAlgebra", "LogExpFunctions", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics", "StatsAPI"]
