@@ -2,59 +2,40 @@
     import MIToS.MSA: _pairwise_score
 
     @testset "Sum Of Pairs" begin
-        simple = read_file(joinpath(DATA, "simple.fasta"), FASTA)
-        expected_simple =
-            _pairwise_score(simple[1, :], simple[2, :]; gap_open = -10, gap_extend = -1)
+        # simple.fasta : 
+        # AR
+        # RA
+        simple = read_file(joinpath(DATA, "simple.fasta"), FASTA) 
+        expected_simple = MSA.BLOSUM62[Int(res"A"), Int(res"R")] +
+                          MSA.BLOSUM62[Int(res"R"), Int(res"A")]
+        @test _pairwise_score(simple[1, :], simple[2, :]; gap_open = -10, gap_extend = -1) == expected_simple
         @test sum_of_pairs_score(simple) == expected_simple
 
-        msa = permutedims(hcat(res"A-", res"AR", res"RA"))
-        expected_default =
-            _pairwise_score(msa[1, :], msa[2, :]; gap_open = -10, gap_extend = -1) +
-            _pairwise_score(msa[1, :], msa[3, :]; gap_open = -10, gap_extend = -1) +
-            _pairwise_score(msa[2, :], msa[3, :]; gap_open = -10, gap_extend = -1)
-        @test sum_of_pairs_score(msa) == expected_default
-
-        expected_custom =
-            _pairwise_score(msa[1, :], msa[2, :]; gap_open = -5, gap_extend = -2) +
-            _pairwise_score(msa[1, :], msa[3, :]; gap_open = -5, gap_extend = -2) +
-            _pairwise_score(msa[2, :], msa[3, :]; gap_open = -5, gap_extend = -2)
-        @test sum_of_pairs_score(msa; gap_open = -5, gap_extend = -2) == expected_custom
-
-        custom_matrix = fill(-1, 22, 22)
-        for i = 1:22
-            custom_matrix[i, i] = 1
+        msa = Residue[
+            'A'  '-'  '-'  'A'
+            'A'  'R'  'A'  'V'
+            '-'  'R'  'A'  '-'
+        ]
+        
+        # BLOSUM62 values
+        # A A =  4
+        # A R = -1
+        # R R =  5
+        # A V =  0
+        for (go, ge) in [(-10, -1), (-5, -2)] # (-10, -1) is the default
+            # 1-2, 1-3, 2-3
+            expected = (4 + go + ge + 0) + 
+                       (go + go + ge + go) + 
+                       (go + 5 + 4 + go)
+            observed = _pairwise_score(msa[1, :], msa[2, :]; gap_open = -go, gap_extend = ge) +
+                _pairwise_score(msa[1, :], msa[3, :]; gap_open = -go, gap_extend = ge) +
+                _pairwise_score(msa[2, :], msa[3, :]; gap_open = -go, gap_extend = ge)
+            @test observed == expected
+            @test sum_of_pairs_score(msa; gap_open = go, gap_extend = ge) == expected
         end
-        expected_matrix =
-            _pairwise_score(
-                msa[1, :],
-                msa[2, :];
-                gap_open = -5,
-                gap_extend = -2,
-                matrix = custom_matrix,
-            ) +
-            _pairwise_score(
-                msa[1, :],
-                msa[3, :];
-                gap_open = -5,
-                gap_extend = -2,
-                matrix = custom_matrix,
-            ) +
-            _pairwise_score(
-                msa[2, :],
-                msa[3, :];
-                gap_open = -5,
-                gap_extend = -2,
-                matrix = custom_matrix,
-            )
-        @test sum_of_pairs_score(
-            msa;
-            gap_open = -5,
-            gap_extend = -2,
-            matrix = custom_matrix,
-        ) == expected_matrix
-
+        # Test with multiple gaps
         g1 = res"-A-"
         g2 = res"A--"
-        @test _pairwise_score(g1, g2; gap_open = -10, gap_extend = -1) == -20
+        @test _pairwise_score(g1, g2) == -20 # gap_open=-10
     end
 end
