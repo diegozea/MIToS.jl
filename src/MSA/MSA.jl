@@ -138,6 +138,7 @@ export  # Residue
     percentidentity,
     meanpercentidentity,
     percentsimilarity,
+    sum_of_pairs_score,
     # Clusters
     WeightTypes,
     NoClustering,
@@ -172,6 +173,7 @@ include("MultipleSequenceAlignment.jl")
 include("MSAEditing.jl")
 include("GetIndex.jl")
 include("MSAStats.jl")
+include("MSAQuality.jl")
 include("GeneralParserMethods.jl")
 include("Raw.jl")
 include("Stockholm.jl")

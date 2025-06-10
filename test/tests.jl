@@ -43,6 +43,7 @@ end
     include("MSA/General.jl")
     include("MSA/MSAEditing.jl")
     include("MSA/MSAStats.jl")
+    include("MSA/MSAQuality.jl")
     include("MSA/Sequences.jl")
     include("MSA/Shuffle.jl")
     include("MSA/Identity.jl")
