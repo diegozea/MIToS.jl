@@ -53,7 +53,7 @@ using Pkg; Pkg.add("MIToS")
 To update your installed version, you can execute:
 
 ```julia
-using Pkg; Pkg.update("MIToS")`
+using Pkg; Pkg.update("MIToS")
 ```
 
 ### Scripts
