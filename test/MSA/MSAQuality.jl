@@ -8,7 +8,7 @@
         simple = read_file(joinpath(DATA, "simple.fasta"), FASTA) 
         expected_simple = MSA.BLOSUM62[Int(Residue('A')), Int(Residue('R'))] +
                           MSA.BLOSUM62[Int(Residue('R')), Int(Residue('A'))]
-        @test _pairwise_score(simple[1, :], simple[2, :]; gap_open = -10, gap_extend = -1) == expected_simple
+        @test _pairwise_score(simple[1, :], simple[2, :], -10, -1, MSA.BLOSUM62) == expected_simple
         @test sum_of_pairs_score(simple) == expected_simple
 
         msa = Residue[
@@ -27,15 +27,15 @@
             expected = (4 + go + ge + 0) + 
                        (go + go + ge + go) + 
                        (go + 5 + 4 + go)
-            observed = _pairwise_score(msa[1, :], msa[2, :]; gap_open = -go, gap_extend = ge) +
-                _pairwise_score(msa[1, :], msa[3, :]; gap_open = -go, gap_extend = ge) +
-                _pairwise_score(msa[2, :], msa[3, :]; gap_open = -go, gap_extend = ge)
+            observed = _pairwise_score(msa[1, :], msa[2, :], go, ge, MSA.BLOSUM62) +
+                _pairwise_score(msa[1, :], msa[3, :], go, ge, MSA.BLOSUM62) +
+                _pairwise_score(msa[2, :], msa[3, :], go, ge, MSA.BLOSUM62)
             @test observed == expected
             @test sum_of_pairs_score(msa; gap_open = go, gap_extend = ge) == expected
         end
         # Test with multiple gaps
         g1 = res"-A-"
         g2 = res"A--"
-        @test _pairwise_score(g1, g2) == -20 # gap_open=-10
+        @test _pairwise_score(g1, g2, -10, -1, MSA.BLOSUM62) == -20
     end
 end

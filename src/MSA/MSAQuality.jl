@@ -28,10 +28,10 @@ const BLOSUM62 = Int[
 
 function _pairwise_score(
     seq1::AbstractVector{Residue},
-    seq2::AbstractVector{Residue};
+    seq2::AbstractVector{Residue},
     gap_open::Int,
     gap_extend::Int,
-    matrix::AbstractMatrix{Int} = BLOSUM62,
+    matrix::AbstractMatrix{Int},
 )
     len = length(seq1)
     score = 0
@@ -88,10 +88,10 @@ function sum_of_pairs_score(
         for j = (i+1):nseq
             total += _pairwise_score(
                 seqi,
-                view(msa, j, :);
-                gap_open = gap_open,
-                gap_extend = gap_extend,
-                matrix = matrix,
+                view(msa, j, :),
+                gap_open,
+                gap_extend,
+                matrix,
             )
         end
     end
