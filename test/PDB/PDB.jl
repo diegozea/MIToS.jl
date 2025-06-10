@@ -380,12 +380,12 @@
         pdbml_B = select_residues(pdbml, model = "1", chain = "B")
 
         for B in [pdb_B, pdbml_B]
-            @test B[findall(r -> r.id.number == "2S", B)[1]+1].id.number == "323P"
-            @test B[findall(r -> r.id.number == "334P", B)[1]+1].id.number == "6"
-            @test B[findall(r -> r.id.number == "94", B)[1]+1].id.number == "94A"
-            @test B[findall(r -> r.id.number == "94A", B)[1]+1].id.number == "95"
-            @test B[findall(r -> r.id.number == "188", B)[1]+1].id.number == "1T"
-            @test B[findall(r -> r.id.number == "1T", B)[1]+1].id.number == "2T"
+            @test B[findall(r->r.id.number=="2S", B)[1]+1].id.number == "323P"
+            @test B[findall(r->r.id.number=="334P", B)[1]+1].id.number == "6"
+            @test B[findall(r->r.id.number=="94", B)[1]+1].id.number == "94A"
+            @test B[findall(r->r.id.number=="94A", B)[1]+1].id.number == "95"
+            @test B[findall(r->r.id.number=="188", B)[1]+1].id.number == "1T"
+            @test B[findall(r->r.id.number=="1T", B)[1]+1].id.number == "2T"
         end
     end
 

@@ -26,8 +26,8 @@ function ROCAnalysis.AUC(
     scores_list = getlist(getarray(sco))
     ROCAnalysis.AUC(
         ROCAnalysis.roc(
-            scores_list[true_contacts.&.!isnan.(scores_list)],
-            scores_list[false_contacts.&.!isnan.(scores_list)],
+            scores_list[true_contacts .& .!isnan.(scores_list)],
+            scores_list[false_contacts .& .!isnan.(scores_list)],
         ),
     )
 end

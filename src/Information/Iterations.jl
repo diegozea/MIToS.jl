@@ -278,20 +278,20 @@ end
         usediagonal = false, diagonalvalue = NaN, kargs...)
 
 It efficiently map a function (first argument) that takes a table of `Frequencies` or
-`Probabilities` (depending on the `probabilities` keyword argument) calculated on 
-sequences (`dims = 1`) or columns (`dims = 2`, the default) of an `msa` (second argument). 
-If `rank = 1`, the default, the function is applied to each sequence or column. If 
-`rank = 2`, the function is applied to each pair of sequences or columns. In that case, 
+`Probabilities` (depending on the `probabilities` keyword argument) calculated on
+sequences (`dims = 1`) or columns (`dims = 2`, the default) of an `msa` (second argument).
+If `rank = 1`, the default, the function is applied to each sequence or column. If
+`rank = 2`, the function is applied to each pair of sequences or columns. In that case,
 we can set the `usediagonal` keyword argument to `true` to apply the function to pairs
-of the same sequence or column. The `diagonalvalue` keyword argument is used to set the 
+of the same sequence or column. The `diagonalvalue` keyword argument is used to set the
 value of the diagonal elements if `usediagonal` is `false`. By default, the function is not
 applied to the diagonal elements (i.e. `usediagonal = false`) and the `diagonalvalue` is
-set to `NaN`. The `alphabet` keyword argument can be used to set the alphabet used to 
+set to `NaN`. The `alphabet` keyword argument can be used to set the alphabet used to
 construct the contingency table. The function also accepts the following keyword arguments:
 
 $_mapfreq_kargs_doc
 
-Note that the `pseudofrequencies` argument is only valid if `probabilities = true`. All the 
+Note that the `pseudofrequencies` argument is only valid if `probabilities = true`. All the
 other keyword arguments are passed to the function `f`.
 
 # Example
@@ -299,9 +299,11 @@ other keyword arguments are passed to the function `f`.
 ```jldoctest
 julia> using MIToS.MSA, MIToS.Information
 
-julia> msa = Residue['V' 'Q' 'W' 'E';
-                     'D' 'T' 'Q' 'F';
-                     'G' 'T' 'R' 'C']
+julia> msa = Residue[
+           'V' 'Q' 'W' 'E';
+           'D' 'T' 'Q' 'F';
+           'G' 'T' 'R' 'C'
+       ]
 3×4 Matrix{Residue}:
  V  Q  W  E
  D  T  Q  F
@@ -313,20 +315,19 @@ Function ╲ Col │   1    2    3    4
 ───────────────┼───────────────────
 sum            │ 1.0  1.0  1.0  1.0
 
-julia> mapfreq(sum, msa, probabilities=false)
+julia> mapfreq(sum, msa, probabilities = false)
 1×4 Named Matrix{Float64}
 Function ╲ Col │   1    2    3    4
 ───────────────┼───────────────────
 sum            │ 3.0  3.0  3.0  3.0
 
-julia> mapfreq(sum, msa, dims=1)
+julia> mapfreq(sum, msa, dims = 1)
 3×1 Named Matrix{Float64}
 Seq ╲ Function │ sum
 ───────────────┼────
 1              │ 1.0
 2              │ 1.0
 3              │ 1.0
-
 ```
 """
 function mapfreq(

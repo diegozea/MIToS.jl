@@ -45,7 +45,7 @@
         ]
 
         @test names(GappedAlphabet()) == strings_gapped
-        @test names(UngappedAlphabet()) == strings_gapped[1:end-1]
+        @test names(UngappedAlphabet()) == strings_gapped[1:(end-1)]
 
         for i = 1:20
             @test UngappedAlphabet()[strings_gapped[i]] == i

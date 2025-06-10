@@ -293,7 +293,7 @@ gaps in the reference (first) sequence.
 """
 function adjustreference(msa::AbstractMatrix{Residue}, annotate::Bool = false)
     # The annotate argument is useful for calling this inside other functions
-    msa[:, msa[1, :].!=GAP]
+    msa[:, msa[1, :] .!= GAP]
 end
 
 """

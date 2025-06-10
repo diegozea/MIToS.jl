@@ -25,7 +25,7 @@ function _add_insert_gaps!(SEQS)
                 else
                     res = seq[j]
                     if isuppercase(res) || res == '-'
-                        SEQS[i] = seq[1:j-1] * "." * seq[j:end]
+                        SEQS[i] = seq[1:(j-1)] * "." * seq[j:end]
                         seq_len[i] += 1
                     end
                 end

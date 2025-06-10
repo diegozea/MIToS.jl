@@ -153,8 +153,8 @@ A state-holding object that can *disambiguate raw sequence identifiers
 one-by-one* while you stream an MSA or sequence file.
 
 It remembers every generated name (`new2old`), mapping each new name to
-its original sequence name, and tracks the next suffix count for each 
-original name via `old2count`. This lets you both check for collisions 
+its original sequence name, and tracks the next suffix count for each
+original name via `old2count`. This lets you both check for collisions
 in O(1) and reconstruct the full original → new name mapping afterward.
 
 # Fields
@@ -187,7 +187,10 @@ suffixes `(1)`, `(2)`, ... until it finds one that hasn't been used yet.
 
 Returns the collision-free identifier for use in your alignment or output.
 """
-function _disambiguate_seqname!(disambiguator::OnlineSequenceNameDisambiguator, original_seqname)
+function _disambiguate_seqname!(
+    disambiguator::OnlineSequenceNameDisambiguator,
+    original_seqname,
+)
     # start with whatever counter we’ve already recorded (0 if first time)
     n = get!(disambiguator.old2count, original_seqname, 0)
     name = _candidate_seqname(original_seqname, n)
@@ -218,7 +221,10 @@ adds an annotation associating the new name with its original input name.
 
 Returns the updated `annotations` object.
 """
-function _annotate_seqname_changes!(disambiguator::OnlineSequenceNameDisambiguator, annotations::Annotations)
+function _annotate_seqname_changes!(
+    disambiguator::OnlineSequenceNameDisambiguator,
+    annotations::Annotations,
+)
     for (new_name, original_seqname) in disambiguator.new2old
         if new_name != original_seqname
             # add the new name to the annotations

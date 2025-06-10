@@ -28,7 +28,7 @@ MIToSTests.retest("MSA") # warm up
 MIToSTests.retest("test name") # specific tests
 ```
 
-Note that we need to first warm up using the most general test and then the specific one. 
+Note that we need to first warm up using the most general test and then the specific one.
 Otherwise, `ReTest` will not be able to find the specific one.
 
 NOTE: For some reason, after modifying the tests, `Revise` does not detect the changes

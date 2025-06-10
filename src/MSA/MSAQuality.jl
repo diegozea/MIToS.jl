@@ -86,13 +86,7 @@ function sum_of_pairs_score(
     @inbounds for i = 1:(nseq-1)
         seqi = view(msa, i, :)
         for j = (i+1):nseq
-            total += _pairwise_score(
-                seqi,
-                view(msa, j, :),
-                gap_open,
-                gap_extend,
-                matrix,
-            )
+            total += _pairwise_score(seqi, view(msa, j, :), gap_open, gap_extend, matrix)
         end
     end
     total

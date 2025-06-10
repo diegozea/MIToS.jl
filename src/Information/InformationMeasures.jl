@@ -68,11 +68,11 @@ end
         probabilities::Bool=false, usediagonal::Bool=true, kargs...)
 
 It calculates the Shannon entropy (H) on a MSA. You can use the keyword argument `base` to
-change the base of the log. $_DOC_LOG_BASE It uses [`mapfreq`](@ref) under the hood, 
-so it takes the same keyword arguments. By default, it measures the entropy of each column 
-in the MSA. You can use `dims = 1` to measure the entropy of each sequence. You can also 
-set `rank = 2`to measure the joint entropy of each pair of sequences or columns. This 
-function sets by default the `probabilities` keyword argument to `false` because it's 
+change the base of the log. $_DOC_LOG_BASE It uses [`mapfreq`](@ref) under the hood,
+so it takes the same keyword arguments. By default, it measures the entropy of each column
+in the MSA. You can use `dims = 1` to measure the entropy of each sequence. You can also
+set `rank = 2`to measure the joint entropy of each pair of sequences or columns. This
+function sets by default the `probabilities` keyword argument to `false` because it's
 faster to calculate the entropy from counts/frequencies. It also sets `usediagonal = true`
 to also calculate the entropy of the individual variables (sequences or columns).
 
@@ -90,7 +90,6 @@ julia> shannon_entropy(msa)
  Function ╲ Col │       1        2
 ────────────────┼─────────────────
 shannon_entropy │     0.0  1.09861
-
 ```
 """
 function shannon_entropy(
@@ -138,7 +137,7 @@ end
     marginal_entropy(table::Union{Frequencies{T,N,A},Probabilities{T,N,A}}; margin::Int=1, 
         base::Number=ℯ)
 
-It calculates marginal entropy (H) from a table of `Frequencies` or `Probabilities`. It takes 
+It calculates marginal entropy (H) from a table of `Frequencies` or `Probabilities`. It takes
 two keyword arguments: `margin` and `base`. The first one is used to indicate the margin
 used to calculate the entropy, e.g. it estimates the entropy H(X) if margin is 1, H(Y)
 for 2, etc. The default value of `margin` is 1. The second keyword argument is used to
@@ -206,7 +205,7 @@ distribution must have the same size and alphabet as the probabilities. The defa
         AbstractArray{T,N}, Probabilities{T,N,A}, ContingencyTable{T,N,A}}=BLOSUM62_Pi, 
         base::Number=ℯ)
 
-It calculates the Kullback-Leibler (KL) divergence from a table of `Probabilities`. 
+It calculates the Kullback-Leibler (KL) divergence from a table of `Probabilities`.
 $_DOC_KL_KARG
 """
 function kullback_leibler(
@@ -330,7 +329,7 @@ end
 """
     mutual_information(table::Union{Frequencies{T,2,A},Probabilities{T,2,A}}; base::Number=ℯ)
 
-It calculates Mutual Information (MI) from a table of `Frequencies` or `Probabilities`. 
+It calculates Mutual Information (MI) from a table of `Frequencies` or `Probabilities`.
 $_DOC_LOG_BASE Note that calculating MI from `Frequencies` is faster than from `Probabilities`.
 """
 function mutual_information(table::Probabilities{T,2,A}; base::Number = ℯ) where {T,A}
@@ -389,9 +388,11 @@ dimensions. $_DOC_LOG_BASE
 ```jldoctest
 julia> using MIToS.MSA, MIToS.Information
 
-julia> msa = Residue['V' 'Q' 'W' 'E';
-                     'D' 'T' 'Q' 'F';
-                     'G' 'T' 'R' 'C']
+julia> msa = Residue[
+           'V' 'Q' 'W' 'E';
+           'D' 'T' 'Q' 'F';
+           'G' 'T' 'R' 'C'
+       ]
 3×4 Matrix{Residue}:
  V  Q  W  E
  D  T  Q  F
@@ -424,18 +425,20 @@ end
     mutual_information(msa::AbstractArray{Residue}; base::Number=ℯ, kargs...)
 
 It calculates Mutual Information (MI) from a multiple sequence alignment (MSA).
-$_DOC_LOG_BASE The minimum value for `rank` is 2 (the default value). By defualt, it 
+$_DOC_LOG_BASE The minimum value for `rank` is 2 (the default value). By defualt, it
 uses counts/frequencies to calculate the MI, as it's faster. You can use the keyword
 argument `probabilities = true` to calculate the MI from probabilities.
 
 # Example
 
-```jldoctest 
+```jldoctest
 julia> using MIToS.MSA, MIToS.Information
 
-julia> msa = Residue['V' 'Q' 'W' 'E';
-                     'D' 'T' 'Q' 'F';
-                     'G' 'T' 'R' 'C']
+julia> msa = Residue[
+           'V' 'Q' 'W' 'E';
+           'D' 'T' 'Q' 'F';
+           'G' 'T' 'R' 'C'
+       ]
 3×4 Matrix{Residue}:
  V  Q  W  E
  D  T  Q  F
@@ -493,7 +496,7 @@ end
 """
     normalized_mutual_information(msa::AbstractArray{Residue}; kargs...)
 
-This function calculates the Normalized Mutual Information (nMI) from a multiple sequence 
+This function calculates the Normalized Mutual Information (nMI) from a multiple sequence
 alignment using the [`mapfreq`](@ref) function—all the keyword arguments are passed to
 `mapfreq`. $_DOC_NMI By default, it uses counts/frequencies to estimate the nMI, as it's
 faster than using probabilities.

@@ -866,7 +866,7 @@ to new names, or one or more pairs going from old to new names. If the `msa` is 
     rename_sequences!(msa, newnames::Vector{T}) where {T<:AbstractString}
     rename_sequences!(msa, old2new::AbstractDict)
     rename_sequences!(msa, old2new::Pair...)
-    
+
 $RENAME_SEQUENCES_DOC The function modifies the `msa` in place and returns it.
 """
 function rename_sequences!(
@@ -905,7 +905,7 @@ end
     rename_sequences(msa, old2new::AbstractDict)
     rename_sequences(msa, old2new::Pair...)
 
-$RENAME_SEQUENCES_DOC The function returns a new MSA with the sequences renamed without 
+$RENAME_SEQUENCES_DOC The function returns a new MSA with the sequences renamed without
 modifying the original MSA.
 """
 rename_sequences(msa, newnames) = rename_sequences!(deepcopy(msa), newnames)

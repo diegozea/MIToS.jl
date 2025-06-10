@@ -167,9 +167,9 @@ For example, it does not verify that `SeqMap` annotations have consistent length
     merge!(target::Annotations, sources::Annotations...)
 
 Merge one or more source `Annotations` into a target `Annotations`. This function calls
-`Base.merge!` on each of the four dictionaries in the `Annotations` type: `file`, 
-`sequences`, `columns`, and `residues`. Consequently, it behaves like `Base.merge!` for 
-dictionaries; if the same key exists in different `Annotations` objects, the value from the 
+`Base.merge!` on each of the four dictionaries in the `Annotations` type: `file`,
+`sequences`, `columns`, and `residues`. Consequently, it behaves like `Base.merge!` for
+dictionaries; if the same key exists in different `Annotations` objects, the value from the
 last one is used.
 
 $_MERGE_NOTE
@@ -188,7 +188,7 @@ end
 """
     merge(target::Annotations, sources::Annotations...)
 
-Create a new `Annotations` object by merging two or more `Annotations`. If the same 
+Create a new `Annotations` object by merging two or more `Annotations`. If the same
 annotation exists in different `Annotations` objects, the value from the last one is used.
 See also `merge!`.
 

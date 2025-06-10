@@ -456,9 +456,7 @@ end
 
         gapped_seq_col = MIToS.MSA._insert_gap_columns(single_seq_msa, 1, 2) # at the middle
         @test size(gapped_seq_col) == (1, 3)
-        @test gapped_seq_col == Residue[
-            'A' '-' 'R'
-        ]
+        @test gapped_seq_col == Residue['A' '-' 'R']
 
         # Test for a single column
         gapped_col_col = MIToS.MSA._insert_gap_columns(single_col_msa, 1, 2) # at the end

@@ -732,7 +732,7 @@ function _add_gaps_in_b(msa_a, msa_b, positions_a, positions_b, axis::Int = 1)
     end
     # compress the list of gap positions to later add full gap blocks
     for pos in Iterators.reverse(unique(gap_positions))
-        block_names = gap_names[gap_positions.==pos]
+        block_names = gap_names[gap_positions .== pos]
         if axis == 1
             matching_b = _renumber_sequence_gaps(
                 _insert_gap_sequences(matching_b, block_names, pos + 1),
@@ -834,7 +834,7 @@ function _insert_sorted_gaps(
         start_target = start == 0 ? 1 : reference2target[start] + 1
         stop_target = stop > N_reference ? N_target + 1 : reference2target[stop]
         # This should work fine, even if `start` is 0 and `stop` is n+1
-        unmatched_names = names_reference[start+1:stop-1]
+        unmatched_names = names_reference[(start+1):(stop-1)]
         # Determine whether the gap block should be inserted before or after the sequences
         if block_position == :before
             push!(blocks_target, (start_target, unmatched_names))
@@ -867,7 +867,7 @@ function _reorder_and_extract_unmatched_names(msa, positions, axis::Int)
         reordered_msa = msa[:, vcat(positions, unmatched_positions)]
         reordered_names = columnnames(reordered_msa)
     end
-    unmatched_names = reordered_names[length(positions)+1:end]
+    unmatched_names = reordered_names[(length(positions)+1):end]
 
     return reordered_msa, unmatched_names
 end
