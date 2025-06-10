@@ -6,8 +6,8 @@
         # AR
         # RA
         simple = read_file(joinpath(DATA, "simple.fasta"), FASTA) 
-        expected_simple = MSA.BLOSUM62[Int(res"A"), Int(res"R")] +
-                          MSA.BLOSUM62[Int(res"R"), Int(res"A")]
+        expected_simple = MSA.BLOSUM62[Residue('A'), Residue('R')] +
+                          MSA.BLOSUM62[Residue('R'), Residue('A')]
         @test _pairwise_score(simple[1, :], simple[2, :]; gap_open = -10, gap_extend = -1) == expected_simple
         @test sum_of_pairs_score(simple) == expected_simple
 
