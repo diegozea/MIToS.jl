@@ -183,7 +183,7 @@ end
 `change_coordinates(residue::PDBResidue, coordinates::AbstractMatrix{Float64}, offset::Int=1)`
 
 Returns a new `PDBResidues` with (x,y,z) from a coordinates `AbstractMatrix{Float64}`
-You can give an `offset` indicating in wich matrix row starts the (x,y,z) coordinates
+You can give an `offset` indicating in which matrix row starts the (x,y,z) coordinates
 of the residue.
 """
 function change_coordinates(
