@@ -163,7 +163,8 @@ export  # Residue
     shuffle!,
     # Concatenation
     gethcatmapping,
-    join_msas
+    join_msas,
+    ResidueSubstitutionMatrices
 
 include("Residues.jl")
 include("Alphabet.jl")
@@ -184,6 +185,7 @@ include("Sequences.jl")
 include("Shuffle.jl")
 include("PLM.jl")
 include("Identity.jl")
+include("ResidueSubstitutionMatrices.jl")
 include("Clusters.jl")
 include("Hobohm.jl")
 include("Plots.jl")
