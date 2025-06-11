@@ -198,9 +198,9 @@ end
 It swaps the names on the positions `i` and `j` of a `Vector{String}`
 """
 function _swap!(names::Vector{String}, i::Int, j::Int)
-    name = names[i, :]
-    names[i, :] = names[j, :]
-    names[j, :] = name
+    name = names[i]
+    names[i] = names[j]
+    names[j] = name
     names
 end
 
