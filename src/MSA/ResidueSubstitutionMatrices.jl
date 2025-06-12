@@ -1,12 +1,15 @@
 module ResidueSubstitutionMatrices
 
 using ..MSA: Residue, ResidueAlphabet, GappedAlphabet
-using NamedArrays
+using Printf
 
 export ResidueSubstitutionMatrix
 
 """
-    ResidueSubstitutionMatrix{T<:Real}(scores::AbstractMatrix{T}, alphabet::ResidueAlphabet = GappedAlphabet())
+    ResidueSubstitutionMatrix{T<:Real, A<:ResidueAlphabet}(
+        scores::AbstractMatrix{T},
+        alphabet::A = GappedAlphabet(),
+    )
 
 Symmetric substitution scores for pairs of [`Residue`](@ref) values.
 The matrix must be square and its size must match the length of the
@@ -42,13 +45,6 @@ ResidueSubstitutionMatrix(
     alphabet::A = GappedAlphabet(),
 ) where {T<:Real,A<:ResidueAlphabet} = ResidueSubstitutionMatrix{T,A}(scores, alphabet)
 
-"""
-    matrix[i::Int, j::Int]
-
-Return the substitution score for the pair of residue indexes `i` and `j`.
-"""
-@inline Base.getindex(matrix::ResidueSubstitutionMatrix{T}, i::Int, j::Int) where {T} =
-    matrix.scores[i, j]
 
 """
     matrix[a::Residue, b::Residue]
@@ -84,12 +80,19 @@ end
 end
 
 function Base.show(io::IO, ::MIME"text/plain", matrix::ResidueSubstitutionMatrix)
+    println(io, "$(typeof(matrix)) :")
     labels = names(matrix.alphabet)
-    named = NamedArray(matrix.scores, (labels, labels))
-    show(io, MIME"text/plain"(), named)
+    width = maximum(length.(labels))
+    for (i, lbl) in enumerate(labels)
+        print(io, rpad(lbl, width), " ")
+        row = matrix.scores[i, :]
+        for v in row
+            Printf.@printf(io, "%8g", v)
+        end
+        i < length(labels) && print(io, '\n')
+    end
 end
 
-Base.show(io::IO, matrix::ResidueSubstitutionMatrix) =
-    show(io, MIME"text/plain"(), matrix)
+Base.show(io::IO, matrix::ResidueSubstitutionMatrix) = show(io, MIME"text/plain"(), matrix)
 
 end # module
