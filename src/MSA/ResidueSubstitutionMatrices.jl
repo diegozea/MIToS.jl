@@ -52,29 +52,29 @@ ResidueSubstitutionMatrix(
 Return the substitution score for the pair of residues `a` and `b`.
 """
 @inline function Base.getindex(
-    matrix::ResidueSubstitutionMatrix{T},
+    matrix::ResidueSubstitutionMatrix{T,A},
     a::Residue,
     b::Residue,
-) where {T}
+) where {T,A}
     i = matrix.alphabet[a]
     j = matrix.alphabet[b]
     @inbounds matrix.scores[i, j]
 end
 
 @inline function Base.getindex(
-    matrix::ResidueSubstitutionMatrix{T},
+    matrix::ResidueSubstitutionMatrix{T,A},
     r::Residue,
     c::Colon,
-) where {T}
+) where {T,A}
     i = matrix.alphabet[r]
     @inbounds matrix.scores[i, c]
 end
 
 @inline function Base.getindex(
-    matrix::ResidueSubstitutionMatrix{T},
+    matrix::ResidueSubstitutionMatrix{T,A},
     r::Colon,
     c::Residue,
-) where {T}
+) where {T,A}
     j = matrix.alphabet[c]
     @inbounds matrix.scores[r, j]
 end
@@ -82,14 +82,17 @@ end
 function Base.show(io::IO, ::MIME"text/plain", matrix::ResidueSubstitutionMatrix)
     println(io, "$(typeof(matrix)) :")
     labels = names(matrix.alphabet)
-    width = maximum(length.(labels))
-    for (i, lbl) in enumerate(labels)
+    strlabels = map(labels) do lbl
+        length(lbl) == 1 ? lbl : "(" * lbl * ")"
+    end
+    width = maximum(length.(strlabels))
+    for (i, lbl) in enumerate(strlabels)
         print(io, rpad(lbl, width), " ")
         row = matrix.scores[i, :]
         for v in row
             Printf.@printf(io, "%8g", v)
         end
-        i < length(labels) && print(io, '\n')
+        i < length(strlabels) && print(io, '\n')
     end
 end
 
