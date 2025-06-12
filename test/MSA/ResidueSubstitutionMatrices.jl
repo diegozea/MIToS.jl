@@ -25,6 +25,9 @@ using MIToS.MSA.ResidueSubstitutionMatrices
 
     buf = IOBuffer()
     show(buf, MIME"text/plain"(), m)
-    @test length(String(take!(buf))) > 0
+    str = String(take!(buf))
+    @test occursin("ResidueSubstitutionMatrix", str)
+    @test occursin("A", str)
+    @test !occursin("Alphabet:", str)
 
 end

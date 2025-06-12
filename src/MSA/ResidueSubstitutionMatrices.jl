@@ -1,6 +1,7 @@
 module ResidueSubstitutionMatrices
 
 using ..MSA: Residue, ResidueAlphabet, GappedAlphabet
+using Printf
 
 export ResidueSubstitutionMatrix
 
@@ -68,10 +69,21 @@ end
     @inbounds matrix.scores[r, j]
 end
 
-    matrix::ResidueSubstitutionMatrix{T, A},
-    a::Residue,
-    b::Residue,
-) where {T<:Real,A<:ResidueAlphabet}
+    labels = names(matrix.alphabet)
+    label_width = maximum(length.(labels))
+    value_strings = [@sprintf("%g", v) for v in matrix.scores]
+    value_width = maximum(length.(value_strings)) + 1
+    n = size(matrix.scores, 1)
+    println(io, typeof(matrix), " :")
+    for i = 1:n
+        print(io, rpad(labels[i], label_width), " ")
+        offset = (i - 1) * n
+        for j = 1:n
+            idx = offset + j
+            print(io, lpad(value_strings[idx], value_width))
+        end
+        i == n || println(io)
+    end
     i = matrix.alphabet[a]
     j = matrix.alphabet[b]
     @inbounds matrix.scores[i, j]
