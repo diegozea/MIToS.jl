@@ -1,7 +1,6 @@
 module ResidueSubstitutionMatrices
 
 using ..MSA: Residue, ResidueAlphabet, GappedAlphabet
-using Printf
 
 export ResidueSubstitutionMatrix
 
