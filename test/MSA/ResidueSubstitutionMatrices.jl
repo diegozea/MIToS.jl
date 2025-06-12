@@ -12,6 +12,9 @@ using MIToS.MSA.ResidueSubstitutionMatrices
     @test m[1, 1] == 1.0
     @test m[1, 2] == 0.0
 
+    @test m[GAP, :] == scores[end, :]
+    @test m[:, GAP] == scores[:, end]
+
     @test_throws ArgumentError ResidueSubstitutionMatrices.ResidueSubstitutionMatrix(
         ones(20, 21),
     )

@@ -50,6 +50,24 @@ ResidueSubstitutionMatrix(
 Return the substitution score for the pair of residues `a` and `b`.
 """
 @inline function Base.getindex(
+@inline function Base.getindex(
+    matrix::ResidueSubstitutionMatrix{T},
+    r::Residue,
+    c::Colon,
+) where {T}
+    i = matrix.alphabet[r]
+    @inbounds matrix.scores[i, c]
+end
+
+@inline function Base.getindex(
+    matrix::ResidueSubstitutionMatrix{T},
+    r::Colon,
+    c::Residue,
+) where {T}
+    j = matrix.alphabet[c]
+    @inbounds matrix.scores[r, j]
+end
+
     matrix::ResidueSubstitutionMatrix{T, A},
     a::Residue,
     b::Residue,
