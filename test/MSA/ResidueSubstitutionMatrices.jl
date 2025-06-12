@@ -29,7 +29,7 @@ using MIToS.MSA.ResidueSubstitutionMatrices
     @test occursin("ResidueSubstitutionMatrix", str)
     @test occursin("A", str)
     @test !occursin("Alphabet:", str)
-    @test !occursin("Named Matrix", str)
+    @test occursin("Named Matrix", str)
 
     ab2 = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
     scores2 = Float64[i == j ? 1.0 : 0.0 for i = 1:length(ab2), j = 1:length(ab2)]

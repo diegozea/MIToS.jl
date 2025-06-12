@@ -1,7 +1,7 @@
 module ResidueSubstitutionMatrices
 
 using ..MSA: Residue, ResidueAlphabet, GappedAlphabet
-using Printf
+using NamedArrays
 
 export ResidueSubstitutionMatrix
 
@@ -81,19 +81,11 @@ end
 
 function Base.show(io::IO, ::MIME"text/plain", matrix::ResidueSubstitutionMatrix)
     println(io, "$(typeof(matrix)) :")
-    labels = names(matrix.alphabet)
-    strlabels = map(labels) do lbl
-        length(lbl) == 1 ? lbl : "(" * lbl * ")"
-    end
-    width = maximum(length.(strlabels))
-    for (i, lbl) in enumerate(strlabels)
-        print(io, rpad(lbl, width), " ")
-        row = matrix.scores[i, :]
-        for v in row
-            Printf.@printf(io, "%8g", v)
-        end
-        i < length(strlabels) && print(io, '\n')
-    end
+    rawlabels = names(matrix.alphabet)
+    labels = [length(lbl) == 1 ? lbl : "(" * lbl * ")" for lbl in rawlabels]
+    named = NamedArray(matrix.scores, (labels, labels))
+    ctx = IOContext(io, :limit => true)
+    show(ctx, MIME"text/plain"(), named)
 end
 
 Base.show(io::IO, matrix::ResidueSubstitutionMatrix) = show(io, MIME"text/plain"(), matrix)
