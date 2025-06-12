@@ -85,7 +85,7 @@ function Base.show(io::IO, ::MIME"text/plain", matrix::ResidueSubstitutionMatrix
     labels = [length(lbl) == 1 ? lbl : "(" * lbl * ")" for lbl in rawlabels]
     named = NamedArray(matrix.scores, (labels, labels))
     ctx = IOContext(io, :limit => true)
-    show(ctx, MIME"text/plain"(), named)
+    show(ctx, MIME"text/plain"(), named, size(named, 1))
 end
 
 Base.show(io::IO, matrix::ResidueSubstitutionMatrix) = show(io, MIME"text/plain"(), matrix)
