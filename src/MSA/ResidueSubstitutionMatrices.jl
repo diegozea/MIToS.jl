@@ -17,10 +17,10 @@ struct ResidueSubstitutionMatrix{T<:Real,A<:ResidueAlphabet} <: AbstractMatrix{T
     alphabet::A
 
     function (::Type{ResidueSubstitutionMatrix{T,A}})(
-        scores::Matrix{T},
-        alphabet::A,
-    ) where {T<:Real,A<:ResidueAlphabet}
-        n, m = size(scores)
+    alphabet::A = GappedAlphabet(),
+Base.show(io::IO, matrix::ResidueSubstitutionMatrix) =
+    show(io, MIME"text/plain"(), matrix)
+
         if n != m
             throw(ArgumentError("scores matrix must be square"))
         end
