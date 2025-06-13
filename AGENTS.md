@@ -39,26 +39,20 @@ julia --project -e 'using JuliaFormatter; JuliaFormatter.format_file("abc.jl")'
 
 # Release Notes
 
-Please do not edit the `NEWS.md` file unless you are explicitly asked to do so. That file 
-contains the release notes for this package. It follows semantic versioning. You can check 
-the current version in the `Project.toml` file. Please, do not update the version number 
-in the `Project.toml` file. Each section in the `NEWS.md` has a title that indicates the
-previous and current versions. The last version should always be placed first in the 
-`NEWS.md` file, followed by older sections, ordered from most recent to oldest. Document 
-each change with bullet points. Clearly label breaking changes using 
-the `*[Breaking change]*` tag at the beginning of the bullet, so they are easily
-identifiable.
+The `NEWS.md` file contains the release notes for this package. Please update it with any changes you make to the package. Note that this package follows semantic versioning, so any changes that break the API should increment the major version number with respect to the current version. You can check the current version in the `Project.toml` file. Please, do not update the version number in the `Project.toml` file.
 
-# Benchmarking
+Each new set of changes should be documented under a section titled:
 
-If you are explicitly asked to run the benchmark suite, make sure
-`PkgBenchmark` and `BenchmarkTools` are installed. Then execute the
-following command from the repository root to tune and run all benchmarks:
-
-```bash
-julia --project -e 'import PkgBenchmark, MIToS; PkgBenchmark.benchmarkpkg(MIToS; retune=true)'
+```md
+### Changes from CURRENT to master
 ```
 
-This command creates a `benchmark/tune.json` file with the tuning
-information and prints benchmark results to the terminal.
+For example, if the current version listed in the `Project.toml` file is `0.1.0`, the title of your next set of changes should be:
 
+```md
+### Changes from 0.1.0 to master
+```
+
+This section should always be placed first in the `NEWS.md` file, followed by older sections, ordered from most recent to oldest.
+
+Document each change with bullet points. Clearly label breaking changes using the `*[Breaking change]*` tag at the beginning of the bullet, so they are easily identifiable.
