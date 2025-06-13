@@ -3,6 +3,7 @@ uuid = "51bafb47-8a16-5ded-8b04-24ef4eede0b5"
 version = "3.1.0"
 
 [deps]
+ArgCheck = "dce04be8-c92d-5529-be00-80e4d2c0e197"
 AutoHashEquals = "15f4f7f2-30c1-5605-9d31-71845cf9641f"
 BioStructures = "de9282ab-8554-53be-b2d6-f6c222edabfc"
 CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
@@ -36,6 +37,7 @@ MIToSROCAnalysisExt = "ROCAnalysis"
 
 [compat]
 Aqua = "0.8"
+ArgCheck = "2.5.0"
 AutoHashEquals = "0.2, 1, 2"
 BioStructures = "4"
 Clustering = "0.14, 0.15"

@@ -60,7 +60,7 @@ end
 function _create_script(script_file::String, msa_file::String, jdl_file::String; kargs...)
     if length(kargs) > 0
         for (k, v) in kargs
-            @assert isa(v, Number) || isa(v, Symbol) "Argument values must be numbers or symbols"
+            @argcheck isa(v, Number) || isa(v, Symbol) "Argument values must be numbers or symbols"
         end
         str_kargs =
             "," * join([isa(v, Symbol) ? "$k=:$v" : "$k=$v" for (k, v) in kargs], ',')

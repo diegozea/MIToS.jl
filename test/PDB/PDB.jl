@@ -134,8 +134,8 @@
             @test selectbestoccupancy(resid_141[1], collect(1:48)) == 1
             @test selectbestoccupancy(resid_141[1], [1, 2]) == 1
 
-            @test_throws AssertionError selectbestoccupancy(resid_141[1], Int[])
-            @test_throws AssertionError selectbestoccupancy(resid_141[1], collect(1:100))
+            @test_throws ArgumentError selectbestoccupancy(resid_141[1], Int[])
+            @test_throws ArgumentError selectbestoccupancy(resid_141[1], collect(1:100))
         end
 
         @testset "select_atom with All" begin

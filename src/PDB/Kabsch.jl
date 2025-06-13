@@ -12,7 +12,7 @@ Rotates `B` so that `rmsd(A,B)` is minimized.
 Returns the rotation matrix. You should do `B * RotationMatrix` to get the rotated B.
 """
 function kabsch(A::AbstractMatrix{Float64}, B::AbstractMatrix{Float64})
-    @assert size(A) == size(B)
+    @argcheck size(A) == size(B)
     M::AbstractMatrix{Float64} = B' * A
     χ = Matrix{Float64}(I, size(M, 1), size(M, 2))
     χ[end, end] = sign(det(M))
@@ -39,7 +39,7 @@ Return RMSD between two sets of points `A` and `B`, given as NxD matrices
 (N: number of points, D: dimension).
 """
 function rmsd(A::AbstractMatrix{Float64}, B::AbstractMatrix{Float64})
-    @assert size(A) == size(B)
+    @argcheck size(A) == size(B)
     N, D = size(A)
     s::Float64 = 0.0
     for i = 1:N, j = 1:D
@@ -393,7 +393,7 @@ function mean_coordinates(
     matrixweights::AbstractVector{Float64},
 ) where {T<:AbstractMatrix{Float64}}
     _rmsf_test(vec)
-    @assert length(vec) == length(matrixweights) "The number of matrix weights must be equal to the number of matrices."
+    @argcheck length(vec) == length(matrixweights) "The number of matrix weights must be equal to the number of matrices."
     n = sum(matrixweights)
     reduce(+, (vec .* matrixweights)) ./ n
 end

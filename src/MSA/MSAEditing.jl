@@ -7,14 +7,14 @@
 # If the input is a matrix, dropdims the singleton dimension
 
 function _column_mask(mask::AbstractMatrix{Bool}, msa)
-    @assert size(mask, 1) == 1 "The mask should be a vector or a matrix of size (1,ncol)"
-    @assert size(mask, 2) == ncolumns(msa) "One boolean value per column is needed."
+    @argcheck size(mask, 1) == 1 "The mask should be a vector or a matrix of size (1,ncol)"
+    @argcheck size(mask, 2) == ncolumns(msa) "One boolean value per column is needed."
     dropdims(mask, dims = 1)
 end
 
 function _sequence_mask(mask::AbstractMatrix{Bool}, msa)
-    @assert size(mask, 2) == 1 "The mask should be a vector or a matrix of size (nseq,1)"
-    @assert size(mask, 1) == nsequences(msa) "One boolean value per sequence is needed."
+    @argcheck size(mask, 2) == 1 "The mask should be a vector or a matrix of size (nseq,1)"
+    @argcheck size(mask, 1) == nsequences(msa) "One boolean value per sequence is needed."
     dropdims(mask, dims = 2)
 end
 
@@ -39,12 +39,12 @@ end
 # If the mask is an AbstractVector{Bool}, return it without changes
 
 function _column_mask(mask::AbstractVector{Bool}, msa)
-    @assert length(mask) == ncolumns(msa) "One boolean value per column is needed."
+    @argcheck length(mask) == ncolumns(msa) "One boolean value per column is needed."
     mask
 end
 
 function _sequence_mask(mask::AbstractVector{Bool}, msa)
-    @assert length(mask) == nsequences(msa) "One boolean value per sequence is needed."
+    @argcheck length(mask) == nsequences(msa) "One boolean value per sequence is needed."
     mask
 end
 

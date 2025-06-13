@@ -36,8 +36,8 @@
         @test MultipleSequenceAlignment(M) != MultipleSequenceAlignment(T)
         @test AnnotatedMultipleSequenceAlignment(M) != AnnotatedMultipleSequenceAlignment(T)
 
-        @test_throws AssertionError AlignedSequence(M)
-        @test_throws AssertionError AnnotatedAlignedSequence(M)
+        @test_throws ArgumentError AlignedSequence(M)
+        @test_throws ArgumentError AnnotatedAlignedSequence(M)
     end
 
     @testset "MSA & sequences" begin

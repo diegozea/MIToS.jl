@@ -38,7 +38,7 @@ frequencies/probabilities `Pab` because they are used to estimate the pseudofreq
 function _calculate_blosum_pseudofrequencies!(
     Pab::ContingencyTable{T,2,UngappedAlphabet},
 ) where {T}
-    @assert gettotal(Pab) ≈ one(T) "The input should be a probability table (normalized)"
+    @argcheck gettotal(Pab) ≈ one(T) "The input should be a probability table (normalized)"
     pab = getarray(gettable(Pab))
     gab = Pab.temporal
     bl62 = getarray(gettable(BLOSUM62_Pij))

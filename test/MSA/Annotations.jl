@@ -23,14 +23,14 @@
 
         setannotresidue!(annot, "O31698/18-71", "SS", example_str)
 
-        @test_throws AssertionError setannotresidue!(
+        @test_throws ArgumentError setannotresidue!(
             annot,
             "O31698/18-71",
             String(rand('A':'Z', 51)),
             example_str,
         )
 
-        @test_throws AssertionError setannotresidue!(
+        @test_throws ArgumentError setannotresidue!(
             annot,
             "O31698/18-71",
             "Feature Name",
@@ -123,7 +123,7 @@
         setannotcolumn!(annot, "SS_cons", "CCCCCHHHHHHHHHHHHHEEEEEEEEEEEEEEEEEEH")
         setannotsequence!(annot, "O31698/88-139", "OS", "Bacillus subtilis")
 
-        @test_throws AssertionError filtercolumns!(annot, [true, false, true])
+        @test_throws ArgumentError filtercolumns!(annot, [true, false, true])
 
         #filtersequences!(annot, IndexedArray(["O31698/88-139", "O31698/18-71"]), [false, true])
         #@test length( getannotsequence(annot) ) == 0

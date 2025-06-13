@@ -40,8 +40,8 @@
             @test (aln .== GAP) != gaps[1]
         end
 
-        @test_throws AssertionError shuffle_msa(msa, dims = 0, fixedgaps = true)
-        @test_throws AssertionError shuffle_msa(msa, dims = 3, fixedgaps = true)
+        @test_throws ArgumentError shuffle_msa(msa, dims = 0, fixedgaps = true)
+        @test_throws ArgumentError shuffle_msa(msa, dims = 3, fixedgaps = true)
     end
 
     @testset "Columns" begin

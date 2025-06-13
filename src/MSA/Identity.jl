@@ -139,7 +139,7 @@ the pairwise comparison (the calculation could be slow).
 function meanpercentidentity(msa, nsamples::Int = 44850; exact::Bool = false)
     #                 lengthlist(300, false) == 44850
     nseq, ncol = size(msa)
-    @assert nsamples > 2 "At least 2 samples are needed."
+    @argcheck nsamples > 2 "At least 2 samples are needed."
     nvalues = lengthlist(nseq, Val{false})
     sum = 0.0
     if !exact && nvalues >= nsamples
