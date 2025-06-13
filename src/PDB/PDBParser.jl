@@ -21,8 +21,15 @@ function _parse_pdbatom(line::String, atom_name, element)
     x = parse(Float64, SubString(line, 31, 38))
     y = parse(Float64, SubString(line, 39, 46))
     z = parse(Float64, SubString(line, 47, 54))
-    occupancy = parse(Float64, SubString(line, 55, 60))
-    B = String(strip(SubString(line, 61, 66), ' '))
+    occ_field = ncodeunits(line) ≥ 60 ? strip(SubString(line, 55, 60)) : ""
+    if isempty(occ_field)
+        occupancy = 1.0
+        @warn "No occupancy values found. Using 1.0 for all atoms." maxlog=1
+    else
+        occupancy = parse(Float64, occ_field)
+    end
+    b_field = ncodeunits(line) ≥ 66 ? strip(SubString(line, 61, 66)) : ""
+    B = isempty(b_field) ? "0.0" : String(b_field)
     alt_id = strip(String(SubString(line, 17, 17)))
     if 80 ≤ ncodeunits(line)
         charge = String(strip(SubString(line, 79, 80)))
@@ -242,7 +249,7 @@ function Utils.print_file(
         _Format_PDB_ATOM,
         res.id.group,
         serial_number,
-        length(atomname) <= 3 ? string(" ", atomname) : atomname, # It works with NACCESS
+        length(atomname) ≤ 3 ? string(" ", atomname) : atomname, # It works with NACCESS
         res.atoms[atom_index].alt_id,
         res.id.name,
         res.id.chain,
