@@ -16,6 +16,14 @@ GappedAlphabet of length 21. Residues : res"ARNDCQEGHILKMFPSTWYV-"
 struct GappedAlphabet <: ResidueAlphabet end
 
 """
+    GappedXAlphabet
+
+Residue alphabet including the 20 natural amino acids, a gap character and the
+`X` residue used for unknown or ambiguous cases.
+"""
+struct GappedXAlphabet <: ResidueAlphabet end
+
+"""
 This type defines the usual alphabet of the 20 natural residues, without the gap character.
 
 ```jldoctest
@@ -87,6 +95,7 @@ end
 
 Base.length(ab::UngappedAlphabet) = 20
 Base.length(ab::GappedAlphabet) = 21
+Base.length(::GappedXAlphabet) = 22
 Base.length(ab::ReducedAlphabet) = ab.len
 
 Base.eltype(::ResidueAlphabet) = Int
@@ -200,9 +209,11 @@ Base.names(alphabet::ResidueAlphabet) = String[string(Residue(i)) for i in alpha
 const _UngappedAlphabet_Names =
     OrderedDict{String,Int}(string(Residue(i)) => i for i = 1:20)
 const _GappedAlphabet_Names = OrderedDict{String,Int}(string(Residue(i)) => i for i = 1:21)
+const _GappedXAlphabet_Names = OrderedDict{String,Int}(string(Residue(i)) => i for i = 1:22)
 
 @inline getnamedict(alphabet::UngappedAlphabet) = _UngappedAlphabet_Names
 @inline getnamedict(alphabet::GappedAlphabet) = _GappedAlphabet_Names
+@inline getnamedict(::GappedXAlphabet) = _GappedXAlphabet_Names
 
 """
 It takes a `ResidueAlphabet` and returns a dictionary from group name to group position.
