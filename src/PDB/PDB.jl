@@ -31,6 +31,7 @@ using JSON3
 using Downloads
 using Logging
 using BioStructures
+using ArgCheck
 
 export  # PDBResidues
     PDBResidueIdentifier,

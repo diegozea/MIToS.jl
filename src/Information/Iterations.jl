@@ -345,10 +345,10 @@ function mapfreq(
     kargs...,
 )
     # Ensure that the keyword arguments are correct
-    @assert dims == 1 || dims == 2 "The dimension must be 1 (sequences) or 2 (columns)."
-    @assert rank == 1 || rank == 2 "The rank must be 1 (single sequences or columns) or 2 (pairs)."
+    @argcheck dims == 1 || dims == 2 "The dimension must be 1 (sequences) or 2 (columns)."
+    @argcheck rank == 1 || rank == 2 "The rank must be 1 (single sequences or columns) or 2 (pairs)."
     if pseudofrequencies !== NoPseudofrequencies()
-        @assert probabilities "Set `probabilities = true` to use pseudofrequencies."
+        @argcheck probabilities "Set `probabilities = true` to use pseudofrequencies."
     end
     # Define the table to apply the function
     _table = ContingencyTable(Float64, Val{rank}, alphabet)

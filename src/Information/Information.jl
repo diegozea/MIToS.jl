@@ -31,6 +31,7 @@ using OrderedCollections        # OrderedDicts for NamedArrays
 using StatsBase             # entropy
 using LinearAlgebra         # normalize
 using PairwiseListMatrices
+using ArgCheck
 
 if isdefined(Base, :count!)
     import Base: count!

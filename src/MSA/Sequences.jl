@@ -11,7 +11,7 @@ _format_fallback(::Type{RawSequences}) = Raw
 
 function _generate_sequences(ids, seqs, annot)
     n = length(ids)
-    @assert n == length(seqs)
+    @argcheck n == length(seqs)
     output = AnnotatedSequence[]
     sizehint!(output, n)
     for (id, seq) in zip(ids, seqs)

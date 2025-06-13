@@ -22,6 +22,7 @@ import LightXML
 using AutoHashEquals
 using OrderedCollections
 using MIToS.Utils
+using ArgCheck
 
 export DataBase,
     dbPDBe,
