@@ -1,5 +1,10 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.1.0 to master
+
+- Replaced argument validation `@assert` statements with `@argcheck` from the `ArgCheck` 
+  package.
+
 ### Changes from v3.0.6 to v3.1.0
 
 - When reading MSA files with duplicated sequence names, we previously raised an error. 
@@ -7,7 +12,6 @@
   (e.g., `(1)`, `(2)`), and the original names are preserved in the `"OriginalSeqName"`
   sequence annotation. This behavior is implemented for FASTA, A3M, A2M, and PIR formats.
   However, duplicated names still raise an error when reading Stockholm files.
-- Replaced argument validation `@assert` statements with `@argcheck` from the ArgCheck package.
 
 ### Changes from v2.22.0 to v3.0.0
 
@@ -22,7 +26,6 @@ The MSA module now includes ways to read, write, and work with unaligned protein
   - The `MSA` module now exports the `AnnotatedSequence` type to represent a single protein
     sequence with annotations. This type is a subtype of the new `AbstractSequence` type,
     a subtype of the new `AbstractResidueMatrix` type.
-
   - The `MSA` module now exports the `sequence_id` function to get the identifier of a
     sequence object.
   - The `MSA` module now defines the `FASTASequences`, `PIRSequences`, and `RawSequences`
