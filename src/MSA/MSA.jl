@@ -26,6 +26,7 @@ using StatsBase             # Weights for clustering
 using RecipesBase           # Plots for MSAs
 using TranscodingStreams    # To solve MethodError seek(::TranscodingStream, ::Int)
 using MIToS.Utils
+using ArgCheck
 
 import Markdown: @md_str # for docstrings
 

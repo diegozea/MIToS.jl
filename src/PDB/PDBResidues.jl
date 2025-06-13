@@ -659,12 +659,12 @@ Returns the index value of the `Vector` with maximum occupancy.
 """
 function selectbestoccupancy(atoms::Vector{PDBAtom}, indices::Vector{Int})
     Ni = length(indices)
-    @assert Ni != 0 "There are no atom indices"
+    @argcheck Ni != 0 "There are no atom indices"
     if Ni == 1
         return (indices[1])
     end
     Na = length(atoms)
-    @assert Ni ≤ Na "There are more atom indices ($Ni) than atoms in the Residue ($Na)"
+    @argcheck Ni ≤ Na "There are more atom indices ($Ni) than atoms in the Residue ($Na)"
     indice = 0
     occupancy = -Inf
     for i in indices
@@ -975,7 +975,7 @@ function proximitymean(
     include::Bool = false,
 ) where {T<:AbstractFloat}
     N = length(residues)
-    @assert N == length(scores) "Vectors must have the same length."
+    @argcheck N == length(scores) "Vectors must have the same length."
     count = zeros(Int, N)
     sum = zeros(T, N)
     offset = include ? 0 : 1

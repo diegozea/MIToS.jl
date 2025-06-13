@@ -55,11 +55,11 @@
             @test getsequence(filtersequences(msa, Bool[false, false, true, true]), 2) ==
                   getsequence(msa, 4)
 
-            @test_throws AssertionError filtersequences(
+            @test_throws ArgumentError filtersequences(
                 msa,
                 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] .> 2,
             )
-            @test_throws AssertionError filtersequences(msa, [1, 2, 3] .> 2)
+            @test_throws ArgumentError filtersequences(msa, [1, 2, 3] .> 2)
         end
 
         for msa in pfam_msas[3:4]
@@ -86,8 +86,8 @@
                 getresidues(getsequence(filtercolumns(msa, collect(1:110) .<= 10), 4)),
             ) == res"QTLNSYKMAE"
 
-            @test_throws AssertionError filtercolumns(msa, [1, 2, 3] .> 2)
-            @test_throws AssertionError filtercolumns(msa, collect(1:200) .<= 10)
+            @test_throws ArgumentError filtercolumns(msa, [1, 2, 3] .> 2)
+            @test_throws ArgumentError filtercolumns(msa, collect(1:200) .<= 10)
         end
 
         for msa in pfam_msas[3:4]
@@ -116,8 +116,8 @@
             @test filtercolumns(seq, seq .== Residue('Q')) ==
                   filtercolumns(seq, seq .== Residue('Q'))
 
-            @test_throws AssertionError filtercolumns(annseq, 1:(length(seq)-10) .> 2)
-            @test_throws AssertionError filtercolumns(seq, 1:(length(seq)+10) .<= 10)
+            @test_throws ArgumentError filtercolumns(annseq, 1:(length(seq)-10) .> 2)
+            @test_throws ArgumentError filtercolumns(seq, 1:(length(seq)+10) .<= 10)
 
             # Sequences are matrices
             @test vec(getresidues(filtered_annseq)) == res"QQQQQQQQQQQQQQ"

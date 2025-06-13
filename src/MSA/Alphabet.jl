@@ -78,7 +78,7 @@ function ReducedAlphabet(str::AbstractString)
             pos += 1
         end
         int_residue = Int(Residue(char))
-        @assert int_residue != 22 "$char isn't valid for a residue alphabet." # N == 22
+        @argcheck int_residue != 22 "$char isn't valid for a residue alphabet." # N == 22
         group_names[pos] = string(group_names[pos], char)
         mapping[int_residue] = pos
     end
@@ -155,7 +155,7 @@ end
 end
 
 @inline function Base.getindex(ab::ResidueAlphabet, res::String)::Int
-    @assert length(res) == 1 "The string with the residue should have only one character."
+    @argcheck length(res) == 1 "The string with the residue should have only one character."
     i = Int(Residue(res[1]))
     ifelse(i <= length(ab), i, 22)
 end

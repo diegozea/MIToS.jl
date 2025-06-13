@@ -105,9 +105,10 @@ Some other changes are:
 
 - When reading MSA files with duplicated sequence names, we previously raised an error. 
   Now, duplicated names are automatically disambiguated by appending suffixes 
-  (e.g., `(1)`, `(2)`), and the original names are preserved in the `"OriginalSeqName"` 
+  (e.g., `(1)`, `(2)`), and the original names are preserved in the `"OriginalSeqName"`
   sequence annotation. This behavior is implemented for FASTA, A3M, A2M, and PIR formats.
   However, duplicated names still raise an error when reading Stockholm files.
+- Replaced argument validation `@assert` statements with `@argcheck` from the ArgCheck package.
 
 ### Changes from v2.22.0 to v3.0.0
 

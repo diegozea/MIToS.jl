@@ -56,7 +56,7 @@ function shuffle_msa!(
     fixedgaps::Bool = true,
     fixed_reference::Bool = false,
 )
-    @assert dims == 1 || dims == 2 "dims must be 1 for shuffling along sequences or 2 for columns"
+    @argcheck dims == 1 || dims == 2 "dims must be 1 for shuffling along sequences or 2 for columns"
     subset_indices = _subset_indices(msa, dims, subset, fixed_reference)
     msa_matrix = getresidues(msa)
     nseq, ncol = size(msa_matrix)

@@ -19,8 +19,8 @@ function downloadsifts(
     filename::AbstractString = "$(lowercase(pdbcode)).xml.gz",
     source::AbstractString = "ftp",
 )
-    @assert endswith(filename, ".xml.gz") "filename must end with .xml.gz"
-    @assert source == "ftp" || source == "https" "source must be ftp or https"
+    @argcheck endswith(filename, ".xml.gz") "filename must end with .xml.gz"
+    @argcheck source == "ftp" || source == "https" "source must be ftp or https"
     if check_pdbcode(pdbcode)
         url = if source == "ftp"
             string(

@@ -99,7 +99,7 @@ mutable struct AlignedSequence <: AbstractAlignedSequence
     matrix::NamedResidueMatrix{Array{Residue,2}}
 
     function (::Type{AlignedSequence})(matrix::NamedResidueMatrix{Array{Residue,2}})
-        @assert size(matrix, 1) == 1 "There are more than one sequence."
+        @argcheck size(matrix, 1) == 1 "There are more than one sequence."
         setdimnames!(matrix, ("Seq", "Col"))
         new(matrix)
     end
@@ -117,7 +117,7 @@ mutable struct AnnotatedAlignedSequence <: AbstractAlignedSequence
         matrix::NamedResidueMatrix{Array{Residue,2}},
         annotations::Annotations,
     )
-        @assert size(matrix, 1) == 1 "There are more than one sequence."
+        @argcheck size(matrix, 1) == 1 "There are more than one sequence."
         setdimnames!(matrix, ("Seq", "Col"))
         new(matrix, annotations)
     end
@@ -139,7 +139,10 @@ mutable struct AnnotatedSequence <: AbstractSequence
         matrix::NamedResidueMatrix{Array{Residue,2}},
         annotations::Annotations,
     )
-        @assert size(matrix, 1) == 1 "There should be only one sequence—i.e. one row."
+        @argcheck size(matrix, 1) == 1 "There should be only one sequence—i.e. one row."
+        if dimnames(matrix, 2) != "Pos"
+            setdimnames!(matrix, ("Seq", "Pos")) # Unaligned sequences have positions instead of columns
+        end
         clean_matrix = adjustreference(matrix) # ensure that the sequence has no gaps
         # clean_matrix has a copy of the original data, so we can modify it without 
         # affecting the original matrix
@@ -849,7 +852,7 @@ function stringsequence(msa::AbstractMultipleSequenceAlignment, i)
 end
 
 function stringsequence(seq::AbstractMatrix{Residue})
-    @assert size(seq, 1) == 1 "There are more than one sequence/row."
+    @argcheck size(seq, 1) == 1 "There are more than one sequence/row."
     String(vec(seq))
 end
 
@@ -876,7 +879,7 @@ function rename_sequences!(
     msa::NamedResidueMatrix{AT},
     newnames::Vector{T},
 ) where {AT,T<:AbstractString}
-    @assert length(newnames) == size(msa, 1) "The number of new names must match the number of sequences."
+    @argcheck length(newnames) == size(msa, 1) "The number of new names must match the number of sequences."
     setnames!(msa, newnames, 1)
     msa
 end

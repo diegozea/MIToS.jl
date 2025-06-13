@@ -215,7 +215,7 @@ function kullback_leibler(
 ) where {T<:Number,N,A<:ResidueAlphabet}
     p = getcontingencytable(probabilities)
     bg = _gettablearray(background)
-    @assert size(background) == size(p) "probabilities and background must have the same size."
+    @argcheck size(background) == size(p) "probabilities and background must have the same size."
     KL = zero(T)
     @inbounds for i in eachindex(p)
         pᵢ = p[i]
@@ -246,7 +246,7 @@ function kullback_leibler(
     rank::Int = 1,
     kargs...,
 )
-    @assert rank == 1 "rank must be 1 for kullback_leibler"
+    @argcheck rank == 1 "rank must be 1 for kullback_leibler"
     mapfreq(
         kullback_leibler,
         msa;
@@ -457,7 +457,7 @@ function mutual_information(
     base::Number = ℯ,
     kargs...,
 )
-    @assert rank > 1 "rank must be greater than 1 for mutual_information"
+    @argcheck rank > 1 "rank must be greater than 1 for mutual_information"
     mapfreq(
         mutual_information,
         msa;
@@ -507,7 +507,7 @@ function normalized_mutual_information(
     probabilities::Bool = false,
     kargs...,
 )
-    @assert rank > 1 "rank must be greater than 1 for normalized_mutual_information"
+    @argcheck rank > 1 "rank must be greater than 1 for normalized_mutual_information"
     mapfreq(
         normalized_mutual_information,
         msa;

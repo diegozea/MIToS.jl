@@ -89,7 +89,7 @@ function _get_seqname_mapping_hcat(concatenated_seqnames, msas...)
     nseq = length(concatenated_seqnames)
     for j = 1:nmsa
         seq_names = sequencenames(msas[j])
-        @assert nseq == length(seq_names)
+        @argcheck nseq == length(seq_names)
         for i = 1:nseq
             mapping[(j, seq_names[i])] = concatenated_seqnames[i]
         end
@@ -651,7 +651,7 @@ function _fix_msa_numbers(original_msa, int_position, gap_block_columns, gapped_
 end
 
 function _insert_gap_columns(input_msa, gap_block_columns::Int, position)
-    @assert gap_block_columns ≥ 0 "The number of gap columns must be greater than 0."
+    @argcheck gap_block_columns ≥ 0 "The number of gap columns must be greater than 0."
     msa = AnnotatedMultipleSequenceAlignment(input_msa)
     gap_block_columns == 0 && return msa
     gap_block = _gap_columns(msa, gap_block_columns)
@@ -692,7 +692,7 @@ aligned_msa_b = _add_gaps_in_b(msa_a, msa_b, [1, 2, 3], [2, 3, 4], 2) # axis = 2
 ```
 """
 function _add_gaps_in_b(msa_a, msa_b, positions_a, positions_b, axis::Int = 1)
-    @assert axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
+    @argcheck axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
     # sort the positions to keep the order in msa_a
     order_a = sortperm(positions_a)
     sorted_b = positions_b[order_a]
@@ -748,7 +748,7 @@ function _find_pairing_positions(index_function::Function, msa_a, msa_b, pairing
 end
 
 function _find_pairing_positions(axis::Int, msa_a, msa_b, pairing)
-    @assert axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
+    @argcheck axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
     index_function = axis == 1 ? sequence_index : column_index
     _find_pairing_positions(index_function, msa_a, msa_b, pairing)
 end
@@ -836,8 +836,8 @@ function _insert_sorted_gaps(
     block_position::Symbol = :before,
     axis::Int = 1,
 )
-    @assert block_position in [:before, :after] "block_position must be :before or :after."
-    @assert axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
+    @argcheck block_position in [:before, :after] "block_position must be :before or :after."
+    @argcheck axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
     # Obtain the positions that will be aligned to gaps in the reference
     N_reference = axis == 1 ? nsequences(msa_reference) : ncolumns(msa_reference)
     gaps_reference = _find_gaps(positions_reference, N_reference)

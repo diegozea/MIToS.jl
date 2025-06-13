@@ -237,8 +237,8 @@ end
     pdb = "2vqc"
     mapping = read_file(joinpath(DATA, "$(pdb).xml.gz"), SIFTSXML)
 
-    @test_throws AssertionError downloadsifts(pdb, source = "http")
-    @test_throws AssertionError downloadsifts(pdb, filename = "bad_name.txt")
+    @test_throws ArgumentError downloadsifts(pdb, source = "http")
+    @test_throws ArgumentError downloadsifts(pdb, filename = "bad_name.txt")
     @test_throws ErrorException downloadsifts("2vqc_A")
 
     filename_ftp = downloadsifts(pdb, filename = tempname() * ".xml.gz")

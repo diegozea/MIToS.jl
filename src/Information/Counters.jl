@@ -7,7 +7,7 @@
     seqs::Vararg{AbstractArray{Residue},N},
 ) where {T,N,A}
     quote
-        @assert N == length(seqs) "Number of residue arrays and table dimension doesn't match."
+        @argcheck N == length(seqs) "Number of residue arrays and table dimension doesn't match."
         # seq_1 = seqs[1]
         # seq_2 = ...
         @nextract $N seq d -> seqs[d]
@@ -15,9 +15,9 @@
         # @assert len == length(seq_1) "Residue arrays have different lengths"
         # @assert len == length(seq_2) ...
         @nexprs $N d ->
-            @assert len == length(seq_d) "Residue arrays have different lengths."
+            @argcheck len == length(seq_d) "Residue arrays have different lengths."
         if isa(weights, AbstractArray)
-            @assert len == length(weights) "Residue array and weights sizes doesn't match."
+            @argcheck len == length(weights) "Residue array and weights sizes doesn't match."
         end
         _cleanup_temporal!(counts)
         temporal = counts.temporal

@@ -75,7 +75,7 @@ end
 
 # This function is useful because of the Julia issue #12495
 function _filter(str::String, mask::AbstractArray{Bool})
-    @assert length(str) == length(mask) "The string and the mask must have the same length"
+    @argcheck length(str) == length(mask) "The string and the mask must have the same length"
     #                 data                             readable   writable
     buffer = IOBuffer(Array{UInt8}(undef, lastindex(str)), read = true, write = true)
     # To start at the beginning of the buffer:
@@ -108,7 +108,7 @@ function filtersequences!(
     ids::Vector{String},
     mask::AbstractVector{Bool},
 )
-    @assert length(ids) == length(mask) "It's needed one sequence id per element in the mask."
+    @argcheck length(ids) == length(mask) "It's needed one sequence id per element in the mask."
     nresannot = length(data.residues)
     nseqannot = length(data.sequences)
     if nresannot > 0 || nseqannot > 0
@@ -298,8 +298,8 @@ It returns per residue annotation for `(seqname, feature)`
 # -------
 
 function _test_feature_name(feature::String)
-    @assert length(feature) <= 50 "Feature name has a limit of 50 characters."
-    @assert !occursin(r"\s", feature) "Feature name must not have spaces."
+    @argcheck length(feature) <= 50 "Feature name has a limit of 50 characters."
+    @argcheck !occursin(r"\s", feature) "Feature name must not have spaces."
 end
 
 function setannotfile!(ann::Annotations, feature::String, annotation::String)
