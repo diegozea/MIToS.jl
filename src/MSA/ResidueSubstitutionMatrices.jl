@@ -1,9 +1,11 @@
 module ResidueSubstitutionMatrices
 
-using ..MSA: Residue, ResidueAlphabet, GappedAlphabet
+using ..MSA: Residue, ResidueAlphabet, GappedAlphabet, GappedXAlphabet
+import ..MSA: getnamedict
 using NamedArrays
 
 export ResidueSubstitutionMatrix
+
 
 """
     ResidueSubstitutionMatrix{T<:Real, A<:ResidueAlphabet}(
@@ -89,5 +91,42 @@ function Base.show(io::IO, ::MIME"text/plain", matrix::ResidueSubstitutionMatrix
 end
 
 Base.show(io::IO, matrix::ResidueSubstitutionMatrix) = show(io, MIME"text/plain"(), matrix)
+
+# This BLOSUM62 matrix was obtained from the NCBI source code :
+# https://www.ncbi.nlm.nih.gov/IEB/ToolBox/C_DOC/lxr/source/data/BLOSUM62
+"""
+    BLOSUM62
+
+Standard BLOSUM62 substitution matrix represented as a
+[`ResidueSubstitutionMatrix`](@ref) using [`GappedXAlphabet`](@ref).
+"""
+const BLOSUM62 = ResidueSubstitutionMatrix(
+    Int[
+        #    A   R   N   D   C   Q   E   G   H   I   L   K   M   F   P   S   T   W   Y   V   -   X
+        4 -1 -2 -2 0 -1 -1 0 -2 -1 -1 -1 -1 -2 -1 1 0 -3 -2 0 -4 -1
+        -1 5 0 -2 -3 1 0 -2 0 -3 -2 2 -1 -3 -2 -1 -1 -3 -2 -3 -4 -1
+        -2 0 6 1 -3 0 0 0 1 -3 -3 0 -2 -3 -2 1 0 -4 -2 -3 -4 -1
+        -2 -2 1 6 -3 0 2 -1 -1 -3 -4 -1 -3 -3 -1 0 -1 -4 -3 -3 -4 -1
+        0 -3 -3 -3 9 -3 -4 -3 -3 -1 -1 -3 -1 -2 -3 -1 -1 -2 -2 -1 -4 -1
+        -1 1 0 0 -3 5 2 -2 0 -3 -2 1 0 -3 -1 0 -1 -2 -1 -2 -4 -1
+        -1 0 0 2 -4 2 5 -2 0 -3 -3 1 -2 -3 -1 0 -1 -3 -2 -2 -4 -1
+        0 -2 0 -1 -3 -2 -2 6 -2 -4 -4 -2 -3 -3 -2 0 -2 -2 -3 -3 -4 -1
+        -2 0 1 -1 -3 0 0 -2 8 -3 -3 -1 -2 -1 -2 -1 -2 -2 2 -3 -4 -1
+        -1 -3 -3 -3 -1 -3 -3 -4 -3 4 2 -3 1 0 -3 -2 -1 -3 -1 3 -4 -1
+        -1 -2 -3 -4 -1 -2 -3 -4 -3 2 4 -2 2 0 -3 -2 -1 -2 -1 1 -4 -1
+        -1 2 0 -1 -3 1 1 -2 -1 -3 -2 5 -1 -3 -1 0 -1 -3 -2 -2 -4 -1
+        -1 -1 -2 -3 -1 0 -2 -3 -2 1 2 -1 5 0 -2 -1 -1 -1 -1 1 -4 -1
+        -2 -3 -3 -3 -2 -3 -3 -3 -1 0 0 -3 0 6 -4 -2 -2 1 3 -1 -4 -1
+        -1 -2 -2 -1 -3 -1 -1 -2 -2 -3 -3 -1 -2 -4 7 -1 -1 -4 -3 -2 -4 -1
+        1 -1 1 0 -1 0 0 0 -1 -2 -2 0 -1 -2 -1 4 1 -3 -2 -2 -4 -1
+        0 -1 0 -1 -1 -1 -1 -2 -2 -1 -1 -1 -1 -2 -1 1 5 -2 -2 0 -4 -1
+        -3 -3 -4 -4 -2 -2 -3 -2 -2 -3 -2 -3 -1 1 -4 -3 -2 11 2 -3 -4 -1
+        -2 -2 -2 -3 -2 -1 -2 -3 2 -1 -1 -2 -1 3 -3 -2 -2 2 7 -1 -4 -1
+        0 -3 -3 -3 -1 -2 -2 -3 -3 3 1 -2 1 -1 -2 -2 0 -3 -1 4 -4 -1
+        -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 -4 1 -4
+        -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -4 -1
+    ],
+    GappedXAlphabet(),
+)
 
 end # module

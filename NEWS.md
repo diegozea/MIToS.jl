@@ -2,9 +2,14 @@
 
 ### Changes from v3.1.0 to master
 
-- *[Breaking change]* Replaced argument validation `@assert` statements with `@argcheck` 
-  from the `ArgCheck` package. Therefore, functions that previously raised an 
+- *[Breaking change]* Replaced argument validation `@assert` statements with `@argcheck`
+  from the `ArgCheck` package. Therefore, functions that previously raised an
   `AssertionError` now raise an `ArgumentError` instead.
+- Moved `BLOSUM62` matrix to the `ResidueSubstitutionMatrices` module and
+  converted it into a `ResidueSubstitutionMatrix`. Functions `sum_of_pairs_score`
+  and `_pairwise_score` now take a `ResidueSubstitutionMatrix` instead of an
+  `AbstractMatrix{Int}`.
+- Added new `GappedXAlphabet` type to `Alphabet.jl` and updated `BLOSUM62` to use it.
 
 ### Changes from v3.0.6 to v3.1.0
 

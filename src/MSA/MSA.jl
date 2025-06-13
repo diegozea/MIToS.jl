@@ -38,6 +38,7 @@ export  # Residue
     # Alphabet
     ResidueAlphabet,
     GappedAlphabet,
+    GappedXAlphabet,
     UngappedAlphabet,
     ReducedAlphabet,
     getnamedict,
@@ -175,6 +176,7 @@ include("MultipleSequenceAlignment.jl")
 include("MSAEditing.jl")
 include("GetIndex.jl")
 include("MSAStats.jl")
+include("ResidueSubstitutionMatrices.jl")
 include("MSAQuality.jl")
 include("GeneralParserMethods.jl")
 include("Raw.jl")
@@ -186,7 +188,6 @@ include("Sequences.jl")
 include("Shuffle.jl")
 include("PLM.jl")
 include("Identity.jl")
-include("ResidueSubstitutionMatrices.jl")
 include("Clusters.jl")
 include("Hobohm.jl")
 include("Plots.jl")
