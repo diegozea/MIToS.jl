@@ -56,7 +56,8 @@ function sum_of_pairs_score(
     msa::AbstractMatrix{Residue};
     gap_open::Real = -10,
     gap_extend::Real = -1,
-    matrix::ResidueSubstitutionMatrices.ResidueSubstitutionMatrix{T,A} = ResidueSubstitutionMatrices.BLOSUM62,
+    matrix::ResidueSubstitutionMatrices.ResidueSubstitutionMatrix{T,A} =
+        ResidueSubstitutionMatrices.BLOSUM62,
 ) where {T,A}
     S = promote_type(T, typeof(gap_open), typeof(gap_extend))
     go = convert(S, gap_open)

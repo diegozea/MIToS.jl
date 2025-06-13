@@ -102,7 +102,8 @@ Standard BLOSUM62 substitution matrix represented as a
 """
 const BLOSUM62 = ResidueSubstitutionMatrix(
     Int[
-        #    A   R   N   D   C   Q   E   G   H   I   L   K   M   F   P   S   T   W   Y   V   -   X
+        #    A   R   N   D   C   Q   E   G   H   I   L   K   M   F   P   S   T
+        #    W   Y   V   -   X
         4 -1 -2 -2 0 -1 -1 0 -2 -1 -1 -1 -1 -2 -1 1 0 -3 -2 0 -4 -1
         -1 5 0 -2 -3 1 0 -2 0 -3 -2 2 -1 -3 -2 -1 -1 -3 -2 -3 -4 -1
         -2 0 6 1 -3 0 0 0 1 -3 -3 0 -2 -3 -2 1 0 -4 -2 -3 -4 -1
