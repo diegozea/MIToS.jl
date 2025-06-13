@@ -29,15 +29,6 @@ the tests. You can do that by running the following command:
 julia --project -e 'using Pkg; Pkg.add("NewDependency")'
 ```
 
-In case you need to run the entire test suite, you can use `MIToSTests.retest` to test each 
-MIToS' module (`Utils`, `MSA`, etc.) separately and in parallel using bash:
-
-```bash
-for m in Utils MSA Information PDB SIFTS Pfam; do
-  nohup julia --project -e "using MIToSTests; MIToSTests.retest(\"$m\"); MIToSTests.retest(\"$m\")" > "$m".log 2>&1 &
-done
-```
-
 # Formatting
 
 At the end, you can format your files, e.g., the `abc.jl` file, using `JuliaFormatter`:
@@ -47,23 +38,21 @@ julia --project -e 'using JuliaFormatter; JuliaFormatter.format_file("abc.jl")'
 ```
 
 # Release Notes
-The `NEWS.md` file contains the release notes for this package. Please update it
-with any changes you make to the package. Note that this package follows semantic 
-versioning, so any changes that break the API should increment the major version number 
-with respect to the current version. You can check the current version in the
-`Project.toml` file. Please, do not update the version number in the `Project.toml` file.
-Note that each new version have a title in the `NEWS.md` file, that follows the following
-format:
+
+The `NEWS.md` file contains the release notes for this package. Please update it with any changes you make to the package. Note that this package follows semantic versioning, so any changes that break the API should increment the major version number with respect to the current version. You can check the current version in the `Project.toml` file. Please, do not update the version number in the `Project.toml` file.
+
+Each new set of changes should be documented under a section titled:
 
 ```md
-### Changes from CURRENT to NEXT
+### Changes from CURRENT to master
 ```
 
-So, for example, if the current version, i.e., the version in the `Project.toml` file, is 
-`0.1.0` and you are introducing a breaking change, the title of the next version
-should be: `### Changes from 0.1.0 to 0.2.0` and should be the first section in the file; 
-the setion are ordered by the `NEXT` version number from the highest to the lowest.
+For example, if the current version listed in the `Project.toml` file is `0.1.0`, the title of your next set of changes should be:
 
-Also note that each change is documented in the `NEWS.md` file with a bullet point
-format. Any breaking change starts with the `*[Breaking change]*` tag, so that it is
-easily identifiable.
+```md
+### Changes from 0.1.0 to master
+```
+
+This section should always be placed first in the `NEWS.md` file, followed by older sections, ordered from most recent to oldest.
+
+Document each change with bullet points. Clearly label breaking changes using the `*[Breaking change]*` tag at the beginning of the bullet, so they are easily identifiable.
