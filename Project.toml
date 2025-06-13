@@ -37,7 +37,7 @@ MIToSROCAnalysisExt = "ROCAnalysis"
 
 [compat]
 Aqua = "0.8"
-ArgCheck = "2.5.0"
+ArgCheck = "2"
 AutoHashEquals = "0.2, 1, 2"
 BioStructures = "4"
 Clustering = "0.14, 0.15"
