@@ -2,8 +2,9 @@
 
 ### Changes from v3.1.0 to master
 
-- Replaced argument validation `@assert` statements with `@argcheck` from the `ArgCheck` 
-  package.
+- *[Breaking change]* Replaced argument validation `@assert` statements with `@argcheck` 
+  from the `ArgCheck` package. Therefore, functions that previously raised an 
+  `AssertionError` now raise an `ArgumentError` instead.
 
 ### Changes from v3.0.6 to v3.1.0
 
