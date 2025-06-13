@@ -73,6 +73,7 @@ end
     include("PDB/Internals.jl")
     include("PDB/Sequences.jl")
     include("PDB/AlphaFoldDB.jl")
+    include("PDB/ShortPDB.jl")
 end
 
 # SIFTS
