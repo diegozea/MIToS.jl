@@ -6,10 +6,11 @@ function _pairwise_score(
     gap_extend::Real,
     matrix::ResidueSubstitutionMatrices.ResidueSubstitutionMatrix{T,A},
 ) where {T,A}
-    go = convert(T, gap_open)
-    ge = convert(T, gap_extend)
+    S = promote_type(T, typeof(gap_open), typeof(gap_extend))
+    go = convert(S, gap_open)
+    ge = convert(S, gap_extend)
     len = length(seq1)
-    score = 0
+    score = zero(S)
     ingap1 = false
     ingap2 = false
     @inbounds for k = 1:len
@@ -36,7 +37,7 @@ function _pairwise_score(
         else
             ingap1 = false
             ingap2 = false
-            score += matrix[r1, r2]
+            score += convert(S, matrix[r1, r2])
         end
     end
     score
@@ -57,10 +58,11 @@ function sum_of_pairs_score(
     gap_extend::Real = -1,
     matrix::ResidueSubstitutionMatrices.ResidueSubstitutionMatrix{T,A} = ResidueSubstitutionMatrices.BLOSUM62,
 ) where {T,A}
-    go = convert(T, gap_open)
-    ge = convert(T, gap_extend)
+    S = promote_type(T, typeof(gap_open), typeof(gap_extend))
+    go = convert(S, gap_open)
+    ge = convert(S, gap_extend)
     nseq, _ = size(msa)
-    total = 0
+    total = zero(S)
     @inbounds for i = 1:(nseq-1)
         seqi = view(msa, i, :)
         for j = (i+1):nseq
