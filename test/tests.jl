@@ -83,11 +83,6 @@ end
     include("PDB/Sequences.jl")
     include("PDB/AlphaFoldDB.jl")
     include("PDB/ShortPDB.jl")
-    include("PDB/ShowConstructors.jl")
-    include("PDB/Copy.jl")
-    include("PDB/PDBResidues.jl")
-    include("PDB/MMCIFParser.jl")
-    include("PDB/Plots.jl")
 end
 
 # SIFTS
