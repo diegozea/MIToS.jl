@@ -988,8 +988,14 @@ end
 #   (cross(points[2] - points[1], points[3] - points[1]), sum(points)./length(points))
 # end
 
-# Show PDB* objects
-# =================
+# Show PDB* objects (using Format)
+# ====================================
+
+const _Format_ResidueID = FormatExpr("{:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
+const _Format_ATOM = FormatExpr("{:>50} {:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
+
+const _Format_ResidueID_Res = FormatExpr("  {:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
+const _Format_ATOM_Res = FormatExpr("  {:>25} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}\n")
 
 function Base.show(io::IO, id::PDBResidueIdentifier)
     print(
@@ -1040,11 +1046,52 @@ function Base.show(io::IO, atom::PDBAtom)
 end
 
 function Base.show(io::IO, res::PDBResidue)
-    println(io, "PDBResidue(id=", res.id, ", ")
-    print(io, "            ", "atoms=[")
-    n = length(res.atoms)
-    for i = 1:(n-1)
-        println(io, i == 1 ? "" : "                   ", res.atoms[i], ", ")
+    println(io, "PDBResidue:\n  id::PDBResidueIdentifier")
+    printfmt(
+        io,
+        _Format_ResidueID_Res,
+        "PDBe_number",
+        "number",
+        "name",
+        "group",
+        "model",
+        "chain",
+    )
+    printfmt(
+        io,
+        _Format_ResidueID_Res,
+        string('"', res.id.PDBe_number, '"'),
+        string('"', res.id.number, '"'),
+        string('"', res.id.name, '"'),
+        string('"', res.id.group, '"'),
+        string('"', res.id.model, '"'),
+        string('"', res.id.chain, '"'),
+    )
+    len = length(res)
+    println(io, "  atoms::Vector{PDBAtom}  length: ", len)
+    printfmt(
+        io,
+        _Format_ATOM_Res,
+        "coordinates",
+        "atom",
+        "element",
+        "occupancy",
+        "B",
+        "alt_id",
+        "charge",
+    )
+    for i = 1:len
+        printfmt(
+            io,
+            _Format_ATOM_Res,
+            res.atoms[i].coordinates,
+            string('"', res.atoms[i].atom, '"'),
+            string('"', res.atoms[i].element, '"'),
+            res.atoms[i].occupancy,
+            string('"', res.atoms[i].B, '"'),
+            string('"', res.atoms[i].alt_id, '"'),
+            string('"', res.atoms[i].charge, '"'),
+        )
     end
     println(io, n == 1 ? "" : "                   ", res.atoms[n], "])")
 end
