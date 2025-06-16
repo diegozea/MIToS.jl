@@ -4,13 +4,10 @@ function _pairwise_score(
     seq2::AbstractVector{Residue},
     gap_open::Real,
     gap_extend::Real,
-    matrix::ResidueSubstitutionMatrices.ResidueSubstitutionMatrix{T,A},
-) where {T,A}
-    S = promote_type(T, typeof(gap_open), typeof(gap_extend))
-    go = convert(S, gap_open)
-    ge = convert(S, gap_extend)
+    matrix::ResidueSubstitutionMatrices.ResidueSubstitutionMatrix,
+)
+    score = zero(typeof(gap_open))
     len = length(seq1)
-    score = zero(S)
     ingap1 = false
     ingap2 = false
     @inbounds for k = 1:len
@@ -20,24 +17,24 @@ function _pairwise_score(
             continue
         elseif r1 == GAP
             if ingap1
-                score += ge
+                score += gap_extend
             else
-                score += go
+                score += gap_open
                 ingap1 = true
             end
             ingap2 = false
         elseif r2 == GAP
             if ingap2
-                score += ge
+                score += gap_extend
             else
-                score += go
+                score += gap_open
                 ingap2 = true
             end
             ingap1 = false
         else
             ingap1 = false
             ingap2 = false
-            score += convert(S, matrix[r1, r2])
+            score += convert(typeof(gap_open), matrix[r1, r2])
         end
     end
     score
