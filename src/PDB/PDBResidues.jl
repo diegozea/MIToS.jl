@@ -68,6 +68,25 @@ following fields that you can access at any moment for query purposes:
     atoms::Vector{PDBAtom}
 end
 
+# Constructors to match printed representation
+function PDBResidueIdentifier(; PDB_number, number, name, group, model, chain)
+    PDBResidueIdentifier(PDB_number, number, name, group, model, chain)
+end
+
+function Coordinates(a::AbstractVector{<:Real})
+    length(a) == 3 || throw(ArgumentError("Coordinates vector must have length 3"))
+    Coordinates((a[1], a[2], a[3]))
+end
+
+function PDBAtom(; coordinates, atom, element, occupancy, B, alt_id, charge)
+    coords = coordinates isa Coordinates ? coordinates : Coordinates(coordinates)
+    PDBAtom(coords, atom, element, occupancy, B, alt_id, charge)
+end
+
+function PDBResidue(; id, atoms)
+    PDBResidue(id, atoms)
+end
+
 Base.length(res::PDBResidue) = length(res.atoms)
 
 # Copy
