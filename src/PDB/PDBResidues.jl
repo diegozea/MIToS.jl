@@ -975,9 +975,8 @@ end
 const _Format_ResidueID = FormatExpr("{:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
 const _Format_ATOM = FormatExpr("{:>50} {:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
 
-const _Format_ResidueID_Res = FormatExpr("\t\t{:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
-const _Format_ATOM_Res =
-    FormatExpr("\t\t{:>50} {:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
+const _Format_ResidueID_Res = FormatExpr("  {:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
+const _Format_ATOM_Res = FormatExpr("  {:>25} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}\n")
 
 function Base.show(io::IO, id::PDBResidueIdentifier)
     printfmt(
@@ -1028,7 +1027,7 @@ function Base.show(io::IO, atom::PDBAtom)
 end
 
 function Base.show(io::IO, res::PDBResidue)
-    println(io, "PDBResidue:\n\tid::PDBResidueIdentifier")
+    println(io, "PDBResidue:\n  id::PDBResidueIdentifier")
     printfmt(
         io,
         _Format_ResidueID_Res,
@@ -1050,7 +1049,7 @@ function Base.show(io::IO, res::PDBResidue)
         string('"', res.id.chain, '"'),
     )
     len = length(res)
-    println(io, "\tatoms::Vector{PDBAtom}\tlength: ", len)
+    println(io, "  atoms::Vector{PDBAtom}  length: ", len)
     printfmt(
         io,
         _Format_ATOM_Res,
