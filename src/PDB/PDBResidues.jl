@@ -969,109 +969,63 @@ end
 #   (cross(points[2] - points[1], points[3] - points[1]), sum(points)./length(points))
 # end
 
-# Show PDB* objects (using Format)
-# ====================================
-
-const _Format_ResidueID = FormatExpr("{:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
-const _Format_ATOM = FormatExpr("{:>50} {:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
-
-const _Format_ResidueID_Res = FormatExpr("  {:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
-const _Format_ATOM_Res = FormatExpr("  {:>25} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}\n")
+# Show PDB* objects
+# =================
 
 function Base.show(io::IO, id::PDBResidueIdentifier)
-    printfmt(
+    print(
         io,
-        _Format_ResidueID,
-        "PDBe_number",
-        "number",
-        "name",
-        "group",
-        "model",
-        "chain",
-    )
-    printfmt(
-        io,
-        _Format_ResidueID,
-        string('"', id.PDBe_number, '"'),
-        string('"', id.number, '"'),
-        string('"', id.name, '"'),
-        string('"', id.group, '"'),
-        string('"', id.model, '"'),
-        string('"', id.chain, '"'),
+        "PDBResidueIdentifier(PDB_number=\"",
+        id.PDBe_number,
+        "\", number=\"",
+        id.number,
+        "\", name=\"",
+        id.name,
+        "\", group=\"",
+        id.group,
+        "\", model=\"",
+        id.model,
+        "\", chain=\"",
+        id.chain,
+        "\")",
     )
 end
 
 function Base.show(io::IO, atom::PDBAtom)
-    printfmt(
+    print(
         io,
-        _Format_ATOM,
-        "coordinates",
-        "atom",
-        "element",
-        "occupancy",
-        "B",
-        "alt_id",
-        "charge",
-    )
-    printfmt(
-        io,
-        _Format_ATOM,
+        "PDBAtom(",
+        "coordinates=",
         atom.coordinates,
-        string('"', atom.atom, '"'),
-        string('"', atom.element, '"'),
+        ", ",
+        "atom=\"",
+        atom.atom,
+        "\", ",
+        "element=\"",
+        atom.element,
+        "\", ",
+        "occupancy=",
         atom.occupancy,
-        string('"', atom.B, '"'),
-        string('"', atom.alt_id, '"'),
-        string('"', atom.charge, '"'),
+        ", ",
+        "B=\"",
+        atom.B,
+        "\", ",
+        "alt_id=\"",
+        atom.alt_id,
+        "\", ",
+        "charge=\"",
+        atom.charge,
+        "\"",
+        ")",
     )
 end
 
 function Base.show(io::IO, res::PDBResidue)
-    println(io, "PDBResidue:\n  id::PDBResidueIdentifier")
-    printfmt(
-        io,
-        _Format_ResidueID_Res,
-        "PDBe_number",
-        "number",
-        "name",
-        "group",
-        "model",
-        "chain",
-    )
-    printfmt(
-        io,
-        _Format_ResidueID_Res,
-        string('"', res.id.PDBe_number, '"'),
-        string('"', res.id.number, '"'),
-        string('"', res.id.name, '"'),
-        string('"', res.id.group, '"'),
-        string('"', res.id.model, '"'),
-        string('"', res.id.chain, '"'),
-    )
-    len = length(res)
-    println(io, "  atoms::Vector{PDBAtom}  length: ", len)
-    printfmt(
-        io,
-        _Format_ATOM_Res,
-        "coordinates",
-        "atom",
-        "element",
-        "occupancy",
-        "B",
-        "alt_id",
-        "charge",
-    )
-    for i = 1:len
-        printfmt(
-            io,
-            _Format_ATOM_Res,
-            res.atoms[i].coordinates,
-            string('"', res.atoms[i].atom, '"'),
-            string('"', res.atoms[i].element, '"'),
-            res.atoms[i].occupancy,
-            string('"', res.atoms[i].B, '"'),
-            string('"', res.atoms[i].alt_id, '"'),
-            string('"', res.atoms[i].charge, '"'),
-        )
+    println(io, "PDBResidue(id=", res.id, ", ")
+    print(io, "            ", "atoms=[")
+    n = length(res.atoms)
+    for i = 1:(n-1)
+        println(io, i == 1 ? "" : "                   ", res.atoms[i], ", ")
     end
+    println(io, n == 1 ? "" : "                   ", res.atoms[n], "])")
 end
