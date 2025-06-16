@@ -16,6 +16,9 @@
   which omit occupancy or B-factor values. The parser now defaults missing
   occupancy to `1.0` and B-factor to `"0.0"`. A single warning informs when
   occupancy values are not present.
+- Improved `show` method for `PDBResidue` so that atom headers are printed only once
+  per residue. The index column was removed, indentation reduced to two spaces, and
+  atom columns are now narrower for a more compact display.
 
 ### Changes from v3.0.6 to v3.1.0
 
