@@ -977,7 +977,7 @@ const _Format_ATOM = FormatExpr("{:>50} {:>15} {:>15} {:>15} {:>15} {:>15} {:>15
 
 const _Format_ResidueID_Res = FormatExpr("\t\t{:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
 const _Format_ATOM_Res =
-    FormatExpr("\t\t{:<10} {:>50} {:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
+    FormatExpr("\t\t{:>50} {:>15} {:>15} {:>15} {:>15} {:>15} {:>15}\n")
 
 function Base.show(io::IO, id::PDBResidueIdentifier)
     printfmt(
@@ -1051,23 +1051,21 @@ function Base.show(io::IO, res::PDBResidue)
     )
     len = length(res)
     println(io, "\tatoms::Vector{PDBAtom}\tlength: ", len)
+    printfmt(
+        io,
+        _Format_ATOM_Res,
+        "coordinates",
+        "atom",
+        "element",
+        "occupancy",
+        "B",
+        "alt_id",
+        "charge",
+    )
     for i = 1:len
         printfmt(
             io,
             _Format_ATOM_Res,
-            "",
-            "coordinates",
-            "atom",
-            "element",
-            "occupancy",
-            "B",
-            "alt_id",
-            "charge",
-        )
-        printfmt(
-            io,
-            _Format_ATOM_Res,
-            string(i, ":"),
             res.atoms[i].coordinates,
             string('"', res.atoms[i].atom, '"'),
             string('"', res.atoms[i].element, '"'),
