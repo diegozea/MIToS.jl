@@ -4,7 +4,7 @@ struct SIFTSXML <: FileFormat end
 # ==============
 
 """
-    downloadsifts(pdbcode::AbstractString; filename::AbstractString, source::AbstractString="ftp")
+    downloadsifts(pdbcode::AbstractString; filename::AbstractString, source::AbstractString="https")
 
 Download the gzipped SIFTS XML file for the provided `pdbcode`.
 The downloaded file will have the default extension `.xml.gz`.
@@ -17,7 +17,7 @@ EBI PDBe server at https://www.ebi.ac.uk/pdbe/files/sifts/.
 function downloadsifts(
     pdbcode::AbstractString;
     filename::AbstractString = "$(lowercase(pdbcode)).xml.gz",
-    source::AbstractString = "ftp",
+    source::AbstractString = "https",
 )
     @argcheck endswith(filename, ".xml.gz") "filename must end with .xml.gz"
     @argcheck source == "ftp" || source == "https" "source must be ftp or https"
