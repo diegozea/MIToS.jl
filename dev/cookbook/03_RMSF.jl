@@ -80,4 +80,3 @@ RMSF = rmsf(pdb_models)
 # position in your structure:
 
 plot(RMSF, legend = false, xlab = "Residue", ylab = "RMSF [Å]")
-
