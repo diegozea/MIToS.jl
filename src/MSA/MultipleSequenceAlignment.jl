@@ -484,7 +484,7 @@ getresiduesequences(x::AbstractResidueMatrix) = getresiduesequences(getresidues(
 # ---------------
 
 # Gives you the annotations of the Sequence
-function getsequence(data::Annotations, id::String)
+function getsequence(data::Annotations, id::AbstractString)
     GS = Dict{Tuple{String,String},String}()
     GR = Dict{Tuple{String,String},String}()
     if length(data.sequences) > 0
@@ -518,7 +518,8 @@ to the sequence.
 getsequence(msa::AbstractMatrix{Residue}, i::Int) = msa[i:i, :]
 
 getsequence(msa::NamedResidueMatrix{Array{Residue,2}}, i::Int) = msa[i:i, :]
-getsequence(msa::NamedResidueMatrix{Array{Residue,2}}, id::String) = msa[String[id], :]
+getsequence(msa::NamedResidueMatrix{Array{Residue,2}}, id::AbstractString) =
+    msa[String[id], :]
 
 function getsequence(msa::AnnotatedMultipleSequenceAlignment, i::Int)
     seq = namedmatrix(msa)[i:i, :]
@@ -526,13 +527,13 @@ function getsequence(msa::AnnotatedMultipleSequenceAlignment, i::Int)
     AnnotatedAlignedSequence(seq, annot)
 end
 
-function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::String)
+function getsequence(msa::AnnotatedMultipleSequenceAlignment, id::AbstractString)
     seq = namedmatrix(msa)[String[id], :]
     annot = getsequence(annotations(msa), id)
     AnnotatedAlignedSequence(seq, annot)
 end
 
-function getsequence(msa::MultipleSequenceAlignment, seq::String)
+function getsequence(msa::MultipleSequenceAlignment, seq::AbstractString)
     AlignedSequence(getsequence(namedmatrix(msa), seq))
 end
 
@@ -815,7 +816,7 @@ It returns the sequence coordinates as a `Vector{Int}` for an MSA sequence. That
 one element for each MSA column. If the number if `0` in the mapping, there is a gap in
 that column for that sequence.
 """
-function getsequencemapping(msa::AnnotatedMultipleSequenceAlignment, seq_id::String)
+function getsequencemapping(msa::AnnotatedMultipleSequenceAlignment, seq_id::AbstractString)
     _str2int_mapping(getannotsequence(msa, seq_id, "SeqMap"))
 end
 

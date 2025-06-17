@@ -179,10 +179,10 @@ This function calls `MIToS.Utils.download_file` that calls `Downloads.download`.
 can use keyword arguments, such as `headers`, from that function.
 """
 function downloadpdb(
-    pdbcode::String;
+    pdbcode::AbstractString;
     format::Type{T} = MMCIFFile,
-    filename::String = uppercase(pdbcode) * _file_extension(format),
-    baseurl::String = "http://www.rcsb.org/pdb/files/",
+    filename::AbstractString = uppercase(pdbcode) * _file_extension(format),
+    baseurl::AbstractString = "http://www.rcsb.org/pdb/files/",
     kargs...,
 ) where {T<:FileFormat}
     if check_pdbcode(pdbcode)
@@ -205,7 +205,7 @@ end
 
 This function use the percent-encoding to escape the characters that are not allowed in a URL.
 """
-function _escape_url_query(query::String)::String
+function _escape_url_query(query::AbstractString)::String
     # Characters that do not need to be percent-encoded
     unreserved =
         Set{Char}("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~")
@@ -223,7 +223,7 @@ function _escape_url_query(query::String)::String
     String(take!(encoded_url))
 end
 
-function _graphql_query(pdbcode::String)
+function _graphql_query(pdbcode::AbstractString)
     """
     {
       entry(entry_id: "$pdbcode") {
@@ -252,7 +252,7 @@ function _graphql_query(pdbcode::String)
     """ |> _escape_url_query
 end
 
-function _pdbheader(pdbcode::String; kargs...)
+function _pdbheader(pdbcode::AbstractString; kargs...)
     pdbcode = uppercase(pdbcode)
     if check_pdbcode(pdbcode)
         with_logger(ConsoleLogger(stderr, Logging.Warn)) do
@@ -273,7 +273,11 @@ end
 """
 It downloads a JSON file containing the PDB header information.
 """
-function downloadpdbheader(pdbcode::String; filename::String = tempname(), kargs...)
+function downloadpdbheader(
+    pdbcode::AbstractString;
+    filename::AbstractString = tempname(),
+    kargs...,
+)
     open(filename, "w") do fh
         write(fh, _pdbheader(pdbcode; kargs...))
     end
@@ -285,6 +289,6 @@ Access general information about a PDB entry (e.g., Header information) using th
 GraphQL interface of the PDB database. It parses the JSON answer into a `JSON3.Object` that
 can be used as a dictionary.
 """
-function getpdbdescription(pdbcode::String; kargs...)
+function getpdbdescription(pdbcode::AbstractString; kargs...)
     JSON3.read(_pdbheader(pdbcode; kargs...))["data"]["entry"]
 end
