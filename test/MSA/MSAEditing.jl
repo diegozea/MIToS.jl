@@ -61,6 +61,12 @@
             )
             @test_throws AssertionError filtersequences(msa, [1, 2, 3] .> 2)
         end
+
+        for msa in pfam_msas[3:4]
+            copy_msa = copy(msa)
+            @test filtersequences!(seq -> gapfraction(seq) < 0.5, copy_msa) ==
+                  filtersequences(msa, seq -> gapfraction(seq) < 0.5)
+        end
     end
 
     @testset "filtercolumns!" begin
@@ -77,6 +83,12 @@
 
             @test_throws AssertionError filtercolumns(msa, [1, 2, 3] .> 2)
             @test_throws AssertionError filtercolumns(msa, collect(1:200) .<= 10)
+        end
+
+        for msa in pfam_msas[3:4]
+            copy_msa = copy(msa)
+            @test filtercolumns!(col -> gapfraction(col) < 0.5, copy_msa) ==
+                  filtercolumns(msa, col -> gapfraction(col) < 0.5)
         end
 
         @testset "filtercolumns! for sequences" begin
@@ -103,6 +115,9 @@
 
             @test getannotcolumn(filtered_annseq, "SS_cons") == "XHHEXXXXXXXXXX"
             @test getannotresidue(filtered_annseq, "SS") == "XHHEXXXXXXXXXX"
+
+            @test filtercolumns!(col -> col[1] == Residue('Q'), copy(annseq)) ==
+                  filtercolumns(annseq, col -> col[1] == Residue('Q'))
         end
     end
 
