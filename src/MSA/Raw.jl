@@ -10,9 +10,13 @@ function _load_sequences(
 )
     SEQS = String[]
     IDS = String[]
+    nonres = r"[^A-Za-z-\.]+"
     for (i, line::String) in enumerate(lineiterator(io))
-        push!(SEQS, line)
-        push!(IDS, string(i))
+        clean = replace(line, nonres => "")
+        if !isempty(clean)
+            push!(SEQS, clean)
+            push!(IDS, string(i))
+        end
     end
     return IDS, SEQS, Annotations()
 end
