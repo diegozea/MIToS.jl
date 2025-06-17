@@ -45,5 +45,3 @@ getweight(cl::Clusters) = cl.weights
 getweight(cl::Clusters, seq::Int) = cl.weights[seq]
 
 @inline getweight(cl::Weights, i::Int) = cl[i]
-
-
