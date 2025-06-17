@@ -359,6 +359,15 @@
             end
 
             @test parse_file(raw_string, Raw) == raw
+
+            special_string = """# P D K Q L D E R E H T I E
+# P D A Q R I K A K R N A K"""
+            expected = parse_file(
+                """PDKQLDEREHTIE
+PDAQRIKAKRNAK""",
+                Raw,
+            )
+            @test parse_file(special_string, Raw) == expected
         end
 
         @testset "Print" begin
