@@ -184,12 +184,12 @@ names end with a bang `!`, following the Julia convention. Some of these functio
 `annotate` keyword argument (in general, it's `true` by default) to indicate if the
 modification should be recorded in the MSA/sequence annotations.
 
-One common task is to delete sequences or columns of the MSA. This could be done using the
-functions `filtersequences!` and `filtercolumns!`. These functions take the MSA or sequence
-(if it's possible) as first argument and a `BitVector` or `Vector{Bool}` mask as second
-argument. It deletes all the sequences or columns where the mask is `false`. These functions
-are also defined for `Annotations`, this allows to automatically update (modify) the
-annotations (and therefore, sequence and column mappings) in the MSA.
+One common task is to delete sequences or columns of the MSA using the functions
+`filtersequences!` and `filtercolumns!`. They take the MSA as the first argument and either a
+boolean mask or a function as the second argument. You may also provide the function first,
+which enables the `do` block syntax. Elements for which the result is `false` are deleted. These
+functions are also defined for `Annotations`, allowing automatic updates of the annotations and
+the sequence and column mappings in the MSA.
 
 This two deleting operations are used in the second and third mutating
 functions of the following list:

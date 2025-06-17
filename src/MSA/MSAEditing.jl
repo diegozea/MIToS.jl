@@ -105,10 +105,12 @@ filtersequences(msa::AbstractMatrix{Residue}, mask) = msa[_sequence_mask(mask, m
 
 """
 `filtersequences!(msa, mask[, annotate::Bool=true])`
+`filtersequences!(f, msa[, annotate::Bool=true])`
 
-It allows to filter `msa` sequences using a `AbstractVector{Bool}` `mask`
-(It removes sequences with `false` values). `AnnotatedMultipleSequenceAlignment` annotations
-are updated if `annotate` is `true` (default).
+It allows to filter `msa` sequences using a boolean `mask` or a function `f`
+(called once per sequence). Sequences with `false` values are removed.
+`AnnotatedMultipleSequenceAlignment` annotations are updated if `annotate`
+is `true` (default).
 """
 function filtersequences!(
     msa::AnnotatedMultipleSequenceAlignment,
@@ -131,6 +133,23 @@ function filtersequences!(msa::MultipleSequenceAlignment, mask, annotate::Bool =
     msa
 end
 
+# Wrapper to support do-block syntax: the function comes first
+function filtersequences!(
+    f::Function,
+    msa::AnnotatedMultipleSequenceAlignment,
+    annotate::Bool = true,
+)
+    filtersequences!(msa, f, annotate)
+end
+
+function filtersequences!(
+    f::Function,
+    msa::MultipleSequenceAlignment,
+    annotate::Bool = false,
+)
+    filtersequences!(msa, f, annotate)
+end
+
 function filtersequences(
     msa::Union{AnnotatedMultipleSequenceAlignment,MultipleSequenceAlignment},
     args...,
@@ -150,9 +169,11 @@ end
 
 """
 `filtercolumns!(msa, mask[, annotate::Bool=true])`
+`filtercolumns!(f, msa[, annotate::Bool=true])`
 
-It allows to filter MSA or aligned sequence columns/positions using a
-`AbstractVector{Bool}` `mask`. Annotations are updated if `annotate` is `true` (default).
+It allows to filter MSA or aligned sequence columns/positions using a boolean
+`mask` or a function `f` applied to each column. Annotations are updated if
+`annotate` is `true` (default).
 """
 function filtercolumns!(
     x::Union{AnnotatedMultipleSequenceAlignment,AnnotatedAlignedSequence,AnnotatedSequence},
@@ -172,6 +193,19 @@ function filtercolumns!(x::UnannotatedAlignedObject, mask, annotate::Bool = fals
     # inside other functions
     x.matrix = filtercolumns(namedmatrix(x), _column_mask(mask, x))
     x
+end
+
+# Wrapper to support do-block syntax: the function comes first
+function filtercolumns!(
+    f::Function,
+    x::Union{AnnotatedMultipleSequenceAlignment,AnnotatedAlignedSequence,AnnotatedSequence},
+    annotate::Bool = true,
+)
+    filtercolumns!(x, f, annotate)
+end
+
+function filtercolumns!(f::Function, x::UnannotatedAlignedObject, annotate::Bool = false)
+    filtercolumns!(x, f, annotate)
 end
 
 filtercolumns(x::AbstractResidueMatrix, args...) = filtercolumns!(deepcopy(x), args...)
