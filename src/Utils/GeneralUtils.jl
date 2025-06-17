@@ -3,7 +3,7 @@ All is used instead of MIToS 1.0 "all" or "*", because it's possible to dispatch
 """
 struct All end
 
-_get_function_name(str::String)::String = split(str, '.')[end]
+_get_function_name(str::AbstractString)::String = split(str, '.')[end]
 
 """
 This function performs the same operation as
@@ -84,7 +84,10 @@ Selects the first element of the vector. This is useful for unpacking one elemen
 Throws a warning if there are more elements. `element_name` is *element* by default,
 but the name can be changed using the second argument.
 """
-function select_element(vector::Array{T,1}, element_name::String = "element") where {T}
+function select_element(
+    vector::Array{T,1},
+    element_name::AbstractString = "element",
+) where {T}
     len = length(vector)
     if len == 0
         throw(ErrorException("There is not $element_name"))
@@ -159,7 +162,7 @@ end
 """
 It checks if a PDB code has the correct format.
 """
-check_pdbcode(pdbcode::String) = occursin(r"^\w{4}$", pdbcode)
+check_pdbcode(pdbcode::AbstractString) = occursin(r"^\w{4}$", pdbcode)
 
 """
 Getter for the `array` field of `NamedArray`s
