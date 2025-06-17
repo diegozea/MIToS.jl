@@ -218,7 +218,7 @@ This function takes a vector of sequence names and a sequence id.
 It returns the position of that id in the vector.
 If the id isn't in the vector, It throws an error.
 """
-function _get_seqid_index(names::Vector{String}, sequence_id::String)
+function _get_seqid_index(names::Vector{String}, sequence_id::AbstractString)
     id_index = something(findfirst(isequal(sequence_id), names), 0)
     if id_index == 0
         throw(ErrorException("$sequence_id is not in the list of sequence names."))
@@ -255,7 +255,7 @@ function swapsequences!(matrix::NamedArray, i::Int, j::Int)
     return matrix
 end
 
-function swapsequences!(matrix::NamedArray, i::String, j::String)
+function swapsequences!(matrix::NamedArray, i::AbstractString, j::AbstractString)
     seqnames = sequencenames(matrix)
     swapsequences!(matrix, _get_seqid_index(seqnames, i), _get_seqid_index(seqnames, j))
 end
@@ -302,7 +302,7 @@ end
 
 function setreference!(
     msa::NamedResidueMatrix{T},
-    id::String,
+    id::AbstractString,
     annotate::Bool = false,
 ) where {T<:AbstractArray}
     swapsequences!(msa, names(msa, 1)[1], id)
@@ -310,7 +310,7 @@ end
 
 function setreference!(
     msa::AbstractMultipleSequenceAlignment,
-    id::String,
+    id::AbstractString,
     annotate::Bool = true,
 )
     setreference!(msa, _get_seqid_index(sequencenames(msa), id), annotate)

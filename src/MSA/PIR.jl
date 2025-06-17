@@ -102,7 +102,7 @@ function _print_pir_seq(io::IO, seq_type, seq_id, seq_title, seq)
     println(io, '*')
 end
 
-function _get_pir_annotations(sequence_annotations, seq_id::String)
+function _get_pir_annotations(sequence_annotations, seq_id::AbstractString)
     if haskey(sequence_annotations, (seq_id, "Type"))
         seq_type = sequence_annotations[(seq_id, "Type")]
     else

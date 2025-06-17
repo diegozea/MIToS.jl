@@ -5,7 +5,7 @@ This function queries the AlphaFoldDB API to retrieve structure information for
 a given `uniprot_accession`, e.g. `"P00520"`. This function returns the structure
 information as a `JSON3.Object`.
 """
-function query_alphafolddb(uniprot_accession::String)
+function query_alphafolddb(uniprot_accession::AbstractString)
     # Construct the URL for the AlphaFoldDB API request
     url = "https://alphafold.ebi.ac.uk/api/prediction/$uniprot_accession"
 
@@ -26,13 +26,13 @@ function query_alphafolddb(uniprot_accession::String)
 end
 
 # This function extracts the filename from a given URL.
-function _extract_filename_from_url(url::String)
+function _extract_filename_from_url(url::AbstractString)
     return split(url, "/")[end]
 end
 
 # Function to download the PDB or CIF file based on the UniProt Accession
 """
-    download_alphafold_structure(uniprot_accession::String; format::Type{T}=MMCIFFile) where T<:FileFormat
+    download_alphafold_structure(uniprot_accession::AbstractString; format::Type{T}=MMCIFFile) where T<:FileFormat
 
 This function downloads the structure file (PDB or mmCIF) for a given UniProt Accession
 from AlphaFoldDB. The `uniprot_accession` parameter specifies the UniProt Accession of the
