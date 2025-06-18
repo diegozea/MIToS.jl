@@ -42,8 +42,8 @@ jobs:
             ${{ runner.os }}-test-${{ env.cache-name }}-
             ${{ runner.os }}-test-
             ${{ runner.os }}-
-      - name: Update LibCURL_jll
-        run: julia --project=@. -e 'using Pkg; Pkg.add("LibCURL_jll")'
+      - name: Install latest LibCURL_jll
+        run: julia --project=@. -e 'using Pkg; Pkg.add("LibCURL_jll"); Pkg.update("LibCURL_jll")'
       - uses: julia-actions/julia-buildpkg@v1
       # - run: julia --project -e 'using Pkg; Pkg.develop(url="https://github.com/carlobaldassi/GaussDCA.jl.git")'
       - uses: julia-actions/julia-runtest@v1
