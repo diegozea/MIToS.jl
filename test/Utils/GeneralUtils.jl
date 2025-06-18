@@ -148,3 +148,11 @@ end
         end
     end
 end
+
+@testset "check_pdbcode" begin
+    using MIToS.Utils
+    @test check_pdbcode("1abc")
+    @test !check_pdbcode("123")
+    @test !check_pdbcode("ABCDE")
+    @test check_pdbcode("9Z9Z")
+end

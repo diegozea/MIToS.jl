@@ -514,3 +514,12 @@ end
         end
     end
 end
+
+@testset "Helper functions" begin
+    using MIToS.PDB
+    @test MIToS.PDB._inputnameforgzip("file.pdb") == "file.pdb.gz"
+    @test MIToS.PDB._inputnameforgzip("file.pdb.gz") == "file.pdb.gz"
+    @test MIToS.PDB._file_extension(MMCIFFile) == ".cif.gz"
+    @test MIToS.PDB._file_extension(PDBML) == ".xml.gz"
+    @test MIToS.PDB._file_extension(PDBFile) == ".pdb.gz"
+end

@@ -303,3 +303,13 @@ end
     @test first.SCOP2[2].name == "ASN"
     @test first.SCOP2[2].chain == "A"
 end
+
+@testset "SIFTSResidue show" begin
+    mapping = read_file(joinpath(DATA, "18gs.xml.gz"), SIFTSXML)
+    missing_res = mapping[1]
+    shown = sprint(show, missing_res)
+    @test occursin("SIFTSResidue (missing)", shown)
+    present_res = mapping[end]
+    shown2 = sprint(show, present_res)
+    @test occursin("SIFTSResidue with secondary structure", shown2)
+end

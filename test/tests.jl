@@ -52,6 +52,7 @@ end
     include("MSA/MSAAnnotations.jl")
     include("MSA/GetIndex.jl")
     include("MSA/Concatenation.jl")
+    include("MSA/Plots.jl")
 end
 
 # Information
@@ -75,6 +76,7 @@ end
     include("PDB/AlphaFoldDB.jl")
     include("PDB/ShortPDB.jl")
     include("PDB/ShowConstructors.jl")
+    include("PDB/Plots.jl")
 end
 
 # SIFTS
