@@ -11,4 +11,3 @@
     @test data.args[2] == sequencenames(msa)
     @test data.args[3] == map(string, getresidues(msa))
 end
-
