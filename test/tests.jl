@@ -88,3 +88,8 @@ end
 @testset verbose = true "Pfam" begin
     include("Pfam/Pfam.jl")
 end
+
+# Deprecated
+@testset verbose = true "Deprecated" begin
+    include("Deprecated.jl")
+end
