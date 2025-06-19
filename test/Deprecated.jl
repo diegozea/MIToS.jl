@@ -171,7 +171,7 @@
         group = "ATOM",
         residue = "1",
     )
-    @test_deprecated (@residues pdb model "1" chain "A" group "ATOM" residue "1") ==
+    @test_deprecated eval(:(@residues $pdb model "1" chain "A" group "ATOM" residue "1")) ==
                      select_residues(
         pdb;
         model = "1",
@@ -179,8 +179,9 @@
         group = "ATOM",
         residue = "1",
     )
-    @test_deprecated (@residuesdict pdb model "1" chain "A" group "ATOM" residue "1") ==
-                     residuesdict(
+    @test_deprecated eval(
+        :(@residuesdict $pdb model "1" chain "A" group "ATOM" residue "1"),
+    ) == residuesdict(
         pdb;
         model = "1",
         chain = "A",
@@ -195,8 +196,9 @@
         residue = "1",
         atom = "CA",
     )
-    @test_deprecated (@atoms pdb model "1" chain "A" group "ATOM" residue "1" atom "CA") ==
-                     select_atoms(
+    @test_deprecated eval(
+        :(@atoms $pdb model "1" chain "A" group "ATOM" residue "1" atom "CA"),
+    ) == select_atoms(
         pdb;
         model = "1",
         chain = "A",
