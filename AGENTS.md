@@ -46,5 +46,19 @@ in the `Project.toml` file. Each section in the `NEWS.md` has a title that indic
 previous and current versions. The last version should always be placed first in the 
 `NEWS.md` file, followed by older sections, ordered from most recent to oldest. Document 
 each change with bullet points. Clearly label breaking changes using 
-the `*[Breaking change]*` tag at the beginning of the bullet, so they are easily 
+the `*[Breaking change]*` tag at the beginning of the bullet, so they are easily
 identifiable.
+
+# Benchmarking
+
+If you are explicitly asked to run the benchmark suite, make sure
+`PkgBenchmark` and `BenchmarkTools` are installed. Then execute the
+following command from the repository root to tune and run all benchmarks:
+
+```bash
+julia --project -e 'import PkgBenchmark, MIToS; PkgBenchmark.benchmarkpkg(MIToS; retune=true)'
+```
+
+This command creates a `benchmark/tune.json` file with the tuning
+information and prints benchmark results to the terminal.
+
