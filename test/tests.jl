@@ -26,6 +26,11 @@ const DATA = joinpath(@__DIR__, "data")
     Aqua.test_all(MIToS, ambiguities = false)
 end
 
+# Deprecated
+@testset verbose = true "Deprecated" begin
+    include("Deprecated.jl")
+end
+
 # Utils
 @testset verbose = true "Utils" begin
     include("Utils/GeneralUtils.jl")
