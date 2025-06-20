@@ -513,6 +513,40 @@ end
             @test readed_writed_readed == readed
         end
     end
+
+    @testset "Write mmCIF files" begin
+        cif_file = joinpath(DATA, "2vqc.cif")
+
+        @testset "label = false" begin
+            io = IOBuffer()
+
+            residues = read_file(cif_file, MMCIFFile; label = false)
+            Utils.print_file(io, residues, MMCIFFile; label = false)
+            str = String(take!(io))
+            parsed = parse_file(IOBuffer(str), MMCIFFile; label = false)
+
+            @test occursin("_atom_site.auth_atom_id", str)
+            @test !occursin("_atom_site.label_atom_id", str)
+            @test parsed[1].id.number == "4"
+            @test parsed[1].id.PDBe_number == "10"
+            @test parsed == residues
+        end
+
+        @testset "label = true" begin
+            io = IOBuffer()
+
+            residues = read_file(cif_file, MMCIFFile; label = true)
+            Utils.print_file(io, residues, MMCIFFile; label = true)
+            str = String(take!(io))
+            parsed = parse_file(IOBuffer(str), MMCIFFile; label = true)
+
+            @test occursin("_atom_site.label_atom_id", str)
+            @test !occursin("_atom_site.auth_atom_id", str)
+            @test parsed[1].id.number == "4"
+            @test parsed[1].id.PDBe_number == "10"
+            @test parsed == residues
+        end
+    end
 end
 
 @testset "Helper functions" begin
