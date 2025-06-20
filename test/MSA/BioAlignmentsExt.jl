@@ -1,8 +1,6 @@
-using Pkg
-Pkg.add("BioAlignments")
 using MIToS.MSA.ResidueSubstitutionMatrices
 using MIToS.MSA
-using BioAlignments
+import BioAlignments
 
 @testset "BioAlignmentsExt" begin
     mito = MIToS.MSA.ResidueSubstitutionMatrices.BLOSUM62
