@@ -510,7 +510,7 @@ function normalized_mutual_information(
     @argcheck rank > 1 "rank must be greater than 1 for normalized_mutual_information"
     mapfreq(
         normalized_mutual_information,
-        msa,
+        msa;
         rank = rank,
         probabilities = probabilities,
         kargs...,
