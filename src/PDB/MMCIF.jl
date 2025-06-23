@@ -2,9 +2,13 @@ struct MMCIFFile <: FileFormat end
 
 _clean_string(s::String) = replace(s, "." => "", "?" => "")
 
-function _parse_mmcif_to_pdbresidues(mmcif_dict::MMCIFDict, label::Bool)
+function _parse_mmcif_to_pdbresidues(mmcif_dict::BioStructures.MMCIFDict, label::Bool)
     # Choose the correct prefix based on the label argument
-    prefix = label ? "_atom_site.label" : "_atom_site.auth"
+    prefix = if label
+        "_atom_site.label"
+    else
+        "_atom_site.auth"
+    end
     chain_attr = string(prefix, "_asym_id")
     comp_id_attr = string(prefix, "_comp_id")
     atom_id_attr = string(prefix, "_atom_id")
@@ -99,7 +103,7 @@ function Utils.parse_file(
     label::Bool = true,
     occupancyfilter::Bool = false,
 )
-    mmcif_dict = MMCIFDict(io)
+    mmcif_dict = BioStructures.MMCIFDict(io)
 
     residues = select_residues(
         _parse_mmcif_to_pdbresidues(mmcif_dict, label),
@@ -131,24 +135,19 @@ function _inscode(res::PDBResidue)
     return m === nothing ? "?" : m.match
 end
 
-function _pdbresidues_to_mmcifdict(
-    residues::Vector{PDBResidue};
-    label::Bool = false,
-    molecular_structures::Bool = false,
-)
+function _pdbresidues_to_mmcifdict(residues::Vector{PDBResidue}; label::Bool = false)
     # Initialize MMCIFDict with the necessary fields
-    mmcif_dict = MMCIFDict()
+    mmcif_dict = BioStructures.MMCIFDict()
 
     # Initialize fields as empty arrays
-    if molecular_structures || !label
-        mmcif_dict["_atom_site.auth_asym_id"] = String[]
-        mmcif_dict["_atom_site.auth_comp_id"] = String[]
-        mmcif_dict["_atom_site.auth_atom_id"] = String[]
-    end
     if label
         mmcif_dict["_atom_site.label_asym_id"] = String[]
         mmcif_dict["_atom_site.label_comp_id"] = String[]
         mmcif_dict["_atom_site.label_atom_id"] = String[]
+    else
+        mmcif_dict["_atom_site.auth_asym_id"] = String[]
+        mmcif_dict["_atom_site.auth_comp_id"] = String[]
+        mmcif_dict["_atom_site.auth_atom_id"] = String[]
     end
     mmcif_dict["_atom_site.id"] = String[]
     mmcif_dict["_atom_site.auth_seq_id"] = String[]
@@ -169,15 +168,14 @@ function _pdbresidues_to_mmcifdict(
 
     for res in residues
         for atom in res.atoms
-            if molecular_structures || !label
-                push!(mmcif_dict["_atom_site.auth_asym_id"], res.id.chain)
-                push!(mmcif_dict["_atom_site.auth_comp_id"], res.id.name)
-                push!(mmcif_dict["_atom_site.auth_atom_id"], atom.atom)
-            end
             if label
                 push!(mmcif_dict["_atom_site.label_asym_id"], res.id.chain)
                 push!(mmcif_dict["_atom_site.label_comp_id"], res.id.name)
                 push!(mmcif_dict["_atom_site.label_atom_id"], atom.atom)
+            else
+                push!(mmcif_dict["_atom_site.auth_asym_id"], res.id.chain)
+                push!(mmcif_dict["_atom_site.auth_comp_id"], res.id.name)
+                push!(mmcif_dict["_atom_site.auth_atom_id"], atom.atom)
             end
             push!(mmcif_dict["_atom_site.id"], string(atom_id_counter))
             push!(mmcif_dict["_atom_site.auth_seq_id"], _resnumber(res.id.number))
@@ -215,3 +213,33 @@ function Utils.print_file(
     mmcif_dict = _pdbresidues_to_mmcifdict(residues, label = label)
     writemmcif(io, mmcif_dict)
 end
+
+"""
+    BioStructures.MMCIFDict(residues::Vector{PDBResidue}; label::Bool = false)
+
+Create a `BioStructures.MMCIFDict` from a vector of `PDBResidue`s. Set
+`label = true` to fill the CIF dictionary using the `label_` fields instead of
+the `auth_` fields.
+"""
+function BioStructures.MMCIFDict(residues::Vector{PDBResidue}; label::Bool = false)
+    _pdbresidues_to_mmcifdict(residues; label = label)
+end
+
+"""
+    Base.convert(::Type{Vector{PDBResidue}}, mmcif_dict::BioStructures.MMCIFDict)
+
+Convert a `MMCIFDict` into a vector of `PDBResidue`s using the `label_` fields
+present in the dictionary.
+"""
+function Base.convert(::Type{Vector{PDBResidue}}, mmcif_dict::BioStructures.MMCIFDict)
+    label = haskey(mmcif_dict, "_atom_site.label_asym_id")
+    _parse_mmcif_to_pdbresidues(mmcif_dict, label)
+end
+
+"""
+    Base.convert(::Type{BioStructures.MMCIFDict}, residues::Vector{PDBResidue})
+
+Return a `MMCIFDict` representation of `residues` using the `auth_` fields.
+"""
+Base.convert(::Type{BioStructures.MMCIFDict}, residues::Vector{PDBResidue}) =
+    BioStructures.MMCIFDict(residues)
