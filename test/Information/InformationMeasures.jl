@@ -181,5 +181,37 @@
                 ),
             ) ≈ 40.0
         end
+
+        @testset "MSA methods" begin
+            aln = read_file(joinpath(DATA, "Gaoetal2011.fasta"), FASTA)
+
+            @testset "kullback_leibler" begin
+                kl = kullback_leibler(aln)
+                kl_exp =
+                    [kullback_leibler(probabilities(aln[:, j])) for j = 1:ncolumns(aln)]
+                @test vec(getarray(kl)) ≈ kl_exp
+
+                kl_seq = kullback_leibler(aln; dims = 1)
+                kl_seq_exp =
+                    [kullback_leibler(probabilities(aln[i, :])) for i = 1:nsequences(aln)]
+                @test vec(getarray(kl_seq)) ≈ kl_seq_exp
+            end
+
+            @testset "normalized_mutual_information" begin
+                nmi = normalized_mutual_information(aln)
+                table = Frequencies(ContingencyTable(Float64, Val{2}, UngappedAlphabet()))
+                nmi_exp = mapcolpairfreq!(
+                    normalized_mutual_information,
+                    aln,
+                    table;
+                    usediagonal = false,
+                    diagonalvalue = NaN,
+                )
+
+                nmi_mat = Matrix(getarray(nmi))
+                nmi_exp_mat = Matrix(getarray(nmi_exp))
+                @test all(isapprox.(nmi_mat, nmi_exp_mat; nans = true))
+            end
+        end
     end
 end
