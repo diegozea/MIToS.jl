@@ -48,7 +48,6 @@ end
     include("MSA/General.jl")
     include("MSA/MSAEditing.jl")
     include("MSA/MSAStats.jl")
-    include("MSA/N_effective.jl")
     include("MSA/MSAQuality.jl")
     include("MSA/Sequences.jl")
     include("MSA/Shuffle.jl")
