@@ -44,4 +44,7 @@ end
     msa = reshape([res"A"; res"C"; res"D"], 3, 1)
     @test n_effective(msa, 0.0) == 1.0
     @test n_effective(msa, 100.0) == 3.0
+
+    pfam = read_file(joinpath(DATA, "PF09645_full.stockholm"), Stockholm)
+    @test n_effective(pfam) == 4.0
 end
