@@ -232,7 +232,8 @@ Convert a `MMCIFDict` into a vector of `PDBResidue`s using the `label_` fields
 present in the dictionary.
 """
 function Base.convert(::Type{Vector{PDBResidue}}, mmcif_dict::BioStructures.MMCIFDict)
-    _parse_mmcif_to_pdbresidues(mmcif_dict, true)
+    label = haskey(mmcif_dict, "_atom_site.label_asym_id")
+    _parse_mmcif_to_pdbresidues(mmcif_dict, label)
 end
 
 """
