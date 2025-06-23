@@ -7,6 +7,7 @@ using MIToS.Information
 using MIToS.PDB
 using MIToS.SIFTS
 using MIToS.Pfam
+import BioStructures
 using Aqua
 using LinearAlgebra
 using Random

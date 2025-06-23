@@ -1,5 +1,3 @@
-import BioStructures
-
 @testset "MMCIFDict conversions" begin
     cif_file = joinpath(DATA, "2vqc.cif")
 
