@@ -75,6 +75,7 @@ end
 # PDB
 @testset verbose = true "PDB" begin
     include("PDB/PDB.jl")
+    include("PDB/BioStructures.jl")
     include("PDB/Contacts.jl")
     include("PDB/Kabsch.jl")
     include("PDB/Internals.jl")
