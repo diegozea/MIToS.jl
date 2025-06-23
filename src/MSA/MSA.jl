@@ -96,6 +96,7 @@ export  # Residue
     residuefraction,
     coverage,
     columngapfraction,
+    n_effective,
     # MSAEditing
     filtersequences,
     filtersequences!,
