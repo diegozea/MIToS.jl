@@ -7,6 +7,7 @@ using MIToS.Information
 using MIToS.PDB
 using MIToS.SIFTS
 using MIToS.Pfam
+import BioStructures
 using Aqua
 using LinearAlgebra
 using Random
@@ -75,6 +76,7 @@ end
 # PDB
 @testset verbose = true "PDB" begin
     include("PDB/PDB.jl")
+    include("PDB/BioStructures.jl")
     include("PDB/Contacts.jl")
     include("PDB/Kabsch.jl")
     include("PDB/Internals.jl")
