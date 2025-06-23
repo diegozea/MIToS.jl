@@ -37,4 +37,11 @@ end
         cr = Clustering.dbscan(distance, 38.0, metric = nothing, min_neighbors = 2)
         @test convert(Clusters, cr) == clusters
     end
+
+    @testset "Do-block predicate" begin
+        clusters_do = hobohmI(fasta, 62) do s1, s2, thr
+            percentidentity(s1, s2, thr)
+        end
+        @test clusters_do == clusters
+    end
 end
