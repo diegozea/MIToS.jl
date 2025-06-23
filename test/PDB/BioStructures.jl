@@ -4,6 +4,8 @@
     @testset "label = true" begin
         residues = read_file(cif_file, MMCIFFile)
         dict = BioStructures.MMCIFDict(residues; label = true)
+        @test convert(BioStructures.MMCIFDict, residues) ==
+              BioStructures.MMCIFDict(residues)
         @test convert(Vector{PDBResidue}, dict) == residues
         ref = BioStructures.MMCIFDict(cif_file)
         numeric_fields = Set([
@@ -30,6 +32,8 @@
         residues = read_file(cif_file, MMCIFFile, label = false)
         dict = BioStructures.MMCIFDict(residues; label = false)
         @test convert(Vector{PDBResidue}, dict) == residues
+        @test convert(BioStructures.MMCIFDict, residues) ==
+              BioStructures.MMCIFDict(residues)
         ref = BioStructures.MMCIFDict(cif_file)
         numeric_fields = Set([
             "_atom_site.Cartn_x",
