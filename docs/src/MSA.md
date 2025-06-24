@@ -693,6 +693,17 @@ println("This MSA has ", nsequences(msa), " sequences...")
 clusters = hobohmI(msa, 62)
 ```
 
+`hobohmI` can also receive any vector of items together with a custom
+`within_cluster` function, so it may be used to cluster unaligned sequences,
+protein structures or other data.  If you already extracted the aligned
+sequences as a vector of residue vectors, you can call it directly:
+
+```@example msa_clusters
+seqs = getresiduesequences(msa)
+clusters_vec = hobohmI(percentidentity, seqs, 62)
+@assert clusters == clusters_vec
+```
+
 ```@example msa_clusters
 println(
     "...but has only ",
