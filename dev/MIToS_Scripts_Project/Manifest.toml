@@ -41,9 +41,9 @@ version = "0.1.5"
 
 [[deps.BioStructures]]
 deps = ["BioGenerics", "BioSymbols", "CodecZlib", "Downloads", "Format", "LinearAlgebra", "PrecompileTools", "RecipesBase", "Statistics"]
-git-tree-sha1 = "c18b98259677a40c4f747740098e16e989b91615"
+git-tree-sha1 = "1875f9d5fa62e845edfa3cd469953612ed40619e"
 uuid = "de9282ab-8554-53be-b2d6-f6c222edabfc"
-version = "4.5.0"
+version = "4.6.0"
 
     [deps.BioStructures.extensions]
     BioStructuresBioAlignmentsExt = ["BioSequences", "BioAlignments"]
