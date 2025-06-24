@@ -44,4 +44,10 @@ end
         end
         @test clusters_do == clusters
     end
+
+    @testset "Vector input" begin
+        seqs = getresiduesequences(fasta)
+        clusters_vec = hobohmI(percentidentity, seqs, 62)
+        @test clusters_vec == clusters
+    end
 end
