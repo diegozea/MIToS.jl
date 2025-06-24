@@ -652,15 +652,24 @@ input an MSA followed by an identity threshold value, and returns a `Clusters` t
 with the result of a Hobohm I sequence clustering [10.1002/pro.5560010313](@cite).
 The Hobohm I algorithm will add a sequence to an existing cluster, if
 the percentage of identity is equal or greater than the threshold.
-The `Clusters` is sub-type of `ClusteringResult` from the [Clustering.jl![](./assets/external-link.png)](http://clusteringjl.readthedocs.org/en/latest/index.html)
-package. One advantage of use a sub-type of `ClusteringResult`is that you are able to use
-any method defined on `Clustering.jl` like `varinfo` (Variation of Information) for example.
-Also, you can use any clustering algorithm included in *Clustering.jl*, and convert its
-result to an `Clusters` object to use it with MIToS.
-`MSA` defines the functions `nclusters` to get the resulting number of clusters, `counts`
-to get the number of sequences on each cluster and `assignments` to get the cluster number
-of each sequence. The most important method is `getweight`, which returns the weight of
-each sequence. This method is used in the `Information` module of MIToS to reduce redundancy.
+`MSA` defines the functions `nelements` to get the resulting number of clusters. You can 
+access the `clustersize` field of the `Clusters` type to get the number of sequences in 
+each cluster and the `clusters` to get the cluster number of each sequence. The most 
+important method is `getweight`, which returns the weight of each sequence. This method is 
+used in the `Information` module of MIToS to reduce redundancy.
+If you want, you can also use the `Clusters` object with the 
+[Clustering.jl![](./assets/external-link.png)](http://clusteringjl.readthedocs.org/en/latest/index.html) 
+package. Thanks to the package extension mechanism, if `Clustering.jl` is loaded, you can 
+use functions like `Clustering.nclusters`, `Clustering.counts`, and 
+`Clustering.assignments` directly on `Clusters` objects. Additionally, you can convert a 
+`ClusteringResult` object into a `Clusters` object to use it with MIToS. This allows you 
+to take advantage of the algorithms and utilities provided by *Clustering.jl*.
+
+!!! tip "Versatile Clustering with `hobohmI`"
+    The `hobohmI` function can accept any vector of items, along with a custom
+    `within_cluster` function as its first argument. This means you can use `hobohmI` 
+    to cluster not just MSAs, but any type of data—such as unaligned sequences, protein 
+    structures, or any other collection of items.
 
 #### [Example: Reducing redundancy of a MSA](@id Example:-Reducing-redundancy-of-a-MSA)
 
@@ -691,17 +700,6 @@ println("This MSA has ", nsequences(msa), " sequences...")
 
 ```@example msa_clusters
 clusters = hobohmI(msa, 62)
-```
-
-`hobohmI` can also receive any vector of items together with a custom
-`within_cluster` function, so it may be used to cluster unaligned sequences,
-protein structures or other data.  If you already extracted the aligned
-sequences as a vector of residue vectors, you can call it directly:
-
-```@example msa_clusters
-seqs = getresiduesequences(msa)
-clusters_vec = hobohmI(percentidentity, seqs, 62)
-@assert clusters == clusters_vec
 ```
 
 ```@example msa_clusters
