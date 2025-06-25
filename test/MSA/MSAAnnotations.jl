@@ -60,4 +60,22 @@
         @test !occursin(r"MIToS_", printed[3])
         @test !occursin(r"MIToS_", printed[4])
     end
+
+    @testset "Print modifications" begin
+        pipe = Pipe()
+        redirect_stdout(pipe) do
+            printmodifications(pfam)
+        end
+        close(pipe.in)
+        printed = split(chomp(read(pipe.out, String)), '\n')
+        @test length(printed) == 8
+        @test printed[1] == "-------------------"
+        @test occursin(r"^\d{4}-\d{2}-\d{2}", printed[2])
+        @test printed[3] == ""
+        @test occursin("deletefullgaps!", printed[4])
+        @test printed[5] == "-------------------"
+        @test occursin(r"^\d{4}-\d{2}-\d{2}", printed[6])
+        @test printed[7] == ""
+        @test occursin("filtercolumns!", printed[8])
+    end
 end
