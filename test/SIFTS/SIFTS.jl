@@ -313,3 +313,39 @@ end
     shown2 = sprint(show, present_res)
     @test occursin("SIFTSResidue with secondary structure", shown2)
 end
+@testset "_name methods" begin
+    @test _name(dbPDBe) == "PDBe"
+    @test _name(dbUniProt) == "UniProt"
+    @test _name(dbPfam) == "Pfam"
+    @test _name(dbNCBI) == "NCBI"
+    @test _name(dbInterPro) == "InterPro"
+    @test _name(dbPDB) == "PDB"
+    @test _name(dbSCOP) == "SCOP"
+    @test _name(dbSCOP2) == "SCOP2"
+    @test _name(dbSCOP2B) == "SCOP2B"
+    @test _name(dbCATH) == "CATH"
+    @test _name(dbEnsembl) == "Ensembl"
+end
+
+@testset "get methods" begin
+
+    mapping = read_file(joinpath(DATA, "18gs.xml.gz"), SIFTSXML)
+    res = mapping[4]
+    @test get(res, dbPDBe) == res.PDBe
+    @test get(res, dbUniProt) == res.UniProt
+    @test get(res, dbPfam) == res.Pfam
+    @test get(res, dbNCBI) == res.NCBI
+    @test get(res, dbInterPro) == res.InterPro
+    @test get(res, dbPDB) == res.PDB
+    @test get(res, dbSCOP) == res.SCOP
+    @test get(res, dbCATH) == res.CATH
+    @test get(res, dbEnsembl) == res.Ensembl
+
+    mapping_scop2 = read_file(joinpath(DATA, "1xyz.xml.gz"), SIFTSXML)
+    res_scop2 = mapping_scop2[findfirst(res -> length(res.SCOP2) > 0, mapping_scop2)]
+    @test get(res_scop2, dbSCOP2) == res_scop2.SCOP2
+
+    mapping_scop2b = read_file(joinpath(DATA, "1ivo.xml.gz"), SIFTSXML)
+    res_scop2b = mapping_scop2b[findfirst(res -> !ismissing(res.SCOP2B), mapping_scop2b)]
+    @test get(res_scop2b, dbSCOP2B) == res_scop2b.SCOP2B
+end
