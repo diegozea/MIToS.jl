@@ -5,7 +5,7 @@ needed for measure the predictive performance at protein contact prediction of m
 
 **Features**
 
-  - Read and parse PDF and PDBML files
+  - Read and parse mmCIF, PDB and PDBML files.
   - Calculate distance and contacts between atoms or residues
   - Determine interaction between residues
 
