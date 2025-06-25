@@ -216,4 +216,29 @@
         end
     end
 
+    @testset "Cleanup" begin
+        for alphabet in (
+            UngappedAlphabet(),
+            GappedAlphabet(),
+            ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP"),
+        )
+            for N = 1:3
+                table = ContingencyTable(Float64, Val{N}, alphabet)
+
+                fill!(table, 1.0)
+                fill!(table.temporal, 2.0)
+                @test sum(table) > 0.0
+                @test sum(table.temporal) > 0.0
+                @test sum(getmarginals(table)) > 0.0
+                @test gettotal(table) > 0.0
+
+                Information.cleanup!(table)
+                @test sum(table.temporal) == 0.0
+                @test sum(table) == 0.0
+                @test sum(getmarginals(table)) == 0.0
+                @test gettotal(table) == 0.0
+            end
+        end
+    end
+
 end
