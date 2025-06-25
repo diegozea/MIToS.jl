@@ -103,3 +103,22 @@ end
     end
     @test altlocs_ca(str_from_vec) == altlocs_ca(str_ref) == ['A', 'B']
 end
+
+@testset "Vector{PDBResidue} from MolecularStructure" begin
+    pdb_file = joinpath(DATA, "1SSX.pdb")
+    residues = read_file(pdb_file, PDBFile)
+    str_ref = BioStructures.read(pdb_file, BioStructures.PDBFormat)
+    str_from_vec = BioStructures.MolecularStructure(residues)
+
+    conv_ref = convert(Vector{PDBResidue}, str_ref)
+    conv_vec = convert(Vector{PDBResidue}, str_from_vec)
+
+    @test length(conv_ref) == length(residues)
+    @test length(conv_vec) == length(residues)
+
+    recon = BioStructures.MolecularStructure(conv_ref)
+    @test BioStructures.countmodels(recon) == BioStructures.countmodels(str_ref)
+    @test BioStructures.countchains(recon) == BioStructures.countchains(str_ref)
+    @test BioStructures.countresidues(recon) == BioStructures.countresidues(str_ref)
+    @test BioStructures.countatoms(recon) == BioStructures.countatoms(str_ref)
+end
