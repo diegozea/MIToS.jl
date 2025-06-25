@@ -1,3 +1,8 @@
+"""
+`MMCIFFile <: FileFormat`
+
+macromolecular Crystallographic Information File (mmCIF) format.
+"""
 struct MMCIFFile <: FileFormat end
 
 _clean_string(s::String) = replace(s, "." => "", "?" => "")
