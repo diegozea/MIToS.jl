@@ -85,6 +85,7 @@ end
     include("PDB/ShortPDB.jl")
     include("PDB/ShowConstructors.jl")
     include("PDB/Copy.jl")
+    include("PDB/PDBResidues.jl")
     include("PDB/Plots.jl")
 end
 
