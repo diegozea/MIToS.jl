@@ -370,16 +370,19 @@ end
 """
 Prints MIToS annotated modifications
 """
-function printmodifications(ann::Annotations)
+function printmodifications(io::IO, ann::Annotations)
     for (key, value) in ann.file
         if startswith(key, "MIToS_")
             list_k = split(key, '_')
-            println("-------------------")
-            println(list_k[2])
-            println('\n', value)
+            println(io, "-----------------------")
+            println(io, list_k[2])
+            println(io)
+            println(io, value)
         end
     end
 end
+
+printmodifications(ann::Annotations) = printmodifications(stdout, ann)
 
 # Show & Print Annotations
 # ========================
