@@ -314,17 +314,17 @@ end
     @test occursin("SIFTSResidue with secondary structure", shown2)
 end
 @testset "_name methods" begin
-    @test _name(dbPDBe) == "PDBe"
-    @test _name(dbUniProt) == "UniProt"
-    @test _name(dbPfam) == "Pfam"
-    @test _name(dbNCBI) == "NCBI"
-    @test _name(dbInterPro) == "InterPro"
-    @test _name(dbPDB) == "PDB"
-    @test _name(dbSCOP) == "SCOP"
-    @test _name(dbSCOP2) == "SCOP2"
-    @test _name(dbSCOP2B) == "SCOP2B"
-    @test _name(dbCATH) == "CATH"
-    @test _name(dbEnsembl) == "Ensembl"
+    @test MIToS.SIFTS._name(dbPDBe) == "PDBe"
+    @test MIToS.SIFTS._name(dbUniProt) == "UniProt"
+    @test MIToS.SIFTS._name(dbPfam) == "Pfam"
+    @test MIToS.SIFTS._name(dbNCBI) == "NCBI"
+    @test MIToS.SIFTS._name(dbInterPro) == "InterPro"
+    @test MIToS.SIFTS._name(dbPDB) == "PDB"
+    @test MIToS.SIFTS._name(dbSCOP) == "SCOP"
+    @test MIToS.SIFTS._name(dbSCOP2) == "SCOP2"
+    @test MIToS.SIFTS._name(dbSCOP2B) == "SCOP2B"
+    @test MIToS.SIFTS._name(dbCATH) == "CATH"
+    @test MIToS.SIFTS._name(dbEnsembl) == "Ensembl"
 end
 
 @testset "get methods" begin
