@@ -1,0 +1,127 @@
+@testset "PDBResidues" begin
+
+    @test vec(Coordinates((1.0, 2.0, 3.0))) == [1.0, 2.0, 3.0]
+    @test_throws ArgumentError Coordinates([1.0, 2.0])
+
+    c1 = Coordinates(0.0, 0.0, 0.0)
+    c2 = Coordinates(0.5, 0.5, sqrt(0.5))
+    limit = 1.0
+    @test contact(c1, c2, limit)
+    c3 = Coordinates(0.5, 0.5, sqrt(0.5) + 0.001)
+    @test !contact(c1, c3, limit)
+    @test contact(c1, c1, limit)
+
+    atom1 = PDBAtom(
+        coordinates = c1,
+        atom = "CA",
+        element = "C",
+        occupancy = 1.0,
+        B = "0",
+        alt_id = "",
+        charge = "",
+    )
+    atom2 = PDBAtom(
+        coordinates = c2,
+        atom = "CA",
+        element = "C",
+        occupancy = 1.0,
+        B = "0",
+        alt_id = "",
+        charge = "",
+    )
+    atom3 = PDBAtom(
+        coordinates = c3,
+        atom = "CA",
+        element = "C",
+        occupancy = 1.0,
+        B = "0",
+        alt_id = "",
+        charge = "",
+    )
+    @test contact(atom1, atom2, limit)
+    @test !contact(atom1, atom3, limit)
+    @test contact(atom1, atom1, limit)
+
+    res1 = PDBResidue(
+        PDBResidueIdentifier("1", "1", "ALA", "ATOM", "1", "A"),
+        [
+            PDBAtom(
+                coordinates = c1,
+                atom = "CA",
+                element = "C",
+                occupancy = 1.0,
+                B = "0",
+                alt_id = "",
+                charge = "",
+            ),
+            PDBAtom(
+                coordinates = Coordinates(0.0, 3.0, 0.0),
+                atom = "CB",
+                element = "C",
+                occupancy = 1.0,
+                B = "0",
+                alt_id = "",
+                charge = "",
+            ),
+        ],
+    )
+    res2 = PDBResidue(
+        PDBResidueIdentifier("2", "2", "ALA", "ATOM", "1", "A"),
+        [
+            PDBAtom(
+                coordinates = Coordinates(1.0, 0.0, 0.0),
+                atom = "CA",
+                element = "C",
+                occupancy = 1.0,
+                B = "0",
+                alt_id = "",
+                charge = "",
+            ),
+            PDBAtom(
+                coordinates = Coordinates(5.0, 0.0, 0.0),
+                atom = "CB",
+                element = "C",
+                occupancy = 1.0,
+                B = "0",
+                alt_id = "",
+                charge = "",
+            ),
+        ],
+    )
+    res3 = PDBResidue(
+        PDBResidueIdentifier("3", "3", "ALA", "ATOM", "1", "A"),
+        [
+            PDBAtom(
+                coordinates = Coordinates(10.0, 0.0, 0.0),
+                atom = "CA",
+                element = "C",
+                occupancy = 1.0,
+                B = "0",
+                alt_id = "",
+                charge = "",
+            ),
+            PDBAtom(
+                coordinates = Coordinates(15.0, 0.0, 0.0),
+                atom = "CB",
+                element = "C",
+                occupancy = 1.0,
+                B = "0",
+                alt_id = "",
+                charge = "",
+            ),
+        ],
+    )
+
+    @test contact(res1, res2, 2.0)
+    @test contact(res1, res2, 2.0, criteria = "CA")
+    @test !contact(res1, res2, 2.0, criteria = "CB")
+    @test !contact(res1, res3, 2.0)
+
+    residues = [res1, res2, res3]
+    expected = Bool[
+        true true false;
+        true true false;
+        false false true
+    ]
+    @test contact(residues, 2.0) == expected
+end
