@@ -62,12 +62,17 @@
     end
 
     @testset "Print modifications" begin
-        pipe = Pipe()
-        redirect_stdout(pipe) do
-            printmodifications(pfam)
+        ann = Annotations()
+        annotate_modification!(ann, "deletefullgaps! test")
+        annotate_modification!(ann, "filtercolumns! test")
+        printed = let
+            pipe = Pipe()
+            redirect_stdout(pipe) do
+                printmodifications(ann)
+            end
+            close(pipe.in)
+            split(chomp(read(pipe.out, String)), r"\r?\n")
         end
-        close(pipe.in)
-        printed = split(chomp(read(pipe.out, String)), '\n')
         @test length(printed) == 8
         @test printed[1] == "-------------------"
         @test occursin(r"^\d{4}-\d{2}-\d{2}", printed[2])
