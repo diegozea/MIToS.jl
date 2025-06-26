@@ -364,38 +364,6 @@ function _generate_annotated_msa(
     msa
 end
 
-
-# Matrix{Residue} and NamedArray{Residue,2}
-# -----------------------------------------
-#
-# This checks that all the sequences have the same length
-#
-
-function _strings_to_msa(
-    ::Type{NamedArray{Residue,2}},
-    seqs::Vector{String},
-    deletefullgaps::Bool,
-)
-    msa = NamedArray(convert(Matrix{Residue}, seqs))
-    setdimnames!(msa, ("Seq", "Col"))
-    if deletefullgaps
-        return (deletefullgapcolumns(msa))
-    end
-    msa
-end
-
-function _strings_to_msa(
-    ::Type{Matrix{Residue}},
-    seqs::Vector{String},
-    deletefullgaps::Bool,
-)
-    msa = convert(Matrix{Residue}, seqs)
-    if deletefullgaps
-        return (deletefullgapcolumns(msa))
-    end
-    msa
-end
-
 # Unsafe: It doesn't check sequence lengths
 # Use it after _pre_read... calling _check_seq_...
 function _strings_to_matrix_residue_unsafe(seqs::Vector{String}, deletefullgaps::Bool)
@@ -405,7 +373,6 @@ function _strings_to_matrix_residue_unsafe(seqs::Vector{String}, deletefullgaps:
     end
     msa
 end
-
 
 # Delete Full of Gap Columns
 # ==========================
