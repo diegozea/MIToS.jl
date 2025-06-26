@@ -189,3 +189,119 @@ end
     ]
     @test AUC(score, msacontacts) == AUC(roc(tar, non))
 end
+
+@testset "PDB mapping branches" begin
+    msa_base = read_file(
+        joinpath(DATA, "PF09645_full.stockholm"),
+        Stockholm,
+        generatemapping = true,
+        useidcoordinates = true,
+    )
+
+
+    @testset "getseq2pdb duplicate ID" begin
+        msa_dup = read_file(joinpath(DATA, "PF09645_full.stockholm"), Stockholm)
+        setannotsequence!(msa_dup, "F112_SSV1/3-112", "DR", "PDB; 9XYZ B; 10-20;")
+        seq2pdb = getseq2pdb(msa_dup)
+        @test seq2pdb["F112_SSV1/3-112"] == [("2VQC", "A"), ("9XYZ", "B")]
+    end
+
+    @testset "skip blank Pfnum" begin
+        # residue 2 in dummy_sifts_file.xml has an empty Pfam number so it
+        # should be ignored in the mapping
+        xml_path = joinpath(DATA, "dummy_sifts_file.xml")
+        map_skip = msacolumn2pdbresidue(
+            msa_base,
+            "F112_SSV1/3-112",
+            "2VQC",
+            "A",
+            "PF09645",
+            xml_path;
+            strict = false,
+            checkpdbname = false,
+            missings = true,
+        )
+        @test minimum(keys(map_skip)) == 7
+    end
+
+    @testset "warning vs strict" begin
+        # Pfam number 4 maps to PDB residue SER while the MSA has T.
+        # With strict=false a warning is expected; strict=true throws an error.
+        xml_path = joinpath(DATA, "dummy_sifts_file.xml")
+        @test_logs (:warn, r"MSA sequence residue") begin
+            msacolumn2pdbresidue(
+                msa_base,
+                "F112_SSV1/3-112",
+                "2VQC",
+                "A",
+                "PF09645",
+                xml_path;
+                strict = false,
+                checkpdbname = false,
+                missings = true,
+            )
+        end
+        @test_throws ErrorException msacolumn2pdbresidue(
+            msa_base,
+            "F112_SSV1/3-112",
+            "2VQC",
+            "A",
+            "PF09645",
+            xml_path;
+            strict = true,
+            checkpdbname = false,
+            missings = true,
+        )
+    end
+
+    @testset "PDB name check" begin
+        # The PDB residue at Pfam number 4 is SER but the MSA residue is T, so
+        # enabling checkpdbname should raise an error regardless of strict mode.
+        xml_path = joinpath(DATA, "dummy_sifts_file.xml")
+        @test_throws ErrorException msacolumn2pdbresidue(
+            msa_base,
+            "F112_SSV1/3-112",
+            "2VQC",
+            "A",
+            "PF09645",
+            xml_path;
+            strict = false,
+            checkpdbname = true,
+            missings = true,
+        )
+    end
+
+    @testset "overload equivalence" begin
+        result1 = msacolumn2pdbresidue(
+            msa_base,
+            "F112_SSV1/3-112",
+            "2VQC",
+            "A",
+            "PF09645";
+            strict = false,
+            checkpdbname = false,
+            missings = true,
+        )
+        result2 = msacolumn2pdbresidue(
+            msa_base,
+            "F112_SSV1/3-112",
+            "2VQC",
+            "A",
+            "PF09645",
+            joinpath(DATA, "2vqc.xml.gz");
+            strict = false,
+            checkpdbname = false,
+            missings = true,
+        )
+        result3 = msacolumn2pdbresidue(
+            msa_base,
+            "F112_SSV1/3-112",
+            "2VQC",
+            "A";
+            strict = false,
+            checkpdbname = false,
+            missings = true,
+        )
+        @test result1 == result2 == result3
+    end
+end
