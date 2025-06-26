@@ -388,32 +388,35 @@
     end
 
     @testset "MSA round trip" begin
-        M = NamedArray(reshape(res"AB", 1, 2))
-        msa = MultipleSequenceAlignment(M)
+        mat = NamedArray(reshape(res"AB", 1, 2))
+        msa = MultipleSequenceAlignment(mat)
         @test MultipleSequenceAlignment(msa) === msa
         @test @allocated(MultipleSequenceAlignment(msa)) == 0
     end
 
     @testset "AnnotatedAlignedSequence self identity" begin
+        mat = NamedArray(reshape(res"AB", 1, 2))
         ann = Annotations()
         setannotfile!(ann, "Note", "foo")
-        aas = AnnotatedAlignedSequence(copy(M), ann)
+        aas = AnnotatedAlignedSequence(mat, ann)
         @test AnnotatedAlignedSequence(aas) === aas
         @test annotations(AnnotatedAlignedSequence(aas)) === ann
     end
 
     @testset "AlignedSequence self identity" begin
-        as = AlignedSequence(copy(M))
+        mat = NamedArray(reshape(res"AB", 1, 2))
+        as = AlignedSequence(mat)
         @test AlignedSequence(as) === as
     end
 
     @testset "AnnotatedSequence from raw matrix" begin
         rawmat = reshape(res"AC", 1, 2)
-        ann2 = deepcopy(ann)
-        seq_from_raw = AnnotatedSequence(rawmat, ann2)
+        ann = Annotations();
+        setannotfile!(ann, "Note", "foo")
+        seq_from_raw = AnnotatedSequence(rawmat, ann)
         @test dimnames(seq_from_raw) == ["Seq", "Pos"]
         @test isa(namedmatrix(seq_from_raw), NamedArray)
-        @test annotations(seq_from_raw) == ann2 && annotations(seq_from_raw) !== ann2
+        @test annotations(seq_from_raw) == ann && annotations(seq_from_raw) !== ann
         @test getresidues(seq_from_raw) == rawmat
     end
 
@@ -427,15 +430,20 @@
     end
 
     @testset "AnnotatedSequence from AnnotatedAlignedSequence" begin
-        ann3 = deepcopy(ann)
-        aas2 = AnnotatedAlignedSequence(mat_gap, ann3)
-        seq_from_aas = AnnotatedSequence(aas2)
-        @test annotations(seq_from_aas) == ann3 && annotations(seq_from_aas) !== ann3
+        mat_gap = NamedArray(reshape(res"A-C", 1, 3))
+        ann = Annotations();
+        setannotfile!(ann, "Note", "foo")
+        aas = AnnotatedAlignedSequence(mat_gap, ann)
+        seq_from_aas = AnnotatedSequence(aas)
+        @test annotations(seq_from_aas) == ann && annotations(seq_from_aas) !== ann
     end
 
     @testset "AnnotatedSequence no-op identity" begin
-        seq_from_aas = AnnotatedSequence(aas2)
-        @test AnnotatedSequence(seq_from_aas) === seq_from_aas
+        seq = AnnotatedSequence(res"AC")
+        orig_mat = namedmatrix(seq)
+        orig_ann = annotations(seq)
+        @test AnnotatedSequence(seq) === seq
+        @test namedmatrix(seq) === orig_mat && annotations(seq) === orig_ann
     end
 
     @testset "AnnotatedSequence named matrix branch coverage" begin
