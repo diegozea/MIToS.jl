@@ -449,12 +449,12 @@
     @testset "AnnotatedSequence named matrix branch coverage" begin
         named_col = NamedArray(reshape(res"AD", 1, 2), (["id"], ["1", "2"]), ("Seq", "Col"))
         seq_branch1 = AnnotatedSequence(named_col, Annotations())
-        @test dimnames(seq_branch1, 2) == "Pos"
-        @test dimnames(named_col, 2) == "Pos"
+        @test dimnames(seq_branch1)[2] == "Pos"
+        @test dimnames(named_col)[2] == "Pos"
 
         named_pos = NamedArray(reshape(res"AD", 1, 2), (["id"], ["1", "2"]), ("Seq", "Pos"))
         seq_branch2 = AnnotatedSequence(named_pos, Annotations())
-        @test dimnames(seq_branch2, 2) == "Pos"
-        @test dimnames(named_pos, 2) == "Pos"
+        @test dimnames(seq_branch2)[2] == "Pos"
+        @test dimnames(named_pos)[2] == "Pos"
     end
 end
