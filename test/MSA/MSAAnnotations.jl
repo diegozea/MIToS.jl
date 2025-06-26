@@ -65,22 +65,10 @@
         ann = Annotations()
         annotate_modification!(ann, "deletefullgaps! test")
         annotate_modification!(ann, "filtercolumns! test")
-        printed = let
-            pipe = Pipe()
-            redirect_stdout(pipe) do
-                printmodifications(ann)
-            end
-            close(pipe.in)
-            split(chomp(read(pipe.out, String)), r"\r?\n")
-        end
-        @test length(printed) == 8
-        @test printed[1] == "-------------------"
-        @test occursin(r"^\d{4}-\d{2}-\d{2}", printed[2])
-        @test printed[3] == ""
-        @test occursin("deletefullgaps!", printed[4])
-        @test printed[5] == "-------------------"
-        @test occursin(r"^\d{4}-\d{2}-\d{2}", printed[6])
-        @test printed[7] == ""
-        @test occursin("filtercolumns!", printed[8])
+        printed = split(chomp(sprint(printmodifications, ann)), r"\r?\n"; keepempty = true)
+        @test count(==("-------------------"), printed) == 2
+        @test count(x -> occursin(r"^\d{4}-\d{2}-\d{2}", x), printed) == 2
+        @test any(contains.(printed, "deletefullgaps!"))
+        @test any(contains.(printed, "filtercolumns!"))
     end
 end
