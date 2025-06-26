@@ -144,8 +144,7 @@ mutable struct AnnotatedSequence <: AbstractSequence
             setdimnames!(matrix, ("Seq", "Pos")) # Unaligned sequences have positions instead of columns
         end
         clean_matrix = adjustreference(matrix) # ensure that the sequence has no gaps
-        # copy annotations to avoid aliasing between sequences
-        new(clean_matrix, deepcopy(annotations))
+        new(clean_matrix, annotations)
     end
 end
 

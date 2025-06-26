@@ -413,7 +413,7 @@
         rawmat = reshape(res"AC", 1, 2)
         ann = Annotations();
         setannotfile!(ann, "Note", "foo")
-        seq_from_raw = AnnotatedSequence(rawmat, ann)
+        seq_from_raw = AnnotatedSequence(rawmat, deepcopy(ann))
         @test dimnames(seq_from_raw) == ["Seq", "Pos"]
         @test isa(namedmatrix(seq_from_raw), NamedArray)
         @test annotations(seq_from_raw) == ann && annotations(seq_from_raw) !== ann
