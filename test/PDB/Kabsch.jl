@@ -125,6 +125,67 @@
 
         @test rmsf(Matrix{Float64}[A, B]) == [sqrt(3), 0.0]
         @test rmsf(Matrix{Float64}[A, B], w) == [sqrt(0.25 * 6.75 + 0.75 * 0.75), 0.0]
+
+        @testset "Vector{PDBResidue}" begin
+            resA = [
+                PDBResidue(
+                    PDBResidueIdentifier("1", "1", "ALA", "ATOM", "1", "A"),
+                    [
+                        PDBAtom(Coordinates(-1.0, -1.0, -1.0), "CA", "C", 1.0, "0", "", ""),
+                        PDBAtom(Coordinates(-1.0, -1.0, 0.0), "CB", "C", 1.0, "0", "", ""),
+                    ],
+                ),
+                PDBResidue(
+                    PDBResidueIdentifier("2", "2", "GLY", "ATOM", "1", "A"),
+                    [
+                        PDBAtom(Coordinates(-1.0, 0.0, 1.0), "CA", "C", 1.0, "0", "", ""),
+                        PDBAtom(Coordinates(-1.0, 1.0, 1.0), "CB", "C", 1.0, "0", "", ""),
+                    ],
+                ),
+            ]
+            resB = [
+                PDBResidue(
+                    PDBResidueIdentifier("1", "1", "ALA", "ATOM", "1", "B"),
+                    [
+                        PDBAtom(Coordinates(1.0, 1.0, 1.0), "CA", "C", 1.0, "0", "", ""),
+                        PDBAtom(Coordinates(1.0, 1.0, 2.0), "CB", "C", 1.0, "0", "", ""),
+                    ],
+                ),
+                PDBResidue(
+                    PDBResidueIdentifier("2", "2", "GLY", "ATOM", "1", "B"),
+                    [
+                        PDBAtom(Coordinates(-1.0, 0.0, 1.0), "CA", "C", 1.0, "0", "", ""),
+                        PDBAtom(Coordinates(-1.0, 1.0, 2.0), "CB", "C", 1.0, "0", "", ""),
+                    ],
+                ),
+            ]
+            wres = [0.25, 0.75]
+
+            @test mean_coordinates(Vector{PDBResidue}[resA, resB]) == [
+                0.0 0.0 0.0 # mean([-1,-1,-1], [1,1,1])
+                -1.0 0.0 1.0 # mean([-1,0,1], [-1,0,1])
+            ]
+
+            @test mean_coordinates(Vector{PDBResidue}[resA, resB], wres) == [
+                0.5 0.5 0.5 # 0.25 * resA + 0.75 * resB
+                -1.0 0.0 1.0
+            ]
+
+            @test mean_coordinates(Vector{PDBResidue}[resA, resB]; calpha = false) == [
+                0.0 0.0 0.0 # CA1
+                0.0 0.0 1.0 # CB1
+                -1.0 0.0 1.0 # CA2
+                -1.0 1.0 1.5 # CB2
+            ]
+
+            @test mean_coordinates(Vector{PDBResidue}[resA, resB], wres; calpha = false) ==
+                  [
+                0.5 0.5 0.5 # weighted CA1
+                0.5 0.5 1.5 # weighted CB1
+                -1.0 0.0 1.0 # weighted CA2
+                -1.0 1.0 1.75 # weighted CB2
+            ]
+        end
     end
 
     @testset "Superimpose PDBs" begin
