@@ -61,7 +61,7 @@
         @test !occursin(r"MIToS_", printed[4])
     end
 
-    @testset "Print modifications" begin
+    @testset "printmodifications" begin
         ann = Annotations()
         annotate_modification!(ann, "deletefullgaps! test")
         sleep(0.01)
@@ -71,5 +71,11 @@
         @test count(x -> occursin(r"^\d{4}-\d{2}-\d{2}", x), printed) == 2
         @test any(contains.(printed, "deletefullgaps!"))
         @test any(contains.(printed, "filtercolumns!"))
+
+        pipe = Pipe()
+        redirect_stdout(() -> printmodifications(ann), pipe)
+        close(pipe.in)
+        printed_stdout = split(chomp(read(pipe.out, String)), r"\r?\n"; keepempty = true)
+        @test printed_stdout == printed
     end
 end
