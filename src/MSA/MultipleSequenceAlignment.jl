@@ -145,7 +145,6 @@ mutable struct AnnotatedSequence <: AbstractSequence
         end
         clean_matrix = adjustreference(matrix) # ensure that the sequence has no gaps
         new(clean_matrix, annotations)
-    end
 end
 
 # Constructors
