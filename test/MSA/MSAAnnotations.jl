@@ -64,9 +64,10 @@
     @testset "Print modifications" begin
         ann = Annotations()
         annotate_modification!(ann, "deletefullgaps! test")
+        sleep(0.01)
         annotate_modification!(ann, "filtercolumns! test")
         printed = split(chomp(sprint(printmodifications, ann)), r"\r?\n"; keepempty = true)
-        @test count(==("-------------------"), printed) == 2
+        @test count(==("-----------------------"), printed) == 2
         @test count(x -> occursin(r"^\d{4}-\d{2}-\d{2}", x), printed) == 2
         @test any(contains.(printed, "deletefullgaps!"))
         @test any(contains.(printed, "filtercolumns!"))

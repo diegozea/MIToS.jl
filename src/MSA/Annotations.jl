@@ -374,7 +374,7 @@ function printmodifications(io::IO, ann::Annotations)
     for (key, value) in ann.file
         if startswith(key, "MIToS_")
             list_k = split(key, '_')
-            println(io, "-------------------")
+            println(io, "-----------------------")
             println(io, list_k[2])
             println(io)
             println(io, value)
