@@ -127,6 +127,20 @@
         ]
     end
 
+    @testset "ndims" begin
+        @test ndims(Residue) == 0
+        for i = 1:22
+            @test ndims(Residue(i)) == 0
+        end
+    end
+
+    @testset "length" begin
+        for i = 1:22
+            res = Residue(i)
+            @test length(res) == length(Int(res))
+        end
+    end
+
     @testset "Other Base methods" begin
 
         for i = 1:22
