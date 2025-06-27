@@ -207,9 +207,9 @@ end
     end
 
     @testset "skip blank Pfnum" begin
-        # residue 2 in dummy_sifts_file.xml has an empty Pfam number so it
+        # residue 2 in dummy_sifts__file.xml has an empty Pfam number so it
         # should be ignored in the mapping
-        xml_path = joinpath(DATA, "dummy_sifts_file.xml")
+        xml_path = joinpath(DATA, "dummy_sifts__file.xml")
         map_skip = msacolumn2pdbresidue(
             msa_base,
             "F112_SSV1/3-112",
@@ -228,7 +228,7 @@ end
     @testset "warning vs strict" begin
         # Pfam number 4 maps to PDB residue SER while the MSA has T.
         # With strict=false a warning is expected; strict=true throws an error.
-        xml_path = joinpath(DATA, "dummy_sifts_file.xml")
+        xml_path = joinpath(DATA, "dummy_sifts__file.xml")
         @test_logs (:warn, r"MSA sequence residue") match_mode = :any begin
             msacolumn2pdbresidue(
                 msa_base,
@@ -258,7 +258,7 @@ end
     @testset "PDB name check" begin
         # The PDB residue at Pfam number 4 is SER but the MSA residue is T, so
         # enabling checkpdbname should raise an error regardless of strict mode.
-        xml_path = joinpath(DATA, "dummy_sifts_file.xml")
+        xml_path = joinpath(DATA, "dummy_sifts__file.xml")
         @test_throws ErrorException msacolumn2pdbresidue(
             msa_base,
             "F112_SSV1/3-112",
@@ -273,8 +273,8 @@ end
     end
 
     @testset "overload equivalence" begin
-        orig_downloadsifts = downloadsifts
-        downloadsifts(pdbid; kwargs...) = joinpath(DATA, "2vqc.xml.gz")
+        # Compare the results from the different overloads.  Two of them
+        # download the SIFTS file on demand.
         setannotfile!(msa_base, "AC", "PF09645.1")
         result1 = msacolumn2pdbresidue(
             msa_base,
@@ -306,7 +306,6 @@ end
             checkpdbname = false,
             missings = true,
         )
-        downloadsifts = orig_downloadsifts
         @test result1 == result2 == result3
     end
 end
