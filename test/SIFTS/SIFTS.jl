@@ -349,3 +349,9 @@ end
     res_scop2b = mapping_scop2b[findfirst(res -> !ismissing(res.SCOP2B), mapping_scop2b)]
     @test get(res_scop2b, dbSCOP2B) == res_scop2b.SCOP2B
 end
+
+@testset "parse_file error" begin
+    io = IOBuffer()
+    @test_throws ArgumentError Utils.parse_file(io, SIFTSXML)
+    @test_throws ArgumentError Utils.parse_file("dummy", SIFTSXML)
+end
