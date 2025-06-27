@@ -949,30 +949,14 @@ end
 
 function _get_plane(residue::PDBResidue)
     name = residue.id.name
-    planes = Vector{PDBAtom}[]
     if name != "TRP"
-        plane = PDBAtom[]
-        for atom in residue.atoms
-            if (name, atom.atom) in PDB._aromatic
-                push!(plane, atom)
-            end
-        end
-        push!(planes, plane)
+        plane = [atom for atom in residue.atoms if (name, atom.atom) in PDB._aromatic]
+        return Vector{Vector{PDBAtom}}([plane])
     else
-        plane1 = PDBAtom[]
-        plane2 = PDBAtom[]
-        for atom in residue.atoms
-            if atom.atom in Set{String}(["CE2", "CD2", "CZ2", "CZ3", "CH2", "CE3"])
-                push!(plane1, atom)
-            end
-            if atom.atom in Set{String}(["CG", "CD1", "NE1", "CE2", "CD2"])
-                push!(plane2, atom)
-            end
-        end
-        push!(planes, plane1)
-        push!(planes, plane2)
+        plane1 = [atom for atom in residue.atoms if atom.atom in PDB._TRP_PLANE1_ATOMS]
+        plane2 = [atom for atom in residue.atoms if atom.atom in PDB._TRP_PLANE2_ATOMS]
+        return Vector{Vector{PDBAtom}}([plane1, plane2])
     end
-    planes
 end
 
 function _centre(planes::Vector{Vector{PDBAtom}})

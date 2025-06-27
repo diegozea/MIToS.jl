@@ -324,6 +324,10 @@ const _aromatic = Set{Tuple{String,String}}([
     ("TYR", "CZ"),
 ])
 
+const _TRP_PLANE1_ATOMS = Set{String}(["CE2", "CD2", "CZ2", "CZ3", "CH2", "CE3"])
+
+const _TRP_PLANE2_ATOMS = Set{String}(["CG", "CD1", "NE1", "CE2", "CD2"])
+
 const _cationic = Set{Tuple{String,String}}([
     ("ARG", "CZ"),
     ("ARG", "NE"),
