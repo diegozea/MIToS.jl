@@ -386,4 +386,76 @@
             @test length(unique(annotated_sequence)) == 21
         end
     end
+
+    @testset "MultipleSequenceAlignment Round-trip" begin
+        mat = NamedArray(reshape(res"AB", 1, 2))
+        msa = MultipleSequenceAlignment(mat)
+        @test MultipleSequenceAlignment(msa) === msa
+        @test @allocated(MultipleSequenceAlignment(msa)) == 0
+    end
+
+    @testset "AnnotatedAlignedSequence Self-identity" begin
+        mat = NamedArray(reshape(res"AB", 1, 2))
+        ann = Annotations()
+        setannotfile!(ann, "Note", "foo")
+        aas = AnnotatedAlignedSequence(mat, ann)
+        @test AnnotatedAlignedSequence(aas) === aas
+        @test annotations(AnnotatedAlignedSequence(aas)) === ann
+    end
+
+    @testset "AlignedSequence Self-identity" begin
+        mat = NamedArray(reshape(res"AB", 1, 2))
+        as = AlignedSequence(mat)
+        @test AlignedSequence(as) === as
+    end
+
+    @testset "AnnotatedSequence from raw matrix" begin
+        rawmat = reshape(res"AC", 1, 2)
+        ann = Annotations();
+        setannotfile!(ann, "Note", "foo")
+        seq_from_raw = AnnotatedSequence(rawmat, ann)
+        @test dimnames(seq_from_raw) == ["Seq", "Pos"]
+        @test isa(namedmatrix(seq_from_raw), NamedArray)
+        @test annotations(seq_from_raw) === ann # it wraps the annotation object
+        @test getresidues(seq_from_raw) == rawmat
+    end
+
+    @testset "AnnotatedSequence from AlignedSequence" begin
+        mat_gap = NamedArray(reshape(res"A-C", 1, 3))
+        alnseq = AlignedSequence(mat_gap)
+        seq_from_aln = AnnotatedSequence(alnseq)
+        @test dimnames(seq_from_aln) == ["Seq", "Pos"]
+        @test isempty(annotations(seq_from_aln))
+        @test all(getresidues(seq_from_aln) .!= GAP)
+    end
+
+    @testset "AnnotatedSequence from AnnotatedAlignedSequence" begin
+        mat_gap = NamedArray(reshape(res"A-C", 1, 3))
+        ann = Annotations();
+        setannotfile!(ann, "Note", "foo")
+        aas = AnnotatedAlignedSequence(mat_gap, ann) # has gaps as it is aligned
+        seq_from_aas = AnnotatedSequence(aas) # deletes gaps to get the unaligned sequence
+        @test annotations(seq_from_aas) == ann && annotations(seq_from_aas) !== ann
+    end
+
+    @testset "AnnotatedSequence no-op identity" begin
+        seq = AnnotatedSequence(res"AC")
+        orig_mat = namedmatrix(seq)
+        orig_ann = annotations(seq)
+        @test AnnotatedSequence(seq) === seq
+        @test namedmatrix(seq) === orig_mat && annotations(seq) === orig_ann
+    end
+
+    @testset "Branch coverage inside AnnotatedSequence(matrix,annot)" begin
+        named_col = NamedArray(reshape(res"AD", 1, 2), (["id"], ["1", "2"]), ("Seq", "Col"))
+        seq_branch1 = AnnotatedSequence(named_col, Annotations())
+        @test dimnames(named_col)[2] == "Col"
+        @test dimnames(seq_branch1)[2] == "Pos"
+
+
+        named_pos = NamedArray(reshape(res"AD", 1, 2), (["id"], ["1", "2"]), ("Seq", "Pos"))
+        seq_branch2 = AnnotatedSequence(named_pos, Annotations())
+        @test dimnames(named_pos)[2] == "Pos"
+        @test dimnames(seq_branch2)[2] == "Pos"
+    end
 end
