@@ -125,3 +125,28 @@
     ]
     @test contact(residues, 2.0) == expected
 end
+
+@testset "cross PDBAtom" begin
+    a = PDBAtom(
+        coordinates = Coordinates(0.0, 1.0, 0.0),
+        atom = "CA",
+        element = "C",
+        occupancy = 1.0,
+        B = "0",
+        alt_id = "",
+        charge = "",
+    )
+    b = PDBAtom(
+        coordinates = Coordinates(0.0, 0.0, 1.0),
+        atom = "CB",
+        element = "C",
+        occupancy = 1.0,
+        B = "0",
+        alt_id = "",
+        charge = "",
+    )
+
+    @test cross(a, b) == cross(a.coordinates, b.coordinates)
+    @test cross(a, b) == Coordinates(1.0, 0.0, 0.0)
+    @test cross(b, a) == Coordinates(-1.0, 0.0, 0.0)
+end
