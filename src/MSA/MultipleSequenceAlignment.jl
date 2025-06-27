@@ -140,11 +140,14 @@ mutable struct AnnotatedSequence <: AbstractSequence
         annotations::Annotations,
     )
         @argcheck size(matrix, 1) == 1 "There should be only one sequence—i.e. one row."
-        if dimnames(matrix, 2) != "Pos"
-            setdimnames!(matrix, ("Seq", "Pos")) # Unaligned sequences have positions instead of columns
-        end
         clean_matrix = adjustreference(matrix) # ensure that the sequence has no gaps
+        # clean_matrix has a copy of the original data, so we can modify it without 
+        # affecting the original matrix
+        if dimnames(clean_matrix, 2) != "Pos"
+            setdimnames!(clean_matrix, ("Seq", "Pos")) # Unaligned sequences have positions instead of columns
+        end
         new(clean_matrix, annotations)
+    end
 end
 
 # Constructors

@@ -413,10 +413,10 @@
         rawmat = reshape(res"AC", 1, 2)
         ann = Annotations();
         setannotfile!(ann, "Note", "foo")
-        seq_from_raw = AnnotatedSequence(rawmat, deepcopy(ann))
+        seq_from_raw = AnnotatedSequence(rawmat, ann)
         @test dimnames(seq_from_raw) == ["Seq", "Pos"]
         @test isa(namedmatrix(seq_from_raw), NamedArray)
-        @test annotations(seq_from_raw) == ann && annotations(seq_from_raw) !== ann
+        @test annotations(seq_from_raw) === ann # it wraps the annotation object
         @test getresidues(seq_from_raw) == rawmat
     end
 
@@ -433,8 +433,8 @@
         mat_gap = NamedArray(reshape(res"A-C", 1, 3))
         ann = Annotations();
         setannotfile!(ann, "Note", "foo")
-        aas = AnnotatedAlignedSequence(mat_gap, ann)
-        seq_from_aas = AnnotatedSequence(aas)
+        aas = AnnotatedAlignedSequence(mat_gap, ann) # has gaps as it is aligned
+        seq_from_aas = AnnotatedSequence(aas) # deletes gaps to get the unaligned sequence
         @test annotations(seq_from_aas) == ann && annotations(seq_from_aas) !== ann
     end
 
@@ -449,12 +449,13 @@
     @testset "Branch coverage inside AnnotatedSequence(matrix,annot)" begin
         named_col = NamedArray(reshape(res"AD", 1, 2), (["id"], ["1", "2"]), ("Seq", "Col"))
         seq_branch1 = AnnotatedSequence(named_col, Annotations())
+        @test dimnames(named_col)[2] == "Col"
         @test dimnames(seq_branch1)[2] == "Pos"
-        @test dimnames(named_col)[2] == "Pos"
+
 
         named_pos = NamedArray(reshape(res"AD", 1, 2), (["id"], ["1", "2"]), ("Seq", "Pos"))
         seq_branch2 = AnnotatedSequence(named_pos, Annotations())
-        @test dimnames(seq_branch2)[2] == "Pos"
         @test dimnames(named_pos)[2] == "Pos"
+        @test dimnames(seq_branch2)[2] == "Pos"
     end
 end
