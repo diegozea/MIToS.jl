@@ -203,5 +203,16 @@
             out_raw = parse_file(io, RawSequences)
             @test in_raw == out_raw
         end
+
+        @testset "Missing annotations" begin
+            seq = AnnotatedSequence("SeqID", "ACDE", Annotations())
+            io = IOBuffer()
+            @test_logs (:warn, r"There is not sequence Type annotation for SeqID") (
+                :warn,
+                r"There is not sequence Title annotation for SeqID",
+            ) match_mode = :any begin
+                print_file(io, [seq], PIRSequences)
+            end
+        end
     end
 end
