@@ -158,4 +158,41 @@
             end
         end
     end
+
+    @testset "Sequences" begin
+        msa = read_file(simple, FASTA, generatemapping = true)
+        annseq = getsequence(msa, 1)
+
+        @testset "AnnotatedAlignedSequence" begin
+            rev = annseq[[2, 1]]
+            @test isa(rev, AnnotatedAlignedSequence)
+            @test getresidues(rev) == Residue['R' 'A']
+            annot_vals = Set(values(getannotfile(rev)))
+            @test any(
+                occursin("filtercolumns! : 2 columns have been selected.", v) for
+                v in annot_vals
+            )
+            @test any(
+                occursin("filtercolumns! : column order has changed!", v) for
+                v in annot_vals
+            )
+
+            single = annseq[[2]]
+            @test isa(single, AnnotatedAlignedSequence)
+            @test getresidues(single) == reshape(res"R", 1, 1)
+            annot_vals = Set(values(getannotfile(single)))
+            @test any(occursin("filtercolumns! : 1 column has been", v) for v in annot_vals)
+        end
+
+        @testset "AlignedSequence" begin
+            seq = AlignedSequence(annseq)
+            rev = seq[[2, 1]]
+            @test isa(rev, AlignedSequence)
+            @test getresidues(rev) == Residue['R' 'A']
+
+            copy_all = seq[:]
+            @test isa(copy_all, AlignedSequence)
+            @test getresidues(copy_all) == getresidues(seq)
+        end
+    end
 end
