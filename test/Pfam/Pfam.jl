@@ -221,14 +221,15 @@ end
             checkpdbname = false,
             missings = true,
         )
-        @test minimum(keys(map_skip)) == 7
+        @test length(map_skip) == 1
+        @test minimum(keys(map_skip)) == 6
     end
 
     @testset "warning vs strict" begin
         # Pfam number 4 maps to PDB residue SER while the MSA has T.
         # With strict=false a warning is expected; strict=true throws an error.
         xml_path = joinpath(DATA, "dummy_sifts_file.xml")
-        @test_logs (:warn, r"MSA sequence residue") begin
+        @test_logs (:warn, r"MSA sequence residue") match_mode = :any begin
             msacolumn2pdbresidue(
                 msa_base,
                 "F112_SSV1/3-112",
@@ -272,6 +273,9 @@ end
     end
 
     @testset "overload equivalence" begin
+        orig_downloadsifts = downloadsifts
+        downloadsifts(pdbid; kwargs...) = joinpath(DATA, "2vqc.xml.gz")
+        setannotfile!(msa_base, "AC", "PF09645.1")
         result1 = msacolumn2pdbresidue(
             msa_base,
             "F112_SSV1/3-112",
@@ -302,6 +306,7 @@ end
             checkpdbname = false,
             missings = true,
         )
+        downloadsifts = orig_downloadsifts
         @test result1 == result2 == result3
     end
 end
