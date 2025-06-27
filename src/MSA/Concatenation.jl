@@ -607,17 +607,6 @@ function _insert_gap_sequences(msa, seqnames, position)
     end
 end
 
-# Insert gap columns.
-
-function _get_msa_number(colnames, position)
-    fields = split(colnames[position], '_')
-    if length(fields) == 1
-        0 # the column does not have a MSA number as prefix
-    else
-        parse(Int, first(fields))
-    end
-end
-
 # rely on hcat to do the job, then correct the annotations
 # to avoid changing the MSA index number.
 function _fix_msa_numbers(original_msa, int_position, gap_block_columns, gapped_msa)
