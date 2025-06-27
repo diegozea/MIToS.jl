@@ -279,6 +279,28 @@
         end
     end
 
+    @testset "getCA" begin
+        @testset "empty residue" begin
+            id = PDBResidueIdentifier("1", "1", "GLY", "ATOM", "1", "A")
+            res = PDBResidue(id, PDBAtom[])
+            @test (@test_logs (:warn, r"There are no atoms in residue") match_mode =
+                :any begin
+                getCA(res)
+            end) === missing
+        end
+
+        @testset "best occupancy" begin
+            id = PDBResidueIdentifier("1", "1", "ALA", "ATOM", "1", "A")
+            atoms = [
+                PDBAtom(Coordinates(0.0, 0.0, 0.0), "CA", "C", 0.5, "0", "", ""),
+                PDBAtom(Coordinates(1.0, 0.0, 0.0), "CA", "C", 1.0, "0", "", ""),
+                PDBAtom(Coordinates(0.0, 1.0, 0.0), "CB", "C", 0.8, "0", "", ""),
+            ]
+            res = PDBResidue(id, atoms)
+            @test getCA(res) === atoms[2]
+        end
+    end
+
     @testset "PDBResidue without alpha-carbon" begin
         small_2WEL = read_file(joinpath(DATA, "2WEL_D_region.pdb"), PDBFile)
         small_6BAB = read_file(joinpath(DATA, "6BAB_D_region.pdb"), PDBFile)
