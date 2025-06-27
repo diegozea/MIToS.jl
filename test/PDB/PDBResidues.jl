@@ -124,4 +124,20 @@
         false false true
     ]
     @test contact(residues, 2.0) == expected
+
+    @testset "print_file" begin
+        res1 = read_file(joinpath(DATA, "short.pdb"), PDBFile)[1]
+
+        io = IOBuffer()
+        Utils.print_file(io, res1, PDBFile)
+        str = String(take!(io))
+        parsed = parse_file(IOBuffer(str), PDBFile)
+        @test parsed == [res1]
+
+        io = IOBuffer()
+        Utils.print_file(io, res1, PDBFile, 10)
+        lines = split(String(take!(io)), '\n'; keepempty = false)
+        @test startswith(lines[1], "ATOM     10  N")
+        @test startswith(lines[2], "ATOM     11  CA")
+    end
 end
