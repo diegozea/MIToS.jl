@@ -387,14 +387,14 @@
         end
     end
 
-    @testset "MSA round trip" begin
+    @testset "MultipleSequenceAlignment Round-trip" begin
         mat = NamedArray(reshape(res"AB", 1, 2))
         msa = MultipleSequenceAlignment(mat)
         @test MultipleSequenceAlignment(msa) === msa
         @test @allocated(MultipleSequenceAlignment(msa)) == 0
     end
 
-    @testset "AnnotatedAlignedSequence self identity" begin
+    @testset "AnnotatedAlignedSequence Self-identity" begin
         mat = NamedArray(reshape(res"AB", 1, 2))
         ann = Annotations()
         setannotfile!(ann, "Note", "foo")
@@ -403,7 +403,7 @@
         @test annotations(AnnotatedAlignedSequence(aas)) === ann
     end
 
-    @testset "AlignedSequence self identity" begin
+    @testset "AlignedSequence Self-identity" begin
         mat = NamedArray(reshape(res"AB", 1, 2))
         as = AlignedSequence(mat)
         @test AlignedSequence(as) === as
@@ -446,7 +446,7 @@
         @test namedmatrix(seq) === orig_mat && annotations(seq) === orig_ann
     end
 
-    @testset "AnnotatedSequence named matrix branch coverage" begin
+    @testset "Branch coverage inside AnnotatedSequence(matrix,annot)" begin
         named_col = NamedArray(reshape(res"AD", 1, 2), (["id"], ["1", "2"]), ("Seq", "Col"))
         seq_branch1 = AnnotatedSequence(named_col, Annotations())
         @test dimnames(seq_branch1)[2] == "Pos"
