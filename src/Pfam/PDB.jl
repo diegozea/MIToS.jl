@@ -155,7 +155,7 @@ function msacolumn2pdbresidue(
     pfamid::String;
     kargs...,
 )
-    msacolumn2pdbresidue(msa, seqid, pdbid, chain, pfamid, downloadsifts(pdbid), kargs...)
+    msacolumn2pdbresidue(msa, seqid, pdbid, chain, pfamid, downloadsifts(pdbid); kargs...)
 end
 
 function msacolumn2pdbresidue(
@@ -170,7 +170,7 @@ function msacolumn2pdbresidue(
         seqid,
         pdbid,
         chain,
-        String(split(getannotfile(msa, "AC"), '.')[1]),
+        String(split(getannotfile(msa, "AC"), '.')[1]);
         kargs...,
     )
 end

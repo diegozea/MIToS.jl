@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entry xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" dbSource="PDBe">
+  <entity type="protein" entityId="A">
+    <segment segId="dummy" start="8" end="10">
+      <listResidue>
+        <residue dbSource="PDBe" dbCoordSys="PDBe" dbResNum="8" dbResName="ALA">
+          <crossRefDb dbSource="PDB" dbCoordSys="PDBresnum" dbAccessionId="2vqc" dbResNum="2" dbResName="ALA" dbChainId="A"/>
+          <crossRefDb dbSource="UniProt" dbCoordSys="UniProt" dbAccessionId="P20220" dbResNum="2" dbResName="A"/>
+          <crossRefDb dbSource="Pfam" dbCoordSys="UniProt" dbAccessionId="PF09645" dbResNum="" dbResName="A"/>
+        </residue>
+        <residue dbSource="PDBe" dbCoordSys="PDBe" dbResNum="9" dbResName="GLN">
+          <crossRefDb dbSource="PDB" dbCoordSys="PDBresnum" dbAccessionId="2vqc" dbResNum="3" dbResName="GLN" dbChainId="A"/>
+          <crossRefDb dbSource="UniProt" dbCoordSys="UniProt" dbAccessionId="P20220" dbResNum="3" dbResName="Q"/>
+          <crossRefDb dbSource="Pfam" dbCoordSys="UniProt" dbAccessionId="PF09645" dbResNum="3" dbResName="Q"/>
+        </residue>
+        <residue dbSource="PDBe" dbCoordSys="PDBe" dbResNum="10" dbResName="THR">
+          <crossRefDb dbSource="PDB" dbCoordSys="PDBresnum" dbAccessionId="2vqc" dbResNum="4" dbResName="SER" dbChainId="A"/>
+          <crossRefDb dbSource="UniProt" dbCoordSys="UniProt" dbAccessionId="P20220" dbResNum="4" dbResName="T"/>
+          <crossRefDb dbSource="Pfam" dbCoordSys="UniProt" dbAccessionId="PF09645" dbResNum="4" dbResName="S"/>
+        </residue>
+      </listResidue>
+    </segment>
+  </entity>
+</entry>
