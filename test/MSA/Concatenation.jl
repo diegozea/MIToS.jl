@@ -1530,6 +1530,8 @@ end
                 [1, 2] .=> [3, 4],
                 kind = :iner,
             )
+            # kind is incorrect using two position lists
+            @test_throws ArgumentError join_msas(msa62, msa62, [1, 2], [3, 4], kind = :iner)
             # pairing is empty
             @test_throws ArgumentError join_msas(msa62, msa62, [])
             # each element of the pairing is not a pair
