@@ -175,5 +175,5 @@ end
 # TODO: AnnotatedSequence
 
 function Base.getindex(seq::AlignedSequence, cols::Union{AbstractArray,Colon})
-    AlignedSequence(seq.matrix[cols])
+    AlignedSequence(seq.matrix[:, cols])
 end
