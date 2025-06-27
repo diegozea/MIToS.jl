@@ -173,6 +173,39 @@
             @test gethcatmapping(concat_a) == [1, 1, 2, 2, 3, 3]
         end
     end
+
+    @testset "join_msas IO" begin
+        # Ensure joined MSAs can be written and read losslessly
+        # and still be joined with further MSAs
+        # Read input MSAs
+        msa_a = read_file(joinpath(DATA, "simple.fasta"), FASTA, generatemapping = true)
+        msa_b =
+            read_file(joinpath(DATA, "Gaoetal2011.fasta"), FASTA, generatemapping = true)
+        msa_c = copy(msa_a)
+
+        pairing = [1, 2] .=> [1, 2]
+        joined_ab = join_msas(msa_a, msa_b, pairing, axis = 1)
+
+        mktemp() do tmp_file, io
+            # Write the joined MSA keeping `io` open
+            print_file(io, joined_ab, Stockholm)
+            flush(io)
+
+            # Read the joined MSA from the same IO
+            seekstart(io)
+            joined_read = parse_file(io, Stockholm)
+
+            @test joined_read == joined_ab
+            @test annotations(joined_read) == annotations(joined_ab)
+
+            # Join a third MSA and compare both results
+            joined_original = join_msas(joined_ab, msa_c, pairing, axis = 1)
+            joined_from_file = join_msas(joined_read, msa_c, pairing, axis = 1)
+
+            @test joined_from_file == joined_original
+            @test annotations(joined_from_file) == annotations(joined_original)
+        end
+    end
 end
 
 @testset "vcat" begin
