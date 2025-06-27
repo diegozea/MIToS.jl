@@ -146,4 +146,18 @@
         @test getannotsequence(annot, "x(1)(1)", "OriginalSeqName", "") == "x(1)"
         @test getannotsequence(annot, "x(1)(2)", "OriginalSeqName", "") == "x(1)"
     end
+
+    @testset "Mapping warnings" begin
+        fasta = joinpath(DATA, "simple.fasta")
+        msa = read_file(fasta, FASTA, generatemapping = true)
+        mktemp() do tmp, _
+            write_file(tmp, msa, Stockholm)
+            @test_logs (:warn, r"sequence mappings annotations") (
+                :warn,
+                r"column annotations",
+            ) match_mode = :all begin
+                read_file(tmp, Stockholm, generatemapping = true)
+            end
+        end
+    end
 end
