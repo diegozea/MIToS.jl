@@ -141,68 +141,63 @@ function _inscode(res::PDBResidue)
 end
 
 function _pdbresidues_to_mmcifdict(residues::Vector{PDBResidue}; label::Bool = false)
-    # Initialize MMCIFDict with the necessary fields
+    n_atoms = sum(length(res.atoms) for res in residues)
+
     mmcif_dict = BioStructures.MMCIFDict()
 
-    # Initialize fields as empty arrays
     if label
-        mmcif_dict["_atom_site.label_asym_id"] = String[]
-        mmcif_dict["_atom_site.label_comp_id"] = String[]
-        mmcif_dict["_atom_site.label_atom_id"] = String[]
+        mmcif_dict["_atom_site.label_asym_id"] = Vector{String}(undef, n_atoms)
+        mmcif_dict["_atom_site.label_comp_id"] = Vector{String}(undef, n_atoms)
+        mmcif_dict["_atom_site.label_atom_id"] = Vector{String}(undef, n_atoms)
     else
-        mmcif_dict["_atom_site.auth_asym_id"] = String[]
-        mmcif_dict["_atom_site.auth_comp_id"] = String[]
-        mmcif_dict["_atom_site.auth_atom_id"] = String[]
+        mmcif_dict["_atom_site.auth_asym_id"] = Vector{String}(undef, n_atoms)
+        mmcif_dict["_atom_site.auth_comp_id"] = Vector{String}(undef, n_atoms)
+        mmcif_dict["_atom_site.auth_atom_id"] = Vector{String}(undef, n_atoms)
     end
-    mmcif_dict["_atom_site.id"] = String[]
-    mmcif_dict["_atom_site.auth_seq_id"] = String[]
-    mmcif_dict["_atom_site.label_seq_id"] = String[]
-    mmcif_dict["_atom_site.Cartn_x"] = String[]
-    mmcif_dict["_atom_site.Cartn_y"] = String[]
-    mmcif_dict["_atom_site.Cartn_z"] = String[]
-    mmcif_dict["_atom_site.occupancy"] = String[]
-    mmcif_dict["_atom_site.B_iso_or_equiv"] = String[]
-    mmcif_dict["_atom_site.type_symbol"] = String[]
-    mmcif_dict["_atom_site.group_PDB"] = String[]
-    mmcif_dict["_atom_site.pdbx_PDB_model_num"] = String[]
-    mmcif_dict["_atom_site.pdbx_PDB_ins_code"] = String[]
-    mmcif_dict["_atom_site.label_alt_id"] = String[]
-    mmcif_dict["_atom_site.pdbx_formal_charge"] = String[]
+    mmcif_dict["_atom_site.id"] = Vector{String}(undef, n_atoms)
+    mmcif_dict["_atom_site.auth_seq_id"] = Vector{String}(undef, n_atoms)
+    mmcif_dict["_atom_site.label_seq_id"] = Vector{String}(undef, n_atoms)
+    mmcif_dict["_atom_site.Cartn_x"] = Vector{String}(undef, n_atoms)
+    mmcif_dict["_atom_site.Cartn_y"] = Vector{String}(undef, n_atoms)
+    mmcif_dict["_atom_site.Cartn_z"] = Vector{String}(undef, n_atoms)
+    mmcif_dict["_atom_site.occupancy"] = Vector{String}(undef, n_atoms)
+    mmcif_dict["_atom_site.B_iso_or_equiv"] = Vector{String}(undef, n_atoms)
+    mmcif_dict["_atom_site.type_symbol"] = Vector{String}(undef, n_atoms)
+    mmcif_dict["_atom_site.group_PDB"] = Vector{String}(undef, n_atoms)
+    mmcif_dict["_atom_site.pdbx_PDB_model_num"] = Vector{String}(undef, n_atoms)
+    mmcif_dict["_atom_site.pdbx_PDB_ins_code"] = Vector{String}(undef, n_atoms)
+    mmcif_dict["_atom_site.label_alt_id"] = Vector{String}(undef, n_atoms)
+    mmcif_dict["_atom_site.pdbx_formal_charge"] = Vector{String}(undef, n_atoms)
 
-    atom_id_counter = 1
-
+    i = 1
     for res in residues
         for atom in res.atoms
             if label
-                push!(mmcif_dict["_atom_site.label_asym_id"], res.id.chain)
-                push!(mmcif_dict["_atom_site.label_comp_id"], res.id.name)
-                push!(mmcif_dict["_atom_site.label_atom_id"], atom.atom)
+                mmcif_dict["_atom_site.label_asym_id"][i] = res.id.chain
+                mmcif_dict["_atom_site.label_comp_id"][i] = res.id.name
+                mmcif_dict["_atom_site.label_atom_id"][i] = atom.atom
             else
-                push!(mmcif_dict["_atom_site.auth_asym_id"], res.id.chain)
-                push!(mmcif_dict["_atom_site.auth_comp_id"], res.id.name)
-                push!(mmcif_dict["_atom_site.auth_atom_id"], atom.atom)
+                mmcif_dict["_atom_site.auth_asym_id"][i] = res.id.chain
+                mmcif_dict["_atom_site.auth_comp_id"][i] = res.id.name
+                mmcif_dict["_atom_site.auth_atom_id"][i] = atom.atom
             end
-            push!(mmcif_dict["_atom_site.id"], string(atom_id_counter))
-            push!(mmcif_dict["_atom_site.auth_seq_id"], _resnumber(res.id.number))
-            push!(mmcif_dict["_atom_site.label_seq_id"], _resnumber(res.id.PDBe_number))
-            push!(mmcif_dict["_atom_site.Cartn_x"], string(atom.coordinates.x))
-            push!(mmcif_dict["_atom_site.Cartn_y"], string(atom.coordinates.y))
-            push!(mmcif_dict["_atom_site.Cartn_z"], string(atom.coordinates.z))
-            push!(mmcif_dict["_atom_site.occupancy"], string(atom.occupancy))
-            push!(mmcif_dict["_atom_site.B_iso_or_equiv"], atom.B)
-            push!(mmcif_dict["_atom_site.type_symbol"], atom.element)
-            push!(mmcif_dict["_atom_site.group_PDB"], res.id.group)
-            push!(mmcif_dict["_atom_site.pdbx_PDB_model_num"], res.id.model)
-            push!(mmcif_dict["_atom_site.pdbx_PDB_ins_code"], _inscode(res))
-            push!(
-                mmcif_dict["_atom_site.label_alt_id"],
-                isempty(atom.alt_id) ? "." : atom.alt_id,
-            )
-            push!(
-                mmcif_dict["_atom_site.pdbx_formal_charge"],
-                isempty(atom.charge) ? "?" : atom.charge,
-            )
-            atom_id_counter += 1
+            mmcif_dict["_atom_site.id"][i] = string(i)
+            mmcif_dict["_atom_site.auth_seq_id"][i] = _resnumber(res.id.number)
+            mmcif_dict["_atom_site.label_seq_id"][i] = _resnumber(res.id.PDBe_number)
+            mmcif_dict["_atom_site.Cartn_x"][i] = string(atom.coordinates.x)
+            mmcif_dict["_atom_site.Cartn_y"][i] = string(atom.coordinates.y)
+            mmcif_dict["_atom_site.Cartn_z"][i] = string(atom.coordinates.z)
+            mmcif_dict["_atom_site.occupancy"][i] = string(atom.occupancy)
+            mmcif_dict["_atom_site.B_iso_or_equiv"][i] = atom.B
+            mmcif_dict["_atom_site.type_symbol"][i] = atom.element
+            mmcif_dict["_atom_site.group_PDB"][i] = res.id.group
+            mmcif_dict["_atom_site.pdbx_PDB_model_num"][i] = res.id.model
+            mmcif_dict["_atom_site.pdbx_PDB_ins_code"][i] = _inscode(res)
+            mmcif_dict["_atom_site.label_alt_id"][i] =
+                isempty(atom.alt_id) ? "." : atom.alt_id
+            mmcif_dict["_atom_site.pdbx_formal_charge"][i] =
+                isempty(atom.charge) ? "?" : atom.charge
+            i += 1
         end
     end
 
