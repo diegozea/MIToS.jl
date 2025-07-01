@@ -18,11 +18,12 @@ function _h_concatenated_seq_names(msas...; delim::String = "_&_")
     concatenated_names
 end
 
-function _hcat_colnames_kernel!(colnames, columns, msa_number::Int)::Int
+function _hcat_colnames_kernel!(colnames, columns, msa_number::Int, start_idx::Int)
     first_col = first(columns)
     check_msa_change = '_' in first_col
     previous = ""
     msa_number += 1
+    idx = start_idx
     for col in columns
         if check_msa_change
             fields = split(col, '_')
@@ -35,17 +36,20 @@ function _hcat_colnames_kernel!(colnames, columns, msa_number::Int)::Int
             end
             col = last(fields)
         end
-        push!(colnames, "$(msa_number)_$col")
+        colnames[idx] = "$(msa_number)_$col"
+        idx += 1
     end
-    msa_number
+    msa_number, idx
 end
 
 function _h_concatenated_col_names(msas...)
-    colnames = String[]
+    total_cols = sum(ncolumns(msa) for msa in msas)
+    colnames = Vector{String}(undef, total_cols)
+    idx = 1
     msa_number = 0
     for msa in msas
         columns = columnname_iterator(msa)
-        msa_number = _hcat_colnames_kernel!(colnames, columns, msa_number)
+        msa_number, idx = _hcat_colnames_kernel!(colnames, columns, msa_number, idx)
     end
     colnames
 end
@@ -55,6 +59,8 @@ _get_seq_lengths(msas...) = Int[ncolumns(msa) for msa in msas]
 function _h_concatenate_annotfile(data::Annotations...)
     N = length(data)
     annotfile = copy(getannotfile(data[1]))
+    total_entries = sum(length(getannotfile(d)) for d in data)
+    sizehint!(annotfile, total_entries)
     for i = 2:N
         ann = data[i]::Annotations
         for (k, v) in getannotfile(ann)
@@ -70,7 +76,7 @@ function _h_concatenate_annotfile(data::Annotations...)
                     # in one of the source MSAs and there is no match between keys.
                     @warn "There was no possible to match the ColMap annotations."
                 end
-                push!(annotfile, k => v)
+                annotfile[k] = v
             end
         end
     end
@@ -120,23 +126,18 @@ function _clean_sequence_mapping!(msa::AnnotatedAlignedObject)
 end
 
 function _concatenate_annotsequence(seqname_mapping, data::Annotations...)
+    total_entries = sum(length(getannotsequence(ann)) for ann in data)
     annotsequence = Dict{Tuple{String,String},String}()
+    sizehint!(annotsequence, total_entries)
     for (i, ann::Annotations) in enumerate(data)
         for ((seqname, annot_name), value) in getannotsequence(ann)
             concatenated_seqname = get(seqname_mapping, (i, seqname), seqname)
             new_key = (concatenated_seqname, annot_name)
-            # if we used :vcat, new_key will not be present in the dict as the
-            # sequence names are disambiguated first
             if haskey(annotsequence, new_key)
-                # so, we execute the following code only if we used :hcat
-                if annot_name == "SeqMap"
-                    sep = ","
-                else
-                    sep = "_&_"
-                end
+                sep = annot_name == "SeqMap" ? "," : "_&_"
                 annotsequence[new_key] = string(annotsequence[new_key], sep, value)
             else
-                push!(annotsequence, new_key => value)
+                annotsequence[new_key] = value
             end
         end
     end
@@ -154,12 +155,12 @@ function _fill_and_update!(dict, last, key, i, value, seq_lengths)
         last[key] = i
     else
         if i == 1
-            push!(dict, key => value)
+            dict[key] = value
         else
             previous = sum(seq_lengths[1:(i-1)])
-            push!(dict, key => string(repeat(" ", previous), value))
+            dict[key] = string(repeat(" ", previous), value)
         end
-        push!(last, key => i)
+        last[key] = i
     end
 end
 
@@ -184,7 +185,9 @@ function _h_concatenate_annotcolumn(
     seq_lengths::Vector{Int},
     data::Annotations...,
 )::Dict{String,String}
+    total_entries = sum(length(getannotcolumn(a)) for a in data)
     annotcolumn = Dict{String,String}()
+    sizehint!(annotcolumn, total_entries)
     last = Dict{String,Int}()
     for (i, ann::Annotations) in enumerate(data)
         for (annot_name, value) in getannotcolumn(ann)
@@ -195,7 +198,9 @@ function _h_concatenate_annotcolumn(
 end
 
 function _h_concatenate_annotresidue(seq_lengths, seqname_mapping, data::Annotations...)
+    total_entries = sum(length(getannotresidue(a)) for a in data)
     annotresidue = Dict{Tuple{String,String},String}()
+    sizehint!(annotresidue, total_entries)
     last = Dict{Tuple{String,String},Int}()
     for (i, ann) in enumerate(data)
         for ((seqname, annot_name), value) in getannotresidue(ann)
@@ -295,7 +300,9 @@ as prefix, the MSA number is increased accordingly.
 """
 function _v_concatenated_seq_names(msas...; fill_mapping::Bool = false)
     label_mapping = Dict{String,Int}()
-    concatenated_names = String[]
+    total_seq = sum(nsequences(msa) for msa in msas)
+    concatenated_names = Vector{String}(undef, total_seq)
+    idx = 1
     msa_number = 0
     previous_msa_number = 0
     for msa in msas
@@ -324,7 +331,8 @@ function _v_concatenated_seq_names(msas...; fill_mapping::Bool = false)
                 end
             end
             previous_msa_number = msa_number
-            push!(concatenated_names, new_seqname)
+            concatenated_names[idx] = new_seqname
+            idx += 1
         end
     end
     concatenated_names, label_mapping
@@ -335,7 +343,9 @@ It returns a Dict mapping the MSA number and sequence name to the vertically
 concatenated sequence name.
 """
 function _get_seqname_mapping_vcat(concatenated_seqnames, msas...)
+    total_seq = sum(nsequences(msa) for msa in msas)
     mapping = Dict{Tuple{Int,String},String}()
+    sizehint!(mapping, total_seq)
     sequence_number = 0
     for (i, msa) in enumerate(msas)
         for seq in sequencename_iterator(msa)
@@ -364,13 +374,15 @@ function _update_annotation_name(annot_name, msa_number, label_mapping)
 end
 
 function _v_concatenate_annotfile(label_mapping::Dict{String,Int}, data::Annotations...)
+    total_entries = sum(length(getannotfile(a)) for a in data)
     annotfile = OrderedDict{String,String}()
+    sizehint!(annotfile, total_entries)
     msa_number = 0
     for ann::Annotations in data
         msa_number += 1
         for (name, annotation) in getannotfile(ann)
             msa_number, new_name = _update_annotation_name(name, msa_number, label_mapping)
-            push!(annotfile, new_name => annotation)
+            annotfile[new_name] = annotation
         end
     end
     annotfile
@@ -381,13 +393,15 @@ Column annotations are disambiguated by adding a prefix to the annotation name a
 we do for the sequence names.
 """
 function _v_concatenate_annotcolumn(label_mapping::Dict{String,Int}, data::Annotations...)
+    total_entries = sum(length(getannotcolumn(a)) for a in data)
     annotcolumn = Dict{String,String}()
+    sizehint!(annotcolumn, total_entries)
     msa_number = 0
     for ann::Annotations in data
         msa_number += 1
         for (name, annotation) in getannotcolumn(ann)
             msa_number, new_name = _update_annotation_name(name, msa_number, label_mapping)
-            push!(annotcolumn, new_name => annotation)
+            annotcolumn[new_name] = annotation
         end
     end
     annotcolumn
@@ -398,12 +412,14 @@ Residue annotations are disambiguated by adding a prefix to the sequence name ho
 the annotation as we do for the sequence names.
 """
 function _v_concatenate_annotresidue(concatenated_seqnames, data::Annotations...)
+    total_entries = sum(length(getannotresidue(a)) for a in data)
     annotresidue = Dict{Tuple{String,String},String}()
+    sizehint!(annotresidue, total_entries)
     for (i, ann::Annotations) in enumerate(data)
         for ((seqname, annot_name), value) in getannotresidue(ann)
             concatenated_seqname = get(concatenated_seqnames, (i, seqname), seqname)
             new_key = (concatenated_seqname, annot_name)
-            push!(annotresidue, new_key => value)
+            annotresidue[new_key] = value
         end
     end
     annotresidue
