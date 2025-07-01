@@ -219,6 +219,7 @@ const vanderwaalsradius = Dict{Tuple{String,String},Float64}(
 )
 
 function _add_CTER_O!(dict)
+    sizehint!(dict, length(dict) + 20 * 3)
     for aa in _3_letter_aa
         push!(dict, (aa, "OXT"))
         push!(dict, (aa, "OT2"))
@@ -228,10 +229,11 @@ function _add_CTER_O!(dict)
 end
 
 function _add_CTER_O!(dict, value)
+    sizehint!(dict, length(dict) + 20 * 3)
     for aa in _3_letter_aa
-        push!(dict, (aa, "OXT") => value)
-        push!(dict, (aa, "OT2") => value)
-        push!(dict, (aa, "OT1") => value)
+        dict[(aa, "OXT")] = value
+        dict[(aa, "OT2")] = value
+        dict[(aa, "OT1")] = value
     end
     dict
 end
@@ -794,23 +796,19 @@ const _hbond_acceptor = Dict{Tuple{String,String},Vector{String}}(
 )
 
 function _generate_dict!(dict, input_dict)
+    sizehint!(dict, length(dict) + length(input_dict))
     for (res, atom) in keys(input_dict)
-        if haskey(dict, res)
-            push!(dict[res], atom)
-        else
-            dict[res] = Set{String}(String[atom])
-        end
+        set = get!(dict, res, Set{String}())
+        push!(set, atom)
     end
     dict
 end
 
 function _generate_dict!(dict, input_set::Set{Tuple{String,String}})
+    sizehint!(dict, length(dict) + length(input_set))
     for (res, atom) in input_set
-        if haskey(dict, res)
-            push!(dict[res], atom)
-        else
-            dict[res] = Set{String}(String[atom])
-        end
+        set = get!(dict, res, Set{String}())
+        push!(set, atom)
     end
     dict
 end
