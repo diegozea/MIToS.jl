@@ -282,17 +282,12 @@ function _get_matched_Cαs(
     B::AbstractVector{PDBResidue},
     matches,
 )
-    if Base.IteratorSize(typeof(matches)) == Base.SizeUnknown()
-        Asel, Bsel = PDBResidue[], PDBResidue[]
-        for (i, j) in matches
-            push!(Asel, A[i])
-            push!(Bsel, B[j])
-        end
-        return _get_matched_Cαs(Asel, Bsel, nothing)
-    end
-    Asel = Vector{PDBResidue}(undef, length(matches))
+    pairs_iter =
+        Base.IteratorSize(typeof(matches)) == Base.SizeUnknown() ? collect(matches) :
+        matches
+    Asel = Vector{PDBResidue}(undef, length(pairs_iter))
     Bsel = similar(Asel)
-    for (k, (i, j)) in enumerate(matches)
+    for (k, (i, j)) in enumerate(pairs_iter)
         Asel[k] = A[i]
         Bsel[k] = B[j]
     end

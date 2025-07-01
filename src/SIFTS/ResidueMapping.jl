@@ -293,14 +293,19 @@ function SIFTSResidue(
     UniProt = missing
     Pfam = missing
     NCBI = missing
+    crossrefs = LightXML.get_elements_by_tagname(residue, "crossRefDb")
+    nrefs = length(crossrefs)
     InterPro = dbInterPro[]
+    sizehint!(InterPro, nrefs)
     PDB = missing
     SCOP = missing
     SCOP2 = dbSCOP2[]
+    sizehint!(SCOP2, nrefs)
     SCOP2B = missing
     CATH = missing
     Ensembl = dbEnsembl[]
-    for crossref in LightXML.get_elements_by_tagname(residue, "crossRefDb")
+    sizehint!(Ensembl, nrefs)
+    for crossref in crossrefs
         db = LightXML.attribute(crossref, "dbSource")
         if db == "UniProt"
             UniProt = dbUniProt(crossref)
@@ -434,7 +439,14 @@ function Utils.parse_file(
     chain::Union{Type{All},String} = All,
     missings::Bool = true,
 )
-    vector = SIFTSResidue[]
+    n_residues = 0
+    for entity in _get_entities(document)
+        for segment in _get_segments(entity)
+            n_residues += length(_get_residues(segment))
+        end
+    end
+    vector = Vector{SIFTSResidue}(undef, n_residues)
+    i = 0
     for entity in _get_entities(document)
         for segment in _get_segments(entity)
             residues = _get_residues(segment)
@@ -444,12 +456,14 @@ function Utils.parse_file(
                     sifts_res = SIFTSResidue(residue, missing_residue, sscode, ssname)
                     if _is_All(chain) ||
                        (!ismissing(sifts_res.PDB) && sifts_res.PDB.chain == chain)
-                        push!(vector, sifts_res)
+                        i += 1
+                        vector[i] = sifts_res
                     end
                 end
             end
         end
     end
+    resize!(vector, i)
     vector
 end
 
