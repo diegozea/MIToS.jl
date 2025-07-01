@@ -4,6 +4,7 @@ using MIToS.Utils
 using MIToS.MSA
 using MIToS.Information
 using MIToS.PDB
+using MIToS.SIFTS
 
 const SUITE = BenchmarkGroup()
 
