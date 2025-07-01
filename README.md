@@ -21,8 +21,10 @@ MI-derived scores are good predictors of inter-residue contacts in a protein str
 To allow such analysis, MIToS also implements several useful tools for working with protein structures, such as those available in the **Protein Data Bank (PDB)** or predicted by AlphaFold 2.
 
 MIToS starting point was an improvement of the algorithm published by Buslje et al. [2]. 
-A BLOSUM62-based pseudo-count strategy, similar to Altschul et al.[4], , was implemented to improve performance in the range of MSAs with a low number of sequences [1]. 
-**MIToS** offers all the tools for using, developing, and testing MI-based scores—in fact, any measure based on reside frequencies in an MSA—in different modules.
+A BLOSUM62-based pseudo-count strategy, was implemented to improve performance in the range 
+of MSAs with a low number of sequences [1]. 
+**MIToS** offers all the tools for using, developing, and testing MI-based scores—in fact, 
+any measure based on reside frequencies in an MSA—in different modules.
 
 ### Modules
 MIToS tools are separated into different modules for different tasks.
@@ -87,8 +89,11 @@ pairs using mutual information." Bioinformatics 25.9 (2009): 1125-1131.
 3. Buslje, Cristina Marino, et al. "Networks of high mutual information define the
 structural proximity of catalytic sites: implications for catalytic residue
 identification." PLoS Comput Biol 6.11 (2010): e1000978.
-4. Altschul, Stephen F., et al. "Gapped BLAST and PSI-BLAST: a new generation of protein
-database search programs." Nucleic acids research 25.17 (1997): 3389-3402.
+
+### License
+
+This project is released under the **MIT License**. See the [LICENSE.md](LICENSE.md) file 
+for the full license terms.
 
 ### Acknowledgments
 MIToS was initially developed at the *Structural Bioinformatics Unit* of the 
