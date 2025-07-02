@@ -297,6 +297,93 @@
             end
         end
 
+        @testset "Rename columns" begin
+
+            # rename_columns!
+            for object in (NamedArray(M), msa, annotated_msa)
+                copied_object = deepcopy(object)
+                if isa(copied_object, AnnotatedMultipleSequenceAlignment)
+                    setannotfile!(
+                        copied_object,
+                        "HCat",
+                        join(columnnames(copied_object), ','),
+                    )
+                end
+                new_object =
+                    rename_columns!(copied_object, ["A", "B", "C", "D", "E", "F", "G"])
+                @test new_object == copied_object
+                @test columnnames(copied_object) == ["A", "B", "C", "D", "E", "F", "G"]
+                if isa(copied_object, AnnotatedMultipleSequenceAlignment)
+                    @test getannotfile(copied_object, "HCat") == "A,B,C,D,E,F,G"
+                end
+            end
+
+            # rename_columns
+            for object in (NamedArray(M), msa, annotated_msa)
+                if isa(object, AnnotatedMultipleSequenceAlignment)
+                    setannotfile!(object, "HCat", join(columnnames(object), ','))
+                end
+                new_object = rename_columns(object, ["A", "B", "C", "D", "E", "F", "G"])
+                @test columnnames(object) == ["1", "2", "3", "4", "5", "6", "7"]
+                @test columnnames(new_object) == ["A", "B", "C", "D", "E", "F", "G"]
+                if isa(new_object, AnnotatedMultipleSequenceAlignment)
+                    @test getannotfile(new_object, "HCat") == "A,B,C,D,E,F,G"
+                end
+            end
+
+            # rename one or two columns
+            for object in (NamedArray(M), msa, annotated_msa)
+                copied_object = deepcopy(object)
+                if isa(copied_object, AnnotatedMultipleSequenceAlignment)
+                    setannotfile!(
+                        copied_object,
+                        "HCat",
+                        join(columnnames(copied_object), ','),
+                    )
+                end
+                new_object = rename_columns(copied_object, "1" => "A", "2" => "B")
+                @test columnnames(copied_object) == ["1", "2", "3", "4", "5", "6", "7"]
+                @test columnnames(new_object) == ["A", "B", "3", "4", "5", "6", "7"]
+                if isa(new_object, AnnotatedMultipleSequenceAlignment)
+                    @test getannotfile(new_object, "HCat") == "A,B,3,4,5,6,7"
+                end
+            end
+
+            # rename_columns! with Dict
+            for object in (NamedArray(M), msa, annotated_msa)
+                copied_object = deepcopy(object)
+                if isa(copied_object, AnnotatedMultipleSequenceAlignment)
+                    setannotfile!(
+                        copied_object,
+                        "HCat",
+                        join(columnnames(copied_object), ','),
+                    )
+                end
+                rename_columns!(copied_object, Dict("1" => "A", "2" => "B"))
+                @test columnnames(copied_object) == ["A", "B", "3", "4", "5", "6", "7"]
+                if isa(copied_object, AnnotatedMultipleSequenceAlignment)
+                    @test getannotfile(copied_object, "HCat") == "A,B,3,4,5,6,7"
+                end
+            end
+
+            # rename_columns! with Pairs
+            for object in (NamedArray(M), msa, annotated_msa)
+                copied_object = deepcopy(object)
+                if isa(copied_object, AnnotatedMultipleSequenceAlignment)
+                    setannotfile!(
+                        copied_object,
+                        "HCat",
+                        join(columnnames(copied_object), ','),
+                    )
+                end
+                rename_columns!(copied_object, "1" => "A", "2" => "B")
+                @test columnnames(copied_object) == ["A", "B", "3", "4", "5", "6", "7"]
+                if isa(copied_object, AnnotatedMultipleSequenceAlignment)
+                    @test getannotfile(copied_object, "HCat") == "A,B,3,4,5,6,7"
+                end
+            end
+        end
+
         @testset "Column names" begin
 
             for object in (M, NamedArray(M), msa, annotated_msa)

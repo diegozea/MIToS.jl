@@ -19,6 +19,23 @@ MIToS also uses MSA annotations to keep track of:
     residues::Dict{Tuple{String,String},String}
 end
 
+"""
+    _rename_columns(annotations::Annotations, newnames::Vector{String})
+
+Update column-related annotations in `annotations` according to `newnames`.
+
+Currently, this only affects the `"HCat"` file annotation that keeps track of
+the original MSAs after horizontal concatenation. If the annotation is present,
+it is updated to reflect `newnames`.
+"""
+function _rename_columns(annotations::Annotations, newnames::Vector{String})
+    new_annotations = copy(annotations)
+    if haskey(getannotfile(new_annotations), "HCat")
+        _set_hcat_annotfile!(new_annotations, newnames)
+    end
+    new_annotations
+end
+
 Annotations() = Annotations(
     OrderedDict{String,String}(),
     Dict{Tuple{String,String},String}(),
