@@ -182,6 +182,10 @@
             @test getresidues(single) == reshape(res"R", 1, 1)
             annot_vals = Set(values(getannotfile(single)))
             @test any(occursin("filtercolumns! : 1 column has been", v) for v in annot_vals)
+
+            copy_all = annseq[:]
+            @test isa(copy_all, AnnotatedAlignedSequence)
+            @test getresidues(copy_all) == getresidues(annseq)
         end
 
         @testset "AlignedSequence" begin
@@ -192,6 +196,32 @@
 
             copy_all = seq[:]
             @test isa(copy_all, AlignedSequence)
+            @test getresidues(copy_all) == getresidues(seq)
+        end
+
+        @testset "AnnotatedSequence" begin
+            seq = AnnotatedSequence(annseq)
+            rev = seq[[2, 1]]
+            @test isa(rev, AnnotatedSequence)
+            @test getresidues(rev) == Residue['R' 'A']
+            annot_vals = Set(values(getannotfile(rev)))
+            @test any(
+                occursin("filtercolumns! : 2 columns have been selected.", v) for
+                v in annot_vals
+            )
+            @test any(
+                occursin("filtercolumns! : column order has changed!", v) for
+                v in annot_vals
+            )
+
+            single = seq[[2]]
+            @test isa(single, AnnotatedSequence)
+            @test getresidues(single) == reshape(res"R", 1, 1)
+            annot_vals = Set(values(getannotfile(single)))
+            @test any(occursin("filtercolumns! : 1 column has been", v) for v in annot_vals)
+
+            copy_all = seq[:]
+            @test isa(copy_all, AnnotatedSequence)
             @test getresidues(copy_all) == getresidues(seq)
         end
     end
