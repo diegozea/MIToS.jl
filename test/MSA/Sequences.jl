@@ -22,7 +22,9 @@
         @test size(seq) == (1, 20) # A sequence is stored as a 1xN matrix
         @test length(seq) == 20
         @test getindex(seq, 1) == Residue('A')
-        @test getindex(seq, 1:3) == res"ARN"
+        sub = getindex(seq, 1:3)
+        @test isa(sub, AnnotatedSequence)
+        @test getresidues(sub) == reshape(res"ARN", 1, 3)
         @test join(Char(res) for res in seq) == "ARNDCQEGHILKMFPSTWYV" # Iteration
     end
 
