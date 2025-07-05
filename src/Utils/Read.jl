@@ -80,6 +80,17 @@ Returns `true` if the file exists and isn't empty.
 isnotemptyfile(filename) = isfile(filename) && filesize(filename) > 0
 
 # for using with download, since filename doesn't have file extension
+function _parse_xml(filename)
+    if endswith(filename, ".gz")
+        open(filename, "r") do fh
+            xml = read(GzipDecompressorStream(fh), String)
+            return LightXML.parse_string(xml)
+        end
+    else
+        return LightXML.parse_file(filename)
+    end
+end
+
 function _read(
     completename::AbstractString,
     filename::AbstractString,
@@ -89,19 +100,16 @@ function _read(
 ) where {T<:FileFormat}
     check_file(filename)
     if endswith(completename, ".xml.gz") || endswith(completename, ".xml")
-        document = LightXML.parse_file(filename)
+        document = _parse_xml(filename)
         try
             parse_file(document, T, args...; kargs...)
         finally
             LightXML.free(document)
         end
     else
-        fh = open(filename, "r")
-        try
+        open(filename, "r") do fh
             fh = endswith(completename, ".gz") ? GzipDecompressorStream(fh) : fh
             parse_file(fh, T, args...; kargs...)
-        finally
-            close(fh)
         end
     end
 end
