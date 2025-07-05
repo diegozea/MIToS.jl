@@ -123,13 +123,11 @@ end
     end
 
     @testset "Test _check_gzip_file" begin
-        for file in readdir(DATA)
-            filename = joinpath(DATA, file)
-            if file != "2vqc.xml.gz" # is a decompressed file that has a wrong .gz extension
-                @test MIToS.Utils._check_gzip_file(filename) == filename
-            else
-                @test_throws ErrorException MIToS.Utils._check_gzip_file(filename)
-            end
+        compressed_file = joinpath(DATA, "1ssx.xml.gz")
+        @test MIToS.Utils._check_gzip_file(compressed_file) == compressed_file
+        mktempdir() do tmp
+            cp(joinpath(DATA, "2vqc.xml"), joinpath(tmp, "2vqc.xml.gz"))
+            @test_throws ErrorException MIToS.Utils._check_gzip_file(joinpath(tmp, "2vqc.xml.gz"))
         end
     end
 

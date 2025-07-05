@@ -370,7 +370,7 @@ function siftsmapping(
     missings::Bool = true,
 ) where {F,T}
     mapping = OrderedDict{String,String}()
-    xdoc = LightXML.parse_file(filename)
+    xdoc = Utils._get_xml_document(filename)
     try
         for entity in _get_entities(xdoc)
             segments = _get_segments(entity)
