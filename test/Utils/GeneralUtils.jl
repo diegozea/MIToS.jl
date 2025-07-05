@@ -123,11 +123,11 @@ end
     end
 
     @testset "Test _check_gzip_file" begin
-        compressed_file = joinpath(DATA, "1ssx.xml.gz")
+        compressed_file = joinpath(DATA, "2vqc.xml.gz")
         @test MIToS.Utils._check_gzip_file(compressed_file) == compressed_file
         mktempdir() do tmp
-            cp(joinpath(DATA, "2vqc.xml"), joinpath(tmp, "2vqc.xml.gz"))
-            @test_throws ErrorException MIToS.Utils._check_gzip_file(joinpath(tmp, "2vqc.xml.gz"))
+            cp(joinpath(DATA, "gaps.txt"), joinpath(tmp, "gaps.txt.gz"))
+            @test_throws ErrorException MIToS.Utils._check_gzip_file(joinpath(tmp, "gaps.txt.gz"))
         end
     end
 
