@@ -22,7 +22,7 @@ end
 @testset "Mapping PDB/Pfam" begin
 
     msa_file = joinpath(DATA, "PF09645_full.stockholm")
-    sifts_file = joinpath(DATA, "2vqc.xml")
+    sifts_file = joinpath(DATA, "2vqc.xml.gz")
     pdb_file = joinpath(DATA, "2VQC.xml")
     msa = read_file(msa_file, Stockholm, generatemapping = true, useidcoordinates = true)
     cmap = msacolumn2pdbresidue(msa, "F112_SSV1/3-112", "2VQC", "A", "PF09645", sifts_file)
@@ -295,7 +295,7 @@ end
                     "2VQC",
                     "A",
                     "PF09645",
-                    joinpath(DATA, "2vqc.xml");
+                    joinpath(DATA, "2vqc.xml.gz");
                     strict = false,
                     checkpdbname = false,
                     missings = true,

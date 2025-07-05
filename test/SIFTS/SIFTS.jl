@@ -1,6 +1,6 @@
 @testset "SIFTS Mappings" begin
 
-    sifts_file = joinpath(DATA, "2vqc.xml")
+    sifts_file = joinpath(DATA, "2vqc.xml.gz")
 
     @testset "parse" begin
 
@@ -235,7 +235,7 @@ end
 @testset "download" begin
 
     pdb = "2vqc"
-    mapping = read_file(joinpath(DATA, "$(pdb).xml"), SIFTSXML)
+    mapping = read_file(joinpath(DATA, "$(pdb).xml.gz"), SIFTSXML)
 
     @test_throws AssertionError downloadsifts(pdb, source = "http")
     @test_throws AssertionError downloadsifts(pdb, filename = "bad_name.txt")
