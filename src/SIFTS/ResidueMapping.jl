@@ -370,7 +370,20 @@ function siftsmapping(
     missings::Bool = true,
 ) where {F,T}
     mapping = OrderedDict{String,String}()
-    xdoc = LightXML.parse_file(filename)
+    xdoc = open(filename, "r") do fh
+        if endswith(filename, ".gz")
+            magic = read(fh, UInt16)
+            seek(fh, 0)
+            if magic == 0x1f8b || magic == 0x8b1f
+                fh = GzipDecompressorStream(fh)
+            end
+        end
+        if endswith(filename, ".xml") || endswith(filename, ".xml.gz")
+            LightXML.parse_string(read(fh, String))
+        else
+            LightXML.parse_file(fh)
+        end
+    end
     try
         for entity in _get_entities(xdoc)
             segments = _get_segments(entity)

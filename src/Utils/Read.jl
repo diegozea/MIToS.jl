@@ -88,20 +88,18 @@ function _read(
     kargs...,
 ) where {T<:FileFormat}
     check_file(filename)
-    if endswith(completename, ".xml.gz") || endswith(completename, ".xml")
-        document = LightXML.parse_file(filename)
-        try
-            parse_file(document, T, args...; kargs...)
-        finally
-            LightXML.free(document)
-        end
-    else
-        fh = open(filename, "r")
-        try
-            fh = endswith(completename, ".gz") ? GzipDecompressorStream(fh) : fh
+    open(filename, "r") do fh
+        fh = endswith(completename, ".gz") ? GzipDecompressorStream(fh) : fh
+        if endswith(completename, ".xml") || endswith(completename, ".xml.gz")
+            xml = read(fh, String)
+            document = LightXML.parse_string(xml)
+            try
+                parse_file(document, T, args...; kargs...)
+            finally
+                LightXML.free(document)
+            end
+        else
             parse_file(fh, T, args...; kargs...)
-        finally
-            close(fh)
         end
     end
 end

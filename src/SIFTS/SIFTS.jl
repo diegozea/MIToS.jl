@@ -23,6 +23,7 @@ using AutoHashEquals
 using OrderedCollections
 using MIToS.Utils
 using ArgCheck
+using CodecZlib
 
 export DataBase,
     dbPDBe,
