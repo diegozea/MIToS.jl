@@ -20,7 +20,7 @@ MIToS also uses MSA annotations to keep track of:
 end
 
 """
-    _rename_columns(annotations::Annotations, newnames::Vector{String})
+    _rename_columns(annotations::Annotations, newnames::Vector{T}) where {T<:AbstractString}
 
 Update column-related annotations in `annotations` according to `newnames`.
 
@@ -28,7 +28,10 @@ Currently, this only affects the `"HCat"` file annotation that keeps track of
 the original MSAs after horizontal concatenation. If the annotation is present,
 it is updated to reflect `newnames`.
 """
-function _rename_columns(annotations::Annotations, newnames::Vector{String})
+function _rename_columns(
+    annotations::Annotations,
+    newnames::Vector{T},
+) where {T<:AbstractString}
     new_annotations = copy(annotations)
     if haskey(getannotfile(new_annotations), "HCat")
         _set_hcat_annotfile!(new_annotations, newnames)
