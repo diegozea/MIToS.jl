@@ -22,7 +22,7 @@ end
 @testset "Mapping PDB/Pfam" begin
 
     msa_file = joinpath(DATA, "PF09645_full.stockholm")
-    sifts_file = joinpath(DATA, "2vqc.xml.gz")
+    sifts_file = joinpath(DATA, "2vqc.xml")
     pdb_file = joinpath(DATA, "2VQC.xml")
     msa = read_file(msa_file, Stockholm, generatemapping = true, useidcoordinates = true)
     cmap = msacolumn2pdbresidue(msa, "F112_SSV1/3-112", "2VQC", "A", "PF09645", sifts_file)
@@ -273,39 +273,44 @@ end
     end
 
     @testset "overload equivalence" begin
-        # Compare the results from the different overloads.  Two of them
-        # download the SIFTS file on demand.
-        setannotfile!(msa_base, "AC", "PF09645.1")
-        result1 = msacolumn2pdbresidue(
-            msa_base,
-            "F112_SSV1/3-112",
-            "2VQC",
-            "A",
-            "PF09645";
-            strict = false,
-            checkpdbname = false,
-            missings = true,
-        )
-        result2 = msacolumn2pdbresidue(
-            msa_base,
-            "F112_SSV1/3-112",
-            "2VQC",
-            "A",
-            "PF09645",
-            joinpath(DATA, "2vqc.xml.gz");
-            strict = false,
-            checkpdbname = false,
-            missings = true,
-        )
-        result3 = msacolumn2pdbresidue(
-            msa_base,
-            "F112_SSV1/3-112",
-            "2VQC",
-            "A";
-            strict = false,
-            checkpdbname = false,
-            missings = true,
-        )
-        @test result1 == result2 == result3
+        
+        mktempdir() do tmpfolder
+            cd(tmpfolder) do 
+                # Compare the results from the different overloads.  Two of them
+                # download the SIFTS file on demand.
+                setannotfile!(msa_base, "AC", "PF09645.1")
+                result1 = msacolumn2pdbresidue(
+                    msa_base,
+                    "F112_SSV1/3-112",
+                    "2VQC",
+                    "A",
+                    "PF09645";
+                    strict = false,
+                    checkpdbname = false,
+                    missings = true,
+                )
+                result2 = msacolumn2pdbresidue(
+                    msa_base,
+                    "F112_SSV1/3-112",
+                    "2VQC",
+                    "A",
+                    "PF09645",
+                    joinpath(DATA, "2vqc.xml");
+                    strict = false,
+                    checkpdbname = false,
+                    missings = true,
+                )
+                result3 = msacolumn2pdbresidue(
+                    msa_base,
+                    "F112_SSV1/3-112",
+                    "2VQC",
+                    "A";
+                    strict = false,
+                    checkpdbname = false,
+                    missings = true,
+                )
+                @test result1 == result2 == result3
+            end
+        end
     end
 end

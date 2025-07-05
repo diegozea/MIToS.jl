@@ -1,6 +1,6 @@
 let
     sifts_file = joinpath(@__DIR__, "..", "..", "test", "data", "18gs.xml.gz")
-    xdoc = SIFTS.LightXML.parse_file(sifts_file)
+    xdoc = Utils._get_xml_document(sifts_file)
     residue = first(
         SIFTS._get_residues(first(SIFTS._get_segments(first(SIFTS._get_entities(xdoc))))),
     )
