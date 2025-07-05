@@ -48,7 +48,7 @@
 using MIToS
 pdb_file = abspath(pathof(MIToS), "..", "..", "test", "data", "2VQC.pdb")
 pfam_file = abspath(pathof(MIToS), "..", "..", "test", "data", "PF09645_full.stockholm")
-sifts_file = abspath(pathof(MIToS), "..", "..", "test", "data", "2vqc.xml.gz")
+sifts_file = abspath(pathof(MIToS), "..", "..", "test", "data", "2vqc.xml")
 #md nothing # hide
 
 # You can also use `downloadpdb` from `MIToS.PDB`, `downloadpfam` from
