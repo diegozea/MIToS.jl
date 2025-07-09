@@ -1560,5 +1560,50 @@ end
                 end
             end
         end
+
+        @testset "default pairing" begin
+            @testset "sequences" begin
+                msa_simple =
+                    read_file(joinpath(DATA, "simple.fasta"), FASTA, generatemapping = true)
+                msa_copy = copy(msa_simple)
+                @test join_msas(msa_simple, msa_copy) ==
+                      join_msas(msa_simple, msa_copy, [1, 2] .=> [1, 2])
+
+                msa_reordered = msa_copy[[2, 1], :]
+                @test join_msas(msa_copy, msa_reordered) ==
+                      join_msas(msa_copy, msa_reordered, [1, 2] .=> [2, 1])
+
+                msa_other = read_file(
+                    joinpath(DATA, "Gaoetal2011.fasta"),
+                    FASTA,
+                    generatemapping = true,
+                )
+                @test_throws ArgumentError join_msas(msa_simple, msa_other)
+            end
+
+            @testset "columns" begin
+                msa_simple =
+                    read_file(joinpath(DATA, "simple.fasta"), FASTA, generatemapping = true)
+                msa_copy = copy(msa_simple)
+                @test join_msas(msa_simple, msa_copy; axis = 2) ==
+                      join_msas(msa_simple, msa_copy, [1, 2] .=> [1, 2]; axis = 2)
+
+                msa_reordered = msa_copy[:, [2, 1]]
+                @test join_msas(msa_copy, msa_reordered; axis = 2) ==
+                      join_msas(msa_copy, msa_reordered, [1, 2] .=> [2, 1]; axis = 2)
+
+                msa_other = read_file(
+                    joinpath(DATA, "Gaoetal2011.fasta"),
+                    FASTA,
+                    generatemapping = true,
+                )
+                setnames!(
+                    namedmatrix(msa_other),
+                    ["X" * string(i) for i = 1:ncolumns(msa_other)],
+                    2,
+                )
+                @test_throws ArgumentError join_msas(msa_simple, msa_other; axis = 2)
+            end
+        end
     end
 end

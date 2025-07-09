@@ -753,6 +753,31 @@ function _find_pairing_positions(axis::Int, msa_a, msa_b, pairing)
 end
 
 """
+    _match_positions_by_name(axis, msa_a, msa_b)
+
+Return two vectors with the positions of sequences or columns that share the same
+name in `msa_a` and `msa_b`. The first vector corresponds to positions in
+`msa_a`, while the second contains the matching positions in `msa_b`.
+The `axis` argument selects whether the matching is performed on sequences
+(`axis == 1`) or columns (`axis == 2`).
+"""
+function _match_positions_by_name(axis::Int, msa_a, msa_b)
+    @argcheck axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
+    names_a = axis == 1 ? sequencenames(msa_a) : columnnames(msa_a)
+    names_b = axis == 1 ? sequencenames(msa_b) : columnnames(msa_b)
+    index_b = Dict(name => i for (i, name) in enumerate(names_b))
+    positions_a = Int[]
+    positions_b = Int[]
+    for (i, name_a) in enumerate(names_a)
+        if haskey(index_b, name_a)
+            push!(positions_a, i)
+            push!(positions_b, index_b[name_a])
+        end
+    end
+    positions_a, positions_b
+end
+
+"""
     _find_gaps(positions, n)
 
 Calculate gaps in a sorted sequence of positions given also a maximum value `n` that would
@@ -862,23 +887,30 @@ function _reorder_and_extract_unmatched_names(msa, positions, axis::Int)
 end
 
 """
-    join_msas(msa_a::AnnotatedMultipleSequenceAlignment, 
-        msa_b::AnnotatedMultipleSequenceAlignment, 
-        pairing; 
-        kind::Symbol=:outer, 
+    join_msas(msa_a::AnnotatedMultipleSequenceAlignment,
+        msa_b::AnnotatedMultipleSequenceAlignment;
+        kind::Symbol=:outer,
         axis::Int=1)::AnnotatedMultipleSequenceAlignment
 
-    join_msas(msa_a::AnnotatedMultipleSequenceAlignment, 
-        msa_b::AnnotatedMultipleSequenceAlignment, 
-        positions_a, 
-        positions_b; 
-        kind::Symbol=:outer, 
+    join_msas(msa_a::AnnotatedMultipleSequenceAlignment,
+        msa_b::AnnotatedMultipleSequenceAlignment,
+        pairing;
+        kind::Symbol=:outer,
         axis::Int=1)::AnnotatedMultipleSequenceAlignment
 
-Join two Multiple Sequence Alignments (MSAs), `msa_a` and `msa_b`, based on specified
-matching positions or names. The function supports two formats: one takes a `pairing`
-argument as a list of correspondences, and the other takes `positions_a` and
-`positions_b` as separate lists indicating matching positions or names in each MSA.
+    join_msas(msa_a::AnnotatedMultipleSequenceAlignment,
+        msa_b::AnnotatedMultipleSequenceAlignment,
+        positions_a,
+        positions_b;
+        kind::Symbol=:outer,
+        axis::Int=1)::AnnotatedMultipleSequenceAlignment
+
+Join two Multiple Sequence Alignments (MSAs), `msa_a` and `msa_b`, based on
+specified matching positions or names. If no explicit pairing or position lists
+are provided, sequences or columns with the same name are paired automatically.
+The function therefore supports three calling conventions: using only the two
+MSAs, providing a `pairing` iterator, or passing `positions_a` and
+`positions_b` separately.
 This function allows for various types of join operations (`:inner`, `:outer`, `:left`,
 `:right`) and can merge MSAs by sequences (`axis` `1`) or by columns (`axis` `2`).
 
@@ -925,6 +957,17 @@ expected. `Dict` in Julia does not maintain the order of its elements, which mig
 unpredictable order of sequences/columns in the output MSA. To preserve order, it is
 recommended to use an `OrderedDict` or a list of `Pair`s objects.
 """
+function join_msas(
+    msa_a::AnnotatedMultipleSequenceAlignment,
+    msa_b::AnnotatedMultipleSequenceAlignment,
+    ;
+    kind::Symbol = :outer,
+    axis::Int = 1,
+)
+    positions_a, positions_b = _match_positions_by_name(axis, msa_a, msa_b)
+    join_msas(msa_a, msa_b, positions_a, positions_b; kind = kind, axis = axis)
+end
+
 function join_msas(
     msa_a::AnnotatedMultipleSequenceAlignment,
     msa_b::AnnotatedMultipleSequenceAlignment,
