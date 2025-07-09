@@ -13,15 +13,13 @@
 # [Chimera](https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/bfactor.html).
 #
 # We cannot simply assign a new value to the `B` field of a `PDBAtom` because
-# this type is immutable. However, we can make use of the `@set` macro of the
-# [Setfield](https://github.com/jw3126/Setfield.jl) package to create a new
-# `PDBAtom` with a different B-factor value.
+# this type is immutable. Instead, MIToS provides the `change_b_factor`
+# function to create a new atom with a different B-factor value.
 #
-# In a PDB file, B-factors are stored from the column 61 to 66. Therefore, new
-# B-factors should be a `String` with 6 or fewer characters, normally using two
-# characters for decimal values. We can use `pyfmt` and `FormatSpec` from the
-# [Format](https://github.com/JuliaString/Format.jl) package to create a
-# proper B-factor string.
+# In a PDB file, B-factors are stored from column 61 to 66. Therefore,
+# new values should be formatted using at most six characters, normally with two
+# decimal digits. The `change_b_factor` function will take care of this and
+# throw an error if that is not possible.
 #
 # ## MIToS solution
 #
@@ -67,53 +65,17 @@ hydrophobicity = Dict(
 )
 #md nothing # hide
 
-# First, we define a helper function using `Format` to create a proper
-# B-factor string with the PDB format; 6 characters and 2 digits after the
-# decimal point.
-# The [PDB format description](https://www.wwpdb.org/documentation/file-format-content/format23/sect9.html)
-# describe this field as:
-# ```
-# COLUMNS      DATA TYPE        FIELD      DEFINITION
-# ------------------------------------------------------
-# 61 - 66      Real(6.2)        tempFactor Temperature factor.
-# ```
+using MIToS.PDB
 
-using Format
+# Now, we can use the `change_b_factor` function on each residue to change the
+# B-factor of the `"CA"` atoms:
 
-"""
-Return value as a string with the B factor format described in PDB. # e.g. 1.5 -> "  1.50"
-"""
-format_b_factor(value) = pyfmt(FormatSpec("6.2f"), value) # e.g. 1.5 -> "  1.50"
-#md nothing # hide
-
-# Then, where are using that helper function to define a function that returns
-# a new `PDBAtom` by changing the `B` factor field using the `Setfield` package.
-
-using Setfield
-
-"""
-Return a new PDBAtom with the B-factor changed to value.
-"""
-function change_b_factor(atom::PDBAtom, value)
-    b_factor_string = format_b_factor(value)
-    b_factor_string = strip(b_factor_string) # e.g. "  1.50" -> "1.50"
-    if length(b_factor_string) > 6
-        throw(ErrorException("$b_factor_string has more than 6 characters."))
-    end
-    @set atom.B = b_factor_string
-end
-#md nothing # hide
-
-# Now, we can use the `change_b_factor` function to change the B-factor of each
-# `"CA"` atom:
-
-for res in pdb_residues
-    for i in eachindex(res.atoms)
-        atom = res.atoms[i]
-        if atom.atom == "CA"
-            res.atoms[i] = change_b_factor(atom, hydrophobicity[res.id.name])
-        end
-    end
+for i in eachindex(pdb_residues)
+    pdb_residues[i] = change_b_factor(
+        pdb_residues[i],
+        hydrophobicity[pdb_residues[i].id.name];
+        atom = "CA",
+    )
 end
 
 # Finally, we can save the changed residues in a new PDB file.

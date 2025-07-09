@@ -188,6 +188,48 @@ end
 
 LinearAlgebra.cross(a::PDBAtom, b::PDBAtom) = cross(a.coordinates, b.coordinates)
 
+"""
+    change_b_factor(atom::PDBAtom, value)
+
+Return a new `PDBAtom` with the B-factor changed to `value`.
+`value` is formatted using the PDB `Real(6.2)` specification and must not exceed
+six characters once formatted.
+"""
+function change_b_factor(atom::PDBAtom, value)
+    b_factor_string = pyfmt(FormatSpec("6.2f"), value)
+    b_factor_string = strip(b_factor_string)
+    if length(b_factor_string) > 6
+        throw(ErrorException("$b_factor_string has more than 6 characters."))
+    end
+    PDBAtom(
+        copy(atom.coordinates),
+        deepcopy(atom.atom),
+        deepcopy(atom.element),
+        copy(atom.occupancy),
+        b_factor_string,
+        deepcopy(atom.alt_id),
+        deepcopy(atom.charge),
+    )
+end
+
+"""
+    change_b_factor(residue::PDBResidue, value; atom=All)
+
+Return a new `PDBResidue` with the B-factor of the selected atoms changed to
+`value`. By default all atoms in the residue are updated. Atom selection follows
+the same conventions as [`select_atoms`](@ref).
+"""
+function change_b_factor(residue::PDBResidue, value; atom = All)
+    updated_atoms = map(residue.atoms) do a
+        if _is(a.atom, atom)
+            change_b_factor(a, value)
+        else
+            a
+        end
+    end
+    PDBResidue(residue.id, updated_atoms)
+end
+
 # Find Residues/Atoms
 # ===================
 

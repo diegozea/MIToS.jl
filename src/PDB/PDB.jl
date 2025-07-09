@@ -96,6 +96,7 @@ export  # PDBResidues
     CAmatrix,
     coordinatesmatrix,
     change_coordinates,
+    change_b_factor,
     centeredcoordinates,
     centeredresidues,
     superimpose,

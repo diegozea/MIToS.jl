@@ -166,3 +166,41 @@ end
     @test cross(a, b) == Coordinates(1.0, 0.0, 0.0)
     @test cross(b, a) == Coordinates(-1.0, 0.0, 0.0)
 end
+
+@testset "change_b_factor" begin
+    atom = PDBAtom(
+        coordinates = Coordinates(0.0, 0.0, 0.0),
+        atom = "CA",
+        element = "C",
+        occupancy = 1.0,
+        B = "0.00",
+        alt_id = "",
+        charge = "",
+    )
+    newatom = change_b_factor(atom, 1.5)
+    @test newatom.B == "1.50"
+    @test atom.B == "0.00"  # original atom unchanged
+    @test_throws ErrorException change_b_factor(atom, 123456.7)
+
+    residue = PDBResidue(
+        PDBResidueIdentifier("1", "1", "ALA", "ATOM", "1", "A"),
+        [
+            atom,
+            PDBAtom(
+                coordinates = Coordinates(1.0, 0.0, 0.0),
+                atom = "CB",
+                element = "C",
+                occupancy = 1.0,
+                B = "0.00",
+                alt_id = "",
+                charge = "",
+            ),
+        ],
+    )
+    newres = change_b_factor(residue, 2.0)
+    @test all(a.B == "2.00" for a in newres.atoms)
+    @test residue.atoms[1].B == "0.00"
+    newres_ca = change_b_factor(residue, 3.0; atom = "CA")
+    @test newres_ca.atoms[1].B == "3.00"
+    @test newres_ca.atoms[2].B == "0.00"
+end
