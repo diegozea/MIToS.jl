@@ -172,7 +172,20 @@ function Base.getindex(seq::AnnotatedAlignedSequence, cols::AbstractArray)
     seq_copy
 end
 
-# TODO: AnnotatedSequence
+Base.getindex(seq::AnnotatedAlignedSequence, cols::Colon) = copy(seq)
+
+function Base.getindex(seq::AnnotatedSequence, cols::AbstractArray)
+    if cols isa AbstractRange
+        return seq.matrix[cols]
+    end
+    seq_copy = copy(seq)
+    col_selector = _column_indices(seq, cols)
+    filtercolumns!(seq_copy, col_selector)
+    _annotate_col_modification!(seq_copy, col_selector)
+    seq_copy
+end
+
+Base.getindex(seq::AnnotatedSequence, cols::Colon) = copy(seq)
 
 function Base.getindex(seq::AlignedSequence, cols::Union{AbstractArray,Colon})
     AlignedSequence(seq.matrix[:, cols])
