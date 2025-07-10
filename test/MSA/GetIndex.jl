@@ -190,6 +190,10 @@
             @test isa(copy_all, AnnotatedAlignedSequence)
             @test getresidues(copy_all) == getresidues(annseq)
             @test getannotcolumn(copy_all, "ColAnnot") == getannotcolumn(annseq, "ColAnnot")
+
+            @test annseq[[2, 1]] == annseq[2:-1:1]
+            @test annseq[[2]] == annseq[2:2]
+            @test annseq[1:2] == annseq[:]
         end
 
         @testset "AlignedSequence" begin
@@ -227,15 +231,14 @@
             annot_vals = Set(values(getannotfile(single)))
             @test any(occursin("filtercolumns! : 1 column has been", v) for v in annot_vals)
 
-            range_sel = seq[1:2]
-            @test isa(range_sel, AnnotatedSequence)
-            @test getresidues(range_sel) == getresidues(seq)[:, 1:2]
-            @test getannotresidue(range_sel, "ResAnnot") == "ab"
-
             copy_all = seq[:]
             @test isa(copy_all, AnnotatedSequence)
             @test getresidues(copy_all) == getresidues(seq)
             @test getannotresidue(copy_all, "ResAnnot") == getannotresidue(seq, "ResAnnot")
+
+            @test seq[[2, 1]] == seq[2:-1:1]
+            @test seq[[2]] == seq[2:2]
+            @test seq[1:2] == seq[:]
         end
     end
 end
