@@ -1532,8 +1532,6 @@ end
             )
             # kind is incorrect using two position lists
             @test_throws ArgumentError join_msas(msa62, msa62, [1, 2], [3, 4], kind = :iner)
-            # pairing is empty
-            @test_throws ArgumentError join_msas(msa62, msa62, [])
             # each element of the pairing is not a pair
             @test_throws ArgumentError join_msas(msa62, msa62, [1, 2, 3])
             # the list of positions are not of the same length
@@ -1557,6 +1555,74 @@ end
                         kind = kind,
                         axis = axis,
                     )
+                end
+            end
+        end
+
+        @testset "default pairing" begin
+            @testset "sequences" begin
+                msa_simple =
+                    read_file(joinpath(DATA, "simple.fasta"), FASTA, generatemapping = true)
+                msa_copy = copy(msa_simple)
+                @test join_msas(msa_simple, msa_copy) ==
+                      join_msas(msa_simple, msa_copy, [1, 2] .=> [1, 2])
+
+                msa_reordered = msa_copy[[2, 1], :]
+                @test join_msas(msa_copy, msa_reordered) ==
+                      join_msas(msa_copy, msa_reordered, [1, 2] .=> [2, 1])
+
+                @testset "no matching names" begin
+                    msa_other = read_file(
+                        joinpath(DATA, "Gaoetal2011.fasta"),
+                        FASTA,
+                        generatemapping = true,
+                    )
+                    @test_throws ErrorException join_msas(msa_simple, msa_other, kind = :inner)
+                    outer_join = join_msas(msa_simple, msa_other, kind = :outer)
+                    @test vec(gapfraction(outer_join, 1)) == [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
+                    @test vec(gapfraction(outer_join, 2)) == [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
+                    right_join = join_msas(msa_simple, msa_other, kind = :right)
+                    @test vec(gapfraction(right_join, 1)) == [6, 6, 0, 0, 0, 0, 0, 0] ./ 6
+                    @test vec(gapfraction(right_join, 2)) == [2, 2, 2, 2, 2, 2] ./ (6 + 2)
+                    left_join = join_msas(msa_simple, msa_other, kind = :left)
+                    @test vec(gapfraction(left_join, 1)) == [0, 0, 2, 2, 2, 2, 2, 2] ./ 2
+                    @test vec(gapfraction(left_join, 2)) == [6, 6] ./ (6 + 2)
+                end
+            end
+
+            @testset "columns" begin
+                msa_simple =
+                    read_file(joinpath(DATA, "simple.fasta"), FASTA, generatemapping = true)
+                msa_copy = copy(msa_simple)
+                @test join_msas(msa_simple, msa_copy; axis = 2) ==
+                      join_msas(msa_simple, msa_copy, [1, 2] .=> [1, 2]; axis = 2)
+
+                msa_reordered = msa_copy[:, [2, 1]]
+                @test join_msas(msa_copy, msa_reordered; axis = 2) ==
+                      join_msas(msa_copy, msa_reordered, [1, 2] .=> [2, 1]; axis = 2)
+
+                @testset "no matching names" begin
+                    msa_other = read_file(
+                        joinpath(DATA, "Gaoetal2011.fasta"),
+                        FASTA,
+                        generatemapping = true,
+                    )
+                    # change the column names so that they are not the same
+                    setnames!(
+                        namedmatrix(msa_other),
+                        ["X" * string(i) for i = 1:ncolumns(msa_other)],
+                        2,
+                    )
+                    @test_throws ErrorException join_msas(msa_simple, msa_other; axis = 2, kind = :inner)
+                    outer_join = join_msas(msa_simple, msa_other; axis = 2, kind = :outer)
+                    @test vec(gapfraction(outer_join, 1)) == [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
+                    @test vec(gapfraction(outer_join, 2)) == [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
+                    right_join = join_msas(msa_simple, msa_other; axis = 2, kind = :right)
+                    @test vec(gapfraction(right_join, 1)) == [2, 2, 2, 2, 2, 2] ./ (6 + 2)
+                    @test vec(gapfraction(right_join, 2)) == [6, 6, 0, 0, 0, 0, 0, 0] ./ 6
+                    left_join = join_msas(msa_simple, msa_other; axis = 2, kind = :left)
+                    @test vec(gapfraction(left_join, 1)) == [6, 6] ./ (6 + 2)
+                    @test vec(gapfraction(left_join, 2)) == [0, 0, 2, 2, 2, 2, 2, 2] ./ 2
                 end
             end
         end
