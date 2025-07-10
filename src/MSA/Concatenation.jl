@@ -19,23 +19,25 @@ function _h_concatenated_seq_names(msas...; delim::String = "_&_")
 end
 
 function _hcat_colnames_kernel!(colnames, columns, msa_number::Int)::Int
-    first_col = first(columns)
-    check_msa_change = '_' in first_col
-    previous = ""
-    msa_number += 1
-    for col in columns
-        if check_msa_change
-            fields = split(col, '_')
-            current = first(fields)
-            if current != previous
-                if previous != ""
-                    msa_number += 1
+    if !isempty(columns)
+        previous = ""
+        msa_number += 1
+        first_col = first(columns)
+        check_msa_change = '_' in first_col
+        for col in columns
+            if check_msa_change
+                fields = split(col, '_')
+                current = first(fields)
+                if current != previous
+                    if previous != ""
+                        msa_number += 1
+                    end
+                    previous = string(current)
                 end
-                previous = string(current)
+                col = last(fields)
             end
-            col = last(fields)
+            push!(colnames, "$(msa_number)_$col")
         end
-        push!(colnames, "$(msa_number)_$col")
     end
     msa_number
 end
@@ -721,7 +723,7 @@ function _add_gaps_in_b(msa_a, msa_b, positions_a, positions_b, axis::Int = 1)
     end
     # compress the list of gap positions to later add full gap blocks
     for pos in Iterators.reverse(unique(gap_positions))
-        block_names = gap_names[gap_positions .== pos]
+        block_names = gap_names[gap_positions.==pos]
         if axis == 1
             matching_b = _renumber_sequence_gaps(
                 _insert_gap_sequences(matching_b, block_names, pos + 1),
@@ -737,6 +739,9 @@ end
 
 function _find_pairing_positions(index_function::Function, msa_a, msa_b, pairing)
     n = length(pairing)
+    if n == 0
+        return Int[], Int[]
+    end
     positions_a = Vector{Int}(undef, n)
     positions_b = Vector{Int}(undef, n)
     for (i, (a, b)) in enumerate(pairing)
@@ -774,6 +779,10 @@ function _match_positions_by_name(axis::Int, msa_a, msa_b)
             push!(positions_b, index_b[name_a])
         end
     end
+    if isempty(positions_a)
+        entity = axis == 1 ? "sequences" : "columns"
+        @warn "Joining MSAs by $entity name found no matches."
+    end
     positions_a, positions_b
 end
 
@@ -791,7 +800,7 @@ greater than 1 between consecutive positions. To account for gaps at the end, th
 position of a gap matching the last position of the sequence is set to `n+1`.
 """
 function _find_gaps(positions, n)
-    _positions = if positions[end] == n
+    _positions = if !isempty(positions) && positions[end] == n
         ((0,), positions)
     else
         ((0,), positions, (n + 1,))
@@ -976,14 +985,7 @@ function join_msas(
     axis::Int = 1,
 )
     # Check that input arguments and throw explicit ArgumentErrors if necessary
-    if isempty(pairing)
-        throw(
-            ArgumentError(
-                "The pairing argument indicating the matching positions is empty.",
-            ),
-        )
-    end
-    if length(first(pairing)) != 2
+    if !isempty(pairing) && length(first(pairing)) != 2
         throw(
             ArgumentError(
                 string(
@@ -1008,6 +1010,11 @@ function join_msas(
     positions_a, positions_b = _find_pairing_positions(axis, msa_a, msa_b, pairing)
     # Perform the join
     if kind == :inner
+        if isempty(pairing)
+            throw(
+                ErrorException("No matching positions for :inner join; MSA will be empty."),
+            )
+        end
         if axis == 1
             return hcat(msa_a[positions_a, :], msa_b[positions_b, :])
         else
