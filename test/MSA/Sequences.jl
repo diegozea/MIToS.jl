@@ -22,7 +22,7 @@
         @test size(seq) == (1, 20) # A sequence is stored as a 1xN matrix
         @test length(seq) == 20
         @test getindex(seq, 1) == Residue('A')
-        @test getindex(seq, 1:3) == res"ARN"
+        @test vec(getindex(seq, 1:3)) == res"ARN"
         @test join(Char(res) for res in seq) == "ARNDCQEGHILKMFPSTWYV" # Iteration
     end
 
