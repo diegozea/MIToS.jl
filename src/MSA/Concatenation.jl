@@ -19,23 +19,25 @@ function _h_concatenated_seq_names(msas...; delim::String = "_&_")
 end
 
 function _hcat_colnames_kernel!(colnames, columns, msa_number::Int)::Int
-    first_col = first(columns)
-    check_msa_change = '_' in first_col
-    previous = ""
-    msa_number += 1
-    for col in columns
-        if check_msa_change
-            fields = split(col, '_')
-            current = first(fields)
-            if current != previous
-                if previous != ""
-                    msa_number += 1
+    if !isempty(columns)
+        previous = ""
+        msa_number += 1
+        first_col = first(columns)
+        check_msa_change = '_' in first_col
+        for col in columns
+            if check_msa_change
+                fields = split(col, '_')
+                current = first(fields)
+                if current != previous
+                    if previous != ""
+                        msa_number += 1
+                    end
+                    previous = string(current)
                 end
-                previous = string(current)
+                col = last(fields)
             end
-            col = last(fields)
+            push!(colnames, "$(msa_number)_$col")
         end
-        push!(colnames, "$(msa_number)_$col")
     end
     msa_number
 end
@@ -721,7 +723,7 @@ function _add_gaps_in_b(msa_a, msa_b, positions_a, positions_b, axis::Int = 1)
     end
     # compress the list of gap positions to later add full gap blocks
     for pos in Iterators.reverse(unique(gap_positions))
-        block_names = gap_names[gap_positions .== pos]
+        block_names = gap_names[gap_positions.==pos]
         if axis == 1
             matching_b = _renumber_sequence_gaps(
                 _insert_gap_sequences(matching_b, block_names, pos + 1),
@@ -737,6 +739,9 @@ end
 
 function _find_pairing_positions(index_function::Function, msa_a, msa_b, pairing)
     n = length(pairing)
+    if n == 0
+        return Int[], Int[]
+    end
     positions_a = Vector{Int}(undef, n)
     positions_b = Vector{Int}(undef, n)
     for (i, (a, b)) in enumerate(pairing)
@@ -753,6 +758,35 @@ function _find_pairing_positions(axis::Int, msa_a, msa_b, pairing)
 end
 
 """
+    _match_positions_by_name(axis, msa_a, msa_b)
+
+Return two vectors with the positions of sequences or columns that share the same
+name in `msa_a` and `msa_b`. The first vector corresponds to positions in
+`msa_a`, while the second contains the matching positions in `msa_b`.
+The `axis` argument selects whether the matching is performed on sequences
+(`axis == 1`) or columns (`axis == 2`).
+"""
+function _match_positions_by_name(axis::Int, msa_a, msa_b)
+    @argcheck axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
+    names_a = axis == 1 ? sequencenames(msa_a) : columnnames(msa_a)
+    names_b = axis == 1 ? sequencenames(msa_b) : columnnames(msa_b)
+    index_b = Dict(name => i for (i, name) in enumerate(names_b))
+    positions_a = Int[]
+    positions_b = Int[]
+    for (i, name_a) in enumerate(names_a)
+        if haskey(index_b, name_a)
+            push!(positions_a, i)
+            push!(positions_b, index_b[name_a])
+        end
+    end
+    if isempty(positions_a)
+        entity = axis == 1 ? "sequences" : "columns"
+        @warn "Joining MSAs by $entity name found no matches."
+    end
+    positions_a, positions_b
+end
+
+"""
     _find_gaps(positions, n)
 
 Calculate gaps in a sorted sequence of positions given also a maximum value `n` that would
@@ -766,7 +800,7 @@ greater than 1 between consecutive positions. To account for gaps at the end, th
 position of a gap matching the last position of the sequence is set to `n+1`.
 """
 function _find_gaps(positions, n)
-    _positions = if positions[end] == n
+    _positions = if !isempty(positions) && positions[end] == n
         ((0,), positions)
     else
         ((0,), positions, (n + 1,))
@@ -862,23 +896,30 @@ function _reorder_and_extract_unmatched_names(msa, positions, axis::Int)
 end
 
 """
-    join_msas(msa_a::AnnotatedMultipleSequenceAlignment, 
-        msa_b::AnnotatedMultipleSequenceAlignment, 
-        pairing; 
-        kind::Symbol=:outer, 
+    join_msas(msa_a::AnnotatedMultipleSequenceAlignment,
+        msa_b::AnnotatedMultipleSequenceAlignment;
+        kind::Symbol=:outer,
         axis::Int=1)::AnnotatedMultipleSequenceAlignment
 
-    join_msas(msa_a::AnnotatedMultipleSequenceAlignment, 
-        msa_b::AnnotatedMultipleSequenceAlignment, 
-        positions_a, 
-        positions_b; 
-        kind::Symbol=:outer, 
+    join_msas(msa_a::AnnotatedMultipleSequenceAlignment,
+        msa_b::AnnotatedMultipleSequenceAlignment,
+        pairing;
+        kind::Symbol=:outer,
         axis::Int=1)::AnnotatedMultipleSequenceAlignment
 
-Join two Multiple Sequence Alignments (MSAs), `msa_a` and `msa_b`, based on specified
-matching positions or names. The function supports two formats: one takes a `pairing`
-argument as a list of correspondences, and the other takes `positions_a` and
-`positions_b` as separate lists indicating matching positions or names in each MSA.
+    join_msas(msa_a::AnnotatedMultipleSequenceAlignment,
+        msa_b::AnnotatedMultipleSequenceAlignment,
+        positions_a,
+        positions_b;
+        kind::Symbol=:outer,
+        axis::Int=1)::AnnotatedMultipleSequenceAlignment
+
+Join two Multiple Sequence Alignments (MSAs), `msa_a` and `msa_b`, based on
+specified matching positions or names. If no explicit pairing or position lists
+are provided, sequences or columns with the same name are paired automatically.
+The function therefore supports three calling conventions: using only the two
+MSAs, providing a `pairing` iterator, or passing `positions_a` and
+`positions_b` separately.
 This function allows for various types of join operations (`:inner`, `:outer`, `:left`,
 `:right`) and can merge MSAs by sequences (`axis` `1`) or by columns (`axis` `2`).
 
@@ -928,19 +969,23 @@ recommended to use an `OrderedDict` or a list of `Pair`s objects.
 function join_msas(
     msa_a::AnnotatedMultipleSequenceAlignment,
     msa_b::AnnotatedMultipleSequenceAlignment,
+    ;
+    kind::Symbol = :outer,
+    axis::Int = 1,
+)
+    positions_a, positions_b = _match_positions_by_name(axis, msa_a, msa_b)
+    join_msas(msa_a, msa_b, positions_a, positions_b; kind = kind, axis = axis)
+end
+
+function join_msas(
+    msa_a::AnnotatedMultipleSequenceAlignment,
+    msa_b::AnnotatedMultipleSequenceAlignment,
     pairing;
     kind::Symbol = :outer,
     axis::Int = 1,
 )
     # Check that input arguments and throw explicit ArgumentErrors if necessary
-    if isempty(pairing)
-        throw(
-            ArgumentError(
-                "The pairing argument indicating the matching positions is empty.",
-            ),
-        )
-    end
-    if length(first(pairing)) != 2
+    if !isempty(pairing) && length(first(pairing)) != 2
         throw(
             ArgumentError(
                 string(
@@ -965,6 +1010,11 @@ function join_msas(
     positions_a, positions_b = _find_pairing_positions(axis, msa_a, msa_b, pairing)
     # Perform the join
     if kind == :inner
+        if isempty(pairing)
+            throw(
+                ErrorException("No matching positions for :inner join; MSA will be empty."),
+            )
+        end
         if axis == 1
             return hcat(msa_a[positions_a, :], msa_b[positions_b, :])
         else
