@@ -68,14 +68,16 @@ hydrophobicity = Dict(
 using MIToS.PDB
 
 # Now, we can use the `change_b_factor` function on each residue to change the
-# B-factor of the `"CA"` atoms:
+# B-factor of the `"CA"` atoms. Some PDB files contain hetero residues not
+# present in the hydrophobicity dictionary, so we check for the residue name
+# before applying the change:
 
 for i in eachindex(pdb_residues)
-    pdb_residues[i] = change_b_factor(
-        pdb_residues[i],
-        hydrophobicity[pdb_residues[i].id.name];
-        atom = "CA",
-    )
+    name = pdb_residues[i].id.name
+    if haskey(hydrophobicity, name)
+        pdb_residues[i] =
+            change_b_factor(pdb_residues[i], hydrophobicity[name]; atom = "CA")
+    end
 end
 
 # Finally, we can save the changed residues in a new PDB file.
