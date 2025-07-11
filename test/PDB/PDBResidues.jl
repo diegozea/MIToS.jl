@@ -166,3 +166,51 @@ end
     @test cross(a, b) == Coordinates(1.0, 0.0, 0.0)
     @test cross(b, a) == Coordinates(-1.0, 0.0, 0.0)
 end
+
+@testset "change_b_factor" begin
+    atom = PDBAtom(
+        coordinates = Coordinates(0.0, 0.0, 0.0),
+        atom = "CA",
+        element = "C",
+        occupancy = 1.0,
+        B = "0.00",
+        alt_id = "",
+        charge = "",
+    )
+    newatom = change_b_factor(atom, 1.5)
+    @test newatom.B == "1.50"
+    @test_throws ErrorException change_b_factor(atom, 123456.7) # longer than 6 characters
+
+    residue = PDBResidue(
+        PDBResidueIdentifier("1", "1", "ALA", "ATOM", "1", "A"),
+        [
+            atom,
+            PDBAtom(
+                coordinates = Coordinates(1.0, 0.0, 0.0),
+                atom = "CB",
+                element = "C",
+                occupancy = 1.0,
+                B = "0.00",
+                alt_id = "",
+                charge = "",
+            ),
+        ],
+    )
+
+    newres = change_b_factor(residue, 2.0)
+    @test all(a.B == "2.00" for a in newres.atoms)
+    @test all(a.B == "0.00" for a in residue.atoms) # residue should not be modified
+
+    newres_ca = change_b_factor(residue, 3.0; atom = "CA") # atom selection
+    @test newres_ca.atoms[1].B == "3.00"
+    @test newres_ca.atoms[2].B == "0.00"
+
+    rescopy = deepcopy(residue)
+    change_b_factor!(rescopy, 4.0)
+    @test all(a.B == "4.00" for a in rescopy.atoms)
+    @test all(a.B == "0.00" for a in residue.atoms) # original residue unmodified
+
+    change_b_factor!(rescopy, 5.0; atom = "CA")
+    @test rescopy.atoms[1].B == "5.00" # only CA atom modified
+    @test rescopy.atoms[2].B == "4.00"
+end
