@@ -58,6 +58,8 @@ export  # PDBResidues
     bestoccupancy,
     residuepairsmatrix,
     proximitymean,
+    change_b_factor,
+    change_b_factor!,
     # AtomsData
     covalentradius,
     vanderwaalsradius,
@@ -96,7 +98,6 @@ export  # PDBResidues
     CAmatrix,
     coordinatesmatrix,
     change_coordinates,
-    change_b_factor,
     centeredcoordinates,
     centeredresidues,
     superimpose,

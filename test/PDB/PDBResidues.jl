@@ -203,4 +203,14 @@ end
     newres_ca = change_b_factor(residue, 3.0; atom = "CA")
     @test newres_ca.atoms[1].B == "3.00"
     @test newres_ca.atoms[2].B == "0.00"
+
+    rescopy = deepcopy(residue)
+    change_b_factor!(rescopy, 4.0)
+    @test all(a.B == "4.00" for a in rescopy.atoms)
+    @test residue.atoms[1].B == "0.00"
+
+    rescopy2 = deepcopy(residue)
+    change_b_factor!(rescopy2, 5.0; atom = "CA")
+    @test rescopy2.atoms[1].B == "5.00"
+    @test rescopy2.atoms[2].B == "0.00"
 end

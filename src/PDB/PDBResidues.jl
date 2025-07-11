@@ -230,6 +230,22 @@ function change_b_factor(residue::PDBResidue, value; atom = All)
     PDBResidue(residue.id, updated_atoms)
 end
 
+"""
+    change_b_factor!(residue::PDBResidue, value; atom=All)
+
+Change the B-factor of the selected atoms in `residue` in place and return the
+modified residue. By default all atoms in the residue are updated. Atom
+selection follows the same conventions as [`select_atoms`](@ref).
+"""
+function change_b_factor!(residue::PDBResidue, value; atom = All)
+    for i in eachindex(residue.atoms)
+        if _is(residue.atoms[i].atom, atom)
+            residue.atoms[i] = change_b_factor(residue.atoms[i], value)
+        end
+    end
+    return residue
+end
+
 # Find Residues/Atoms
 # ===================
 
