@@ -219,21 +219,6 @@ function change_coordinates(
     updated
 end
 
-"""
-Returns a new `PDBAtom` but with a `B` as B-factor
-"""
-function _change_B(atom::PDBAtom, B::String)
-    PDBAtom(
-        copy(atom.coordinates),
-        deepcopy(atom.atom),
-        deepcopy(atom.element),
-        copy(atom.occupancy),
-        B,
-        deepcopy(atom.alt_id),
-        deepcopy(atom.charge),
-    )
-end
-
 _iscentered(x::Float64, y::Float64, z::Float64) =
     (abs(x) <= 1e-13) && (abs(y) <= 1e-13) && (abs(z) <= 1e-13)
 
