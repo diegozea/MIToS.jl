@@ -213,18 +213,6 @@ function change_b_factor(atom::PDBAtom, value)
 end
 
 """
-    change_b_factor(residue::PDBResidue, value; atom=All)
-
-Return a new `PDBResidue` with the B-factor of the selected atoms changed to
-`value`. By default all atoms in the residue are updated. Atom selection follows
-the same conventions as [`select_atoms`](@ref).
-"""
-function change_b_factor(residue::PDBResidue, value; atom = All)
-    newres = deepcopy(residue)
-    change_b_factor!(newres, value; atom = atom)
-end
-
-"""
     change_b_factor!(residue::PDBResidue, value; atom=All)
 
 Change the B-factor of the selected atoms in `residue` in place and return the
@@ -233,11 +221,23 @@ selection follows the same conventions as [`select_atoms`](@ref).
 """
 function change_b_factor!(residue::PDBResidue, value; atom = All)
     for i in eachindex(residue.atoms)
-        if _is(residue.atoms[i].atom, atom)
-            residue.atoms[i] = change_b_factor(residue.atoms[i], value)
+        res_atom = residue.atoms[i]
+        if _is(res_atom.atom, atom)
+            residue.atoms[i] = change_b_factor(res_atom, value)
         end
     end
     return residue
+end
+
+"""
+    change_b_factor(residue::PDBResidue, value; atom=All)
+
+Return a new `PDBResidue` with the B-factor of the selected atoms changed to
+`value`. By default all atoms in the residue are updated. Atom selection follows
+the same conventions as [`select_atoms`](@ref).
+"""
+function change_b_factor(residue::PDBResidue, value; atom = All) 
+    change_b_factor!(deepcopy(residue), value; atom = atom)
 end
 
 # Find Residues/Atoms

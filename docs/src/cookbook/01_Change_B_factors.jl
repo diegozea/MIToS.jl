@@ -14,14 +14,14 @@
 #
 # We cannot simply assign a new value to the `B` field of a `PDBAtom` because
 # this type is immutable. Instead, MIToS provides the `change_b_factor`
-# function to create a new atom with a different B-factor value.
+# function to create a new atom with a different B-factor value. When used on a 
+# `PDBResidue`, it changes the B-factor of all atoms by default. The mutating variant
+# `change_b_factor!` performs the update in place.
 #
 # In a PDB file, B-factors are stored from column 61 to 66. Therefore,
 # new values should be formatted using at most six characters, normally with two
-# decimal digits. The `change_b_factor` function will take care of this and
-# throw an error if that is not possible. When used on a `PDBResidue`, it
-# changes the B-factor of all atoms by default. The mutating variant
-# `change_b_factor!` performs the update in place.
+# decimal digits. The `change_b_factor` and `change_b_factor!` functions will take care of 
+# this and throw an error if that is not possible.
 #
 # ## MIToS solution
 #
@@ -38,8 +38,8 @@ using MIToS.PDB
 pdb_residues = read_file(pdbfile, PDBFile)
 #md nothing # hide
 
-# For this example, we are going to replace the B-factor of the alpha-carbons
-# by the residue hydrophobicity according to the hydrophobicity scale of
+# For this example, we are going to replace the B-factor of a residue's atoms
+# with the residue hydrophobicity according to the hydrophobicity scale of
 # [Kyte and Doolittle](https://doi.org/10.1016/0022-2836(82)90515-0) used by
 # [Chimera](https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/midas/hydrophob.html):
 
@@ -89,16 +89,15 @@ end
 #
 # ## Discussion
 #
-# While we have focused on changing the B-factor field of a `PDBAtom`, you can
-# use the same approach to change other fields. However, if you want to change
-# atom coordinates, it is better to use the `change_coordinates` function from
+# Here, we have focused on changing the B-factor field of a `PDBAtom`. In case you want to 
+# change atom coordinates, it is better to use the `change_coordinates` function from
 # the PDB module of MIToS. For other fields you can rely on the
 # [Setfield](https://github.com/jw3126/Setfield.jl) package.
 #
-# MIToS atoms and residues generally stores the string present in the input
+# MIToS atoms and residues generally store the string present in the input
 # file without surrounding spaces. You can use the `Format` module to
 # create these strings and `strip` to get rid of the spaces. You can see the
 # [PDB format description](https://www.wwpdb.org/documentation/file-format-content/format23/sect9.html)
 # to know what is the format of the expected string or see the
 # [MIToS PDB print_file source code](https://github.com/diegozea/MIToS.jl/blob/master/src/PDB/PDBParser.j)
-# to get a quick idea.
+# to get an idea.

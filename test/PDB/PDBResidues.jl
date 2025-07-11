@@ -179,8 +179,7 @@ end
     )
     newatom = change_b_factor(atom, 1.5)
     @test newatom.B == "1.50"
-    @test atom.B == "0.00"  # original atom unchanged
-    @test_throws ErrorException change_b_factor(atom, 123456.7)
+    @test_throws ErrorException change_b_factor(atom, 123456.7) # longer than 6 characters
 
     residue = PDBResidue(
         PDBResidueIdentifier("1", "1", "ALA", "ATOM", "1", "A"),
@@ -197,20 +196,21 @@ end
             ),
         ],
     )
+
     newres = change_b_factor(residue, 2.0)
     @test all(a.B == "2.00" for a in newres.atoms)
-    @test residue.atoms[1].B == "0.00"
-    newres_ca = change_b_factor(residue, 3.0; atom = "CA")
+    @test all(a.B == "0.00" for a in residue.atoms) # residue should not be modified
+
+    newres_ca = change_b_factor(residue, 3.0; atom = "CA") # atom selection
     @test newres_ca.atoms[1].B == "3.00"
     @test newres_ca.atoms[2].B == "0.00"
 
     rescopy = deepcopy(residue)
     change_b_factor!(rescopy, 4.0)
     @test all(a.B == "4.00" for a in rescopy.atoms)
-    @test residue.atoms[1].B == "0.00"
+    @test all(a.B == "0.00" for a in residue.atoms) # original residue unmodified
 
-    rescopy2 = deepcopy(residue)
-    change_b_factor!(rescopy2, 5.0; atom = "CA")
-    @test rescopy2.atoms[1].B == "5.00"
-    @test rescopy2.atoms[2].B == "0.00"
+    change_b_factor!(rescopy, 5.0; atom = "CA")
+    @test rescopy.atoms[1].B == "5.00" # only CA atom modified
+    @test rescopy.atoms[2].B == "4.00"
 end
