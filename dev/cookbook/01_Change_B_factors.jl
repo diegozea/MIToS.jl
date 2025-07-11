@@ -13,15 +13,15 @@
 # [Chimera](https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/bfactor.html).
 #
 # We cannot simply assign a new value to the `B` field of a `PDBAtom` because
-# this type is immutable. However, we can make use of the `@set` macro of the
-# [Setfield](https://github.com/jw3126/Setfield.jl) package to create a new
-# `PDBAtom` with a different B-factor value.
+# this type is immutable. Instead, MIToS provides the `change_b_factor`
+# function to create a new atom with a different B-factor value. When used on a 
+# `PDBResidue`, it changes the B-factor of all atoms by default. The mutating variant
+# `change_b_factor!` performs the update in place.
 #
-# In a PDB file, B-factors are stored from the column 61 to 66. Therefore, new
-# B-factors should be a `String` with 6 or fewer characters, normally using two
-# characters for decimal values. We can use `pyfmt` and `FormatSpec` from the
-# [Format](https://github.com/JuliaString/Format.jl) package to create a
-# proper B-factor string.
+# In a PDB file, B-factors are stored from column 61 to 66. Therefore,
+# new values should be formatted using at most six characters, normally with two
+# decimal digits. The `change_b_factor` and `change_b_factor!` functions will take care of 
+# this and throw an error if that is not possible.
 #
 # ## MIToS solution
 #
@@ -38,8 +38,8 @@ using MIToS.PDB
 pdb_residues = read_file(pdbfile, PDBFile)
 #md nothing # hide
 
-# For this example, we are going to replace the B-factor of the alpha-carbons
-# by the residue hydrophobicity according to the hydrophobicity scale of
+# For this example, we are going to replace the B-factor of a residue's atoms
+# with the residue hydrophobicity according to the hydrophobicity scale of
 # [Kyte and Doolittle](https://doi.org/10.1016/0022-2836(82)90515-0) used by
 # [Chimera](https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/midas/hydrophob.html):
 
@@ -67,52 +67,17 @@ hydrophobicity = Dict(
 )
 #md nothing # hide
 
-# First, we define a helper function using `Format` to create a proper
-# B-factor string with the PDB format; 6 characters and 2 digits after the
-# decimal point.
-# The [PDB format description](https://www.wwpdb.org/documentation/file-format-content/format23/sect9.html)
-# describe this field as:
-# ```
-# COLUMNS      DATA TYPE        FIELD      DEFINITION
-# ------------------------------------------------------
-# 61 - 66      Real(6.2)        tempFactor Temperature factor.
-# ```
+using MIToS.PDB
 
-using Format
-
-"""
-Return value as a string with the B factor format described in PDB. # e.g. 1.5 -> "  1.50"
-"""
-format_b_factor(value) = pyfmt(FormatSpec("6.2f"), value) # e.g. 1.5 -> "  1.50"
-#md nothing # hide
-
-# Then, where are using that helper function to define a function that returns
-# a new `PDBAtom` by changing the `B` factor field using the `Setfield` package.
-
-using Setfield
-
-"""
-Return a new PDBAtom with the B-factor changed to value.
-"""
-function change_b_factor(atom::PDBAtom, value)
-    b_factor_string = format_b_factor(value)
-    b_factor_string = strip(b_factor_string) # e.g. "  1.50" -> "1.50"
-    if length(b_factor_string) > 6
-        throw(ErrorException("$b_factor_string has more than 6 characters."))
-    end
-    @set atom.B = b_factor_string
-end
-#md nothing # hide
-
-# Now, we can use the `change_b_factor` function to change the B-factor of each
-# `"CA"` atom:
+# Now, we can use the `change_b_factor!` function on each residue to change the
+# B-factor of all its atoms. Some PDB files contain residues or other molecules
+# not present in the hydrophobicity dictionary, so we check for the residue name
+# before applying the change:
 
 for res in pdb_residues
-    for i in eachindex(res.atoms)
-        atom = res.atoms[i]
-        if atom.atom == "CA"
-            res.atoms[i] = change_b_factor(atom, hydrophobicity[res.id.name])
-        end
+    name = res.id.name
+    if haskey(hydrophobicity, name)
+        change_b_factor!(res, hydrophobicity[name])
     end
 end
 
@@ -124,15 +89,15 @@ end
 #
 # ## Discussion
 #
-# While we have focused on changing the B-factor field of a `PDBAtom`, you can
-# use the same approach to change other fields. However, if you want to change
-# atom coordinates, it is better to use the `change_coordinates` function from
-# the PDB module of MIToS.
+# Here, we have focused on changing the B-factor field of a `PDBAtom`. In case you want to 
+# change atom coordinates, it is better to use the `change_coordinates` function from
+# the PDB module of MIToS. For other fields you can rely on the
+# [Setfield](https://github.com/jw3126/Setfield.jl) package.
 #
-# MIToS atoms and residues generally stores the string present in the input
+# MIToS atoms and residues generally store the string present in the input
 # file without surrounding spaces. You can use the `Format` module to
 # create these strings and `strip` to get rid of the spaces. You can see the
 # [PDB format description](https://www.wwpdb.org/documentation/file-format-content/format23/sect9.html)
 # to know what is the format of the expected string or see the
 # [MIToS PDB print_file source code](https://github.com/diegozea/MIToS.jl/blob/master/src/PDB/PDBParser.j)
-# to get a quick idea.
+# to get an idea.
