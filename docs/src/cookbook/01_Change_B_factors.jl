@@ -70,9 +70,9 @@ hydrophobicity = Dict(
 using MIToS.PDB
 
 # Now, we can use the `change_b_factor!` function on each residue to change the
-# B-factor of all its atoms. Some PDB files contain hetero residues not present
-# in the hydrophobicity dictionary, so we check for the residue name before
-# applying the change:
+# B-factor of all its atoms. Some PDB files contain residues or other molecules
+# not present in the hydrophobicity dictionary, so we check for the residue name
+# before applying the change:
 
 for res in pdb_residues
     name = res.id.name

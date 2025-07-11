@@ -220,14 +220,8 @@ Return a new `PDBResidue` with the B-factor of the selected atoms changed to
 the same conventions as [`select_atoms`](@ref).
 """
 function change_b_factor(residue::PDBResidue, value; atom = All)
-    updated_atoms = map(residue.atoms) do a
-        if _is(a.atom, atom)
-            change_b_factor(a, value)
-        else
-            a
-        end
-    end
-    PDBResidue(residue.id, updated_atoms)
+    newres = deepcopy(residue)
+    change_b_factor!(newres, value; atom = atom)
 end
 
 """
