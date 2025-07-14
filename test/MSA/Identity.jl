@@ -216,4 +216,21 @@
             end
         end
     end
+
+    @testset "Percent Positives" begin
+        using MIToS.MSA.ResidueSubstitutionMatrices: BLOSUM62
+
+        @test percentpositive(res"AH", res"AH") == 100.0
+        @test percentpositive(res"AH", res"AH"; matrix = BLOSUM62) == 100.0
+        @test percentpositive(res"AV", res"AR") == 50.0
+        @test percentpositive(res"N", res"D") == 100.0
+        @test percentpositive(res"-A-", res"--H") == 0.0
+        @test percentpositive(res"XX", res"XX") == 0.0
+
+        ab = GappedAlphabet()
+        scores = Float64[i == j ? 1.0 : -1.0 for i = 1:length(ab), j = 1:length(ab)]
+        m = ResidueSubstitutionMatrices.ResidueSubstitutionMatrix(scores)
+        @test percentpositive(res"AX", res"AR"; matrix = m) == 50.0
+        @test percentpositive(res"XX", res"XX"; matrix = m) == 0.0
+    end
 end

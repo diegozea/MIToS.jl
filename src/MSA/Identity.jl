@@ -264,3 +264,50 @@ function percentsimilarity(msa::AbstractMatrix{Residue}, A...; out::Type = Float
     end
     P
 end
+
+"""
+    percentpositive(seq1, seq2; matrix=ResidueSubstitutionMatrices.BLOSUM62)
+
+Return the percentage of positives (as defined by BLAST) between two
+aligned sequences. By default, the ``BLOSUM62`` substitution matrix is
+used, but an alternative ``matrix`` can be provided. Columns with gaps
+in both sequences are ignored. Residues not present in the substitution
+matrix, including ``XAA`` if absent, are treated as negatives but still
+count towards the alignment length.
+"""
+function percentpositive(
+    seq1::Vector{Residue},
+    seq2::Vector{Residue};
+    matrix::ResidueSubstitutionMatrices.ResidueSubstitutionMatrix{T,A} = ResidueSubstitutionMatrices.BLOSUM62,
+) where {T,A}
+    len = length(seq1)
+    if len != length(seq2)
+        throw(
+            ErrorException(
+                """
+Sequences of different lengths, they aren't aligned or don't come from the same MSA.
+""",
+            ),
+        )
+    end
+
+    count = 0
+    colgap = 0
+    alph = matrix.alphabet
+    @inbounds for i = 1:len
+        a = seq1[i]
+        b = seq2[i]
+        if a == GAP && b == GAP
+            colgap += 1
+            continue
+        end
+        if in(a, alph) && in(b, alph) && matrix[a, b] > 0
+            count += 1
+        end
+    end
+    alnlen = len - colgap
+    if alnlen == 0
+        return NaN
+    end
+    100.0 * count / alnlen
+end
