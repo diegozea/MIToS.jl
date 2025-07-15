@@ -26,6 +26,24 @@ function _percentidentity(seq1, seq2, len)
 end
 
 """
+_check_samelength(seq1, seq2)
+
+Verify that `seq1` and `seq2` have the same length. Return the common
+length or throw an `ErrorException` if the lengths are different.
+"""
+function _check_samelength(seq1, seq2)
+    len = length(seq1)
+    if len != length(seq2)
+        throw(
+            ErrorException(
+                "Sequences of different lengths, they aren't aligned or don't come from the same MSA.",
+            ),
+        )
+    end
+    len
+end
+
+"""
 `percentidentity(seq1, seq2)`
 
 Calculates the fraction of identities between two aligned sequences. The identity value is
@@ -35,14 +53,7 @@ count to the length of the sequences. Positions with a `XAA` in at least one seq
 aren't counted.
 """
 function percentidentity(seq1, seq2)
-    len = length(seq1)
-    if len != length(seq2)
-        throw(
-            ErrorException("""
-      Sequences of different length, they aren't aligned or don't come from the same MSA.
-      """),
-        )
-    end
+    len = _check_samelength(seq1, seq2)
     _percentidentity(seq1, seq2, len)
 end
 
@@ -56,14 +67,7 @@ sequence aren't counted.
 """
 function percentidentity(seq1, seq2, threshold)
     fraction = threshold / 100.0
-    len = length(seq1)
-    if len != length(seq2)
-        throw(
-            ErrorException("""
-      Sequences of different length, they aren't aligned or don't come from the same MSA.
-      """),
-        )
-    end
+    len = _check_samelength(seq1, seq2)
     n = len
     limit_count = n * fraction
     diff = 0
@@ -214,17 +218,7 @@ function percentsimilarity(
     seq2::Vector{Residue},
     alphabet::ResidueAlphabet = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP"),
 )
-
-    len = length(seq1)
-    if len != length(seq2)
-        throw(
-            ErrorException(
-                """
-Sequences of different lengths, they aren't aligned or don't come from the same MSA.
-""",
-            ),
-        )
-    end
+    len = _check_samelength(seq1, seq2)
 
     count = 0
     colgap = 0
@@ -261,6 +255,68 @@ function percentsimilarity(msa::AbstractMatrix{Residue}, A...; out::Type = Float
     P = sequencepairsmatrix(msa, out, Val{false}, out(100.0))
     @inbounds @iterateupper getarray(P) false begin
         list[k] = percentsimilarity(M[i], M[j], A...)
+    end
+    P
+end
+
+"""
+    percentpositive(seq1, seq2; matrix=ResidueSubstitutionMatrices.BLOSUM62)
+
+Return the percentage of positives (as in BLAST) between two
+aligned sequences. By default, the `BLOSUM62` substitution matrix is
+used, but an alternative `matrix` can be provided. Columns with gaps
+in both sequences are ignored. Residues not present in the substitution
+matrix, including `XAA` if absent, are treated as negatives but still
+count towards the alignment length.
+"""
+function _percentpositive(seq1, seq2, len, matrix)
+    count = 0
+    colgap = 0
+    alph = matrix.alphabet
+    @inbounds for i = 1:len
+        a = seq1[i]
+        b = seq2[i]
+        if a == GAP && b == GAP
+            colgap += 1
+            continue
+        end
+        if in(a, alph) && in(b, alph) && matrix[a, b] > 0
+            count += 1
+        end
+    end
+    alnlen = len - colgap
+    alnlen == 0 && return NaN
+    100.0 * count / alnlen
+end
+
+function percentpositive(
+    seq1::Vector{Residue},
+    seq2::Vector{Residue};
+    matrix::ResidueSubstitutionMatrices.ResidueSubstitutionMatrix{T,A} = ResidueSubstitutionMatrices.BLOSUM62,
+) where {T,A}
+    len = _check_samelength(seq1, seq2)
+    _percentpositive(seq1, seq2, len, matrix)
+end
+
+"""
+`percentpositive(msa[, out::Type=Float64]; matrix=ResidueSubstitutionMatrices.BLOSUM62)`
+
+Compute the percentage of positives (as in BLAST) between all pairs of
+sequences in a multiple sequence alignment `msa`. The default
+substitution `matrix` is `BLOSUM62`, but a different one can be passed.
+The output element type can be chosen with the `out` keyword argument
+(`Float64` by default).
+"""
+function percentpositive(
+    msa::AbstractMatrix{Residue},
+    out::Type = Float64;
+    matrix::ResidueSubstitutionMatrices.ResidueSubstitutionMatrix{T,A} = ResidueSubstitutionMatrices.BLOSUM62,
+) where {T,A}
+    M = getresiduesequences(msa)
+    len = length(M[1])
+    P = sequencepairsmatrix(msa, out, Val{false}, out(100.0))
+    @inbounds @iterateupper getarray(P) false begin
+        list[k] = _percentpositive(M[i], M[j], len, matrix)
     end
     P
 end

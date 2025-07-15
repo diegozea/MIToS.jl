@@ -141,6 +141,7 @@ export  # Residue
     percentidentity,
     meanpercentidentity,
     percentsimilarity,
+    percentpositive,
     sum_of_pairs_score,
     # Clusters
     WeightTypes,
