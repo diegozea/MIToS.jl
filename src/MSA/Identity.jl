@@ -268,7 +268,7 @@ end
 """
     percentpositive(seq1, seq2; matrix=ResidueSubstitutionMatrices.BLOSUM62)
 
-Return the percentage of positives (as defined by BLAST) between two
+Return the percentage of positives (as in BLAST) between two
 aligned sequences. By default, the ``BLOSUM62`` substitution matrix is
 used, but an alternative ``matrix`` can be provided. Columns with gaps
 in both sequences are ignored. Residues not present in the substitution

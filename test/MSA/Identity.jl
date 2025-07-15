@@ -227,6 +227,9 @@
         @test percentpositive(res"-A-", res"--H") == 0.0
         @test percentpositive(res"XX", res"XX") == 0.0
 
+        @test_throws ErrorException percentpositive(res"AA", res"AAA")
+        @test isnan(percentpositive(res"---", res"---"))
+
         ab = GappedAlphabet()
         scores = Float64[i == j ? 1.0 : -1.0 for i = 1:length(ab), j = 1:length(ab)]
         m = ResidueSubstitutionMatrices.ResidueSubstitutionMatrix(scores)
