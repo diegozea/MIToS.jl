@@ -417,9 +417,9 @@ version = "1.11.0"
 
 [[deps.StaticArrays]]
 deps = ["LinearAlgebra", "PrecompileTools", "Random", "StaticArraysCore"]
-git-tree-sha1 = "0feb6b9031bd5c51f9072393eb5ab3efd31bf9e4"
+git-tree-sha1 = "cbea8a6bd7bed51b1619658dec70035e07b8502f"
 uuid = "90137ffa-7385-5640-81b9-e52037218182"
-version = "1.9.13"
+version = "1.9.14"
 
     [deps.StaticArrays.extensions]
     StaticArraysChainRulesCoreExt = "ChainRulesCore"
