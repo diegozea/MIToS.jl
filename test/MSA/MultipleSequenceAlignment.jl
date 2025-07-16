@@ -315,13 +315,13 @@
                     @test getannotfile(copied_object, "HCat") == hcat_before
                     expected = join(
                         [
-                            "$o=>$n" for
+                            string(repr(o), "=>", repr(n)) for
                             (o, n) in zip(oldcols, ["A", "B", "C", "D", "E", "F", "G"]) if
                             o != n
                         ],
                         ",",
                     )
-                    @test getannotfile(copied_object, "ColChanges_1") == expected
+                    @test getannotfile(copied_object, "1_ColChanges") == expected
                     @test any(startswith.(keys(getannotfile(copied_object)), "MIToS_"))
                 end
             end
@@ -340,14 +340,14 @@
                           join(["1", "2", "3", "4", "5", "6", "7"], ',')
                     expected = join(
                         [
-                            "$o=>$n" for (o, n) in zip(
+                            string(repr(o), "=>", repr(n)) for (o, n) in zip(
                                 ["1", "2", "3", "4", "5", "6", "7"],
                                 ["A", "B", "C", "D", "E", "F", "G"],
                             ) if o != n
                         ],
                         ",",
                     )
-                    @test getannotfile(new_object, "ColChanges_1") == expected
+                    @test getannotfile(new_object, "1_ColChanges") == expected
                     @test any(startswith.(keys(getannotfile(new_object)), "MIToS_"))
                 end
             end
@@ -367,13 +367,13 @@
                     @test getannotfile(new_object, "HCat") == hcat_before
                     expected = join(
                         [
-                            "$o=>$n" for
+                            string(repr(o), "=>", repr(n)) for
                             (o, n) in zip(oldcols, ["A", "B", "3", "4", "5", "6", "7"]) if
                             o != n
                         ],
                         ",",
                     )
-                    @test getannotfile(new_object, "ColChanges_1") == expected
+                    @test getannotfile(new_object, "1_ColChanges") == expected
                     @test any(startswith.(keys(getannotfile(new_object)), "MIToS_"))
                 end
             end
@@ -385,23 +385,30 @@
                 before = getannotfile(h, "HCat")
                 rename_columns!(h, ["A", "B", "C", "D"])
                 @test getannotfile(h, "HCat") == before
-                @test getannotfile(h, "ColChanges_1") == "1_1=>A,1_2=>B,2_1=>C,2_2=>D"
+                @test getannotfile(h, "1_ColChanges") ==
+                      "\"1_1\"=>\"A\",\"1_2\"=>\"B\",\"2_1\"=>\"C\",\"2_2\"=>\"D\""
                 @test any(startswith.(keys(getannotfile(h)), "MIToS_"))
 
                 v = vcat(h, h)
                 before1 = getannotfile(v, "1_HCat")
                 before2 = getannotfile(v, "2_HCat")
+                col1 = getannotfile(v, "1_ColChanges")
+                col2 = getannotfile(v, "2_ColChanges")
                 rename_columns!(v, ["Q", "W", "E", "R"])
                 @test getannotfile(v, "1_HCat") == before1
                 @test getannotfile(v, "2_HCat") == before2
-                @test getannotfile(v, "ColChanges_1") == "A=>Q,B=>W,C=>E,D=>R"
+                @test getannotfile(v, "1_ColChanges") == col1
+                @test getannotfile(v, "2_ColChanges") == col2
+                @test getannotfile(v, "3_ColChanges") ==
+                      "\"A\"=>\"Q\",\"B\"=>\"W\",\"C\"=>\"E\",\"D\"=>\"R\""
                 @test any(startswith.(keys(getannotfile(v)), "MIToS_"))
 
                 j = join_msas(msa_in, msa_in, [1, 2] .=> [1, 2], axis = 1)
                 j_before = getannotfile(j, "HCat")
                 rename_columns!(j, ["L", "M", "N", "O"])
                 @test getannotfile(j, "HCat") == j_before
-                @test getannotfile(j, "ColChanges_1") == "1_1=>L,1_2=>M,2_1=>N,2_2=>O"
+                @test getannotfile(j, "1_ColChanges") ==
+                      "\"1_1\"=>\"L\",\"1_2\"=>\"M\",\"2_1\"=>\"N\",\"2_2\"=>\"O\""
                 @test any(startswith.(keys(getannotfile(j)), "MIToS_"))
             end
 
@@ -419,13 +426,13 @@
                     @test getannotfile(copied_object, "HCat") == hcat_before
                     expected = join(
                         [
-                            "$o=>$n" for
+                            string(repr(o), "=>", repr(n)) for
                             (o, n) in zip(oldcols, ["A", "B", "3", "4", "5", "6", "7"]) if
                             o != n
                         ],
                         ",",
                     )
-                    @test getannotfile(copied_object, "ColChanges_1") == expected
+                    @test getannotfile(copied_object, "1_ColChanges") == expected
                     @test any(startswith.(keys(getannotfile(copied_object)), "MIToS_"))
                 end
             end
@@ -444,13 +451,13 @@
                     @test getannotfile(copied_object, "HCat") == hcat_before
                     expected = join(
                         [
-                            "$o=>$n" for
+                            string(repr(o), "=>", repr(n)) for
                             (o, n) in zip(oldcols, ["A", "B", "3", "4", "5", "6", "7"]) if
                             o != n
                         ],
                         ",",
                     )
-                    @test getannotfile(copied_object, "ColChanges_1") == expected
+                    @test getannotfile(copied_object, "1_ColChanges") == expected
                     @test any(startswith.(keys(getannotfile(copied_object)), "MIToS_"))
                 end
             end
@@ -460,10 +467,10 @@
                 oldcols = columnnames(obj)
                 before = getannotfile(obj, "HCat")
                 rename_columns!(obj, ["A", "B", "C", "D", "E", "F", "G"])
-                first_change = getannotfile(obj, "ColChanges_1")
+                first_change = getannotfile(obj, "1_ColChanges")
                 rename_columns!(obj, ["Q", "W", "E", "R", "T", "Y", "U"])
-                @test getannotfile(obj, "ColChanges_1") == first_change
-                @test haskey(getannotfile(obj), "ColChanges_2")
+                @test getannotfile(obj, "1_ColChanges") == first_change
+                @test haskey(getannotfile(obj), "2_ColChanges")
                 @test getannotfile(obj, "HCat") == before
             end
         end
