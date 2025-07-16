@@ -28,9 +28,9 @@ end
 
 Update column-related annotations in `annotations` when column names change.
 
-If any name differs between `oldnames` and `newnames`, the pairs of changed
-names are stored in the `"ColChange"` file annotation using the format
-`old=>new`. The modification is recorded using `annotate_modification!`.
+If the names differ, the original names are stored in the `"OrigCols"` file
+annotation (only on the first call) and the modification is recorded with
+`annotate_modification!`.
 """
 function _rename_columns(
     annotations::Annotations,
@@ -39,16 +39,10 @@ function _rename_columns(
 ) where {T<:AbstractString}
     new_annotations = copy(annotations)
     if oldnames != newnames
-        changes = String[]
-        for (old, new) in zip(oldnames, newnames)
-            if old != new
-                push!(changes, string(old, "=>", new))
-            end
+        if !haskey(new_annotations.file, "OrigCols")
+            setannotfile!(new_annotations, "OrigCols", join(oldnames, ','))
         end
-        if !isempty(changes)
-            setannotfile!(new_annotations, "ColChange", join(changes, ','))
-            annotate_modification!(new_annotations, "rename_columns!")
-        end
+        annotate_modification!(new_annotations, "rename_columns!")
     end
     new_annotations
 end
