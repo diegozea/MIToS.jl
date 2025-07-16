@@ -263,8 +263,8 @@ end
     percentpositive(seq1, seq2; matrix=ResidueSubstitutionMatrices.BLOSUM62)
 
 Return the percentage of positives (as in BLAST) between two
-aligned sequences. By default, the `BLOSUM62` substitution matrix is
-used, but an alternative `matrix` can be provided. Columns with gaps
+aligned sequences. The substitution matrix is selected with the
+`matrix` keyword argument and defaults to `BLOSUM62`. Columns with gaps
 in both sequences are ignored. Residues not present in the substitution
 matrix, including `XAA` if absent, are treated as negatives but still
 count towards the alignment length.
@@ -302,10 +302,10 @@ end
 `percentpositive(msa[, out::Type=Float64]; matrix=ResidueSubstitutionMatrices.BLOSUM62)`
 
 Compute the percentage of positives (as in BLAST) between all pairs of
-sequences in a multiple sequence alignment `msa`. The default
-substitution `matrix` is `BLOSUM62`, but a different one can be passed.
-The output element type can be chosen with the `out` keyword argument
-(`Float64` by default).
+sequences in the multiple sequence alignment `msa`. The substitution
+`matrix` is supplied via a keyword argument and defaults to `BLOSUM62`.
+The output element type is selected with the optional positional
+argument `out` (`Float64` by default).
 """
 function percentpositive(
     msa::AbstractMatrix{Residue},
