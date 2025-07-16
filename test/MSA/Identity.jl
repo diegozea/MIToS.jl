@@ -216,4 +216,40 @@
             end
         end
     end
+
+    @testset "Percent Positives" begin
+        using MIToS.MSA.ResidueSubstitutionMatrices: BLOSUM62
+
+        @test_throws ErrorException percentpositive(res"A", res"AA")
+
+        @test percentpositive(res"AH", res"AH") == 100.0
+        @test percentpositive(res"AH", res"AH"; matrix = BLOSUM62) == 100.0
+        @test percentpositive(res"AV", res"AR") == 50.0
+        @test percentpositive(res"N", res"D") == 100.0
+        @test percentpositive(res"-A-", res"--H") == 0.0
+        @test percentpositive(res"XX", res"XX") == 0.0
+
+        @test isnan(percentpositive(res"---", res"---"))
+
+        ab = GappedAlphabet()
+        scores = Float64[i == j ? 1.0 : -1.0 for i = 1:length(ab), j = 1:length(ab)]
+        m = ResidueSubstitutionMatrices.ResidueSubstitutionMatrix(scores)
+        @test percentpositive(res"AX", res"AR"; matrix = m) == 50.0
+        @test percentpositive(res"XX", res"XX"; matrix = m) == 0.0
+
+        @testset "Percent Positives MSA" begin
+            fasta = read_file(joinpath(DATA, "Gaoetal2011.fasta"), FASTA)
+            pp = percentpositive(fasta)
+
+            pp32 = percentpositive(fasta, Float32)
+
+            @test eltype(pp) == Float64
+            @test eltype(pp32) == Float32
+            @test pp[1, 1] == 100.0
+            @test isapprox(pp[1, 2], 83.33, atol = 0.01)
+            @test isapprox(pp[1, 4], 66.67, atol = 0.01)
+            @test isapprox(pp[4, 5], 83.33, atol = 0.01)
+            @test pp[5, 6] == 100.0
+        end
+    end
 end
