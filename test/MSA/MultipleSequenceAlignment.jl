@@ -313,8 +313,8 @@
                 @test columnnames(copied_object) == ["A", "B", "C", "D", "E", "F", "G"]
                 if isa(copied_object, AnnotatedMultipleSequenceAlignment)
                     @test getannotfile(copied_object, "HCat") == hcat_before
-                    @test getannotfile(copied_object, "OriginalColNames") ==
-                          join(oldcols, ',')
+                    @test getannotfile(copied_object, "ColChange") ==
+                          "1=>A,2=>B,3=>C,4=>D,5=>E,6=>F,7=>G"
                     @test any(startswith.(keys(getannotfile(copied_object)), "MIToS_"))
                 end
             end
@@ -331,8 +331,8 @@
                 if isa(new_object, AnnotatedMultipleSequenceAlignment)
                     @test getannotfile(new_object, "HCat") ==
                           join(["1", "2", "3", "4", "5", "6", "7"], ',')
-                    @test getannotfile(new_object, "OriginalColNames") ==
-                          join(["1", "2", "3", "4", "5", "6", "7"], ',')
+                    @test getannotfile(new_object, "ColChange") ==
+                          "1=>A,2=>B,3=>C,4=>D,5=>E,6=>F,7=>G"
                     @test any(startswith.(keys(getannotfile(new_object)), "MIToS_"))
                 end
             end
@@ -350,7 +350,7 @@
                 @test columnnames(new_object) == ["A", "B", "3", "4", "5", "6", "7"]
                 if isa(new_object, AnnotatedMultipleSequenceAlignment)
                     @test getannotfile(new_object, "HCat") == hcat_before
-                    @test getannotfile(new_object, "OriginalColNames") == join(oldcols, ',')
+                    @test getannotfile(new_object, "ColChange") == "1=>A,2=>B"
                     @test any(startswith.(keys(getannotfile(new_object)), "MIToS_"))
                 end
             end
@@ -362,7 +362,7 @@
                 before = getannotfile(h, "HCat")
                 rename_columns!(h, ["A", "B", "C", "D"])
                 @test getannotfile(h, "HCat") == before
-                @test getannotfile(h, "OriginalColNames") == "1_1,1_2,2_1,2_2"
+                @test getannotfile(h, "ColChange") == "1_1=>A,1_2=>B,2_1=>C,2_2=>D"
                 @test any(startswith.(keys(getannotfile(h)), "MIToS_"))
 
                 v = vcat(h, h)
@@ -371,14 +371,14 @@
                 rename_columns!(v, ["Q", "W", "E", "R"])
                 @test getannotfile(v, "1_HCat") == before1
                 @test getannotfile(v, "2_HCat") == before2
-                @test getannotfile(v, "OriginalColNames") == "A,B,C,D"
+                @test getannotfile(v, "ColChange") == "A=>Q,B=>W,C=>E,D=>R"
                 @test any(startswith.(keys(getannotfile(v)), "MIToS_"))
 
                 j = join_msas(msa_in, msa_in, [1, 2] .=> [1, 2], axis = 1)
                 j_before = getannotfile(j, "HCat")
                 rename_columns!(j, ["L", "M", "N", "O"])
                 @test getannotfile(j, "HCat") == j_before
-                @test getannotfile(j, "OriginalColNames") == "1_1,1_2,2_1,2_2"
+                @test getannotfile(j, "ColChange") == "1_1=>L,1_2=>M,2_1=>N,2_2=>O"
                 @test any(startswith.(keys(getannotfile(j)), "MIToS_"))
             end
 
@@ -394,8 +394,7 @@
                 @test columnnames(copied_object) == ["A", "B", "3", "4", "5", "6", "7"]
                 if isa(copied_object, AnnotatedMultipleSequenceAlignment)
                     @test getannotfile(copied_object, "HCat") == hcat_before
-                    @test getannotfile(copied_object, "OriginalColNames") ==
-                          join(oldcols, ',')
+                    @test getannotfile(copied_object, "ColChange") == "1=>A,2=>B"
                     @test any(startswith.(keys(getannotfile(copied_object)), "MIToS_"))
                 end
             end
@@ -412,8 +411,7 @@
                 @test columnnames(copied_object) == ["A", "B", "3", "4", "5", "6", "7"]
                 if isa(copied_object, AnnotatedMultipleSequenceAlignment)
                     @test getannotfile(copied_object, "HCat") == hcat_before
-                    @test getannotfile(copied_object, "OriginalColNames") ==
-                          join(oldcols, ',')
+                    @test getannotfile(copied_object, "ColChange") == "1=>A,2=>B"
                     @test any(startswith.(keys(getannotfile(copied_object)), "MIToS_"))
                 end
             end
