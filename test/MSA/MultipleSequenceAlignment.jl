@@ -302,32 +302,38 @@
             # rename_columns!
             for object in (NamedArray(M), msa, annotated_msa)
                 copied_object = deepcopy(object)
+                oldcols = columnnames(copied_object)
                 if isa(copied_object, AnnotatedMultipleSequenceAlignment)
-                    setannotfile!(
-                        copied_object,
-                        "HCat",
-                        join(columnnames(copied_object), ','),
-                    )
+                    setannotfile!(copied_object, "HCat", join(oldcols, ','))
+                    hcat_before = getannotfile(copied_object, "HCat")
                 end
                 new_object =
                     rename_columns!(copied_object, ["A", "B", "C", "D", "E", "F", "G"])
                 @test new_object == copied_object
                 @test columnnames(copied_object) == ["A", "B", "C", "D", "E", "F", "G"]
                 if isa(copied_object, AnnotatedMultipleSequenceAlignment)
-                    @test getannotfile(copied_object, "HCat") == "A,B,C,D,E,F,G"
+                    @test getannotfile(copied_object, "HCat") == hcat_before
+                    @test getannotfile(copied_object, "OriginalColNames") ==
+                          join(oldcols, ',')
+                    @test any(startswith.(keys(getannotfile(copied_object)), "MIToS_"))
                 end
             end
 
             # rename_columns
             for object in (NamedArray(M), msa, annotated_msa)
                 if isa(object, AnnotatedMultipleSequenceAlignment)
-                    setannotfile!(object, "HCat", join(columnnames(object), ','))
+                    oldcols = columnnames(object)
+                    setannotfile!(object, "HCat", join(oldcols, ','))
                 end
                 new_object = rename_columns(object, ["A", "B", "C", "D", "E", "F", "G"])
                 @test columnnames(object) == ["1", "2", "3", "4", "5", "6", "7"]
                 @test columnnames(new_object) == ["A", "B", "C", "D", "E", "F", "G"]
                 if isa(new_object, AnnotatedMultipleSequenceAlignment)
-                    @test getannotfile(new_object, "HCat") == "A,B,C,D,E,F,G"
+                    @test getannotfile(new_object, "HCat") ==
+                          join(["1", "2", "3", "4", "5", "6", "7"], ',')
+                    @test getannotfile(new_object, "OriginalColNames") ==
+                          join(["1", "2", "3", "4", "5", "6", "7"], ',')
+                    @test any(startswith.(keys(getannotfile(new_object)), "MIToS_"))
                 end
             end
 
@@ -335,34 +341,62 @@
             for object in (NamedArray(M), msa, annotated_msa)
                 copied_object = deepcopy(object)
                 if isa(copied_object, AnnotatedMultipleSequenceAlignment)
-                    setannotfile!(
-                        copied_object,
-                        "HCat",
-                        join(columnnames(copied_object), ','),
-                    )
+                    oldcols = columnnames(copied_object)
+                    setannotfile!(copied_object, "HCat", join(oldcols, ','))
+                    hcat_before = getannotfile(copied_object, "HCat")
                 end
                 new_object = rename_columns(copied_object, "1" => "A", "2" => "B")
                 @test columnnames(copied_object) == ["1", "2", "3", "4", "5", "6", "7"]
                 @test columnnames(new_object) == ["A", "B", "3", "4", "5", "6", "7"]
                 if isa(new_object, AnnotatedMultipleSequenceAlignment)
-                    @test getannotfile(new_object, "HCat") == "A,B,3,4,5,6,7"
+                    @test getannotfile(new_object, "HCat") == hcat_before
+                    @test getannotfile(new_object, "OriginalColNames") == join(oldcols, ',')
+                    @test any(startswith.(keys(getannotfile(new_object)), "MIToS_"))
                 end
+            end
+
+            @testset "Renaming after concatenation" begin
+                msa_file = joinpath(DATA, "simple.fasta")
+                msa_in = read_file(msa_file, FASTA, generatemapping = true)
+                h = hcat(msa_in, msa_in)
+                before = getannotfile(h, "HCat")
+                rename_columns!(h, ["A", "B", "C", "D"])
+                @test getannotfile(h, "HCat") == before
+                @test getannotfile(h, "OriginalColNames") == "1_1,1_2,2_1,2_2"
+                @test any(startswith.(keys(getannotfile(h)), "MIToS_"))
+
+                v = vcat(h, h)
+                before1 = getannotfile(v, "1_HCat")
+                before2 = getannotfile(v, "2_HCat")
+                rename_columns!(v, ["Q", "W", "E", "R"])
+                @test getannotfile(v, "1_HCat") == before1
+                @test getannotfile(v, "2_HCat") == before2
+                @test getannotfile(v, "OriginalColNames") == "A,B,C,D"
+                @test any(startswith.(keys(getannotfile(v)), "MIToS_"))
+
+                j = join_msas(msa_in, msa_in, [1, 2] .=> [1, 2], axis = 1)
+                j_before = getannotfile(j, "HCat")
+                rename_columns!(j, ["L", "M", "N", "O"])
+                @test getannotfile(j, "HCat") == j_before
+                @test getannotfile(j, "OriginalColNames") == "1_1,1_2,2_1,2_2"
+                @test any(startswith.(keys(getannotfile(j)), "MIToS_"))
             end
 
             # rename_columns! with Dict
             for object in (NamedArray(M), msa, annotated_msa)
                 copied_object = deepcopy(object)
                 if isa(copied_object, AnnotatedMultipleSequenceAlignment)
-                    setannotfile!(
-                        copied_object,
-                        "HCat",
-                        join(columnnames(copied_object), ','),
-                    )
+                    oldcols = columnnames(copied_object)
+                    setannotfile!(copied_object, "HCat", join(oldcols, ','))
+                    hcat_before = getannotfile(copied_object, "HCat")
                 end
                 rename_columns!(copied_object, Dict("1" => "A", "2" => "B"))
                 @test columnnames(copied_object) == ["A", "B", "3", "4", "5", "6", "7"]
                 if isa(copied_object, AnnotatedMultipleSequenceAlignment)
-                    @test getannotfile(copied_object, "HCat") == "A,B,3,4,5,6,7"
+                    @test getannotfile(copied_object, "HCat") == hcat_before
+                    @test getannotfile(copied_object, "OriginalColNames") ==
+                          join(oldcols, ',')
+                    @test any(startswith.(keys(getannotfile(copied_object)), "MIToS_"))
                 end
             end
 
@@ -370,16 +404,17 @@
             for object in (NamedArray(M), msa, annotated_msa)
                 copied_object = deepcopy(object)
                 if isa(copied_object, AnnotatedMultipleSequenceAlignment)
-                    setannotfile!(
-                        copied_object,
-                        "HCat",
-                        join(columnnames(copied_object), ','),
-                    )
+                    oldcols = columnnames(copied_object)
+                    setannotfile!(copied_object, "HCat", join(oldcols, ','))
+                    hcat_before = getannotfile(copied_object, "HCat")
                 end
                 rename_columns!(copied_object, "1" => "A", "2" => "B")
                 @test columnnames(copied_object) == ["A", "B", "3", "4", "5", "6", "7"]
                 if isa(copied_object, AnnotatedMultipleSequenceAlignment)
-                    @test getannotfile(copied_object, "HCat") == "A,B,3,4,5,6,7"
+                    @test getannotfile(copied_object, "HCat") == hcat_before
+                    @test getannotfile(copied_object, "OriginalColNames") ==
+                          join(oldcols, ',')
+                    @test any(startswith.(keys(getannotfile(copied_object)), "MIToS_"))
                 end
             end
         end

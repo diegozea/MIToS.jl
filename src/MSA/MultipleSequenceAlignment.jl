@@ -968,7 +968,8 @@ function rename_columns!(
     msa::AnnotatedMultipleSequenceAlignment,
     newnames::Vector{T},
 ) where {T<:AbstractString}
-    new_annotations = _rename_columns(annotations(msa), newnames)
+    oldnames = collect(columnname_iterator(msa))
+    new_annotations = _rename_columns(annotations(msa), oldnames, newnames)
     rename_columns!(namedmatrix(msa), newnames)
     msa.annotations = new_annotations
     msa
