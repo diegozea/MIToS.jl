@@ -28,8 +28,9 @@ end
 
 Update column-related annotations in `annotations` when column names change.
 
-If the names differ, the original names are stored in the `"OrigCols"` file
-annotation (only on the first call) and the modification is recorded with
+Changed columns are recorded in a file annotation named `"ColChanges_N"` where
+`N` is the number of times columns were renamed. Each value is a comma-separated
+list of `"old=>new"` pairs. The modification is also tracked with
 `annotate_modification!`.
 """
 function _rename_columns(
@@ -39,10 +40,17 @@ function _rename_columns(
 ) where {T<:AbstractString}
     new_annotations = copy(annotations)
     if oldnames != newnames
-        if !haskey(new_annotations.file, "OrigCols")
-            setannotfile!(new_annotations, "OrigCols", join(oldnames, ','))
+        changes = [string(o, "=>", n) for (o, n) in zip(oldnames, newnames) if o != n]
+        if !isempty(changes)
+            regex = r"^ColChanges_(\d+)$"
+            nums = Int[
+                parse(Int, m.captures[1]) for k in keys(new_annotations.file) for
+                m in eachmatch(regex, k)
+            ]
+            next = isempty(nums) ? 1 : maximum(nums) + 1
+            setannotfile!(new_annotations, "ColChanges_" * string(next), join(changes, ','))
+            annotate_modification!(new_annotations, "rename_columns!")
         end
-        annotate_modification!(new_annotations, "rename_columns!")
     end
     new_annotations
 end
