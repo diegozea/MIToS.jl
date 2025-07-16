@@ -89,7 +89,9 @@ export  # Residue
     sequencename_iterator,
     columnname_iterator,
     rename_sequences!,
-    rename_sequences, # TODO: rename_columns!
+    rename_sequences,
+    rename_columns!,
+    rename_columns,
     # MSAStats
     gapfraction,
     residuefraction,
