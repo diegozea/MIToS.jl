@@ -34,11 +34,7 @@ length or throw an `ErrorException` if the lengths are different.
 function _check_samelength(seq1, seq2)
     len = length(seq1)
     if len != length(seq2)
-        throw(
-            ErrorException(
-                "Sequences have different lengths; they are not aligned.",
-            ),
-        )
+        throw(ErrorException("Sequences have different lengths; they are not aligned."))
     end
     len
 end
