@@ -36,7 +36,7 @@ function _check_samelength(seq1, seq2)
     if len != length(seq2)
         throw(
             ErrorException(
-                "Sequences of different lengths, they aren't aligned or don't come from the same MSA.",
+                "Sequences have different lengths; they are not aligned.",
             ),
         )
     end
@@ -259,6 +259,9 @@ function percentsimilarity(msa::AbstractMatrix{Residue}, A...; out::Type = Float
     P
 end
 
+# Positives
+# =========
+
 """
     percentpositive(seq1, seq2; matrix=ResidueSubstitutionMatrices.BLOSUM62)
 
@@ -266,8 +269,8 @@ Return the percentage of positives (as in BLAST) between two
 aligned sequences. The substitution matrix is selected with the
 `matrix` keyword argument and defaults to `BLOSUM62`. Columns with gaps
 in both sequences are ignored. Residues not present in the substitution
-matrix, including `XAA` if absent, are treated as negatives but still
-count towards the alignment length.
+matrix, including `XAA` if absent, are treated as negatives (therefore, they
+count towards the alignment length).
 """
 function _percentpositive(seq1, seq2, len, matrix)
     count = 0
@@ -303,9 +306,10 @@ end
 
 Compute the percentage of positives (as in BLAST) between all pairs of
 sequences in the multiple sequence alignment `msa`. The substitution
-`matrix` is supplied via a keyword argument and defaults to `BLOSUM62`.
+matrix is supplied via the `matrix` keyword argument and defaults to `BLOSUM62`.
 The output element type is selected with the optional positional
-argument `out` (`Float64` by default).
+argument `out` (`Float64` by default). You can use `Float32` or `Float16`
+to avoid `OutOfMemoryError()` for MSAs with a large number of sequences.
 """
 function percentpositive(
     msa::AbstractMatrix{Residue},
