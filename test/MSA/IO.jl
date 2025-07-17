@@ -333,6 +333,38 @@
         end
     end
 
+    @testset "Clustal" begin
+
+        clustal_file = joinpath(DATA, "PF09645.aln")
+        clustal_num_file = joinpath(DATA, "PF09645.aln-num")
+
+        @testset "Read" begin
+            msa1 = read_file(clustal_file, Clustal)
+            msa2 = read_file(clustal_num_file, Clustal)
+            @test msa1 == msa2
+            for T in msa_types
+                @test isa(read_file(clustal_file, Clustal, T), T)
+            end
+            @test getannotcolumn(msa1, "cons") ==
+                  ".  : *: : . *. * *:   **:  ::::   *  :    : :*: :   *: ::      :"
+        end
+
+        @testset "String input/output" begin
+            msa = read_file(clustal_file, Clustal)
+            io = IOBuffer()
+            print_file(io, msa, Clustal)
+            printed = String(take!(io))
+            @test !occursin(" 58", printed)
+            @test parse_file(printed, Clustal) == msa
+
+            io = IOBuffer()
+            print_file(io, msa, Clustal; showcounts = true)
+            printed_num = String(take!(io))
+            @test occursin(" 58", printed_num)
+            @test parse_file(printed_num, Clustal) == msa
+        end
+    end
+
     @testset "Raw" begin
 
         # AnnotatedMultipleSequenceAlignment
