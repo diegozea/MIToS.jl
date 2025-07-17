@@ -2,6 +2,52 @@ _with_vdw(a::PDBAtom, resname_a::String) = (resname_a, a.atom) in keys(vanderwaa
 
 _with_cov(a::PDBAtom, resname_a::String) = a.element in keys(covalentradius)
 
+# Detect peptide bonds between two atoms
+"""
+    peptide_bond(
+        res_a::PDBResidue,
+        a::PDBAtom,
+        res_b::PDBResidue,
+        b::PDBAtom,
+        cutoff = 1.38,
+    )
+
+Return `true` if the atoms form a peptide bond.
+
+The bond is recognized when the atoms are named `"C"` and `"N"`, belong to the
+same chain and model, and are separated by at most `cutoff` Å. If neither atom is
+`"C"` nor `"N"`, the function returns `missing`.
+
+Peptide bonds have been reported in the 1.28–1.38 Å range, so the maximum value
+is used to be as inclusive as possible.
+
+# References
+
+  - [Panjikar, Santosh, and Manfred S. Weiss. "Peptide bonds revisited." IUCrJ
+    12.3 (2025): 307–321.](@cite 10.1107/S2052252525002106)
+"""
+function peptide_bond(
+    res_a::PDBResidue,
+    a::PDBAtom,
+    res_b::PDBResidue,
+    b::PDBAtom,
+    cutoff = 1.38,
+)
+    names = (a.atom, b.atom)
+    if !("C" in names && "N" in names)
+        return missing
+    end
+    if res_a.id.chain == res_b.id.chain &&
+       res_a.id.model == res_b.id.model &&
+       distance(a, b) <= cutoff
+        return true
+    end
+    return false
+end
+
+peptide_bond(res_a::PDBResidue, ia::Int, res_b::PDBResidue, ib::Int, cutoff = 1.38) =
+    peptide_bond(res_a, res_a.atoms[ia], res_b, res_b.atoms[ib], cutoff)
+
 ishydrophobic(a::PDBAtom, resname_a::String) = (resname_a, a.atom) in _hydrophobic
 
 """
@@ -80,12 +126,22 @@ vanderwaals(a::PDBResidue, b::PDBResidue) = any(vanderwaals, a, b, _with_vdw)
 # -------------------
 
 """
-Returns `true` if the distance between the atoms is less than the sum of the
-`vanderwaalsradius` of the atoms. If the atoms aren't on the list (i.e. `OXT`), the
-`vanderwaalsradius` of the element is used. If there is not data in the dict,
-distance `0.0` is used.
+    vanderwaalsclash(res_a::PDBResidue, a::PDBAtom, res_b::PDBResidue, b::PDBAtom)
+
+Return `true` if the distance between the atoms is less than the sum of their
+`vanderwaalsradius` values.
+
+Pairs detected as peptide bonds by [`peptide_bond`](@ref) are ignored. If the
+atoms are not listed (for example `OXT`), the radius of the element is used.
+Unknown elements fall back to `0.0`. Only distances are checked; no chemical
+context is considered.
 """
-function vanderwaalsclash(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
+
+function vanderwaalsclash(res_a::PDBResidue, a::PDBAtom, res_b::PDBResidue, b::PDBAtom)
+    bond = peptide_bond(res_a, a, res_b, b)
+    bond === true && return false
+    resname_a = res_a.id.name
+    resname_b = res_b.id.name
     return (
         distance(a, b) <=
         get(
@@ -100,16 +156,73 @@ function vanderwaalsclash(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
     )
 end
 
-vanderwaalsclash(a::PDBResidue, b::PDBResidue) = any(vanderwaalsclash, a, b, _with_vdw)
+vanderwaalsclash(res_a::PDBResidue, ia::Int, res_b::PDBResidue, ib::Int) =
+    vanderwaalsclash(res_a, res_a.atoms[ia], res_b, res_b.atoms[ib])
+
+function vanderwaalsclash(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
+    Base.depwarn(
+        "vanderwaalsclash(a,b,resname_a,resname_b) is deprecated. " *
+        "Use vanderwaalsclash(a,b,residue_a,residue_b) instead.",
+        :vanderwaalsclash,
+    )
+    return (
+        distance(a, b) <=
+        get(
+            vanderwaalsradius,
+            (resname_a, a.atom),
+            get(vanderwaalsradius, (resname_a, a.element), 0.0),
+        ) + get(
+            vanderwaalsradius,
+            (resname_b, b.atom),
+            get(vanderwaalsradius, (resname_b, b.element), 0.0),
+        )
+    )
+end
+
+function vanderwaalsclash(a::PDBResidue, b::PDBResidue)
+    resname_a, resname_b = a.id.name, b.id.name
+    a_atoms = a.atoms
+    b_atoms = b.atoms
+    indices_a = _find(x -> _with_vdw(x, resname_a), a_atoms)
+    indices_b = _find(x -> _with_vdw(x, resname_b), b_atoms)
+    if !isempty(indices_a) && !isempty(indices_b)
+        @inbounds for i in indices_a
+            for j in indices_b
+                atom_a = a_atoms[i]
+                atom_b = b_atoms[j]
+                bond = peptide_bond(a, atom_a, b, atom_b)
+                if (bond !== true) && vanderwaalsclash(a, atom_a, b, atom_b)
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
 
 # Covalent
 # --------
 
 """
-Returns `true` if the distance between atoms is less than the sum of the `covalentradius`
-of each atom.
+Return `true` if the distance between atoms is less than the sum of the
+`covalentradius` of each atom.
+
+For residues, the check iterates over atoms with known covalent radii and also
+reports `true` when a peptide bond is detected by [`peptide_bond`](@ref).
+Peptide bonds are considered covalent even when the `C` and `N` atoms are
+farther apart than the sum of their radii.
+
+!!! warning
+
+    Atom pairs separated by less than the sum of their covalent radii are
+    reported as covalent, even if they correspond to steric clashes rather than
+    true bonds.
+
+This method only verifies distances and does not inspect bonding angles or other
+chemical context.
 """
-function covalent(a::PDBAtom, b::PDBAtom, resname_a, resname_b) # any(... calls it with the res names
+function covalent(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
+    # any(... calls it with the residue names)
     return (
         distance(a, b) <=
         get(covalentradius, a.element, 0.0) + get(covalentradius, b.element, 0.0)
@@ -118,7 +231,28 @@ end
 
 covalent(a::PDBAtom, b::PDBAtom) = covalent(a, b, "", "")
 
-covalent(a::PDBResidue, b::PDBResidue) = any(covalent, a, b, _with_cov)
+function covalent(a::PDBResidue, b::PDBResidue)
+    resname_a, resname_b = a.id.name, b.id.name
+    a_atoms = a.atoms
+    b_atoms = b.atoms
+    indices_a = _find(x -> _with_cov(x, resname_a), a_atoms)
+    indices_b = _find(x -> _with_cov(x, resname_b), b_atoms)
+    if !isempty(indices_a) && !isempty(indices_b)
+        @inbounds for i in indices_a
+            for j in indices_b
+                atom_a = a_atoms[i]
+                atom_b = b_atoms[j]
+                bond = peptide_bond(a, atom_a, b, atom_b)
+                if bond === true
+                    return true
+                elseif covalent(atom_a, atom_b, resname_a, resname_b)
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
 
 # Disulphide
 # ----------

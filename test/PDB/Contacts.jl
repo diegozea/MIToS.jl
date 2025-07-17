@@ -520,4 +520,42 @@
         @test proximitymean(residues, [10.0, 15.0, 30.0], 6.05, include = true) ==
               [25, 110 / 3, 45] ./ 2.0
     end
+
+    @testset "Peptide bond" begin
+        res1 = PDBResidue(
+            PDBResidueIdentifier("1", "1", "ALA", "ATOM", "1", "A"),
+            [
+                PDBAtom(
+                    coordinates = Coordinates(0.0, 0.0, 0.0),
+                    atom = "C",
+                    element = "C",
+                    occupancy = 1.0,
+                    B = "0",
+                    alt_id = "",
+                    charge = "",
+                ),
+            ],
+        )
+        res2 = PDBResidue(
+            PDBResidueIdentifier("2", "2", "ALA", "ATOM", "1", "A"),
+            [
+                PDBAtom(
+                    coordinates = Coordinates(1.33, 0.0, 0.0),
+                    atom = "N",
+                    element = "N",
+                    occupancy = 1.0,
+                    B = "0",
+                    alt_id = "",
+                    charge = "",
+                ),
+            ],
+        )
+
+        @test covalent(res1, res2)
+        @test !vanderwaalsclash(res1, res2)
+        @test !vanderwaalsclash(res1, res1.atoms[1], res2, res2.atoms[1])
+        @test !vanderwaalsclash(res1, 1, res2, 1)
+        @test peptide_bond(res1, res1.atoms[1], res2, res2.atoms[1])
+        @test peptide_bond(res1, 1, res2, 1)
+    end
 end

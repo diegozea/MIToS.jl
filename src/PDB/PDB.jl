@@ -72,6 +72,7 @@ export  # PDBResidues
     ishbonddonor,
     ishbondacceptor,
     hydrogenbond,
+    peptide_bond,
     vanderwaals,
     vanderwaalsclash,
     covalent,
