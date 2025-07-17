@@ -2,6 +2,8 @@ struct Clustal <: MSAFormat end
 
 # Parser based on the format description at
 # https://meme-suite.org/meme/doc/clustalw-format.html
+# Each block ends with a line showing the degree of conservation for
+# the columns of the alignment.
 
 function _pre_readclustal(io::Union{IO,AbstractString})
     seqs = OrderedDict{String,String}()
@@ -32,15 +34,14 @@ function _pre_readclustal(io::Union{IO,AbstractString})
             in_sequence_block = true
             continue
         end
-        if in_sequence_block &&
-           startidx > 0 &&
-           ncodeunits(chomped) >= endidx &&
-           isascii(chomped) &&
-           match(seq_re, chomped) === nothing
-            # conservation line
-            # cut the conservation line using the slice defined by the first sequence
-            consblock = chomped[startidx:endidx]
-            write(conservation, consblock)
+        if in_sequence_block && isascii(chomped) && match(seq_re, chomped) === nothing
+            # conservation line found
+            first = findfirst(!isspace, chomped)
+            last = findlast(!isspace, chomped)
+            if first !== nothing && last !== nothing
+                consblock = chomped[first:last] # trim leading/trailing spaces
+                write(conservation, consblock)
+            end
             in_sequence_block = false
         end
     end
@@ -75,7 +76,7 @@ function Utils.print_file(
     block = 60
     cons = nothing
     if isa(msa, AnnotatedAlignedObject)
-        cons = getannotcolumn(msa, "cons", nothing)
+        cons = getannotcolumn(msa, "cons", "")
     end
     # Clustal prints blocks of 60 columns
     for start = 1:block:ncol  # start of a new block
