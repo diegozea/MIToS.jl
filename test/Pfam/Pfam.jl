@@ -144,7 +144,7 @@ end
                 buslje09(msa, lambda = 0.05, threshold = 62.0, samples = 0)[2],
                 contacts,
             )
-            @test isapprox(auc_value, 0.5291; atol = 0.0002)
+            @test isapprox(auc_value, 0.5291; atol = 3e-4)
         end
     end
 end
@@ -273,9 +273,9 @@ end
     end
 
     @testset "overload equivalence" begin
-        
+
         mktempdir() do tmpfolder
-            cd(tmpfolder) do 
+            cd(tmpfolder) do
                 # Compare the results from the different overloads.  Two of them
                 # download the SIFTS file on demand.
                 setannotfile!(msa_base, "AC", "PF09645.1")
