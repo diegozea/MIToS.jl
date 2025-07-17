@@ -36,10 +36,9 @@ function _pre_readclustal(io::Union{IO,AbstractString})
         end
         if in_sequence_block && isascii(chomped) && match(seq_re, chomped) === nothing
             # conservation line found
-            first = findfirst(!isspace, chomped)
-            last = findlast(!isspace, chomped)
-            if first !== nothing && last !== nothing
-                consblock = chomped[first:last] # trim leading/trailing spaces
+            stop = min(endidx, lastindex(chomped))
+            if stop >= startidx
+                consblock = chomped[startidx:stop]
                 write(conservation, consblock)
             end
             in_sequence_block = false
