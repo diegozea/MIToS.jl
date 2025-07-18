@@ -8,7 +8,7 @@ struct Clustal <: MSAFormat end
 function _pre_readclustal(io::Union{IO,AbstractString})
     seqs = OrderedDict{String,String}()
     conservation = IOBuffer()
-    seq_re = r"^(\S+)\s+([A-Za-z.-]+)(?:\s+\d+)?"
+    seq_re = r"^(\S+)\s+([A-Za-z.-]+)(?:\s+\d+)?"  # sequence line with optional count
     startidx = 0
     endidx = 0
     in_sequence_block = false # true when reading a sequence block
@@ -31,14 +31,17 @@ function _pre_readclustal(io::Union{IO,AbstractString})
             else
                 seqs[id] = seq
             end
-            in_sequence_block = true
+            in_sequence_block = true  # we are inside a sequence block now
             continue
         end
         if in_sequence_block && isascii(chomped) && match(seq_re, chomped) === nothing
             # conservation line found
             stop = min(endidx, lastindex(chomped))
             if stop >= startidx
-                consblock = chomped[startidx:stop]
+                # remove leading/trailing padding spaces from the conservation
+                # line before storing it. The remaining characters correspond
+                # to the alignment columns in this block.
+                consblock = strip(chomped[startidx:stop])
                 write(conservation, consblock)
             end
             in_sequence_block = false
@@ -86,8 +89,8 @@ function Utils.print_file(
             if showcounts
                 # append cumulative residue count as Clustal does
                 pre = stringsequence(getsequence(msa, i)[:, 1:stop])
-                count = count(ch -> ch != '-' && ch != '.', pre)
-                line *= " " * string(count)
+                rescount = Base.count(ch -> ch != '-' && ch != '.', pre)
+                line *= " " * string(rescount)
             end
             println(io, line)
         end
