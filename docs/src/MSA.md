@@ -13,7 +13,7 @@ using MIToS.MSA # to load the MSA module
 
 ## Features
 
-  - [**Read**](@ref Reading-MSA-files) and [**write**](@ref Writing-MSA-files) MSAs in `Stockholm`, `FASTA`, `A3M`, `A2M`, `PIR` or `Raw` format.
+  - [**Read**](@ref Reading-MSA-files) and [**write**](@ref Writing-MSA-files) MSAs in `Stockholm`, `FASTA`, `A3M`, `A2M`, `PIR`, `Clustal` or `Raw` format.
   - Handle [**MSA annotations**](@ref MSA-Annotations).
   - [**Edit the MSA**](@ref Editing-your-MSA), e.g. delete columns or sequences, change sequence order, shuffling...
   - [**Keep track of positions**](@ref Column-and-sequence-mappings) and annotations after modifications on the MSA.
@@ -39,7 +39,7 @@ arguments. It opens the file and uses the arguments to call the `parse_file` fun
 the file. You can `read_file` **gzipped files** if they have the `.gz` extension and
 also urls pointing to a **web file**.
 The second argument of `read_file` and `parse_file` is the file `FileFormat`. The supported MSA formats
-at the moment are `Stockholm`, `FASTA`, `PIR` (NBRF), `A3M`, `A2M`, and `Raw`.
+at the moment are `Stockholm`, `FASTA`, `PIR` (NBRF), `A3M`, `A2M`, `Clustal`, and `Raw`.
 For example, reading with MIToS the full Stockholm MSA of the Pfam family *PF09645* from
 the MIToS test data will be:
 
@@ -101,7 +101,7 @@ printmodifications(msa)
 
 Julia REPL shows MSAs as Matrices. If you want to print them in another format, you should
 use the `print_file` function with an MSA object as first argument and the `FileFormat` `FASTA`,
-`Stockholm`, `PIR` or `Raw` as second argument.
+`Stockholm`, `Clustal`, `PIR` or `Raw` as second argument.
 
 ```@example msa_write
 using MIToS.MSA
