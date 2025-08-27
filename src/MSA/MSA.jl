@@ -120,6 +120,8 @@ export  # Residue
     deletefullgapcolumns!,
     # Raw
     Raw,
+    # Clustal
+    Clustal,
     # Stockholm
     Stockholm,
     # FASTA
@@ -184,6 +186,7 @@ include("ResidueSubstitutionMatrices.jl")
 include("MSAQuality.jl")
 include("GeneralParserMethods.jl")
 include("Raw.jl")
+include("Clustal.jl")
 include("Stockholm.jl")
 include("FASTA.jl")
 include("PIR.jl")
