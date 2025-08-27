@@ -40,9 +40,9 @@ function _pre_readclustal(io::Union{IO,AbstractString})
             stop = min(endidx, lastindex(line))
             if stop >= startidx
                 # remove leading/trailing padding spaces from the conservation
-                # line before storing it. The remaining characters correspond
-                # to the alignment columns in this block.
-                consblock = strip(line[startidx:stop])
+                # line before storing it using the previously stored indices
+                # of the aligned columns in this block.
+                consblock = line[startidx:stop]
                 write(conservation, consblock)
             end
             in_sequence_block = false
