@@ -345,8 +345,9 @@
             for T in msa_types
                 @test isa(read_file(clustal_file, Clustal, T), T)
             end
-            @test getannotcolumn(msa1, "cons") ==
-                  ".  : *: : . *. * *:   **:  ::::   *  :    : :*: :   *: ::      :"
+            real_cons = "   .  : *: : . *. * *:   **:  ::::   *  :    : :*: :   *    : ::      :                                       "
+            @test getannotcolumn(msa1, "cons") == real_cons
+            @test getannotcolumn(msa2, "cons") == real_cons
         end
 
         @testset "String input/output" begin
