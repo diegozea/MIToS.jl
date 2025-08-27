@@ -34,14 +34,15 @@ function _pre_readclustal(io::Union{IO,AbstractString})
             in_sequence_block = true  # we are inside a sequence block now
             continue
         end
-        if in_sequence_block && isascii(chomped) && match(seq_re, chomped) === nothing
+        # using line instead of chomped to preserve whitespaces in the conservation line
+        if in_sequence_block && isascii(line) && match(seq_re, line) === nothing
             # conservation line found
-            stop = min(endidx, lastindex(chomped))
+            stop = min(endidx, lastindex(line))
             if stop >= startidx
                 # remove leading/trailing padding spaces from the conservation
                 # line before storing it. The remaining characters correspond
                 # to the alignment columns in this block.
-                consblock = strip(chomped[startidx:stop])
+                consblock = strip(line[startidx:stop])
                 write(conservation, consblock)
             end
             in_sequence_block = false
