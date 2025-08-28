@@ -555,6 +555,8 @@
         @test !vanderwaalsclash(res1, res2)
         @test !vanderwaalsclash(res1, res1.atoms[1], res2, res2.atoms[1])
         @test !vanderwaalsclash(res1, 1, res2, 1)
+        @test covalent(res1, res1.atoms[1], res2, res2.atoms[1])
+        @test covalent(res1, 1, res2, 1)
         @test peptide_bond(res1, res1.atoms[1], res2, res2.atoms[1])
         @test peptide_bond(res1, 1, res2, 1)
     end

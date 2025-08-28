@@ -203,7 +203,26 @@ end
 # Covalent
 # --------
 
+_covalent(a::PDBAtom, b::PDBAtom, resname_a::String, resname_b::String) = (
+    distance(a, b) <=
+    get(covalentradius, a.element, 0.0) + get(covalentradius, b.element, 0.0)
+)
+
+function covalent(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
+    Base.depwarn(
+        "covalent(a,b,resname_a,resname_b) is deprecated. " *
+        "Use covalent(res_a,a,res_b,b) instead.",
+        :covalent,
+    )
+    return _covalent(a, b, resname_a, resname_b)
+end
+
+
+covalent(a::PDBAtom, b::PDBAtom) = _covalent(a, b, "", "")
+
 """
+    covalent(res_a::PDBResidue, a::PDBAtom, res_b::PDBResidue, b::PDBAtom)
+
 Return `true` if the distance between atoms is less than the sum of the
 `covalentradius` of each atom.
 
@@ -221,31 +240,24 @@ farther apart than the sum of their radii.
 This method only verifies distances and does not inspect bonding angles or other
 chemical context.
 """
-function covalent(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
-    # any(... calls it with the residue names)
-    return (
-        distance(a, b) <=
-        get(covalentradius, a.element, 0.0) + get(covalentradius, b.element, 0.0)
-    )
+function covalent(res_a::PDBResidue, a::PDBAtom, res_b::PDBResidue, b::PDBAtom)
+    bond = peptide_bond(res_a, a, res_b, b)
+    bond === true && return true
+    return covalent(a, b, res_a.id.name, res_b.id.name)
 end
 
-covalent(a::PDBAtom, b::PDBAtom) = covalent(a, b, "", "")
+covalent(res_a::PDBResidue, ia::Int, res_b::PDBResidue, ib::Int) =
+    covalent(res_a, res_a.atoms[ia], res_b, res_b.atoms[ib])
 
 function covalent(a::PDBResidue, b::PDBResidue)
-    resname_a, resname_b = a.id.name, b.id.name
     a_atoms = a.atoms
     b_atoms = b.atoms
-    indices_a = _find(x -> _with_cov(x, resname_a), a_atoms)
-    indices_b = _find(x -> _with_cov(x, resname_b), b_atoms)
+    indices_a = _find(x -> _with_cov(x, a.id.name), a_atoms)
+    indices_b = _find(x -> _with_cov(x, b.id.name), b_atoms)
     if !isempty(indices_a) && !isempty(indices_b)
         @inbounds for i in indices_a
             for j in indices_b
-                atom_a = a_atoms[i]
-                atom_b = b_atoms[j]
-                bond = peptide_bond(a, atom_a, b, atom_b)
-                if bond === true
-                    return true
-                elseif covalent(atom_a, atom_b, resname_a, resname_b)
+                if covalent(a, a_atoms[i], b, b_atoms[j])
                     return true
                 end
             end

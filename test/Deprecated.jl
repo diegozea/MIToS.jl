@@ -225,6 +225,42 @@
             residue = "1",
             atom = "CA",
         )
+
+        res1 = PDBResidue(
+            PDBResidueIdentifier("1", "1", "ALA", "ATOM", "1", "A"),
+            [
+                PDBAtom(
+                    coordinates = Coordinates(0.0, 0.0, 0.0),
+                    atom = "C",
+                    element = "C",
+                    occupancy = 1.0,
+                    B = "0",
+                    alt_id = "",
+                    charge = "",
+                ),
+            ],
+        )
+        res2 = PDBResidue(
+            PDBResidueIdentifier("2", "2", "ALA", "ATOM", "1", "A"),
+            [
+                PDBAtom(
+                    coordinates = Coordinates(1.33, 0.0, 0.0),
+                    atom = "N",
+                    element = "N",
+                    occupancy = 1.0,
+                    B = "0",
+                    alt_id = "",
+                    charge = "",
+                ),
+            ],
+        )
+        @test_deprecated vanderwaalsclash(
+            res1.atoms[1],
+            res2.atoms[1],
+            res1.id.name,
+            res2.id.name,
+        )
+        @test_deprecated covalent(res1.atoms[1], res2.atoms[1], res1.id.name, res2.id.name)
     end
 
     @testset "Utilities" begin
