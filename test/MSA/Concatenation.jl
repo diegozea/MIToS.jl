@@ -1577,10 +1577,16 @@ end
                         FASTA,
                         generatemapping = true,
                     )
-                    @test_throws ErrorException join_msas(msa_simple, msa_other, kind = :inner)
+                    @test_throws ErrorException join_msas(
+                        msa_simple,
+                        msa_other,
+                        kind = :inner,
+                    )
                     outer_join = join_msas(msa_simple, msa_other, kind = :outer)
-                    @test vec(gapfraction(outer_join, 1)) == [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
-                    @test vec(gapfraction(outer_join, 2)) == [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
+                    @test vec(gapfraction(outer_join, 1)) ==
+                          [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
+                    @test vec(gapfraction(outer_join, 2)) ==
+                          [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
                     right_join = join_msas(msa_simple, msa_other, kind = :right)
                     @test vec(gapfraction(right_join, 1)) == [6, 6, 0, 0, 0, 0, 0, 0] ./ 6
                     @test vec(gapfraction(right_join, 2)) == [2, 2, 2, 2, 2, 2] ./ (6 + 2)
@@ -1613,10 +1619,17 @@ end
                         ["X" * string(i) for i = 1:ncolumns(msa_other)],
                         2,
                     )
-                    @test_throws ErrorException join_msas(msa_simple, msa_other; axis = 2, kind = :inner)
+                    @test_throws ErrorException join_msas(
+                        msa_simple,
+                        msa_other;
+                        axis = 2,
+                        kind = :inner,
+                    )
                     outer_join = join_msas(msa_simple, msa_other; axis = 2, kind = :outer)
-                    @test vec(gapfraction(outer_join, 1)) == [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
-                    @test vec(gapfraction(outer_join, 2)) == [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
+                    @test vec(gapfraction(outer_join, 1)) ==
+                          [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
+                    @test vec(gapfraction(outer_join, 2)) ==
+                          [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
                     right_join = join_msas(msa_simple, msa_other; axis = 2, kind = :right)
                     @test vec(gapfraction(right_join, 1)) == [2, 2, 2, 2, 2, 2] ./ (6 + 2)
                     @test vec(gapfraction(right_join, 2)) == [6, 6, 0, 0, 0, 0, 0, 0] ./ 6

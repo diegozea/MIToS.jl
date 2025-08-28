@@ -411,7 +411,7 @@
 
     @testset "AnnotatedSequence from raw matrix" begin
         rawmat = reshape(res"AC", 1, 2)
-        ann = Annotations();
+        ann = Annotations()
         setannotfile!(ann, "Note", "foo")
         seq_from_raw = AnnotatedSequence(rawmat, ann)
         @test dimnames(seq_from_raw) == ["Seq", "Pos"]
@@ -431,7 +431,7 @@
 
     @testset "AnnotatedSequence from AnnotatedAlignedSequence" begin
         mat_gap = NamedArray(reshape(res"A-C", 1, 3))
-        ann = Annotations();
+        ann = Annotations()
         setannotfile!(ann, "Note", "foo")
         aas = AnnotatedAlignedSequence(mat_gap, ann) # has gaps as it is aligned
         seq_from_aas = AnnotatedSequence(aas) # deletes gaps to get the unaligned sequence
