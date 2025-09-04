@@ -559,5 +559,6 @@
         @test covalent(res1, 1, res2, 1)
         @test peptide_bond(res1, res1.atoms[1], res2, res2.atoms[1])
         @test peptide_bond(res1, 1, res2, 1)
+        @test peptide_bond(res1, res2)
     end
 end

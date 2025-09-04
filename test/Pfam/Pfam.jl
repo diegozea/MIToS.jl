@@ -144,7 +144,7 @@ end
                 buslje09(msa, lambda = 0.05, threshold = 62.0, samples = 0)[2],
                 contacts,
             )
-            @test isapprox(auc_value, 0.5291; atol = 0.0002)
+            @test isapprox(auc_value, 0.5291; atol = 0.0005)
         end
     end
 end

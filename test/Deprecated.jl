@@ -13,14 +13,14 @@
         tmp2 = tempname()
         @test_deprecated write(tmp2, msa_matrix, Stockholm)
         @test read(tmp1, String) == read(tmp2, String)
-        rm(tmp1);
+        rm(tmp1)
         rm(tmp2)
 
-        io1 = IOBuffer();
-        print_file(io1, msa_matrix, Stockholm);
+        io1 = IOBuffer()
+        print_file(io1, msa_matrix, Stockholm)
         str1 = String(take!(io1))
-        io2 = IOBuffer();
-        @test_deprecated print(io2, msa_matrix, Stockholm);
+        io2 = IOBuffer()
+        @test_deprecated print(io2, msa_matrix, Stockholm)
         str2 = String(take!(io2))
         @test str1 == str2
 
@@ -39,7 +39,7 @@
         @test_deprecated join(ann_msa, ann_msa, pair) == joined_new
 
         rng = MersenneTwister(1)
-        copy1 = copy(msa_matrix);
+        copy1 = copy(msa_matrix)
         copy2 = copy(msa_matrix)
         expected = shuffle_msa!(rng, copy1; dims = 1, fixedgaps = true) |> getresidues
         rng = MersenneTwister(1)
@@ -225,42 +225,6 @@
             residue = "1",
             atom = "CA",
         )
-
-        res1 = PDBResidue(
-            PDBResidueIdentifier("1", "1", "ALA", "ATOM", "1", "A"),
-            [
-                PDBAtom(
-                    coordinates = Coordinates(0.0, 0.0, 0.0),
-                    atom = "C",
-                    element = "C",
-                    occupancy = 1.0,
-                    B = "0",
-                    alt_id = "",
-                    charge = "",
-                ),
-            ],
-        )
-        res2 = PDBResidue(
-            PDBResidueIdentifier("2", "2", "ALA", "ATOM", "1", "A"),
-            [
-                PDBAtom(
-                    coordinates = Coordinates(1.33, 0.0, 0.0),
-                    atom = "N",
-                    element = "N",
-                    occupancy = 1.0,
-                    B = "0",
-                    alt_id = "",
-                    charge = "",
-                ),
-            ],
-        )
-        @test_deprecated vanderwaalsclash(
-            res1.atoms[1],
-            res2.atoms[1],
-            res1.id.name,
-            res2.id.name,
-        )
-        @test_deprecated covalent(res1.atoms[1], res2.atoms[1], res1.id.name, res2.id.name)
     end
 
     @testset "Utilities" begin

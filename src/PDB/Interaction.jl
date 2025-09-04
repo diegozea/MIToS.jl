@@ -32,6 +32,9 @@ function peptide_bond(
     res_b::PDBResidue,
     b::PDBAtom,
     cutoff = 1.38,
+    # NOTE: 1.38 is lower than the bond length calculated using covalent radii, 
+    # which is 1.617 Å calculated as (0.76 Å + 0.71 Å) * 1.1
+    # This means, that the covalent function will always return true for peptide bonds.
 )
     names = (a.atom, b.atom)
     if !("C" in names && "N" in names)
@@ -47,6 +50,24 @@ end
 
 peptide_bond(res_a::PDBResidue, ia::Int, res_b::PDBResidue, ib::Int, cutoff = 1.38) =
     peptide_bond(res_a, res_a.atoms[ia], res_b, res_b.atoms[ib], cutoff)
+
+function peptide_bond(res_a::PDBResidue, res_b::PDBResidue, cutoff = 1.38)
+    if res_a != res_b
+        indices_a = findall(x -> x.atom == "C", res_a.atoms)
+        indices_b = findall(x -> x.atom == "N", res_b.atoms)
+        if length(indices_a) != 0 && length(indices_b) != 0
+            @inbounds for i in indices_a
+                for j in indices_b
+                    if peptide_bond(res_a, res_a.atoms[i], res_b, res_b.atoms[j], cutoff)
+                        return true
+                    end
+                end
+            end
+            return false
+        end
+    end
+    missing
+end
 
 ishydrophobic(a::PDBAtom, resname_a::String) = (resname_a, a.atom) in _hydrophobic
 
@@ -77,12 +98,29 @@ ishbondacceptor(a::PDBAtom, resname_a::String) =
     (resname_a, a.atom) in keys(_hbond_acceptor)
 
 """
-`any(f::Function, a::PDBResidue, b::PDBResidue, criteria::Function)`
+`any(f::Function, a::PDBResidue, b::PDBResidue, criteria::Function; kwargs...)`
 
 Test if the function `f` is true for any pair of atoms between the residues `a` and `b`.
-This function only test atoms that returns `true` for the fuction `criteria`.
+This function only tests atoms that return `true` for the function `criteria`.
+Any keyword arguments provided are forwarded to `f`. The function `f` must return a
+boolean value and have the following signature:
+
+```julia
+f(a::PDBAtom, b::PDBAtom, resname_a::String, resname_b::String; kwargs...)
+```
+
+For example, the functions [`covalent`](@ref), [`vanderwaals`](@ref),
+[`vanderwaalsclash`](@ref), [`disulphide`](@ref), [`aromaticsulphur`](@ref),
+[`pication`](@ref), [`ionic`](@ref), and [`hydrophobic`](@ref) can be used with `any`.
+
+The function `criteria` should also return a boolean value and it should have the
+following signature:
+
+```julia
+criteria(a::PDBAtom, resname_a::String)
+```
 """
-function Base.any(f::Function, a::PDBResidue, b::PDBResidue, criteria::Function)
+function Base.any(f::Function, a::PDBResidue, b::PDBResidue, criteria::Function; kwargs...)
     resname_a, resname_b = a.id.name, b.id.name
     a_atoms = a.atoms
     b_atoms = b.atoms
@@ -91,20 +129,138 @@ function Base.any(f::Function, a::PDBResidue, b::PDBResidue, criteria::Function)
     if length(indices_a) != 0 && length(indices_b) != 0
         @inbounds for i in indices_a
             for j in indices_b
-                if f(a_atoms[i], b_atoms[j], resname_a, resname_b)
-                    return (true)
+                if f(a_atoms[i], b_atoms[j], resname_a, resname_b; kwargs...)
+                    return true
                 end
             end
         end
     end
-    return (false)
+    false
 end
 
 # Interaction types
 # =================
 
+# Covalent
+# --------
+
+function _get_covalent_radius(atom::PDBAtom)
+    element = atom.element
+    if haskey(covalentradius, element)
+        covalentradius[element]
+    else
+        @warn(
+            "Element $element not found in `covalentradius`; using 0.0 as default",
+            maxlog = 1,
+            _id = ("covalentradius", element)
+        )
+        0.0
+    end
+end
+
+"""
+    covalent(
+        a::PDBAtom,
+        b::PDBAtom;
+        tolerance_factor::Float64 = 1.1,
+    )
+
+Return `true` if the distance between atoms is less than the sum of the
+[`covalentradius`](@ref) of each atom taking into account the tolerance factor.
+By default, the tolerance factor is set to `1.1`, allowing for a 10% increase in the sum
+of the covalent radii. This multiplicative factor can be adjusted using the
+`tolerance_factor` keyword argument. This function is based on equation 5 from
+*Kim and Kim (2015)*. Covalent radii are obtained from Cordero et al. (2008). If the
+element is not listed in [`covalentradius`](@ref), the radius is set to `0.0`, and this
+function will return `false`.
+
+!!! warning
+
+    This check considers only interatomic distances; it does not evaluate bond angles,
+    coordination, or other chemical context. Any atom pair closer than the sum of their
+    covalent radii (taking into account the tolerance factor) is flagged as a covalent
+    contact, even if this corresponds to a steric clash rather than a true bond.
+
+# References
+
+    - [Kim, Y. and Kim, W.Y. (2015), Universal Structure Conversion Method for Organic
+      Molecules: From Atomic Connectivity to Three-Dimensional Geometry. 
+      Bull. Korean Chem. Soc., 36: 1769-1777.](@cite https://doi.org/10.1002/bkcs.10334)
+"""
+function covalent(
+    a::PDBAtom,
+    b::PDBAtom;
+    tolerance_factor::Float64 = 1.1, # 10% tolerance
+)
+    # 0.0 as default to avoid defining bonds for elements without known covalent radius    
+    rᵢ = _get_covalent_radius(a)
+    rⱼ = _get_covalent_radius(b)
+    if rᵢ == 0.0 || rⱼ == 0.0
+        @warn(
+            "Covalent bonds are undefined when the covalent radius is unknown (i.e., 0.0).",
+            maxlog = 1
+        )
+        return false
+    end
+    dᵢⱼ = distance(a, b)
+    dᵢⱼ <= (tolerance_factor * (rᵢ + rⱼ))
+end
+
+function covalent(
+    a::PDBAtom,
+    b::PDBAtom,
+    # the `any` function will call this function with the resnames
+    resname_a::String,
+    resname_b::String;
+    tolerance_factor::Float64 = 1.1,
+)
+    covalent(a, b, tolerance_factor = tolerance_factor)
+end
+
+covalent(
+    res_a::PDBResidue,
+    ia::Int,
+    res_b::PDBResidue,
+    ib::Int;
+    tolerance_factor::Float64 = 1.1,
+) = covalent(res_a.atoms[ia], res_b.atoms[ib], tolerance_factor = tolerance_factor)
+
+covalent(
+    res_a::PDBResidue,
+    atom_a::PDBAtom,
+    res_b::PDBResidue,
+    atom_b::PDBAtom;
+    tolerance_factor::Float64 = 1.1,
+) = covalent(atom_a, atom_b, tolerance_factor = tolerance_factor)
+
+function covalent(a::PDBResidue, b::PDBResidue; tolerance_factor::Float64 = 1.1)
+    any(covalent, a, b, _with_cov; tolerance_factor = tolerance_factor)
+end
+
 # van der Waals
 # -------------
+
+function _get_vanderwaals_radius(atom::PDBAtom, resname::String)
+    if haskey(vanderwaalsradius, (resname, atom.atom))
+        vanderwaalsradius[(resname, atom.atom)]
+    else
+        @warn(
+            "Atom $(atom.atom) in residue $resname not found in `vanderwaalsradius`; using element radius as default",
+            maxlog = 1,
+            _id = ("vanderwaalsradius", resname, atom.atom)
+        )
+        if haskey(vanderwaalsradius_alvarez_2013, atom.element)
+            vanderwaalsradius_alvarez_2013[atom.element]
+        else
+            @warn(
+                "Element $(atom.element) not found in `vanderwaalsradius_alvarez_2013`; using 0.0 as default",
+                maxlog = 1,
+                _id = ("vanderwaalsradius_alvarez_2013", atom.element)
+            )
+            0.0
+        end
+    end
+end
 
 """
 Test if two atoms or residues are in van der Waals contact using:
@@ -112,12 +268,8 @@ Test if two atoms or residues are in van der Waals contact using:
 It returns distance `<= 0.5` if the atoms aren't in `vanderwaalsradius`.
 """
 function vanderwaals(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
-    return (
-        distance(a, b) <=
-        0.5 +
-        get(vanderwaalsradius, (resname_a, a.atom), 0.0) +
-        get(vanderwaalsradius, (resname_b, b.atom), 0.0)
-    )
+    distance(a, b) <=
+    (0.5 + _get_vanderwaals_radius(a, resname_a) + _get_vanderwaals_radius(b, resname_b))
 end
 
 vanderwaals(a::PDBResidue, b::PDBResidue) = any(vanderwaals, a, b, _with_vdw)
@@ -126,144 +278,37 @@ vanderwaals(a::PDBResidue, b::PDBResidue) = any(vanderwaals, a, b, _with_vdw)
 # -------------------
 
 """
-    vanderwaalsclash(res_a::PDBResidue, a::PDBAtom, res_b::PDBResidue, b::PDBAtom)
+    vanderwaalsclash(a::PDBAtom, b::PDBAtom, resname_a::String, resname_b::String)
 
 Return `true` if the distance between the atoms is less than the sum of their
 `vanderwaalsradius` values.
 
-Pairs detected as peptide bonds by [`peptide_bond`](@ref) are ignored. If the
+Pairs detected as covalent bonds by [`covalent`](@ref) are ignored. If the
 atoms are not listed (for example `OXT`), the radius of the element is used.
-Unknown elements fall back to `0.0`. Only distances are checked; no chemical
-context is considered.
+Unknown elements fall back to `0.0` returning `false`. Only distances are checked;
+no chemical context is considered.
 """
-
-function vanderwaalsclash(res_a::PDBResidue, a::PDBAtom, res_b::PDBResidue, b::PDBAtom)
-    bond = peptide_bond(res_a, a, res_b, b)
-    bond === true && return false
-    resname_a = res_a.id.name
-    resname_b = res_b.id.name
-    return (
-        distance(a, b) <=
-        get(
-            vanderwaalsradius,
-            (resname_a, a.atom),
-            get(vanderwaalsradius, (resname_a, a.element), 0.0),
-        ) + get(
-            vanderwaalsradius,
-            (resname_b, b.atom),
-            get(vanderwaalsradius, (resname_b, b.element), 0.0),
-        )
-    )
+function vanderwaalsclash(a::PDBAtom, b::PDBAtom, resname_a::String, resname_b::String)
+    if covalent(a, b)
+        return false
+    end
+    r_vdW_a = _get_vanderwaals_radius(a, resname_a)
+    r_vdW_b = _get_vanderwaals_radius(b, resname_b)
+    if r_vdW_a == 0.0 || r_vdW_b == 0.0
+        false
+    else
+        distance(a, b) <= (r_vdW_a + r_vdW_b)
+    end
 end
 
 vanderwaalsclash(res_a::PDBResidue, ia::Int, res_b::PDBResidue, ib::Int) =
-    vanderwaalsclash(res_a, res_a.atoms[ia], res_b, res_b.atoms[ib])
+    vanderwaalsclash(res_a.atoms[ia], res_b.atoms[ib], res_a.id.name, res_b.id.name)
 
-function vanderwaalsclash(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
-    Base.depwarn(
-        "vanderwaalsclash(a,b,resname_a,resname_b) is deprecated. " *
-        "Use vanderwaalsclash(a,b,residue_a,residue_b) instead.",
-        :vanderwaalsclash,
-    )
-    return (
-        distance(a, b) <=
-        get(
-            vanderwaalsradius,
-            (resname_a, a.atom),
-            get(vanderwaalsradius, (resname_a, a.element), 0.0),
-        ) + get(
-            vanderwaalsradius,
-            (resname_b, b.atom),
-            get(vanderwaalsradius, (resname_b, b.element), 0.0),
-        )
-    )
-end
+vanderwaalsclash(res_a::PDBResidue, atom_a::PDBAtom, res_b::PDBResidue, atom_b::PDBAtom) =
+    vanderwaalsclash(atom_a, atom_b, res_a.id.name, res_b.id.name)
 
 function vanderwaalsclash(a::PDBResidue, b::PDBResidue)
-    resname_a, resname_b = a.id.name, b.id.name
-    a_atoms = a.atoms
-    b_atoms = b.atoms
-    indices_a = _find(x -> _with_vdw(x, resname_a), a_atoms)
-    indices_b = _find(x -> _with_vdw(x, resname_b), b_atoms)
-    if !isempty(indices_a) && !isempty(indices_b)
-        @inbounds for i in indices_a
-            for j in indices_b
-                atom_a = a_atoms[i]
-                atom_b = b_atoms[j]
-                bond = peptide_bond(a, atom_a, b, atom_b)
-                if (bond !== true) && vanderwaalsclash(a, atom_a, b, atom_b)
-                    return true
-                end
-            end
-        end
-    end
-    return false
-end
-
-# Covalent
-# --------
-
-_covalent(a::PDBAtom, b::PDBAtom, resname_a::String, resname_b::String) = (
-    distance(a, b) <=
-    get(covalentradius, a.element, 0.0) + get(covalentradius, b.element, 0.0)
-)
-
-function covalent(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
-    Base.depwarn(
-        "covalent(a,b,resname_a,resname_b) is deprecated. " *
-        "Use covalent(res_a,a,res_b,b) instead.",
-        :covalent,
-    )
-    return _covalent(a, b, resname_a, resname_b)
-end
-
-
-covalent(a::PDBAtom, b::PDBAtom) = _covalent(a, b, "", "")
-
-"""
-    covalent(res_a::PDBResidue, a::PDBAtom, res_b::PDBResidue, b::PDBAtom)
-
-Return `true` if the distance between atoms is less than the sum of the
-`covalentradius` of each atom.
-
-For residues, the check iterates over atoms with known covalent radii and also
-reports `true` when a peptide bond is detected by [`peptide_bond`](@ref).
-Peptide bonds are considered covalent even when the `C` and `N` atoms are
-farther apart than the sum of their radii.
-
-!!! warning
-
-    Atom pairs separated by less than the sum of their covalent radii are
-    reported as covalent, even if they correspond to steric clashes rather than
-    true bonds.
-
-This method only verifies distances and does not inspect bonding angles or other
-chemical context.
-"""
-function covalent(res_a::PDBResidue, a::PDBAtom, res_b::PDBResidue, b::PDBAtom)
-    bond = peptide_bond(res_a, a, res_b, b)
-    bond === true && return true
-    return covalent(a, b, res_a.id.name, res_b.id.name)
-end
-
-covalent(res_a::PDBResidue, ia::Int, res_b::PDBResidue, ib::Int) =
-    covalent(res_a, res_a.atoms[ia], res_b, res_b.atoms[ib])
-
-function covalent(a::PDBResidue, b::PDBResidue)
-    a_atoms = a.atoms
-    b_atoms = b.atoms
-    indices_a = _find(x -> _with_cov(x, a.id.name), a_atoms)
-    indices_b = _find(x -> _with_cov(x, b.id.name), b_atoms)
-    if !isempty(indices_a) && !isempty(indices_b)
-        @inbounds for i in indices_a
-            for j in indices_b
-                if covalent(a, a_atoms[i], b, b_atoms[j])
-                    return true
-                end
-            end
-        end
-    end
-    return false
+    any(vanderwaalsclash, a, b, _with_vdw)
 end
 
 # Disulphide
