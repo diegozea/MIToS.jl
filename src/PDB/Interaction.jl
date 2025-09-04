@@ -1,4 +1,4 @@
-_with_vdw(a::PDBAtom, resname_a::String) = (resname_a, a.atom) in keys(vanderwaalsradius)
+_with_vdw(a::PDBAtom, resname_a::String) = a.element in keys(VAN_DER_WAALS_RADII)
 
 _with_cov(a::PDBAtom, resname_a::String) = a.element in keys(covalentradius)
 
@@ -240,37 +240,48 @@ end
 # van der Waals
 # -------------
 
-function _get_vanderwaals_radius(atom::PDBAtom, resname::String)
-    if haskey(vanderwaalsradius, (resname, atom.atom))
-        vanderwaalsradius[(resname, atom.atom)]
+function _get_vanderwaals_radius(atom::PDBAtom)
+    if haskey(VAN_DER_WAALS_RADII, atom.element)
+        VAN_DER_WAALS_RADII[atom.element]
     else
         @warn(
-            "Atom $(atom.atom) in residue $resname not found in `vanderwaalsradius`; using element radius as default",
+            "Element $(atom.element) not found in `VAN_DER_WAALS_RADII`; using 0.0 as default",
             maxlog = 1,
-            _id = ("vanderwaalsradius", resname, atom.atom)
+            _id = ("VAN_DER_WAALS_RADII", atom.element)
         )
-        if haskey(vanderwaalsradius_alvarez_2013, atom.element)
-            vanderwaalsradius_alvarez_2013[atom.element]
-        else
-            @warn(
-                "Element $(atom.element) not found in `vanderwaalsradius_alvarez_2013`; using 0.0 as default",
-                maxlog = 1,
-                _id = ("vanderwaalsradius_alvarez_2013", atom.element)
-            )
-            0.0
-        end
+        0.0
     end
 end
 
 """
-Test if two atoms or residues are in van der Waals contact using:
-`distance(a,b) <= 0.5 + vanderwaalsradius[a] + vanderwaalsradius[b]`.
-It returns distance `<= 0.5` if the atoms aren't in `vanderwaalsradius`.
+    vanderwaals(a::PDBAtom, b::PDBAtom)
+
+Test if two atoms or residues are in van der Waals contact using the criterion in
+Alvarez (2013). That means, if the distance between two atoms is between 0.7 Å less
+and 0.7 Å more than the sum of their van der Waals radii. If the element is not listed
+in [`VAN_DER_WAALS_RADII`](@ref), the radius is set to `0.0`, and this function will
+return `false`.
+
+# References
+
+    - [Alvarez, Santiago. "A cartography of the van der Waals territories." Dalton 
+      Transactions 42.24 (2013): 8617-8636.](@cite C3DT50599E)
 """
-function vanderwaals(a::PDBAtom, b::PDBAtom, resname_a, resname_b)
-    distance(a, b) <=
-    (0.5 + _get_vanderwaals_radius(a, resname_a) + _get_vanderwaals_radius(b, resname_b))
+function vanderwaals(a::PDBAtom, b::PDBAtom)
+    d_ab = distance(a, b)
+    r_vdW_a = _get_vanderwaals_radius(a)
+    r_vdW_b = _get_vanderwaals_radius(b)
+    if r_vdW_a == 0.0 || r_vdW_b == 0.0
+        false
+    else
+        dw = r_vdW_a + r_vdW_b
+        (dw - 0.7) <= d_ab <= (dw + 0.7)
+    end
 end
+
+# Definition to use with the `any` function
+vanderwaals(a::PDBAtom, b::PDBAtom, resname_a::String, resname_b::String) =
+    vanderwaals(a, b)
 
 vanderwaals(a::PDBResidue, b::PDBResidue) = any(vanderwaals, a, b, _with_vdw)
 
@@ -278,34 +289,43 @@ vanderwaals(a::PDBResidue, b::PDBResidue) = any(vanderwaals, a, b, _with_vdw)
 # -------------------
 
 """
-    vanderwaalsclash(a::PDBAtom, b::PDBAtom, resname_a::String, resname_b::String)
+    vanderwaalsclash(a::PDBAtom, b::PDBAtom)
 
-Return `true` if the distance between the atoms is less than the sum of their
-`vanderwaalsradius` values.
+This function considered a van der Waals clash if the distance between two atoms falls
+within the van der Waals gap as defined by Alvarez (2013). That means, if the distance
+between two atoms that are not covalently bonded is less than or equal to the sum of their
+van der Waals radii less 0.7 Å. Here we use the [`covalent`](@ref) function to check for
+covalent bonds instead of fixing a distance threshold as in Alvarez (2013) — that paper
+suggest that _"distances shorter than the radii sum by more than 1.3 Å correspond most
+likely to a chemical bond"_. Unknown elements fall back to `0.0` returning `false`.
+Only distances are checked; no chemical context is considered.
 
-Pairs detected as covalent bonds by [`covalent`](@ref) are ignored. If the
-atoms are not listed (for example `OXT`), the radius of the element is used.
-Unknown elements fall back to `0.0` returning `false`. Only distances are checked;
-no chemical context is considered.
+# References
+
+    - [Alvarez, Santiago. "A cartography of the van der Waals territories." Dalton 
+      Transactions 42.24 (2013): 8617-8636.](@cite C3DT50599E)
 """
-function vanderwaalsclash(a::PDBAtom, b::PDBAtom, resname_a::String, resname_b::String)
+function vanderwaalsclash(a::PDBAtom, b::PDBAtom)
     if covalent(a, b)
         return false
     end
-    r_vdW_a = _get_vanderwaals_radius(a, resname_a)
-    r_vdW_b = _get_vanderwaals_radius(b, resname_b)
+    r_vdW_a = _get_vanderwaals_radius(a)
+    r_vdW_b = _get_vanderwaals_radius(b)
     if r_vdW_a == 0.0 || r_vdW_b == 0.0
         false
     else
-        distance(a, b) <= (r_vdW_a + r_vdW_b)
+        distance(a, b) < (r_vdW_a + r_vdW_b - 0.7)
     end
 end
 
+vanderwaalsclash(a::PDBAtom, b::PDBAtom, resname_a::String, resname_b::String) =
+    vanderwaalsclash(a, b)
+
 vanderwaalsclash(res_a::PDBResidue, ia::Int, res_b::PDBResidue, ib::Int) =
-    vanderwaalsclash(res_a.atoms[ia], res_b.atoms[ib], res_a.id.name, res_b.id.name)
+    vanderwaalsclash(res_a.atoms[ia], res_b.atoms[ib])
 
 vanderwaalsclash(res_a::PDBResidue, atom_a::PDBAtom, res_b::PDBResidue, atom_b::PDBAtom) =
-    vanderwaalsclash(atom_a, atom_b, res_a.id.name, res_b.id.name)
+    vanderwaalsclash(atom_a, atom_b)
 
 function vanderwaalsclash(a::PDBResidue, b::PDBResidue)
     any(vanderwaalsclash, a, b, _with_vdw)

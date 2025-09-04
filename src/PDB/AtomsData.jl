@@ -134,6 +134,11 @@ const _3_letter_aa = String[
 """
 van der Waals radius in Å from the Additional file 1 of *Bickerton et al.*
 
+!!! warning
+
+    This variable is deprecated and will be removed in future releases. Please use
+    [`VAN_DER_WAALS_RADII`](@ref) instead.
+
 # References
 
     - [Bickerton, George R., Alicia P. Higueruelo, and Tom L. Blundell. "Comprehensive, 
@@ -312,14 +317,15 @@ const vanderwaalsradius = Dict{Tuple{String,String},Float64}(
 )
 
 """
-A dictionary from element symbol to van der Waals radius in Å from Alvarez 2013 (Table S1).
+A dictionary mapping element symbols to their van der Waals radii (in Å),
+as reported by Alvarez (2013, Table S1).
 
 # References
 
     - [Alvarez, Santiago. "A cartography of the van der Waals territories." Dalton 
       Transactions 42.24 (2013): 8617-8636.](@cite C3DT50599E)
 """
-const vanderwaalsradius_alvarez_2013 = Dict{String,Float64}(
+const VAN_DER_WAALS_RADII = Dict{String,Float64}(
     "H" => 1.2,
     "He" => 1.43,
     "Li" => 2.12,

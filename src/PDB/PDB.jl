@@ -63,7 +63,7 @@ export  # PDBResidues
     # AtomsData
     covalentradius,
     vanderwaalsradius,
-    vanderwaalsradius_alvarez_2013,
+    VAN_DER_WAALS_RADII,
     check_atoms_for_interactions,
     # Interaction
     ishydrophobic,
