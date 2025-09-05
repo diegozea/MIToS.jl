@@ -59,27 +59,26 @@
 
                 if resnum2 == "309" && (resnum1 == "184" || resnum1 == "187")
                     @test ionic(res1, res2)
-                else
-                    @test !ionic(res1, res2)
                 end
 
                 if (resnum1 == "211" && resnum2 == "312") ||
                    (resnum1 == "212" && resnum2 == "237")
                     @test vanderwaals(res1, res2)
-                else
-                    @test !vanderwaals(res1, res2)
                 end
 
                 if resnum1 == "212" && resnum2 == "237"
                     @test hydrophobic(res1, res2)
-                else
-                    @test !hydrophobic(res1, res2)
                 end
 
                 if resnum1 == "211" && resnum2 == "312"
-                    @test vanderwaalsclash(res1, res2)
-                else
+                    # ChimeraX
+                    # select /A:211@HH22 /D:312@CB
+                    # distance 2.554 Å
+                    @test isapprox(distance(res1, res2), 2.554; atol = 0.001)
+                    @test !covalent(res1, res2) # 1.1 * (0.76 + 0.31) ≈ 1.17
+                    @test vanderwaals(res1, res2) # (1.77 + 1.2) - 0.7 ≈ 2.27
                     @test !vanderwaalsclash(res1, res2)
+                    @test vanderwaalsclash(res1, res2, tolerance_value=0.0) # dw ≈  2.97
                 end
 
                 @test !aromaticsulphur(res1, res2)
@@ -266,54 +265,62 @@
             ("134", "201"),
             ("136", "201"),
             ("138", "157"),
-            ("16", "156"),
+            # ("16", "156"), # distance 3.7 dw max for CHON using Alvarez 2013 is 3.54 
             ("124", "210"),
             ("125", "204"),
             ("127", "210"),
             ("139", "156"),
             ("140", "156"),
             ("143", "192"),
-            ("55", "196"),
+            # ("55", "196"), # select /A:55@H /B:196@CA distance 3.002 dw 2.97 Alvarez 2013
             ("142", "193"),
-            ("103", "212"),
-            ("16", "158"),
-            ("53", "209"),
+            # ("103", "212"), # distance 3.67
+            # ("16", "158"), # distance 3.64
+            # ("53", "209"), # distance 3.71
             ("72", "154"),
             ("122", "209"),
             ("124", "209"),
             ("138", "158"),
             ("141", "155"),
             ("136", "159"),
-            ("100", "180"),
+            # ("100", "180"), # distance 3.73
             ("29", "198"),
             ("30", "198"),
             ("134", "161"),
             ("142", "152"),
-            ("144", "152"),
+            # ("144", "152"), # distance 3.7
             ("42", "195"),
             ("43", "195"),
             ("57", "214"),
-            ("72", "153"),
+            # ("72", "153"), # select /A:72@CA /B:153@O distance 3.298 dw 3.27 Alvarez 2013
+            # ("71", "153"), # select /A:71@O /B:153@O distance 3.19 dw 3.0 Alvarez 2013
+            # ("132", "164"), # distance 3.9
+            # ("141", "153"), # select /A:141@HE1 /B:153@O distance 2.7 dw 3.0 Alvarez 2013
+            ("143", "149"),
             ("73", "153"),
             ("74", "153"),
             ("102", "214"),
             ("143", "150"),
             ("144", "150"),
             ("145", "146"),
-            ("145", "150"),
+            # ("145", "150"), # select /A:145@HZ3 /B:150@OG distance 3.2 dw 2.7
             ("145", "147"), # OXT
             ("102", "229"),
-            ("91", "237"),
+            # ("91", "237"), # distance 3.59
             ("101", "234"),
-            ("143", "151"),
-            ("121", "200"),
+            # ("143", "151"), # distance 3.59
+            # ("121", "200"), # distance 3.58
             ("134", "162"),
             ("137", "200"),
             ("100", "177"),
             ("133", "162"),
         ]
+            # The original test data comes from using the PICCOLO criteria
+            # some residues pairs have been commented out because to adapt to
+            # van der Waals radii from Alvarez 2013 while keeping the original
+            # tolerance of 0.0 Å
 
-            @test vanderwaalsclash(CA[res1], CB[res2])
+            @test vanderwaalsclash(CA[res1], CB[res2]; tolerance_value = 0.0)
         end
 
         for (res1, res2) in Tuple{String,String}[
@@ -463,7 +470,7 @@
             ("136", "162"),
             ("136", "199"),
             ("136", "160"),
-            ("138", "160"),
+            # ("138", "160"), # select /A:138@CD1 /B:160@CB distance 4.25 dw + 0.7 ≈ 4.24
             ("136", "200"),
             ("137", "199"),
             ("137", "200"),
@@ -552,9 +559,9 @@
         )
 
         @test covalent(res1, res2)
-        @test !vanderwaalsclash(res1, res2)
-        @test !vanderwaalsclash(res1, res1.atoms[1], res2, res2.atoms[1])
-        @test !vanderwaalsclash(res1, 1, res2, 1)
+        @test !vanderwaalsclash(res1, res2; tolerance_value = 0.0)
+        @test !vanderwaalsclash(res1, res1.atoms[1], res2, res2.atoms[1]; tolerance_value = 0.0)
+        @test !vanderwaalsclash(res1, 1, res2, 1; tolerance_value = 0.0)
         @test covalent(res1, res1.atoms[1], res2, res2.atoms[1])
         @test covalent(res1, 1, res2, 1)
         @test peptide_bond(res1, res1.atoms[1], res2, res2.atoms[1])

@@ -289,23 +289,37 @@ vanderwaals(a::PDBResidue, b::PDBResidue) = any(vanderwaals, a, b, _with_vdw)
 # -------------------
 
 """
-    vanderwaalsclash(a::PDBAtom, b::PDBAtom)
+    vanderwaalsclash(a::PDBAtom, b::PDBAtom; tolerance_value::Float64 = -0.7)
 
 This function considered a van der Waals clash if the distance between two atoms falls
 within the van der Waals gap as defined by Alvarez (2013). That means, if the distance
 between two atoms that are not covalently bonded is less than or equal to the sum of their
-van der Waals radii less 0.7 Å. Here we use the [`covalent`](@ref) function to check for
-covalent bonds instead of fixing a distance threshold as in Alvarez (2013) — that paper
-suggest that _"distances shorter than the radii sum by more than 1.3 Å correspond most
-likely to a chemical bond"_. Unknown elements fall back to `0.0` returning `false`.
-Only distances are checked; no chemical context is considered.
+van der Waals radii less 0.7 Å (as the default value for `tolerance_value` is `-0.7`).
+Here we use the [`covalent`](@ref) function to check for covalent bonds instead of fixing
+a distance threshold as in Alvarez (2013) — that paper suggest that _"distances shorter
+than the radii sum by more than 1.3 Å correspond most likely to a chemical bond"_. Unknown
+elements fall back to `0.0` returning `false`. Only distances are checked; no chemical
+context is considered.
+
+!!! warning
+
+    The `tolerance_value` as been set to `-0.7` by default in MIToS 3.2.0 and later.
+    Previous versions used `0.0` as default, matching the definition on
+    Bickerton et al. (2012). However, that value is too high and results in many
+    van der Waals contacts being classified as clashes. Alvarez (2013) suggests that
+    _"the position of the shortest non-bonded distance can be roughly estimated to be 0.7 Å
+    shorter than the radii sum."_
 
 # References
 
     - [Alvarez, Santiago. "A cartography of the van der Waals territories." Dalton 
       Transactions 42.24 (2013): 8617-8636.](@cite C3DT50599E)
+    - [Bickerton, George R., Alicia P. Higueruelo, and Tom L. Blundell. "Comprehensive, 
+      atomic-level characterization of structurally characterized protein-protein 
+      interactions: the PICCOLO database." BMC bioinformatics 
+      12 (2011): 1-15.](@cite 10.1186/1471-2105-12-313)
 """
-function vanderwaalsclash(a::PDBAtom, b::PDBAtom)
+function vanderwaalsclash(a::PDBAtom, b::PDBAtom; tolerance_value::Float64 = -0.7)
     if covalent(a, b)
         return false
     end
@@ -314,21 +328,36 @@ function vanderwaalsclash(a::PDBAtom, b::PDBAtom)
     if r_vdW_a == 0.0 || r_vdW_b == 0.0
         false
     else
-        distance(a, b) < (r_vdW_a + r_vdW_b - 0.7)
+        distance(a, b) < (r_vdW_a + r_vdW_b + tolerance_value)
     end
 end
 
-vanderwaalsclash(a::PDBAtom, b::PDBAtom, resname_a::String, resname_b::String) =
-    vanderwaalsclash(a, b)
+vanderwaalsclash(
+    a::PDBAtom,
+    b::PDBAtom,
+    resname_a::String,
+    resname_b::String;
+    tolerance_value::Float64 = -0.7,
+) = vanderwaalsclash(a, b; tolerance_value = tolerance_value)
 
-vanderwaalsclash(res_a::PDBResidue, ia::Int, res_b::PDBResidue, ib::Int) =
-    vanderwaalsclash(res_a.atoms[ia], res_b.atoms[ib])
+vanderwaalsclash(
+    res_a::PDBResidue,
+    ia::Int,
+    res_b::PDBResidue,
+    ib::Int;
+    tolerance_value::Float64 = -0.7,
+) = vanderwaalsclash(res_a.atoms[ia], res_b.atoms[ib]; tolerance_value = tolerance_value)
 
-vanderwaalsclash(res_a::PDBResidue, atom_a::PDBAtom, res_b::PDBResidue, atom_b::PDBAtom) =
-    vanderwaalsclash(atom_a, atom_b)
+vanderwaalsclash(
+    res_a::PDBResidue,
+    atom_a::PDBAtom,
+    res_b::PDBResidue,
+    atom_b::PDBAtom;
+    tolerance_value::Float64 = -0.7,
+) = vanderwaalsclash(atom_a, atom_b; tolerance_value = tolerance_value)
 
-function vanderwaalsclash(a::PDBResidue, b::PDBResidue)
-    any(vanderwaalsclash, a, b, _with_vdw)
+function vanderwaalsclash(a::PDBResidue, b::PDBResidue; tolerance_value::Float64 = -0.7)
+    any(vanderwaalsclash, a, b, _with_vdw; tolerance_value = tolerance_value)
 end
 
 # Disulphide
