@@ -273,9 +273,9 @@ end
     end
 
     @testset "overload equivalence" begin
-        
+
         mktempdir() do tmpfolder
-            cd(tmpfolder) do 
+            cd(tmpfolder) do
                 # Compare the results from the different overloads.  Two of them
                 # download the SIFTS file on demand.
                 setannotfile!(msa_base, "AC", "PF09645.1")

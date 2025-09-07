@@ -90,7 +90,9 @@ export  # Residue
     sequencename_iterator,
     columnname_iterator,
     rename_sequences!,
-    rename_sequences, # TODO: rename_columns!
+    rename_sequences,
+    rename_columns!,
+    rename_columns,
     # MSAStats
     gapfraction,
     residuefraction,
@@ -118,6 +120,8 @@ export  # Residue
     deletefullgapcolumns!,
     # Raw
     Raw,
+    # Clustal
+    Clustal,
     # Stockholm
     Stockholm,
     # FASTA
@@ -141,6 +145,7 @@ export  # Residue
     percentidentity,
     meanpercentidentity,
     percentsimilarity,
+    percentpositive,
     sum_of_pairs_score,
     # Clusters
     WeightTypes,
@@ -181,6 +186,7 @@ include("ResidueSubstitutionMatrices.jl")
 include("MSAQuality.jl")
 include("GeneralParserMethods.jl")
 include("Raw.jl")
+include("Clustal.jl")
 include("Stockholm.jl")
 include("FASTA.jl")
 include("PIR.jl")
