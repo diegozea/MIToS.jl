@@ -78,7 +78,7 @@
                     @test !covalent(res1, res2) # 1.1 * (0.76 + 0.31) ≈ 1.17
                     @test vanderwaals(res1, res2) # (1.77 + 1.2) - 0.7 ≈ 2.27
                     @test !vanderwaalsclash(res1, res2)
-                    @test vanderwaalsclash(res1, res2, tolerance_value=0.0) # dw ≈  2.97
+                    @test vanderwaalsclash(res1, res2, tolerance_value = 0.0) # dw ≈  2.97
                 end
 
                 @test !aromaticsulphur(res1, res2)
@@ -558,14 +558,47 @@
             ],
         )
 
-        @test covalent(res1, res2)
         @test !vanderwaalsclash(res1, res2; tolerance_value = 0.0)
-        @test !vanderwaalsclash(res1, res1.atoms[1], res2, res2.atoms[1]; tolerance_value = 0.0)
+        @test !vanderwaalsclash(
+            res1,
+            res1.atoms[1],
+            res2,
+            res2.atoms[1];
+            tolerance_value = 0.0,
+        )
         @test !vanderwaalsclash(res1, 1, res2, 1; tolerance_value = 0.0)
         @test covalent(res1, res1.atoms[1], res2, res2.atoms[1])
         @test covalent(res1, 1, res2, 1)
+        @test covalent(res1, res2)
         @test peptide_bond(res1, res1.atoms[1], res2, res2.atoms[1])
         @test peptide_bond(res1, 1, res2, 1)
         @test peptide_bond(res1, res2)
+
+        @testset "Missing and false" begin
+            residues = read_file(joinpath(DATA, "2WEL_D_region.pdb"), PDBFile)
+            @test peptide_bond(residues[1], residues[2])
+            # the function should return missing if we test a residue against itself
+            # residue[1] has both C and N
+            @test ismissing(peptide_bond(residues[1], residues[1]))
+            # residue[2] only has N; the first residue in the pair should provide C
+            @test ismissing(peptide_bond(residues[2], residues[3]))
+            # the atom pair has no C
+            @test ismissing(
+                peptide_bond(
+                    residues[1],
+                    residues[1].atoms[1], # N
+                    residues[2],
+                    residues[2].atoms[1], # N
+                ),
+            )
+            # residue[2] N and residue[3] C are 2.46 Å apart
+            @test !peptide_bond(
+                residues[2],
+                residues[2].atoms[1], # N
+                residues[3],
+                residues[3].atoms[2], # C
+            )
+            @test !peptide_bond(residues[2], 1, residues[3], 2)
+        end
     end
 end
