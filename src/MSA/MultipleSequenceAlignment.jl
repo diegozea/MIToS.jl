@@ -930,3 +930,74 @@ function rename_sequences!(msa, old2new::Pair...)
 end
 
 rename_sequences(msa, old2new::Pair...) = rename_sequences(msa, _newnames(msa, old2new...))
+
+# Rename columns
+# --------------
+
+const RENAME_COLUMNS_DOC = md"""
+Rename the columns of an MSA given a vector of new names, a dictionary mapping old names
+to new names, or one or more pairs going from old to new names. If the `msa` is an
+`AnnotatedMultipleSequenceAlignment`, the annotations are also updated.
+"""
+
+"""
+    rename_columns!(msa, newnames::Vector{T}) where {T<:AbstractString}
+    rename_columns!(msa, old2new::AbstractDict)
+    rename_columns!(msa, old2new::Pair...)
+
+$RENAME_COLUMNS_DOC The function modifies the `msa` in place and returns it.
+"""
+function rename_columns!(
+    msa::NamedResidueMatrix{AT},
+    newnames::Vector{T},
+) where {AT,T<:AbstractString}
+    @argcheck length(newnames) == size(msa, 2) "The number of new names must match the number of columns."
+    setnames!(msa, newnames, 2)
+    msa
+end
+
+function rename_columns!(
+    msa::MultipleSequenceAlignment,
+    newnames::Vector{T},
+) where {T<:AbstractString}
+    rename_columns!(namedmatrix(msa), newnames)
+    msa
+end
+
+function rename_columns!(
+    msa::AnnotatedMultipleSequenceAlignment,
+    newnames::Vector{T},
+) where {T<:AbstractString}
+    oldnames = collect(columnname_iterator(msa))
+    new_annotations = _rename_columns(annotations(msa), oldnames, newnames)
+    rename_columns!(namedmatrix(msa), newnames)
+    msa.annotations = new_annotations
+    msa
+end
+
+"""
+    rename_columns(msa, newnames::Vector{T}) where {T<:AbstractString}
+    rename_columns(msa, old2new::AbstractDict)
+    rename_columns(msa, old2new::Pair...)
+
+$RENAME_COLUMNS_DOC The function returns a new MSA with the columns renamed without
+modifying the original MSA.
+"""
+rename_columns(msa, newnames) = rename_columns!(deepcopy(msa), newnames)
+
+# Rename a single column or a set of columns
+function _newcolnames(msa, old2new::AbstractDict)
+    String[get(old2new, name, name) for name in columnname_iterator(msa)]
+end
+
+_newcolnames(msa, old2new::Pair...) = _newcolnames(msa, Dict(old2new))
+
+function rename_columns!(msa, old2new::AbstractDict)
+    rename_columns!(msa, _newcolnames(msa, old2new))
+end
+
+function rename_columns!(msa, old2new::Pair...)
+    rename_columns!(msa, _newcolnames(msa, old2new...))
+end
+
+rename_columns(msa, old2new::Pair...) = rename_columns(msa, _newcolnames(msa, old2new...))
