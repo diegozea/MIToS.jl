@@ -601,4 +601,41 @@
             @test !peptide_bond(residues[2], 1, residues[3], 2)
         end
     end
+
+    @testset "Unknown element: Bolognium (Bo)" begin
+        # Two atoms of "Bo" (Bolognium)
+        bo1 = PDBAtom(Coordinates(0.0, 0.0, 0.0), "X1", "Bo", 1.0, "0", "", "")
+        bo2 = PDBAtom(Coordinates(1.0, 0.0, 0.0), "X2", "Bo", 1.0, "0", "", "")
+
+        # --- covalent radius: warn exactly once, both return 0.0 ---
+        cov_logs, _ = Test.collect_test_logs() do
+            @test PDB._get_covalent_radius(bo1) == 0.0
+            @test PDB._get_covalent_radius(bo2) == 0.0
+        end
+        cov_warns = count(
+            r -> r.level == Base.CoreLogging.Warn && occursin("Bo", string(r.message)),
+            cov_logs,
+        )
+        @test cov_warns == 1
+
+        # --- van der Waals radius: warn exactly once, both return 0.0 ---
+        vdw_logs, _ = Test.collect_test_logs() do
+            @test PDB._get_vanderwaals_radius(bo1) == 0.0
+            @test PDB._get_vanderwaals_radius(bo2) == 0.0
+        end
+        vdw_warns = count(
+            r ->
+                r.level == Base.CoreLogging.Warn &&
+                    occursin("Bo", string(r.message)) &&
+                    occursin("VAN_DER_WAALS_RADII", string(r.message)),
+            vdw_logs,
+        )
+        @test vdw_warns == 1
+
+        # --- interactions: all false when radii are 0.0 ---
+        # capture & ignore any warnings they might emit
+        @test !vanderwaals(bo1, bo2)
+        @test !vanderwaalsclash(bo1, bo2)
+        @test !covalent(bo1, bo2)
+    end
 end
