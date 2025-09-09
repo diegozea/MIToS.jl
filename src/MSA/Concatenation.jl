@@ -719,7 +719,7 @@ function _add_gaps_in_b(msa_a, msa_b, positions_a, positions_b, axis::Int = 1)
     end
     # compress the list of gap positions to later add full gap blocks
     for pos in Iterators.reverse(unique(gap_positions))
-        block_names = gap_names[gap_positions.==pos]
+        block_names = gap_names[gap_positions .== pos]
         if axis == 1
             matching_b = _renumber_sequence_gaps(
                 _insert_gap_sequences(matching_b, block_names, pos + 1),

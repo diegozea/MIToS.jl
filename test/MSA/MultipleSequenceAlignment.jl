@@ -439,7 +439,7 @@
                     rename_columns!(msa, ["L", "M", "N", "O"])
                     @test getannotfile(msa, "HCat") == msa_before
                     @test getannotfile(msa, "1_ColChanges") ==
-                        "\"1_1\"=>\"L\",\"1_2\"=>\"M\",\"2_1\"=>\"N\",\"2_2\"=>\"O\""
+                          "\"1_1\"=>\"L\",\"1_2\"=>\"M\",\"2_1\"=>\"N\",\"2_2\"=>\"O\""
                     @test any(startswith.(keys(getannotfile(msa)), "MIToS_"))
                     @test any(==("rename_columns!"), values(getannotfile(msa)))
                 end

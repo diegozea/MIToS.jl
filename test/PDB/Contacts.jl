@@ -520,4 +520,115 @@
         @test proximitymean(residues, [10.0, 15.0, 30.0], 6.05, include = true) ==
               [25, 110 / 3, 45] ./ 2.0
     end
+
+    @testset "Peptide bond" begin
+        res1 = PDBResidue(
+            PDBResidueIdentifier("1", "1", "ALA", "ATOM", "1", "A"),
+            [
+                PDBAtom(
+                    coordinates = Coordinates(0.0, 0.0, 0.0),
+                    atom = "C",
+                    element = "C",
+                    occupancy = 1.0,
+                    B = "0",
+                    alt_id = "",
+                    charge = "",
+                ),
+            ],
+        )
+        res2 = PDBResidue(
+            PDBResidueIdentifier("2", "2", "ALA", "ATOM", "1", "A"),
+            [
+                PDBAtom(
+                    coordinates = Coordinates(1.33, 0.0, 0.0),
+                    atom = "N",
+                    element = "N",
+                    occupancy = 1.0,
+                    B = "0",
+                    alt_id = "",
+                    charge = "",
+                ),
+            ],
+        )
+
+        @test !vanderwaalsclash(res1, res2; tolerance_value = 0.0)
+        @test !vanderwaalsclash(
+            res1,
+            res1.atoms[1],
+            res2,
+            res2.atoms[1];
+            tolerance_value = 0.0,
+        )
+        @test !vanderwaalsclash(res1, 1, res2, 1; tolerance_value = 0.0)
+        @test covalent(res1, res1.atoms[1], res2, res2.atoms[1])
+        @test covalent(res1, 1, res2, 1)
+        @test covalent(res1, res2)
+        @test peptide_bond(res1, res1.atoms[1], res2, res2.atoms[1])
+        @test peptide_bond(res1, 1, res2, 1)
+        @test peptide_bond(res1, res2)
+
+        @testset "Missing and false" begin
+            residues = read_file(joinpath(DATA, "2WEL_D_region.pdb"), PDBFile)
+            @test peptide_bond(residues[1], residues[2])
+            # the function should return missing if we test a residue against itself
+            # residue[1] has both C and N
+            @test ismissing(peptide_bond(residues[1], residues[1]))
+            # residue[2] only has N; the first residue in the pair should provide C
+            @test ismissing(peptide_bond(residues[2], residues[3]))
+            # the atom pair has no C
+            @test ismissing(
+                peptide_bond(
+                    residues[1],
+                    residues[1].atoms[1], # N
+                    residues[2],
+                    residues[2].atoms[1], # N
+                ),
+            )
+            # residue[2] N and residue[3] C are 2.46 Å apart
+            @test !peptide_bond(
+                residues[2],
+                residues[2].atoms[1], # N
+                residues[3],
+                residues[3].atoms[2], # C
+            )
+            @test !peptide_bond(residues[2], 1, residues[3], 2)
+        end
+    end
+
+    @testset "Unknown element: Bolognium (Bo)" begin
+        # Two atoms of "Bo" (Bolognium)
+        bo1 = PDBAtom(Coordinates(0.0, 0.0, 0.0), "X1", "Bo", 1.0, "0", "", "")
+        bo2 = PDBAtom(Coordinates(1.0, 0.0, 0.0), "X2", "Bo", 1.0, "0", "", "")
+
+        # --- covalent radius: warn exactly once, both return 0.0 ---
+        cov_logs, _ = Test.collect_test_logs() do
+            @test PDB._get_covalent_radius(bo1) == 0.0
+            @test PDB._get_covalent_radius(bo2) == 0.0
+        end
+        cov_warns = count(
+            r -> r.level == Base.CoreLogging.Warn && occursin("Bo", string(r.message)),
+            cov_logs,
+        )
+        @test cov_warns == 1
+
+        # --- van der Waals radius: warn exactly once, both return 0.0 ---
+        vdw_logs, _ = Test.collect_test_logs() do
+            @test PDB._get_vanderwaals_radius(bo1) == 0.0
+            @test PDB._get_vanderwaals_radius(bo2) == 0.0
+        end
+        vdw_warns = count(
+            r ->
+                r.level == Base.CoreLogging.Warn &&
+                occursin("Bo", string(r.message)) &&
+                occursin("VAN_DER_WAALS_RADII", string(r.message)),
+            vdw_logs,
+        )
+        @test vdw_warns == 1
+
+        # --- interactions: all false when radii are 0.0 ---
+        # capture & ignore any warnings they might emit
+        @test !vanderwaals(bo1, bo2)
+        @test !vanderwaalsclash(bo1, bo2)
+        @test !covalent(bo1, bo2)
+    end
 end
