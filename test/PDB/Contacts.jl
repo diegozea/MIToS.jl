@@ -575,6 +575,8 @@
             @test ismissing(peptide_bond(residues[1], residues[1]))
             # residue[2] only has N; the first residue in the pair should provide C
             @test ismissing(peptide_bond(residues[2], residues[3]))
+            # residues[3] provides C and residues[2] provides N, but they are too far
+            @test !peptide_bond(residues[3], residues[2])
             # the atom pair has no C
             @test ismissing(
                 peptide_bond(
