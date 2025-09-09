@@ -1,19 +1,112 @@
 """
-Covalent radius in Å of each element from the Additional file 1 of PICCOLO
-(*Bickerton et al.*). Hydrogen was updated using the value on Table 2 from
-(*Cordero et al.*).
+Covalent radii (Å) for the chemical elements, taken from Table 2 of Cordero et al. (2008).
+When multiple values are reported for an element, we select a single value; typically
+the largest to minimize false positives when looking for covalent bonds. Specifically,
+for C, we use the sp3 value, and for Mn, Fe, and Co, we use the high-spin (h.s.) values.
 
 # References
 
-    - [Bickerton, George R., Alicia P. Higueruelo, and Tom L. Blundell. "Comprehensive, 
-      atomic-level characterization of structurally characterized protein-protein 
-      interactions: the PICCOLO database." BMC bioinformatics 
-      12 (2011): 1-15.](@cite 10.1186/1471-2105-12-313)
     - [Cordero, Beatriz, et al. "Covalent radii revisited." Dalton Transactions 
       21 (2008): 2832-2838.](@cite 10.1039/B801115J)
 """
-const covalentradius =
-    Dict{String,Float64}("C" => 0.77, "N" => 0.70, "O" => 0.66, "S" => 1.04, "H" => 0.31)
+const covalentradius = Dict{String,Float64}(
+    "H" => 0.31,
+    "He" => 0.28,
+    "Li" => 1.28,
+    "Be" => 0.96,
+    "B" => 0.84,
+    "C" => 0.76,
+    "N" => 0.71,
+    "O" => 0.66,
+    "F" => 0.57,
+    "Ne" => 0.58,
+    "Na" => 1.66,
+    "Mg" => 1.41,
+    "Al" => 1.21,
+    "Si" => 1.11,
+    "P" => 1.07,
+    "S" => 1.05,
+    "Cl" => 1.02,
+    "Ar" => 1.06,
+    "K" => 2.03,
+    "Ca" => 1.76,
+    "Sc" => 1.7,
+    "Ti" => 1.6,
+    "V" => 1.53,
+    "Cr" => 1.39,
+    "Mn" => 1.61,
+    "Fe" => 1.52,
+    "Co" => 1.5,
+    "Ni" => 1.24,
+    "Cu" => 1.32,
+    "Zn" => 1.22,
+    "Ga" => 1.22,
+    "Ge" => 1.2,
+    "As" => 1.19,
+    "Se" => 1.2,
+    "Br" => 1.2,
+    "Kr" => 1.16,
+    "Rb" => 2.2,
+    "Sr" => 1.95,
+    "Y" => 1.9,
+    "Zr" => 1.75,
+    "Nb" => 1.64,
+    "Mo" => 1.54,
+    "Tc" => 1.47,
+    "Ru" => 1.46,
+    "Rh" => 1.42,
+    "Pd" => 1.39,
+    "Ag" => 1.45,
+    "Cd" => 1.44,
+    "In" => 1.42,
+    "Sn" => 1.39,
+    "Sb" => 1.39,
+    "Te" => 1.38,
+    "I" => 1.39,
+    "Xe" => 1.4,
+    "Cs" => 2.44,
+    "Ba" => 2.15,
+    "La" => 2.07,
+    "Ce" => 2.04,
+    "Pr" => 2.03,
+    "Nd" => 2.01,
+    "Pm" => 1.99,
+    "Sm" => 1.98,
+    "Eu" => 1.98,
+    "Gd" => 1.96,
+    "Tb" => 1.94,
+    "Dy" => 1.92,
+    "Ho" => 1.92,
+    "Er" => 1.89,
+    "Tm" => 1.9,
+    "Yb" => 1.87,
+    "Lu" => 1.87,
+    "Hf" => 1.75,
+    "Ta" => 1.7,
+    "W" => 1.62,
+    "Re" => 1.51,
+    "Os" => 1.44,
+    "Ir" => 1.41,
+    "Pt" => 1.36,
+    "Au" => 1.36,
+    "Hg" => 1.32,
+    "Tl" => 1.45,
+    "Pb" => 1.46,
+    "Bi" => 1.48,
+    "Po" => 1.4,
+    "At" => 1.5,
+    "Rn" => 1.5,
+    "Fr" => 2.6,
+    "Ra" => 2.21,
+    "Ac" => 2.15,
+    "Th" => 2.06,
+    "Pa" => 2,
+    "U" => 1.96,
+    "Np" => 1.9,
+    "Pu" => 1.87,
+    "Am" => 1.8,
+    "Cm" => 1.69,
+)
 
 const _3_letter_aa = String[
     "ALA",
@@ -40,6 +133,11 @@ const _3_letter_aa = String[
 
 """
 van der Waals radius in Å from the Additional file 1 of *Bickerton et al.*
+
+!!! warning
+
+    This variable is deprecated and will be removed in future releases. Please use
+    [`VAN_DER_WAALS_RADII`](@ref) instead.
 
 # References
 
@@ -216,6 +314,110 @@ const vanderwaalsradius = Dict{Tuple{String,String},Float64}(
     ("VAL", "CG2") => 1.88,
     ("VAL", "N") => 1.64,
     ("VAL", "O") => 1.42,
+)
+
+"""
+A dictionary mapping element symbols to their van der Waals radii (in Å),
+as reported by Alvarez (2013, Table S1).
+
+# References
+
+    - [Alvarez, Santiago. "A cartography of the van der Waals territories." Dalton 
+      Transactions 42.24 (2013): 8617-8636.](@cite C3DT50599E)
+"""
+const VAN_DER_WAALS_RADII = Dict{String,Float64}(
+    "H" => 1.2,
+    "He" => 1.43,
+    "Li" => 2.12,
+    "Be" => 1.98,
+    "B" => 1.91,
+    "C" => 1.77,
+    "N" => 1.66,
+    "O" => 1.5,
+    "F" => 1.46,
+    "Ne" => 1.58,
+    "Na" => 2.5,
+    "Mg" => 2.51,
+    "Al" => 2.25,
+    "Si" => 2.19,
+    "P" => 1.9,
+    "S" => 1.89,
+    "Cl" => 1.82,
+    "Ar" => 1.83,
+    "K" => 2.73,
+    "Ca" => 2.62,
+    "Sc" => 2.58,
+    "Ti" => 2.46,
+    "V" => 2.42,
+    "Cr" => 2.45,
+    "Mn" => 2.45,
+    "Fe" => 2.44,
+    "Co" => 2.4,
+    "Ni" => 2.4,
+    "Cu" => 2.38,
+    "Zn" => 2.39,
+    "Ga" => 2.32,
+    "Ge" => 2.29,
+    "As" => 1.88,
+    "Se" => 1.82,
+    "Br" => 1.86,
+    "Kr" => 2.25,
+    "Rb" => 3.21,
+    "Sr" => 2.84,
+    "Y" => 2.75,
+    "Zr" => 2.52,
+    "Nb" => 2.56,
+    "Mo" => 2.45,
+    "Tc" => 2.44,
+    "Ru" => 2.46,
+    "Rh" => 2.44,
+    "Pd" => 2.15,
+    "Ag" => 2.53,
+    "Cd" => 2.49,
+    "In" => 2.43,
+    "Sn" => 2.42,
+    "Sb" => 2.47,
+    "Te" => 1.99,
+    "I" => 2.04,
+    "Xe" => 2.06,
+    "Cs" => 3.48,
+    "Ba" => 3.03,
+    "La" => 2.98,
+    "Ce" => 2.88,
+    "Pr" => 2.92,
+    "Nd" => 2.95,
+    "Sm" => 2.9,
+    "Eu" => 2.87,
+    "Gd" => 2.83,
+    "Tb" => 2.79,
+    "Dy" => 2.87,
+    "Ho" => 2.81,
+    "Er" => 2.83,
+    "Tm" => 2.79,
+    "Yb" => 2.8,
+    "Lu" => 2.74,
+    "Hf" => 2.63,
+    "Ta" => 2.53,
+    "W" => 2.57,
+    "Re" => 2.49,
+    "Os" => 2.48,
+    "Ir" => 2.41,
+    "Pt" => 2.29,
+    "Au" => 2.32,
+    "Hg" => 2.45,
+    "Tl" => 2.47,
+    "Pb" => 2.6,
+    "Bi" => 2.54,
+    "Ac" => 2.8,
+    "Th" => 2.93,
+    "Pa" => 2.88,
+    "U" => 2.71,
+    "Np" => 2.82,
+    "Pu" => 2.81,
+    "Am" => 2.83,
+    "Cm" => 3.05,
+    "Bk" => 3.38,
+    "Cf" => 3.05,
 )
 
 function _add_CTER_O!(dict)
