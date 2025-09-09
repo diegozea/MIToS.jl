@@ -306,9 +306,11 @@ context is considered.
     The `tolerance_value` as been set to `-0.7` by default in MIToS 3.2.0 and later.
     Previous versions used `0.0` as default, matching the definition on
     Bickerton et al. (2012). However, that value is too high and results in many
-    van der Waals contacts being classified as clashes. Alvarez (2013) suggests that
-    _"the position of the shortest non-bonded distance can be roughly estimated to be 0.7 Å
-    shorter than the radii sum."_
+    van der Waals contacts being classified as clashes. MIToS 3.2.0 also replaced the
+    van der Waals radii from *Bickerton et al.* (2012) with the values reported by
+    *Alvarez* (2013). Alvarez (2013) suggests that _"the position of the shortest
+    non-bonded distance can be roughly estimated to be 0.7 Å shorter than the radii
+    sum."_
 
 # References
 
