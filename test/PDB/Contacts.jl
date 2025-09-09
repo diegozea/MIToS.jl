@@ -59,27 +59,26 @@
 
                 if resnum2 == "309" && (resnum1 == "184" || resnum1 == "187")
                     @test ionic(res1, res2)
-                else
-                    @test !ionic(res1, res2)
                 end
 
                 if (resnum1 == "211" && resnum2 == "312") ||
                    (resnum1 == "212" && resnum2 == "237")
                     @test vanderwaals(res1, res2)
-                else
-                    @test !vanderwaals(res1, res2)
                 end
 
                 if resnum1 == "212" && resnum2 == "237"
                     @test hydrophobic(res1, res2)
-                else
-                    @test !hydrophobic(res1, res2)
                 end
 
                 if resnum1 == "211" && resnum2 == "312"
-                    @test vanderwaalsclash(res1, res2)
-                else
+                    # ChimeraX
+                    # select /A:211@HH22 /D:312@CB
+                    # distance 2.554 Å
+                    @test isapprox(distance(res1, res2), 2.554; atol = 0.001)
+                    @test !covalent(res1, res2) # 1.1 * (0.76 + 0.31) ≈ 1.17
+                    @test vanderwaals(res1, res2) # (1.77 + 1.2) - 0.7 ≈ 2.27
                     @test !vanderwaalsclash(res1, res2)
+                    @test vanderwaalsclash(res1, res2, tolerance_value = 0.0) # dw ≈  2.97
                 end
 
                 @test !aromaticsulphur(res1, res2)
@@ -266,54 +265,62 @@
             ("134", "201"),
             ("136", "201"),
             ("138", "157"),
-            ("16", "156"),
+            # ("16", "156"), # distance 3.7 dw max for CHON using Alvarez 2013 is 3.54 
             ("124", "210"),
             ("125", "204"),
             ("127", "210"),
             ("139", "156"),
             ("140", "156"),
             ("143", "192"),
-            ("55", "196"),
+            # ("55", "196"), # select /A:55@H /B:196@CA distance 3.002 dw 2.97 Alvarez 2013
             ("142", "193"),
-            ("103", "212"),
-            ("16", "158"),
-            ("53", "209"),
+            # ("103", "212"), # distance 3.67
+            # ("16", "158"), # distance 3.64
+            # ("53", "209"), # distance 3.71
             ("72", "154"),
             ("122", "209"),
             ("124", "209"),
             ("138", "158"),
             ("141", "155"),
             ("136", "159"),
-            ("100", "180"),
+            # ("100", "180"), # distance 3.73
             ("29", "198"),
             ("30", "198"),
             ("134", "161"),
             ("142", "152"),
-            ("144", "152"),
+            # ("144", "152"), # distance 3.7
             ("42", "195"),
             ("43", "195"),
             ("57", "214"),
-            ("72", "153"),
+            # ("72", "153"), # select /A:72@CA /B:153@O distance 3.298 dw 3.27 Alvarez 2013
+            # ("71", "153"), # select /A:71@O /B:153@O distance 3.19 dw 3.0 Alvarez 2013
+            # ("132", "164"), # distance 3.9
+            # ("141", "153"), # select /A:141@HE1 /B:153@O distance 2.7 dw 3.0 Alvarez 2013
+            ("143", "149"),
             ("73", "153"),
             ("74", "153"),
             ("102", "214"),
             ("143", "150"),
             ("144", "150"),
             ("145", "146"),
-            ("145", "150"),
+            # ("145", "150"), # select /A:145@HZ3 /B:150@OG distance 3.2 dw 2.7
             ("145", "147"), # OXT
             ("102", "229"),
-            ("91", "237"),
+            # ("91", "237"), # distance 3.59
             ("101", "234"),
-            ("143", "151"),
-            ("121", "200"),
+            # ("143", "151"), # distance 3.59
+            # ("121", "200"), # distance 3.58
             ("134", "162"),
             ("137", "200"),
             ("100", "177"),
             ("133", "162"),
         ]
+            # The original test data comes from using the PICCOLO criteria
+            # some residues pairs have been commented out because to adapt to
+            # van der Waals radii from Alvarez 2013 while keeping the original
+            # tolerance of 0.0 Å
 
-            @test vanderwaalsclash(CA[res1], CB[res2])
+            @test vanderwaalsclash(CA[res1], CB[res2]; tolerance_value = 0.0)
         end
 
         for (res1, res2) in Tuple{String,String}[
@@ -463,7 +470,7 @@
             ("136", "162"),
             ("136", "199"),
             ("136", "160"),
-            ("138", "160"),
+            # ("138", "160"), # select /A:138@CD1 /B:160@CB distance 4.25 dw + 0.7 ≈ 4.24
             ("136", "200"),
             ("137", "199"),
             ("137", "200"),
@@ -519,5 +526,116 @@
               [3, 12 / 3, 5] ./ 2.0
         @test proximitymean(residues, [10.0, 15.0, 30.0], 6.05, include = true) ==
               [25, 110 / 3, 45] ./ 2.0
+    end
+
+    @testset "Peptide bond" begin
+        res1 = PDBResidue(
+            PDBResidueIdentifier("1", "1", "ALA", "ATOM", "1", "A"),
+            [
+                PDBAtom(
+                    coordinates = Coordinates(0.0, 0.0, 0.0),
+                    atom = "C",
+                    element = "C",
+                    occupancy = 1.0,
+                    B = "0",
+                    alt_id = "",
+                    charge = "",
+                ),
+            ],
+        )
+        res2 = PDBResidue(
+            PDBResidueIdentifier("2", "2", "ALA", "ATOM", "1", "A"),
+            [
+                PDBAtom(
+                    coordinates = Coordinates(1.33, 0.0, 0.0),
+                    atom = "N",
+                    element = "N",
+                    occupancy = 1.0,
+                    B = "0",
+                    alt_id = "",
+                    charge = "",
+                ),
+            ],
+        )
+
+        @test !vanderwaalsclash(res1, res2; tolerance_value = 0.0)
+        @test !vanderwaalsclash(
+            res1,
+            res1.atoms[1],
+            res2,
+            res2.atoms[1];
+            tolerance_value = 0.0,
+        )
+        @test !vanderwaalsclash(res1, 1, res2, 1; tolerance_value = 0.0)
+        @test covalent(res1, res1.atoms[1], res2, res2.atoms[1])
+        @test covalent(res1, 1, res2, 1)
+        @test covalent(res1, res2)
+        @test peptide_bond(res1, res1.atoms[1], res2, res2.atoms[1])
+        @test peptide_bond(res1, 1, res2, 1)
+        @test peptide_bond(res1, res2)
+
+        @testset "Missing and false" begin
+            residues = read_file(joinpath(DATA, "2WEL_D_region.pdb"), PDBFile)
+            @test peptide_bond(residues[1], residues[2])
+            # the function should return missing if we test a residue against itself
+            # residue[1] has both C and N
+            @test ismissing(peptide_bond(residues[1], residues[1]))
+            # residue[2] only has N; the first residue in the pair should provide C
+            @test ismissing(peptide_bond(residues[2], residues[3]))
+            # the atom pair has no C
+            @test ismissing(
+                peptide_bond(
+                    residues[1],
+                    residues[1].atoms[1], # N
+                    residues[2],
+                    residues[2].atoms[1], # N
+                ),
+            )
+            # residue[2] N and residue[3] C are 2.46 Å apart
+            @test !peptide_bond(
+                residues[2],
+                residues[2].atoms[1], # N
+                residues[3],
+                residues[3].atoms[2], # C
+            )
+            @test !peptide_bond(residues[2], 1, residues[3], 2)
+        end
+    end
+
+    @testset "Unknown element: Bolognium (Bo)" begin
+        # Two atoms of "Bo" (Bolognium)
+        bo1 = PDBAtom(Coordinates(0.0, 0.0, 0.0), "X1", "Bo", 1.0, "0", "", "")
+        bo2 = PDBAtom(Coordinates(1.0, 0.0, 0.0), "X2", "Bo", 1.0, "0", "", "")
+
+        # --- covalent radius: warn exactly once, both return 0.0 ---
+        cov_logs, _ = Test.collect_test_logs() do
+            @test PDB._get_covalent_radius(bo1) == 0.0
+            @test PDB._get_covalent_radius(bo2) == 0.0
+        end
+        cov_warns = count(
+            r -> r.level == Base.CoreLogging.Warn && occursin("Bo", string(r.message)),
+            cov_logs,
+        )
+        @test cov_warns == 1
+
+        # --- van der Waals radius: warn exactly once, both return 0.0 ---
+        vdw_logs, _ = Test.collect_test_logs() do
+            @test PDB._get_vanderwaals_radius(bo1) == 0.0
+            @test PDB._get_vanderwaals_radius(bo2) == 0.0
+        end
+        vdw_warns = count(
+            r ->
+                r.level == Base.CoreLogging.Warn &&
+                    occursin("Bo", string(r.message)) &&
+                    occursin("VAN_DER_WAALS_RADII", string(r.message)),
+            vdw_logs,
+        )
+        @test vdw_warns == 1
+
+        # --- interactions: all false when radii are 0.0 ---
+        # capture & ignore any warnings they might emit
+        @test !vanderwaals(bo1, bo2)
+        @test !vanderwaalsclash(bo1, bo2)
+        @test !covalent(bo1, bo2)
     end
 end

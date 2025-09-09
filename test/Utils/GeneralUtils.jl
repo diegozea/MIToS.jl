@@ -127,7 +127,9 @@ end
         @test MIToS.Utils._check_gzip_file(compressed_file) == compressed_file
         mktempdir() do tmp
             cp(joinpath(DATA, "gaps.txt"), joinpath(tmp, "gaps.txt.gz"))
-            @test_throws ErrorException MIToS.Utils._check_gzip_file(joinpath(tmp, "gaps.txt.gz"))
+            @test_throws ErrorException MIToS.Utils._check_gzip_file(
+                joinpath(tmp, "gaps.txt.gz"),
+            )
         end
     end
 

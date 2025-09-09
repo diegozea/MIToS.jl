@@ -63,6 +63,7 @@ export  # PDBResidues
     # AtomsData
     covalentradius,
     vanderwaalsradius,
+    VAN_DER_WAALS_RADII,
     check_atoms_for_interactions,
     # Interaction
     ishydrophobic,
@@ -72,6 +73,7 @@ export  # PDBResidues
     ishbonddonor,
     ishbondacceptor,
     hydrogenbond,
+    peptide_bond,
     vanderwaals,
     vanderwaalsclash,
     covalent,

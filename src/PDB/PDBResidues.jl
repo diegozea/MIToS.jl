@@ -236,7 +236,7 @@ Return a new `PDBResidue` with the B-factor of the selected atoms changed to
 `value`. By default all atoms in the residue are updated. Atom selection follows
 the same conventions as [`select_atoms`](@ref).
 """
-function change_b_factor(residue::PDBResidue, value; atom = All) 
+function change_b_factor(residue::PDBResidue, value; atom = All)
     change_b_factor!(deepcopy(residue), value; atom = atom)
 end
 
