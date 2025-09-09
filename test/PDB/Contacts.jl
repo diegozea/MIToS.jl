@@ -626,8 +626,8 @@
         vdw_warns = count(
             r ->
                 r.level == Base.CoreLogging.Warn &&
-                    occursin("Bo", string(r.message)) &&
-                    occursin("VAN_DER_WAALS_RADII", string(r.message)),
+                occursin("Bo", string(r.message)) &&
+                occursin("VAN_DER_WAALS_RADII", string(r.message)),
             vdw_logs,
         )
         @test vdw_warns == 1
