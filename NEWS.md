@@ -11,11 +11,13 @@
 
 Changes in the `PDB` module are:
 
-- *[Breaking change]* The values in `covalentradius` were modified to match those of 
+- *[Breaking change]* The values in `covalentradius` were modified to match those of
   Cordero et al. (2008) instead of the previously used values from Bickerton et al. (2011).
-- *[Breaking change]* The `covalent` function has been updated to return `true` 
-  when the distance between two atoms is less than or equal to the sum of their 
-  covalent radii, scaled by a new `tolerance_factor` keyword argument 
+- *[Breaking change]* The `covalentradius` constant has been deprecated in favor of the
+  `COVALENT_RADII` dictionary, which maps element symbols to their covalent radii.
+- *[Breaking change]* The `covalent` function has been updated to return `true`
+  when the distance between two atoms is less than or equal to the sum of their
+  covalent radii, scaled by a new `tolerance_factor` keyword argument
   (default: `1.1`).
 - *[Breaking change]* The `vanderwaalsradius` constant (with values from 
   Bickerton et al. 2011) has been deprecated in favor of the `VAN_DER_WAALS_RADII` 
