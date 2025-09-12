@@ -67,6 +67,11 @@
             @test filtersequences!(seq -> gapfraction(seq) < 0.5, copy_msa) ==
                   filtersequences(msa, seq -> gapfraction(seq) < 0.5)
         end
+
+        for msa in pfam_msas[3:4]
+            @test filtersequences(seq -> gapfraction(seq) < 0.5, msa) ==
+                  filtersequences(msa, seq -> gapfraction(seq) < 0.5)
+        end
     end
 
     @testset "filtercolumns!" begin
@@ -88,6 +93,11 @@
         for msa in pfam_msas[3:4]
             copy_msa = copy(msa)
             @test filtercolumns!(col -> gapfraction(col) < 0.5, copy_msa) ==
+                  filtercolumns(msa, col -> gapfraction(col) < 0.5)
+        end
+
+        for msa in pfam_msas[3:4]
+            @test filtercolumns(col -> gapfraction(col) < 0.5, msa) ==
                   filtercolumns(msa, col -> gapfraction(col) < 0.5)
         end
 
@@ -118,6 +128,11 @@
 
             @test filtercolumns!(col -> col[1] == Residue('Q'), copy(annseq)) ==
                   filtercolumns(annseq, col -> col[1] == Residue('Q'))
+
+            @test filtercolumns(col -> col[1] == Residue('Q'), annseq) ==
+                  filtercolumns(annseq, col -> col[1] == Residue('Q'))
+            @test filtercolumns(col -> col[1] == Residue('Q'), seq) ==
+                  filtercolumns(seq, col -> col[1] == Residue('Q'))
         end
     end
 
