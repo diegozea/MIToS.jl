@@ -82,8 +82,8 @@ Changes in the `MSA` module are:
   in the sequences.
 - The `join_msas` function now match sequences based on their names if no explicit
   pairing or position lists are provided.
-- The `filtercolumns!` and `filtersequences!` functions now accept a function as the
-  first positional argument to allow the do-block syntax.
+- The `filtercolumns`/`filtercolumns!` and `filtersequences`/`filtersequences!` functions
+  now accept a function as the first positional argument to allow the do-block syntax.
 - The `printmodifications` function can now take an `IO` object as the first
   positional argument to specify the output destination. By default, it prints to
   `stdout` as before.
