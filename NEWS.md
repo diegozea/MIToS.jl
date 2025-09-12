@@ -16,9 +16,63 @@
   which omit occupancy or B-factor values. The parser now defaults missing
   occupancy to `1.0` and B-factor to `"0.0"`. A single warning informs when
   occupancy values are not present.
-- Improved `show` method for `PDBResidue` so that atom headers are printed only once
-  per residue. The index column was removed, indentation reduced to two spaces, and
-  atom columns are now narrower for a more compact display.
+- More efficient conversion between `BioStructures.MolecularStructure` and MIToS'
+  `Vector{PDBResidue}`.
+
+Changes in the `MSA` module are:
+
+- The `MSA` module now exports the `ResidueSubstitutionMatrices` submodule to handle
+  residue substitution matrices. This submodule exports the `ResidueSubstitutionMatrix`
+  type to represent residue substitution matrices.
+- The `ResidueSubstitutionMatrices` module defines the `BLOSUM62` matrix as an instance 
+  of the new `ResidueSubstitutionMatrix` type. This matrix is not exported by default,
+  so you need to `import` it explicitly or use its fully qualified name.
+- A `BioAlignments` package extension has been added to provide conversion functions
+  between `BioAlignments.SubstitutionMatrix` and `ResidueSubstitutionMatrix`.
+- The `sum_of_pairs_score` function has been added to the `MSA` module to compute
+  the sum-of-pairs score of an MSA. This function takes a `ResidueSubstitutionMatrix`
+  as input; by default, it uses the `BLOSUM62` matrix.
+- The `GappedXAlphabet` alphabet type was added to represent the 20 standard amino 
+  acids, the gap character, and the unknown/ambiguous/non-standard character X (`XAA`). 
+  This alphabet is the one used by the `BLOSUM62` matrix.
+- The `hobohmI` function has been expanded to take a predicate function as the first
+  positional argument to allow more flexible clustering criteria and the use of the
+  do-block syntax. By default, it behaves as before as it uses `percentidentity` as the 
+  predicate function.
+- The `hobohmI` function has been extended to accept any `AbstractVector` of items as 
+  the second positional argument, rather than being limited to MSAs. This makes it 
+  possible to cluster arbitrary collections of items based on a user-defined predicate 
+  (the first positional argument).
+- The `n_effective` function has been added to compute the effective number of sequences
+  in an MSA using sequence weights.
+- The `percentpositive` function has been added to compute the percentage of positive
+  residue pairs between two aligned sequences as defined by a residue substitution 
+  matrix.
+- The `rename_columns!` and `rename_columns` functions have been added to rename the 
+  columns of an MSA while keeping track of the original column names in the annotations.
+- A new `Clustal` file format has been added to read and write MSAs in the
+  Clustal format.
+- The parser for the `Raw` format now supports files with spaces and special characters 
+  in the sequences.
+- The `join_msas` function now match sequences based on their names if no explicit
+  pairing or position lists are provided.
+- The `filtercolumns`/`filtercolumns!` and `filtersequences`/`filtersequences!` functions
+  now accept a function as the first positional argument to allow the do-block syntax.
+- The `printmodifications` function can now take an `IO` object as the first
+  positional argument to specify the output destination. By default, it prints to
+  `stdout` as before.
+
+Some other changes are:
+
+- `AbstractString` is used instead of `String` in some function signatures to allow
+  more flexible string-like arguments, such as `SubString`.
+- The benchmark suite was updated using `PkgBenchmark` and `BenchmarkTools`. The
+  `AirspeedVelocity` benchmark workflow was added to track performance changes 
+  over time.
+- An `AGENTS.md` file was added to help *Codex* and other AI tools to better understand
+  the code and provide more accurate suggestions.
+- This version includes several bug fixes. Test coverage has been greatly improved
+  and now exceeds 96%.
 
 ### Changes from v3.0.6 to v3.1.0
 
