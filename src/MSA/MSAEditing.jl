@@ -157,6 +157,14 @@ function filtersequences(
     filtersequences!(deepcopy(msa), args...)
 end
 
+function filtersequences(
+    f::Function,
+    msa::Union{AnnotatedMultipleSequenceAlignment,MultipleSequenceAlignment},
+    args...,
+)
+    filtersequences!(deepcopy(msa), f, args...)
+end
+
 # Filter columns
 # --------------
 
@@ -209,6 +217,10 @@ function filtercolumns!(f::Function, x::UnannotatedAlignedObject, annotate::Bool
 end
 
 filtercolumns(x::AbstractResidueMatrix, args...) = filtercolumns!(deepcopy(x), args...)
+
+function filtercolumns(f::Function, x::AbstractResidueMatrix, args...)
+    filtercolumns!(deepcopy(x), f, args...)
+end
 
 # Util function
 # -------------
