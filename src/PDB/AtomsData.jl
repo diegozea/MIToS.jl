@@ -9,7 +9,7 @@ for C, we use the sp3 value, and for Mn, Fe, and Co, we use the high-spin (h.s.)
     - [Cordero, Beatriz, et al. "Covalent radii revisited." Dalton Transactions 
       21 (2008): 2832-2838.](@cite 10.1039/B801115J)
 """
-const covalentradius = Dict{String,Float64}(
+const COVALENT_RADII = Dict{String,Float64}(
     "H" => 0.31,
     "He" => 0.28,
     "Li" => 1.28,
@@ -107,6 +107,8 @@ const covalentradius = Dict{String,Float64}(
     "Am" => 1.8,
     "Cm" => 1.69,
 )
+
+Base.@deprecate_binding covalentradius COVALENT_RADII
 
 const _3_letter_aa = String[
     "ALA",

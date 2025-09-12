@@ -1,6 +1,6 @@
 _with_vdw(a::PDBAtom, resname_a::String) = a.element in keys(VAN_DER_WAALS_RADII)
 
-_with_cov(a::PDBAtom, resname_a::String) = a.element in keys(covalentradius)
+_with_cov(a::PDBAtom, resname_a::String) = a.element in keys(COVALENT_RADII)
 
 # Detect peptide bonds between two atoms
 """
@@ -146,13 +146,13 @@ end
 
 function _get_covalent_radius(atom::PDBAtom)
     element = atom.element
-    if haskey(covalentradius, element)
-        covalentradius[element]
+    if haskey(COVALENT_RADII, element)
+        COVALENT_RADII[element]
     else
         @warn(
-            "Element $element not found in `covalentradius`; using 0.0 as default",
+            "Element $element not found in `COVALENT_RADII`; using 0.0 as default",
             maxlog = 1,
-            _id = ("covalentradius", element)
+            _id = ("COVALENT_RADII", element)
         )
         0.0
     end
@@ -166,12 +166,12 @@ end
     )
 
 Return `true` if the distance between atoms is less than the sum of the
-[`covalentradius`](@ref) of each atom taking into account the tolerance factor.
+[`COVALENT_RADII`](@ref) of each atom taking into account the tolerance factor.
 By default, the tolerance factor is set to `1.1`, allowing for a 10% increase in the sum
 of the covalent radii. This multiplicative factor can be adjusted using the
 `tolerance_factor` keyword argument. This function is based on equation 5 from
 *Kim and Kim (2015)*. Covalent radii are obtained from Cordero et al. (2008). If the
-element is not listed in [`covalentradius`](@ref), the radius is set to `0.0`, and this
+element is not listed in [`COVALENT_RADII`](@ref), the radius is set to `0.0`, and this
 function will return `false`.
 
 !!! warning
