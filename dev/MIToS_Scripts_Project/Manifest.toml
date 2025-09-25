@@ -1,6 +1,6 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.6"
+julia_version = "1.11.7"
 manifest_format = "2.0"
 project_hash = "8e27a1918b9f3e4804605a272be5b59383997e38"
 
@@ -41,9 +41,9 @@ version = "0.1.5"
 
 [[deps.BioStructures]]
 deps = ["BioGenerics", "BioSymbols", "CodecZlib", "Downloads", "Format", "LinearAlgebra", "PrecompileTools", "RecipesBase", "Statistics"]
-git-tree-sha1 = "68687060591b4506ff9779ae39cb60b75dfc41ca"
+git-tree-sha1 = "636204c9416cc573497632e81d989a2fac467825"
 uuid = "de9282ab-8554-53be-b2d6-f6c222edabfc"
-version = "4.6.1"
+version = "4.7.0"
 
     [deps.BioStructures.extensions]
     BioStructuresBioAlignmentsExt = ["BioSequences", "BioAlignments"]
