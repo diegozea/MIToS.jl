@@ -4,29 +4,27 @@ struct SIFTSXML <: FileFormat end
 # ==============
 
 """
-    downloadsifts(pdbcode::AbstractString; filename::AbstractString, source::AbstractString="https")
+    downloadsifts(pdbcode::AbstractString; filename::AbstractString, source::AbstractString="ftp")
 
 Download the gzipped SIFTS XML file for the provided `pdbcode`.
 The downloaded file will have the default extension `.xml.gz`.
 While you can change the `filename`, it must include the `.xml.gz` ending.
-The `source` keyword argument is set to `"https"` by default.
-Alternatively, you can choose `"ftp"` as the `source`, which will retrieve the file from
-the EBI FTP server at ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/.
-However, please note that using `"https"` is highly recommended.
-This option will download the file from the
+The `source` keyword argument is set to `"ftp"` by default, downloading from the HTTPS
+mirror at `https://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/`.
+Alternatively, you can choose `"https"` as the `source` to download directly from the
 EBI PDBe server at https://www.ebi.ac.uk/pdbe/files/sifts/.
 """
 function downloadsifts(
     pdbcode::AbstractString;
     filename::AbstractString = "$(lowercase(pdbcode)).xml.gz",
-    source::AbstractString = "https",
+    source::AbstractString = "ftp",
 )
     @assert endswith(filename, ".xml.gz") "filename must end with .xml.gz"
     @assert source == "ftp" || source == "https" "source must be ftp or https"
     if check_pdbcode(pdbcode)
         url = if source == "ftp"
             string(
-                "ftp://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/",
+                "https://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/",
                 lowercase(pdbcode[2:3]),
                 "/",
                 lowercase(pdbcode),
