@@ -61,6 +61,7 @@ export  # PDBResidues
     change_b_factor,
     change_b_factor!,
     # AtomsData
+    COVALENT_RADII,
     covalentradius,
     vanderwaalsradius,
     VAN_DER_WAALS_RADII,
