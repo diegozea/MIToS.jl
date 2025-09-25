@@ -241,11 +241,11 @@ end
     @test_throws ArgumentError downloadsifts(pdb, filename = "bad_name.txt")
     @test_throws ErrorException downloadsifts("2vqc_A")
 
-    filename_https = downloadsifts(pdb, filename = tempname() * ".xml.gz")
-    @test length(read_file(filename_https, SIFTSXML)) == length(mapping)
-
-    filename_ftp = downloadsifts(pdb, filename = tempname() * ".xml.gz", source = "ftp")
+    filename_ftp = downloadsifts(pdb, filename = tempname() * ".xml.gz")
     @test length(read_file(filename_ftp, SIFTSXML)) == length(mapping)
+
+    filename_https = downloadsifts(pdb, filename = tempname() * ".xml.gz", source = "https")
+    @test length(read_file(filename_https, SIFTSXML)) == length(mapping)
 end
 
 @testset "Ensembl" begin
