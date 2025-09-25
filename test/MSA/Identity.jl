@@ -53,6 +53,10 @@
         @test percentidentity(res"AH-", res"AX-", 100.0)
         @test percentidentity(res"AH-", res"XG-", 0.0)
         @test !percentidentity(res"AGG", res"AHX", 62.0) # 50% < 62%
+        # Mixed XAA and mismatch columns should still reach the threshold once the
+        # ignored XAA positions are removed from the running length (2 matches out
+        # of 3 counted columns = 66%, not 2 / 4 = 50%).
+        @test percentidentity(res"AXAA", res"AAGA", 60.0)
     end
 
     @testset "MSA" begin
