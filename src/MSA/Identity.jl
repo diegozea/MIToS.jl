@@ -73,6 +73,7 @@ function percentidentity(seq1, seq2, threshold)
         aa2 = seq2[i]
         if aa1 == XAA || aa2 == XAA
             n -= 1
+            limit_count = n * fraction
             continue
         end
         if aa1 == aa2
