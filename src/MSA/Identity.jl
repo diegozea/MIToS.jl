@@ -22,7 +22,14 @@ function _percentidentity(seq1, seq2, len)
             end
         end
     end
-    100.0 * count / (len - notcount)
+    effective_len = len - notcount
+    if effective_len == 0
+        # All positions were ignored (only GAP and/or XAA columns), so the
+        # percent identity is undefined. Preserve the previous behaviour by
+        # returning NaN instead of dividing by zero.
+        return NaN
+    end
+    100.0 * count / effective_len
 end
 
 """
