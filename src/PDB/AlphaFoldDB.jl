@@ -3,25 +3,43 @@
 
 This function queries the AlphaFoldDB API to retrieve structure information for
 a given `uniprot_accession`, e.g. `"P00520"`. This function returns the structure
-information as a `JSON3.Object`.
+information as a `JSON3.Object`. The download is performed via `download_file`,
+which already retries the request using an exponential backoff strategy.
 """
 function query_alphafolddb(uniprot_accession::AbstractString)
     # Construct the URL for the AlphaFoldDB API request
     url = "https://alphafold.ebi.ac.uk/api/prediction/$uniprot_accession"
 
-    body = IOBuffer()
-    response = Downloads.request(url, method = "GET", output = body)
-
-    if response.status == 200
-        # Use only to get the unique EntrySummary object in the Root list
-        only(JSON3.read(String(take!(body))))
-    else
-        error_type = response.status == 422 ? "Validation Error" : "Error"
-        throw(
-            ErrorException(
-                "$error_type ($(response.status)) fetching UniProt Accession $uniprot_accession from AlphaFoldDB.",
-            ),
-        )
+    filepath = try
+        download_file(url)
+    catch err
+        if err isa Downloads.RequestError
+            status = err.response === nothing ? "?" : err.response.status
+            error_type = status == 422 ? "Validation Error" : "Error"
+            throw(
+                ErrorException(
+                    "$error_type ($status) fetching UniProt Accession $uniprot_accession from AlphaFoldDB.",
+                ),
+            )
+        else
+            rethrow(err)
+        end
+    end
+    try
+        body = read(filepath, String)
+        return only(JSON3.read(body))
+    catch err
+        if err isa ArgumentError
+            throw(
+                ErrorException(
+                    "Unexpected response fetching UniProt Accession $uniprot_accession from AlphaFoldDB.",
+                ),
+            )
+        else
+            rethrow(err)
+        end
+    finally
+        isfile(filepath) && rm(filepath)
     end
 end
 
