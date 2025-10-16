@@ -139,7 +139,7 @@ mutable struct AnnotatedSequence <: AbstractSequence
         matrix::NamedResidueMatrix{Array{Residue,2}},
         annotations::Annotations,
     )
-        @argcheck size(matrix, 1) == 1 "There should be only one sequence—i.e. one row."
+        @assert size(matrix, 1) == 1 "There should be only one sequence—i.e. one row."
         clean_matrix = adjustreference(matrix) # ensure that the sequence has no gaps
         # clean_matrix has a copy of the original data, so we can modify it without 
         # affecting the original matrix
@@ -951,7 +951,7 @@ function rename_columns!(
     msa::NamedResidueMatrix{AT},
     newnames::Vector{T},
 ) where {AT,T<:AbstractString}
-    @argcheck length(newnames) == size(msa, 2) "The number of new names must match the number of columns."
+    @assert length(newnames) == size(msa, 2) "The number of new names must match the number of columns."
     setnames!(msa, newnames, 2)
     msa
 end

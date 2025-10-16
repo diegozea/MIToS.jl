@@ -763,7 +763,7 @@ The `axis` argument selects whether the matching is performed on sequences
 (`axis == 1`) or columns (`axis == 2`).
 """
 function _match_positions_by_name(axis::Int, msa_a, msa_b)
-    @argcheck axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
+    @assert axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
     names_a = axis == 1 ? sequencenames(msa_a) : columnnames(msa_a)
     names_b = axis == 1 ? sequencenames(msa_b) : columnnames(msa_b)
     index_b = Dict(name => i for (i, name) in enumerate(names_b))

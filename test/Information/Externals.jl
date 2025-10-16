@@ -14,7 +14,7 @@
     @test occursin("min_separation=2", content)
     @test occursin("mode=:fast", content)
     @test occursin("GaussDCA.gDCA(\"$msa_file\"", content)
-    @test_throws ArgumentError MIToS.Information._create_script(
+    @test_throws AssertionError MIToS.Information._create_script(
         script,
         msa_file,
         jdl_file;
