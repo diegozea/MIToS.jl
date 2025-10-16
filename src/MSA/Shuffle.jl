@@ -7,13 +7,7 @@ function _subset_indices(msa::Matrix{Residue}, dims::Int, subset, fixed_referenc
             1:ncol
         end
     else
-        if eltype(subset) !== Int
-            throw(
-                ArgumentError(
-                    "For a Matrix{Residue}, subset must be an iterator of Int values or Colon()",
-                ),
-            )
-        end
+        @assert eltype(subset) === Int "For a Matrix{Residue}, subset must be an iterator of Int values or Colon()"
         if isa(subset, AbstractRange)
             collect(subset)
         elseif isa(subset, Int)

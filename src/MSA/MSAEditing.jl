@@ -22,17 +22,15 @@ end
 
 function _column_mask(mask::Function, msa)
     out = mapslices(mask, msa, dims = 1)
-    if size(out) != (1, ncolumns(msa)) || eltype(out) != Bool
-        error("The function must return a Bool element per column.")
-    end
+    @assert size(out) == (1, ncolumns(msa)) "The function must return a Bool element per column."
+    @assert eltype(out) == Bool "The function must return a Bool element per column."
     dropdims(out, dims = 1)
 end
 
 function _sequence_mask(mask::Function, msa)
     out = mapslices(mask, msa, dims = 2)
-    if size(out) != (nsequences(msa), 1) || eltype(out) != Bool
-        error("The function must return a Bool element per column.")
-    end
+    @assert size(out) == (nsequences(msa), 1) "The function must return a Bool element per column."
+    @assert eltype(out) == Bool "The function must return a Bool element per column."
     dropdims(out, dims = 2)
 end
 

@@ -46,15 +46,9 @@ function download_alphafold_structure(
 ) where {T<:FileFormat}
 
     structure_info = query_alphafolddb(uniprot_accession)
-
+    @assert format === PDBFile || format === MMCIFFile "Unsupported format: $format"
     # Initialize the model URL based on the requested format
-    if format === PDBFile
-        model_url = structure_info["pdbUrl"]
-    elseif format === MMCIFFile
-        model_url = structure_info["cifUrl"]
-    else
-        throw(ArgumentError("Unsupported format: $format"))
-    end
+    model_url = format === PDBFile ? structure_info["pdbUrl"] : structure_info["cifUrl"]
 
     file_name = _extract_filename_from_url(model_url)
 

@@ -454,9 +454,7 @@ function Utils.parse_file(
 end
 
 function Utils.parse_file(fh::Union{IO,AbstractString}, ::Type{SIFTSXML}; kwargs...)
-    throw(
-        ArgumentError("The SIFTS XML file should have the .xml or the .xml.gz extension."),
-    )
+    error("The SIFTS XML file should have the .xml or the .xml.gz extension.")
 end
 
 # Find SIFTSResidue

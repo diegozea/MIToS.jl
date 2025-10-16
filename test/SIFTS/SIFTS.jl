@@ -352,6 +352,6 @@ end
 
 @testset "parse_file error" begin
     io = IOBuffer()
-    @test_throws ArgumentError Utils.parse_file(io, SIFTSXML)
-    @test_throws ArgumentError Utils.parse_file("dummy", SIFTSXML)
+    @test_throws ErrorException Utils.parse_file(io, SIFTSXML)
+    @test_throws ErrorException Utils.parse_file("dummy", SIFTSXML)
 end

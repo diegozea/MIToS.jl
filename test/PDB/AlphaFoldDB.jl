@@ -39,7 +39,7 @@
 
         @testset "Unsupported format" begin
             struct UnsupportedFormat <: FileFormat end
-            @test_throws ArgumentError download_alphafold_structure(
+            @test_throws AssertionError download_alphafold_structure(
                 "A0A0C5B5G6",
                 format = UnsupportedFormat,
             )

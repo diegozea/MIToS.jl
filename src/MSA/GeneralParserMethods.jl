@@ -263,9 +263,7 @@ function _ids_ordered_dict(ids, nseq::Int)
     for (i, id) in enumerate(ids)
         dict[id] = i
     end
-    if length(dict) < nseq
-        throw(ArgumentError("There are less unique sequence identifiers than sequences."))
-    end
+    @assert length(dict) == nseq "There are less unique sequence identifiers than sequences."
     return dict
 end
 

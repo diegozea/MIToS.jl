@@ -98,12 +98,11 @@ function _get_selected_sequences(msa, selector)
         return selector
     else
         to_select = Set(selector)
+        @assert type <: Number || type <: AbstractString "$type is not a valid element type for the selector."
         if type <: Number
             Bool[i in to_select for i = 1:nsequences(msa)]
-        elseif type <: AbstractString
-            Bool[i in to_select for i in sequencenames(msa)]
         else
-            throw(ArgumentError("$type is not a valid element type for the selector."))
+            Bool[i in to_select for i in sequencenames(msa)]
         end
     end
 end

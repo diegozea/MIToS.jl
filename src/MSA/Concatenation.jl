@@ -566,14 +566,12 @@ end
 # Insert gap sequences.
 
 function _get_position(max_pos, position::Int)
-    if position < 1
-        throw(ArgumentError("The gap block position must be equal or greater than 1."))
-    elseif position > max_pos
+    @assert position >= 1 "The gap block position must be equal or greater than 1."
+    if position > max_pos
         max_pos + 1 # to insert the gap block at the end
     else
         position # in the MSA
     end
-    position
 end
 
 function _vcat_gap_block(msa_a, msa_b)
@@ -980,28 +978,16 @@ function join_msas(
     kind::Symbol = :outer,
     axis::Int = 1,
 )
-    # Check that input arguments and throw explicit ArgumentErrors if necessary
-    if !isempty(pairing) && length(first(pairing)) != 2
-        throw(
-            ArgumentError(
-                string(
-                    "pairing must consist of pairs where the first element ",
-                    "corresponds to a position in the first MSA and the second to the second MSA. ",
-                    "Otherwise, utilize two distinct position lists.",
-                ),
-            ),
+    # Validate input arguments
+    if !isempty(pairing)
+        @assert length(first(pairing)) == 2 string(
+            "pairing must consist of pairs where the first element ",
+            "corresponds to a position in the first MSA and the second to the second MSA. ",
+            "Otherwise, utilize two distinct position lists.",
         )
     end
-    if kind != :inner && kind != :outer && kind != :left && kind != :right
-        throw(
-            ArgumentError(
-                "The kind of join must be one of :inner, :outer, :left or :right.",
-            ),
-        )
-    end
-    if axis != 1 && axis != 2
-        throw(ArgumentError("The axis must be 1 (sequences) or 2 (columns)."))
-    end
+    @assert kind == :inner || kind == :outer || kind == :left || kind == :right "The kind of join must be one of :inner, :outer, :left or :right."
+    @assert axis == 1 || axis == 2 "The axis must be 1 (sequences) or 2 (columns)."
     # Get the matching positions as integer vectors
     positions_a, positions_b = _find_pairing_positions(axis, msa_a, msa_b, pairing)
     # Perform the join
@@ -1070,12 +1056,6 @@ function join_msas(
     elseif kind == :right
         gapped_a = _add_gaps_in_b(msa_b, msa_a, positions_b, positions_a, axis)
         return axis == 1 ? hcat(gapped_a, msa_b) : vcat(gapped_a, msa_b)
-    else
-        throw(
-            ArgumentError(
-                "The kind of join must be one of :inner, :outer, :left or :right.",
-            ),
-        )
     end
 end
 
@@ -1087,9 +1067,7 @@ function join_msas(
     kind::Symbol = :outer,
     axis::Int = 1,
 )
-    if length(positions_a) != length(positions_b)
-        throw(ArgumentError("positions_a and positions_b must have the same length."))
-    end
+    @assert length(positions_a) == length(positions_b) "positions_a and positions_b must have the same length."
     pairing = zip(positions_a, positions_b)
     join_msas(msa_a, msa_b, pairing, kind = kind, axis = axis)
 end

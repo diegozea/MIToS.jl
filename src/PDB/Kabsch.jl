@@ -237,17 +237,13 @@ function _get_matched_Cαs(
     ::Nothing,
 )
     length_A = length(A)
-    if length_A != length(B)
-        throw(ArgumentError("PDBResidue vectors should have the same length."))
-    end
+    @assert length_A == length(B) "PDBResidue vectors should have the same length."
     ACα = PDB.CAmatrix(A)
     BCα = PDB.CAmatrix(B)
     without_Cα = isnan.(ACα[:, 1]) .| isnan.(BCα[:, 1])
     if any(without_Cα)
         n_without_ca = sum(without_Cα)
-        if length_A - n_without_ca == 0
-            throw(ArgumentError("There are not alpha-carbons to align."))
-        end
+        @assert length_A - n_without_ca != 0 "There are not alpha-carbons to align."
         @warn string(
             "Using ",
             length_A - n_without_ca,
@@ -346,16 +342,10 @@ This looks for errors in the input to rmsf methods
 """
 function _rmsf_test(vector)
     n = length(vector)
-    if n < 2
-        throw(ArgumentError("You need at least two matrices/structures"))
-    end
+    @assert n >= 2 "You need at least two matrices/structures"
     sizes = unique(Tuple{Int,Int}[size(s) for s in vector])
-    if length(sizes) > 1
-        throw(ArgumentError("Matrices/Structures must have the same number of rows/atoms"))
-    end
-    if sizes[1][2] != 3
-        throw(ArgumentError("Matrices should have 3 columns (x, y, z)"))
-    end
+    @assert length(sizes) == 1 "Matrices/Structures must have the same number of rows/atoms"
+    @assert sizes[1][2] == 3 "Matrices should have 3 columns (x, y, z)"
 end
 
 """

@@ -1,7 +1,7 @@
 @testset "PDBResidues" begin
 
     @test vec(Coordinates((1.0, 2.0, 3.0))) == [1.0, 2.0, 3.0]
-    @test_throws ArgumentError Coordinates([1.0, 2.0])
+    @test_throws AssertionError Coordinates([1.0, 2.0])
 
     c1 = Coordinates(0.0, 0.0, 0.0)
     c2 = Coordinates(0.5, 0.5, sqrt(0.5))

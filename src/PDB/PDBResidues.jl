@@ -74,7 +74,7 @@ function PDBResidueIdentifier(; PDB_number, number, name, group, model, chain)
 end
 
 function Coordinates(a::AbstractVector{<:Real})
-    length(a) == 3 || throw(ArgumentError("Coordinates vector must have length 3"))
+    @assert length(a) == 3 "Coordinates vector must have length 3"
     Coordinates((a[1], a[2], a[3]))
 end
 
@@ -383,26 +383,19 @@ macro residues(
     residue::Symbol,
     r,
 )
-    if model == :model && chain == :chain && group == :group && residue == :residue
-        Base.depwarn(
-            "Using the @residues macro is deprecated in favor of the select_residues function: select_residues(residue_list; model, chain, group, residue)",
-            Symbol("@residues"),
-            force = true,
-        )
-        return :(select_residues(
-            $(esc(residue_list));
-            model = $(esc(m)),
-            chain = $(esc(c)),
-            group = $(esc(g)),
-            residue = $(esc(r)),
-        ))
-    else
-        throw(
-            ArgumentError(
-                "The signature is @residues ___ model ___ chain ___ group ___ residue ___",
-            ),
-        )
-    end
+    @assert model == :model && chain == :chain && group == :group && residue == :residue "The signature is @residues ___ model ___ chain ___ group ___ residue ___"
+    Base.depwarn(
+        "Using the @residues macro is deprecated in favor of the select_residues function: select_residues(residue_list; model, chain, group, residue)",
+        Symbol("@residues"),
+        force = true,
+    )
+    return :(select_residues(
+        $(esc(residue_list));
+        model = $(esc(m)),
+        chain = $(esc(c)),
+        group = $(esc(g)),
+        residue = $(esc(r)),
+    ))
 end
 
 # residuesdict
@@ -474,26 +467,19 @@ macro residuesdict(
     residue::Symbol,
     r,
 )
-    if model == :model && chain == :chain && group == :group && residue == :residue
-        Base.depwarn(
-            "Using @residuesdict macro is deprecated in favor of residuesdict function with keyword arguments: residuesdict(residue_list; model, chain, group, residue)",
-            Symbol("@residuesdict"),
-            force = true,
-        )
-        return :(residuesdict(
-            $(esc(residue_list));
-            model = $(esc(m)),
-            chain = $(esc(c)),
-            group = $(esc(g)),
-            residue = $(esc(r)),
-        ))
-    else
-        throw(
-            ArgumentError(
-                "The signature is @residuesdict ___ model ___ chain ___ group ___ residue ___",
-            ),
-        )
-    end
+    @assert model == :model && chain == :chain && group == :group && residue == :residue "The signature is @residuesdict ___ model ___ chain ___ group ___ residue ___"
+    Base.depwarn(
+        "Using @residuesdict macro is deprecated in favor of residuesdict function with keyword arguments: residuesdict(residue_list; model, chain, group, residue)",
+        Symbol("@residuesdict"),
+        force = true,
+    )
+    return :(residuesdict(
+        $(esc(residue_list));
+        model = $(esc(m)),
+        chain = $(esc(c)),
+        group = $(esc(g)),
+        residue = $(esc(r)),
+    ))
 end
 
 # select_atoms
@@ -575,31 +561,24 @@ macro atoms(
     atom::Symbol,
     a,
 )
-    if model == :model &&
-       chain == :chain &&
-       group == :group &&
-       residue == :residue &&
-       atom == :atom
-        Base.depwarn(
-            "Using the @atoms macro is deprecated in favor of the select_atoms function: select_atoms(residue_list; model, chain, group, residue, atom)",
-            Symbol("@atoms"),
-            force = true,
-        )
-        return :(select_atoms(
-            $(esc(residue_list));
-            model = $(esc(m)),
-            chain = $(esc(c)),
-            group = $(esc(g)),
-            residue = $(esc(r)),
-            atom = $(esc(a)),
-        ))
-    else
-        throw(
-            ArgumentError(
-                "The signature is @atoms ___ model ___ chain ___ group ___ residue ___ atom ___",
-            ),
-        )
-    end
+    @assert model == :model &&
+        chain == :chain &&
+        group == :group &&
+        residue == :residue &&
+        atom == :atom "The signature is @atoms ___ model ___ chain ___ group ___ residue ___ atom ___"
+    Base.depwarn(
+        "Using the @atoms macro is deprecated in favor of the select_atoms function: select_atoms(residue_list; model, chain, group, residue, atom)",
+        Symbol("@atoms"),
+        force = true,
+    )
+    return :(select_atoms(
+        $(esc(residue_list));
+        model = $(esc(m)),
+        chain = $(esc(c)),
+        group = $(esc(g)),
+        residue = $(esc(r)),
+        atom = $(esc(a)),
+    ))
 end
 
 # Special find...

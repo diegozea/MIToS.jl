@@ -2,9 +2,8 @@
 
 ### Changes from v3.1.0 to master
 
-- *[Breaking change]* Replaced argument validation `@assert` statements with `@argcheck`
-  from the `ArgCheck` package. Therefore, functions that previously raised an
-  `AssertionError` now raise an `ArgumentError` instead.
+- *[Breaking change]* Replaced uses of `@argcheck` with `@assert`, so functions now raise
+  `AssertionError` instead of `ArgumentError`.
 - The `downloadsifts` default source now points to the HTTPS FTP mirror at
   `https://ftp.ebi.ac.uk`, while keeping the direct PDBe download available via
   `source = "https"`.

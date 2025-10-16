@@ -42,6 +42,7 @@ macro keep_names_dimension(functions)
         definitions[i] = quote
 
             function ($f)(msa::NamedResidueMatrix{T}, dimension::Int) where {T}
+                @assert dimension == 1 || dimension == 2 "Dimension must be 1 or 2."
                 result = ($f)(getarray(msa), dimension)
                 if dimension == 1
                     name_list = names(msa, 2)
@@ -69,8 +70,6 @@ macro keep_names_dimension(functions)
                         ),
                         ("Seq", "Function"),
                     )
-                else
-                    throw(ArgumentError("Dimension must be 1 or 2."))
                 end
             end
 

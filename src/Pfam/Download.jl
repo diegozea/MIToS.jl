@@ -23,7 +23,7 @@ function downloadpfam(
     if alignment != "full" && alignment != "seed" && alignment != "uniprot"
         throw(ErrorException("alignment must be \"full\", \"seed\" or \"uniprot\""))
     end
-    endswith(filename, ".gz") || error("filename must end in .gz")
+    @assert endswith(filename, ".gz") "filename must end in .gz"
     if occursin(r"^PF\d{5}$"i, pfamcode)
         download_file(
             "https://www.ebi.ac.uk/interpro/wwwapi/entry/pfam/$pfamcode/?annotation=alignment:$alignment&download",

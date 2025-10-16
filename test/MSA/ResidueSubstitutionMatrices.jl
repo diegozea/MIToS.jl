@@ -15,10 +15,10 @@ using MIToS.MSA.ResidueSubstitutionMatrices
     @test m[GAP, :] == scores[end, :]
     @test m[:, GAP] == scores[:, end]
 
-    @test_throws ArgumentError ResidueSubstitutionMatrices.ResidueSubstitutionMatrix(
+    @test_throws AssertionError ResidueSubstitutionMatrices.ResidueSubstitutionMatrix(
         ones(20, 21),
     )
-    @test_throws ArgumentError ResidueSubstitutionMatrices.ResidueSubstitutionMatrix(
+    @test_throws AssertionError ResidueSubstitutionMatrices.ResidueSubstitutionMatrix(
         ones(20, 20),
         ReducedAlphabet("AC"),
     )

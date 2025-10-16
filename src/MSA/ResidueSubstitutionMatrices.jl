@@ -27,12 +27,8 @@ struct ResidueSubstitutionMatrix{T<:Real,A<:ResidueAlphabet} <: AbstractMatrix{T
         alphabet::A,
     ) where {T<:Real,A<:ResidueAlphabet}
         n, m = size(scores)
-        if n != m
-            throw(ArgumentError("scores matrix must be square"))
-        end
-        if n != length(alphabet)
-            throw(ArgumentError("matrix size must match alphabet length"))
-        end
+        @assert n == m "scores matrix must be square"
+        @assert n == length(alphabet) "matrix size must match alphabet length"
         new{T,A}(Matrix{T}(scores), alphabet)
     end
 end

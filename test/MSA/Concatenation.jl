@@ -471,8 +471,8 @@ end
 
     @testset "Insert gaps: Invalid gap positions" begin
         # Position less than 1
-        @test_throws ArgumentError MIToS.MSA._insert_gap_sequences(msa, ["SEQ1", "SEQ2"], 0)
-        @test_throws ArgumentError MIToS.MSA._insert_gap_columns(msa, 3, 0)
+        @test_throws AssertionError MIToS.MSA._insert_gap_sequences(msa, ["SEQ1", "SEQ2"], 0)
+        @test_throws AssertionError MIToS.MSA._insert_gap_columns(msa, 3, 0)
 
         # Position greater than the number of sequences/columns are valid and used to 
         # insert gaps at the end of the MSA
@@ -1520,22 +1520,22 @@ end
             end
         end
 
-        @testset "ArgumentErrors" begin
+        @testset "Invalid arguments" begin
             # axis is not 1 or 2
-            @test_throws ArgumentError join_msas(msa62, msa62, [1, 2] .=> [3, 4], axis = 3)
+            @test_throws AssertionError join_msas(msa62, msa62, [1, 2] .=> [3, 4], axis = 3)
             # kind is not :inner, :left, :right, or :outer
-            @test_throws ArgumentError join_msas(
+            @test_throws AssertionError join_msas(
                 msa62,
                 msa62,
                 [1, 2] .=> [3, 4],
                 kind = :iner,
             )
             # kind is incorrect using two position lists
-            @test_throws ArgumentError join_msas(msa62, msa62, [1, 2], [3, 4], kind = :iner)
+            @test_throws AssertionError join_msas(msa62, msa62, [1, 2], [3, 4], kind = :iner)
             # each element of the pairing is not a pair
-            @test_throws ArgumentError join_msas(msa62, msa62, [1, 2, 3])
+            @test_throws AssertionError join_msas(msa62, msa62, [1, 2, 3])
             # the list of positions are not of the same length
-            @test_throws ArgumentError join_msas(msa62, msa62, [1, 2], [3, 4, 5])
+            @test_throws AssertionError join_msas(msa62, msa62, [1, 2], [3, 4, 5])
         end
 
         @testset "Using two position lists instead of a list of pairs" begin

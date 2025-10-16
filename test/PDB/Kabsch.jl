@@ -102,11 +102,11 @@
         ]
         w = [0.25, 0.75]
 
-        @test_throws ArgumentError mean_coordinates(Matrix{Float64}[A[1:1, :], B])
-        @test_throws ArgumentError mean_coordinates(Matrix{Float64}[A[:, 1:2], B])
-        @test_throws ArgumentError mean_coordinates(Matrix{Float64}[A])
-        @test_throws ArgumentError mean_coordinates(Matrix{Float64}[A, B'])
-        @test_throws ArgumentError mean_coordinates(Matrix{Float64}[A', B'])
+        @test_throws AssertionError mean_coordinates(Matrix{Float64}[A[1:1, :], B])
+        @test_throws AssertionError mean_coordinates(Matrix{Float64}[A[:, 1:2], B])
+        @test_throws AssertionError mean_coordinates(Matrix{Float64}[A])
+        @test_throws AssertionError mean_coordinates(Matrix{Float64}[A, B'])
+        @test_throws AssertionError mean_coordinates(Matrix{Float64}[A', B'])
 
         @test mean_coordinates(Matrix{Float64}[A, B]) == [
             0.0 0.0 0.0
@@ -316,7 +316,7 @@
 
             filter!(atom -> atom.atom != "CA", small_2WEL[1].atoms)
             filter!(atom -> atom.atom != "CA", small_6BAB[3].atoms)
-            @test_throws ArgumentError superimpose(small_2WEL, small_6BAB)
+            @test_throws AssertionError superimpose(small_2WEL, small_6BAB)
         end
     end
 end
