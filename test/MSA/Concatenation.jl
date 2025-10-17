@@ -471,7 +471,11 @@ end
 
     @testset "Insert gaps: Invalid gap positions" begin
         # Position less than 1
-        @test_throws AssertionError MIToS.MSA._insert_gap_sequences(msa, ["SEQ1", "SEQ2"], 0)
+        @test_throws AssertionError MIToS.MSA._insert_gap_sequences(
+            msa,
+            ["SEQ1", "SEQ2"],
+            0,
+        )
         @test_throws AssertionError MIToS.MSA._insert_gap_columns(msa, 3, 0)
 
         # Position greater than the number of sequences/columns are valid and used to 
@@ -1531,7 +1535,13 @@ end
                 kind = :iner,
             )
             # kind is incorrect using two position lists
-            @test_throws AssertionError join_msas(msa62, msa62, [1, 2], [3, 4], kind = :iner)
+            @test_throws AssertionError join_msas(
+                msa62,
+                msa62,
+                [1, 2],
+                [3, 4],
+                kind = :iner,
+            )
             # each element of the pairing is not a pair
             @test_throws AssertionError join_msas(msa62, msa62, [1, 2, 3])
             # the list of positions are not of the same length
@@ -1577,10 +1587,16 @@ end
                         FASTA,
                         generatemapping = true,
                     )
-                    @test_throws ErrorException join_msas(msa_simple, msa_other, kind = :inner)
+                    @test_throws ErrorException join_msas(
+                        msa_simple,
+                        msa_other,
+                        kind = :inner,
+                    )
                     outer_join = join_msas(msa_simple, msa_other, kind = :outer)
-                    @test vec(gapfraction(outer_join, 1)) == [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
-                    @test vec(gapfraction(outer_join, 2)) == [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
+                    @test vec(gapfraction(outer_join, 1)) ==
+                          [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
+                    @test vec(gapfraction(outer_join, 2)) ==
+                          [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
                     right_join = join_msas(msa_simple, msa_other, kind = :right)
                     @test vec(gapfraction(right_join, 1)) == [6, 6, 0, 0, 0, 0, 0, 0] ./ 6
                     @test vec(gapfraction(right_join, 2)) == [2, 2, 2, 2, 2, 2] ./ (6 + 2)
@@ -1613,10 +1629,17 @@ end
                         ["X" * string(i) for i = 1:ncolumns(msa_other)],
                         2,
                     )
-                    @test_throws ErrorException join_msas(msa_simple, msa_other; axis = 2, kind = :inner)
+                    @test_throws ErrorException join_msas(
+                        msa_simple,
+                        msa_other;
+                        axis = 2,
+                        kind = :inner,
+                    )
                     outer_join = join_msas(msa_simple, msa_other; axis = 2, kind = :outer)
-                    @test vec(gapfraction(outer_join, 1)) == [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
-                    @test vec(gapfraction(outer_join, 2)) == [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
+                    @test vec(gapfraction(outer_join, 1)) ==
+                          [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
+                    @test vec(gapfraction(outer_join, 2)) ==
+                          [6, 6, 2, 2, 2, 2, 2, 2] ./ (6 + 2)
                     right_join = join_msas(msa_simple, msa_other; axis = 2, kind = :right)
                     @test vec(gapfraction(right_join, 1)) == [2, 2, 2, 2, 2, 2] ./ (6 + 2)
                     @test vec(gapfraction(right_join, 2)) == [6, 6, 0, 0, 0, 0, 0, 0] ./ 6
