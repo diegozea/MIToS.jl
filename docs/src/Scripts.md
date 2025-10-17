@@ -57,74 +57,80 @@ julia Buslje09.jl -h
 
 ```@setup scripts
 using Pkg
-project_folder = "MIToS_Scripts_Project"
-isdir(project_folder) || mkdir(project_folder)
+project_folder = normpath(@__DIR__, "..")
 Pkg.activate(project_folder)
-Pkg.add(url="https://github.com/MIToSOrg/MIToS_Scripts.jl")
+Pkg.instantiate()
 using MIToS_Scripts
+using MIToS
 scripts_folder = joinpath(pkgdir(MIToS_Scripts), "scripts")
+
+function run_script_help(script_name)
+    script_path = joinpath(scripts_folder, script_name)
+    cmd = `$(Base.julia_cmd()) --project=$project_folder -e 'using MIToS_Scripts, MIToS; MIToS_Scripts.loadedversion(::Module) = Base.pkgversion(MIToS); script_path = popfirst!(Base.ARGS); include(script_path)' $script_path -h`
+    read(cmd, String)
+end
 ```
 
 ### Buslje09.jl
 
 ```@example scripts
-script_path = joinpath(scripts_folder, "Buslje09.jl") # hide
-println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+script_name = "Buslje09.jl" # hide
+print(run_script_help(script_name)) # hide
 ```
 
 ### BLMI.jl
 
 ```@example scripts
-script_path = joinpath(scripts_folder, "BLMI.jl") # hide
-println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+script_name = "BLMI.jl" # hide
+print(run_script_help(script_name)) # hide
 
 ```
 
 ### Conservation.jl
 
 ```@example scripts
-script_path = joinpath(scripts_folder, "Conservation.jl") # hide
-println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+script_name = "Conservation.jl" # hide
+print(run_script_help(script_name)) # hide
 ```
 
 ### DownloadPDB.jl
 
 ```@example scripts
-script_path = joinpath(scripts_folder, "DownloadPDB.jl") # hide
-println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+script_name = "DownloadPDB.jl" # hide
+print(run_script_help(script_name)) # hide
 ```
 
 ### Distances.jl
 
 ```@example scripts
-script_path = joinpath(scripts_folder, "Distances.jl") # hide
-println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+script_name = "Distances.jl" # hide
+print(run_script_help(script_name)) # hide
 ```
 
 ### MSADescription.jl
 
 ```@example scripts
-script_path = joinpath(scripts_folder, "MSADescription.jl") # hide
-println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+script_name = "MSADescription.jl" # hide
+print(run_script_help(script_name)) # hide
 ```
 
 ### PercentIdentity.jl
 
 ```@example scripts
-script_path = joinpath(scripts_folder, "PercentIdentity.jl") # hide
-println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+script_name = "PercentIdentity.jl" # hide
+print(run_script_help(script_name)) # hide
 ```
 
 ### AlignedColumns.jl
 
 ```@example scripts
-script_path = joinpath(scripts_folder, "AlignedColumns.jl") # hide
-println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+script_name = "AlignedColumns.jl" # hide
+print(run_script_help(script_name)) # hide
 ```
 
 ### SplitStockholm.jl
 
 ```@example scripts
-script_path = joinpath(scripts_folder, "SplitStockholm.jl") # hide
-println(read(`$(Base.julia_cmd()) --project=$project_folder $script_path -h`, String)) #hide
+script_name = "SplitStockholm.jl" # hide
+print(run_script_help(script_name)) # hide
 ```
