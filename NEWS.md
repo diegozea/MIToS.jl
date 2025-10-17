@@ -1,35 +1,9 @@
 ## MIToS.jl Release Notes
 
-### Changes from v3.1.0 to master
-
-- *[Breaking change]* Replaced uses of `@argcheck` with `@assert`, so functions now raise
-  `AssertionError` instead of `ArgumentError`.
-- The `downloadsifts` default source now points to the HTTPS FTP mirror at
-  `https://ftp.ebi.ac.uk`, while keeping the direct PDBe download available via
-  `source = "https"`.
+### Changes from v3.1.0 to v3.2.0
 
 Changes in the `PDB` module are:
 
-- *[Breaking change]* The values in `covalentradius` were modified to match those of 
-  Cordero et al. (2008) instead of the previously used values from Bickerton et al. (2011).
-- *[Breaking change]* The `covalent` function has been updated to return `true` 
-  when the distance between two atoms is less than or equal to the sum of their 
-  covalent radii, scaled by a new `tolerance_factor` keyword argument 
-  (default: `1.1`).
-- *[Breaking change]* The `vanderwaalsradius` constant (with values from 
-  Bickerton et al. 2011) has been deprecated in favor of the `VAN_DER_WAALS_RADII` 
-  dictionary, which maps element symbols to their van der Waals radii as defined by 
-  Alvarez (2013).
-- *[Breaking change]* The `vanderwaalsclash` function has been modified to use the 
-  `VAN_DER_WAALS_RADII` dictionary and to include a `tolerance_value` keyword argument
-  (default is `-0.7` Å) to follow the criteria defined by Alvarez (2013).
-- *[Breaking change]* The `vanderwaals` function now relies on the 
-  `VAN_DER_WAALS_RADII` dictionary and follows the criteria defined by Alvarez (2013). 
-  As a result, the function returns `true` if the distance between two atoms is within 
-  ±0.7 Å of the sum of their van der Waals radii. Previously, it returned `true` when 
-  the distance was strictly less than the sum of their radii plus 0.5 Å.
-- The `peptide_bond` function has been added to determine if a pair of `PDBResidue`s
-  or `PDBAtom`s are connected by a peptide bond.
 - The `change_b_factor` and `change_b_factor!` functions have been added to modify
   the B-factor of a `PDBAtom` or to a set of `PDBAtom`s in a `PDBResidue`.
 - New constructor to create a `Coordinates` object from a vector of real numbers.
@@ -54,7 +28,7 @@ Changes in the `MSA` module are:
   of the new `ResidueSubstitutionMatrix` type. This matrix is not exported by default,
   so you need to `import` it explicitly or use its fully qualified name.
 - A `BioAlignments` package extension has been added to provide conversion functions
-  between `BioAlignments.SubstitutionMatrix` and `ResidueSubstitutionMatrix`.
+  from `BioAlignments.SubstitutionMatrix` to `ResidueSubstitutionMatrix`.
 - The `sum_of_pairs_score` function has been added to the `MSA` module to compute
   the sum-of-pairs score of an MSA. This function takes a `ResidueSubstitutionMatrix`
   as input; by default, it uses the `BLOSUM62` matrix.
@@ -90,6 +64,9 @@ Changes in the `MSA` module are:
 
 Some other changes are:
 
+- The `downloadsifts` default source now points to the HTTPS FTP mirror at
+  `https://ftp.ebi.ac.uk`, while keeping the direct PDBe download available via
+  `source = "https"`.
 - `AbstractString` is used instead of `String` in some function signatures to allow
   more flexible string-like arguments, such as `SubString`.
 - The benchmark suite was updated using `PkgBenchmark` and `BenchmarkTools`. The
