@@ -11,6 +11,7 @@ import BioStructures
 using Aqua
 using LinearAlgebra
 using Random
+using Downloads
 using OrderedCollections    # OrderedDict
 using Statistics            # mean
 using DelimitedFiles        # readdlm

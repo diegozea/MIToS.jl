@@ -13,31 +13,15 @@ function query_alphafolddb(uniprot_accession::AbstractString)
     filepath = try
         download_file(url)
     catch err
-        if err isa Downloads.RequestError
-            status = err.response === nothing ? "?" : err.response.status
-            error_type = status == 422 ? "Validation Error" : "Error"
-            throw(
-                ErrorException(
-                    "$error_type ($status) fetching UniProt Accession $uniprot_accession from AlphaFoldDB.",
-                ),
-            )
-        else
-            rethrow(err)
-        end
+        @error "Error fetching UniProt Accession $uniprot_accession from AlphaFoldDB."
+        rethrow(err)
     end
     try
         body = read(filepath, String)
         return only(JSON3.read(body))
     catch err
-        if err isa ArgumentError
-            throw(
-                ErrorException(
-                    "Unexpected response fetching UniProt Accession $uniprot_accession from AlphaFoldDB.",
-                ),
-            )
-        else
-            rethrow(err)
-        end
+        @error "Unexpected AlphaFoldDB response for $uniprot_accession."
+        rethrow(err)
     finally
         isfile(filepath) && rm(filepath)
     end

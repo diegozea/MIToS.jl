@@ -7,9 +7,9 @@
             @test match(r"^https.+\.pdb$", structure_info["pdbUrl"]) !== nothing
         end
 
-        # @testset "Invalid UniProt Accession" begin
-        #     @test_throws HTTP.Exceptions.StatusError query_alphafolddb("INVALID_ACCESSION")
-        # end
+        @testset "Invalid UniProt Accession" begin
+            @test_throws Downloads.RequestError query_alphafolddb("INVALID_ACCESSION")
+        end
     end
 
     @testset "download_alphafold_structure tests" begin
