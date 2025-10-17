@@ -1,3 +1,8 @@
+import Pkg
+Pkg.activate(@__DIR__)
+Pkg.add(Pkg.PackageSpec(url="https://github.com/MIToSOrg/MIToS_Scripts.jl.git"))
+Pkg.instantiate()
+
 using Documenter
 using DocumenterCitations
 
