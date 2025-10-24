@@ -35,9 +35,13 @@ function _parse_mmcif_to_pdbresidues(mmcif_dict::BioStructures.MMCIFDict, label:
     alt_ids = mmcif_dict["_atom_site.label_alt_id"] # Alternative location ID
     formal_charges =
         haskey(mmcif_dict, "_atom_site.pdbx_formal_charge") ?
-        mmcif_dict["_atom_site.pdbx_formal_charge"] : ["0" for _ = 1:length(atom_names)]
+        mmcif_dict["_atom_site.pdbx_formal_charge"] : ["?" for _ = 1:length(atom_names)]
     # Formal charge: net integer charge assigned; default is "0" as the regex is [+-]?[0-9]+
     # https://mmcif.wwpdb.org/dictionaries/mmcif_pdbx_v50.dic/Items/_atom_site.pdbx_formal_charge.html
+    # If the value is missing, it is represented as "?" in the mmCIF file. 
+    # The `_clean_string` function will convert "?" to "", which we then print as "?" 
+    # thanks to the `_pdbresidues_to_mmcifdict` function.
+    # https://mmcif.wwpdb.org/docs/tutorials/mechanics/pdbx-mmcif-syntax.html
     ins_codes = mmcif_dict["_atom_site.pdbx_PDB_ins_code"] # Insertion codes
 
     residues = PDBResidue[]
