@@ -70,3 +70,13 @@
     @test length(parsed_heavy[2].atoms) == 1
     @test parsed_heavy[2].atoms[1].element == "C"
 end
+
+@testset "Parsing AlphaFold 3 output mmCIF file" begin
+    cif_file = joinpath(DATA, "fold_2025_10_24_12_24_model_0.cif")
+    residues = read_file(cif_file, MMCIFFile)
+    @assert length(residues) == 4 # The model only has 4 G residues
+    # AlphaFold 3 mmCIF doesn’t have formal charges, so there are all zeros by default
+    for res in residues
+        @test all(a.charge == "0" for a in res.atoms)
+    end
+end

@@ -33,7 +33,11 @@ function _parse_mmcif_to_pdbresidues(mmcif_dict::BioStructures.MMCIFDict, label:
     group_pdb = mmcif_dict["_atom_site.group_PDB"]  # Group type, "ATOM" or "HETATM"
     pdb_model = mmcif_dict["_atom_site.pdbx_PDB_model_num"]  # Model number
     alt_ids = mmcif_dict["_atom_site.label_alt_id"] # Alternative location ID
-    formal_charges = mmcif_dict["_atom_site.pdbx_formal_charge"] # Formal charge
+    formal_charges =
+        haskey(mmcif_dict, "_atom_site.pdbx_formal_charge") ?
+        mmcif_dict["_atom_site.pdbx_formal_charge"] : ["0" for _ = 1:length(atom_names)]
+    # Formal charge: net integer charge assigned; default is "0" as the regex is [+-]?[0-9]+
+    # https://mmcif.wwpdb.org/dictionaries/mmcif_pdbx_v50.dic/Items/_atom_site.pdbx_formal_charge.html
     ins_codes = mmcif_dict["_atom_site.pdbx_PDB_ins_code"] # Insertion codes
 
     residues = PDBResidue[]
