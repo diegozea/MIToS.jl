@@ -23,6 +23,14 @@ struct Stockholm <: MSAFormat end
     end
 end
 
+@inline function _append_annotation_fragment!(dict::AbstractDict, key, fragment)
+    if haskey(dict, key)
+        dict[key] = dict[key] * fragment
+    else
+        dict[key] = fragment
+    end
+end
+
 function _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
     if startswith(line, "#=GF")
         words = get_n_words(line, 3)
@@ -42,10 +50,12 @@ function _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
         end
     elseif startswith(line, "#=GC")
         words = get_n_words(line, 3)
-        GC[words[2]] = words[3]
+        _append_annotation_fragment!(GC, words[2], words[3])
     elseif startswith(line, "#=GR")
         words = get_n_words(line, 4)
-        GR[(words[2], words[3])] = words[4]
+        key = (words[2], words[3])
+        fragment = words[4]
+        _append_annotation_fragment!(GR, key, fragment)
     else
         _fill_with_sequence_line!(IDS, SEQS, line)
     end
