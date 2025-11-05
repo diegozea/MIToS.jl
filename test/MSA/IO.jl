@@ -23,6 +23,7 @@
         pf09645_sto = joinpath(DATA, "PF09645_full.stockholm")
         rna_sto = joinpath(DATA, "upsk_rna.sto")
         clustal_sto = joinpath(DATA, "clustalo-I20240512-trunc.aln-stockholm")
+        hmmer_sto = joinpath(DATA, "hmmer_multiblock.sto")
 
         @testset "Read" begin
 
@@ -131,16 +132,11 @@
 
         @testset "File write Matrix{Residue}" begin
 
-            path = tempdir()
-            tmp_file = joinpath(path, ".tmp.stockholm")
-            try
+            mktemp() do tmp_file, tmp_io
+                close(tmp_io)
                 msa = read_file(pf09645_sto, Stockholm, Matrix{Residue})
                 write_file(tmp_file, msa, Stockholm)
                 @test read_file(tmp_file, Stockholm, Matrix{Residue}) == msa
-            finally
-                if isfile(tmp_file)
-                    rm(tmp_file)
-                end
             end
         end
 
@@ -159,6 +155,36 @@
                 print_file(io, msa, Stockholm)
                 printed = String(take!(io))
                 @test occursin(seq, printed)
+            end
+        end
+
+        @testset "HMMER multi-block annotations" begin
+
+            expected_rf = "xxxxxxxxxxxxxxxxxxxx......xxxxxxx......."
+            expected_ss_seq1 = "HHHHHHHHHHHHHHHHHHHHCCCCCCCCCCCCCCCCCCCC"
+            expected_ss_seq2 = "EEEEEEEEEEEEEEEEEEEEDDDDDDDDDDDDDDDDDDDD"
+
+            msa = read_file(hmmer_sto, Stockholm)
+            msa_keepinserts = read_file(hmmer_sto, Stockholm, keepinserts = true)
+
+            for alignment in (msa, msa_keepinserts)
+                @test getannotcolumn(alignment, "RF") == expected_rf
+                @test length(getannotcolumn(alignment, "RF")) == size(alignment, 2)
+                @test getannotresidue(alignment, "seq1", "SS") == expected_ss_seq1
+                @test getannotresidue(alignment, "seq2", "SS") == expected_ss_seq2
+            end
+
+            mktemp() do tmp_file, tmp_io
+                close(tmp_io)
+                write_file(tmp_file, msa, Stockholm)
+                roundtrip = read_file(tmp_file, Stockholm)
+                roundtrip_keepinserts = read_file(tmp_file, Stockholm, keepinserts = true)
+
+                for alignment in (roundtrip, roundtrip_keepinserts)
+                    @test getannotcolumn(alignment, "RF") == expected_rf
+                    @test getannotresidue(alignment, "seq1", "SS") == expected_ss_seq1
+                    @test getannotresidue(alignment, "seq2", "SS") == expected_ss_seq2
+                end
             end
         end
     end

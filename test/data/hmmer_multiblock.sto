@@ -1,0 +1,13 @@
+# STOCKHOLM 1.0
+seq1            ACDEFGHIKLMNPQRSTVWY
+seq2            ACDEFGHIKLMNPQRSTVWY
+#=GC RF         xxxxxxxxxxxxxxxxxxxx
+#=GR seq1 SS    HHHHHHHHHHHHHHHHHHHH
+#=GR seq2 SS    EEEEEEEEEEEEEEEEEEEE
+
+seq1            ACDEFGHIKLMNPQRSTVWY
+seq2            ACDEFGHIKLMNPQRSTVWY
+#=GC RF         ......xxxxxxx.......
+#=GR seq1 SS    CCCCCCCCCCCCCCCCCCCC
+#=GR seq2 SS    DDDDDDDDDDDDDDDDDDDD
+//
