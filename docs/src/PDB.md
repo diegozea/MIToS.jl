@@ -63,13 +63,13 @@ file = download_alphafold_structure("P01308")
 ```
 
 If you need more information about that entry, you can use the `query_alphafolddb` function.
-The `query_alphafolddb` function returns an `JSON3.Object` that works like a dictionary.
+The `query_alphafolddb` function returns an `JSON.Object` that works like a dictionary.
 
 ```@example alphafold_io
 json_result = query_alphafolddb("P01308")
 ```
 
-You can access the information in the `JSON3.Object` using the keys. For example, to get
+You can access the information in the `JSON.Object` using the keys. For example, to get
 the URL to the PAE matrix image:
 
 ```@example alphafold_io

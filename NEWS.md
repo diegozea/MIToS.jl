@@ -1,5 +1,10 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.2.3 to v3.3.0
+
+- MIToS migrated from JSON3 to JSON v1; therefore, the `MIToS.PDB.query_alphafolddb`
+  and `MIToS.PDB.getpdbdescription` functions now return `JSON.Object{String, Any}` objects.
+
 ### Changes from v3.2.2 to v3.2.3
 
 - The `Stockholm` file format parser now correctly handles column and residue annotations
