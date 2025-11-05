@@ -3,7 +3,7 @@
 
 This function queries the AlphaFoldDB API to retrieve structure information for
 a given `uniprot_accession`, e.g. `"P00520"`. This function returns the structure
-information as a `JSON3.Object`. The download is performed via `download_file`,
+information as a `JSON.Object`. The download is performed via `download_file`,
 which already retries the request using an exponential backoff strategy.
 """
 function query_alphafolddb(uniprot_accession::AbstractString)
@@ -18,7 +18,7 @@ function query_alphafolddb(uniprot_accession::AbstractString)
     end
     try
         body = read(filepath, String)
-        return only(JSON3.read(body))
+        return only(JSON.parse(body))
     catch err
         @error "Unexpected AlphaFoldDB response for $uniprot_accession."
         rethrow(err)

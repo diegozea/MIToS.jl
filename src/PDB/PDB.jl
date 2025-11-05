@@ -27,7 +27,7 @@ using LinearAlgebra
 using Statistics            # mean
 using MIToS.Utils
 using Format
-using JSON3
+using JSON
 using Downloads
 using Logging
 using BioStructures
