@@ -17,8 +17,7 @@ function query_alphafolddb(uniprot_accession::AbstractString)
         rethrow(err)
     end
     try
-        body = read(filepath, String)
-        return only(JSON.parse(body))
+        return only(JSON.parsefile(filepath))
     catch err
         @error "Unexpected AlphaFoldDB response for $uniprot_accession."
         rethrow(err)
