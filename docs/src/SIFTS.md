@@ -17,15 +17,74 @@ using MIToS.SIFTS # to load the SIFTS module
 
 ## Features
 
-  - Download and parse SIFTS XML files
-  - Store residue-level mapping in Julia
-  - Easy generation of `Dict`s between residues numbers
+  - Download and parse SIFTS XML files for residue-level mappings
+  - Download and parse SIFTS CSV files for chain-level mappings
+  - Store residue- and chain-level mapping in Julia
+  - Easy generation of `Dict`s between the residue numbers of two different databases
 
 ## Contents
 
 ```@contents
 Pages = ["SIFTS.md"]
 Depth = 4
+```
+
+## Chain-level summary files
+
+The SITFS database provides chain-level summary tables, usually downloadable as compressed
+CSV files from the [PDBe SIFTS Quick Access page](https://www.ebi.ac.uk/pdbe/docs/sifts/quick.html).
+MIToS allows downloading that data through the `downloadsifts` function. You should pass a 
+`DataBase` subtype to indicate which summary file to download. After downloading the file,
+you can read it using the `read_file` function and the `SIFTSCSV` format. For example,
+to download the file with the chain-level mapping between PDB chains and SCOP2 identifiers:
+
+```@example chain_level_summary
+using MIToS.SIFTS
+
+summary_path = downloadsifts(dbSCOP2)
+```
+
+Once you have the path to the downloaded file, you can read it with:
+
+```@example chain_level_summary
+summary = read_file(summary_path, SIFTSCSV)
+```
+
+The returned object is a `NamedTuple` with two fields; `colnames` and `table`. The `colnames` 
+field is a `Vector{Symbol}` with the column names of the summary table and the `table` field
+is a `Matrix{String}` with the data stored in the CSV file. You can easily convert that 
+into a `DataFrame` if you want to use that structure for downstream analysis:
+
+```@example chain_level_summary
+using DataFrames
+summary_df = DataFrame(summary.table, summary.colnames)
+```
+
+The following list shows the available chain-level summary files you can download using
+the `downloadsifts` function:
+
+- `dbUniProt`: Residue-span mapping between each PDBe chain and its **UniProt** numbering.
+- `dbPfam`: **Pfam** domain identifiers (via UniProt) linked to every processed PDB chain.
+- `dbInterPro`: **InterPro*** identifiers reported for each processed PDB chain.
+- `dbCATH`: **CATH** identifier summary plus UniProt primary accession for every processed PDB chain.
+- `dbSCOP`: **SCOP** identifier summary plus UniProt primary accession for every processed PDB chain.
+- `dbSCOP2`: **SCOP2** identifier summary plus UniProt primary accession for every processed PDB chain.
+- `dbSCOP2B`: **SCOP2B** is an expansion of SCOP2 to PDB chains sharing a UniProt accession with >=80% SCOP2 domain coverage.
+- `dbEnsembl`: **Ensembl** identifier summary plus UniProt primary accession for every processed chain.
+
+You can find the full description of each column in the 
+[PDBe SIFTS Quick Access guide](https://www.ebi.ac.uk/pdbe/docs/sifts/quick.html). From that
+link you can also download other CSV files not currently supported by `downloadsifts`. 
+If downloaded in CSV format, those files can still be read using the `read_file` function 
+and the `SIFTSCSV` format. For example, you can benefit from the `download_file` function
+at `MIToS.Utils` to download the taxonomy summary file and read it with `read_file`:
+
+```@example chain_level_summary_taxonomy
+using MIToS.SIFTS
+using MIToS.Utils
+
+taxonomy_path = download_file("https://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/csv/pdb_chain_taxonomy.csv.gz")
+taxonomy = read_file(taxonomy_path, SIFTSCSV)
 ```
 
 ## [Simplest residue-level mapping](@id Simplest-residue-level-mapping)

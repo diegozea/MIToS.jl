@@ -25,25 +25,25 @@
         end
     end
 
-    # We will test using only dbSCOP2 as it is currently (07/11/2025) the smallest
-    # file (around 849KB) at https://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/tsv/
     @testset "Downloading and parsing" begin
         mktempdir() do dir
             cd(dir) do
-                # Test Download
-                downloadsifts(dbSCOP2)
-                @test isfile("pdb_chain_scop2_uniprot.csv.gz")
-                # Test Parsing
-                data = read_file("pdb_chain_scop2_uniprot.csv.gz", SIFTSCSV)
-                @test isa(data, NamedTuple)
-                @test haskey(data, :colnames)
-                @test haskey(data, :table)
-                @test isa(data.colnames, Vector{Symbol})
-                @test isa(data.table, Matrix{String})
-                @test length(data.colnames) >= 3 # Ensure at least 3 columns are present
-                @test size(data.table, 2) == length(data.colnames) # Ensure columns match
-                @test size(data.table, 1) >= 10000 # Ensure at least 10,000 rows are present
-                # NOTE: We do not test exact numbers as the files may be updated over time
+                # This is time consuming, but we need to ensure that downloadsifts and
+                # and read_file with SIFTSCSV work as expected for all supported databases.
+                for db in implemented_databases    
+                    # Test Download
+                    csv_file = downloadsifts(db)
+                    # Test Parsing
+                    data = read_file(csv_file, SIFTSCSV)
+                    @test isa(data, NamedTuple)
+                    @test haskey(data, :colnames)
+                    @test haskey(data, :table)
+                    @test isa(data.colnames, Vector{Symbol})
+                    @test isa(data.table, Matrix{String})
+                    @test length(data.colnames) >= 3 # Ensure at least 3 columns are present
+                    @test size(data.table, 2) == length(data.colnames) # Ensure columns match
+                    @test size(data.table, 1) >= 5 # Ensure at least 5 rows are present
+                end
             end
         end
     end

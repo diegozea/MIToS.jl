@@ -1,5 +1,14 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.3.0 to master
+
+The `SIFTS` module now supports chain-level mappings:
+
+- `downloadsifts` now accepts a `DataBase` subtype as its first argument, allowing you to 
+  download the chain-level SIFTS summary CSV file for the specified database.
+- The module now exports the `SIFTSCSV` `FileFormat`, which can be used 
+  with `read_file(..., SIFTSCSV)` to load the information from the SIFTS CSV files.
+
 ### Changes from v3.2.3 to v3.3.0
 
 - MIToS migrated from JSON3 to JSON v1; therefore, the `MIToS.PDB.query_alphafolddb`
