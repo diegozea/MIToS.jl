@@ -57,7 +57,8 @@ into a `DataFrame` if you want to use that structure for downstream analysis:
 
 ```@example chain_level_summary
 using DataFrames
-summary_df = DataFrame(summary.table, summary.colnames)
+summary_df = DataFrame(summary.table, summary.colnames);
+first(summary_df, 5) # preview the first 5 rows
 ```
 
 The following list shows the available chain-level summary files you can download using
