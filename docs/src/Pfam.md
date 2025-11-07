@@ -67,7 +67,7 @@ number that correspond to each MSA column for given a determined sequence and PD
 That function downloads information from SIFTS to generate the mapping.
 
 ```@example pfam_example
-col2res = msacolumn2pdbresidue(msa, "ICSA_SHIFL/611-720", "3ML3", "A")
+col2res = msacolumn2pdbresidue(msa, "ICSA_SHIFL/612-720", "3ML3", "A")
 ```
 
 The returned dictionary can be used to get the PDB residue associated to each column
