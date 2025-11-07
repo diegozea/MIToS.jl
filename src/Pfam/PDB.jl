@@ -13,12 +13,28 @@ Dict{String,Array{Tuple{String,String},1}} with 1 entry:
   "F112_SSV1/3-112" => [("2VQC","A")]
 ```
 """
-function getseq2pdb(msa::AnnotatedMultipleSequenceAlignment)
+function getseq2pdb(
+    msa::AnnotatedMultipleSequenceAlignment;
+    force_sifts_mapping::Bool = false,
+    sifts_pfam_csv::Union{Nothing,AbstractString} = nothing,
+    sifts_uniprot_csv::Union{Nothing,AbstractString} = nothing,
+)
+    # Get the Pfam accession from the MSA annotations
+    msa_ac = getannotfile(msa, "AC", "")
+    if isempty(msa_ac)
+        throw(
+            ErrorException("Cannot determine Pfam accession number from MSA annotations."),
+        )
+    end
+    pfam_id = String(first(split(msa_ac, '.')))
+    # Build the dict from sequence annotations first
+    has_annot = false
     dict = Dict{String,Vector{Tuple{String,String}}}()
     for (k, v) in getannotsequence(msa)
         id, annot = k
         # i.e.: "#=GS F112_SSV1/3-112 DR PDB; 2VQC A; 4-73;\n"
         if annot == "DR" && occursin(_regex_PDB_from_GS, v)
+            has_annot = true
             for m in eachmatch(_regex_PDB_from_GS, v)
                 if haskey(dict, id)
                     push!(dict[id], (m.captures[1], m.captures[2]))
@@ -28,7 +44,102 @@ function getseq2pdb(msa::AnnotatedMultipleSequenceAlignment)
             end
         end
     end
+    if !has_annot
+        @warn "The MSA lacks DR PDB annotations (common in recent Pfam)." maxlog=1 _id="pdb_annot_$(pfam_id)"
+    end
+    # If no annotations or forced, use SIFTS mapping
+    if force_sifts_mapping || !has_annot
+        _sifts_seq2pdb!(dict, msa, pfam_id, sifts_pfam_csv, sifts_uniprot_csv)
+    end
     sizehint!(dict, length(dict))
+end
+
+# Same helper functions as in src/SIFTS/Summary.jl
+_summary_name(db::Type{dbPfam}) = "pdb_chain_pfam.csv.gz"
+_summary_name(db::Type{dbUniProt}) = "pdb_chain_uniprot.csv.gz"
+
+function _download_or_reuse_sifts_file(
+    sifts_csv::Union{Nothing,AbstractString},
+    db::Type{T},
+) where {T<:DataBase}
+    if !isnothing(sifts_csv)
+        return sifts_csv
+    end
+    filename = _summary_name(db)
+    if isfile(filename) && filesize(filename) > 0
+        @info "Reusing existing SIFTS file: $filename" maxlog=1 _id="reuse_$filename"
+        filename
+    else
+        @info "Downloading SIFTS file: $filename" maxlog=1 _id="download_$filename"
+        downloadsifts(db, filename = filename)
+    end
+end
+
+# Since the SIFTS mapping uses primary (citable) accession numbers from UniProt 
+# (without version numbers), but the Pfam MSA uses the entry names, we need to get the
+# mapping between these two identifiers. Pfam MSAs include the UniProt accession (with
+# version numbers) in the sequence annotations, so we can extract it from there:
+function _get_acc2seqnames(msa::AnnotatedMultipleSequenceAlignment)
+    seq_annot = getannotsequence(msa)
+    acc2seqnames = Dict{String,Vector{String}}()
+    for ((seqname, annot), value) in seq_annot
+        if annot == "AC"
+            uniprot_acc = first(split(value, '.')) # Remove version number
+            push!(get!(acc2seqnames, uniprot_acc, String[]), seqname)
+        end
+    end
+    sizehint!(acc2seqnames, length(acc2seqnames))
+    acc2seqnames
+end
+
+function _sifts_seq2pdb!(
+    dict::Dict{String,Vector{Tuple{String,String}}},
+    msa::AnnotatedMultipleSequenceAlignment,
+    pfam_id::String,
+    sifts_pfam_csv::Union{Nothing,AbstractString},
+    sifts_uniprot_csv::Union{Nothing,AbstractString},
+)
+    # Download or reuse SIFTS files
+    sifts_pfam_file = _download_or_reuse_sifts_file(sifts_pfam_csv, dbPfam)
+    sifts_uniprot_file = _download_or_reuse_sifts_file(sifts_uniprot_csv, dbUniProt)
+    # Read SIFTS files
+    sifts_pfam = read_file(sifts_pfam_file, SIFTSCSV)
+    sifts_uniprot = read_file(sifts_uniprot_file, SIFTSCSV)
+    # Get the PDB and UniProt accessions associated to the given Pfam
+    pdb_chain_up_pfam = sifts_pfam.table[sifts_pfam.table[:, 4].==pfam_id, 1:4]
+    # Keep only UniProt–PDB chain mappings that belong to the given Pfam
+    uniprot_accs = Set(pdb_chain_up_pfam[:, 3])
+    row_selector = in.(sifts_uniprot.table[:, 3], Ref{Set{String}}(uniprot_accs))
+    pdb_chain_up_coords = sifts_uniprot.table[row_selector, :]
+    # Create a mapping from UniProt primary accession number to sequence names
+    acc2seqnames = _get_acc2seqnames(msa)
+    # Fill in the dict with PDB–chain tuples from SIFTS
+    for row_index in axes(pdb_chain_up_coords, 1)
+        uniprot_acc = pdb_chain_up_coords[row_index, 3]
+        if haskey(acc2seqnames, uniprot_acc)
+            pdb_id = pdb_chain_up_coords[row_index, 1]
+            chain_id = pdb_chain_up_coords[row_index, 2]
+            for seqname in acc2seqnames[uniprot_acc]
+                # Extract UniProt region of the given MSA sequence
+                start_str, end_str = split(last(split(seqname, '/')), '-')
+                seq_start = parse(Int, start_str)
+                seq_end = parse(Int, end_str)
+                # Extract UniProt region of the SIFTS mapping
+                up_start = parse(Int, pdb_chain_up_coords[row_index, 8])
+                up_end = parse(Int, pdb_chain_up_coords[row_index, 9])
+                # Only add the mapping if there is overlap between both regions
+                if (seq_end < up_start) || (seq_start > up_end)
+                    continue # no overlap
+                end
+                if haskey(dict, seqname)
+                    push!(dict[seqname], (pdb_id, chain_id))
+                else
+                    dict[seqname] = Tuple{String,String}[(pdb_id, chain_id)]
+                end
+            end
+        end
+    end
+    dict
 end
 
 # Mapping PDB/Pfam

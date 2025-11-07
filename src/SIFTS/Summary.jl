@@ -24,21 +24,23 @@ struct SIFTSCSV <: FileFormat end
 
 const _CSV_URL = "https://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/csv/"
 
-@inline _summary_url(::Type{dbUniProt}) = _CSV_URL * "pdb_chain_uniprot.csv.gz"
+@inline _summary_name(::Type{dbUniProt}) = "pdb_chain_uniprot.csv.gz"
+@inline _summary_name(::Type{dbPfam}) = "pdb_chain_pfam.csv.gz"
+@inline _summary_name(::Type{dbInterPro}) = "pdb_chain_interpro.csv.gz"
+@inline _summary_name(::Type{dbSCOP}) = "pdb_chain_scop_uniprot.csv.gz"
+@inline _summary_name(::Type{dbSCOP2}) = "pdb_chain_scop2_uniprot.csv.gz"
+@inline _summary_name(::Type{dbSCOP2B}) = "pdb_chain_scop2b_sf_uniprot.csv.gz"
+@inline _summary_name(::Type{dbCATH}) = "pdb_chain_cath_uniprot.csv.gz"
+@inline _summary_name(::Type{dbEnsembl}) = "pdb_chain_ensembl.csv.gz"
 
-@inline _summary_url(::Type{dbPfam}) = _CSV_URL * "pdb_chain_pfam.csv.gz"
-
-@inline _summary_url(::Type{dbInterPro}) = _CSV_URL * "pdb_chain_interpro.csv.gz"
-
-@inline _summary_url(::Type{dbSCOP}) = _CSV_URL * "pdb_chain_scop_uniprot.csv.gz"
-
-@inline _summary_url(::Type{dbSCOP2}) = _CSV_URL * "pdb_chain_scop2_uniprot.csv.gz"
-
-@inline _summary_url(::Type{dbSCOP2B}) = _CSV_URL * "pdb_chain_scop2b_sf_uniprot.csv.gz"
-
-@inline _summary_url(::Type{dbCATH}) = _CSV_URL * "pdb_chain_cath_uniprot.csv.gz"
-
-@inline _summary_url(::Type{dbEnsembl}) = _CSV_URL * "pdb_chain_ensembl.csv.gz"
+@inline _summary_url(db::Type{dbUniProt}) = _CSV_URL * _summary_name(db)
+@inline _summary_url(db::Type{dbPfam}) = _CSV_URL * _summary_name(db)
+@inline _summary_url(db::Type{dbInterPro}) = _CSV_URL * _summary_name(db)
+@inline _summary_url(db::Type{dbSCOP}) = _CSV_URL * _summary_name(db)
+@inline _summary_url(db::Type{dbSCOP2}) = _CSV_URL * _summary_name(db)
+@inline _summary_url(db::Type{dbSCOP2B}) = _CSV_URL * _summary_name(db)
+@inline _summary_url(db::Type{dbCATH}) = _CSV_URL * _summary_name(db)
+@inline _summary_url(db::Type{dbEnsembl}) = _CSV_URL * _summary_name(db)
 
 @inline function _summary_url(::Type{T}) where T<:DataBase
     throw(ErrorException("No SIFTS summary file url defined for database type $T"))
@@ -64,11 +66,10 @@ downloaded file.
 """
 function downloadsifts(
     database::Type{T};
-    filename::Union{AbstractString,Nothing} = nothing,
+    filename::AbstractString = _summary_name(database),
 ) where {T<:DataBase}
     url = _summary_url(database)
-    path = isnothing(filename) ? basename(url) : filename
-    download_file(url, path)
+    download_file(url, filename)
 end
 
 # Parsing Summary Files
