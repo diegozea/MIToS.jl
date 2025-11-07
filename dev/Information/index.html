@@ -313,7 +313,7 @@ table : 8×8 Named Matrix{Float64}
 Dim_1 ╲ Dim_2 │ AILMV   NQST    RHK     DE    FWY      C      G      P
 ──────────────┼───────────────────────────────────────────────────────
 AILMV         │   0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0
-NQST          │  42.0  114.0   10.0   33.0    1.0    1.0    0.0    0.0
+NQST          │  41.0   95.0   10.0   27.0    3.0    0.0    1.0    0.0
 RHK           │   0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0
 DE            │   0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0
 FWY           │   0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0
@@ -324,22 +324,22 @@ P             │   0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0
 marginals : 8×2 Named Matrix{Float64}
 Residue ╲ Dim │ Dim_1  Dim_2
 ──────────────┼─────────────
-AILMV         │   0.0   42.0
-NQST          │ 201.0  114.0
+AILMV         │   0.0   41.0
+NQST          │ 177.0   95.0
 RHK           │   0.0   10.0
-DE            │   0.0   33.0
-FWY           │   0.0    1.0
-C             │   0.0    1.0
-G             │   0.0    0.0
+DE            │   0.0   27.0
+FWY           │   0.0    3.0
+C             │   0.0    0.0
+G             │   0.0    1.0
 P             │   0.0    0.0
 
-total : 201.0</code></pre><p>In cases like the above, where there are few observations, applying a constant pseudocount  to the contingency table could be beneficial. This module defines the type <code>AdditiveSmoothing</code> and the corresponding <code>fill!</code> and  <a href="../Information_API/#MIToS.Information.apply_pseudocount!-Union{Tuple{A}, Tuple{N}, Tuple{T}, Tuple{MIToS.Information.ContingencyTable{T, N, A}, T}} where {T, N, A}"><code>apply_pseudocount!</code></a> methods  to efficiently fill or add a constant value to each element of the table.</p><pre><code class="language-julia hljs">apply_pseudocount!(Nij, AdditiveSmoothing(1.0))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">MIToS.Information.ContingencyTable{Float64, 2, MIToS.MSA.ReducedAlphabet} : 
+total : 177.0</code></pre><p>In cases like the above, where there are few observations, applying a constant pseudocount  to the contingency table could be beneficial. This module defines the type <code>AdditiveSmoothing</code> and the corresponding <code>fill!</code> and  <a href="../Information_API/#MIToS.Information.apply_pseudocount!-Union{Tuple{A}, Tuple{N}, Tuple{T}, Tuple{MIToS.Information.ContingencyTable{T, N, A}, T}} where {T, N, A}"><code>apply_pseudocount!</code></a> methods  to efficiently fill or add a constant value to each element of the table.</p><pre><code class="language-julia hljs">apply_pseudocount!(Nij, AdditiveSmoothing(1.0))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">MIToS.Information.ContingencyTable{Float64, 2, MIToS.MSA.ReducedAlphabet} : 
 
 table : 8×8 Named Matrix{Float64}
 Dim_1 ╲ Dim_2 │ AILMV   NQST    RHK     DE    FWY      C      G      P
 ──────────────┼───────────────────────────────────────────────────────
 AILMV         │   1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0
-NQST          │  43.0  115.0   11.0   34.0    2.0    2.0    1.0    1.0
+NQST          │  42.0   96.0   11.0   28.0    4.0    1.0    2.0    1.0
 RHK           │   1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0
 DE            │   1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0
 FWY           │   1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0
@@ -350,16 +350,16 @@ P             │   1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0
 marginals : 8×2 Named Matrix{Float64}
 Residue ╲ Dim │ Dim_1  Dim_2
 ──────────────┼─────────────
-AILMV         │   8.0   50.0
-NQST          │ 209.0  122.0
+AILMV         │   8.0   49.0
+NQST          │ 185.0  103.0
 RHK           │   8.0   18.0
-DE            │   8.0   41.0
-FWY           │   8.0    9.0
-C             │   8.0    9.0
-G             │   8.0    8.0
+DE            │   8.0   35.0
+FWY           │   8.0   11.0
+C             │   8.0    8.0
+G             │   8.0    9.0
 P             │   8.0    8.0
 
-total : 265.0</code></pre><p>If we work with a normalized contingency table or a <code>Probabilities</code> object and use the  <code>UnappedAlphabet()</code>, we can apply the BLOSUM62-based pseudo frequencies to the table.  For that, we can use the <code>BLOSUM_Pseudofrequencies</code> type and the <code>apply_pseudofrequencies!</code>  function. That function first needs to calculate the actual probabilities <span>$p_{a,b}$</span> for  each pair of residues <span>$a$</span>, <span>$b$</span>. Then, it uses the conditional probability matrix  <code>BLOSUM62_Pij</code> and the observed probabilities to calculate pseudo frequencies <span>$G$</span>.</p><p class="math-container">\[G_{ab} = \sum_{cd}  p_{cd} \cdot BLOSUM62( a | c ) \cdot BLOSUM62( b | d )\]</p><p>The <code>apply_pseudofrequencies!</code> function calculates the probability <span>$P$</span> of each pair of  residues <span>$a$</span>, <span>$b$</span> between the columns <span>$i$</span>, <span>$j$</span> as the weighted mean between the observed  frequency <span>$p$</span> and BLOSUM62-based pseudo frequency <span>$G$</span>. The former has α as weight, and the  latter has the parameter β. We use the number of sequences or sequence clusters as α, and  β is an empiric weight value that we determined to be close to <code>8.512</code>.</p><p class="math-container">\[P_{ab} = \frac{\alpha \cdot p_{ab} + \beta \cdot G_{ab} }{\alpha + \beta}\]</p><p>The <code>BLOSUM_Pseudofrequencies</code> type is defined with two parameters, α and β, that are  set using the positional arguments of the constructor.</p><pre><code class="language-julia hljs">using MIToS.MSA
+total : 241.0</code></pre><p>If we work with a normalized contingency table or a <code>Probabilities</code> object and use the  <code>UnappedAlphabet()</code>, we can apply the BLOSUM62-based pseudo frequencies to the table.  For that, we can use the <code>BLOSUM_Pseudofrequencies</code> type and the <code>apply_pseudofrequencies!</code>  function. That function first needs to calculate the actual probabilities <span>$p_{a,b}$</span> for  each pair of residues <span>$a$</span>, <span>$b$</span>. Then, it uses the conditional probability matrix  <code>BLOSUM62_Pij</code> and the observed probabilities to calculate pseudo frequencies <span>$G$</span>.</p><p class="math-container">\[G_{ab} = \sum_{cd}  p_{cd} \cdot BLOSUM62( a | c ) \cdot BLOSUM62( b | d )\]</p><p>The <code>apply_pseudofrequencies!</code> function calculates the probability <span>$P$</span> of each pair of  residues <span>$a$</span>, <span>$b$</span> between the columns <span>$i$</span>, <span>$j$</span> as the weighted mean between the observed  frequency <span>$p$</span> and BLOSUM62-based pseudo frequency <span>$G$</span>. The former has α as weight, and the  latter has the parameter β. We use the number of sequences or sequence clusters as α, and  β is an empiric weight value that we determined to be close to <code>8.512</code>.</p><p class="math-container">\[P_{ab} = \frac{\alpha \cdot p_{ab} + \beta \cdot G_{ab} }{\alpha + \beta}\]</p><p>The <code>BLOSUM_Pseudofrequencies</code> type is defined with two parameters, α and β, that are  set using the positional arguments of the constructor.</p><pre><code class="language-julia hljs">using MIToS.MSA
 using MIToS.Information
 column_i = res&quot;ARANHDDRDC&quot;
 column_j = res&quot;-RRNHADRAV&quot;
@@ -411,7 +411,7 @@ W             │ 0.00226332  0.00252896
 Y             │ 0.00874174  0.00980948
 V             │  0.0158639   0.0893325
 
-total : 1.0</code></pre><h2 id="Correction-for-data-redundancy-in-a-MSA"><a class="docs-heading-anchor" href="#Correction-for-data-redundancy-in-a-MSA">Correction for data redundancy in a MSA</a><a id="Correction-for-data-redundancy-in-a-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Correction-for-data-redundancy-in-a-MSA" title="Permalink"></a></h2><p>A simple way to reduce redundancy in an MSA without losing sequences is through  clusterization and sequence weighting. The weight of each sequence should be <span>$1/N$</span>,  where <span>$N$</span> is the number of sequences in its cluster. The <code>Clusters</code> type of the <code>MSA</code>  module stores the weights. This vector of weights can be extracted  (with the <code>getweight</code> function) and used by the <code>frequencies</code> and <code>probabilities</code> functions  with the keyword argument <code>weights</code>. Also, using the <code>Clusters</code> as the second argument of  the function <code>frequencies!</code> is possible.</p><pre><code class="language-julia hljs">clusters = hobohmI(msa, 62) # from MIToS.MSA</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">MIToS.MSA.Clusters([1, 4, 3, 1, 2, 1, 2, 9, 9, 3  …  1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  297, 462, 463, 46, 122, 464, 111, 465, 429, 348], [1.0, 0.25, 0.3333333333333333, 1.0, 0.5, 1.0, 0.5, 0.1111111111111111, 0.1111111111111111, 0.3333333333333333  …  0.3333333333333333, 1.0, 1.0, 0.14285714285714285, 0.1111111111111111, 1.0, 0.3333333333333333, 1.0, 0.5, 0.3333333333333333])</code></pre><pre><code class="language-julia hljs">frequencies(msa[:, 1], msa[:, 2], weights = clusters)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">MIToS.Information.Frequencies{Float64, 2, MIToS.MSA.UngappedAlphabet} wrapping a MIToS.Information.ContingencyTable{Float64, 2, MIToS.MSA.UngappedAlphabet} : 
+total : 1.0</code></pre><h2 id="Correction-for-data-redundancy-in-a-MSA"><a class="docs-heading-anchor" href="#Correction-for-data-redundancy-in-a-MSA">Correction for data redundancy in a MSA</a><a id="Correction-for-data-redundancy-in-a-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Correction-for-data-redundancy-in-a-MSA" title="Permalink"></a></h2><p>A simple way to reduce redundancy in an MSA without losing sequences is through  clusterization and sequence weighting. The weight of each sequence should be <span>$1/N$</span>,  where <span>$N$</span> is the number of sequences in its cluster. The <code>Clusters</code> type of the <code>MSA</code>  module stores the weights. This vector of weights can be extracted  (with the <code>getweight</code> function) and used by the <code>frequencies</code> and <code>probabilities</code> functions  with the keyword argument <code>weights</code>. Also, using the <code>Clusters</code> as the second argument of  the function <code>frequencies!</code> is possible.</p><pre><code class="language-julia hljs">clusters = hobohmI(msa, 62) # from MIToS.MSA</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">MIToS.MSA.Clusters([2, 1, 5, 1, 1, 1, 8, 2, 1, 2  …  1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  481, 19, 126, 482, 11, 179, 135, 16, 101, 359], [0.5, 1.0, 0.2, 1.0, 1.0, 1.0, 0.125, 0.5, 1.0, 0.5  …  1.0, 0.08333333333333333, 0.14285714285714285, 1.0, 0.027777777777777776, 0.3333333333333333, 0.25, 0.05, 0.2, 0.5])</code></pre><pre><code class="language-julia hljs">frequencies(msa[:, 1], msa[:, 2], weights = clusters)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">MIToS.Information.Frequencies{Float64, 2, MIToS.MSA.UngappedAlphabet} wrapping a MIToS.Information.ContingencyTable{Float64, 2, MIToS.MSA.UngappedAlphabet} : 
 
 table : 20×20 Named Matrix{Float64}
 Dim_1 ╲ Dim_2 │        A         R         N  …         W         Y         V
@@ -428,34 +428,34 @@ G             │      0.0       0.0       0.0          0.0       0.0       0.0
 M             │      0.0       0.0       0.0          0.0       0.0       0.0
 F             │      0.0       0.0       0.0          0.0       0.0       0.0
 P             │      0.0       0.0       0.0          0.0       0.0       0.0
-S             │  3.27778       3.2   23.1333     0.333333       0.0   12.5012
+S             │     4.75      6.25      22.4          0.0       1.0    11.497
 T             │      0.0       0.0       0.0          0.0       0.0       0.0
 W             │      0.0       0.0       0.0          0.0       0.0       0.0
 Y             │      0.0       0.0       0.0          0.0       0.0       0.0
 V             │      0.0       0.0       0.0  …       0.0       0.0       0.0
 
 marginals : 20×2 Named Matrix{Float64}
-Residue ╲ Dim │    Dim_1     Dim_2
-──────────────┼───────────────────
-A             │      0.0   3.27778
-R             │      0.0       3.2
-N             │      0.0   23.1333
-D             │      0.0   10.2833
-C             │      0.0       1.0
-Q             │      0.0      7.55
-E             │      0.0    4.9619
-G             │      0.0       0.0
-⋮                      ⋮         ⋮
-M             │      0.0       1.0
-F             │      0.0       0.0
-P             │      0.0       0.0
-S             │  107.531   16.8833
-T             │      0.0   18.4024
-W             │      0.0  0.333333
-Y             │      0.0       0.0
-V             │      0.0   12.5012
+Residue ╲ Dim │   Dim_1    Dim_2
+──────────────┼─────────────────
+A             │     0.0     4.75
+R             │     0.0     6.25
+N             │     0.0     22.4
+D             │     0.0      7.9
+C             │     0.0      0.0
+Q             │     0.0      9.0
+E             │     0.0  4.82381
+G             │     0.0      1.0
+⋮                     ⋮        ⋮
+M             │     0.0     1.25
+F             │     0.0      1.0
+P             │     0.0      0.0
+S             │  102.78     11.1
+T             │     0.0  17.6667
+W             │     0.0      0.0
+Y             │     0.0      1.0
+V             │     0.0   11.497
 
-total : 107.53055555555555</code></pre><h2 id="Estimating-information-measures-on-an-MSA"><a class="docs-heading-anchor" href="#Estimating-information-measures-on-an-MSA">Estimating information measures on an MSA</a><a id="Estimating-information-measures-on-an-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Estimating-information-measures-on-an-MSA" title="Permalink"></a></h2><p>The <code>Information</code> module has a number of functions defined to calculate information measures from <code>Frequencies</code> and <code>Probabilities</code>:</p><ul><li><code>shannon_entropy</code> : Shannon entropy (H)</li><li><code>marginal_entropy</code> : Shannon entropy (H) of the marginals</li><li><code>kullback_leibler</code> : Kullback-Leibler (KL) divergence</li><li><code>mutual_information</code> : Mutual Information (MI)</li><li><code>normalized_mutual_information</code> : Normalized Mutual Information (nMI) by Entropy</li><li><code>gap_intersection_percentage</code></li><li><code>gap_union_percentage</code></li></ul><p>Information measure functions take optionally the base as a keyword argument (default: <code>ℯ</code>). You can set <code>base=2</code> to measure information in bits.</p><pre><code class="language-julia hljs">using MIToS.Information
+total : 102.78030303030303</code></pre><h2 id="Estimating-information-measures-on-an-MSA"><a class="docs-heading-anchor" href="#Estimating-information-measures-on-an-MSA">Estimating information measures on an MSA</a><a id="Estimating-information-measures-on-an-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Estimating-information-measures-on-an-MSA" title="Permalink"></a></h2><p>The <code>Information</code> module has a number of functions defined to calculate information measures from <code>Frequencies</code> and <code>Probabilities</code>:</p><ul><li><code>shannon_entropy</code> : Shannon entropy (H)</li><li><code>marginal_entropy</code> : Shannon entropy (H) of the marginals</li><li><code>kullback_leibler</code> : Kullback-Leibler (KL) divergence</li><li><code>mutual_information</code> : Mutual Information (MI)</li><li><code>normalized_mutual_information</code> : Normalized Mutual Information (nMI) by Entropy</li><li><code>gap_intersection_percentage</code></li><li><code>gap_union_percentage</code></li></ul><p>Information measure functions take optionally the base as a keyword argument (default: <code>ℯ</code>). You can set <code>base=2</code> to measure information in bits.</p><pre><code class="language-julia hljs">using MIToS.Information
 using MIToS.MSA
 
 Ni = frequencies(res&quot;PPCDPPPPPKDKKKKDDGPP&quot;) # Ni has the count table of residues in this low complexity sequence
@@ -465,58 +465,58 @@ H = shannon_entropy(Ni) # returns the Shannon entropy in nats (base e)</code></p
 msa = read_file(
     &quot;https://raw.githubusercontent.com/diegozea/MIToS.jl/master/docs/data/PF18883.stockholm.gz&quot;,
     Stockholm,
-)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">AnnotatedMultipleSequenceAlignment with 835 annotations : 811×113 Named Matrix{MIToS.MSA.Residue}
-                 Seq ╲ Col │  53   54   55   56   57  …  428  429  430  431  432
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">AnnotatedMultipleSequenceAlignment with 881 annotations : 859×116 Named Matrix{MIToS.MSA.Residue}
+                 Seq ╲ Col │  45   46   47   48   49  …  476  477  478  479  480
 ───────────────────────────┼────────────────────────────────────────────────────
-A0A370X5B3_9GAMM/1736-1853 │   -    -    -    -    -  …    Y    A    Y    R    L
-D1AVB4_STRM9/461-568       │   -    -    -    -    -       Y    R    Y    R    L
-A0A2T5HR93_9PSED/761-875   │   S    N    L    T    S       Y    Q    Y    T    L
-A0A427CBK0_9GAMM/418-540   │   -    -    -    -    -       F    R    Y    R    L
-A0A1I1MWW5_9BURK/779-907   │   -    -    -    -    -       Y    E    Y    R    L
-C6JIE8_FUSVA/367-481       │   -    I    I    S    N       Y    E    Y    F    L
-A0A017H8U7_9FUSO/691-802   │   S    S    V    T    E       Y    E    Y    T    L
-A0A085VLZ6_PSESX/333-446   │   -    -    -    -    -       Y    E    Y    Y    L
+Q13FK3_PARXL/450-568       │   S    T    A    T    N  …    F    D    Y    L    L
+A0A2C6C5P0_9GAMM/492-602   │   -    -    L    T    G       F    D    Y    F    L
+A0A0A7A549_SHIDY/581-689   │   -    -    -    -    -       Y    D    Y    R    L
+A0A1E3VNB9_9HYPH/439-551   │   -    -    -    -    -       F    A    Y    G    L
+A0A4R0YPQ6_9GAMM/572-696   │   -    K    L    G    R       W    Q    Y    T    L
+A0A1I0DBW0_9GAMM/2097-2206 │   -    -    -    -    -       Y    D    Y    Q    L
+A7ZLW8_ECO24/839-959       │   -    -    -    -    -       Y    V    Y    T    L
+B7LGS8_ECO55/291-403       │   S    T    V    S    N       Y    E    Y    S    L
 ⋮                              ⋮    ⋮    ⋮    ⋮    ⋮  ⋱    ⋮    ⋮    ⋮    ⋮    ⋮
-A0A318T6N3_9RHIZ/636-751   │   -    -    -    K    T       Y    V    Y    Q    L
-A0A388SGN0_9BURK/625-739   │   S    E    L    T    T       Y    L    Y    E    L
-A0A443IAD3_9GAMM/1863-1969 │   -    -    -    -    -       Y    D    Y    S    L
-A0A2S8VQP6_9CAUL/182-287   │   -    -    -    -    R       V    R    Y    R    -
-A0A1A9RWJ5_9NEIS/1004-1099 │   S    T    V    T    N       -    -    -    -    -
-A6T0K2_JANMA/343-459       │   -    -    -    -    -       Y    A    Y    T    L
-Q2KVL9_BORA1/480-598       │   S    R    I    T    R       Y    E    Y    R    L
-A0A2W4CX06_9RHIZ/331-444   │   -    -    -    -    N  …    Y    E    Y    L    L</code></pre><p>We are going to count residues to estimate the Shannon entropy. The <code>shannon_entropy</code> estimation is performed over a rehused <code>Frequencies</code> object. The result will be a vector containing the values estimated over each column without counting gaps (<code>UngappedAlphabet</code>).</p><pre><code class="language-julia hljs">using MIToS.Information
+Q0WGA9_YERPE/790-917       │   -    -    -    -    -       Y    A    Y    T    L
+A0A1E3WDC8_9HYPH/497-591   │   -    -    -    -    -       F    D    Y    D    L
+A0A7W6P2V6_9HYPH/510-621   │   -    -    -    -    -       Y    A    Y    R    L
+A0A2T5HR93_9PSED/761-875   │   S    N    L    T    S       Y    Q    Y    T    L
+A0A843YVK4_9BURK/1398-1516 │   S    M    L    S    S       F    Q    Y    L    L
+M4RY98_9SPHN/2929-3041     │   -    -    -    -    -       Y    E    Y    K    L
+A0A2Z3I4X0_9GAMM/539-665   │   -    -    -    -    -       Y    E    Y    T    L
+A0A4R0YYZ7_9GAMM/486-609   │   -    N    L    T    N  …    Y    D    Y    G    L</code></pre><p>We are going to count residues to estimate the Shannon entropy. The <code>shannon_entropy</code> estimation is performed over a rehused <code>Frequencies</code> object. The result will be a vector containing the values estimated over each column without counting gaps (<code>UngappedAlphabet</code>).</p><pre><code class="language-julia hljs">using MIToS.Information
 
 Hx = mapcolfreq!(
     shannon_entropy,
     msa,
     Frequencies(ContingencyTable(Float64, Val{1}, UngappedAlphabet())),
-)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1×113 Named Matrix{Float64}
- Function ╲ Col │        53         54  …        431        432
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1×116 Named Matrix{Float64}
+ Function ╲ Col │        45         46  …        479        480
 ────────────────┼──────────────────────────────────────────────
-shannon_entropy │       0.0    2.28908  …    2.43627        0.0</code></pre><p>If we want the <strong>joint entropy</strong> between columns pairs, we need to use a bidimensional table of <code>Frequencies</code> and <code>mapcolpairfreq!</code>.</p><pre><code class="language-julia hljs">Hxy = mapcolpairfreq!(
+shannon_entropy │       0.0    2.28772  …    2.43434        0.0</code></pre><p>If we want the <strong>joint entropy</strong> between columns pairs, we need to use a bidimensional table of <code>Frequencies</code> and <code>mapcolpairfreq!</code>.</p><pre><code class="language-julia hljs">Hxy = mapcolpairfreq!(
     shannon_entropy,
     msa,
     Frequencies(ContingencyTable(Float64, Val{2}, UngappedAlphabet())),
-)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">113×113 Named PairwiseListMatrices.PairwiseListMatrix{Float64, true, Vector{Float64}}
-Col1 ╲ Col2 │        53         54  …        431        432
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">116×116 Named PairwiseListMatrices.PairwiseListMatrix{Float64, true, Vector{Float64}}
+Col1 ╲ Col2 │        45         46  …        479        480
 ────────────┼──────────────────────────────────────────────
-53          │       0.0    2.27907  …    2.34531        0.0
-54          │   2.27907    2.28908       4.19681    2.25097
-55          │   1.12284     3.2452       3.37893    1.14042
-56          │   1.77041    3.76691        4.0201    2.04439
-57          │   2.18455    4.03923       4.17225    2.07303
-58          │  0.570446    2.76359       3.06398   0.779658
-59          │   2.11739     4.0329       4.28252    2.19535
-60          │   1.53981    3.46025       3.35723    1.08494
+45          │       0.0    2.26507  …    2.41084        0.0
+46          │   2.26507    2.28772       4.12676    2.32843
+47          │    1.2693    3.29869        3.4382     1.2568
+48          │   1.80571     3.5901       3.94843    1.98273
+49          │   2.07224    3.92801        4.0331    1.89421
+50          │   0.79974    2.87008       3.12324   0.909088
+51          │   2.05952    3.92529         4.253    2.19041
+53          │   1.72383    3.60276       3.58318    1.30742
 ⋮                     ⋮          ⋮  ⋱          ⋮          ⋮
-423         │   1.09798    3.13026       3.42102    1.19229
-424         │  0.479167    2.61361       2.62843   0.258226
-427         │   1.34976    3.38375       3.37444    1.13379
-428         │  0.600381    2.79541       3.06003   0.721655
-429         │   1.52338    3.49462       3.90651    1.86877
-430         │ 0.0584063     2.3272        2.4817  0.0594665
-431         │   2.34531    4.19681       2.43627    2.40596
-432         │       0.0    2.25097  …    2.40596        0.0</code></pre><p>In the above examples, we indicate the type of each occurrence in the counting and the probability table to use. Also, it&#39;s possible for some measures as <strong>entropy</strong> and <strong>mutual information</strong>, to estimate the values only with the count table (without calculate the probability table). Estimating measures only with a <code>ResidueCount</code> table, when this is possible, should be faster than using a probability table.</p><pre><code class="language-julia hljs">Time_Pab = map(1:100) do x
+466         │  0.824982    2.92987       3.26139   0.994561
+469         │   0.22452    2.47499       2.53582   0.127292
+472         │   1.22671    3.27064       3.30322    1.01379
+476         │  0.602854    2.77209        3.0593   0.691011
+477         │   1.56287    3.44917       3.95663    1.84351
+478         │ 0.0371757    2.32216       2.45713  0.0356648
+479         │   2.41084    4.12676       2.43434    2.40957
+480         │       0.0    2.32843  …    2.40957        0.0</code></pre><p>In the above examples, we indicate the type of each occurrence in the counting and the probability table to use. Also, it&#39;s possible for some measures as <strong>entropy</strong> and <strong>mutual information</strong>, to estimate the values only with the count table (without calculate the probability table). Estimating measures only with a <code>ResidueCount</code> table, when this is possible, should be faster than using a probability table.</p><pre><code class="language-julia hljs">Time_Pab = map(1:100) do x
     time = @elapsed mapcolpairfreq!(
         shannon_entropy,
         msa,
@@ -547,14 +547,14 @@ histogram(
   - samples     Int       100     Number of samples for Z-score
   - fixedgaps   Bool      true    Fix gaps positions for the random samples
   - alphabet    ResidueAlphabet UngappedAlphabet()  Residue alphabet to be used</code></pre><p>This function returns:</p><pre><code class="language-julia hljs">  - Z score
-  - MI or MIp</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/diegozea/MIToS.jl/blob/a78503e7c1dd81ff39eaa4ccdd461dc8655605d2/src/Information/CorrectedMutualInformation.jl#L27-L50">source</a></section></article><p>The second, implemented in the <code>BLMI</code> function, has the same corrections that the above algorithm, but use BLOSUM62 pseudo frequencies. This function is <strong>slower</strong> than <code>buslje09</code> (at the same number of samples), but gives <strong>better performance</strong> (for structural contact prediction) when the MSA has <strong>less than 400 clusters</strong> after a Hobohm I at 62% identity.</p><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MIToS.Information.BLMI" href="#MIToS.Information.BLMI"><code>MIToS.Information.BLMI</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><p><code>BLMI</code> takes an MSA and calculates a Z score (ZBLMI) and a corrected MI/MIp as described on <strong>Busjle et al. 2009</strong> but using using BLOSUM62 pseudo frequencies instead of a fixed pseudocount.</p><p>Keyword argument, type, default value and descriptions:</p><pre><code class="language-julia hljs">  - beta        Float64   8.512   β for BLOSUM62 pseudo frequencies
+  - MI or MIp</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/diegozea/MIToS.jl/blob/fe4e79da12b075efd7d936005958037b1047367b/src/Information/CorrectedMutualInformation.jl#L27-L50">source</a></section></article><p>The second, implemented in the <code>BLMI</code> function, has the same corrections that the above algorithm, but use BLOSUM62 pseudo frequencies. This function is <strong>slower</strong> than <code>buslje09</code> (at the same number of samples), but gives <strong>better performance</strong> (for structural contact prediction) when the MSA has <strong>less than 400 clusters</strong> after a Hobohm I at 62% identity.</p><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MIToS.Information.BLMI" href="#MIToS.Information.BLMI"><code>MIToS.Information.BLMI</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><p><code>BLMI</code> takes an MSA and calculates a Z score (ZBLMI) and a corrected MI/MIp as described on <strong>Busjle et al. 2009</strong> but using using BLOSUM62 pseudo frequencies instead of a fixed pseudocount.</p><p>Keyword argument, type, default value and descriptions:</p><pre><code class="language-julia hljs">  - beta        Float64   8.512   β for BLOSUM62 pseudo frequencies
   - lambda      Float64   0.0     Low count value
   - threshold             62      Percent identity threshold for sequence clustering (Hobohm I)
   - maxgap      Float64   0.5     Maximum fraction of gaps in positions included in calculation
   - apc         Bool      true    Use APC correction (MIp)
   - samples     Int       50      Number of samples for Z-score
   - fixedgaps   Bool      true    Fix gaps positions for the random samples</code></pre><p>This function returns:</p><pre><code class="language-julia hljs">  - Z score (ZBLMI)
-  - MI or MIp using BLOSUM62 pseudo frequencies (BLMI/BLMIp)</code></pre><p><strong>References</strong></p><ul><li><a href="../References/#cit-10_1093_bioinformatics_btp135">Buslje, Cristina Marino, et al. &quot;Correction for phylogeny, small number of observations and data redundancy improves the identification of coevolving amino acid pairs using mutual information.&quot; Bioinformatics 25.9 (2009): 1125-1131.</a></li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/diegozea/MIToS.jl/blob/a78503e7c1dd81ff39eaa4ccdd461dc8655605d2/src/Information/CorrectedMutualInformation.jl#L112-L142">source</a></section></article><h4 id="Example:-Estimating-corrected-MI-from-an-MSA"><a class="docs-heading-anchor" href="#Example:-Estimating-corrected-MI-from-an-MSA">Example: Estimating corrected MI from an MSA</a><a id="Example:-Estimating-corrected-MI-from-an-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Estimating-corrected-MI-from-an-MSA" title="Permalink"></a></h4><pre><code class="language-julia hljs">using MIToS.MSA
+  - MI or MIp using BLOSUM62 pseudo frequencies (BLMI/BLMIp)</code></pre><p><strong>References</strong></p><ul><li><a href="../References/#cit-10_1093_bioinformatics_btp135">Buslje, Cristina Marino, et al. &quot;Correction for phylogeny, small number of observations and data redundancy improves the identification of coevolving amino acid pairs using mutual information.&quot; Bioinformatics 25.9 (2009): 1125-1131.</a></li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/diegozea/MIToS.jl/blob/fe4e79da12b075efd7d936005958037b1047367b/src/Information/CorrectedMutualInformation.jl#L112-L142">source</a></section></article><h4 id="Example:-Estimating-corrected-MI-from-an-MSA"><a class="docs-heading-anchor" href="#Example:-Estimating-corrected-MI-from-an-MSA">Example: Estimating corrected MI from an MSA</a><a id="Example:-Estimating-corrected-MI-from-an-MSA-1"></a><a class="docs-heading-anchor-permalink" href="#Example:-Estimating-corrected-MI-from-an-MSA" title="Permalink"></a></h4><pre><code class="language-julia hljs">using MIToS.MSA
 using MIToS.Information
 
 msa = read_file(
@@ -562,53 +562,53 @@ msa = read_file(
     Stockholm,
 )
 ZMIp, MIp = buslje09(msa)
-ZMIp</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">107×107 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
-Col1 ╲ Col2 │           57            58  …           431           432
+ZMIp</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">104×104 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
+Col1 ╲ Col2 │          55           59  …          479          480
+────────────┼──────────────────────────────────────────────────────
+55          │         NaN      3.35427  …     0.807954     -1.36926
+59          │     3.35427          NaN        -2.33647      4.08142
+61          │     3.48247      1.29382         1.07631      -2.0125
+63          │     4.25547      5.44109        -2.35262      2.94517
+65          │     2.52187     0.745947          2.6869      -4.2756
+67          │     2.47507      7.17716        0.261857     0.195738
+75          │     2.47331      1.14997         2.02724     -3.63817
+76          │     1.99445      2.64932         1.59869     -2.53385
+⋮                       ⋮            ⋮  ⋱            ⋮            ⋮
+466         │    -0.37475     -1.51737         1.52023     0.883301
+469         │    -1.53569      3.11161        -4.04664      5.78222
+472         │    0.477014    -0.808986         2.16017     0.554297
+476         │   -0.415859      2.63382        -1.59569      4.49418
+477         │    -1.03343    -0.798803         5.04867    -0.966887
+478         │    -0.45484      3.45414        -3.53217        7.257
+479         │    0.807954     -2.33647             NaN      -3.8947
+480         │    -1.36926      4.08142  …      -3.8947          NaN</code></pre><pre><code class="language-julia hljs">ZBLMIp, BLMIp = BLMI(msa)
+ZBLMIp</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">104×104 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
+Col1 ╲ Col2 │           55            59  …           479           480
 ────────────┼──────────────────────────────────────────────────────────
-57          │          NaN       3.79679  …       1.46719      -1.31723
-58          │      3.79679           NaN         -2.32536       3.98789
-59          │      4.80606       3.11083          3.09876      -2.52694
-60          │      1.63657       3.32252         -2.82194       1.35375
-61          │      3.31942        1.0298         0.475121       -1.4047
-64          │      1.15988       3.95485         -2.71555        4.5692
-65          │    0.0218224       -1.1625         0.729797      -2.44288
-66          │     0.499549       3.93373         -3.36404       3.35545
+55          │          NaN    0.00510628  …     0.0356251   -0.00727139
+59          │   0.00510628           NaN        0.0178858    0.00895292
+61          │    -0.016986    -0.0191445        0.0216977   -0.00821515
+63          │    0.0170255     0.0254772        0.0107834    0.00588479
+65          │   -0.0585246   -0.00577303        0.0380149    -0.0142878
+67          │   -0.0356928     0.0934707        0.0363412    -0.0023537
+75          │    -0.047721   -0.00328833         0.038609    -0.0124116
+76          │   -0.0692647      0.025065        0.0310119    -0.0118365
 ⋮                        ⋮             ⋮  ⋱             ⋮             ⋮
-423         │     0.650214      -1.77911        0.0214239     -0.806482
-424         │        1.514       1.96228         -2.69446       4.88567
-427         │      1.26054     -0.604152          2.07869      0.155905
-428         │      -1.7051       2.23654         -1.65558       3.45441
-429         │    -0.184362      -1.14033          6.74012     -0.943698
-430         │     -1.75058       3.05939         -2.63093       7.74012
-431         │      1.46719      -2.32536              NaN      -3.32197
-432         │     -1.31723       3.98789  …      -3.32197           NaN</code></pre><pre><code class="language-julia hljs">ZBLMIp, BLMIp = BLMI(msa)
-ZBLMIp</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">107×107 Named PairwiseListMatrices.PairwiseListMatrix{Float64, false, Vector{Float64}}
-Col1 ╲ Col2 │           57            58  …           431           432
-────────────┼──────────────────────────────────────────────────────────
-57          │          NaN    -0.0058753  …      0.054706   -0.00724753
-58          │   -0.0058753           NaN      -0.00230327     0.0093646
-59          │  -0.00462501     0.0177384        0.0716935   -0.00916293
-60          │   -0.0385254     0.0114635       -0.0411778    0.00585093
-61          │    0.0076633   -0.00767814        0.0146958   -0.00519354
-64          │    0.0070737    0.00620751        -0.005128     0.0122708
-65          │    -0.046307    -0.0287545       0.00846159    -0.0071145
-66          │    -0.018272     0.0306033       -0.0277811    0.00521656
-⋮                        ⋮             ⋮  ⋱             ⋮             ⋮
-423         │     0.030699    -0.0166871       -0.0186436   -0.00203097
-424         │    0.0653332    -0.0104712       -0.0142883    0.00839156
-427         │    0.0409193    -0.0109902        0.0254383  -0.000165967
-428         │   -0.0293523     0.0176844      -0.00865934     0.0105738
-429         │    0.0123588    -0.0182636        0.0861102   -0.00345761
-430         │   -0.0202489   -0.00581871       -0.0176394     0.0242715
-431         │     0.054706   -0.00230327              NaN   -0.00883419
-432         │  -0.00724753     0.0093646  …   -0.00883419           NaN</code></pre><h2 id="Visualize-Mutual-Information"><a class="docs-heading-anchor" href="#Visualize-Mutual-Information">Visualize Mutual Information</a><a id="Visualize-Mutual-Information-1"></a><a class="docs-heading-anchor-permalink" href="#Visualize-Mutual-Information" title="Permalink"></a></h2><p>You can use the function of the <code>Plots</code> package to visualize the Mutual Information (MI) network between residues. As an example, we are going to visualize the MI between residues of the Pfam domain <em>PF18883</em>. The <code>heatmap</code> is the simplest way to visualize the values of the Mutual Information matrix.</p><pre><code class="language-julia hljs">using Plots
+466         │   0.00676308    -0.0239788         0.018061    0.00264535
+469         │   -0.0129384     0.0140934       -0.0228427     0.0133356
+472         │    0.0248281    -0.0101735        0.0247766    0.00241565
+476         │    0.0130854     0.0215921      -0.00250245     0.0128905
+477         │   -0.0027554    0.00581935        0.0567023   -0.00319993
+478         │    0.0060451    0.00854941       -0.0134113     0.0255812
+479         │    0.0356251     0.0178858              NaN    -0.0101907
+480         │  -0.00727139    0.00895292  …    -0.0101907           NaN</code></pre><h2 id="Visualize-Mutual-Information"><a class="docs-heading-anchor" href="#Visualize-Mutual-Information">Visualize Mutual Information</a><a id="Visualize-Mutual-Information-1"></a><a class="docs-heading-anchor-permalink" href="#Visualize-Mutual-Information" title="Permalink"></a></h2><p>You can use the function of the <code>Plots</code> package to visualize the Mutual Information (MI) network between residues. As an example, we are going to visualize the MI between residues of the Pfam domain <em>PF18883</em>. The <code>heatmap</code> is the simplest way to visualize the values of the Mutual Information matrix.</p><pre><code class="language-julia hljs">using Plots
 gr()
 
 heatmap(ZMIp, yflip = true)</code></pre><p><img src="../inf_heatmap.png" alt/></p><p>ZMIp is a Z score of the corrected MIp against its distribution on a random MSA (shuffling the residues in each sequence), so pairs with highest values are more likely to coevolve. Here, we are going to use the top 1% pairs of MSA columns.</p><pre><code class="language-julia hljs">using PairwiseListMatrices # to use getlist
 using Statistics # to use quantile
 
-threshold = quantile(getlist(ZMIp), 0.99)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">6.986911533273609</code></pre><pre><code class="language-julia hljs">ZMIp[ZMIp.&lt;threshold] .= NaN
-heatmap(ZMIp, yflip = true)</code></pre><p><img src="../inf_heatmap_top.png" alt/></p><p>We are going to calculate the cMI (cumulative mutual information) value of each node. Where cMI is a mutual information score per position that characterizes the extent of mutual information &quot;interactions&quot; in its neighbourhood. This score is calculated as the sum of MI values above a certain threshold for every amino acid pair where the particular residue appears. This value defines to what degree a given amino acid takes part in a mutual information network and we are going to indicate it using the node color. To calculate cMI we are going to use the <code>cumulative</code> function:</p><pre><code class="language-julia hljs">cMI = cumulative(ZMIp, threshold)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1×107 Named Matrix{Float64}
-Function ╲ Col2 │      57       58       59  …      430      431      432
+threshold = quantile(getlist(ZMIp), 0.99)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">7.372462637039986</code></pre><pre><code class="language-julia hljs">ZMIp[ZMIp.&lt;threshold] .= NaN
+heatmap(ZMIp, yflip = true)</code></pre><p><img src="../inf_heatmap_top.png" alt/></p><p>We are going to calculate the cMI (cumulative mutual information) value of each node. Where cMI is a mutual information score per position that characterizes the extent of mutual information &quot;interactions&quot; in its neighbourhood. This score is calculated as the sum of MI values above a certain threshold for every amino acid pair where the particular residue appears. This value defines to what degree a given amino acid takes part in a mutual information network and we are going to indicate it using the node color. To calculate cMI we are going to use the <code>cumulative</code> function:</p><pre><code class="language-julia hljs">cMI = cumulative(ZMIp, threshold)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1×104 Named Matrix{Float64}
+Function ╲ Col2 │      55       59       61  …      478      479      480
 ────────────────┼────────────────────────────────────────────────────────
-cumulative      │     0.0      0.0  6.99245  …  7.74012      0.0  7.74012</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../MSA/">« MSA</a><a class="docs-footer-nextpage" href="../SIFTS/">SIFTS »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.15.0 on <span class="colophon-date" title="Wednesday 5 November 2025 15:36">Wednesday 5 November 2025</span>. Using Julia version 1.12.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+cumulative      │     0.0      0.0  15.9464  …      0.0  7.49519      0.0</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../MSA/">« MSA</a><a class="docs-footer-nextpage" href="../SIFTS/">SIFTS »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.15.0 on <span class="colophon-date" title="Friday 7 November 2025 20:36">Friday 7 November 2025</span>. Using Julia version 1.12.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
