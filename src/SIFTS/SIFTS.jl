@@ -19,6 +19,7 @@ module SIFTS
 
 import LightXML
 
+using DelimitedFiles
 using AutoHashEquals
 using OrderedCollections
 using MIToS.Utils
@@ -39,6 +40,8 @@ export DataBase,
     downloadsifts,
     siftsmapping,
     SIFTSXML,
+    # Summary
+    SIFTSCSV,
     # Mitos.Utils
     All,
     read_file,
@@ -48,5 +51,6 @@ export DataBase,
 
 include("XMLParser.jl")
 include("ResidueMapping.jl")
+include("Summary.jl")
 
 end

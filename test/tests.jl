@@ -20,6 +20,7 @@ using Clustering            # test/MSA/Hobohm.jl
 using NamedArrays           # array
 using StatsBase             # WeightVec
 using PairwiseListMatrices  # getlist
+using InteractiveUtils      # subtypes
 
 const DATA = joinpath(@__DIR__, "data")
 
@@ -94,6 +95,7 @@ end
 # SIFTS
 @testset verbose = true "SIFTS" begin
     include("SIFTS/SIFTS.jl")
+    include("SIFTS/Summary.jl")
 end
 
 # Pfam
