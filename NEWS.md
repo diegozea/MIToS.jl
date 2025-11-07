@@ -1,13 +1,15 @@
 ## MIToS.jl Release Notes
 
-### Changes from v3.3.0 to master
+### Changes from v3.3.0 to v3.4.0
 
-The `SIFTS` module now supports chain-level mappings:
+The `SIFTS` module now supports chain-level mappings. The main changes are:
 
 - `downloadsifts` now accepts a `DataBase` subtype as its first argument, allowing you to 
   download the chain-level SIFTS summary CSV file for the specified database.
 - The module now exports the `SIFTSCSV` `FileFormat`, which can be used 
   with `read_file(..., SIFTSCSV)` to load the information from the SIFTS CSV files.
+- The `getseq2pdb` function in the `Pfam` module has been enhanced to make use of 
+  chain-level SIFTS mappings when PDB mappings are missing from the Pfam MSA annotations.
 
 ### Changes from v3.2.3 to v3.3.0
 

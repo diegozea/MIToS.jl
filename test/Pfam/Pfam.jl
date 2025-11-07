@@ -14,9 +14,21 @@
 end
 
 @testset "PDB code" begin
-
+    # Has PDB mapping annotations in the MSA, but lacks the Pfam accession number
     msa = read_file(joinpath(DATA, "PF09645_full.stockholm"), Stockholm)
     @test getseq2pdb(msa)["F112_SSV1/3-112"] == [("2VQC", "A")]
+    # The docs/data/PF18883.stockholm.gz file is recent (07/11/2025) and has Pfam accession
+    # number but lacks PDB mapping annotations in the MSA
+    docs_data_file = abspath(DATA, "..", "..", "docs", "data", "PF18883.stockholm.gz")
+    msa2 = read_file(docs_data_file, Stockholm)
+    mktempdir() do tmpfolder
+        cd(tmpfolder) do
+            # Using a temporary directory as the SIFTS mapping files will be
+            # automatically downloaded by getseq2pdb
+            pdbs = getseq2pdb(msa2)["ICSA_SHIFL/612-720"]
+            @test sort(pdbs) == sort([("3ML3", "A"), ("5KE1", "A"), ("5KE1", "B")])
+        end
+    end
 end
 
 @testset "Mapping PDB/Pfam" begin

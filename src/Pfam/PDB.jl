@@ -4,13 +4,35 @@
 const _regex_PDB_from_GS = r"PDB;\s+(\w+)\s+(\w);\s+\w+-\w+;" # i.e.: "PDB; 2VQC A; 4-73;\n"
 
 """
-Generates from a Pfam `msa` a `Dict{String, Vector{Tuple{String,String}}}`.
-Keys are sequence IDs and each value is a list of tuples containing PDB code and chain.
+    getseq2pdb(
+        msa::AnnotatedMultipleSequenceAlignment;
+        force_sifts_mapping::Bool = false,
+        sifts_pfam_csv::Union{Nothing,AbstractString} = nothing,
+        sifts_uniprot_csv::Union{Nothing,AbstractString} = nothing,
+    )
+
+Build a `Dict{String, Vector{Tuple{String,String}}}` that maps each Pfam MSA sequence
+name to the `(pdb_id, chain_id)` pairs annotated for that sequence.
+
+The function first inspects the Pfam `#=GS` annotations (`DR PDB; …`) and records any
+PDB/chain pairs it finds. If the alignment lacks those annotations (common in recent
+Pfam releases) or if `force_sifts_mapping` is `true`, the mapping is complemented with
+data from PDBe SIFTS summary CSV files:
+
+  - `pdb_chain_pfam.csv.gz`
+  - `pdb_chain_uniprot.csv.gz`
+
+When `sifts_pfam_csv`/`sifts_uniprot_csv` are not provided, the corresponding files are
+downloaded (or reused if already present in the working directory). The MSA must contain
+an `AC` record in the file annotations so the Pfam accession number can be inferred;
+otherwise an error is thrown. SIFTS-derived mappings are only added when the UniProt
+residue ranges overlap with the ranges encoded in the Pfam sequence
+names (e.g. `"ICSA_SHIFL/612-720"`).
 
 ```julia
-julia> getseq2pdb(msa)
-Dict{String,Array{Tuple{String,String},1}} with 1 entry:
-  "F112_SSV1/3-112" => [("2VQC","A")]
+julia> getseq2pdb(msa) # PF18883
+Dict{String, Vector{Tuple{String, String}}} with 1 entry:
+  "ICSA_SHIFL/612-720" => [("3ML3", "A"), ("5KE1", "A"), ("5KE1", "B")]
 ```
 """
 function getseq2pdb(
@@ -19,14 +41,6 @@ function getseq2pdb(
     sifts_pfam_csv::Union{Nothing,AbstractString} = nothing,
     sifts_uniprot_csv::Union{Nothing,AbstractString} = nothing,
 )
-    # Get the Pfam accession from the MSA annotations
-    msa_ac = getannotfile(msa, "AC", "")
-    if isempty(msa_ac)
-        throw(
-            ErrorException("Cannot determine Pfam accession number from MSA annotations."),
-        )
-    end
-    pfam_id = String(first(split(msa_ac, '.')))
     # Build the dict from sequence annotations first
     has_annot = false
     dict = Dict{String,Vector{Tuple{String,String}}}()
@@ -45,11 +59,12 @@ function getseq2pdb(
         end
     end
     if !has_annot
-        @warn "The MSA lacks DR PDB annotations (common in recent Pfam)." maxlog=1 _id="pdb_annot_$(pfam_id)"
+        first_seq = first(sequencename_iterator(msa))
+        @warn "The MSA lacks DR PDB annotations (common in recent Pfam)." maxlog = 1 _id = "pdb_annot_$(first_seq)"
     end
     # If no annotations or forced, use SIFTS mapping
     if force_sifts_mapping || !has_annot
-        _sifts_seq2pdb!(dict, msa, pfam_id, sifts_pfam_csv, sifts_uniprot_csv)
+        _sifts_seq2pdb!(dict, msa, sifts_pfam_csv, sifts_uniprot_csv)
     end
     sizehint!(dict, length(dict))
 end
@@ -67,10 +82,10 @@ function _download_or_reuse_sifts_file(
     end
     filename = _summary_name(db)
     if isfile(filename) && filesize(filename) > 0
-        @info "Reusing existing SIFTS file: $filename" maxlog=1 _id="reuse_$filename"
+        @info "Reusing existing SIFTS file: $filename" maxlog = 1 _id = "reuse_$filename"
         filename
     else
-        @info "Downloading SIFTS file: $filename" maxlog=1 _id="download_$filename"
+        @info "Downloading SIFTS file: $filename" maxlog = 1 _id = "download_$filename"
         downloadsifts(db, filename = filename)
     end
 end
@@ -95,10 +110,17 @@ end
 function _sifts_seq2pdb!(
     dict::Dict{String,Vector{Tuple{String,String}}},
     msa::AnnotatedMultipleSequenceAlignment,
-    pfam_id::String,
     sifts_pfam_csv::Union{Nothing,AbstractString},
     sifts_uniprot_csv::Union{Nothing,AbstractString},
 )
+    # Get the Pfam accession from the MSA annotations
+    msa_ac = getannotfile(msa, "AC", "")
+    if isempty(msa_ac)
+        throw(
+            ErrorException("Cannot determine Pfam accession number from MSA annotations."),
+        )
+    end
+    pfam_id = String(first(split(msa_ac, '.')))
     # Download or reuse SIFTS files
     sifts_pfam_file = _download_or_reuse_sifts_file(sifts_pfam_csv, dbPfam)
     sifts_uniprot_file = _download_or_reuse_sifts_file(sifts_uniprot_csv, dbUniProt)
@@ -117,8 +139,8 @@ function _sifts_seq2pdb!(
     for row_index in axes(pdb_chain_up_coords, 1)
         uniprot_acc = pdb_chain_up_coords[row_index, 3]
         if haskey(acc2seqnames, uniprot_acc)
-            pdb_id = pdb_chain_up_coords[row_index, 1]
-            chain_id = pdb_chain_up_coords[row_index, 2]
+            pdb_id = uppercase(pdb_chain_up_coords[row_index, 1])
+            chain_id = uppercase(pdb_chain_up_coords[row_index, 2])
             for seqname in acc2seqnames[uniprot_acc]
                 # Extract UniProt region of the given MSA sequence
                 start_str, end_str = split(last(split(seqname, '/')), '-')
