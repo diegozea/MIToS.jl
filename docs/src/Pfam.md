@@ -54,8 +54,10 @@ msa = read_file(pfamfile, Stockholm, generatemapping = true, useidcoordinates = 
 
 ## [Getting PDB information from an MSA](@id Getting-PDB-information-from-an-MSA)
 
-The function `getseq2pdb` parses the MSA annotations to return a `Dict` from the sequence
-identifier in the MSA to PDB and chain codes.
+The function `getseq2pdb` parses the MSA annotations, if present, to return a `Dict` from 
+the sequence identifier in the MSA to PDB and chain codes. In the case of recently
+downloaded MSAs, which usually lack PDB mapping annotations, the function will use SIFTS
+chain-level mappings for this task. In such cases, the required SIFTS summary CSV files are automatically downloaded and cached.
 
 ```@example pfam_example
 getseq2pdb(msa)

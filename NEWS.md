@@ -1,5 +1,11 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.4.0 to v3.4.3
+
+- The performance of the `getseq2pdb` function in the `Pfam` module has been improved by 
+  an internal memoization of the SIFTS CSV tables. This enhancement reduces redundant 
+  parsing when the same SIFTS files are used multiple times.
+
 ### Changes from v3.3.0 to v3.4.0
 
 The `SIFTS` module now supports chain-level mappings. The main changes are:

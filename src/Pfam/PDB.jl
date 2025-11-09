@@ -29,6 +29,10 @@ otherwise an error is thrown. SIFTS-derived mappings are only added when the Uni
 residue ranges overlap with the ranges encoded in the Pfam sequence
 names (e.g. `"ICSA_SHIFL/612-720"`).
 
+SIFTS summary CSVs are parsed at most once per file absolute path and modification time
+pair during the lifetime of the Julia session, so repeated `getseq2pdb` calls reuse
+in-memory tables unless the underlying files change.
+
 ```julia
 julia> getseq2pdb(msa) # PF18883
 Dict{String, Vector{Tuple{String, String}}} with 1 entry:
@@ -90,6 +94,26 @@ function _download_or_reuse_sifts_file(
     end
 end
 
+# Cache SIFTS CSV tables so we only parse them once per file/mtime pair
+const _SIFTS_TABLE_CACHE = Dict{
+    Tuple{String,Float64},
+    NamedTuple{(:colnames, :table),Tuple{Vector{Symbol},Matrix{String}}},
+}()
+
+function _read_sifts_table(path::AbstractString)
+    abs_path = abspath(path)
+    mod_time = mtime(abs_path)
+    key = (abs_path, mod_time)
+    if haskey(_SIFTS_TABLE_CACHE, key)
+        return _SIFTS_TABLE_CACHE[key]
+    end
+    table = read_file(abs_path, SIFTSCSV)
+    # Remove old entries for the same location
+    filter!(kv -> kv.first[1] != abs_path, _SIFTS_TABLE_CACHE)
+    _SIFTS_TABLE_CACHE[key] = table
+    table
+end
+
 # Since the SIFTS mapping uses primary (citable) accession numbers from UniProt 
 # (without version numbers), but the Pfam MSA uses the entry names, we need to get the
 # mapping between these two identifiers. Pfam MSAs include the UniProt accession (with
@@ -125,8 +149,8 @@ function _sifts_seq2pdb!(
     sifts_pfam_file = _download_or_reuse_sifts_file(sifts_pfam_csv, dbPfam)
     sifts_uniprot_file = _download_or_reuse_sifts_file(sifts_uniprot_csv, dbUniProt)
     # Read SIFTS files
-    sifts_pfam = read_file(sifts_pfam_file, SIFTSCSV)
-    sifts_uniprot = read_file(sifts_uniprot_file, SIFTSCSV)
+    sifts_pfam = _read_sifts_table(sifts_pfam_file)
+    sifts_uniprot = _read_sifts_table(sifts_uniprot_file)
     # Get the PDB and UniProt accessions associated to the given Pfam
     pdb_chain_up_pfam = sifts_pfam.table[sifts_pfam.table[:, 4].==pfam_id, 1:4]
     # Keep only UniProt–PDB chain mappings that belong to the given Pfam
