@@ -57,7 +57,7 @@ into a `DataFrame` if you want to use that structure for downstream analysis:
 
 ```@example chain_level_summary
 using DataFrames
-summary_df = DataFrame(summary.table, summary.colnames);
+summary_df = DataFrame(summary.table, summary.colnames)
 first(summary_df, 5) # preview the first 5 rows
 ```
 
@@ -77,8 +77,11 @@ You can find the full description of each column in the
 [PDBe SIFTS Quick Access guide](https://www.ebi.ac.uk/pdbe/docs/sifts/quick.html). From that
 link you can also download other CSV files not currently supported by `downloadsifts`. 
 If downloaded in CSV format, those files can still be read using the `read_file` function 
-and the `SIFTSCSV` format. For example, you can benefit from the `download_file` function
-at `MIToS.Utils` to download the taxonomy summary file and read it with `read_file`:
+and the `SIFTSCSV` format. 
+
+### [Example: Taxonomy summary file](@id Example:-Taxonomy-summary-file)
+
+One example of a CSV file that cannot be downloaded with `downloadsifts` is the chain-level summary containing taxonomy information for each PDB chain. This file also presents some parsing challenges. To obtain it, get its URL from the [PDBe SIFTS Quick Access guide](https://www.ebi.ac.uk/pdbe/docs/sifts/quick.html). Then download it using the `download_file` function from `MIToS.Utils` and read it with `read_file`:
 
 ```@example chain_level_summary_taxonomy
 using MIToS.SIFTS
@@ -86,6 +89,24 @@ using MIToS.Utils
 
 taxonomy_path = download_file("https://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/csv/pdb_chain_taxonomy.csv.gz")
 taxonomy = read_file(taxonomy_path, SIFTSCSV)
+```
+
+The `taxonomy` CSV summary file is not properly formatted as a CSV table because the fourth
+column (`SCIENTIFIC_NAME`) contains commas in some rows. For example: 
+
+```
+101m,A,9755,Physeter macrocephalus (Sperm whale) (Physeter catodon)
+101m,A,9755,Physeter macrocephalus Linnaeus, 1758
+```
+
+Therefore, it makes sense to keep only the first three columns and use `unique` to remove
+the duplicated rows due to the synonymous scientific names:
+
+```@example chain_level_summary_taxonomy
+using DataFrames
+
+taxonomy_df = unique!(DataFrame(taxonomy.table[:, 1:3], taxonomy.colnames[1:3]))
+first(taxonomy_df, 5) # preview the first 5 rows
 ```
 
 ## [Simplest residue-level mapping](@id Simplest-residue-level-mapping)
