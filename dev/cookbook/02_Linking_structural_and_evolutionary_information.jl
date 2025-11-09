@@ -63,9 +63,8 @@ using MIToS.Pfam
 msa = read_file(pfam_file, Stockholm, generatemapping = true, useidcoordinates = true)
 
 # First, we need to know what is the sequence in the MSA that correspond to the
-# PDB we want to link. Luckily, Pfam Stockholm files store the mapping between
-# sequences and PDB chains. You can access that mapping using the `getseq2pdb`
-# function from `MIToS.Pfam`
+# PDB we want to link. You can get that information using the `getseq2pdb` function
+# from `MIToS.Pfam` module:
 
 seq2pdbs = getseq2pdb(msa)
 
