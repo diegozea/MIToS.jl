@@ -13,7 +13,7 @@ abstract type SequenceFormat <: AbstractSequenceFormat end
 # It checks sequence lengths
 function _fill_aln_seq_ann!(
     aln,
-    seq_ann::Vector{String},
+    seq_ann::IOBuffer,
     seq::String,
     init::Int,
     nres::Int,
@@ -33,18 +33,34 @@ function _fill_aln_seq_ann!(
             ),
         )
     end
+    truncate(seq_ann, 0)
     j = 1
+    first_entry = true
     @inbounds for res in seq
         aln[j, i] = res
-        if res != '-' && res != '.'
-            seq_ann[j] = string(init)
-            init += 1
+        if first_entry
+            first_entry = false
         else
-            seq_ann[j] = ""
+            write(seq_ann, ',')
+        end
+        if res != '-' && res != '.'
+            print(seq_ann, init)
+            init += 1
         end
         j += 1
     end
-    join(seq_ann, ','), init - 1
+    String(take!(seq_ann)), init - 1
+end
+
+function _generate_colmap_string(ncol::Int)
+    ncol <= 0 && return ""
+    io = IOBuffer(sizehint = ncol)
+    print(io, 1)
+    for col = 2:ncol
+        write(io, ',')
+        print(io, col)
+    end
+    String(take!(io))
 end
 
 function _to_msa_mapping(sequences::Array{String,1})
@@ -52,7 +68,7 @@ function _to_msa_mapping(sequences::Array{String,1})
     nres = length(sequences[1])
     aln = Array{Residue}(undef, nres, nseq)
     mapp = Array{String}(undef, nseq)
-    seq_ann = Array{String}(undef, nres)
+    seq_ann = IOBuffer(sizehint = max(0, nres))
     for i = 1:nseq
         # It checks sequence lengths
         mapp[i], last = _fill_aln_seq_ann!(aln, seq_ann, sequences[i], 1, nres, i)
@@ -68,7 +84,7 @@ function _to_msa_mapping(sequences::Array{String,1}, ids)
     nres = length(sequences[1])
     aln = Array{Residue}(undef, nres, nseq)
     mapp = Array{String}(undef, nseq)
-    seq_ann = Array{String}(undef, nres)
+    seq_ann = IOBuffer(sizehint = max(0, nres))
     sep = r"/|-"
     for i = 1:nseq
         fields = split(ids[i], sep)
@@ -331,8 +347,9 @@ function _generate_annotated_msa(
             $mssg You can use generatemapping=false to keep the file mapping annotations.
             """
         end
-        setannotfile!(annot, "NCol", string(size(MSA, 2)))
-        setannotfile!(annot, "ColMap", join(vcat(1:size(MSA, 2)), ','))
+        ncols = size(MSA, 2)
+        setannotfile!(annot, "NCol", string(ncols))
+        setannotfile!(annot, "ColMap", _generate_colmap_string(ncols))
         for i = 1:N
             setannotsequence!(annot, IDS[i], "SeqMap", MAP[i])
         end
