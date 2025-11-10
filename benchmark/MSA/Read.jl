@@ -5,6 +5,14 @@ let
 
     SUITE["MSA"]["read"]["Stockholm"] =
         @benchmarkable read_file($sth, Stockholm, MultipleSequenceAlignment)
+    SUITE["MSA"]["read"]["Stockholm (mappings)"] =
+        @benchmarkable read_file(
+            $sth,
+            Stockholm,
+            AnnotatedMultipleSequenceAlignment,
+            generatemapping = true,
+            useidcoordinates = true,
+        )
     SUITE["MSA"]["read"]["FASTA.gz"] =
         @benchmarkable read_file($fasta_gz, FASTA, MultipleSequenceAlignment)
 end
