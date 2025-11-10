@@ -32,33 +32,25 @@ end
 end
 
 @testset "Pfam SIFTS helpers" begin
-
-    @testset "download or reuse" begin
-        mktempdir() do tmp
+    mktempdir() do tmp
+        cd(tmp) do
+            # Reuse a caller-provided SIFTS CSV without triggering a download.
             provided_path = joinpath(tmp, "custom_sifts.csv")
             touch(provided_path)
             @test MIToS.Pfam._download_or_reuse_sifts_file(
                 provided_path,
                 MIToS.SIFTS.dbPfam,
             ) == provided_path
-        end
 
-        mktempdir() do tmp
-            cd(tmp) do
-                filename = "pdb_chain_pfam.csv.gz"
-                open(filename, "w") do io
-                    write(io, "placeholder")
-                end
-                @test MIToS.Pfam._download_or_reuse_sifts_file(
-                    nothing,
-                    MIToS.SIFTS.dbPfam,
-                ) == filename
+            # Reuse the standard filename when the file is already in the cwd.
+            filename = "pdb_chain_pfam.csv.gz"
+            open(filename, "w") do io
+                write(io, "placeholder")
             end
-        end
-    end
+            @test MIToS.Pfam._download_or_reuse_sifts_file(nothing, MIToS.SIFTS.dbPfam) ==
+                  filename
 
-    @testset "SIFTS mapping cache" begin
-        mktempdir() do tmp
+            # Create lightweight Pfam and UniProt mapping tables for the cache tests.
             pfam_path = joinpath(tmp, "custom_pfam.csv")
             open(pfam_path, "w") do io
                 write(io, "pdb,chain,uniprot,pfam\n")
@@ -72,6 +64,7 @@ end
                 write(io, "1abc,a,QSEQ1,.,.,.,.,6,8\n")
             end
 
+            # Minimal Stockholm file to drive the SIFTS mapping.
             msa_path = joinpath(tmp, "pfam_test.sto")
             open(msa_path, "w") do io
                 write(
@@ -87,6 +80,7 @@ end
             msa = read_file(msa_path, Stockholm)
             cache = MIToS.Pfam._SIFTS_TABLE_CACHE
 
+            # First lookup should populate the cache with entries for both CSVs.
             dict1 = getseq2pdb(
                 msa;
                 force_sifts_mapping = true,
@@ -97,6 +91,7 @@ end
             @test length(dict1["QSEQ_AC/5-10"]) == 1
 
             cache_keys_after_first = Set(collect(keys(cache)))
+            # Second lookup must hit the cache without mutating it.
             dict2 = getseq2pdb(
                 msa;
                 force_sifts_mapping = true,
@@ -118,6 +113,7 @@ end
                 )
             end
             msa_no_ac = read_file(msa_no_ac_path, Stockholm)
+            # Missing accession numbers should throw when building the mapping.
             @test_throws ErrorException MIToS.Pfam._sifts_seq2pdb!(
                 Dict{String,Vector{Tuple{String,String}}}(),
                 msa_no_ac,
@@ -125,6 +121,7 @@ end
                 uniprot_path,
             )
 
+            # Remove temporary cache entries so other tests stay isolated.
             for key in collect(keys(cache))
                 if startswith(key[1], tmp)
                     delete!(cache, key)
