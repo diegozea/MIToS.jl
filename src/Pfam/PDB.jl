@@ -152,7 +152,7 @@ function _sifts_seq2pdb!(
     sifts_pfam = _read_sifts_table(sifts_pfam_file)
     sifts_uniprot = _read_sifts_table(sifts_uniprot_file)
     # Get the PDB and UniProt accessions associated to the given Pfam
-    pdb_chain_up_pfam = sifts_pfam.table[sifts_pfam.table[:, 4].==pfam_id, 1:4]
+    pdb_chain_up_pfam = sifts_pfam.table[sifts_pfam.table[:, 4] .== pfam_id, 1:4]
     # Keep only UniProt–PDB chain mappings that belong to the given Pfam
     uniprot_accs = Set(pdb_chain_up_pfam[:, 3])
     row_selector = in.(sifts_uniprot.table[:, 3], Ref{Set{String}}(uniprot_accs))
