@@ -1,16 +1,8 @@
 @testset "SIFTS Summary" begin
 
-    implemented_databases = Set([
-        dbUniProt,
-        dbPfam,
-        dbInterPro,
-        dbSCOP,
-        dbSCOP2,
-        dbSCOP2B,
-        dbCATH,
-        dbEnsembl,
-    ])
-    
+    implemented_databases =
+        Set([dbUniProt, dbPfam, dbInterPro, dbSCOP, dbSCOP2, dbSCOP2B, dbCATH, dbEnsembl])
+
     unimplemented_databases = setdiff(Set(subtypes(DataBase)), implemented_databases)
     # i.e., all the DataBase subtypes that are not included in the implemented_databases
 
@@ -30,7 +22,7 @@
             cd(dir) do
                 # This is time consuming, but we need to ensure that downloadsifts and
                 # and read_file with SIFTSCSV work as expected for all supported databases.
-                for db in implemented_databases    
+                for db in implemented_databases
                     # Test Download
                     csv_file = downloadsifts(db)
                     # Test Parsing

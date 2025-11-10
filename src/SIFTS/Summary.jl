@@ -42,7 +42,7 @@ const _CSV_URL = "https://ftp.ebi.ac.uk/pub/databases/msd/sifts/flatfiles/csv/"
 @inline _summary_url(db::Type{dbCATH}) = _CSV_URL * _summary_name(db)
 @inline _summary_url(db::Type{dbEnsembl}) = _CSV_URL * _summary_name(db)
 
-@inline function _summary_url(::Type{T}) where T<:DataBase
+@inline function _summary_url(::Type{T}) where {T<:DataBase}
     throw(ErrorException("No SIFTS summary file url defined for database type $T"))
 end
 
@@ -81,12 +81,13 @@ end
 Parse a SIFTS summary CSV file from an already-open, decompressed `io` stream.
 This function **expects** that `io` yields the plain CSV text (i.e., any `.gz`
 decompression has already been performed). This is automatically handled if you
-call `read_file` with [`SIFTSCSV`](@ref) as the format; as `read_file` opens the file, 
+call `read_file` with [`SIFTSCSV`](@ref) as the format; as `read_file` opens the file,
 handles decompression when necessary, and then calls `parse_file`.
 
 Returns a `NamedTuple` with:
-- `colnames` — a `Vector{Symbol}` of column names
-- `table` — the raw `Matrix{String}` produced by `DelimitedFiles.readdlm`
+
+  - `colnames` — a `Vector{Symbol}` of column names
+  - `table` — the raw `Matrix{String}` produced by `DelimitedFiles.readdlm`
 
 This low-level representation is intended for downstream reshaping or
 conversion. For example, if you have the output of this function stored in
@@ -98,7 +99,7 @@ summary_df = DataFrame(summary.table, summary.colnames)
 ```
 """
 function Utils.parse_file(io::IO, ::Type{SIFTSCSV})
-    data, header = readdlm(io, ',', String, comments = true, header = true, quotes=false)
+    data, header = readdlm(io, ',', String, comments = true, header = true, quotes = false)
     # quotes=false is needed to parse the taxonomy file correctly
     colnames = Symbol.(vec(header))
     return (colnames = colnames, table = data)

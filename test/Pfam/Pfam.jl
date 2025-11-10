@@ -32,100 +32,108 @@ end
 end
 
 @testset "Pfam SIFTS helpers" begin
-    mktempdir() do tmp
-        cd(tmp) do
-            # Reuse a caller-provided SIFTS CSV without triggering a download.
-            provided_path = joinpath(tmp, "custom_sifts.csv")
-            touch(provided_path)
-            @test MIToS.Pfam._download_or_reuse_sifts_file(
-                provided_path,
-                MIToS.SIFTS.dbPfam,
-            ) == provided_path
+    @testset "download or reuse" begin
+        mktempdir() do tmp
+            cd(tmp) do
+                # Reuse a caller-provided SIFTS CSV without triggering a download.
+                provided_path = joinpath(tmp, "custom_sifts.csv")
+                touch(provided_path) # the function will only return the path
+                @test MIToS.Pfam._download_or_reuse_sifts_file(
+                    provided_path,
+                    MIToS.SIFTS.dbPfam,
+                ) == provided_path
 
-            # Reuse the standard filename when the file is already in the cwd.
-            filename = "pdb_chain_pfam.csv.gz"
-            open(filename, "w") do io
-                write(io, "placeholder")
-            end
-            @test MIToS.Pfam._download_or_reuse_sifts_file(nothing, MIToS.SIFTS.dbPfam) ==
-                  filename
-
-            # Create lightweight Pfam and UniProt mapping tables for the cache tests.
-            pfam_path = joinpath(tmp, "custom_pfam.csv")
-            open(pfam_path, "w") do io
-                write(io, "pdb,chain,uniprot,pfam\n")
-                write(io, "1abc,a,QSEQ1,PFTEST\n")
-            end
-
-            uniprot_path = joinpath(tmp, "custom_uniprot.csv")
-            open(uniprot_path, "w") do io
-                write(io, "pdb,chain,uniprot,x4,x5,x6,x7,up_start,up_end\n")
-                write(io, "1abc,a,QSEQ1,.,.,.,.,50,60\n")
-                write(io, "1abc,a,QSEQ1,.,.,.,.,6,8\n")
-            end
-
-            # Minimal Stockholm file to drive the SIFTS mapping.
-            msa_path = joinpath(tmp, "pfam_test.sto")
-            open(msa_path, "w") do io
-                write(
-                    io,
-                    "# STOCKHOLM 1.0\n",
-                    "#=GF AC PFTEST.1\n",
-                    "#=GS QSEQ_AC/5-10 AC QSEQ1.1\n",
-                    "QSEQ_AC/5-10 ACDEFG\n",
-                    "//\n",
-                )
-            end
-
-            msa = read_file(msa_path, Stockholm)
-            cache = MIToS.Pfam._SIFTS_TABLE_CACHE
-
-            # First lookup should populate the cache with entries for both CSVs.
-            dict1 = getseq2pdb(
-                msa;
-                force_sifts_mapping = true,
-                sifts_pfam_csv = pfam_path,
-                sifts_uniprot_csv = uniprot_path,
-            )
-            @test dict1["QSEQ_AC/5-10"] == [("1ABC", "A")]
-            @test length(dict1["QSEQ_AC/5-10"]) == 1
-
-            cache_keys_after_first = Set(collect(keys(cache)))
-            # Second lookup must hit the cache without mutating it.
-            dict2 = getseq2pdb(
-                msa;
-                force_sifts_mapping = true,
-                sifts_pfam_csv = pfam_path,
-                sifts_uniprot_csv = uniprot_path,
-            )
-            @test dict2 == dict1
-            @test Set(collect(keys(cache))) == cache_keys_after_first
-
-            msa_no_ac_path = joinpath(tmp, "pfam_no_ac.sto")
-            open(msa_no_ac_path, "w") do io
-                write(
-                    io,
-                    "# STOCKHOLM 1.0\n",
-                    "#=GF ID PFTEST\n",
-                    "#=GS QSEQ_NOAC/1-2 AC QSEQ2.1\n",
-                    "QSEQ_NOAC/1-2 AA\n",
-                    "//\n",
-                )
-            end
-            msa_no_ac = read_file(msa_no_ac_path, Stockholm)
-            # Missing accession numbers should throw when building the mapping.
-            @test_throws ErrorException MIToS.Pfam._sifts_seq2pdb!(
-                Dict{String,Vector{Tuple{String,String}}}(),
-                msa_no_ac,
-                pfam_path,
-                uniprot_path,
-            )
-
-            # Remove temporary cache entries so other tests stay isolated.
-            for key in collect(keys(cache))
-                if startswith(key[1], tmp)
-                    delete!(cache, key)
+                # Reuse the standard filename when the file is already in the cwd.
+                filename = "pdb_chain_pfam.csv.gz"
+                open(filename, "w") do io
+                    # the function will only ensure that the file is not empty
+                    write(io, "placeholder")
                 end
+                @test MIToS.Pfam._download_or_reuse_sifts_file(
+                    nothing,
+                    MIToS.SIFTS.dbPfam,
+                ) == filename
+            end
+        end
+    end
+
+    @testset "SIFTS mapping cache" begin
+        mktempdir() do tmp
+            cd(tmp) do
+                # Create lightweight Pfam and UniProt mapping tables for the cache tests.
+                pfam_path = joinpath(tmp, "custom_pfam.csv")
+                open(pfam_path, "w") do io
+                    write(io, "pdb,chain,uniprot,pfam\n")
+                    write(io, "1abc,a,QSEQ1,PFTEST\n")
+                end
+
+                uniprot_path = joinpath(tmp, "custom_uniprot.csv")
+                open(uniprot_path, "w") do io
+                    write(io, "pdb,chain,uniprot,x4,x5,x6,x7,up_start,up_end\n")
+                    write(io, "1abc,a,QSEQ1,.,.,.,.,6,8\n")  # overlapping (QSEQ_AC/5-10)
+                    write(io, "2def,a,QSEQ1,.,.,.,.,50,60\n") # non-overlapping PDB entry
+                end
+
+                # Minimal Stockholm file to drive the SIFTS mapping.
+                msa_path = joinpath(tmp, "pfam_test.sto")
+                open(msa_path, "w") do io
+                    write(
+                        io,
+                        "# STOCKHOLM 1.0\n",
+                        "#=GF AC PFTEST.1\n",
+                        "#=GS QSEQ_AC/5-10 AC QSEQ1.1\n",
+                        "QSEQ_AC/5-10 ACDEFG\n", # positions 5-10 overlap with UniProt 6-8
+                        "//\n",
+                    )
+                end
+
+                msa = read_file(msa_path, Stockholm)
+                cache = MIToS.Pfam._SIFTS_TABLE_CACHE
+
+                # First lookup should populate the cache with entries for both CSVs.
+                dict1 = getseq2pdb(
+                    msa;
+                    force_sifts_mapping = true,
+                    sifts_pfam_csv = pfam_path,
+                    sifts_uniprot_csv = uniprot_path,
+                )
+
+                # Verify that only the overlapping entry was returned.
+                @test dict1["QSEQ_AC/5-10"] == [("1ABC", "A")]
+                @test length(dict1["QSEQ_AC/5-10"]) == 1
+
+                # Second lookup must hit the cache without mutating it.
+                cache_keys_after_first = Set(collect(keys(cache)))
+                dict2 = getseq2pdb(
+                    msa;
+                    force_sifts_mapping = true,
+                    sifts_pfam_csv = pfam_path,
+                    sifts_uniprot_csv = uniprot_path,
+                )
+                @test dict2 == dict1
+                @test Set(collect(keys(cache))) == cache_keys_after_first
+
+                # Test the behavior when accession numbers are missing in the MSA
+                # (Should throw an error)
+                msa_no_ac_path = joinpath(tmp, "pfam_no_ac.sto")
+                open(msa_no_ac_path, "w") do io
+                    write(
+                        io,
+                        "# STOCKHOLM 1.0\n",
+                        "#=GF ID PFTEST\n",
+                        "#=GS QSEQ_NOAC/1-2 AC QSEQ2.1\n",
+                        "QSEQ_NOAC/1-2 AA\n",
+                        "//\n",
+                    )
+                end
+                msa_no_ac = read_file(msa_no_ac_path, Stockholm)
+
+                @test_throws ErrorException MIToS.Pfam._sifts_seq2pdb!(
+                    Dict{String,Vector{Tuple{String,String}}}(),
+                    msa_no_ac,
+                    pfam_path,
+                    uniprot_path,
+                )
             end
         end
     end
