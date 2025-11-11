@@ -35,7 +35,7 @@ function _fill_aln_seq_ann!(
     end
     j = 1
     @inbounds for res in seq
-        aln[j, i] = res
+        aln[i, j] = res
         if res != '-' && res != '.'
             seq_ann[j] = string(init)
             init += 1
@@ -50,14 +50,14 @@ end
 function _to_msa_mapping(sequences::Array{String,1})
     nseq = size(sequences, 1)
     nres = length(sequences[1])
-    aln = Array{Residue}(undef, nres, nseq)
+    aln = Array{Residue}(undef, nseq, nres)
     mapp = Array{String}(undef, nseq)
     seq_ann = Array{String}(undef, nres)
     for i = 1:nseq
         # It checks sequence lengths
         mapp[i], last = _fill_aln_seq_ann!(aln, seq_ann, sequences[i], 1, nres, i)
     end
-    msa = NamedArray(permutedims(aln, [2, 1]))
+    msa = NamedArray(aln)
     # MSA constructors adds dimension names
     # setdimnames!(msa, ("Seq","Col"))
     (msa, mapp)
@@ -66,7 +66,7 @@ end
 function _to_msa_mapping(sequences::Array{String,1}, ids)
     nseq = size(sequences, 1)
     nres = length(sequences[1])
-    aln = Array{Residue}(undef, nres, nseq)
+    aln = Array{Residue}(undef, nseq, nres)
     mapp = Array{String}(undef, nseq)
     seq_ann = Array{String}(undef, nres)
     sep = r"/|-"
@@ -94,7 +94,7 @@ function _to_msa_mapping(sequences::Array{String,1}, ids)
         end
     end
     msa = NamedArray(
-        permutedims(aln, [2, 1]),
+        aln,
         (
             OrderedDict{String,Int}(zip(ids, 1:nseq)),
             OrderedDict{String,Int}(string(i) => i for i = 1:nres),
