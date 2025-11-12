@@ -38,7 +38,7 @@ function _fill_aln_seq_ann!(
         aln[i, j] = res
         j > 1 && write(seq_ann, ',')
         if res != '-' && res != '.'
-            print(seq_ann, init)
+            write(seq_ann, string(init))
             init += 1
         end
         j += 1
