@@ -13,7 +13,7 @@ abstract type SequenceFormat <: AbstractSequenceFormat end
 # It checks sequence lengths
 function _fill_aln_seq_ann!(
     aln,
-    seq_ann::Vector{String},
+    seq_ann::IOBuffer,
     seq::String,
     init::Int,
     nres::Int,
@@ -36,15 +36,14 @@ function _fill_aln_seq_ann!(
     j = 1
     @inbounds for res in seq
         aln[i, j] = res
+        j > 1 && write(seq_ann, ',')
         if res != '-' && res != '.'
-            seq_ann[j] = string(init)
+            print(seq_ann, init)
             init += 1
-        else
-            seq_ann[j] = ""
         end
         j += 1
     end
-    join(seq_ann, ','), init - 1
+    String(take!(seq_ann)), init - 1
 end
 
 function _to_msa_mapping(sequences::Array{String,1})
@@ -52,7 +51,8 @@ function _to_msa_mapping(sequences::Array{String,1})
     nres = length(sequences[1])
     aln = Array{Residue}(undef, nseq, nres)
     mapp = Array{String}(undef, nseq)
-    seq_ann = Array{String}(undef, nres)
+    # sizehint should be enough to store the mappings for the titin (~35000 residues long)
+    seq_ann = IOBuffer(; append=true, sizehint=6 * nres)
     for i = 1:nseq
         # It checks sequence lengths
         mapp[i], last = _fill_aln_seq_ann!(aln, seq_ann, sequences[i], 1, nres, i)
@@ -68,7 +68,7 @@ function _to_msa_mapping(sequences::Array{String,1}, ids)
     nres = length(sequences[1])
     aln = Array{Residue}(undef, nseq, nres)
     mapp = Array{String}(undef, nseq)
-    seq_ann = Array{String}(undef, nres)
+    seq_ann = IOBuffer(; append=true, sizehint=6 * nres)
     sep = r"/|-"
     for i = 1:nseq
         fields = split(ids[i], sep)
