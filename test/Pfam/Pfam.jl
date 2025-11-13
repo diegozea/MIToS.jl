@@ -110,7 +110,7 @@ end
                 @test length(pfam_cache) == 1
                 pfam_cache_key = only(keys(pfam_cache))
                 @test pfam_cache_key[1] == abspath(pfam_path)
-                @test pfam_cache[pfam_cache_key] == Dict("PFTEST" => ["QSEQ1"])
+                @test pfam_cache[pfam_cache_key] == Dict("PFTEST" => Set{String}(["QSEQ1"]))
 
                 @test length(uniprot_cache) == 1
                 uniprot_cache_key = only(keys(uniprot_cache))
@@ -119,19 +119,10 @@ end
                 @test haskey(cached_entries, "QSEQ1")
                 entries = cached_entries["QSEQ1"]
                 @test length(entries) == 2
-                expected_entry = (
-                    pdb_id = "1ABC",
-                    chain_id = "A",
-                    up_start = 6,
-                    up_end = 8,
-                )
+                expected_entry = (pdb_id = "1ABC", chain_id = "A", up_start = 6, up_end = 8)
                 @test expected_entry in entries
-                @test (
-                    pdb_id = "2DEF",
-                    chain_id = "A",
-                    up_start = 50,
-                    up_end = 60,
-                ) in entries
+                @test (pdb_id = "2DEF", chain_id = "A", up_start = 50, up_end = 60) in
+                      entries
 
                 # Second lookup must hit the cache without mutating it.
                 pfam_keys_after_first = collect(keys(pfam_cache))
