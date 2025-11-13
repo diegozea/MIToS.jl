@@ -88,9 +88,12 @@ end
                 end
 
                 msa = read_file(msa_path, Stockholm)
-                cache = MIToS.Pfam._SIFTS_TABLE_CACHE
+                pfam_cache = MIToS.Pfam._SIFTS_PFAM_CACHE
+                uniprot_cache = MIToS.Pfam._SIFTS_UNIPROT_CACHE
+                empty!(pfam_cache)
+                empty!(uniprot_cache)
 
-                # First lookup should populate the cache with entries for both CSVs.
+                # First lookup should populate the caches with entries for both CSVs.
                 dict1 = getseq2pdb(
                     msa;
                     force_sifts_mapping = true,
@@ -102,8 +105,37 @@ end
                 @test dict1["QSEQ_AC/5-10"] == [("1ABC", "A")]
                 @test length(dict1["QSEQ_AC/5-10"]) == 1
 
+                # Verify that both caches contain a single entry keyed by the CSV path
+                # and that the stored mappings are the expected ones.
+                @test length(pfam_cache) == 1
+                pfam_cache_key = only(keys(pfam_cache))
+                @test pfam_cache_key[1] == abspath(pfam_path)
+                @test pfam_cache[pfam_cache_key] == Dict("PFTEST" => ["QSEQ1"])
+
+                @test length(uniprot_cache) == 1
+                uniprot_cache_key = only(keys(uniprot_cache))
+                @test uniprot_cache_key[1] == abspath(uniprot_path)
+                cached_entries = uniprot_cache[uniprot_cache_key]
+                @test haskey(cached_entries, "QSEQ1")
+                entries = cached_entries["QSEQ1"]
+                @test length(entries) == 2
+                expected_entry = (
+                    pdb_id = "1ABC",
+                    chain_id = "A",
+                    up_start = 6,
+                    up_end = 8,
+                )
+                @test expected_entry in entries
+                @test (
+                    pdb_id = "2DEF",
+                    chain_id = "A",
+                    up_start = 50,
+                    up_end = 60,
+                ) in entries
+
                 # Second lookup must hit the cache without mutating it.
-                cache_keys_after_first = Set(collect(keys(cache)))
+                pfam_keys_after_first = collect(keys(pfam_cache))
+                uniprot_keys_after_first = collect(keys(uniprot_cache))
                 dict2 = getseq2pdb(
                     msa;
                     force_sifts_mapping = true,
@@ -111,7 +143,8 @@ end
                     sifts_uniprot_csv = uniprot_path,
                 )
                 @test dict2 == dict1
-                @test Set(collect(keys(cache))) == cache_keys_after_first
+                @test collect(keys(pfam_cache)) == pfam_keys_after_first
+                @test collect(keys(uniprot_cache)) == uniprot_keys_after_first
 
                 # Test the behavior when accession numbers are missing in the MSA
                 # (Should throw an error)

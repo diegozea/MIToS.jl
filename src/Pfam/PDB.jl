@@ -95,23 +95,60 @@ function _download_or_reuse_sifts_file(
 end
 
 # Cache SIFTS CSV tables so we only parse them once per file/mtime pair
-const _SIFTS_TABLE_CACHE = Dict{
-    Tuple{String,Float64},
-    NamedTuple{(:colnames, :table),Tuple{Vector{Symbol},Matrix{String}}},
-}()
+const _SIFTS_PFAM_CACHE = Dict{Tuple{String,Float64},Dict{String,Vector{String}}}()
 
-function _read_sifts_table(path::AbstractString)
+const _SIFTS_UNIPROT_ENTRY =
+    NamedTuple{(:pdb_id, :chain_id, :up_start, :up_end),Tuple{String,String,Int,Int}}
+const _SIFTS_UNIPROT_CACHE =
+    Dict{Tuple{String,Float64},Dict{String,Vector{_SIFTS_UNIPROT_ENTRY}}}()
+
+function _read_sifts_pfam_map(path::AbstractString)
     abs_path = abspath(path)
     mod_time = mtime(abs_path)
     key = (abs_path, mod_time)
-    if haskey(_SIFTS_TABLE_CACHE, key)
-        return _SIFTS_TABLE_CACHE[key]
+    if haskey(_SIFTS_PFAM_CACHE, key)
+        return _SIFTS_PFAM_CACHE[key]
     end
-    table = read_file(abs_path, SIFTSCSV)
+    table = read_file(abs_path, SIFTSCSV).table
+    pfam_to_uniprot = Dict{String,Vector{String}}()
+    for row_index in axes(table, 1)
+        pfam_id = table[row_index, 4]
+        uniprot_acc = table[row_index, 3]
+        push!(get!(pfam_to_uniprot, pfam_id) do
+            String[]
+        end, uniprot_acc)
+    end
     # Remove old entries for the same location
-    filter!(kv -> kv.first[1] != abs_path, _SIFTS_TABLE_CACHE)
-    _SIFTS_TABLE_CACHE[key] = table
-    table
+    filter!(kv -> kv.first[1] != abs_path, _SIFTS_PFAM_CACHE)
+    _SIFTS_PFAM_CACHE[key] = pfam_to_uniprot
+    pfam_to_uniprot
+end
+
+function _read_sifts_uniprot_map(path::AbstractString)
+    abs_path = abspath(path)
+    mod_time = mtime(abs_path)
+    key = (abs_path, mod_time)
+    if haskey(_SIFTS_UNIPROT_CACHE, key)
+        return _SIFTS_UNIPROT_CACHE[key]
+    end
+    table = read_file(abs_path, SIFTSCSV).table
+    uniprot_to_entries = Dict{String,Vector{_SIFTS_UNIPROT_ENTRY}}()
+    for row_index in axes(table, 1)
+        uniprot_acc = table[row_index, 3]
+        entry = (
+            pdb_id = uppercase(table[row_index, 1]),
+            chain_id = uppercase(table[row_index, 2]),
+            up_start = parse(Int, table[row_index, 8]),
+            up_end = parse(Int, table[row_index, 9]),
+        )
+        push!(get!(uniprot_to_entries, uniprot_acc) do
+            Vector{_SIFTS_UNIPROT_ENTRY}()
+        end, entry)
+    end
+    # Remove old entries for the same location
+    filter!(kv -> kv.first[1] != abs_path, _SIFTS_UNIPROT_CACHE)
+    _SIFTS_UNIPROT_CACHE[key] = uniprot_to_entries
+    uniprot_to_entries
 end
 
 # Since the SIFTS mapping uses primary (citable) accession numbers from UniProt 
@@ -149,38 +186,32 @@ function _sifts_seq2pdb!(
     sifts_pfam_file = _download_or_reuse_sifts_file(sifts_pfam_csv, dbPfam)
     sifts_uniprot_file = _download_or_reuse_sifts_file(sifts_uniprot_csv, dbUniProt)
     # Read SIFTS files
-    sifts_pfam = _read_sifts_table(sifts_pfam_file)
-    sifts_uniprot = _read_sifts_table(sifts_uniprot_file)
+    pfam_to_uniprot = _read_sifts_pfam_map(sifts_pfam_file)
+    uniprot_to_entries = _read_sifts_uniprot_map(sifts_uniprot_file)
     # Get the PDB and UniProt accessions associated to the given Pfam
-    pdb_chain_up_pfam = sifts_pfam.table[sifts_pfam.table[:, 4] .== pfam_id, 1:4]
-    # Keep only UniProt–PDB chain mappings that belong to the given Pfam
-    uniprot_accs = Set(pdb_chain_up_pfam[:, 3])
-    row_selector = in.(sifts_uniprot.table[:, 3], Ref{Set{String}}(uniprot_accs))
-    pdb_chain_up_coords = sifts_uniprot.table[row_selector, :]
+    uniprot_accs = Set(get(pfam_to_uniprot, pfam_id, String[]))
     # Create a mapping from UniProt primary accession number to sequence names
     acc2seqnames = _get_acc2seqnames(msa)
     # Fill in the dict with PDB–chain tuples from SIFTS
-    for row_index in axes(pdb_chain_up_coords, 1)
-        uniprot_acc = pdb_chain_up_coords[row_index, 3]
+    for uniprot_acc in uniprot_accs
+        entries = get(uniprot_to_entries, uniprot_acc, nothing)
+        isnothing(entries) && continue
         if haskey(acc2seqnames, uniprot_acc)
-            pdb_id = uppercase(pdb_chain_up_coords[row_index, 1])
-            chain_id = uppercase(pdb_chain_up_coords[row_index, 2])
             for seqname in acc2seqnames[uniprot_acc]
                 # Extract UniProt region of the given MSA sequence
                 start_str, end_str = split(last(split(seqname, '/')), '-')
                 seq_start = parse(Int, start_str)
                 seq_end = parse(Int, end_str)
-                # Extract UniProt region of the SIFTS mapping
-                up_start = parse(Int, pdb_chain_up_coords[row_index, 8])
-                up_end = parse(Int, pdb_chain_up_coords[row_index, 9])
-                # Only add the mapping if there is overlap between both regions
-                if (seq_end < up_start) || (seq_start > up_end)
-                    continue # no overlap
-                end
-                if haskey(dict, seqname)
-                    push!(dict[seqname], (pdb_id, chain_id))
-                else
-                    dict[seqname] = Tuple{String,String}[(pdb_id, chain_id)]
+                for entry in entries
+                    # Only add the mapping if there is overlap between both regions
+                    if (seq_end < entry.up_start) || (seq_start > entry.up_end)
+                        continue # no overlap
+                    end
+                    if haskey(dict, seqname)
+                        push!(dict[seqname], (entry.pdb_id, entry.chain_id))
+                    else
+                        dict[seqname] = Tuple{String,String}[(entry.pdb_id, entry.chain_id)]
+                    end
                 end
             end
         end
