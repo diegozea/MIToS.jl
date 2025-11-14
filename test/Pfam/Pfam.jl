@@ -82,15 +82,20 @@ end
                         "# STOCKHOLM 1.0\n",
                         "#=GF AC PFTEST.1\n",
                         "#=GS QSEQ_AC/5-10 AC QSEQ1.1\n",
+                        "#=GS NOMAP/1-2 AC NOENTRY.1\n", # sequence without UniProt accession
                         "QSEQ_AC/5-10 ACDEFG\n", # positions 5-10 overlap with UniProt 6-8
+                        "NOMAP/1-2 AA----\n",
                         "//\n",
                     )
                 end
 
                 msa = read_file(msa_path, Stockholm)
-                cache = MIToS.Pfam._SIFTS_TABLE_CACHE
+                pfam_cache = MIToS.Pfam._SIFTS_PFAM_CACHE
+                uniprot_cache = MIToS.Pfam._SIFTS_UNIPROT_CACHE
+                empty!(pfam_cache)
+                empty!(uniprot_cache)
 
-                # First lookup should populate the cache with entries for both CSVs.
+                # First lookup should populate the caches with entries for both CSVs.
                 dict1 = getseq2pdb(
                     msa;
                     force_sifts_mapping = true,
@@ -101,9 +106,31 @@ end
                 # Verify that only the overlapping entry was returned.
                 @test dict1["QSEQ_AC/5-10"] == [("1ABC", "A")]
                 @test length(dict1["QSEQ_AC/5-10"]) == 1
+                @test !haskey(dict1, "NOMAP/1-2") # NOENTRY accession produces no mapping 
+                # as it is not a valid UniProt accession.
+
+                # Verify that both caches contain a single entry keyed by the CSV path
+                # and that the stored mappings are the expected ones.
+                @test length(pfam_cache) == 1
+                pfam_cache_key = only(keys(pfam_cache))
+                @test pfam_cache_key[1] == abspath(pfam_path)
+                @test pfam_cache[pfam_cache_key] == Dict("PFTEST" => Set{String}(["QSEQ1"]))
+
+                @test length(uniprot_cache) == 1
+                uniprot_cache_key = only(keys(uniprot_cache))
+                @test uniprot_cache_key[1] == abspath(uniprot_path)
+                cached_entries = uniprot_cache[uniprot_cache_key]
+                @test haskey(cached_entries, "QSEQ1")
+                entries = cached_entries["QSEQ1"]
+                @test length(entries) == 2
+                expected_entry = (pdb_id = "1ABC", chain_id = "A", up_start = 6, up_end = 8)
+                @test expected_entry in entries
+                @test (pdb_id = "2DEF", chain_id = "A", up_start = 50, up_end = 60) in
+                      entries
 
                 # Second lookup must hit the cache without mutating it.
-                cache_keys_after_first = Set(collect(keys(cache)))
+                pfam_keys_after_first = collect(keys(pfam_cache))
+                uniprot_keys_after_first = collect(keys(uniprot_cache))
                 dict2 = getseq2pdb(
                     msa;
                     force_sifts_mapping = true,
@@ -111,7 +138,34 @@ end
                     sifts_uniprot_csv = uniprot_path,
                 )
                 @test dict2 == dict1
-                @test Set(collect(keys(cache))) == cache_keys_after_first
+                @test collect(keys(pfam_cache)) == pfam_keys_after_first
+                @test collect(keys(uniprot_cache)) == uniprot_keys_after_first
+
+                # Warn and early-return when Pfam accession is missing from the Pfam CSV
+                msa_no_mapping_path = joinpath(tmp, "pfam_no_mapping.sto")
+                open(msa_no_mapping_path, "w") do io
+                    write(
+                        io,
+                        "# STOCKHOLM 1.0\n",
+                        "#=GF AC PFUNKNOWN.1\n", # invalid Pfam accession
+                        "#=GS QSEQ_AC/5-10 AC QSEQ1.1\n",
+                        "QSEQ_AC/5-10 ACDEFG\n",
+                        "//\n",
+                    )
+                end
+                msa_no_mapping = read_file(msa_no_mapping_path, Stockholm)
+                empty_dict = Dict{String,Vector{Tuple{String,String}}}()
+                no_map_result = @test_logs (
+                    :warn,
+                    "No UniProt accessions found in SIFTS for Pfam accession PFUNKNOWN.",
+                ) MIToS.Pfam._sifts_seq2pdb!(
+                    empty_dict,
+                    msa_no_mapping,
+                    pfam_path,
+                    uniprot_path,
+                )
+                @test no_map_result === empty_dict
+                @test isempty(no_map_result) # empty mapping returned
 
                 # Test the behavior when accession numbers are missing in the MSA
                 # (Should throw an error)
