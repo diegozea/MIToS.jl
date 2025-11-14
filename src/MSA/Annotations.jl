@@ -74,28 +74,101 @@ end
 # -------
 
 # This function is useful because of the Julia issue #12495
-function _filter(str::String, mask::AbstractArray{Bool})
+function _filter(str::AbstractString, mask::AbstractArray{Bool})
     @assert length(str) == length(mask) "The string and the mask must have the same length"
-    #                 data                             readable   writable
-    buffer = IOBuffer(Array{UInt8}(undef, lastindex(str)), read = true, write = true)
+    buffer = IOBuffer(; sizehint = ncodeunits(str))
     # To start at the beginning of the buffer:
-    truncate(buffer, 0)
-    i = 1
-    for char in str
-        @inbounds if mask[i]
+    for (char, mask_value) in zip(str, mask)
+        if mask_value
             write(buffer, char)
         end
-        i += 1
     end
     String(take!(buffer))
 end
 
-_filter(str::String, indexes::AbstractArray{Int}) = String(collect(str)[indexes])
+function _filter(str::AbstractString, indexes::AbstractVector{<:Integer})
+    isempty(indexes) && return ""
+    if isascii(str)
+        str[indexes] # fast path: ASCII => indices are valid string indices
+    else
+        chars = collect(str) # one Vector{Char}
+        io = IOBuffer(; sizehint = length(indexes))
+        @inbounds for i in indexes
+            write(io, chars[Int(i)])
+        end
+        String(take!(io))
+    end
+end
 
-"""
-For filter column and sequence mapping of the format: ",,,,10,11,,12"
-"""
-_filter_mapping(str_map::String, mask) = join(split(str_map, ',')[mask], ',')
+function _filter_mapping(str_map::AbstractString, mask::AbstractVector{Bool})
+    io = IOBuffer(; sizehint = ncodeunits(str_map))
+    wrote = false
+    nfields = 0
+    for part in eachsplit(str_map, ','; keepempty = true)
+        nfields += 1
+        if nfields > length(mask)
+            throw(DimensionMismatch("mask length $(length(mask)) < $nfields fields"))
+        end
+        if @inbounds mask[nfields]
+            wrote && write(io, ',')
+            write(io, part)
+            wrote = true
+        end
+    end
+    if nfields != length(mask)
+        throw(DimensionMismatch("mask length $(length(mask)) > $nfields fields"))
+    end
+    String(take!(io))
+end
+
+# Compute start/stop indices for all comma-separated fields in `str_map`.
+function _field_ranges(str_map::AbstractString)
+    starts = Int[]
+    stops = Int[]
+
+    last = lastindex(str_map)
+    start = firstindex(str_map)
+    i = start
+
+    while i <= last
+        if @inbounds str_map[i] == ','
+            push!(starts, start)
+            push!(stops, start < i ? prevind(str_map, i) : start - 1)
+            start = nextind(str_map, i)
+        end
+        i = nextind(str_map, i)
+    end
+
+    # final field (possibly empty)
+    push!(starts, start)
+    push!(stops, start <= last ? last : start - 1)
+
+    return starts, stops
+end
+
+function _filter_mapping(str_map::AbstractString, mask::AbstractVector{<:Integer})
+    isempty(mask) && return ""
+
+    starts, stops = _field_ranges(str_map)
+    nentries = length(starts)
+
+    io = IOBuffer(; sizehint = ncodeunits(str_map))
+    first = true
+
+    for raw_idx in mask
+        idx = Int(raw_idx)
+        1 <= idx <= nentries || throw(BoundsError(mask, raw_idx))
+
+        first || write(io, ',')
+        first = false
+
+        s = @inbounds starts[idx]
+        e = @inbounds stops[idx]
+        s <= e && write(io, SubString(str_map, s, e))  # empty field ⇒ nothing
+    end
+
+    return String(take!(io))
+end
 
 """
 `filtersequences!(data::Annotations, ids::Vector{String}, mask::AbstractArray{Bool,1})`

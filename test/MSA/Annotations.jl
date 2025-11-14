@@ -110,6 +110,18 @@
 
             @test MSA._filter(str_col, selector) == "dca"
             @test MSA._filter_mapping(str_map, selector) == "14,13,11"
+            bool_mask = Bool[true, false, true, false]
+            @test MSA._filter_mapping(str_map, bool_mask) == "11,13"
+
+            sparse_map = "1,2,,,30,400"
+            sparse_bool = Bool[true, false, true, true, false, true]
+            @test MSA._filter_mapping(sparse_map, sparse_bool) == "1,,,400"
+            sparse_selector = [6, 3, 6]
+            @test MSA._filter_mapping(sparse_map, sparse_selector) == "400,,400"
+
+            empty_map = ""
+            @test MSA._filter_mapping(empty_map, Bool[true]) == ""
+            @test MSA._filter_mapping(empty_map, [1]) == ""
         end
 
         annot = Annotations()
