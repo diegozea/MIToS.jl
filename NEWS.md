@@ -1,5 +1,11 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.4.3 to v3.4.5
+
+- The `getseq2pdb` internal cache has been improved to reduce memory consumption (it does 
+  not longer keep the entire table in memory) and running time (it parses the table into 
+  data structures that need less further processing).
+
 ### Changes from v3.4.0 to v3.4.3
 
 - The performance of the `getseq2pdb` function in the `Pfam` module has been improved by 
