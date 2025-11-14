@@ -104,4 +104,3 @@ function Utils.parse_file(io::IO, ::Type{SIFTSCSV})
     colnames = Symbol.(vec(header))
     return (colnames = colnames, table = data)
 end
-
