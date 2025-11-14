@@ -116,6 +116,10 @@
             @test starts == [1, 4, 7, 10]
             @test stops == [2, 5, 8, 11]
 
+            @test MSA._filter(str_col, Int[]) == "" # empty selection
+            unicode_str = "αβγδ" # non-ASCII characters
+            @test MSA._filter(unicode_str, [4, 2]) == "δβ"
+
             sparse_map = "1,2,,,30,400"
             sparse_bool = Bool[true, false, true, true, false, true]
             @test MSA._filter_mapping(sparse_map, sparse_bool) == "1,,,400"
@@ -131,6 +135,11 @@
             empty_starts, empty_stops = MSA._field_ranges(empty_map)
             @test empty_starts == Int[firstindex(empty_map)]
             @test empty_stops == Int[0]
+
+            short_mask = Bool[true, false]
+            long_mask = Bool[true, false, true, false, true]
+            @test_throws DimensionMismatch MSA._filter_mapping(str_map, short_mask)
+            @test_throws DimensionMismatch MSA._filter_mapping(str_map, long_mask)
 
             unicode_map = "αβ,γδ,,ζ"
             unicode_starts, unicode_stops = MSA._field_ranges(unicode_map)
