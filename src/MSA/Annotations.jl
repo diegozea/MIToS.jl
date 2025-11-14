@@ -86,7 +86,7 @@ function _filter(str::AbstractString, mask::AbstractArray{Bool})
     String(take!(buffer))
 end
 
-function _filter(str::AbstractString, indexes::AbstractVector{<:Integer})
+function _filter(str::AbstractString, indexes::AbstractArray{Int})
     isempty(indexes) && return ""
     if isascii(str)
         str[indexes] # fast path: ASCII => indices are valid string indices
@@ -94,7 +94,7 @@ function _filter(str::AbstractString, indexes::AbstractVector{<:Integer})
         chars = collect(str) # one Vector{Char}
         io = IOBuffer(; sizehint = length(indexes))
         @inbounds for i in indexes
-            write(io, chars[Int(i)])
+            write(io, chars[i])
         end
         String(take!(io))
     end
