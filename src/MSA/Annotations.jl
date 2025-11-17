@@ -207,7 +207,7 @@ function filtersequences!(
     data
 end
 
-function _get_selected_indexes(input_mask)
+function _get_indexes(input_mask)
     if eltype(input_mask) <: Bool
         return findall(input_mask)
     end
@@ -219,16 +219,16 @@ end
 
 It is useful for deleting column annotations (creating a subset in place).
 """
-function filtercolumns!(data::Annotations, input_mask)
-    mask = _get_selected_indexes(input_mask)
+function filtercolumns!(data::Annotations, mask)
+    int_mask = _get_indexes(mask)
     if length(data.residues) > 0
         for (key, value) in data.residues
-            data.residues[key] = _filter(value, mask)
+            data.residues[key] = _filter(value, int_mask)
         end
     end
     if length(data.columns) > 0
         for (key, value) in data.columns
-            data.columns[key] = _filter(value, mask)
+            data.columns[key] = _filter(value, int_mask)
         end
     end
     if length(data.sequences) > 0
