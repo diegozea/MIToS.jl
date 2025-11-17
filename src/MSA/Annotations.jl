@@ -77,10 +77,11 @@ end
 function _filter(str::AbstractString, mask::AbstractArray{Bool})
     @assert length(str) == length(mask) "The string and the mask must have the same length"
     buffer = IOBuffer(; sizehint = ncodeunits(str))
-    # To start at the beginning of the buffer:
-    for (char, mask_value) in zip(str, mask)
-        if mask_value
-            write(buffer, char)
+    i  = 0
+    @inbounds for c in str
+        i += 1
+        if mask[i]
+            write(buffer, c)
         end
     end
     String(take!(buffer))
