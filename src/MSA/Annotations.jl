@@ -207,6 +207,146 @@ function filtersequences!(
     data
 end
 
+# -------------------------------------------------------------------
+# New helper: Bool mask → contiguous blocks (UnitRange{Int})
+# -------------------------------------------------------------------
+
+"""
+    _mask_to_blocks(mask::AbstractVector{Bool}) -> Vector{UnitRange{Int}}
+
+Convert a Bool mask into contiguous blocks of `true` positions.
+
+Example:
+    [false, true, true, false, true, true, true] -> [2:3, 5:7]
+"""
+function _mask_to_blocks(mask::AbstractVector{Bool})
+    ranges = UnitRange{Int}[]
+    n = length(mask)
+    i = 1
+    @inbounds while i <= n
+        # skip falses
+        while i <= n && !mask[i]
+            i += 1
+        end
+        i > n && break
+        # start of run
+        start = i
+        i += 1
+        while i <= n && mask[i]
+            i += 1
+        end
+        stop = i - 1
+        push!(ranges, start:stop)
+    end
+    return ranges
+end
+
+
+# -------------------------------------------------------------------
+# New overload: _filter_mapping for blocks of field indices
+# -------------------------------------------------------------------
+
+"""
+    _filter_mapping(str_map::AbstractString,
+                    ranges::AbstractVector{<:AbstractUnitRange{<:Integer}})
+
+Filter comma-separated fields of `str_map` using contiguous blocks of
+field indices. Each block `a:b` keeps fields `a..b` inclusive, preserving
+internal commas.
+
+This is the fast path for precomputed blocks (e.g. from `_mask_to_blocks`)
+when `str_map` is an ASCII mapping string produced by MIToS.
+"""
+function _filter_mapping(str_map::AbstractString,
+                         ranges::AbstractVector{<:AbstractUnitRange{<:Integer}})
+    isempty(ranges) && return ""
+
+    starts, stops = _field_ranges(str_map)
+    nentries = length(starts)
+
+    io = IOBuffer(; sizehint = ncodeunits(str_map))
+    first_block = true
+
+    @inbounds for r in ranges
+        lo = first(r)
+        hi = last(r)
+        (1 <= lo <= hi <= nentries) || throw(BoundsError(ranges, hi))
+
+        # union of fields lo:hi = from start of first to end of last
+        s = starts[lo]
+        e = stops[hi]
+
+        first_block || write(io, ',')
+        first_block = false
+
+        s <= e && write(io, SubString(str_map, s, e))
+    end
+
+    return String(take!(io))
+end
+
+function _filter(str::AbstractString,
+                 blocks::AbstractVector{<:AbstractUnitRange{<:Integer}})
+    isempty(blocks) && return ""
+
+    if isascii(str) && isa(str, String)
+        # Fast ASCII path: block indices are valid string indices
+        io = IOBuffer(; sizehint = ncodeunits(str))
+        @inbounds for r in blocks
+            s = first(r); e = last(r)
+            write(io, SubString(str, s, e))
+        end
+        return String(take!(io))
+    else
+        # Generic Unicode-safe fallback
+        chars = collect(str)
+        est_len = sum(length(r) for r in blocks)
+        io = IOBuffer(; sizehint = est_len)
+        @inbounds for r in blocks
+            for i in r
+                write(io, chars[i])
+            end
+        end
+        return String(take!(io))
+    end
+end
+
+"""
+    _indexes_to_blocks(indexes::AbstractVector{<:Integer}) -> Vector{UnitRange{Int}}
+
+Convert a vector of integer indices into contiguous blocks of positions.
+
+Assumes `indexes` are 1-based column/field indices. For best performance,
+they should be sorted and unique.
+
+Example:
+    [1, 2, 3, 5, 6, 10] -> [1:3, 5:6, 10:10]
+"""
+function _indexes_to_blocks(indexes::AbstractVector{<:Integer})
+    isempty(indexes) && return UnitRange{Int}[]
+    ranges = UnitRange{Int}[]
+    start = prev = Int(indexes[1])
+    @inbounds for k in 2:length(indexes)
+        i = Int(indexes[k])
+        if i == prev + 1
+            prev = i
+        else
+            push!(ranges, start:prev)
+            start = prev = i
+        end
+    end
+    push!(ranges, start:prev)
+    return ranges
+end
+
+"""
+    _to_blocks(mask_or_indexes) -> Vector{UnitRange{Int}}
+
+Dispatch helper: from Bool or Int vector to blocks.
+"""
+_to_blocks(mask::AbstractVector{Bool}) = _mask_to_blocks(mask)
+_to_blocks(indexes::AbstractVector{<:Integer}) = _indexes_to_blocks(indexes)
+
 function _get_indexes(input_mask)
     if eltype(input_mask) <: Bool
         return findall(input_mask)
@@ -219,16 +359,17 @@ end
 
 It is useful for deleting column annotations (creating a subset in place).
 """
-function filtercolumns!(data::Annotations, mask)
-    int_mask = _get_indexes(mask)
+function filtercolumns!(data::Annotations, input_mask)
+    # int_mask = _get_indexes(mask)
+    mask = _to_blocks(input_mask)
     if length(data.residues) > 0
         for (key, value) in data.residues
-            data.residues[key] = _filter(value, int_mask)
+            data.residues[key] = _filter(value, mask)
         end
     end
     if length(data.columns) > 0
         for (key, value) in data.columns
-            data.columns[key] = _filter(value, int_mask)
+            data.columns[key] = _filter(value, mask)
         end
     end
     if length(data.sequences) > 0
