@@ -369,7 +369,7 @@ end
 # ==========================
 
 # Function to get the columns to keep, i.e., those containing at least one non-gap residue
-function _columns_to_keep(msa::Matrix{Residue})
+function _columns_to_keep(msa::AbstractMatrix{Residue})
     Bool[any(!=(GAP), view(msa, :, i)) for i in axes(msa, 2)]
 end
 
