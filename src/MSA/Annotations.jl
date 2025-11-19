@@ -284,7 +284,7 @@ function _filter_mapping(str_map::AbstractString,
 
     return String(take!(io))
 end
-
+#=
 function _filter(str::AbstractString,
                  blocks::AbstractVector{<:AbstractUnitRange{<:Integer}})
     isempty(blocks) && return ""
@@ -310,6 +310,89 @@ function _filter(str::AbstractString,
         return String(take!(io))
     end
 end
+=#
+
+
+# Hot path: concrete types, good for the compiler
+@inline function _filter(str::String,
+                         blocks::AbstractVector{UnitRange{Int}})
+    isempty(blocks) && return ""
+
+    if isascii(str)
+        # -------- Fast ASCII path: char index == byte index --------
+        # Better sizehint: only what we actually keep
+        total = 0
+        @inbounds for r in blocks
+            total += length(r)
+        end
+
+        io = IOBuffer(; sizehint = total)
+
+        @inbounds for r in blocks
+            s = first(r); e = last(r)
+            write(io, SubString(str, s, e))
+        end
+
+        return String(take!(io))
+    else
+        # -------- Fast UTF-8 path: char ranges → byte ranges --------
+        # 1) Find the maximum character index we need
+        maxend = 0
+        @inbounds for r in blocks
+            e = last(r)
+            if e > maxend
+                maxend = e
+            end
+        end
+
+        # 2) Precompute byte index for each character 1:maxend,
+        #    plus a sentinel at maxend+1 (index of "next" char)
+        byteidx = Vector{Int}(undef, maxend + 1)
+        i = firstindex(str)
+        @inbounds for k in 1:maxend
+            byteidx[k] = i
+            i = nextind(str, i)
+        end
+        byteidx[maxend + 1] = i  # index after the last used char
+
+        # 3) Exact byte length we’ll copy (for sizehint)
+        total_bytes = 0
+        @inbounds for r in blocks
+            s = first(r); e = last(r)
+            total_bytes += byteidx[e + 1] - byteidx[s]
+        end
+
+        io = IOBuffer(; sizehint = total_bytes)
+
+        # 4) Append each block as a contiguous substring
+        @inbounds for r in blocks
+            s = first(r); e = last(r)
+            start = byteidx[s]
+            stop  = byteidx[e + 1] - 1  # inclusive byte index
+            write(io, SubString(str, start, stop))
+            # If you want to squeeze a bit more:
+            # unsafe_write(io, pointer(str, start), stop - start + 1)
+        end
+
+        return String(take!(io))
+    end
+end
+
+# Generic fallback: normalize once, then hit the fast method
+function _filter(str::AbstractString,
+                 blocks::AbstractVector{<:AbstractUnitRange{<:Integer}})
+    isempty(blocks) && return ""
+
+    # Normalize indices to Int and to contiguous UnitRange
+    norm_blocks = Vector{UnitRange{Int}}(undef, length(blocks))
+    @inbounds for i in eachindex(blocks)
+        r = blocks[i]
+        norm_blocks[i] = Int(first(r)) : Int(last(r))
+    end
+
+    return _filter(String(str), norm_blocks)
+end
+
 
 """
     _indexes_to_blocks(indexes::AbstractVector{<:Integer}) -> Vector{UnitRange{Int}}
@@ -362,6 +445,7 @@ It is useful for deleting column annotations (creating a subset in place).
 function filtercolumns!(data::Annotations, input_mask)
     # int_mask = _get_indexes(mask)
     mask = _to_blocks(input_mask)
+    # mask = findall(input_mask)
     if length(data.residues) > 0
         for (key, value) in data.residues
             data.residues[key] = _filter(value, mask)
