@@ -1,5 +1,11 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.4.5 to v3.4.6
+
+- The performance (both in terms of time and memory) of `read_file` has been greatly 
+  improved for large MSA files. This has been achieved by optimizing mapping generation 
+  and the `deletefullgapcolumns!`, `deletefullgapcolumns` and `filtercolumns!` functions.
+
 ### Changes from v3.4.3 to v3.4.5
 
 - The `getseq2pdb` internal cache has been improved to reduce memory consumption (it does 
