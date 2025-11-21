@@ -7,5 +7,9 @@ let
     missing_residue, sscode, ssname = SIFTS._get_details(residue)
     SUITE["SIFTS"]["SIFTSResidue"]["18gs"] =
         @benchmarkable SIFTS.SIFTSResidue($residue, $missing_residue, $sscode, $ssname)
+    SUITE["SIFTS"]["ResidueDetails"]["_get_details"] =
+        @benchmarkable SIFTS._get_details($residue)
+    SUITE["SIFTS"]["ResidueDetails"]["_is_missing"] =
+        @benchmarkable SIFTS._is_missing($residue)
     SIFTS.LightXML.free(xdoc)
 end
