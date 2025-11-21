@@ -159,7 +159,7 @@ _file_extension(format::Type{PDBFile}) = ".pdb.gz"
 It downloads a gzipped PDB file from PDB database.
 It requires a four character `pdbcode`.
 Its default `format` is `MMCIFFile` (mmCIF) and It uses the `baseurl`
-"http://www.rcsb.org/pdb/files/".
+"https://files.rcsb.org/download/".
 `filename` is the path/name of the output file.
 This function calls `MIToS.Utils.download_file` that calls `Downloads.download`. So, you
 can use keyword arguments, such as `headers`, from that function.
@@ -168,7 +168,7 @@ function downloadpdb(
     pdbcode::AbstractString;
     format::Type{T} = MMCIFFile,
     filename::AbstractString = uppercase(pdbcode) * _file_extension(format),
-    baseurl::AbstractString = "http://www.rcsb.org/pdb/files/",
+    baseurl::AbstractString = "https://files.rcsb.org/download/",
     kargs...,
 ) where {T<:FileFormat}
     if check_pdbcode(pdbcode)

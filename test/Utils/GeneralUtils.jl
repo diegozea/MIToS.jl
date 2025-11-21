@@ -134,11 +134,11 @@ end
     end
 
     @testset "Download a gz file" begin
-        # Use https://www.rcsb.org/pdb/files/3NIR.pdb.gz to test downloading a gz file
+        # Use https://files.rcsb.org/download/3NIR.pdb.gz to test downloading a gz file
         # without a filename
         filename = ""
         try
-            filename = download_file("https://www.rcsb.org/pdb/files/3NIR.pdb.gz")
+            filename = download_file("https://files.rcsb.org/download/3NIR.pdb.gz")
             @test endswith(filename, ".gz")
             @test MIToS.Utils._check_gzip_file(filename) == filename
         finally
