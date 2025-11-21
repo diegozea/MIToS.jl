@@ -22,4 +22,28 @@ let
     )
     SUITE["MSA"]["read"]["FASTA.gz"] =
         @benchmarkable read_file($fasta_gz, FASTA, MultipleSequenceAlignment)
+    SUITE["MSA"]["read"]["FASTA.gz_annotated"] =
+        @benchmarkable read_file($fasta_gz, FASTA, AnnotatedMultipleSequenceAlignment)
+
+    mktempdir() do dir
+        cd(dir) do
+            open("gappy.fasta", "w") do io
+                seq = repeat("A-HAGLLSAPGSCW------", 300)
+                # it generates full-gap columns, both blocks and isolated gaps
+                for i = 1:200
+                    println(io, ">seq", i)
+                    println(io, seq)
+                end
+            end
+
+            SUITE["MSA"]["read"]["FASTA_deletefullgaps"] =
+                @benchmarkable read_file("gappy.fasta", FASTA, MultipleSequenceAlignment)
+            SUITE["MSA"]["read"]["FASTA_deletefullgaps_mapping"] = @benchmarkable read_file(
+                "gappy.fasta",
+                FASTA,
+                AnnotatedMultipleSequenceAlignment,
+                generatemapping = true,
+            )
+        end
+    end
 end
