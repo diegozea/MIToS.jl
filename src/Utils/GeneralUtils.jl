@@ -50,6 +50,14 @@ function get_n_words(line::String, n::Int)
     words = Array{String}(undef, n)
     N = 1
     last_spaces = 0:0
+    start = firstindex(line)
+    while start <= lastindex(line) && (line[start] == ' ' || line[start] == '\t')
+        start = nextind(line, start)
+    end
+    if start != firstindex(line) && start <= lastindex(line)
+        prev_space = prevind(line, start)
+        last_spaces = prev_space:prev_space
+    end
     while true
         if N == n
             @inbounds words[N] = line[(last(last_spaces)+1):end]
