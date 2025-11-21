@@ -5,6 +5,10 @@ let
     SUITE["PDB"]["distance"]["1CBN_20_30"] = @benchmarkable distance($struc[20], $struc[30])
     SUITE["PDB"]["squared_distance"]["1CBN_20_30_heavy"] =
         @benchmarkable squared_distance($struc[20], $struc[30]; criteria = "Heavy")
+    SUITE["PDB"]["squared_distance"]["1CBN_20_30_CB"] =
+        @benchmarkable squared_distance($struc[20], $struc[30]; criteria = "CB")
     SUITE["PDB"]["contact"]["1CBN_20_30_heavy"] =
         @benchmarkable contact($struc[20], $struc[30], 6.05; criteria = "Heavy")
+    SUITE["PDB"]["contact"]["1CBN_20_30_CB"] =
+        @benchmarkable contact($struc[20], $struc[30], 6.05; criteria = "CB")
 end
