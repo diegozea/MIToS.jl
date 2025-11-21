@@ -370,7 +370,17 @@ end
 
 # Function to get the columns to keep, i.e., those containing at least one non-gap residue
 function _columns_to_keep(msa::AbstractMatrix{Residue})
-    Bool[any(!=(GAP), view(msa, :, i)) for i in axes(msa, 2)]
+    nseq, ncol = size(msa)
+    keep = falses(ncol)
+    @inbounds for j in 1:ncol
+        for i in 1:nseq
+            if msa[i, j] != GAP
+                keep[j] = true
+                break
+            end
+        end
+    end
+    keep
 end
 
 _columns_to_keep(msa::NamedArray) = _columns_to_keep(getarray(msa))

@@ -271,9 +271,13 @@ end
 function _convert_to_matrix_residues(sequences::Array{String,1}, size::Tuple{Int,Int})
     nseq, nres = size
     aln = Array{Residue}(undef, nseq, nres)
-    @inbounds for (i, str) in enumerate(sequences)
-        for (j, char) in enumerate(str)
-            aln[CartesianIndex(i, j)] = Residue(char)
+    @inbounds for i in 1:nseq
+        seq = sequences[i]
+        n = ncodeunits(seq)
+        ptr = pointer(seq)
+        @simd for j in 1:n
+            byte = unsafe_load(ptr, j)
+            aln[i, j] = byte < _max_char ? _to_residue[Int(byte)] : XAA
         end
     end
     aln
