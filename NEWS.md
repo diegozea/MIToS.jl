@@ -1,5 +1,10 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.4.6 to v3.5.0
+
+- Fixed PDB downloads by switching the `downloadpdb` default `baseurl` to the new RCSB host `https://files.rcsb.org/download/` and updating tests that used the legacy `/pdb/files/` URLs, avoiding the redirect timeouts on the retired endpoint.
+- Optimized heavy/CA/CB residue distance and contact calculations.
+
 ### Changes from v3.4.5 to v3.4.6
 
 - The performance (both in terms of time and memory) of `read_file` has been greatly 
