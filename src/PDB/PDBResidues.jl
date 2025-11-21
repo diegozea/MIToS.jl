@@ -723,8 +723,8 @@ function squared_distance(A::PDBResidue, B::PDBResidue; criteria::String = "All"
     elseif criteria == "Heavy"
         indices_a = findheavy(a)
         indices_b = findheavy(b)
-        if length(indices_a) != 0 && length(indices_b) != 0
-            for i in indices_a
+        if !isempty(indices_a) && !isempty(indices_b)
+            @inbounds for i in indices_a
                 for j in indices_b
                     dist = _update_squared_distance(a, b, i, j, dist)
                 end
@@ -733,18 +733,20 @@ function squared_distance(A::PDBResidue, B::PDBResidue; criteria::String = "All"
     elseif criteria == "CA"
         indices_a = findatoms(a, "CA")
         indices_b = findatoms(b, "CA")
-        if length(indices_a) != 0 && length(indices_b) != 0
-            for i in indices_a
+        if !isempty(indices_a) && !isempty(indices_b)
+            @inbounds for i in indices_a
                 for j in indices_b
                     dist = _update_squared_distance(a, b, i, j, dist)
                 end
             end
         end
     elseif criteria == "CB"
-        indices_a = findCB(A) # findCB needs residues instead of atoms
-        indices_b = findCB(B)
-        if length(indices_a) != 0 && length(indices_b) != 0
-            for i in indices_a
+        target_a = ifelse(A.id.name == "GLY", "CA", "CB")
+        target_b = ifelse(B.id.name == "GLY", "CA", "CB")
+        indices_a = findatoms(a, target_a)
+        indices_b = findatoms(b, target_b)
+        if !isempty(indices_a) && !isempty(indices_b)
+            @inbounds for i in indices_a
                 for j in indices_b
                     dist = _update_squared_distance(a, b, i, j, dist)
                 end
@@ -805,7 +807,7 @@ function contact(
     elseif criteria == "Heavy"
         indices_a = findheavy(a)
         indices_b = findheavy(b)
-        if length(indices_a) != 0 && length(indices_b) != 0
+        if !isempty(indices_a) && !isempty(indices_b)
             @inbounds for i in indices_a
                 ai = a[i]
                 for j in indices_b
@@ -818,7 +820,7 @@ function contact(
     elseif criteria == "CA"
         indices_a = findatoms(a, "CA")
         indices_b = findatoms(b, "CA")
-        if length(indices_a) != 0 && length(indices_b) != 0
+        if !isempty(indices_a) && !isempty(indices_b)
             @inbounds for i in indices_a
                 ai = a[i]
                 for j in indices_b
@@ -829,9 +831,11 @@ function contact(
             end
         end
     elseif criteria == "CB"
-        indices_a = findCB(A) # findCB needs residues instead of atoms
-        indices_b = findCB(B)
-        if length(indices_a) != 0 && length(indices_b) != 0
+        target_a = ifelse(A.id.name == "GLY", "CA", "CB")
+        target_b = ifelse(B.id.name == "GLY", "CA", "CB")
+        indices_a = findatoms(a, target_a)
+        indices_b = findatoms(b, target_b)
+        if !isempty(indices_a) && !isempty(indices_b)
             @inbounds for i in indices_a
                 ai = a[i]
                 for j in indices_b
