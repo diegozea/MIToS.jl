@@ -32,7 +32,7 @@ function _pre_readpir(io::Union{IO,AbstractString})
     finished = false
     line_number = 0
     seq_number = 0
-    for line::String in lineiterator(io)
+    for line in lineiterator(io)
         line_number += 1
         if startswith(line, '>')
             line_number = 1

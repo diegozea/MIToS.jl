@@ -7,18 +7,25 @@ struct Stockholm <: MSAFormat end
 # reassemble the fragments and to key per‑sequence annotations. An example of
 # file with multiple blocks is at test/data/clustalo-I20240512-trunc.aln-stockholm
 
-@inline function _fill_with_sequence_line!(IDS, SEQS, line)
+@inline function _fill_with_sequence_line!(ids, seqs, id_to_index, line)
     if !startswith(line, '#') && !startswith(line, "//")
         words = get_n_words(line, 2)
         @inbounds id = words[1]
-        if id in IDS
-            # It's useful when sequences are split into several lines
-            # It can be a problem with duplicated IDs
-            i = something(findfirst(isequal(id), IDS), 0)
-            SEQS[i] = SEQS[i] * words[2]
+        idx = get(id_to_index, id, 0)
+        if idx == 0
+            push!(ids, id)
+            push!(seqs, words[2])
+            id_to_index[id] = length(seqs)
+            return
+        end
+        seq = seqs[idx]
+        if seq isa String
+            buffer = IOBuffer(; read = true, write = true)
+            write(buffer, seq)
+            write(buffer, words[2])
+            seqs[idx] = buffer
         else
-            push!(IDS, id)
-            push!(SEQS, words[2])
+            write(seq, words[2])
         end
     end
 end
@@ -31,11 +38,11 @@ end
     end
 end
 
-function _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
+function _fill_with_line!(IDS, SEQS, id_to_index, GF, GS, GC, GR, line)
     if startswith(line, "#=GF")
         words = get_n_words(line, 3)
         id = words[2]
-        if id in keys(GF)
+        if haskey(GF, id)
             GF[id] = GF[id] * "\n" * words[3]
         else
             GF[id] = words[3]
@@ -43,7 +50,7 @@ function _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
     elseif startswith(line, "#=GS")
         words = get_n_words(line, 4)
         idtuple = (words[2], words[3])
-        if idtuple in keys(GS)
+        if haskey(GS, idtuple)
             GS[idtuple] = GS[idtuple] * "\n" * words[4]
         else
             GS[idtuple] = words[4]
@@ -57,40 +64,42 @@ function _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
         fragment = words[4]
         _append_annotation_fragment!(GR, key, fragment)
     else
-        _fill_with_sequence_line!(IDS, SEQS, line)
+        _fill_with_sequence_line!(IDS, SEQS, id_to_index, line)
     end
 end
 
 function _pre_readstockholm(io::Union{IO,AbstractString})
-    IDS = OrderedSet{String}()
-    SEQS = String[]
+    IDS = String[]
+    seqs = Union{String,IOBuffer}[]
+    id_to_index = Dict{String,Int}()
     GF = OrderedDict{String,String}()
     GC = Dict{String,String}()
     GS = Dict{Tuple{String,String},String}()
     GR = Dict{Tuple{String,String},String}()
 
-    @inbounds for line::String in lineiterator(io)
+    @inbounds for line in lineiterator(io)
         isempty(line) && continue
         startswith(line, "//") && break
-        _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
+        _fill_with_line!(IDS, seqs, id_to_index, GF, GS, GC, GR, line)
     end
 
     GF = sizehint!(GF, length(GF))
     GC = sizehint!(GC, length(GC))
     GS = sizehint!(GS, length(GS))
     GR = sizehint!(GR, length(GR))
-    (IDS, SEQS, GF, GS, GC, GR)
+    (IDS, [seq isa String ? seq : String(take!(seq)) for seq in seqs], GF, GS, GC, GR)
 end
 
 function _pre_readstockholm_sequences(io::Union{IO,AbstractString})
-    IDS = OrderedSet{String}()
-    SEQS = String[]
-    @inbounds for line::String in lineiterator(io)
+    IDS = String[]
+    seqs = Union{String,IOBuffer}[]
+    id_to_index = Dict{String,Int}()
+    @inbounds for line in lineiterator(io)
         isempty(line) && continue
         startswith(line, "//") && break
-        _fill_with_sequence_line!(IDS, SEQS, line)
+        _fill_with_sequence_line!(IDS, seqs, id_to_index, line)
     end
-    (IDS, SEQS)
+    (IDS, [seq isa String ? seq : String(take!(seq)) for seq in seqs])
 end
 
 function _load_sequences(
@@ -105,7 +114,7 @@ function _load_sequences(
         IDS, SEQS = _pre_readstockholm_sequences(io)
         annot = Annotations()
     end
-    return collect(IDS), SEQS, annot
+    return IDS, SEQS, annot
 end
 
 # Print Pfam

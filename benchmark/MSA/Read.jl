@@ -22,4 +22,7 @@ let
     )
     SUITE["MSA"]["read"]["FASTA.gz"] =
         @benchmarkable read_file($fasta_gz, FASTA, MultipleSequenceAlignment)
+    pir = joinpath(data_dir, "emboss.pir")
+    SUITE["MSA"]["read"]["PIR"] =
+        @benchmarkable read_file($pir, PIR, MultipleSequenceAlignment)
 end
