@@ -1,5 +1,11 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.5.0 to v3.6.0
+
+- Fixed a minor bug that caused `get_n_words` to return a first empty string when 
+  the string started with a separator character. Now, `get_n_words` correctly returns 
+  only the actual words ignoring leading separators.
+
 ### Changes from v3.4.6 to v3.5.0
 
 - Fixed PDB downloads by switching the `downloadpdb` default `baseurl` to the new RCSB 
