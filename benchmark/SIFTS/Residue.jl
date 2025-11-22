@@ -19,11 +19,13 @@ let
         $sscode,
         $ssname,
     )
-    SUITE["SIFTS"]["ResidueDetails"]["_get_details"] = @benchmarkable SIFTS._get_details(
-        residue,
-    ) setup=((residue, xdoc) = build_residue()) teardown=(SIFTS.LightXML.free(xdoc))
-    SUITE["SIFTS"]["ResidueDetails"]["_is_missing"] = @benchmarkable SIFTS._is_missing(
-        residue,
-    ) setup=((residue, xdoc) = build_residue()) teardown=(SIFTS.LightXML.free(xdoc))
+    SUITE["SIFTS"]["ResidueDetails"]["_get_details"] =
+        @benchmarkable SIFTS._get_details(residue) setup=((residue, xdoc) = build_residue()) teardown=(SIFTS.LightXML.free(
+            xdoc,
+        ))
+    SUITE["SIFTS"]["ResidueDetails"]["_is_missing"] =
+        @benchmarkable SIFTS._is_missing(residue) setup=((residue, xdoc) = build_residue()) teardown=(SIFTS.LightXML.free(
+            xdoc,
+        ))
     SIFTS.LightXML.free(xdoc_for_constructor)
 end
