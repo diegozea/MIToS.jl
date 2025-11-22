@@ -25,25 +25,33 @@ let
     SUITE["MSA"]["read"]["FASTA.gz_annotated"] =
         @benchmarkable read_file($fasta_gz, FASTA, AnnotatedMultipleSequenceAlignment)
 
-    mktempdir() do dir
-        cd(dir) do
-            open("gappy.fasta", "w") do io
-                seq = repeat("A-HAGLLSAPGSCW------", 300)
-                # it generates full-gap columns, both blocks and isolated gaps
-                for i = 1:200
-                    println(io, ">seq", i)
-                    println(io, seq)
-                end
+    global function create_gappy_fasta()
+        dir = mktempdir()
+        gappy_fasta = joinpath(dir, "gappy.fasta")
+        open(gappy_fasta, "w") do io
+            seq = repeat("A-HAGLLSAPGSCW------", 300)
+            # it generates full-gap columns, both blocks and isolated gaps
+            for i = 1:200
+                println(io, ">seq", i)
+                println(io, seq)
             end
-
-            SUITE["MSA"]["read"]["FASTA_deletefullgaps"] =
-                @benchmarkable read_file("gappy.fasta", FASTA, MultipleSequenceAlignment)
-            SUITE["MSA"]["read"]["FASTA_deletefullgaps_mapping"] = @benchmarkable read_file(
-                "gappy.fasta",
-                FASTA,
-                AnnotatedMultipleSequenceAlignment,
-                generatemapping = true,
-            )
         end
+        return gappy_fasta
     end
+
+    SUITE["MSA"]["read"]["FASTA_deletefullgaps"] = @benchmarkable read_file(
+        gappy_fasta,
+        FASTA,
+        MultipleSequenceAlignment,
+    ) setup=(gappy_fasta = create_gappy_fasta()) teardown=(
+        rm(dirname(gappy_fasta); recursive = true, force = true)
+    )
+    SUITE["MSA"]["read"]["FASTA_deletefullgaps_mapping"] = @benchmarkable read_file(
+        gappy_fasta,
+        FASTA,
+        AnnotatedMultipleSequenceAlignment,
+        generatemapping = true,
+    ) setup=(gappy_fasta = create_gappy_fasta()) teardown=(
+        rm(dirname(gappy_fasta); recursive = true, force = true)
+    )
 end
