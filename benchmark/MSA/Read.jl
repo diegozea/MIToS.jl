@@ -39,19 +39,18 @@ let
         return gappy_fasta
     end
 
-    SUITE["MSA"]["read"]["FASTA_deletefullgaps"] = @benchmarkable read_file(
-        gappy_fasta,
-        FASTA,
-        MultipleSequenceAlignment,
-    ) setup=(gappy_fasta = create_gappy_fasta()) teardown=(
-        rm(dirname(gappy_fasta); recursive = true, force = true)
-    )
+    SUITE["MSA"]["read"]["FASTA_deletefullgaps"] =
+        @benchmarkable read_file(gappy_fasta, FASTA, MultipleSequenceAlignment) setup=(
+            gappy_fasta = create_gappy_fasta()
+        ) teardown=(rm(dirname(gappy_fasta); recursive = true, force = true))
     SUITE["MSA"]["read"]["FASTA_deletefullgaps_mapping"] = @benchmarkable read_file(
         gappy_fasta,
         FASTA,
         AnnotatedMultipleSequenceAlignment,
         generatemapping = true,
-    ) setup=(gappy_fasta = create_gappy_fasta()) teardown=(
-        rm(dirname(gappy_fasta); recursive = true, force = true)
-    )
+    ) setup=(gappy_fasta = create_gappy_fasta()) teardown=(rm(
+        dirname(gappy_fasta);
+        recursive = true,
+        force = true,
+    ))
 end
