@@ -3,5 +3,5 @@ let pfam_alignment = read_file(
         Stockholm,
     )
     SUITE["Pfam"]["accession mapping"]["acc2seqnames"] =
-        @benchmarkable Pfam._get_acc2seqnames($pfam_alignment)
+        @benchmarkable MIToS.Pfam._get_acc2seqnames($pfam_alignment)
 end
