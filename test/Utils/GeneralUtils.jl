@@ -6,6 +6,13 @@
     @test get_n_words(line, 3) == String["#=GF", "AC", "PF00571"]
     @test get_n_words(line, 4) == String["#=GF", "AC", "PF00571"]
 
+    @test get_n_words("    padded  entry   with spaces", 4) ==
+          String["padded", "entry", "with", "spaces"]
+    @test get_n_words("    padded  entry   with spaces", 3) ==
+          String["padded", "entry", "with spaces"]
+    @test get_n_words("\t  A B\tC D", 3) == String["A", "B", "C D"]
+    @test get_n_words("\t  A B\tC D", 4) == String["A", "B", "C", "D"]
+
     @test get_n_words("\n", 1) == String["\n"]
     @test get_n_words("#", 1) == String["#"]
 
