@@ -1,6 +1,5 @@
 using BenchmarkTools
 using Random
-import MIToS
 using MIToS.Utils
 using MIToS.MSA
 using MIToS.Information
