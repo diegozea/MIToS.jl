@@ -11,5 +11,5 @@ let
         @benchmarkable SIFTS._get_details($residue)
     SUITE["SIFTS"]["ResidueDetails"]["_is_missing"] =
         @benchmarkable SIFTS._is_missing($residue)
-    SIFTS.LightXML.free(xdoc)
+    atexit(() -> SIFTS.LightXML.free(xdoc))
 end
