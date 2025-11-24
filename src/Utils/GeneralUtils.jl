@@ -6,26 +6,6 @@ struct All end
 _get_function_name(str::AbstractString)::String = split(str, '.')[end]
 
 """
-This function performs the same operation as
-`something(findnext(r"[ \t]+", line, last(last_spaces)+1), 0:-1)` but it is faster.
-"""
-function _find_next_space_or_tab(line, start_pos::Int)
-    for i = start_pos:lastindex(line)
-        char = line[i]
-        if char == ' ' || char == '\t'
-            start_index = i
-            end_index = start_index
-            while end_index <= lastindex(line) &&
-                (line[end_index] == ' ' || line[end_index] == '\t')
-                end_index = nextind(line, end_index)
-            end
-            return start_index:(prevind(line, end_index))
-        end
-    end
-    return 0:-1
-end
-
-"""
 `get_n_words{T <: Union{ASCIIString, UTF8String}}(line::T, n::Int)`
 It returns a `Vector{T}` with the first `n` (possibles) words/fields (delimited
 by space or tab). If there is more than `n` words, the last word
