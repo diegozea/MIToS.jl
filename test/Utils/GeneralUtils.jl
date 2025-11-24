@@ -18,6 +18,8 @@
 
     @test get_n_words("\n", 1) == String["\n"]
     @test get_n_words("#", 1) == String["#"]
+    @test get_n_words("", 1) == String[]
+    @test get_n_words("", 3) == String[]
 
     # ASCII
     str = "#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH"
