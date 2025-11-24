@@ -72,7 +72,7 @@ function get_n_words(line::String, n::Int)
         last_spaces = spaces
         N += 1
     end
-    if N != n
+    if n < N
         resize!(words, N)
     end
     words
