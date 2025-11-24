@@ -47,35 +47,61 @@ function get_n_words(line::String, n::Int)
     if isempty(line)
         return String[]
     end
+    idx = firstindex(line)
+    last_idx = lastindex(line)
+
+    # Skip leading delimiters so we do not emit empty fields for padded lines.
+    while idx <= last_idx
+        c = @inbounds line[idx]
+        if c == ' ' || c == '\t'
+            idx = nextind(line, idx)
+        else
+            break
+        end
+    end
+
+    if idx > last_idx
+        return String[]
+    end
+
     words = Array{String}(undef, n)
-    N = 1
-    last_spaces = 0:0
-    start = firstindex(line)
-    while start <= lastindex(line) && (line[start] == ' ' || line[start] == '\t')
-        start = nextind(line, start)
-    end
-    if start != firstindex(line) && start <= lastindex(line)
-        prev_space = prevind(line, start)
-        last_spaces = prev_space:prev_space
-    end
-    while true
-        if N == n
-            @inbounds words[N] = line[(last(last_spaces)+1):end]
-            break
+    start_idx = idx
+    prev_idx = idx  # remember the last character boundary to avoid repeated prevind calls
+    word_count = 0
+    max_split = n - 1
+
+    # Collect at most the first n - 1 words; the nth entry keeps the remainder.
+    while word_count < max_split && idx <= last_idx
+        c = @inbounds line[idx]
+        if c == ' ' || c == '\t'
+            word_count += 1
+            @inbounds words[word_count] = line[start_idx:prev_idx]
+
+            # Skip the complete delimiter run.
+            idx = nextind(line, idx)
+            while idx <= last_idx
+                c = @inbounds line[idx]
+                if c == ' ' || c == '\t'
+                    idx = nextind(line, idx)
+                else
+                    break
+                end
+            end
+            start_idx = idx
+            prev_idx = idx
+            continue
         end
-        spaces = _find_next_space_or_tab(line, last(last_spaces) + 1)
-        if first(spaces) == 0
-            @inbounds words[N] = line[(last(last_spaces)+1):end]
-            break
-        end
-        @inbounds words[N] = line[(last(last_spaces)+1):(first(spaces)-1)]
-        last_spaces = spaces
-        N += 1
+        prev_idx = idx
+        idx = nextind(line, idx)
     end
-    if n < N
-        resize!(words, N)
+
+    if start_idx <= last_idx && word_count < n
+        word_count += 1
+        @inbounds words[word_count] = line[start_idx:last_idx]
     end
-    words
+
+    word_count < n && resize!(words, word_count)
+    return words
 end
 
 """
