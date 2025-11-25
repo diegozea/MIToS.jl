@@ -69,7 +69,7 @@ function _pre_readstockholm(io::Union{IO,AbstractString})
     GS = Dict{Tuple{String,String},String}()
     GR = Dict{Tuple{String,String},String}()
 
-    @inbounds for line::String in lineiterator(io)
+    @inbounds for line in lineiterator(io)
         isempty(line) && continue
         startswith(line, "//") && break
         _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
@@ -85,7 +85,7 @@ end
 function _pre_readstockholm_sequences(io::Union{IO,AbstractString})
     IDS = OrderedSet{String}()
     SEQS = String[]
-    @inbounds for line::String in lineiterator(io)
+    @inbounds for line in lineiterator(io)
         isempty(line) && continue
         startswith(line, "//") && break
         _fill_with_sequence_line!(IDS, SEQS, line)

@@ -433,7 +433,7 @@ function Utils.parse_file(
     ::Type{SIFTSXML};
     chain::Union{Type{All},String} = All,
     missings::Bool = true,
-)
+)::Vector{SIFTSResidue}
     vector = SIFTSResidue[]
     for entity in _get_entities(document)
         for segment in _get_segments(entity)
@@ -453,7 +453,11 @@ function Utils.parse_file(
     vector
 end
 
-function Utils.parse_file(fh::Union{IO,AbstractString}, ::Type{SIFTSXML}; kwargs...)
+function Utils.parse_file(
+    fh::Union{IO,AbstractString},
+    ::Type{SIFTSXML};
+    kwargs...,
+)::Vector{SIFTSResidue}
     error("The SIFTS XML file should have the .xml or the .xml.gz extension.")
 end
 

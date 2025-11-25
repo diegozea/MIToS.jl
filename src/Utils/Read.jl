@@ -58,8 +58,8 @@ end
 """
 Create an iterable object that will yield each line from a stream **or string**.
 """
-lineiterator(string::String) = eachline(IOBuffer(string))
-lineiterator(stream::IO) = eachline(stream)
+@inline lineiterator(string::String) = eachline(IOBuffer(string))
+@inline lineiterator(stream::IO) = eachline(stream)
 
 """
 Returns the `filename`.
