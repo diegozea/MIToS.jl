@@ -50,7 +50,7 @@ function Utils.parse_file(
     onlyheavy::Bool = false,
     label::Bool = true,
     occupancyfilter::Bool = false,
-)
+)::Vector{PDBResidue}
 
     residues = Vector{PDBResidue}()
 

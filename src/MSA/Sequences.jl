@@ -31,7 +31,7 @@ function Utils.parse_file(
     useidcoordinates::Bool = false,
     deletefullgaps::Bool = true,
     keepinserts::Bool = false,
-) where {T<:SequenceFormat}
+)::Vector{AnnotatedSequence} where {T<:SequenceFormat}
     pre_parser_format = _format_fallback(T)
     ids, seqs, annot = _load_sequences(io, pre_parser_format; create_annotations = true)
     _generate_sequences(ids, seqs, annot)

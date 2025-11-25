@@ -6,8 +6,8 @@ struct All end
 _get_function_name(str::AbstractString)::String = split(str, '.')[end]
 
 """
-`get_n_words{T <: Union{ASCIIString, UTF8String}}(line::T, n::Int)`
-It returns a `Vector{T}` with the first `n` (possibles) words/fields (delimited
+`get_n_words(line::AbstractString, n::Int)`
+It returns a `Vector{String}` with the first `n` (possibles) words/fields (delimited
 by space or tab). If there is more than `n` words, the last word
 returned contains the finals words and the delimiters. The length of the
 returned vector is `n` or less (if the number of words is less than `n`).
@@ -23,7 +23,7 @@ julia> get_n_words("#=GR O31698/18-71 SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHH
  "SS    CCCHHHHHHHHHHHHHHHEEEEEEEEEEEEEEEEHHH"
 ```
 """
-function get_n_words(line::String, n::Int)
+function get_n_words(line::AbstractString, n::Int)
     if isempty(line)
         return String[]
     end

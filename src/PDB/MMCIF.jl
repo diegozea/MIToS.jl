@@ -115,7 +115,7 @@ function Utils.parse_file(
     onlyheavy::Bool = false,
     label::Bool = true,
     occupancyfilter::Bool = false,
-)
+)::Vector{PDBResidue}
     mmcif_dict = BioStructures.MMCIFDict(io)
 
     residues = select_residues(

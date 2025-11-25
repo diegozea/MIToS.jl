@@ -98,7 +98,10 @@ using DataFrames
 summary_df = DataFrame(summary.table, summary.colnames)
 ```
 """
-function Utils.parse_file(io::IO, ::Type{SIFTSCSV})
+function Utils.parse_file(
+    io::IO,
+    ::Type{SIFTSCSV},
+)::NamedTuple{(:colnames, :table),Tuple{Vector{Symbol},Matrix{String}}}
     data, header = readdlm(io, ',', String, comments = true, header = true, quotes = false)
     # quotes=false is needed to parse the taxonomy file correctly
     colnames = Symbol.(vec(header))

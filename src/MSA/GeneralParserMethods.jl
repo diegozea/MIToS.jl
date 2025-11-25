@@ -477,7 +477,7 @@ function Utils.parse_file(
     useidcoordinates::Bool = false,
     deletefullgaps::Bool = true,
     keepinserts::Bool = false,
-) where {T<:MSAFormat}
+)::AnnotatedMultipleSequenceAlignment where {T<:MSAFormat}
     IDS, SEQS, annot = _load_sequences(io, format; create_annotations = true)
     _check_seq_len(IDS, SEQS)
     _generate_annotated_msa(
@@ -496,7 +496,7 @@ function Utils.parse_file(
     format::Type{T},
     output::Type{NamedResidueMatrix{Array{Residue,2}}};
     deletefullgaps::Bool = true,
-) where {T<:MSAFormat}
+)::NamedResidueMatrix{Array{Residue,2}} where {T<:MSAFormat}
     IDS, SEQS, _ = _load_sequences(io, format; create_annotations = false)
     _check_seq_len(IDS, SEQS)
     msa = _generate_named_array(SEQS, IDS)
@@ -511,7 +511,7 @@ function Utils.parse_file(
     format::Type{T},
     output::Type{MultipleSequenceAlignment};
     deletefullgaps::Bool = true,
-) where {T<:MSAFormat}
+)::MultipleSequenceAlignment where {T<:MSAFormat}
     msa = parse_file(
         io,
         format,
@@ -526,7 +526,7 @@ function Utils.parse_file(
     format::Type{T},
     output::Type{Matrix{Residue}};
     deletefullgaps::Bool = true,
-) where {T<:MSAFormat}
+)::Matrix{Residue} where {T<:MSAFormat}
     IDS, SEQS, _ = _load_sequences(io, format; create_annotations = false)
     _check_seq_len(IDS, SEQS)
     _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
@@ -539,7 +539,7 @@ function Utils.parse_file(
     useidcoordinates::Bool = false,
     deletefullgaps::Bool = true,
     keepinserts::Bool = false,
-) where {T<:MSAFormat}
+)::AnnotatedMultipleSequenceAlignment where {T<:MSAFormat}
     parse_file(
         io,
         format,

@@ -60,7 +60,7 @@ function Utils.parse_file(
     atomname::Union{String,Type{All}} = All,
     onlyheavy::Bool = false,
     occupancyfilter::Bool = false,
-)
+)::Vector{PDBResidue}
     residues = Vector{PDBResidue}()
     model_counter = 0
     actual_model = "1"
