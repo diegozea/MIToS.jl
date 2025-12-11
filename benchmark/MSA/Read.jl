@@ -35,15 +35,10 @@ let
 
     SUITE["MSA"]["read"]["Stockholm"] =
         @benchmarkable read_file($sth, Stockholm, MultipleSequenceAlignment)
-    SUITE["MSA"]["read"]["Stockholm.gz"] = @benchmarkable read_file(
-        stockholm_gz,
-        Stockholm,
-        MultipleSequenceAlignment,
-    ) setup=(stockholm_gz = create_stockholm_gz($sth)) teardown=(rm(
-        dirname(stockholm_gz);
-        recursive = true,
-        force = true,
-    ))
+    SUITE["MSA"]["read"]["Stockholm.gz"] =
+        @benchmarkable read_file(stockholm_gz, Stockholm, MultipleSequenceAlignment) setup=(
+            stockholm_gz = create_stockholm_gz($sth)
+        ) teardown=(rm(dirname(stockholm_gz); recursive = true, force = true))
     SUITE["MSA"]["read"]["Stockholm_annotated"] =
         @benchmarkable read_file($sth, Stockholm, AnnotatedMultipleSequenceAlignment)
     SUITE["MSA"]["read"]["Stockholm_mapping"] = @benchmarkable read_file(
@@ -61,15 +56,10 @@ let
     )
     SUITE["MSA"]["read"]["FASTA.gz"] =
         @benchmarkable read_file($fasta_gz, FASTA, MultipleSequenceAlignment)
-    SUITE["MSA"]["read"]["FASTA"] = @benchmarkable read_file(
-        fasta_path,
-        FASTA,
-        MultipleSequenceAlignment,
-    ) setup=(fasta_path = create_uncompressed_fasta($fasta_gz)) teardown=(rm(
-        dirname(fasta_path);
-        recursive = true,
-        force = true,
-    ))
+    SUITE["MSA"]["read"]["FASTA"] =
+        @benchmarkable read_file(fasta_path, FASTA, MultipleSequenceAlignment) setup=(
+            fasta_path = create_uncompressed_fasta($fasta_gz)
+        ) teardown=(rm(dirname(fasta_path); recursive = true, force = true))
     SUITE["MSA"]["read"]["FASTA.gz_annotated"] =
         @benchmarkable read_file($fasta_gz, FASTA, AnnotatedMultipleSequenceAlignment)
     SUITE["MSA"]["read"]["Clustal"] =
