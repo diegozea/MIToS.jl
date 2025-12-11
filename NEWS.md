@@ -1,5 +1,12 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.6.0 to v3.7.0
+
+- Fix a bug occurring when writing mmCIF files with `write_file(..., MMCIFFile)`. 
+  The `print_file` function now uses `label::Bool = true` by default when printing
+  mmCIF files (previously, it was `false` and using ). Therefore, now the atom site labels
+  are written using `_atom_site.label` instead of `_atom_site.auth`.
+
 ### Changes from v3.5.0 to v3.6.0
 
 - Fixed a minor bug that caused `get_n_words` to return a first empty string when 
