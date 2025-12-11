@@ -1,3 +1,4 @@
+import Pkg; Pkg.add("CodecZlib")
 using CodecZlib
 
 let
