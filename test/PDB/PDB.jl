@@ -553,6 +553,18 @@ end
             @test parsed[1].id.PDBe_number == "10"
             @test parsed == residues
         end
+
+        @testset "read_file/write_file roundtrip" begin
+            residues = read_file(cif_file, MMCIFFile)
+
+            mktemp() do path, io
+                close(io)
+                write_file(path, residues, MMCIFFile)
+                parsed = read_file(path, MMCIFFile)
+
+                @test parsed == residues
+            end
+        end
     end
 end
 

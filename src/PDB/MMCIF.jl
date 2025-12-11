@@ -216,7 +216,7 @@ function Utils.print_file(
     io::IO,
     residues::AbstractVector{PDBResidue},
     format::Type{MMCIFFile};
-    label::Bool = false,
+    label::Bool = true,
 )
     mmcif_dict = _pdbresidues_to_mmcifdict(residues, label = label)
     writemmcif(io, mmcif_dict)
