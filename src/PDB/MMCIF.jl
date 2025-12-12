@@ -75,7 +75,7 @@ function _parse_mmcif_to_pdbresidues(mmcif_dict::BioStructures.MMCIFDict, label:
                 parse(Float64, cartn_z[i]),
             ),
             atom_names[i],
-            elements[i],
+            _clean_string(elements[i]),
             parse(Float64, occupancies[i]),
             bfactors[i],
             _clean_string(alt_ids[i]),
@@ -197,7 +197,8 @@ function _pdbresidues_to_mmcifdict(residues::Vector{PDBResidue}; label::Bool = f
             mmcif_dict["_atom_site.Cartn_z"][i] = string(atom.coordinates.z)
             mmcif_dict["_atom_site.occupancy"][i] = string(atom.occupancy)
             mmcif_dict["_atom_site.B_iso_or_equiv"][i] = atom.B
-            mmcif_dict["_atom_site.type_symbol"][i] = atom.element
+            mmcif_dict["_atom_site.type_symbol"][i] =
+                isempty(atom.element) ? "?" : atom.element
             mmcif_dict["_atom_site.group_PDB"][i] = res.id.group
             mmcif_dict["_atom_site.pdbx_PDB_model_num"][i] = res.id.model
             mmcif_dict["_atom_site.pdbx_PDB_ins_code"][i] = _inscode(res)

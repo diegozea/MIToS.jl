@@ -564,6 +564,21 @@ end
 
                 @test parsed == residues
             end
+
+            @testset "PDB without element field" begin
+                for pdb_file in ["short.pdb", "foldseek_example.pdb"]
+                    @testset "$pdb_file" begin
+                        pdb_residues = read_file(joinpath(DATA, pdb_file), PDBFile)
+                        mktemp() do path, io
+                            close(io)
+                            write_file(path, pdb_residues, MMCIFFile)
+                            parsed = read_file(path, MMCIFFile)
+
+                            @test parsed == pdb_residues
+                        end
+                    end
+                end
+            end
         end
     end
 end
