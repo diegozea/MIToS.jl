@@ -30,37 +30,74 @@
         @test isapprox(result.scores[alphabet[Residue('C')], 1], log2(p_c / q_c))
     end
 
-    @testset "Zero policies" begin
+    @testset "Alphabet controls gap counting" begin
+        msa = Matrix{Residue}(undef, 3, 1)
+        msa[:, 1] = Residue[Residue('A'), GAP, GAP]
+
+        result = pssm(msa; alphabet = alphabet, background = uniform_background)
+
+        a_index = alphabet[Residue('A')]
+        c_index = alphabet[Residue('C')]
+
+        @test isapprox(result.scores[a_index, 1], log2(1.0 / uniform_background[a_index]))
+        @test result.scores[c_index, 1] == -Inf
+    end
+
+    @testset "GappedAlphabet counts gaps" begin
+        gapped = GappedAlphabet()
+        uniform_21 = fill(1 / length(gapped), length(gapped))
+        msa = fill(GAP, 3, 1)
+
+        result = pssm(msa; alphabet = gapped, background = uniform_21)
+
+        gap_index = gapped[GAP]
+        a_index = gapped[Residue('A')]
+        q_gap = uniform_21[gap_index]
+
+        @test isfinite(result.scores[gap_index, 1])
+        @test isapprox(result.scores[gap_index, 1], log2(1.0 / q_gap))
+        @test result.scores[a_index, 1] == -Inf
+    end
+
+    @testset "Zero probabilities" begin
         msa = Matrix{Residue}(undef, 2, 1)
         msa[:, 1] = Residue[Residue('A'), Residue('A')]
 
-        neg_inf = pssm(msa; alphabet = alphabet, background = uniform_background, zero_policy = :negInf)
-        clamp = pssm(msa; alphabet = alphabet, background = uniform_background, zero_policy = :clamp)
-
         c_index = alphabet[Residue('C')]
-        @test isinf(neg_inf.scores[c_index, 1]) && neg_inf.scores[c_index, 1] < 0
+        result = pssm(msa; alphabet = alphabet, background = uniform_background)
+        @test isinf(result.scores[c_index, 1]) && result.scores[c_index, 1] < 0
+    end
 
-        expected_clamp = log2(eps(Float64) / uniform_background[c_index])
-        @test isapprox(clamp.scores[c_index, 1], expected_clamp)
+    @testset "Zero background entries" begin
+        q = copy(uniform_background)
+        a_index = alphabet[Residue('A')]
+        q[a_index] = 0.0
+        q ./= sum(q)
 
-        @test_throws DomainError pssm(
-            msa;
-            alphabet = alphabet,
-            background = uniform_background,
-            zero_policy = :error,
-        )
+        msa_a = fill(Residue('A'), 2, 1)
+        result_inf = pssm(msa_a; alphabet = alphabet, background = q)
+        @test isinf(result_inf.scores[a_index, 1]) && result_inf.scores[a_index, 1] > 0
+
+        msa_c = fill(Residue('C'), 2, 1)
+        result_nan = pssm(msa_c; alphabet = alphabet, background = q)
+        @test isnan(result_nan.scores[a_index, 1])
+    end
+
+    @testset "Non-default base" begin
+        msa = Matrix{Residue}(undef, 3, 1)
+        msa[:, 1] = Residue[Residue('A'), Residue('A'), Residue('C')]
+
+        result = pssm(msa; alphabet = alphabet, background = uniform_background, base = 10)
+
+        p_a = 2 / 3
+        q_a = uniform_background[alphabet[Residue('A')]]
+        @test isapprox(result.scores[alphabet[Residue('A')], 1], log10(p_a / q_a))
     end
 
     @testset "All-gap column" begin
         msa = fill(GAP, 3, 1)
-        result = pssm(
-            msa;
-            alphabet = alphabet,
-            background = uniform_background,
-            all_gap_value = 123.0,
-        )
-
-        @test all(result.scores[:, 1] .== 123.0)
+        result = pssm(msa; alphabet = alphabet, background = uniform_background)
+        @test all(isnan, result.scores[:, 1])
     end
 
     @testset "dims validation" begin

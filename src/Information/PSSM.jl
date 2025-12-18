@@ -20,49 +20,36 @@ struct PSSMResult{T,A}
     base::Float64
 end
 
-@inline function _collect_background(background, alphabet::ResidueAlphabet)
-    values =
-        if background isa Probabilities || background isa ContingencyTable
-            gettablearray(background)
-        else
-            background
-        end
-    vector = Float64.(vec(values))
-    length(vector) == length(alphabet) ||
-        throw(ArgumentError("Background length $(length(vector)) doesn't match alphabet length $(length(alphabet))."))
-    total = sum(vector)
-    total > 0 || throw(ArgumentError("Background distribution sums to zero."))
-    if total != 1
+function _collect_background(background::AbstractArray, alphabet::ResidueAlphabet)
+    values = _gettablearray(background)
+    n_values = length(values)
+    n_ab = length(alphabet)
+    if n_values != n_ab
+        throw(
+            ArgumentError(
+                "Background length $n_values doesn't match alphabet length $n_ab.",
+            ),
+        )
+    end
+    vector = Vector{Float64}(undef, n_ab)
+    total = 0.0
+    @inbounds for (i, val) in enumerate(values)
+        value = Float64(val)
+        isfinite(value) ||
+            throw(DomainError(value, "Background values must be finite Float64 values."))
+        value ≥ 0 || throw(
+            DomainError(value, "Background values must be nonnegative Float64 values."),
+        )
+        vector[i] = value
+        total += value
+    end
+    if !(total > 0)
+        throw(DomainError(total, "Background distribution must have positive sum."))
+    end
+    if total != 1.0
         vector ./= total
     end
     vector
-end
-
-@inline function _log_odds(
-    p::Float64,
-    q::Float64,
-    zero_policy::Symbol,
-    use_log2::Bool,
-    invlogbase::Float64,
-    epsT::Float64,
-)
-    if zero_policy === :clamp
-        p = max(p, epsT)
-        q = max(q, epsT)
-    elseif zero_policy === :error
-        (p > 0 && q > 0) || throw(DomainError((p, q), "Zero probability encountered."))
-    else
-        # zero_policy === :negInf
-        if p == 0 && q == 0
-            return NaN
-        elseif p == 0
-            return -Inf
-        elseif q == 0
-            return Inf
-        end
-    end
-    ratio = p / q
-    use_log2 ? log2(ratio) : log(ratio) * invlogbase
 end
 
 """
@@ -73,21 +60,26 @@ MIToS probability estimation. Scores are returned as a matrix with rows ordered 
 provided alphabet and columns corresponding to alignment positions.
 
 # Keywords
-- `dims::Int = 2`: compute scores per column. Other values throw an `ArgumentError`.
-- `alphabet = UngappedAlphabet()`: residue alphabet; score rows follow this order.
-- `weights = NoClustering()`: sequence weights used during probability estimation.
-- `pseudocounts = NoPseudocount()`: pseudocounts applied before normalization.
-- `background = BLOSUM62_Pi`: background distribution `q(a)`; accepts vectors,
-  `Probabilities` or `ContingencyTable` objects. It is normalized if needed.
-- `base::Number = 2`: logarithm base (e.g., 2 for bits).
-- `gap_handling::Symbol = :skip`: if `:skip`, gaps are ignored when the alphabet includes
-  them; if `:include`, gaps are scored using their observed frequency.
-- `zero_policy::Symbol = :negInf`: handling of zero probabilities. `:negInf` produces
-  `-Inf`, `Inf` or `NaN`; `:error` throws; `:clamp` replaces zeros with `eps`.
-- `all_gap_value = NaN`: value used for every residue in columns with no valid
-  observations after applying the gap policy.
+
+  - `dims::Int = 2`: compute scores per column. Other values throw an `ArgumentError`.
+  - `alphabet = UngappedAlphabet()`: residue alphabet; score rows follow this order.
+  - `weights = NoClustering()`: sequence weights used during probability estimation.
+  - `pseudocounts = NoPseudocount()`: pseudocounts applied before normalization.
+  - `background = BLOSUM62_Pi`: background distribution `q(a)`; accepts `AbstractArray`,
+    `Probabilities` or `ContingencyTable` objects. It is normalized if needed.
+  - `base::Number = 2`: logarithm base (e.g., 2 for bits).
+
+Gaps are handled by the chosen `alphabet`: `UngappedAlphabet()` ignores gaps, while
+`GappedAlphabet()` includes them.
+
+Scores are computed directly as log-odds, so IEEE floating-point rules apply for zeros
+(`-Inf`, `Inf`, or `NaN`).
+
+Columns with no valid observations (e.g. all gaps using `UngappedAlphabet()`) are filled
+with `NaN`.
 
 # Examples
+
 ```julia
 using MIToS.Information, MIToS.MSA
 
@@ -103,15 +95,8 @@ function pssm(
     pseudocounts::Pseudocount = NoPseudocount(),
     background = BLOSUM62_Pi,
     base::Number = 2,
-    gap_handling::Symbol = :skip,
-    zero_policy::Symbol = :negInf,
-    all_gap_value = NaN,
 )
     dims == 2 || throw(ArgumentError("pssm supports dims=2 (per-column) only."))
-    gap_handling in (:skip, :include) ||
-        throw(ArgumentError("Unsupported gap_handling = $(gap_handling)."))
-    zero_policy in (:negInf, :error, :clamp) ||
-        throw(ArgumentError("Unsupported zero_policy = $(zero_policy)."))
     base_val = Float64(base)
     (base_val > 0) && (base_val != 1) ||
         throw(ArgumentError("Base must be positive and different from 1."))
@@ -123,27 +108,17 @@ function pssm(
     scores = Matrix{Float64}(undef, nres, ncols)
 
     column_table = ContingencyTable(Float64, Val{1}, alphabet)
-    gap_index = alphabet[GAP]
-    include_gap = gap_handling === :include || gap_index > nres
     use_log2 = base_val == 2
     invlogbase = use_log2 ? 1.0 : inv(log(base_val))
-    epsT = eps(Float64)
-
-    freq_array = gettablearray(column_table)
 
     @inbounds for j = 1:ncols
         cleanup!(column_table)
         col_view = @view msa[:, j]
         frequencies!(column_table, col_view; weights = weights, pseudocounts = pseudocounts)
 
-        if !include_gap && gap_index <= nres
-            freq_array[gap_index] = 0.0
-            update_marginals!(column_table)
-        end
-
         total = gettotal(column_table)
         if total == 0
-            scores[:, j] .= all_gap_value
+            scores[:, j] .= NaN
             continue
         end
 
@@ -152,7 +127,8 @@ function pssm(
         for i = 1:nres
             p = prob_view[i]
             qi = q[i]
-            scores[i, j] = _log_odds(p, qi, zero_policy, use_log2, invlogbase, epsT)
+            ratio = p / qi
+            scores[i, j] = use_log2 ? log2(ratio) : log(ratio) * invlogbase
         end
     end
 
