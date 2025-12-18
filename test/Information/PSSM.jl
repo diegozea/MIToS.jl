@@ -104,4 +104,30 @@
         msa = reshape(res"AC", 1, :)
         @test_throws ArgumentError pssm(msa; dims = 1)
     end
+
+    @testset "Background validation" begin
+        msa = permutedims(hcat(res"AC", res"AD")) # 2 sequences, 2 columns
+
+        @testset "Length mismatch" begin
+            background = fill(1 / 19, 19)
+            @test_throws ArgumentError pssm(msa; alphabet = alphabet, background = background)
+        end
+
+        @testset "Zero sum" begin
+            background = zeros(20)
+            @test_throws DomainError pssm(msa; alphabet = alphabet, background = background)
+        end
+
+        @testset "Non-finite" begin
+            background = fill(1 / 20, 20)
+            background[1] = NaN
+            @test_throws DomainError pssm(msa; alphabet = alphabet, background = background)
+        end
+
+        @testset "Negative" begin
+            background = fill(1 / 20, 20)
+            background[1] = -0.1
+            @test_throws DomainError pssm(msa; alphabet = alphabet, background = background)
+        end
+    end
 end

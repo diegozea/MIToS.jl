@@ -25,21 +25,14 @@ function _collect_background(background::AbstractArray, alphabet::ResidueAlphabe
     n_values = length(values)
     n_ab = length(alphabet)
     if n_values != n_ab
-        throw(
-            ArgumentError(
-                "Background length $n_values doesn't match alphabet length $n_ab.",
-            ),
-        )
+        throw(ArgumentError("Background length $n_values doesn't match alphabet length $n_ab."))
     end
     vector = Vector{Float64}(undef, n_ab)
     total = 0.0
     @inbounds for (i, val) in enumerate(values)
         value = Float64(val)
-        isfinite(value) ||
-            throw(DomainError(value, "Background values must be finite Float64 values."))
-        value ≥ 0 || throw(
-            DomainError(value, "Background values must be nonnegative Float64 values."),
-        )
+        isfinite(value) || throw(DomainError(value, "Background values must be finite Float64 values."))
+        value ≥ 0 || throw(DomainError(value, "Background values must be nonnegative Float64 values."))
         vector[i] = value
         total += value
     end
@@ -83,7 +76,7 @@ with `NaN`.
 ```julia
 using MIToS.Information, MIToS.MSA
 
-msa = hcat(res"AC", res"AD", res"AE")' # three sequences, two positions
+msa = permutedims(hcat(res"AC", res"AD", res"AE")) # three sequences, two positions
 result = pssm(msa; background = fill(1 / 20, 20))
 ```
 """
