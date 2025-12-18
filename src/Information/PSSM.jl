@@ -25,14 +25,21 @@ function _collect_background(background::AbstractArray, alphabet::ResidueAlphabe
     n_values = length(values)
     n_ab = length(alphabet)
     if n_values != n_ab
-        throw(ArgumentError("Background length $n_values doesn't match alphabet length $n_ab."))
+        throw(
+            ArgumentError(
+                "Background length $n_values doesn't match alphabet length $n_ab.",
+            ),
+        )
     end
     vector = Vector{Float64}(undef, n_ab)
     total = 0.0
     @inbounds for (i, val) in enumerate(values)
         value = Float64(val)
-        isfinite(value) || throw(DomainError(value, "Background values must be finite Float64 values."))
-        value ≥ 0 || throw(DomainError(value, "Background values must be nonnegative Float64 values."))
+        isfinite(value) ||
+            throw(DomainError(value, "Background values must be finite Float64 values."))
+        value ≥ 0 || throw(
+            DomainError(value, "Background values must be nonnegative Float64 values."),
+        )
         vector[i] = value
         total += value
     end
@@ -54,7 +61,6 @@ provided alphabet and columns corresponding to alignment positions.
 
 # Keywords
 
-  - `dims::Int = 2`: compute scores per column. Other values throw an `ArgumentError`.
   - `alphabet = UngappedAlphabet()`: residue alphabet; score rows follow this order.
   - `weights = NoClustering()`: sequence weights used during probability estimation.
   - `pseudocounts = NoPseudocount()`: pseudocounts applied before normalization.
@@ -82,22 +88,21 @@ result = pssm(msa; background = fill(1 / 20, 20))
 """
 function pssm(
     msa::AbstractArray{Residue};
-    dims::Int = 2,
     alphabet::ResidueAlphabet = UngappedAlphabet(),
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
     background = BLOSUM62_Pi,
     base::Number = 2,
 )
-    dims == 2 || throw(ArgumentError("pssm supports dims=2 (per-column) only."))
     base_val = Float64(base)
-    (base_val > 0) && (base_val != 1) ||
-        throw(ArgumentError("Base must be positive and different from 1."))
+    if (base_val < 0.0) || (base_val == 1.0)
+        throw(ArgumentError("The logarithm base must be positive and different from 1."))
+    end
 
     q = _collect_background(background, alphabet)
 
     nres = length(alphabet)
-    ncols = size(msa, 2)
+    ncols = ncolumns(msa)
     scores = Matrix{Float64}(undef, nres, ncols)
 
     column_table = ContingencyTable(Float64, Val{1}, alphabet)
