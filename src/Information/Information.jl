@@ -93,6 +93,9 @@ export  # MIToS.MSA
     # CorrectedMutualInformation
     buslje09,
     BLMI,
+    # PSSM
+    PSSMResult,
+    pssm,
     # Gaps
     gap_union_percentage,
     gap_intersection_percentage,
@@ -119,5 +122,6 @@ include("Corrections.jl")
 include("CorrectedMutualInformation.jl")
 include("Gaps.jl")
 include("Externals.jl")
+include("PSSM.jl")
 
 end

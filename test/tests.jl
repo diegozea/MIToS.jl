@@ -73,6 +73,7 @@ end
     include("Information/CorrectedMutualInformation.jl")
     include("Information/Gaps.jl")
     include("Information/Externals.jl")
+    include("Information/PSSM.jl")
 end
 
 # PDB
