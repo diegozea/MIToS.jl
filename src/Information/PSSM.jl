@@ -9,7 +9,7 @@
         base::Float64
     end
 
-Result returned by [`pssm`](@ref), containing the log-odds scores for a protein PSSM.
+Result returned by [`position_specific_scoring_matrix`](@ref), containing the log-odds scores for a protein PSSM.
 `scores` is a matrix whose rows follow the provided `alphabet` ordering and whose columns
 match the alignment positions.
 """
@@ -53,7 +53,7 @@ function _collect_background(background::AbstractArray, alphabet::ResidueAlphabe
 end
 
 """
-    pssm(msa::AbstractArray{Residue}; kwargs...) -> PSSMResult
+    position_specific_scoring_matrix(msa::AbstractArray{Residue}; kwargs...) -> PSSMResult
 
 Compute a log-odds position-specific scoring matrix (PSSM) from a protein MSA using
 MIToS probability estimation. Scores are returned as a matrix with rows ordered by the
@@ -66,7 +66,9 @@ provided alphabet and columns corresponding to alignment positions.
   - `pseudocounts = NoPseudocount()`: pseudocounts applied before normalization.
   - `background = BLOSUM62_Pi`: background distribution `q(a)`; accepts `AbstractArray`,
     `Probabilities` or `ContingencyTable` objects. It is normalized if needed.
-  - `base::Number = 2`: logarithm base (e.g., 2 for bits).
+  - `base::Number = ℯ`: logarithm base.
+
+Use the keyword argument `base` to change the base of the log. $_DOC_LOG_BASE
 
 Gaps are handled by the chosen `alphabet`: `UngappedAlphabet()` ignores gaps, while
 `GappedAlphabet()` includes them.
@@ -83,20 +85,23 @@ with `NaN`.
 using MIToS.Information, MIToS.MSA
 
 msa = permutedims(hcat(res"AC", res"AD", res"AE")) # three sequences, two positions
-result = pssm(msa; background = fill(1 / 20, 20))
+result = position_specific_scoring_matrix(msa; background = fill(1 / 20, 20))
 ```
 """
-function pssm(
+function position_specific_scoring_matrix(
     msa::AbstractArray{Residue};
     alphabet::ResidueAlphabet = UngappedAlphabet(),
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
     background = BLOSUM62_Pi,
-    base::Number = 2,
+    base::Number = ℯ,
 )
-    base_val = Float64(base)
-    if (base_val < 0.0) || (base_val == 1.0)
-        throw(ArgumentError("The logarithm base must be positive and different from 1."))
+    if !(base > 0) || base == 1 # this also catches NaN
+        throw(
+            ArgumentError(
+                "The logarithm base must be positive and different from 1 (base=$base).",
+            ),
+        )
     end
 
     q = _collect_background(background, alphabet)
@@ -106,29 +111,24 @@ function pssm(
     scores = Matrix{Float64}(undef, nres, ncols)
 
     column_table = ContingencyTable(Float64, Val{1}, alphabet)
-    use_log2 = base_val == 2
-    invlogbase = use_log2 ? 1.0 : inv(log(base_val))
+    invlogbase = base === ℯ ? 1.0 : inv(log(base))
 
-    @inbounds for j = 1:ncols
+    for j = 1:ncols
         cleanup!(column_table)
-        col_view = @view msa[:, j]
+        col_view = @inbounds @view msa[:, j]
+        # counts:
         frequencies!(column_table, col_view; weights = weights, pseudocounts = pseudocounts)
-
-        total = gettotal(column_table)
-        if total == 0
-            scores[:, j] .= NaN
-            continue
-        end
-
+        # probabilities:
         normalize!(column_table)
-        prob_view = gettablearray(column_table)
-        for i = 1:nres
-            p = prob_view[i]
+        P = gettablearray(column_table)
+        # log-odds scores:
+        @inbounds for i = 1:nres
+            p = P[i]
             qi = q[i]
             ratio = p / qi
-            scores[i, j] = use_log2 ? log2(ratio) : log(ratio) * invlogbase
+            scores[i, j] = invlogbase == 1.0 ? log(ratio) : log(ratio) * invlogbase
         end
     end
 
-    PSSMResult(scores, alphabet, q, base_val)
+    PSSMResult(scores, alphabet, q, Float64(base))
 end

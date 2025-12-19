@@ -95,7 +95,7 @@ export  # MIToS.MSA
     BLMI,
     # PSSM
     PSSMResult,
-    pssm,
+    position_specific_scoring_matrix,
     # Gaps
     gap_union_percentage,
     gap_intersection_percentage,
