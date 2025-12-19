@@ -6,7 +6,7 @@
         scores::Matrix{T}
         alphabet::A
         background::Vector{Float64}
-        base::Float64
+        base::Union{Irrational{:ℯ}, Float64, Int}
     end
 
 Result returned by [`position_specific_scoring_matrix`](@ref), containing the log-odds scores for a protein PSSM.
@@ -17,7 +17,15 @@ struct PSSMResult{T,A}
     scores::Matrix{T}
     alphabet::A
     background::Vector{Float64}
-    base::Float64
+    base::Union{Irrational{:ℯ},Float64,Int}
+end
+
+# helpers to mostly use Float64 for bases, but keeping ℯ and 2 as is
+@inline _convert_base(base::Irrational{:ℯ}) = base
+@inline _convert_base(base::Int) = base
+@inline _convert_base(base::Number) = Float64(base)
+@inline function _convert_base(base::Integer) # promote to Int if possible
+    base <= typemax(Int) ? Int(base) : Float64(base) # base should be positive
 end
 
 function _collect_background(background::AbstractArray, alphabet::ResidueAlphabet)
@@ -96,10 +104,11 @@ function position_specific_scoring_matrix(
     background = BLOSUM62_Pi,
     base::Number = ℯ,
 )
-    if !(base > 0) || base == 1 # this also catches NaN
+    base_val = _convert_base(base)
+    if !(base_val > 0) || base_val == 1 # this also catches NaN
         throw(
             ArgumentError(
-                "The logarithm base must be positive and different from 1 (base=$base).",
+                "The logarithm base must be positive and different from 1 (base=$base_val).",
             ),
         )
     end
@@ -111,7 +120,7 @@ function position_specific_scoring_matrix(
     scores = Matrix{Float64}(undef, nres, ncols)
 
     column_table = ContingencyTable(Float64, Val{1}, alphabet)
-    invlogbase = base === ℯ ? 1.0 : inv(log(base))
+    invlogbase = base_val === ℯ ? 1.0 : inv(log(base_val))
 
     for j = 1:ncols
         cleanup!(column_table)
@@ -130,5 +139,5 @@ function position_specific_scoring_matrix(
         end
     end
 
-    PSSMResult(scores, alphabet, q, Float64(base))
+    PSSMResult(scores, alphabet, q, base_val)
 end
