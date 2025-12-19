@@ -94,7 +94,8 @@ export  # MIToS.MSA
     buslje09,
     BLMI,
     # PSSM
-    PSSMResult,
+    AbstractColumnScores,
+    PositionSpecificScoreMatrix,
     position_specific_scoring_matrix,
     # Gaps
     gap_union_percentage,

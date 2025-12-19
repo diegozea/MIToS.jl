@@ -1,32 +1,74 @@
 # Position-Specific Scoring Matrix (PSSM)
 # =======================================
 
+# Abstract Types
+# ==============
+
+abstract type AbstractColumnScores{T,N,A} <: AbstractArray{T,N} end
+
+# Result Type
+# ===========
+
 """
-    struct PSSMResult{T,A}
-        scores::Matrix{T}
+    struct PositionSpecificScoreMatrix{T,A}
+        table::NamedArray{T,2,Array{T,2},NTuple{2,OrderedDict{String,Int}}}
         alphabet::A
         background::Vector{Float64}
         base::Union{Irrational{:ℯ}, Float64, Int}
     end
 
 Result returned by [`position_specific_scoring_matrix`](@ref), containing the log-odds scores for a protein PSSM.
-`scores` is a matrix whose rows follow the provided `alphabet` ordering and whose columns
+`table` is a `NamedArray` whose rows follow the provided `alphabet` ordering and whose columns
 match the alignment positions.
 """
-struct PSSMResult{T,A}
-    scores::Matrix{T}
+struct PositionSpecificScoreMatrix{T,A} <: AbstractColumnScores{T,2,A}
+    table::NamedArray{T,2,Array{T,2},NTuple{2,OrderedDict{String,Int}}}
     alphabet::A
     background::Vector{Float64}
-    base::Union{Irrational{:ℯ},Float64,Int}
+    base::Union{Irrational{:ℯ}, Float64, Int}
 end
 
-# helpers to mostly use Float64 for bases, but keeping ℯ and 2 as is
+# Getters
+# -------
+
+@inline getalphabet(scores::AbstractColumnScores) = scores.alphabet
+@inline gettable(scores::AbstractColumnScores) = scores.table
+@inline gettablearray(scores::AbstractColumnScores) = getarray(gettable(scores))
+
+# AbstractArray
+# -------------
+
+for f in (:size, :getindex)
+    @eval Base.$(f)(scores::AbstractColumnScores, args...) =
+        $(f)(gettable(scores), args...)
+end
+
+# Show
+# ----
+
+function Base.show(io::IO, ::MIME"text/plain", scores::AbstractColumnScores)
+    print(io, typeof(scores), " : ")
+    print(io, "\ntable : ")
+    show(io, MIME"text/plain"(), gettable(scores))
+end
+
+# Base Conversion
+# ---------------
+
 @inline _convert_base(base::Irrational{:ℯ}) = base
 @inline _convert_base(base::Int) = base
-@inline _convert_base(base::Number) = Float64(base)
-@inline function _convert_base(base::Integer) # promote to Int if possible
-    base <= typemax(Int) ? Int(base) : Float64(base) # base should be positive
+
+@inline function _convert_base(base::Integer)
+    if base >= 0 && base <= typemax(Int)
+        return Int(base)
+    end
+    Float64(base)
 end
+
+@inline _convert_base(base::Number) = Float64(base)
+
+# Background Collection
+# ---------------------
 
 function _collect_background(background::AbstractArray, alphabet::ResidueAlphabet)
     values = _gettablearray(background)
@@ -60,12 +102,15 @@ function _collect_background(background::AbstractArray, alphabet::ResidueAlphabe
     vector
 end
 
+# PSSM
+# ====
+
 """
-    position_specific_scoring_matrix(msa::AbstractArray{Residue}; kwargs...) -> PSSMResult
+    position_specific_scoring_matrix(msa::AbstractArray{Residue}; kwargs...) -> PositionSpecificScoreMatrix
 
 Compute a log-odds position-specific scoring matrix (PSSM) from a protein MSA using
-MIToS probability estimation. Scores are returned as a matrix with rows ordered by the
-provided alphabet and columns corresponding to alignment positions.
+MIToS probability estimation. Scores are returned as a `NamedArray` with rows ordered by
+the provided alphabet and columns corresponding to alignment positions.
 
 # Keywords
 
@@ -131,13 +176,19 @@ function position_specific_scoring_matrix(
         normalize!(column_table)
         P = gettablearray(column_table)
         # log-odds scores:
-        @inbounds for i = 1:nres
-            p = P[i]
-            qi = q[i]
+        for i = 1:nres
+            p = @inbounds P[i]
+            qi = @inbounds q[i]
             ratio = p / qi
-            scores[i, j] = invlogbase == 1.0 ? log(ratio) : log(ratio) * invlogbase
+            @inbounds scores[i, j] =
+                invlogbase == 1.0 ? log(ratio) : log(ratio) * invlogbase
         end
     end
 
-    PSSMResult(scores, alphabet, q, base_val)
+    row_dict = getnamedict(alphabet)
+    col_names = columnnames(msa)
+    col_dict = OrderedDict{String,Int}(col_names[i] => i for i = 1:ncols)
+    table = NamedArray(scores, (row_dict, col_dict), ("Residue", "Col"))
+
+    PositionSpecificScoreMatrix(table, alphabet, q, base_val)
 end

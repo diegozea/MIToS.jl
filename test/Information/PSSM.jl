@@ -16,7 +16,7 @@
             background = uniform_background,
         )
 
-        @test size(result.scores) == (length(alphabet), size(msa, 2))
+        @test size(result.table) == (length(alphabet), size(msa, 2))
         @test result.alphabet == alphabet
         @test result.background ≈ uniform_background
     end
@@ -36,8 +36,8 @@
         q_a = uniform_background[alphabet[Residue('A')]]
         q_c = uniform_background[alphabet[Residue('C')]]
 
-        @test isapprox(result.scores[alphabet[Residue('A')], 1], log2(p_a / q_a))
-        @test isapprox(result.scores[alphabet[Residue('C')], 1], log2(p_c / q_c))
+        @test isapprox(result.table[alphabet[Residue('A')], 1], log2(p_a / q_a))
+        @test isapprox(result.table[alphabet[Residue('C')], 1], log2(p_c / q_c))
     end
 
     @testset "Alphabet controls gap counting" begin
@@ -52,8 +52,8 @@
         a_index = alphabet[Residue('A')]
         c_index = alphabet[Residue('C')]
 
-        @test isapprox(result.scores[a_index, 1], log(1.0 / uniform_background[a_index]))
-        @test result.scores[c_index, 1] == -Inf
+        @test isapprox(result.table[a_index, 1], log(1.0 / uniform_background[a_index]))
+        @test result.table[c_index, 1] == -Inf
     end
 
     @testset "GappedAlphabet counts gaps" begin
@@ -71,9 +71,9 @@
         a_index = gapped[Residue('A')]
         q_gap = uniform_21[gap_index]
 
-        @test isfinite(result.scores[gap_index, 1])
-        @test isapprox(result.scores[gap_index, 1], log(1.0 / q_gap))
-        @test result.scores[a_index, 1] == -Inf
+        @test isfinite(result.table[gap_index, 1])
+        @test isapprox(result.table[gap_index, 1], log(1.0 / q_gap))
+        @test result.table[a_index, 1] == -Inf
     end
 
     @testset "Zero probabilities" begin
@@ -85,7 +85,7 @@
             alphabet = alphabet,
             background = uniform_background,
         )
-        @test isinf(result.scores[c_index, 1]) && result.scores[c_index, 1] < 0
+        @test isinf(result.table[c_index, 1]) && result.table[c_index, 1] < 0
     end
 
     @testset "Zero background entries" begin
@@ -97,12 +97,12 @@
         msa_a = fill(Residue('A'), 2, 1)
         result_inf =
             position_specific_scoring_matrix(msa_a; alphabet = alphabet, background = q)
-        @test isinf(result_inf.scores[a_index, 1]) && result_inf.scores[a_index, 1] > 0
+        @test isinf(result_inf.table[a_index, 1]) && result_inf.table[a_index, 1] > 0
 
         msa_c = fill(Residue('C'), 2, 1)
         result_nan =
             position_specific_scoring_matrix(msa_c; alphabet = alphabet, background = q)
-        @test isnan(result_nan.scores[a_index, 1])
+        @test isnan(result_nan.table[a_index, 1])
     end
 
     @testset "Non-default base" begin
@@ -117,7 +117,7 @@
 
         p_a = 2 / 3
         q_a = uniform_background[alphabet[Residue('A')]]
-        @test isapprox(result.scores[alphabet[Residue('A')], 1], log10(p_a / q_a))
+        @test isapprox(result.table[alphabet[Residue('A')], 1], log10(p_a / q_a))
     end
 
     @testset "Invalid base" begin
@@ -140,7 +140,7 @@
             alphabet = alphabet,
             background = uniform_background,
         )
-        @test all(isnan, result.scores[:, 1])
+        @test all(isnan, result.table[:, 1])
     end
 
     @testset "Background validation" begin
