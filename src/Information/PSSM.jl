@@ -13,7 +13,6 @@ abstract type AbstractColumnScores{T,N,A} <: AbstractArray{T,N} end
     struct PositionSpecificScoreMatrix{T,A}
         table::NamedArray{T,2,Array{T,2},NTuple{2,OrderedDict{String,Int}}}
         alphabet::A
-        background::Vector{Float64}
         base::Union{Irrational{:ℯ}, Float64, Int}
     end
 
@@ -24,7 +23,6 @@ match the alignment positions.
 struct PositionSpecificScoreMatrix{T,A} <: AbstractColumnScores{T,2,A}
     table::NamedArray{T,2,Array{T,2},NTuple{2,OrderedDict{String,Int}}}
     alphabet::A
-    background::Vector{Float64}
     base::Union{Irrational{:ℯ}, Float64, Int}
 end
 
@@ -47,7 +45,15 @@ end
 # ----
 
 function Base.show(io::IO, ::MIME"text/plain", scores::AbstractColumnScores)
-    print(io, typeof(scores), " : ")
+    base_val = scores.base
+    unit =
+        base_val == ℯ ? "nats" : base_val == 2 ? "bits" : base_val == 10 ? "hartleys" :
+        nothing
+    print(io, typeof(scores), " log base=", base_val)
+    if unit !== nothing
+        print(io, " units=", unit)
+    end
+    print(io, " : ")
     print(io, "\ntable : ")
     show(io, MIME"text/plain"(), gettable(scores))
 end
@@ -149,11 +155,10 @@ function position_specific_scoring_matrix(
     background = BLOSUM62_Pi,
     base::Number = ℯ,
 )
-    base_val = _convert_base(base)
-    if !(base_val > 0) || base_val == 1 # this also catches NaN
+    if !(base > 0) || base == 1 # this also catches NaN
         throw(
             ArgumentError(
-                "The logarithm base must be positive and different from 1 (base=$base_val).",
+                "The logarithm base must be positive and different from 1 (base=$base).",
             ),
         )
     end
@@ -165,7 +170,7 @@ function position_specific_scoring_matrix(
     scores = Matrix{Float64}(undef, nres, ncols)
 
     column_table = ContingencyTable(Float64, Val{1}, alphabet)
-    invlogbase = base_val === ℯ ? 1.0 : inv(log(base_val))
+    invlogbase = base === ℯ ? 1.0 : inv(log(base))
 
     for j = 1:ncols
         cleanup!(column_table)
@@ -188,7 +193,7 @@ function position_specific_scoring_matrix(
     row_dict = getnamedict(alphabet)
     col_names = columnnames(msa)
     col_dict = OrderedDict{String,Int}(col_names[i] => i for i = 1:ncols)
-    table = NamedArray(scores, (row_dict, col_dict), ("Residue", "Col"))
+    table = NamedArray(scores, (row_dict, col_dict), ("Res", "Col"))
 
-    PositionSpecificScoreMatrix(table, alphabet, q, base_val)
+    PositionSpecificScoreMatrix(table, alphabet, _convert_base(base))
 end

@@ -18,7 +18,6 @@
 
         @test size(result.table) == (length(alphabet), size(msa, 2))
         @test result.alphabet == alphabet
-        @test result.background ≈ uniform_background
     end
 
     @testset "Log-odds correctness" begin
