@@ -12,6 +12,7 @@ profiles are matrix-like with shape (n_residues × n_positions), where rows foll
 chosen residue alphabet and columns correspond to alignment positions.
 
 Concrete subtypes represent three stages of a profile:
+
   - PFM ([`PositionFrequencyMatrix`](@ref)): ``fᵢ(a)`` is the (possibly weighted and
     pseudocounted) count of residue a in column i.
   - PSPM ([`PositionSpecificProbabilityMatrix`](@ref)): ``pᵢ(a) = fᵢ(a) / ∑ₐ fᵢ(a)``,
@@ -35,11 +36,11 @@ abstract type AbstractPositionSpecificMatrix{A} <: AbstractArray{Float64,2} end
     end
 
 Position frequency matrix (PFM) for a protein MSA representing the frequencies/counts of
-each residue at each alignment position. So that ``fᵢ(a)`` is the (possibly weighted and 
-pseudocounted) count of residue a in column i. Weights can down-weight redundant sequences, 
-and pseudocounts smooth columns with sparse observations. 
-A `PositionFrequencyMatrix` is a subtype of [`AbstractPositionSpecificMatrix`](@ref). That 
-stores the frequency matrix in the `table` field. `table` is a `NamedArray` whose rows 
+each residue at each alignment position. So that ``fᵢ(a)`` is the (possibly weighted and
+pseudocounted) count of residue a in column i. Weights can down-weight redundant sequences,
+and pseudocounts smooth columns with sparse observations.
+A `PositionFrequencyMatrix` is a subtype of [`AbstractPositionSpecificMatrix`](@ref). That
+stores the frequency matrix in the `table` field. `table` is a `NamedArray` whose rows
 follow the provided `alphabet` ordering and whose columns correspond to alignment positions.
 """
 struct PositionFrequencyMatrix{A} <: AbstractPositionSpecificMatrix{A}
@@ -90,7 +91,7 @@ columns match the alignment positions.
 struct PositionSpecificScoreMatrix{A} <: AbstractPositionSpecificMatrix{A}
     table::NamedArray{Float64,2,Array{Float64,2},NTuple{2,OrderedDict{String,Int}}}
     alphabet::A
-    base::Union{Irrational{:ℯ}, Float64, Int}
+    base::Union{Irrational{:ℯ},Float64,Int}
 end
 
 # Getters
@@ -111,15 +112,11 @@ end
 # Show
 # ----
 
-function Base.show(
-    io::IO,
-    ::MIME"text/plain",
-    scores::PositionSpecificScoreMatrix,
-)
+function Base.show(io::IO, ::MIME"text/plain", scores::PositionSpecificScoreMatrix)
     base_val = scores.base
     unit =
-        base_val == ℯ ? "nats" : base_val == 2 ? "bits" : base_val == 10 ? "hartleys" :
-        nothing
+        base_val == ℯ ? "nats" :
+        base_val == 2 ? "bits" : base_val == 10 ? "hartleys" : nothing
     print(io, typeof(scores), " log base=", base_val)
     if unit !== nothing
         print(io, " units=", unit)
@@ -225,9 +222,9 @@ end
 Compute a position frequency matrix (PFM) from a protein MSA. Each column summarizes how
 often each residue appears at that alignment position. Therefore, for column i and residue
 a, ``fᵢ(a)`` is the (possibly weighted and pseudocounted) count of that residue in that
-column. The `weights` reduce redundancy in highly similar MSAs (so closely related 
-sequences do not dominate), and `pseudocounts` smooth sparse columns to avoid zero 
-frequencies. The chosen `alphabet` defines which symbols are counted; for example, an 
+column. The `weights` reduce redundancy in highly similar MSAs (so closely related
+sequences do not dominate), and `pseudocounts` smooth sparse columns to avoid zero
+frequencies. The chosen `alphabet` defines which symbols are counted; for example, an
 ungapped alphabet ignores gaps while a gapped alphabet treats the gap as a symbol.
 
 # Keyword Arguments
@@ -238,7 +235,7 @@ ungapped alphabet ignores gaps while a gapped alphabet treats the gap as a symbo
 
 # Returns
 
-[`PositionFrequencyMatrix`](@ref) with rows in alphabet order and columns matching 
+[`PositionFrequencyMatrix`](@ref) with rows in alphabet order and columns matching
 alignment positions.
 """
 function position_frequency_matrix(
@@ -276,9 +273,9 @@ end
     position_specific_probability_matrix(pfm::PositionFrequencyMatrix)
     position_specific_probability_matrix(msa::AbstractArray{Residue}; kwargs...)
 
-Build a position-specific probability matrix (PSPM). Internally, it converts a PFM 
-(position frequency matrix) into a PSPM by column-wise normalization using 
-``pᵢ(a) = fᵢ(a) / ∑ₐ fᵢ(a)``, where i is the alignment column, a is a residue symbol in 
+Build a position-specific probability matrix (PSPM). Internally, it converts a PFM
+(position frequency matrix) into a PSPM by column-wise normalization using
+``pᵢ(a) = fᵢ(a) / ∑ₐ fᵢ(a)``, where i is the alignment column, a is a residue symbol in
 the alphabet, and ``∑ₐ`` sums over all residues in that alphabet. When built from an MSA,
 the PFM is computed first using the provided keyword arguments.
 
@@ -335,7 +332,7 @@ position frequency matrix (PFM), or a position-specific probability matrix (PSPM
 Positive scores indicate enrichment over background; negative scores indicate depletion.
 PSSMs are used to score sequences against a profile.
 
-# Keywords
+# Keyword Arguments
 
   - `alphabet = UngappedAlphabet()`: residue alphabet; score rows follow this order.
   - `weights = NoClustering()`: sequence weights used during probability estimation.
@@ -358,6 +355,11 @@ observations (e.g. all gaps using `UngappedAlphabet()`) are filled with `NaN`.
 
 The base controls units: b = 2 yields bits, b = ℯ yields nats, and b = 10 yields
 hartleys.
+
+# Results
+
+[`PositionSpecificScoreMatrix`](@ref) with rows in alphabet order and columns matching
+alignment positions.
 
 # Examples
 
@@ -410,8 +412,7 @@ function position_specific_scoring_matrix(
             p = @inbounds X[i, j]
             qi = @inbounds q[i]
             ratio = p / qi
-            @inbounds X[i, j] =
-                invlogbase == 1.0 ? log(ratio) : log(ratio) * invlogbase
+            @inbounds X[i, j] = invlogbase == 1.0 ? log(ratio) : log(ratio) * invlogbase
         end
     end
 

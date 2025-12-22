@@ -1,22 +1,7 @@
 @testset "PSSM" begin
 
     alphabet = UngappedAlphabet()
-    uniform_background = fill(1 / 20, 20)
-
-    function _approx_with_nan(a, b; atol = 0.0, rtol = 0.0)
-        size(a) == size(b) || return false
-        for i in eachindex(a, b)
-            ai = a[i]
-            bi = b[i]
-            if isnan(ai) && isnan(bi)
-                continue
-            end
-            if !isapprox(ai, bi; atol = atol, rtol = rtol)
-                return false
-            end
-        end
-        return true
-    end
+    uniform_background = fill(1 / 20, 20) # uniform distribution for the UngappedAlphabet
 
     @testset "Shape and ordering" begin
         msa = Residue[
@@ -32,6 +17,7 @@
         )
 
         @test size(result.table) == (length(alphabet), size(msa, 2))
+        @test length(result) == length(alphabet) * size(msa, 2)
         @test result.alphabet == alphabet
     end
 
@@ -79,10 +65,7 @@
             position_frequency_matrix(msa; alphabet = alphabet),
         )
 
-        @test _approx_with_nan(
-            gettablearray(ppm),
-            gettablearray(ppm_from_freqs),
-        )
+        @test isapprox(gettablearray(ppm), gettablearray(ppm_from_freqs); nans = true)
     end
 
     @testset "Scoring overloads and non-mutating semantics" begin
@@ -105,14 +88,8 @@
             base = 2,
         )
 
-        @test _approx_with_nan(
-            gettablearray(pssm_msa),
-            gettablearray(pssm_freqs),
-        )
-        @test _approx_with_nan(
-            gettablearray(pssm_msa),
-            gettablearray(pssm_probs),
-        )
+        @test isapprox(gettablearray(pssm_msa), gettablearray(pssm_freqs); nans = true)
+        @test isapprox(gettablearray(pssm_msa), gettablearray(pssm_probs); nans = true)
 
         pfm0 = position_frequency_matrix(msa; alphabet = alphabet)
         pfm1 = deepcopy(pfm0)
@@ -121,11 +98,7 @@
 
         ppm0 = position_specific_probability_matrix(msa; alphabet = alphabet)
         ppm1 = deepcopy(ppm0)
-        position_specific_scoring_matrix(
-            ppm0;
-            background = uniform_background,
-            base = 2,
-        )
+        position_specific_scoring_matrix(ppm0; background = uniform_background, base = 2)
         @test gettablearray(ppm0) == gettablearray(ppm1)
     end
 
