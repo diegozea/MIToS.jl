@@ -4,7 +4,7 @@
 # Abstract Types
 # ==============
 
-abstract type AbstractColumnScores{T,N,A} <: AbstractArray{T,N} end
+abstract type AbstractPositionSpecificMatrix{T,N,A} <: AbstractArray{T,N} end
 
 # Result Type
 # ===========
@@ -20,7 +20,7 @@ Result returned by [`position_specific_scoring_matrix`](@ref), containing the lo
 `table` is a `NamedArray` whose rows follow the provided `alphabet` ordering and whose columns
 match the alignment positions.
 """
-struct PositionSpecificScoreMatrix{T,A} <: AbstractColumnScores{T,2,A}
+struct PositionSpecificScoreMatrix{T,A} <: AbstractPositionSpecificMatrix{T,2,A}
     table::NamedArray{T,2,Array{T,2},NTuple{2,OrderedDict{String,Int}}}
     alphabet::A
     base::Union{Irrational{:ℯ}, Float64, Int}
@@ -29,22 +29,26 @@ end
 # Getters
 # -------
 
-@inline getalphabet(scores::AbstractColumnScores) = scores.alphabet
-@inline gettable(scores::AbstractColumnScores) = scores.table
-@inline gettablearray(scores::AbstractColumnScores) = getarray(gettable(scores))
+@inline getalphabet(scores::AbstractPositionSpecificMatrix) = scores.alphabet
+@inline gettable(scores::AbstractPositionSpecificMatrix) = scores.table
+@inline gettablearray(scores::AbstractPositionSpecificMatrix) = getarray(gettable(scores))
 
 # AbstractArray
 # -------------
 
 for f in (:size, :getindex)
-    @eval Base.$(f)(scores::AbstractColumnScores, args...) =
+    @eval Base.$(f)(scores::AbstractPositionSpecificMatrix, args...) =
         $(f)(gettable(scores), args...)
 end
 
 # Show
 # ----
 
-function Base.show(io::IO, ::MIME"text/plain", scores::AbstractColumnScores)
+function Base.show(
+    io::IO,
+    ::MIME"text/plain",
+    scores::PositionSpecificScoreMatrix,
+)
     base_val = scores.base
     unit =
         base_val == ℯ ? "nats" : base_val == 2 ? "bits" : base_val == 10 ? "hartleys" :
