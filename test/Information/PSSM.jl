@@ -3,7 +3,7 @@
     alphabet = UngappedAlphabet()
     uniform_background = fill(1 / 20, 20) # uniform distribution for the UngappedAlphabet
 
-    @testset "Shape and ordering" begin
+    @testset "Shape, ordering and values" begin
         msa = Residue[
             'A' 'E'
             'C' 'F'
@@ -19,6 +19,8 @@
         @test size(result.table) == (length(alphabet), size(msa, 2))
         @test length(result) == length(alphabet) * size(msa, 2)
         @test result.alphabet == alphabet
+        @test eltype(result) === Float64
+        @test sum(isfinite.(result), dims = 1) == [3 3] # 3 different residues per column
     end
 
     @testset "Frequencies" begin
@@ -30,19 +32,22 @@
 
         pfm = position_frequency_matrix(msa; alphabet = alphabet)
 
-        a_index = alphabet[Residue('A')]
-        c_index = alphabet[Residue('C')]
+        a_index = alphabet[Residue('A')] # 1
+        c_index = alphabet[Residue('C')] # 5
 
         @test pfm.table[a_index, 1] == 2
         @test pfm.table[c_index, 1] == 1
         @test pfm.table[c_index, 2] == 2
         @test pfm.table[a_index, 2] == 0
+        @test sum(pfm, dims = 1) == [3 2] # gaps not counted
 
         gapped = GappedAlphabet()
         gpfm = position_frequency_matrix(msa; alphabet = gapped)
-        gap_index = gapped[GAP]
+        gap_index = gapped[GAP] # 21
 
+        @test gpfm.table[gap_index, 1] == 0
         @test gpfm.table[gap_index, 2] == 1
+        @test sum(gpfm, dims = 1) == [3 3] # gaps counted
     end
 
     @testset "Probabilities" begin
@@ -54,18 +59,19 @@
 
         ppm = position_specific_probability_matrix(msa; alphabet = alphabet)
 
+        # P should sum to 1 per column
         @test isapprox(sum(ppm.table[:, 1]), 1.0)
         @test isapprox(sum(ppm.table[:, 2]), 1.0)
 
-        msa_gap = fill(GAP, 3, 1)
+        msa_gap = fill(GAP, 3, 1) # all-gap column
         ppm_gap = position_specific_probability_matrix(msa_gap; alphabet = alphabet)
         @test all(isnan, ppm_gap.table[:, 1])
 
+        # same result when computed from frequencies than directly from an MSA
         ppm_from_freqs = position_specific_probability_matrix(
             position_frequency_matrix(msa; alphabet = alphabet),
         )
-
-        @test isapprox(gettablearray(ppm), gettablearray(ppm_from_freqs); nans = true)
+        @test isapprox(gettablearray(ppm), gettablearray(ppm_from_freqs))
     end
 
     @testset "Scoring overloads and non-mutating semantics" begin
@@ -88,18 +94,24 @@
             base = 2,
         )
 
-        @test isapprox(gettablearray(pssm_msa), gettablearray(pssm_freqs); nans = true)
-        @test isapprox(gettablearray(pssm_msa), gettablearray(pssm_probs); nans = true)
+        @test isapprox(gettablearray(pssm_msa), gettablearray(pssm_freqs))
+        @test isapprox(gettablearray(pssm_msa), gettablearray(pssm_probs))
 
-        pfm0 = position_frequency_matrix(msa; alphabet = alphabet)
-        pfm1 = deepcopy(pfm0)
-        position_specific_probability_matrix(pfm0)
-        @test gettablearray(pfm0) == gettablearray(pfm1)
+        @testset "non-mutating behavior" begin
+            pfm_original = position_frequency_matrix(msa; alphabet = alphabet)
+            pfm_backup = deepcopy(pfm_original)
+            position_specific_probability_matrix(pfm_original)
+            @test gettablearray(pfm_original) == gettablearray(pfm_backup)
 
-        ppm0 = position_specific_probability_matrix(msa; alphabet = alphabet)
-        ppm1 = deepcopy(ppm0)
-        position_specific_scoring_matrix(ppm0; background = uniform_background, base = 2)
-        @test gettablearray(ppm0) == gettablearray(ppm1)
+            ppm_original = position_specific_probability_matrix(msa; alphabet = alphabet)
+            ppm_backup = deepcopy(ppm_original)
+            position_specific_scoring_matrix(
+                ppm_original;
+                background = uniform_background,
+                base = 2,
+            )
+            @test gettablearray(ppm_original) == gettablearray(ppm_backup)
+        end
     end
 
     @testset "Log-odds correctness" begin
@@ -114,11 +126,12 @@
 
         p_a = 2 / 3
         p_c = 1 / 3
-        q_a = uniform_background[alphabet[Residue('A')]]
-        q_c = uniform_background[alphabet[Residue('C')]]
+        q_a = 0.05 # uniform background for the UngappedAlphabet
+        q_c = 0.05
 
         @test isapprox(result.table[alphabet[Residue('A')], 1], log2(p_a / q_a))
         @test isapprox(result.table[alphabet[Residue('C')], 1], log2(p_c / q_c))
+        @test isinf(result.table["R", 1]) # arginine not present in column
     end
 
     @testset "Alphabet controls gap counting" begin
@@ -130,11 +143,13 @@
             background = uniform_background,
         )
 
-        a_index = alphabet[Residue('A')]
-        c_index = alphabet[Residue('C')]
-
-        @test isapprox(result.table[a_index, 1], log(1.0 / uniform_background[a_index]))
-        @test result.table[c_index, 1] == -Inf
+        # UngappedAlphabet, so gaps not counted
+        @test isapprox(result["A", 1], log(1.0 / 0.05)) # uniform background
+        @test result["C", 1] == -Inf
+        @test result[1, 1] == result["A", 1] # index access works the same
+        @test result[1, 1] == result[Residue('A'), 1] # Residue access works the same
+        @test_throws BoundsError result[21, 1] # there is no value for gaps
+        @test_throws BoundsError result[GAP, 1] # there is no value for gaps
     end
 
     @testset "GappedAlphabet counts gaps" begin

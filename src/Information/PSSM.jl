@@ -109,6 +109,13 @@ for f in (:size, :getindex)
         $(f)(gettable(scores), args...)
 end
 
+@inline function Base.getindex(scores::AbstractPositionSpecificMatrix, r::Residue, c::Int)
+    i = scores.alphabet[r]
+    table = gettablearray(scores)
+    @boundscheck checkbounds(table, i, c)
+    @inbounds table[i, c]
+end
+
 # Show
 # ----
 
