@@ -95,6 +95,10 @@ export  # MIToS.MSA
     BLMI,
     # PSSM
     AbstractPositionSpecificMatrix,
+    PositionFrequencyMatrix,
+    position_frequency_matrix,
+    PositionSpecificProbabilityMatrix,
+    position_specific_probability_matrix,
     PositionSpecificScoreMatrix,
     position_specific_scoring_matrix,
     # Gaps

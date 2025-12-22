@@ -3,6 +3,21 @@
     alphabet = UngappedAlphabet()
     uniform_background = fill(1 / 20, 20)
 
+    function _approx_with_nan(a, b; atol = 0.0, rtol = 0.0)
+        size(a) == size(b) || return false
+        for i in eachindex(a, b)
+            ai = a[i]
+            bi = b[i]
+            if isnan(ai) && isnan(bi)
+                continue
+            end
+            if !isapprox(ai, bi; atol = atol, rtol = rtol)
+                return false
+            end
+        end
+        return true
+    end
+
     @testset "Shape and ordering" begin
         msa = Residue[
             'A' 'E'
@@ -18,6 +33,100 @@
 
         @test size(result.table) == (length(alphabet), size(msa, 2))
         @test result.alphabet == alphabet
+    end
+
+    @testset "Frequencies" begin
+        msa = Residue[
+            'A' 'C'
+            'A' GAP
+            'C' 'C'
+        ]
+
+        pfm = position_frequency_matrix(msa; alphabet = alphabet)
+
+        a_index = alphabet[Residue('A')]
+        c_index = alphabet[Residue('C')]
+
+        @test pfm.table[a_index, 1] == 2
+        @test pfm.table[c_index, 1] == 1
+        @test pfm.table[c_index, 2] == 2
+        @test pfm.table[a_index, 2] == 0
+
+        gapped = GappedAlphabet()
+        gpfm = position_frequency_matrix(msa; alphabet = gapped)
+        gap_index = gapped[GAP]
+
+        @test gpfm.table[gap_index, 2] == 1
+    end
+
+    @testset "Probabilities" begin
+        msa = Residue[
+            'A' 'C'
+            'A' GAP
+            'C' 'C'
+        ]
+
+        ppm = position_specific_probability_matrix(msa; alphabet = alphabet)
+
+        @test isapprox(sum(ppm.table[:, 1]), 1.0)
+        @test isapprox(sum(ppm.table[:, 2]), 1.0)
+
+        msa_gap = fill(GAP, 3, 1)
+        ppm_gap = position_specific_probability_matrix(msa_gap; alphabet = alphabet)
+        @test all(isnan, ppm_gap.table[:, 1])
+
+        ppm_from_freqs = position_specific_probability_matrix(
+            position_frequency_matrix(msa; alphabet = alphabet),
+        )
+
+        @test _approx_with_nan(
+            gettablearray(ppm),
+            gettablearray(ppm_from_freqs),
+        )
+    end
+
+    @testset "Scoring overloads and non-mutating semantics" begin
+        msa = reshape(Residue['A', 'A', 'C'], 3, 1)
+
+        pssm_msa = position_specific_scoring_matrix(
+            msa;
+            alphabet = alphabet,
+            background = uniform_background,
+            base = 2,
+        )
+        pssm_freqs = position_specific_scoring_matrix(
+            position_frequency_matrix(msa; alphabet = alphabet);
+            background = uniform_background,
+            base = 2,
+        )
+        pssm_probs = position_specific_scoring_matrix(
+            position_specific_probability_matrix(msa; alphabet = alphabet);
+            background = uniform_background,
+            base = 2,
+        )
+
+        @test _approx_with_nan(
+            gettablearray(pssm_msa),
+            gettablearray(pssm_freqs),
+        )
+        @test _approx_with_nan(
+            gettablearray(pssm_msa),
+            gettablearray(pssm_probs),
+        )
+
+        pfm0 = position_frequency_matrix(msa; alphabet = alphabet)
+        pfm1 = deepcopy(pfm0)
+        position_specific_probability_matrix(pfm0)
+        @test gettablearray(pfm0) == gettablearray(pfm1)
+
+        ppm0 = position_specific_probability_matrix(msa; alphabet = alphabet)
+        ppm1 = deepcopy(ppm0)
+        position_specific_scoring_matrix(
+            ppm0;
+            background = uniform_background,
+            base = 2,
+        )
+        @test gettablearray(ppm0) == gettablearray(ppm1)
     end
 
     @testset "Log-odds correctness" begin
