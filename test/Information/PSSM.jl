@@ -3,6 +3,199 @@
     alphabet = UngappedAlphabet()
     uniform_background = fill(1 / 20, 20) # uniform distribution for the UngappedAlphabet
 
+    @testset "Manual construction / empty matrices" begin
+        pfm = PositionFrequencyMatrix(alphabet, 3)
+        ppm = PositionSpecificProbabilityMatrix(alphabet, 3)
+        pssm = PositionSpecificScoringMatrix(alphabet, 3, 2)
+
+        @test Base.ismutabletype(typeof(pfm))
+        @test Base.ismutabletype(typeof(ppm))
+        @test Base.ismutabletype(typeof(pssm))
+
+        @test all(==(0.0), pfm)
+        @test all(isnan, ppm)
+        @test all(==(0.0), pssm)
+        @test pssm.base == 2
+
+        pfm_zeros = zeros(PositionFrequencyMatrix, alphabet, 2)
+        pssm_zeros = zeros(PositionSpecificScoringMatrix, alphabet, 2, 10)
+
+        @test all(==(0.0), pfm_zeros)
+        @test all(==(0.0), pssm_zeros)
+        @test pssm_zeros.base == 10
+
+        pssm[Residue('A'), 1] = 1.23
+        @test pssm[Residue('A'), 1] == 1.23
+        @test pssm["A", 1] == 1.23
+
+        data = zeros(Float64, length(alphabet), 4)
+        pssm2 = PositionSpecificScoringMatrix(data, alphabet, 2)
+        pssm2[Residue('A'), 1] = 4.56
+        @test pssm2[Residue('A'), 1] == 4.56
+        @test gettablearray(pssm2)[alphabet[Residue('A')], 1] == 4.56
+
+        pfm_named = PositionFrequencyMatrix(pfm.table, alphabet)
+        @test pfm_named["A", 1] == pfm["A", 1]
+
+        ppm_named = PositionSpecificProbabilityMatrix(ppm.table, alphabet)
+        @test isnan(ppm_named["A", 1])
+
+        @test_throws ArgumentError PositionFrequencyMatrix(pfm.table, GappedAlphabet())
+
+        pfm_data = PositionFrequencyMatrix(zeros(Float64, length(alphabet), 2), alphabet)
+        @test all(==(0.0), pfm_data)
+
+        bad_data = zeros(Float64, length(alphabet) - 1, 2)
+        @test_throws ErrorException PositionFrequencyMatrix(bad_data, alphabet)
+
+        pssm_float = PositionSpecificScoringMatrix(alphabet, 2, 2.5)
+        @test pssm_float.base == 2.5
+        @test pssm_float.base isa Float64
+
+        pssm_int = PositionSpecificScoringMatrix(alphabet, 2, 2)
+        @test pssm_int.base === 2
+
+        pssm_nat = PositionSpecificScoringMatrix(alphabet, 2, ℯ)
+        @test pssm_nat.base === ℯ
+
+        for base in (-1.0, 0.0, 1.0, NaN)
+            @test_throws ArgumentError PositionSpecificScoringMatrix(alphabet, 2, base)
+        end
+    end
+
+    @testset "Score sequence" begin
+        pssm = PositionSpecificScoringMatrix(alphabet, 2)
+        pssm["A", 1] = 1.0
+        pssm["C", 2] = 2.0
+        pssm["A", 2] = 0.5
+        pssm["C", 1] = -1.0
+
+        seq = Residue['A', 'C']
+        pssm_score = score_sequence(pssm, seq)
+        @test pssm_score isa ProfileScore
+        @test pssm_score.score == 3.0
+        @test pssm_score.used_positions == 2
+        @test pssm_score.kind == :log_odds
+
+        @test_throws ArgumentError score_sequence(pssm, Residue['A'])
+
+        seqs_row = reshape(seq, 1, :)
+        seqs_col = reshape(seq, :, 1)
+        pssm_score_row = score_sequence(pssm, seqs_row)
+        @test pssm_score_row isa ProfileScore
+        @test pssm_score_row.score == 3.0
+        @test pssm_score_row.used_positions == 2
+        @test pssm_score_row.kind == :log_odds
+        pssm_score_col = score_sequence(pssm, seqs_col)
+        @test pssm_score_col isa ProfileScore
+        @test pssm_score_col.score == 3.0
+        @test pssm_score_col.used_positions == 2
+        @test pssm_score_col.kind == :log_odds
+
+        seqs_bad = fill(Residue('A'), 2, 3)
+        @test_throws ArgumentError score_sequence(pssm, seqs_bad)
+
+        seq_unknown = Residue['A', Residue('X')]
+        score_unknown = @test_logs (:warn, r"Residue .* not in alphabet") score_sequence(
+            pssm,
+            seq_unknown,
+        )
+        @test score_unknown isa ProfileScore
+        @test score_unknown.score == 1.0
+        @test score_unknown.used_positions == 1
+        @test score_unknown.kind == :log_odds
+
+        seq_gap = Residue['A', GAP]
+        score_gap = score_sequence(pssm, seq_gap)
+        @test score_gap isa ProfileScore
+        @test score_gap.score == 1.0
+        @test score_gap.used_positions == 1
+        @test score_gap.kind == :log_odds
+
+        ppm = PositionSpecificProbabilityMatrix(alphabet, 2)
+        ppm["A", 1] = 0.1
+        ppm["C", 2] = 0.2
+        ppm_score = score_sequence(ppm, seq)
+        @test ppm_score isa ProfileScore
+        @test isapprox(ppm_score.score, log(0.1) + log(0.2))
+        @test ppm_score.base == ℯ
+        @test isapprox(ppm_score.base^ppm_score.score, 0.02)
+        @test ppm_score.used_positions == 2
+        @test ppm_score.kind == :log_likelihood
+
+        ppm_score_row = score_sequence(ppm, seqs_row)
+        @test ppm_score_row isa ProfileScore
+        @test isapprox(ppm_score_row.score, ppm_score.score)
+        @test ppm_score_row.base == ppm_score.base
+        @test ppm_score_row.used_positions == ppm_score.used_positions
+        @test ppm_score_row.kind == :log_likelihood
+
+        ppm_score_bits = score_sequence(ppm, seq; base = 2)
+        @test ppm_score_bits isa ProfileScore
+        @test isapprox(ppm_score_bits.score, ppm_score.score / log(2))
+        @test ppm_score_bits.base == 2
+        @test isapprox(ppm_score_bits.base^ppm_score_bits.score, 0.02)
+        @test ppm_score_bits.kind == :log_likelihood
+
+        seq_unknown_ppm = Residue['A', Residue('X')]
+        ppm_unknown = @test_logs (:warn, r"Residue .* not in alphabet") score_sequence(
+            ppm,
+            seq_unknown_ppm,
+        )
+        @test ppm_unknown isa ProfileScore
+        @test isapprox(ppm_unknown.score, log(0.1))
+        @test ppm_unknown.base == ℯ
+        @test isapprox(ppm_unknown.base^ppm_unknown.score, 0.1)
+        @test ppm_unknown.used_positions == 1
+        @test ppm_unknown.kind == :log_likelihood
+
+        seq_gap_ppm = Residue['A', GAP]
+        ppm_gap = score_sequence(ppm, seq_gap_ppm)
+        @test ppm_gap isa ProfileScore
+        @test isapprox(ppm_gap.score, log(0.1))
+        @test ppm_gap.base == ℯ
+        @test isapprox(ppm_gap.base^ppm_gap.score, 0.1)
+        @test ppm_gap.used_positions == 1
+        @test ppm_gap.kind == :log_likelihood
+
+        ppm_zero = PositionSpecificProbabilityMatrix(alphabet, 2)
+        ppm_zero["A", 1] = 0.1
+        ppm_zero["C", 2] = 0.0
+        zero_score = score_sequence(ppm_zero, seq)
+        @test zero_score isa ProfileScore
+        @test zero_score.score == -Inf
+        @test zero_score.base == ℯ
+        @test zero_score.used_positions == 2
+        @test zero_score.kind == :log_likelihood
+
+        @testset "MSA and sequence types" begin
+            seq_vec = Residue['A', 'C', 'D']
+            msa_matrix = permutedims(seq_vec)
+
+            msa = MultipleSequenceAlignment(msa_matrix)
+            annot_msa = AnnotatedMultipleSequenceAlignment(msa_matrix)
+
+            pssm_types = PositionSpecificScoringMatrix(alphabet, 3)
+            pssm_types["A", 1] = 0.5
+            pssm_types["C", 2] = 1.0
+            pssm_types["D", 3] = -0.25
+
+            expected = score_sequence(pssm_types, seq_vec)
+            @test expected.used_positions == 3
+            @test expected.kind == :log_odds
+
+            aligned_seq = getsequence(msa, 1)
+            annot_aligned_seq = getsequence(annot_msa, 1)
+            unaligned_seq = AnnotatedSequence(annot_aligned_seq)
+
+            @test score_sequence(pssm_types, msa) == expected
+            @test score_sequence(pssm_types, annot_msa) == expected
+            @test score_sequence(pssm_types, aligned_seq) == expected
+            @test score_sequence(pssm_types, annot_aligned_seq) == expected
+            @test score_sequence(pssm_types, unaligned_seq) == expected
+        end
+    end
+
     @testset "Shape, ordering and values" begin
         msa = Residue[
             'A' 'E'

@@ -99,8 +99,10 @@ export  # MIToS.MSA
     position_frequency_matrix,
     PositionSpecificProbabilityMatrix,
     position_specific_probability_matrix,
-    PositionSpecificScoreMatrix,
+    PositionSpecificScoringMatrix,
     position_specific_scoring_matrix,
+    ProfileScore,
+    score_sequence,
     # Gaps
     gap_union_percentage,
     gap_intersection_percentage,
