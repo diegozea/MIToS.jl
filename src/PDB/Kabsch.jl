@@ -482,7 +482,7 @@ function gdt_ha(
     return mean(values(scores))
 end
 
-tm_d0(L::Integer) = max(0.5, 1.24 * (L - 15)^(1 / 3) - 1.8)
+tm_d0(L::Integer) = max(0.5, 1.24 * cbrt(L - 15) - 1.8)
 
 function _tm_score_from_distances(distances::AbstractVector{<:Real}, Ltarget::Integer)
     d0 = tm_d0(Ltarget)
