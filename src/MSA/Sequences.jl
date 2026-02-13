@@ -9,7 +9,7 @@ struct RawSequences <: SequenceFormat end
 # `_load_sequences`. This lets us redirect sequence formats to an existing parser
 # implementation for MSAs. For example, `FASTASequences` uses the `FASTA` parser.
 # By default, `_format_fallback` returns the same format, so each format can provide
-# its own specialized sequence parser.
+# its own specialized `_load_sequences`.
 _format_fallback(::Type{T}) where {T<:SequenceFormat} = T
 _format_fallback(::Type{FASTASequences}) = FASTA
 _format_fallback(::Type{PIRSequences}) = PIR

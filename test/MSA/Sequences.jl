@@ -177,6 +177,27 @@
     end
 
     @testset "IO" begin
+        @testset "Default _format_fallback for custom SequenceFormat" begin
+            # Test-only format with no specialized `_format_fallback` method.
+            struct DummySequenceFormat <: MIToS.MSA.SequenceFormat end
+
+            # Minimal loader so `parse_file` dispatches through the generic sequence path.
+            function MIToS.MSA._load_sequences(
+                io::Union{IO,AbstractString},
+                format::Type{DummySequenceFormat};
+                create_annotations::Bool = false,
+            )
+                ids = ["dummy_seq"]
+                seqs = ["ACDE"]
+                return ids, seqs, Annotations()
+            end
+
+            @test MIToS.MSA._format_fallback(DummySequenceFormat) == DummySequenceFormat
+
+            parsed = parse_file(IOBuffer("ignored"), DummySequenceFormat)
+            @test join(only(parsed)) == "ACDE"
+        end
+
         @testset "FASTASequences" begin
             in_fasta = read_file(joinpath(DATA, "Q9NW08.fasta"), FASTASequences)
             io = IOBuffer()
