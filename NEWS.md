@@ -1,5 +1,10 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.8.0 to v3.9.0
+
+- Added `AnnotatedFASTASequences` in `MIToS.MSA` to parse annotated sequence files in
+  the Annotated FASTA Format (AFF) and the CAID modified FASTA references/labels format.
+
 ### Changes from v3.7.0 to v3.8.0
 
 - Fix a bug when writing mmCIF files with `write_file(..., MMCIFFile)` that caused
