@@ -53,6 +53,7 @@ end
     include("MSA/MSAStats.jl")
     include("MSA/MSAQuality.jl")
     include("MSA/Sequences.jl")
+    include("MSA/AnnotatedFASTA.jl")
     include("MSA/Shuffle.jl")
     include("MSA/Identity.jl")
     include("MSA/ResidueSubstitutionMatrices.jl")

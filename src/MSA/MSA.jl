@@ -132,6 +132,7 @@ export  # Residue
     A2M,
     # Sequences
     FASTASequences,
+    AnnotatedFASTASequences,
     PIRSequences,
     RawSequences,
     # Shuffle
@@ -190,6 +191,7 @@ include("Stockholm.jl")
 include("FASTA.jl")
 include("PIR.jl")
 include("A3M.jl")
+include("AnnotatedFASTA.jl")
 include("Sequences.jl")
 include("Shuffle.jl")
 include("PLM.jl")
