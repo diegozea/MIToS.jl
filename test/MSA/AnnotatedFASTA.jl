@@ -141,6 +141,97 @@ AC
         end
     end
 
+    @testset "Format tags count mismatch throws informative error" begin
+        mismatched = """
+# Format:
+# >accession|FASTA=identifier
+# Amino acid sequence
+# IDR  Protein disordered region
+# binding  Binding region
+>SEQ_MISMATCH
+AC
+01
+"""
+
+        err = try
+            parse_file(IOBuffer(mismatched), AnnotatedFASTASequences)
+            nothing
+        catch e
+            e
+        end
+
+        @test err isa ErrorException
+        @test occursin("The sequence SEQ_MISMATCH has 1 annotation lines", err.msg)
+        @test occursin("the header Format section defines 2 features", err.msg)
+    end
+
+    @testset "Missing sequence and annotation lines throw informative errors" begin
+        no_sequence_lines = """
+>NO_SEQUENCE
+"""
+
+        err_no_seq = try
+            parse_file(IOBuffer(no_sequence_lines), AnnotatedFASTASequences)
+            nothing
+        catch e
+            e
+        end
+
+        @test err_no_seq isa ErrorException
+        @test occursin("There are no sequence lines for NO_SEQUENCE", err_no_seq.msg)
+
+        no_annotation_lines = """
+>NO_ANNOT
+ACDE
+"""
+
+        err_no_annot = try
+            parse_file(IOBuffer(no_annotation_lines), AnnotatedFASTASequences)
+            nothing
+        catch e
+            e
+        end
+
+        @test err_no_annot isa ErrorException
+        @test occursin("There are no annotation lines for NO_ANNOT", err_no_annot.msg)
+    end
+
+    @testset "Annotation length mismatch throws informative error" begin
+        length_mismatch = """
+>LEN_MISMATCH
+ACDE
+01
+"""
+
+        err = try
+            parse_file(IOBuffer(length_mismatch), AnnotatedFASTASequences)
+            nothing
+        catch e
+            e
+        end
+
+        @test err isa ErrorException
+        @test occursin("The annotation line 1 for LEN_MISMATCH has 2 characters", err.msg)
+        @test occursin("4 are expected", err.msg)
+    end
+
+    @testset "Duplicate sequence names keep OriginalSeqName annotation" begin
+        duplicated_ids = """
+>dup
+AC
+01
+>dup
+GT
+10
+"""
+
+        data = parse_file(IOBuffer(duplicated_ids), AnnotatedFASTASequences)
+        @test length(data) == 2
+        @test sequence_id(data[1]) == "dup"
+        @test sequence_id(data[2]) == "dup(1)"
+        @test getannotsequence(data[2], "OriginalSeqName") == "dup"
+    end
+
     @testset "AFF" begin
         aff = read_file(joinpath(DATA, "aff_example.fasta"), AnnotatedFASTASequences)
 
