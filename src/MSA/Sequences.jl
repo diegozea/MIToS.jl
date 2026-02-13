@@ -5,6 +5,12 @@ struct FASTASequences <: SequenceFormat end
 struct PIRSequences <: SequenceFormat end
 struct RawSequences <: SequenceFormat end
 
+# `parse_file` normalizes the requested format via `_format_fallback` before calling
+# `_load_sequences`. This lets us redirect sequence formats to an existing parser
+# implementation for MSAs. For example, `FASTASequences` uses the `FASTA` parser.
+# By default, `_format_fallback` returns the same format, so each format can provide
+# its own specialized `_load_sequences`.
+_format_fallback(::Type{T}) where {T<:SequenceFormat} = T
 _format_fallback(::Type{FASTASequences}) = FASTA
 _format_fallback(::Type{PIRSequences}) = PIR
 _format_fallback(::Type{RawSequences}) = Raw
