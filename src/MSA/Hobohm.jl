@@ -9,7 +9,9 @@ returns `true` if they should belong to the same cluster. `threshold` is passed
 as the last argument to `within_cluster`. The number of elements is stored in
 `n_items`.
 """
-function _fill_hobohmI_serial!(
+function _fill_hobohmI!(
+    scan_candidates!::Function,
+    state,
     within_cluster::Function,
     cluster::Vector{Int},
     clustersize::Vector{Int},
@@ -24,12 +26,17 @@ function _fill_hobohmI_serial!(
             cluster[i] = cluster_id
             clustersize[cluster_id] += 1
             ref_item = items[i]
-            for j = (i+1):n_items
-                if cluster[j] == 0 && within_cluster(ref_item, items[j], threshold)
-                    cluster[j] = cluster_id
-                    clustersize[cluster_id] += 1
-                end
-            end
+            clustersize[cluster_id] += scan_candidates!(
+                state,
+                within_cluster,
+                cluster,
+                items,
+                ref_item,
+                threshold,
+                cluster_id,
+                i + 1,
+                n_items,
+            )
         end
     end
     @inbounds if cluster[n_items] == 0
@@ -40,42 +47,50 @@ function _fill_hobohmI_serial!(
     resize!(clustersize, cluster_id)
 end
 
-function _fill_hobohmI_threaded!(
+function _scan_hobohmI_serial!(
+    ::Nothing,
     within_cluster::Function,
     cluster::Vector{Int},
-    clustersize::Vector{Int},
     items::AbstractVector,
+    ref_item,
     threshold,
+    cluster_id::Int,
+    first_candidate::Int,
+    last_candidate::Int,
 )
-    cluster_id = 0
-    n_items = length(items)
-    matches = Vector{Bool}(undef, n_items)
-    @inbounds for i = 1:(n_items-1)
-        if cluster[i] == 0
-            cluster_id += 1
-            cluster[i] = cluster_id
-            clustersize[cluster_id] += 1
-            ref_item = items[i]
-            Threads.@threads for j = (i+1):n_items
-                matches[j] =
-                    cluster[j] == 0 && within_cluster(ref_item, items[j], threshold)
-            end
-            added = 0
-            for j = (i+1):n_items
-                if matches[j]
-                    cluster[j] = cluster_id
-                    added += 1
-                end
-            end
-            clustersize[cluster_id] += added
+    added = 0
+    @inbounds for j = first_candidate:last_candidate
+        if cluster[j] == 0 && within_cluster(ref_item, items[j], threshold)
+            cluster[j] = cluster_id
+            added += 1
         end
     end
-    @inbounds if cluster[n_items] == 0
-        cluster_id += 1
-        cluster[n_items] = cluster_id
-        clustersize[cluster_id] += 1
+    added
+end
+
+function _scan_hobohmI_threaded!(
+    matches::Vector{Bool},
+    within_cluster::Function,
+    cluster::Vector{Int},
+    items::AbstractVector,
+    ref_item,
+    threshold,
+    cluster_id::Int,
+    first_candidate::Int,
+    last_candidate::Int,
+)
+    Threads.@threads for j = first_candidate:last_candidate
+        @inbounds matches[j] =
+            cluster[j] == 0 && within_cluster(ref_item, items[j], threshold)
     end
-    resize!(clustersize, cluster_id)
+    added = 0
+    @inbounds for j = first_candidate:last_candidate
+        if matches[j]
+            cluster[j] = cluster_id
+            added += 1
+        end
+    end
+    added
 end
 
 function _fill_hobohmI!(
@@ -87,9 +102,26 @@ function _fill_hobohmI!(
     threads::Bool = true,
 )
     if threads && Threads.nthreads() > 1
-        _fill_hobohmI_threaded!(within_cluster, cluster, clustersize, items, threshold)
+        matches = Vector{Bool}(undef, length(items))
+        _fill_hobohmI!(
+            _scan_hobohmI_threaded!,
+            matches,
+            within_cluster,
+            cluster,
+            clustersize,
+            items,
+            threshold,
+        )
     else
-        _fill_hobohmI_serial!(within_cluster, cluster, clustersize, items, threshold)
+        _fill_hobohmI!(
+            _scan_hobohmI_serial!,
+            nothing,
+            within_cluster,
+            cluster,
+            clustersize,
+            items,
+            threshold,
+        )
     end
 end
 
