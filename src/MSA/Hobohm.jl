@@ -1,6 +1,10 @@
 # Hobohm I
 # ========
 
+const _HOBOHM_THREADS = """The `threads` keyword argument (default: `false`) controls 
+whether the inner scan over candidate cluster members runs in parallel when worker threads 
+are available."""
+
 """
 Fill `cluster` with the Hobohm I assignments and return the number of clusters.
 `cluster` is assumed to be empty (only zeroes) and its length must be equal to
@@ -118,9 +122,7 @@ end
 
 Cluster `items` using the Hobohm I algorithm from Hobohm et al. `within_cluster`
 is a predicate that receives two elements and `threshold` and returns `true` when
-they should be clustered together. User-provided predicates remain serial by
-default; set `threads` to `true` to thread the inner scan over candidate items
-when worker threads are available.
+they should be clustered together. $_HOBOHM_THREADS
 
 # References
 
@@ -150,8 +152,7 @@ end
 
 This method allows clustering the aligned sequences in `msa` using the
 `within_cluster` predicate. It converts the alignment into a vector of
-residue sequences and forwards the call to the general method. User-provided
-predicates remain serial by default.
+residue sequences and forwards the call to the general method. $_HOBOHM_THREADS
 """
 function hobohmI(
     within_cluster::Function,
@@ -177,8 +178,7 @@ end
 `hobohmI(msa, threshold; threads=false)`
 
 This method allows to cluster the sequences contained in `msa` using
-`percentidentity` as the clustering predicate. When `threads` is `true`, the
-inner scan is threaded if worker threads are available.
+`percentidentity` as the clustering predicate. $_HOBOHM_THREADS
 """
 function hobohmI(msa::AbstractMatrix{Residue}, threshold; threads::Bool = false)
     hobohmI(percentidentity, msa, threshold; threads = threads)
