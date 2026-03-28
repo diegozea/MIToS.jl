@@ -76,16 +76,6 @@ function _scan_hobohmI_threaded!(
     end
 end
 
-function _fill_clustersize!(clustersize::Vector{Int}, cluster::Vector{Int}, nclusters::Int)
-    @inbounds for i = 1:nclusters
-        clustersize[i] = 0
-    end
-    @inbounds for i = 1:length(cluster)
-        clustersize[cluster[i]] += 1
-    end
-    resize!(clustersize, nclusters)
-end
-
 function _fill_hobohmI!(
     within_cluster::Function,
     cluster::Vector{Int},
@@ -116,7 +106,10 @@ function _hobohmI(within_cluster::Function, items::AbstractVector, threshold; th
     cluster = zeros(Int, n)
     clustersize = zeros(Int, n)
     nclusters = _fill_hobohmI!(within_cluster, cluster, items, threshold; threads = threads)
-    _fill_clustersize!(clustersize, cluster, nclusters)
+    resize!(clustersize, nclusters)
+    @inbounds for i = 1:n
+        clustersize[cluster[i]] += 1
+    end
     Clusters(clustersize, cluster, _get_sequence_weight(clustersize, cluster))
 end
 
