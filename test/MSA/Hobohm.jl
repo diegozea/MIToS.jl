@@ -6,6 +6,7 @@
 end
 
 @testset "Hobohm I" begin
+    cluster_weights(cl) = [getweight(cl, i) for i = 1:nelements(cl)]
 
     # DAWAEE
     # DAWAEF  83.3
@@ -21,6 +22,20 @@ end
     @test nelements(clusters) == 6
     @test getweight(clusters, 1) == 1 / 3
     @test getweight(clusters, 6) == 1 / 3
+
+    @testset "Serial and threaded are exact" begin
+        for (file, format, threshold) in
+            [("Gaoetal2011.fasta", FASTA, 62), ("gaps.txt", Raw, 62)]
+            msa = read_file(joinpath(DATA, file), format)
+            serial = hobohmI(msa, threshold; threads = false)
+            threaded = hobohmI(msa, threshold; threads = true)
+
+            @test serial == threaded
+            @test assignments(serial) == assignments(threaded)
+            @test counts(serial) == counts(threaded)
+            @test cluster_weights(serial) == cluster_weights(threaded)
+        end
+    end
 
     @testset "Clusters getters" begin
 
@@ -43,11 +58,23 @@ end
             percentidentity(s1, s2, thr)
         end
         @test clusters_do == clusters
+
+        clusters_do_serial = hobohmI(fasta, 62; threads = false) do s1, s2, thr
+            percentidentity(s1, s2, thr)
+        end
+        clusters_do_threaded = hobohmI(fasta, 62; threads = true) do s1, s2, thr
+            percentidentity(s1, s2, thr)
+        end
+        @test clusters_do_serial == clusters_do_threaded
     end
 
     @testset "Vector input" begin
         seqs = getresiduesequences(fasta)
         clusters_vec = hobohmI(percentidentity, seqs, 62)
         @test clusters_vec == clusters
+
+        clusters_vec_serial = hobohmI(percentidentity, seqs, 62; threads = false)
+        clusters_vec_threaded = hobohmI(percentidentity, seqs, 62; threads = true)
+        @test clusters_vec_serial == clusters_vec_threaded
     end
 end
