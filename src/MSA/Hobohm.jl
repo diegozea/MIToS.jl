@@ -2,19 +2,18 @@
 # ========
 
 """
-Fill `cluster` and `clustersize` vectors. They are assumed to be empty (only
-zeroes) and their length must be equal to the number of elements to cluster.
-`within_cluster` is a predicate that takes two items and a `threshold` and
-returns `true` if they should belong to the same cluster. `threshold` is passed
-as the last argument to `within_cluster`. The number of elements is stored in
-`n_items`.
+Fill `cluster` with the Hobohm I assignments and return the number of clusters.
+`cluster` is assumed to be empty (only zeroes) and its length must be equal to
+the number of elements to cluster. `within_cluster` is a predicate that takes
+two items and a `threshold` and returns `true` if they should belong to the
+same cluster. `threshold` is passed as the last argument to `within_cluster`.
+The number of elements is stored in `n_items`.
 """
 function _fill_hobohmI!(
     scan_function::Function,
     state,
     within_cluster::Function,
     cluster::Vector{Int},
-    clustersize::Vector{Int},
     items::AbstractVector,
     threshold,
 )
@@ -24,9 +23,8 @@ function _fill_hobohmI!(
         if cluster[i] == 0
             cluster_id += 1
             cluster[i] = cluster_id
-            clustersize[cluster_id] += 1
             ref_item = items[i]
-            clustersize[cluster_id] += scan_function(
+            scan_function(
                 state,
                 within_cluster,
                 cluster,
@@ -42,9 +40,8 @@ function _fill_hobohmI!(
     @inbounds if cluster[n_items] == 0
         cluster_id += 1
         cluster[n_items] = cluster_id
-        clustersize[cluster_id] += 1
     end
-    resize!(clustersize, cluster_id)
+    cluster_id
 end
 
 function _scan_hobohmI_serial!(
@@ -58,14 +55,11 @@ function _scan_hobohmI_serial!(
     first_candidate::Int,
     last_candidate::Int,
 )
-    added = 0
     @inbounds for j = first_candidate:last_candidate
         if cluster[j] == 0 && within_cluster(ref_item, items[j], threshold)
             cluster[j] = cluster_id
-            added += 1
         end
     end
-    added
 end
 
 function _scan_hobohmI_threaded!(
@@ -83,20 +77,26 @@ function _scan_hobohmI_threaded!(
         @inbounds matches[j] =
             cluster[j] == 0 && within_cluster(ref_item, items[j], threshold)
     end
-    added = 0
     @inbounds for j = first_candidate:last_candidate
         if matches[j]
             cluster[j] = cluster_id
-            added += 1
         end
     end
-    added
+end
+
+function _fill_clustersize!(clustersize::Vector{Int}, cluster::Vector{Int}, nclusters::Int)
+    @inbounds for i = 1:nclusters
+        clustersize[i] = 0
+    end
+    @inbounds for i = 1:length(cluster)
+        clustersize[cluster[i]] += 1
+    end
+    resize!(clustersize, nclusters)
 end
 
 function _fill_hobohmI!(
     within_cluster::Function,
     cluster::Vector{Int},
-    clustersize::Vector{Int},
     items::AbstractVector,
     threshold;
     threads::Bool = true,
@@ -104,15 +104,7 @@ function _fill_hobohmI!(
     use_threads = threads && Threads.nthreads() > 1
     scan_function = ifelse(use_threads, _scan_hobohmI_threaded!, _scan_hobohmI_serial!)
     state = use_threads ? Vector{Bool}(undef, length(items)) : nothing
-    _fill_hobohmI!(
-        scan_function,
-        state,
-        within_cluster,
-        cluster,
-        clustersize,
-        items,
-        threshold,
-    )
+    _fill_hobohmI!(scan_function, state, within_cluster, cluster, items, threshold)
 end
 
 """
@@ -132,14 +124,8 @@ function _hobohmI(within_cluster::Function, items::AbstractVector, threshold; th
     n = length(items)
     cluster = zeros(Int, n)
     clustersize = zeros(Int, n)
-    _fill_hobohmI!(
-        within_cluster,
-        cluster,
-        clustersize,
-        items,
-        threshold;
-        threads = threads,
-    )
+    nclusters = _fill_hobohmI!(within_cluster, cluster, items, threshold; threads = threads)
+    _fill_clustersize!(clustersize, cluster, nclusters)
     Clusters(clustersize, cluster, _get_sequence_weight(clustersize, cluster))
 end
 
