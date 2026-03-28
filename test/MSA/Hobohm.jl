@@ -69,7 +69,7 @@ end
         @test clusters_do_serial == clusters_do_threaded
     end
 
-    @testset "Explicit percentidentity keeps threaded default" begin
+    @testset "Explicit percentidentity stays opt-in" begin
         clusters_percentidentity = hobohmI(percentidentity, fasta, 62)
         clusters_percentidentity_serial =
             hobohmI(percentidentity, fasta, 62; threads = false)
@@ -77,7 +77,7 @@ end
             hobohmI(percentidentity, fasta, 62; threads = true)
 
         @test clusters_percentidentity == clusters
-        @test clusters_percentidentity == clusters_percentidentity_threaded
+        @test clusters_percentidentity == clusters_percentidentity_serial
         @test clusters_percentidentity_serial == clusters_percentidentity_threaded
     end
 
@@ -88,7 +88,7 @@ end
 
         clusters_vec_serial = hobohmI(percentidentity, seqs, 62; threads = false)
         clusters_vec_threaded = hobohmI(percentidentity, seqs, 62; threads = true)
-        @test clusters_vec == clusters_vec_threaded
+        @test clusters_vec == clusters_vec_serial
         @test clusters_vec_serial == clusters_vec_threaded
     end
 

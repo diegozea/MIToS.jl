@@ -180,7 +180,7 @@ function hobohmI(
     ::typeof(percentidentity),
     items::AbstractVector,
     threshold;
-    threads::Bool = true,
+    threads::Bool = false,
 )
     _hobohmI(percentidentity, items, threshold; threads = threads)
 end
@@ -207,19 +207,19 @@ function hobohmI(
     ::typeof(percentidentity),
     msa::AbstractMatrix{Residue},
     threshold;
-    threads::Bool = true,
+    threads::Bool = false,
 )
     aln = getresiduesequences(msa)
     hobohmI(percentidentity, aln, threshold; threads = threads)
 end
 
 """
-`hobohmI(msa, threshold; threads=true)`
+`hobohmI(msa, threshold; threads=false)`
 
 This method allows to cluster the sequences contained in `msa` using
 `percentidentity` as the clustering predicate. When `threads` is `true`, the
 inner scan is threaded if worker threads are available.
 """
-function hobohmI(msa::AbstractMatrix{Residue}, threshold; threads::Bool = true)
+function hobohmI(msa::AbstractMatrix{Residue}, threshold; threads::Bool = false)
     hobohmI(percentidentity, msa, threshold; threads = threads)
 end
