@@ -10,7 +10,7 @@ as the last argument to `within_cluster`. The number of elements is stored in
 `n_items`.
 """
 function _fill_hobohmI!(
-    scan_candidates!::Function,
+    scan_function::Function,
     state,
     within_cluster::Function,
     cluster::Vector{Int},
@@ -26,7 +26,7 @@ function _fill_hobohmI!(
             cluster[i] = cluster_id
             clustersize[cluster_id] += 1
             ref_item = items[i]
-            clustersize[cluster_id] += scan_candidates!(
+            clustersize[cluster_id] += scan_function(
                 state,
                 within_cluster,
                 cluster,
@@ -102,10 +102,10 @@ function _fill_hobohmI!(
     threads::Bool = true,
 )
     use_threads = threads && Threads.nthreads() > 1
-    scan_candidates! = ifelse(use_threads, _scan_hobohmI_threaded!, _scan_hobohmI_serial!)
+    scan_function = ifelse(use_threads, _scan_hobohmI_threaded!, _scan_hobohmI_serial!)
     state = use_threads ? Vector{Bool}(undef, length(items)) : nothing
     _fill_hobohmI!(
-        scan_candidates!,
+        scan_function,
         state,
         within_cluster,
         cluster,
