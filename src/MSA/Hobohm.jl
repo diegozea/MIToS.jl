@@ -11,7 +11,6 @@ The number of elements is stored in `n_items`.
 """
 function _fill_hobohmI!(
     scan_function::Function,
-    state,
     within_cluster::Function,
     cluster::Vector{Int},
     items::AbstractVector,
@@ -25,7 +24,6 @@ function _fill_hobohmI!(
             cluster[i] = cluster_id
             ref_item = items[i]
             scan_function(
-                state,
                 within_cluster,
                 cluster,
                 items,
@@ -45,7 +43,6 @@ function _fill_hobohmI!(
 end
 
 function _scan_hobohmI_serial!(
-    ::Nothing,
     within_cluster::Function,
     cluster::Vector{Int},
     items::AbstractVector,
@@ -63,7 +60,6 @@ function _scan_hobohmI_serial!(
 end
 
 function _scan_hobohmI_threaded!(
-    matches::Vector{Bool},
     within_cluster::Function,
     cluster::Vector{Int},
     items::AbstractVector,
@@ -74,11 +70,7 @@ function _scan_hobohmI_threaded!(
     last_candidate::Int,
 )
     Threads.@threads for j = first_candidate:last_candidate
-        @inbounds matches[j] =
-            cluster[j] == 0 && within_cluster(ref_item, items[j], threshold)
-    end
-    @inbounds for j = first_candidate:last_candidate
-        if matches[j]
+        @inbounds if cluster[j] == 0 && within_cluster(ref_item, items[j], threshold)
             cluster[j] = cluster_id
         end
     end
@@ -103,8 +95,7 @@ function _fill_hobohmI!(
 )
     use_threads = threads && Threads.nthreads() > 1
     scan_function = ifelse(use_threads, _scan_hobohmI_threaded!, _scan_hobohmI_serial!)
-    state = use_threads ? Vector{Bool}(undef, length(items)) : nothing
-    _fill_hobohmI!(scan_function, state, within_cluster, cluster, items, threshold)
+    _fill_hobohmI!(scan_function, within_cluster, cluster, items, threshold)
 end
 
 """
