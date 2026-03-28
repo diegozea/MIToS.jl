@@ -65,6 +65,7 @@ end
         clusters_do_threaded = hobohmI(fasta, 62; threads = true) do s1, s2, thr
             percentidentity(s1, s2, thr)
         end
+        @test clusters_do == clusters_do_serial
         @test clusters_do_serial == clusters_do_threaded
     end
 
@@ -75,6 +76,22 @@ end
 
         clusters_vec_serial = hobohmI(percentidentity, seqs, 62; threads = false)
         clusters_vec_threaded = hobohmI(percentidentity, seqs, 62; threads = true)
+        @test clusters_vec == clusters_vec_serial
         @test clusters_vec_serial == clusters_vec_threaded
+    end
+
+    @testset "Custom predicates stay serial by default" begin
+        seqs = [res"AAAA" for _ = 1:128]
+
+        function serial_only_percentidentity(s1, s2, thr)
+            Threads.threadid() == 1 || error("predicate ran on a worker thread")
+            percentidentity(s1, s2, thr)
+        end
+
+        clusters_default = hobohmI(serial_only_percentidentity, seqs, 100)
+        clusters_serial = hobohmI(serial_only_percentidentity, seqs, 100; threads = false)
+
+        @test clusters_default == clusters_serial
+        @test counts(clusters_default) == [128]
     end
 end

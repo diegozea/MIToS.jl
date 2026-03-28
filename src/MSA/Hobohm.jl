@@ -107,12 +107,13 @@ function _get_sequence_weight(clustersize, cluster)
 end
 
 """
-`hobohmI(within_cluster, items, threshold; threads=true)`
+`hobohmI(within_cluster, items, threshold; threads=false)`
 
 Cluster `items` using the Hobohm I algorithm from Hobohm et al. `within_cluster`
 is a predicate that receives two elements and `threshold` and returns `true` when
-they should be clustered together. When `threads` is `true`, the inner scan over
-candidate items is threaded if worker threads are available.
+they should be clustered together. User-provided predicates remain serial by
+default; set `threads` to `true` to thread the inner scan over candidate items
+when worker threads are available.
 
 # References
 
@@ -123,7 +124,7 @@ function hobohmI(
     within_cluster::Function,
     items::AbstractVector,
     threshold;
-    threads::Bool = true,
+    threads::Bool = false,
 )
     n = length(items)
     cluster = zeros(Int, n)
@@ -140,17 +141,18 @@ function hobohmI(
 end
 
 """
-`hobohmI(within_cluster, msa, threshold; threads=true)`
+`hobohmI(within_cluster, msa, threshold; threads=false)`
 
 This method allows clustering the aligned sequences in `msa` using the
 `within_cluster` predicate. It converts the alignment into a vector of
-residue sequences and forwards the call to the general method.
+residue sequences and forwards the call to the general method. User-provided
+predicates remain serial by default.
 """
 function hobohmI(
     within_cluster::Function,
     msa::AbstractMatrix{Residue},
     threshold;
-    threads::Bool = true,
+    threads::Bool = false,
 )
     aln = getresiduesequences(msa)
     hobohmI(within_cluster, aln, threshold; threads = threads)
