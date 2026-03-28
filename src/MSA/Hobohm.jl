@@ -101,28 +101,18 @@ function _fill_hobohmI!(
     threshold;
     threads::Bool = true,
 )
-    if threads && Threads.nthreads() > 1
-        matches = Vector{Bool}(undef, length(items))
-        _fill_hobohmI!(
-            _scan_hobohmI_threaded!,
-            matches,
-            within_cluster,
-            cluster,
-            clustersize,
-            items,
-            threshold,
-        )
-    else
-        _fill_hobohmI!(
-            _scan_hobohmI_serial!,
-            nothing,
-            within_cluster,
-            cluster,
-            clustersize,
-            items,
-            threshold,
-        )
-    end
+    use_threads = threads && Threads.nthreads() > 1
+    scan_candidates! = ifelse(use_threads, _scan_hobohmI_threaded!, _scan_hobohmI_serial!)
+    state = use_threads ? Vector{Bool}(undef, length(items)) : nothing
+    _fill_hobohmI!(
+        scan_candidates!,
+        state,
+        within_cluster,
+        cluster,
+        clustersize,
+        items,
+        threshold,
+    )
 end
 
 """
