@@ -106,6 +106,21 @@ function _get_sequence_weight(clustersize, cluster)
     Weights(sequence_weight, Float64(length(clustersize)))
 end
 
+function _hobohmI(within_cluster::Function, items::AbstractVector, threshold; threads::Bool)
+    n = length(items)
+    cluster = zeros(Int, n)
+    clustersize = zeros(Int, n)
+    _fill_hobohmI!(
+        within_cluster,
+        cluster,
+        clustersize,
+        items,
+        threshold;
+        threads = threads,
+    )
+    Clusters(clustersize, cluster, _get_sequence_weight(clustersize, cluster))
+end
+
 """
 `hobohmI(within_cluster, items, threshold; threads=false)`
 
@@ -126,18 +141,16 @@ function hobohmI(
     threshold;
     threads::Bool = false,
 )
-    n = length(items)
-    cluster = zeros(Int, n)
-    clustersize = zeros(Int, n)
-    _fill_hobohmI!(
-        within_cluster,
-        cluster,
-        clustersize,
-        items,
-        threshold;
-        threads = threads,
-    )
-    Clusters(clustersize, cluster, _get_sequence_weight(clustersize, cluster))
+    _hobohmI(within_cluster, items, threshold; threads = threads)
+end
+
+function hobohmI(
+    ::typeof(percentidentity),
+    items::AbstractVector,
+    threshold;
+    threads::Bool = true,
+)
+    _hobohmI(percentidentity, items, threshold; threads = threads)
 end
 
 """
@@ -156,6 +169,16 @@ function hobohmI(
 )
     aln = getresiduesequences(msa)
     hobohmI(within_cluster, aln, threshold; threads = threads)
+end
+
+function hobohmI(
+    ::typeof(percentidentity),
+    msa::AbstractMatrix{Residue},
+    threshold;
+    threads::Bool = true,
+)
+    aln = getresiduesequences(msa)
+    hobohmI(percentidentity, aln, threshold; threads = threads)
 end
 
 """

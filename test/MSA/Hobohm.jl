@@ -69,6 +69,18 @@ end
         @test clusters_do_serial == clusters_do_threaded
     end
 
+    @testset "Explicit percentidentity keeps threaded default" begin
+        clusters_percentidentity = hobohmI(percentidentity, fasta, 62)
+        clusters_percentidentity_serial =
+            hobohmI(percentidentity, fasta, 62; threads = false)
+        clusters_percentidentity_threaded =
+            hobohmI(percentidentity, fasta, 62; threads = true)
+
+        @test clusters_percentidentity == clusters
+        @test clusters_percentidentity == clusters_percentidentity_threaded
+        @test clusters_percentidentity_serial == clusters_percentidentity_threaded
+    end
+
     @testset "Vector input" begin
         seqs = getresiduesequences(fasta)
         clusters_vec = hobohmI(percentidentity, seqs, 62)
@@ -76,7 +88,7 @@ end
 
         clusters_vec_serial = hobohmI(percentidentity, seqs, 62; threads = false)
         clusters_vec_threaded = hobohmI(percentidentity, seqs, 62; threads = true)
-        @test clusters_vec == clusters_vec_serial
+        @test clusters_vec == clusters_vec_threaded
         @test clusters_vec_serial == clusters_vec_threaded
     end
 
