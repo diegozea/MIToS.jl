@@ -1,5 +1,12 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.9.0 to v3.10.0
+
+- The `hobohmI` function now accepts an optional `threads` keyword argument to
+  parallelize the inner scan over candidate cluster members when multiple Julia
+  threads are available.
+
+
 ### Changes from v3.8.0 to v3.9.0
 
 - Added `AnnotatedFASTASequences` in `MIToS.MSA` to parse annotated sequence files in
