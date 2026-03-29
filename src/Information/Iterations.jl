@@ -35,6 +35,11 @@ _mappairfreq_kargs_doc = """
 - `diagonalvalue` (default: `zero`): Value to fill diagonal elements if `usediagonal` is `false`.
 """
 
+_mapcolpairfreq_kargs_doc = """
+- `threads` (default: `false`): If `true`, column pairs are processed in parallel using
+  thread-local scratch tables.
+"""
+
 # Residues: The output is a Named Vector
 # --------------------------------------
 
@@ -164,6 +169,70 @@ function _mappairfreq!(
     plm
 end
 
+function _mappairfreq_threaded!(
+    f::Function,
+    res_list::Vector{V},
+    plm::PairwiseListMatrix{T,true,TV},
+    table::Union{Probabilities{T,2,A},Frequencies{T,2,A}};
+    weights::WeightTypes = NoClustering(),
+    pseudocounts::Pseudocount = NoPseudocount(),
+    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
+    kargs...,
+) where {T,TV,A,V<:AbstractArray{Residue}}
+    nres = length(res_list)
+    tables = [deepcopy(table) for _ = 1:Threads.nthreads()]
+    list = getlist(plm)
+    Threads.@threads for i = 1:nres
+        local_table = tables[Threads.threadid()]
+        @inbounds for j = i:nres
+            k = ij2k(i, j, nres, Val{true})
+            list[k] = _mapfreq_kernel!(
+                f,
+                local_table,
+                weights,
+                pseudocounts,
+                pseudofrequencies,
+                res_list[i],
+                res_list[j];
+                kargs...,
+            )
+        end
+    end
+    plm
+end
+
+function _mappairfreq_threaded!(
+    f::Function,
+    res_list::Vector{V},
+    plm::PairwiseListMatrix{T,false,TV},
+    table::Union{Probabilities{T,2,A},Frequencies{T,2,A}};
+    weights::WeightTypes = NoClustering(),
+    pseudocounts::Pseudocount = NoPseudocount(),
+    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
+    kargs...,
+) where {T,TV,A,V<:AbstractArray{Residue}}
+    nres = length(res_list)
+    tables = [deepcopy(table) for _ = 1:Threads.nthreads()]
+    list = getlist(plm)
+    Threads.@threads for i = 1:(nres-1)
+        local_table = tables[Threads.threadid()]
+        @inbounds for j = (i+1):nres
+            k = ij2k(i, j, nres, Val{false})
+            list[k] = _mapfreq_kernel!(
+                f,
+                local_table,
+                weights,
+                pseudocounts,
+                pseudofrequencies,
+                res_list[i],
+                res_list[j];
+                kargs...,
+            )
+        end
+    end
+    plm
+end
+
 # Map to column pairs
 
 """
@@ -173,12 +242,14 @@ probabilities of each pair of columns from the `msa` (second argument).
 
 $_mapfreq_kargs_doc
 $_mappairfreq_kargs_doc
+$_mapcolpairfreq_kargs_doc
 """
 function mapcolpairfreq!(
     f::Function,
     msa::AbstractMatrix{Residue},
     table::Union{Probabilities{T,2,A},Frequencies{T,2,A}};
     usediagonal::Bool = true,
+    threads::Bool = false,
     diagonalvalue::T = zero(T),
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
@@ -190,17 +261,30 @@ function mapcolpairfreq!(
     columns = map(i -> view(residues, :, i), 1:ncol) # 2x faster than calling view inside the loop
     scores = columnpairsmatrix(msa, T, Val{usediagonal}, diagonalvalue) # Named PairwiseListMatrix
     plm = getarray(scores)
-    _mappairfreq!(
-        f,
-        columns,
-        plm,
-        table,
-        Val{usediagonal};
-        weights = weights,
-        pseudocounts = pseudocounts,
-        pseudofrequencies = pseudofrequencies,
-        kargs...,
-    )
+    if threads
+        _mappairfreq_threaded!(
+            f,
+            columns,
+            plm,
+            table;
+            weights = weights,
+            pseudocounts = pseudocounts,
+            pseudofrequencies = pseudofrequencies,
+            kargs...,
+        )
+    else
+        _mappairfreq!(
+            f,
+            columns,
+            plm,
+            table,
+            Val{usediagonal};
+            weights = weights,
+            pseudocounts = pseudocounts,
+            pseudofrequencies = pseudofrequencies,
+            kargs...,
+        )
+    end
     scores
 end
 
