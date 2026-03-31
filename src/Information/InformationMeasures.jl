@@ -191,11 +191,11 @@ function _gettablearray(
     gettablearray(table)
 end
 
-_gettablearray(table::Array{T,N}) where {T,N} = table
+_gettablearray(table::AbstractArray{T,N}) where {T,N} = table
 
 const _DOC_KL_KARG = """
 You can use the keyword argument `background` to set the background distribution. This 
-argument can take an `Array`, `Probabilities`, or `ContingencyTable` object. The background 
+argument can take an `AbstractArray`, `Probabilities`, or `ContingencyTable` object. The background 
 distribution must have the same size and alphabet as the probabilities. The default is the 
 `BLOSUM62_Pi` table. $_DOC_LOG_BASE
 """
@@ -234,9 +234,10 @@ end
 # Kullback-Leibler for MSA
 
 """
-    kullback_leibler(msa::AbstractArray{Residue}; background::Union{Array{T,N}, Probabilities{T,N,A}, ContingencyTable{T,N,A}}=BLOSUM62_Pi, base::Number=ℯ, kargs...)
+    kullback_leibler(msa::AbstractArray{Residue}; background::AbstractArray=BLOSUM62_Pi, base::Number=ℯ, rank::Int=1, kargs...)
 
 It calculates the Kullback-Leibler (KL) divergence from a multiple sequence alignment (MSA).
+Currently, `rank` must be `1`.
 $_DOC_KL_KARG The other keyword arguments are passed to the [`mapfreq`](@ref) function.
 """
 function kullback_leibler(
