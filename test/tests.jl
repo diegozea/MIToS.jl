@@ -91,6 +91,7 @@ end
     include("PDB/PDBResidues.jl")
     include("PDB/MMCIFParser.jl")
     include("PDB/Plots.jl")
+    include("PDB/StructureSimilarity.jl")
 end
 
 # SIFTS
