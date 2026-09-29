@@ -49,7 +49,7 @@ If the name isn't in the MIToS dictionary, a `XAA` is returned.
 ```jldoctest
 julia> using MIToS.MSA
 
-julia> three2residue("ALA")
+julia> three2residue(\"ALA\")
 A
 ```
 """

@@ -39,7 +39,7 @@ Keyword arguments are are directly passed to to `Downloads.download`.
 ```jldoctest
 julia> using MIToS.Utils
 
-julia> download_file("https://www.uniprot.org/uniprot/P69905.fasta", "seq.fasta")
+julia> download_file(\"https://www.uniprot.org/uniprot/P69905.fasta\", \"seq.fasta\")
 "seq.fasta"
 ```
 """
