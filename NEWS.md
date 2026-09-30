@@ -1,5 +1,10 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.10.0 to v3.10.1
+
+- Fixed a precompilation error on Julia 1.13; users of Julia 1.13 must upgrade to
+  MIToS v3.10.1 or later.
+
 ### Changes from v3.9.0 to v3.10.0
 
 - The `hobohmI` function now accepts an optional `threads` keyword argument to
