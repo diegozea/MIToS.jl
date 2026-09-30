@@ -518,7 +518,7 @@ function _printfileannotations(io::IO, ann::Annotations)
     if !isempty(ann.file)
         for (key, value) in ann.file
             for val in split(value, '\n')
-                println(io, string("#=GF ", key, '\t', val))
+                println(io, string("#=GF ", key, ' ', val))
             end
         end
     end
@@ -527,7 +527,7 @@ end
 function _printcolumnsannotations(io::IO, ann::Annotations)
     if !isempty(ann.columns)
         for (key, value) in ann.columns
-            println(io, string("#=GC ", key, "\t\t\t", value))
+            println(io, string("#=GC ", key, ' ', value))
         end
     end
 end
@@ -536,7 +536,7 @@ function _printsequencesannotations(io::IO, ann::Annotations)
     if !isempty(ann.sequences)
         for (key, value) in ann.sequences
             for val in split(value, '\n')
-                println(io, string("#=GS ", key[1], '\t', key[2], '\t', val))
+                println(io, string("#=GS ", key[1], ' ', key[2], ' ', val))
             end
         end
     end
@@ -545,7 +545,7 @@ end
 function _printresiduesannotations(io::IO, ann::Annotations)
     if !isempty(ann.residues)
         for (key, value) in ann.residues
-            println(io, string("#=GR ", key[1], '\t', key[2], '\t', value))
+            println(io, string("#=GR ", key[1], ' ', key[2], ' ', value))
         end
     end
 end

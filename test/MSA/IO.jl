@@ -140,6 +140,40 @@
             end
         end
 
+        @testset "Output syntax" begin
+
+            for T in msa_types
+                msa = read_file(pf09645_sto, Stockholm, T)
+                printed = sprint(print_file, msa, Stockholm)
+                lines = split(chomp(printed), '\n')
+
+                @test first(lines) == "# STOCKHOLM 1.0"
+                @test count(==("# STOCKHOLM 1.0"), lines) == 1
+                @test last(lines) == "//"
+                @test !occursin('\t', printed)
+
+                sequence_lines = filter(
+                    line -> !isempty(line) && !startswith(line, '#') && line != "//",
+                    lines,
+                )
+                @test length(sequence_lines) == nsequences(msa)
+                @test all(line -> occursin(r"^\S+ +\S+$", line), sequence_lines)
+                @test parse_file(printed, Stockholm, T) == msa
+            end
+        end
+
+        @testset "Free-text annotation whitespace" begin
+
+            msa = read_file(pf09645_sto, Stockholm)
+            seqname = first(sequencenames(msa))
+            text = "first\tsecond  third"
+            setannotfile!(msa, "CC", text)
+            setannotsequence!(msa, seqname, "DE", text)
+            roundtrip = parse_file(sprint(print_file, msa, Stockholm), Stockholm)
+            @test getannotfile(roundtrip, "CC") == text
+            @test getannotsequence(roundtrip, seqname, "DE") == text
+        end
+
         @testset "Keep insert columns" begin
 
             msa = read_file(pf09645_sto, Stockholm, keepinserts = true)
