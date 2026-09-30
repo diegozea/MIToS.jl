@@ -184,7 +184,7 @@ Two residues are considered similar if they below to the same group in a `Reduce
 The `alphabet` (third positional argument) by default is:
 
 ```julia
-ReducedAlphabet("(AILMV)(NQST)(RHK)(DE)(FWY)CGP")
+ReducedAlphabet(\"(AILMV)(NQST)(RHK)(DE)(FWY)CGP\")
 ```
 
 The first group is composed of the non polar residues `(AILMV)`, the second group is composed
@@ -197,7 +197,7 @@ are considered unique residues.
 **SMS (Sequence Manipulation Suite)** Ident and Sim (*Stothard Paul. 2000*):
 
 ```julia
-ReducedAlphabet("(GAVLI)(FYW)(ST)(KRH)(DENQ)P(CM)")
+ReducedAlphabet(\"(GAVLI)(FYW)(ST)(KRH)(DENQ)P(CM)\")
 ```
 
 *Stothard P (2000) The Sequence Manipulation Suite: JavaScript programs for analyzing and
@@ -206,7 +206,7 @@ formatting protein and DNA sequences. Biotechniques 28:1102-1104.*
 **Bio3D 2.2** seqidentity (*Grant, Barry J., et al. 2006*):
 
 ```julia
-ReducedAlphabet("(GA)(MVLI)(FYW)(ST)(KRH)(DE)(NQ)PC")
+ReducedAlphabet(\"(GA)(MVLI)(FYW)(ST)(KRH)(DE)(NQ)PC\")
 ```
 
 # References

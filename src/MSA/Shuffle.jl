@@ -149,7 +149,7 @@ $shuffle_msa_doc To shuffle in-place, see [`shuffle_msa!`](@ref).
 
 ```julia
 using MIToS.MSA, Random
-msa = hcat(res"RRE", res"DDK", res"G--")
+msa = hcat(res\"RRE\", res\"DDK\", res\"G--\")
 Random.seed!(42);
 shuffle_msa(msa, dims = 1, fixedgaps = true)
 Random.seed!(42);
