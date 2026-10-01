@@ -99,8 +99,9 @@ printmodifications(msa)
 
 ### Reading multiple Stockholm alignments
 
-[`eachmsa`](@ref) yields one MSA at a time from a Stockholm file containing one or more
-alignments. [`read_file`](@ref) keeps its existing behaviour of reading only the first.
+[`eachmsa`](@ref MIToS.MSA.eachmsa) yields one MSA at a time from a Stockholm file containing
+one or more alignments. [`read_file`](@ref MIToS.Utils.read_file) keeps its existing behaviour
+of reading only the first.
 
 ```julia
 using MIToS.MSA
