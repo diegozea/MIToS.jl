@@ -1,8 +1,9 @@
 """
-An iterator owning an open Stockholm stream and, for URLs, its temporary download.
+An iterator owning an open alignment stream and, for URLs, its temporary download.
 Construct it with [`eachmsa`](@ref). Iteration consumes the stream and cannot restart it.
+The format parameter selects how to find and parse the next alignment.
 """
-mutable struct StockholmMSAIterator{T,S<:IO,K}
+mutable struct MSAIterator{F<:MSAFormat,T,S<:IO,K}
     io::S
     kwargs::K
     temporary::Union{Nothing,String}
@@ -10,11 +11,11 @@ mutable struct StockholmMSAIterator{T,S<:IO,K}
     ready::Bool
 end
 
-Base.IteratorSize(::Type{<:StockholmMSAIterator}) = Base.SizeUnknown()
-Base.eltype(::Type{<:StockholmMSAIterator{T}}) where {T} = T
-Base.isopen(msas::StockholmMSAIterator) = !msas.closed && isopen(msas.io)
+Base.IteratorSize(::Type{<:MSAIterator}) = Base.SizeUnknown()
+Base.eltype(::Type{<:MSAIterator{F,T}}) where {F,T} = T
+Base.isopen(msas::MSAIterator) = !msas.closed && isopen(msas.io)
 
-function Base.close(msas::StockholmMSAIterator)
+function Base.close(msas::MSAIterator)
     msas.closed && return nothing
     msas.closed = true
     try
@@ -27,20 +28,76 @@ function Base.close(msas::StockholmMSAIterator)
     nothing
 end
 
-# Look ahead only as far as the next header. In particular, isempty and zip must
-# not consume an alignment from this stateful iterator.
-function Base.isdone(msas::StockholmMSAIterator, ::Nothing = nothing)
-    msas.closed && return true
-    msas.ready && return false
-    try
-        while !eof(msas.io)
-            line = strip(readline(msas.io))
-            isempty(line) && continue
-            line == "# STOCKHOLM 1.0" ||
-                throw(ArgumentError("Expected a # STOCKHOLM 1.0 header, got: $line"))
+"""
+Check format support before opening a stream or downloading a URL. Formats supporting
+iteration define this method and `_prepare_msa!`, and provide a parser for one alignment.
+"""
+function _check_eachmsa_format(::Type{F}) where {F<:MSAFormat}
+    throw(ArgumentError("eachmsa does not support the $F format"))
+end
+
+_check_eachmsa_format(::Type{Stockholm}) = nothing
+_check_eachmsa_format(::Type{Clustal}) = nothing
+
+"""
+Prepare the next alignment without parsing it. Return `true` if an alignment is ready
+to parse, or `false` at the end of the stream. The iterator caches this result so repeated
+lookahead does not consume an alignment.
+"""
+function _prepare_msa!(msas::MSAIterator{Stockholm})
+    while !eof(msas.io)
+        line = strip(readline(msas.io))
+        isempty(line) && continue
+        line == "# STOCKHOLM 1.0" ||
+            throw(ArgumentError("Expected a # STOCKHOLM 1.0 header, got: $line"))
+        return true
+    end
+    false
+end
+
+function _prepare_msa!(msas::MSAIterator{Clustal})
+    while !eof(msas.io)
+        line = strip(readline(msas.io))
+        isempty(line) && continue
+        _is_clustal_header(line) ||
+            throw(ArgumentError("Expected a CLUSTAL header, got: $line"))
+        return true
+    end
+    false
+end
+
+"""
+Read one prepared alignment, forwarding the output type and parsing keywords. Formats
+whose `parse_file` consumes more than one alignment can specialize this method. If reading
+an alignment also prepares the next one, set `msas.ready = true` to preserve that lookahead.
+"""
+function _read_msa!(msas::MSAIterator{F,T}) where {F,T}
+    parse_file(msas.io, F, T; msas.kwargs...)
+end
+
+function _read_msa!(msas::MSAIterator{Clustal,T}) where {T}
+    # A new header ends the current alignment; blank lines only separate its blocks.
+    # Save that lookahead for the next iteration, including on non-seekable gzip streams.
+    lines = Iterators.takewhile(eachline(msas.io)) do line
+        if _is_clustal_header(line)
             msas.ready = true
             return false
         end
+        true
+    end
+    _parse_msa(T; msas.kwargs...) do create_annotations
+        _load_clustal_sequences(lines)
+    end
+end
+
+# Look ahead only as far as the next header. In particular, isempty and zip must
+# not consume an alignment from this stateful iterator.
+function Base.isdone(msas::MSAIterator, ::Nothing = nothing)
+    msas.closed && return true
+    msas.ready && return false
+    try
+        msas.ready = _prepare_msa!(msas)
+        msas.ready && return false
         close(msas)
         return true
     catch
@@ -49,11 +106,11 @@ function Base.isdone(msas::StockholmMSAIterator, ::Nothing = nothing)
     end
 end
 
-function Base.iterate(msas::StockholmMSAIterator{T}, ::Nothing = nothing) where {T}
+function Base.iterate(msas::MSAIterator, ::Nothing = nothing)
     Base.isdone(msas) && return nothing
     try
         msas.ready = false
-        msa = parse_file(msas.io, Stockholm, T; msas.kwargs...)
+        msa = _read_msa!(msas)
         return msa, nothing
     catch
         close(msas)
@@ -62,10 +119,11 @@ function Base.iterate(msas::StockholmMSAIterator{T}, ::Nothing = nothing) where 
 end
 
 """
-    eachmsa(source, Stockholm[, output::Type]; kwargs...)
-    eachmsa(f, source, Stockholm[, output::Type]; kwargs...)
+    eachmsa(source, format[, output::Type]; kwargs...)
+    eachmsa(f, source, format[, output::Type]; kwargs...)
 
-Iterate over the alignments in a Stockholm file, parsing one MSA at a time. The default
+Iterate over the alignments in a `Stockholm` or `Clustal` file, parsing one MSA at a time.
+For Clustal, each alignment starts with its own CLUSTAL header. The default
 output is `AnnotatedMultipleSequenceAlignment`; the output types and parsing keywords
 are the same as for [`read_file`](@ref) and [`parse_file`](@ref).
 
@@ -95,10 +153,11 @@ end
 """
 function eachmsa(
     source::AbstractString,
-    ::Type{Stockholm},
+    ::Type{F},
     ::Type{T} = AnnotatedMultipleSequenceAlignment;
     kwargs...,
-) where {T}
+) where {F<:MSAFormat,T}
+    _check_eachmsa_format(F)
     remote = any(prefix -> startswith(source, prefix), ("http://", "https://", "ftp://"))
     temporary = remote ? tempname() * (endswith(source, ".gz") ? ".gz" : "") : nothing
     filename = temporary === nothing ? source : temporary
@@ -112,7 +171,7 @@ function eachmsa(
             io = GzipDecompressorStream(io)
         end
         options = (; kwargs...)
-        msas = StockholmMSAIterator{T,typeof(io),typeof(options)}(
+        msas = MSAIterator{F,T,typeof(io),typeof(options)}(
             io,
             options,
             temporary,
@@ -134,7 +193,7 @@ end
 function eachmsa(
     f::Function,
     source::AbstractString,
-    format::Type{Stockholm},
+    format::Type{<:MSAFormat},
     args...;
     kwargs...,
 )
@@ -145,6 +204,3 @@ function eachmsa(
         close(msas)
     end
 end
-
-# TODO: Support concatenated Clustal alignments, using each new CLUSTAL header as
-# the next MSA boundary while keeping wrapped blocks within the same alignment.

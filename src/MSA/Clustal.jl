@@ -5,18 +5,23 @@ struct Clustal <: MSAFormat end
 # Each block ends with a line showing the degree of conservation for
 # the columns of the alignment.
 
-function _pre_readclustal(io::Union{IO,AbstractString})
+# Match a header token, not a sequence name such as CLUSTAL_seq.
+_is_clustal_header(line::AbstractString) = occursin(r"^CLUSTALW?(?:\s|$)", line)
+
+_pre_readclustal(io::Union{IO,AbstractString}) = _pre_readclustal(lineiterator(io))
+
+function _pre_readclustal(lines)
     seqs = OrderedDict{String,String}()
     conservation = IOBuffer()
     seq_re = r"^(\S+)\s+([A-Za-z.-]+)(?:\s+\d+)?"  # sequence line with optional count
     startidx = 0
     endidx = 0
     in_sequence_block = false # true when reading a sequence block
-    for line in lineiterator(io)
+    for line in lines
         chomped = chomp(line)
         # blank line ends the current sequence block
         isempty(strip(chomped)) && (in_sequence_block = false; continue)
-        startswith(chomped, "CLUSTAL") && continue
+        _is_clustal_header(chomped) && continue
         startswith(chomped, '#') && continue
         if (m = match(seq_re, chomped)) !== nothing  # sequence line
             id = m.captures[1]
@@ -54,16 +59,23 @@ function _pre_readclustal(io::Union{IO,AbstractString})
     (IDS, SEQS, isempty(CONS) ? nothing : CONS)
 end
 
+"""
+Read sequence data and conservation annotations from an iterable of Clustal lines.
+"""
+function _load_clustal_sequences(lines)
+    IDS, SEQS, CONS = _pre_readclustal(lines)
+    annot = Annotations()
+    _disambiguate_seqnames!(IDS, annot)
+    CONS !== nothing && setannotcolumn!(annot, "cons", CONS)
+    return IDS, SEQS, annot
+end
+
 function _load_sequences(
     io::Union{IO,AbstractString},
     format::Type{Clustal};
     create_annotations::Bool = false,
 )
-    IDS, SEQS, CONS = _pre_readclustal(io)
-    annot = Annotations()
-    _disambiguate_seqnames!(IDS, annot)
-    CONS !== nothing && setannotcolumn!(annot, "cons", CONS)
-    return IDS, SEQS, annot
+    _load_clustal_sequences(lineiterator(io))
 end
 
 function Utils.print_file(

@@ -32,7 +32,7 @@ Depth = 4
 ### [Reading MSA files](@id Reading-MSA-files)
 
 Use [`read_file`](@ref MIToS.Utils.read_file) to load a single MSA. To iterate over the
-alignments in a Stockholm file, use [`eachmsa`](@ref MIToS.MSA.eachmsa).
+alignments in a Stockholm or Clustal file, use [`eachmsa`](@ref MIToS.MSA.eachmsa).
 
 The `read_file` function is defined in the `Utils` module. It takes a filename/path as a
 first argument followed by other arguments. It opens the file and uses the arguments to
@@ -100,11 +100,11 @@ msa = read_file(
 printmodifications(msa)
 ```
 
-### Reading multiple Stockholm alignments
+### Reading multiple alignments
 
-[`eachmsa`](@ref MIToS.MSA.eachmsa) yields one MSA at a time from a Stockholm file containing
-one or more alignments. [`read_file`](@ref MIToS.Utils.read_file) returns the first alignment
-of a Stockholm file as a single MSA object.
+[`eachmsa`](@ref MIToS.MSA.eachmsa) yields one MSA at a time from a Stockholm or Clustal file
+containing one or more alignments. [`read_file`](@ref MIToS.Utils.read_file) returns the
+first alignment of a Stockholm file as a single MSA object.
 
 Use a `do` block to ensure the file is closed when your analysis finishes:
 
@@ -120,6 +120,9 @@ end
 
 The `do` block closes the stream even if you `break` from the loop or your analysis throws
 an exception.
+
+For a Clustal file, use `Clustal` as the format. Each alignment must start with its own
+CLUSTAL header. Blank lines separate blocks within an alignment.
 
 Both compressed and uncompressed files use the same interface. Gzip data is decompressed
 in one pass, so there is no need to decompress Pfam to disk first. The iterator retains

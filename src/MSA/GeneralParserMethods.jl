@@ -469,16 +469,19 @@ end
 # Parse for MSA formats
 # =====================
 
-function Utils.parse_file(
-    io::Union{IO,AbstractString},
-    format::Type{T},
+"""
+Construct an MSA with the requested output type and parsing options. The loader takes a
+`create_annotations` boolean and returns sequence names, sequences and annotations.
+"""
+function _parse_msa(
+    load::F,
     output::Type{AnnotatedMultipleSequenceAlignment};
     generatemapping::Bool = false,
     useidcoordinates::Bool = false,
     deletefullgaps::Bool = true,
     keepinserts::Bool = false,
-)::AnnotatedMultipleSequenceAlignment where {T<:MSAFormat}
-    IDS, SEQS, annot = _load_sequences(io, format; create_annotations = true)
+)::AnnotatedMultipleSequenceAlignment where {F}
+    IDS, SEQS, annot = load(true)
     _check_seq_len(IDS, SEQS)
     _generate_annotated_msa(
         annot,
@@ -491,13 +494,12 @@ function Utils.parse_file(
     )
 end
 
-function Utils.parse_file(
-    io::Union{IO,AbstractString},
-    format::Type{T},
+function _parse_msa(
+    load::F,
     output::Type{NamedResidueMatrix{Array{Residue,2}}};
     deletefullgaps::Bool = true,
-)::NamedResidueMatrix{Array{Residue,2}} where {T<:MSAFormat}
-    IDS, SEQS, _ = _load_sequences(io, format; create_annotations = false)
+)::NamedResidueMatrix{Array{Residue,2}} where {F}
+    IDS, SEQS, _ = load(false)
     _check_seq_len(IDS, SEQS)
     msa = _generate_named_array(SEQS, IDS)
     if deletefullgaps
@@ -506,30 +508,38 @@ function Utils.parse_file(
     msa
 end
 
-function Utils.parse_file(
-    io::Union{IO,AbstractString},
-    format::Type{T},
+function _parse_msa(
+    load::F,
     output::Type{MultipleSequenceAlignment};
     deletefullgaps::Bool = true,
-)::MultipleSequenceAlignment where {T<:MSAFormat}
-    msa = parse_file(
-        io,
-        format,
+)::MultipleSequenceAlignment where {F}
+    msa = _parse_msa(
+        load,
         NamedResidueMatrix{Array{Residue,2}},
         deletefullgaps = deletefullgaps,
     )
     MultipleSequenceAlignment(msa)
 end
 
-function Utils.parse_file(
-    io::Union{IO,AbstractString},
-    format::Type{T},
+function _parse_msa(
+    load::F,
     output::Type{Matrix{Residue}};
     deletefullgaps::Bool = true,
-)::Matrix{Residue} where {T<:MSAFormat}
-    IDS, SEQS, _ = _load_sequences(io, format; create_annotations = false)
+)::Matrix{Residue} where {F}
+    IDS, SEQS, _ = load(false)
     _check_seq_len(IDS, SEQS)
     _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
+end
+
+function Utils.parse_file(
+    io::Union{IO,AbstractString},
+    format::Type{F},
+    output::Type{T};
+    kwargs...,
+) where {F<:MSAFormat,T}
+    _parse_msa(output; kwargs...) do create_annotations
+        _load_sequences(io, format; create_annotations = create_annotations)
+    end
 end
 
 function Utils.parse_file(
