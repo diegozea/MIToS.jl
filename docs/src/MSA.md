@@ -31,9 +31,12 @@ Depth = 4
 
 ### [Reading MSA files](@id Reading-MSA-files)
 
-The main function for reading MSA files in MIToS is `read_file` and it is defined in the `Utils`
-module. This function takes a filename/path as a first argument followed by other
-arguments. It opens the file and uses the arguments to call the `parse_file` function.
+Use [`read_file`](@ref MIToS.Utils.read_file) to load a single MSA. To iterate over the
+alignments in a Stockholm file, use [`eachmsa`](@ref MIToS.MSA.eachmsa).
+
+The `read_file` function is defined in the `Utils` module. It takes a filename/path as a
+first argument followed by other arguments. It opens the file and uses the arguments to
+call the `parse_file` function.
 `read_file` decides how to open the file, using the prefixes (e.g. https) and suffixes
 (i.e. extensions) of the file name, while `parse_file` does the actual parsing of
 the file. You can `read_file` **gzipped files** if they have the `.gz` extension and
@@ -100,8 +103,8 @@ printmodifications(msa)
 ### Reading multiple Stockholm alignments
 
 [`eachmsa`](@ref MIToS.MSA.eachmsa) yields one MSA at a time from a Stockholm file containing
-one or more alignments. [`read_file`](@ref MIToS.Utils.read_file) keeps its existing behaviour
-of reading only the first.
+one or more alignments. [`read_file`](@ref MIToS.Utils.read_file) returns the first alignment
+of a Stockholm file as a single MSA object.
 
 ```julia
 using MIToS.MSA
@@ -130,7 +133,7 @@ alignment parsing is lazy, and the iterator cannot be restarted after exhaustion
 
 The optional output type and parsing keywords are passed to `parse_file`, for example
 `eachmsa(path, Stockholm, Matrix{Residue}; deletefullgaps = false)`.
-Only Stockholm is currently supported.
+Only Stockholm is supported.
 
 ### [Writing MSA files](@id Writing-MSA-files)
 

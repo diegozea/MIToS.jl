@@ -93,8 +93,8 @@ eachmsa(\"Pfam-A.full.gz\", Stockholm) do msas
 end
 ```
 
-Only Stockholm is currently supported. [`read_file`](@ref) continues to return the first
-alignment of a Stockholm file.
+Only Stockholm is supported. [`read_file`](@ref) returns the first alignment of a Stockholm
+file as a single MSA object.
 """
 function eachmsa(
     source::AbstractString,
