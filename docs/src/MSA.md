@@ -106,6 +106,8 @@ printmodifications(msa)
 one or more alignments. [`read_file`](@ref MIToS.Utils.read_file) returns the first alignment
 of a Stockholm file as a single MSA object.
 
+Use a `do` block to ensure the file is closed when your analysis finishes:
+
 ```julia
 using MIToS.MSA
 
@@ -117,14 +119,12 @@ end
 ```
 
 The `do` block closes the stream even if you `break` from the loop or your analysis throws
-an exception. A regular `for msa in eachmsa(path, Stockholm)` loop also works and closes
-the stream on exhaustion or a parsing error; if you stop early, keep the iterator and
-call `close` in a `finally` block, or use the `do` form above.
+an exception.
 
-Plain and `.gz` files use the same interface. Gzip data is decompressed in one pass, so
-there is no need to decompress Pfam to disk first. The iterator retains no previous MSAs,
-but each individual alignment and the memory used by your analysis must fit in RAM.
-`collect(eachmsa(path, Stockholm))` explicitly loads all alignments into memory.
+Both compressed and uncompressed files use the same interface. Gzip data is decompressed
+in one pass, so there is no need to decompress Pfam to disk first. The iterator retains
+no previous MSAs, but each individual alignment and the memory used by your analysis
+must fit in RAM.
 
 HTTP, HTTPS and FTP URLs are downloaded once per iterator to a temporary file on disk,
 which is removed when the iterator closes. Download the file yourself if you want to
@@ -133,7 +133,6 @@ alignment parsing is lazy, and the iterator cannot be restarted after exhaustion
 
 The optional output type and parsing keywords are passed to `parse_file`, for example
 `eachmsa(path, Stockholm, Matrix{Residue}; deletefullgaps = false)`.
-Only Stockholm is supported.
 
 ### [Writing MSA files](@id Writing-MSA-files)
 

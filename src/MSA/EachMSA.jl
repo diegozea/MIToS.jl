@@ -75,13 +75,11 @@ file when `eachmsa` is called. No alignment is parsed until iteration begins, an
 alignments are not retained by the iterator. Each individual MSA must still fit in memory.
 
 The iterator is consumed as it is read: iterating again continues from its current position.
-An empty file yields no MSAs, and a file with one alignment yields once. Use
-`collect(eachmsa(...))` only when all alignments should be loaded into memory.
+An empty file yields no MSAs, and a file with one alignment yields once.
 
 Exhaustion or a parsing error closes the stream and removes any temporary download.
-Use the `do`-block form to guarantee cleanup when stopping early or when your analysis
-throws an exception. It returns the result of the block. Alternatively, call `close` on
-the iterator in a `finally` block. Closing an iterator more than once is safe.
+Use a `do` block to ensure cleanup when your analysis finishes, even if you stop early
+or your analysis throws an exception. It returns the result of the block.
 
 ```julia
 using MIToS.MSA
@@ -93,8 +91,7 @@ eachmsa(\"Pfam-A.full.gz\", Stockholm) do msas
 end
 ```
 
-Only Stockholm is supported. [`read_file`](@ref) returns the first alignment of a Stockholm
-file as a single MSA object.
+[`read_file`](@ref) returns the first alignment of a Stockholm file as a single MSA object.
 """
 function eachmsa(
     source::AbstractString,
