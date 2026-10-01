@@ -25,6 +25,7 @@ using PairwiseListMatrices  # Percent Identity Matrices
 using StatsBase             # Weights for clustering
 using RecipesBase           # Plots for MSAs
 using TranscodingStreams    # To solve MethodError seek(::TranscodingStream, ::Int)
+using CodecZlib: GzipDecompressorStream
 using MIToS.Utils
 
 import Markdown: @md_str # for docstrings
@@ -123,6 +124,7 @@ export  # Residue
     Clustal,
     # Stockholm
     Stockholm,
+    eachmsa,
     # FASTA
     FASTA,
     # NBRF/PIR
@@ -188,6 +190,7 @@ include("GeneralParserMethods.jl")
 include("Raw.jl")
 include("Clustal.jl")
 include("Stockholm.jl")
+include("EachMSA.jl")
 include("FASTA.jl")
 include("PIR.jl")
 include("A3M.jl")

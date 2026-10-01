@@ -63,6 +63,7 @@ ROCAnalysis = "0.3"
 Random = "1"
 RecipesBase = "1"
 Serialization = "1"
+Sockets = "1"
 StaticArrays = "0.12, 1.0"
 Statistics = "1"
 StatsBase = "0.32, 0.33, 0.34"
@@ -78,7 +79,8 @@ DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 ROCAnalysis = "f535d66d-59bb-5153-8d2b-ef0a426c6aff"
+Sockets = "6462fe0b-24de-5631-8697-dd941f90decc"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Aqua", "DelimitedFiles", "Test", "ROCAnalysis", "Documenter", "Clustering", "BioAlignments", "InteractiveUtils"]
+test = ["Aqua", "DelimitedFiles", "Test", "ROCAnalysis", "Documenter", "Clustering", "BioAlignments", "InteractiveUtils", "Sockets"]

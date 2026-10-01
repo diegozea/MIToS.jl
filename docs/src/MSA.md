@@ -97,6 +97,40 @@ msa = read_file(
 printmodifications(msa)
 ```
 
+### Reading multiple Stockholm alignments
+
+[`eachmsa`](@ref) yields one MSA at a time from a Stockholm file containing one or more
+alignments. [`read_file`](@ref) keeps its existing behaviour of reading only the first.
+
+```julia
+using MIToS.MSA
+
+eachmsa("Pfam-A.full.gz", Stockholm) do msas
+    for msa in msas
+        println(getannotfile(msa, "AC", ""), '\t', nsequences(msa))
+    end
+end
+```
+
+The `do` block closes the stream even if you `break` from the loop or your analysis throws
+an exception. A regular `for msa in eachmsa(path, Stockholm)` loop also works and closes
+the stream on exhaustion or a parsing error; if you stop early, keep the iterator and
+call `close` in a `finally` block, or use the `do` form above.
+
+Plain and `.gz` files use the same interface. Gzip data is decompressed in one pass, so
+there is no need to decompress Pfam to disk first. The iterator retains no previous MSAs,
+but each individual alignment and the memory used by your analysis must fit in RAM.
+`collect(eachmsa(path, Stockholm))` explicitly loads all alignments into memory.
+
+HTTP, HTTPS and FTP URLs are downloaded once per iterator to a temporary file on disk,
+which is removed when the iterator closes. Download the file yourself if you want to
+reuse it across several calls. Files are opened or downloaded when `eachmsa` is called;
+alignment parsing is lazy, and the iterator cannot be restarted after exhaustion.
+
+The optional output type and parsing keywords are passed to `parse_file`, for example
+`eachmsa(path, Stockholm, Matrix{Residue}; deletefullgaps = false)`.
+Only Stockholm is currently supported.
+
 ### [Writing MSA files](@id Writing-MSA-files)
 
 Julia REPL shows MSAs as Matrices. If you want to print them in another format, you should
