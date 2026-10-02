@@ -490,18 +490,18 @@ end
 # =====================
 
 """
-Construct an MSA with the requested output type and parsing options. `load_sequences`
+Construct an MSA with the requested output type and parsing options. `load_sequences_function`
 takes a `create_annotations` boolean and returns sequence names, sequences and annotations.
 """
 function _parse_msa(
-    load_sequences::F,
+    load_sequences_function::F,
     output::Type{AnnotatedMultipleSequenceAlignment};
     generatemapping::Bool = false,
     useidcoordinates::Bool = false,
     deletefullgaps::Bool = true,
     keepinserts::Bool = false,
 )::AnnotatedMultipleSequenceAlignment where {F}
-    IDS, SEQS, annot = load_sequences(true)
+    IDS, SEQS, annot = load_sequences_function(true)
     _check_seq_len(IDS, SEQS)
     _generate_annotated_msa(
         annot,
@@ -515,11 +515,11 @@ function _parse_msa(
 end
 
 function _parse_msa(
-    load_sequences::F,
+    load_sequences_function::F,
     output::Type{NamedResidueMatrix{Array{Residue,2}}};
     deletefullgaps::Bool = true,
 )::NamedResidueMatrix{Array{Residue,2}} where {F}
-    IDS, SEQS, _ = load_sequences(false)
+    IDS, SEQS, _ = load_sequences_function(false)
     _check_seq_len(IDS, SEQS)
     msa = _generate_named_array(SEQS, IDS)
     if deletefullgaps
@@ -529,12 +529,12 @@ function _parse_msa(
 end
 
 function _parse_msa(
-    load_sequences::F,
+    load_sequences_function::F,
     output::Type{MultipleSequenceAlignment};
     deletefullgaps::Bool = true,
 )::MultipleSequenceAlignment where {F}
     msa = _parse_msa(
-        load_sequences,
+        load_sequences_function,
         NamedResidueMatrix{Array{Residue,2}},
         deletefullgaps = deletefullgaps,
     )
@@ -542,11 +542,11 @@ function _parse_msa(
 end
 
 function _parse_msa(
-    load_sequences::F,
+    load_sequences_function::F,
     output::Type{Matrix{Residue}};
     deletefullgaps::Bool = true,
 )::Matrix{Residue} where {F}
-    IDS, SEQS, _ = load_sequences(false)
+    IDS, SEQS, _ = load_sequences_function(false)
     _check_seq_len(IDS, SEQS)
     _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
 end
