@@ -117,7 +117,7 @@ function _get_xml_document(filename::AbstractString)
 end
 
 # for using with download, since filename doesn't have file extension
-function _read(
+function _read_file(
     completename::AbstractString,
     filename::AbstractString,
     format::Type{T},
@@ -135,7 +135,7 @@ function _read(
     else
         open(filename, "r") do fh
             fh = _input_stream(fh, completename)
-            _read(fh, T, args...; kargs...)
+            _read_file(fh, T, args...; kargs...)
         end
     end
 end
@@ -144,7 +144,7 @@ end
 Read an object from an open file. Formats can specialize this method to check for
 additional records without changing `parse_file` or how files are opened and closed.
 """
-function _read(io::IO, format::Type{<:FileFormat}, args...; kwargs...)
+function _read_file(io::IO, format::Type{<:FileFormat}, args...; kwargs...)
     parse_file(io, format, args...; kwargs...)
 end
 
@@ -169,13 +169,13 @@ function read_file(
         filename =
             download_file(completename, headers = Dict("Accept-Encoding" => "identity"))
         try
-            _read(completename, filename, T, args...; kargs...)
+            _read_file(completename, filename, T, args...; kargs...)
         finally
             rm(filename)
         end
     else
         # completename and filename are the same
-        _read(completename, completename, T, args...; kargs...)
+        _read_file(completename, completename, T, args...; kargs...)
     end
 end
 

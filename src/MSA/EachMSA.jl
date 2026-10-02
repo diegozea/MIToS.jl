@@ -151,7 +151,7 @@ end
 Read the first MSA and warn if another alignment header is found. If the parser leaves
 `has_next` unchecked (`nothing`), look for the next header after parsing.
 """
-function Utils._read(
+function Utils._read_file(
     io::IO,
     format::Type{F},
     output::Type{T} = AnnotatedMultipleSequenceAlignment;
