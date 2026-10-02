@@ -1,5 +1,11 @@
 using CodecZlib: GzipCompressor, transcode
 
+"""
+Write an alignment fixture, compressing it when the filename ends in `.gz`.
+"""
+_write_msa_fixture(path, contents) =
+    write(path, endswith(path, ".gz") ? transcode(GzipCompressor, contents) : contents)
+
 @testset "eachmsa" begin
     @testset "$format" for format in (Stockholm, Clustal)
         multiple_warning = "Read only the first alignment; use `eachmsa` to read all."
@@ -47,8 +53,8 @@ using CodecZlib: GzipCompressor, transcode
         mktempdir() do dir
             plain = joinpath(dir, format === Stockholm ? "multiple.sto" : "multiple.aln")
             gzip = plain * ".gz"
-            write(plain, contents)
-            write(gzip, transcode(GzipCompressor, contents))
+            _write_msa_fixture(plain, contents)
+            _write_msa_fixture(gzip, contents)
 
             @testset "Plain and gzip, output $T" for T in output_types
                 for path in (plain, gzip)
@@ -82,10 +88,7 @@ using CodecZlib: GzipCompressor, transcode
                     path = joinpath(dir, "warning-test" * suffix)
                     for trailing in ("", "\n \t\n", "\n# end of file\n")
                         text = first_record * trailing
-                        write(
-                            path,
-                            isempty(suffix) ? text : transcode(GzipCompressor, text),
-                        )
+                        _write_msa_fixture(path, text)
                         msa = @test_logs read_file(path, format)
                         @test msa == expected
                     end
@@ -97,10 +100,7 @@ using CodecZlib: GzipCompressor, transcode
                         header * "not a valid alignment\n",
                     )
                         text = first_record * "\n \t\n" * following
-                        write(
-                            path,
-                            isempty(suffix) ? text : transcode(GzipCompressor, text),
-                        )
+                        _write_msa_fixture(path, text)
                         msa = @test_logs (:warn, multiple_warning) read_file(path, format)
                         @test msa == expected
                     end
@@ -168,10 +168,7 @@ using CodecZlib: GzipCompressor, transcode
                     for suffix in ("", ".gz")
                         path = joinpath(dir, "headers.aln" * suffix)
                         payload = wrapped * next_record
-                        write(
-                            path,
-                            isempty(suffix) ? payload : transcode(GzipCompressor, payload),
-                        )
+                        _write_msa_fixture(path, payload)
                         eachmsa(path, Clustal; deletefullgaps = false) do msas
                             first_msa = first(msas)
                             @test size(first_msa) == (2, 6)
@@ -236,10 +233,7 @@ using CodecZlib: GzipCompressor, transcode
                     "CLUSTAL\n\na AAA\nb A\n"
                 for suffix in ("", ".gz")
                     payload = first_record * malformed
-                    write(
-                        path * suffix,
-                        isempty(suffix) ? payload : transcode(GzipCompressor, payload),
-                    )
+                    _write_msa_fixture(path * suffix, payload)
                     msas = eachmsa(path * suffix, format)
                     @test size(first(msas)) == (4, 29)
                     @test_throws ErrorException iterate(msas)

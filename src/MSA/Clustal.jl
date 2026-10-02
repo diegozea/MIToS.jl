@@ -6,11 +6,12 @@ struct Clustal <: MSAFormat end
 # the columns of the alignment.
 
 # Match a header token, not a sequence name such as CLUSTAL_seq.
-_is_clustal_header(line::AbstractString) = occursin(r"^CLUSTALW?(?:\s|$)", line)
+_msa_header(::Type{Clustal}) = r"^CLUSTALW?(?:\s|$)"
 
-_pre_readclustal(io::Union{IO,AbstractString}) = _pre_readclustal(lineiterator(io))
-
-function _pre_readclustal(lines; has_next = nothing)
+"""
+Read sequence data and conservation annotations from an iterable of Clustal lines.
+"""
+function _load_clustal_sequences(lines; has_next = nothing)
     seqs = OrderedDict{String,String}()
     conservation = IOBuffer()
     seq_re = r"^(\S+)\s+([A-Za-z.-]+)(?:\s+\d+)?"  # sequence line with optional count
@@ -22,7 +23,7 @@ function _pre_readclustal(lines; has_next = nothing)
         chomped = chomp(line)
         # blank line ends the current sequence block
         isempty(strip(chomped)) && (in_sequence_block = false; continue)
-        if _is_clustal_header(chomped)
+        if occursin(_msa_header(Clustal), chomped)
             # A new header starts another alignment, not another sequence block.
             if seen_header || !isempty(seqs)
                 has_next === nothing || (has_next[] = true)
@@ -65,17 +66,9 @@ function _pre_readclustal(lines; has_next = nothing)
     IDS = collect(keys(seqs))
     SEQS = collect(values(seqs))
     CONS = String(take!(conservation))
-    (IDS, SEQS, isempty(CONS) ? nothing : CONS)
-end
-
-"""
-Read sequence data and conservation annotations from an iterable of Clustal lines.
-"""
-function _load_clustal_sequences(lines; has_next = nothing)
-    IDS, SEQS, CONS = _pre_readclustal(lines; has_next = has_next)
     annot = Annotations()
     _disambiguate_seqnames!(IDS, annot)
-    CONS !== nothing && setannotcolumn!(annot, "cons", CONS)
+    isempty(CONS) || setannotcolumn!(annot, "cons", CONS)
     return IDS, SEQS, annot
 end
 

@@ -29,47 +29,9 @@ function Base.close(msas::MSAIterator)
 end
 
 """
-Check format support before opening a stream or downloading a URL. Formats supporting
-iteration define this method and `_prepare_msa!`, and provide a parser for one alignment.
-"""
-function _check_eachmsa_format(::Type{F}) where {F<:MSAFormat}
-    throw(ArgumentError("eachmsa does not support the $F format"))
-end
-
-_check_eachmsa_format(::Type{Stockholm}) = nothing
-_check_eachmsa_format(::Type{Clustal}) = nothing
-
-"""
-Prepare the next alignment without parsing it. Return `true` if an alignment is ready
-to parse, or `false` at the end of the stream. The iterator caches this result so repeated
-lookahead does not consume an alignment.
-"""
-function _prepare_msa!(msas::MSAIterator{Stockholm})
-    while !eof(msas.io)
-        line = strip(readline(msas.io))
-        isempty(line) && continue
-        line == "# STOCKHOLM 1.0" ||
-            throw(ArgumentError("Expected a # STOCKHOLM 1.0 header, got: $line"))
-        return true
-    end
-    false
-end
-
-function _prepare_msa!(msas::MSAIterator{Clustal})
-    while !eof(msas.io)
-        line = strip(readline(msas.io))
-        isempty(line) && continue
-        _is_clustal_header(line) ||
-            throw(ArgumentError("Expected a CLUSTAL header, got: $line"))
-        return true
-    end
-    false
-end
-
-"""
 Read one prepared alignment, forwarding the output type and parsing keywords. Formats
-whose `parse_file` consumes more than one alignment can specialize this method. If reading
-an alignment also prepares the next one, set `msas.ready = true` to preserve that lookahead.
+whose parser consumes the next header can specialize this method and set `msas.ready = true`
+to preserve that header for the next iteration.
 """
 function _read_msa!(msas::MSAIterator{F,T}) where {F,T}
     parse_file(msas.io, F, T; msas.kwargs...)
@@ -79,7 +41,7 @@ function _read_msa!(msas::MSAIterator{Clustal,T}) where {T}
     # A new header ends the current alignment; blank lines only separate its blocks.
     # Save that lookahead for the next iteration, including on non-seekable gzip streams.
     lines = Iterators.takewhile(eachline(msas.io)) do line
-        if _is_clustal_header(line)
+        if occursin(_msa_header(Clustal), line)
             msas.ready = true
             return false
         end
@@ -92,11 +54,11 @@ end
 
 # Look ahead only as far as the next header. In particular, isempty and zip must
 # not consume an alignment from this stateful iterator.
-function Base.isdone(msas::MSAIterator, ::Nothing = nothing)
+function Base.isdone(msas::MSAIterator{F}, ::Nothing = nothing) where {F}
     msas.closed && return true
     msas.ready && return false
     try
-        msas.ready = _prepare_msa!(msas)
+        msas.ready = _read_msa_header(msas.io, F; strict = true)
         msas.ready && return false
         close(msas)
         return true
@@ -172,7 +134,7 @@ function _eachmsa(
     ::Type{T};
     kwargs...,
 ) where {D,F<:MSAFormat,T}
-    _check_eachmsa_format(F)
+    _msa_header(F) # reject unsupported formats before opening or downloading the source
     remote = any(prefix -> startswith(source, prefix), ("http://", "https://", "ftp://"))
     temporary = remote ? tempname() * (endswith(source, ".gz") ? ".gz" : "") : nothing
     filename = temporary === nothing ? source : temporary

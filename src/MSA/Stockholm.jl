@@ -1,5 +1,7 @@
 struct Stockholm <: MSAFormat end
 
+_msa_header(::Type{Stockholm}) = r"^# STOCKHOLM 1\.0$"
+
 # NOTE: Sequence‑Name Disambiguation
 # We do not support sequence‑name disambiguation via the `OnlineSequenceNameDisambiguator`
 # in Stockholm format, because duplicate sequence names are not permitted.
@@ -87,13 +89,7 @@ function _load_sequences(
         annot = Annotations()
     end
     # Only read_file requests lookahead, using an open stream.
-    if has_next !== nothing
-        for line in lineiterator(io)
-            isempty(strip(line)) && continue
-            has_next[] = strip(line) == "# STOCKHOLM 1.0"
-            break
-        end
-    end
+    has_next === nothing || (has_next[] = _read_msa_header(io, Stockholm))
     return collect(IDS), SEQS, annot
 end
 

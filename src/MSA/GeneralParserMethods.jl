@@ -7,6 +7,28 @@ abstract type MSAFormat <: AbstractSequenceFormat end
 
 abstract type SequenceFormat <: AbstractSequenceFormat end
 
+"""
+Return the alignment header pattern for formats supported by `eachmsa`.
+"""
+function _msa_header(::Type{F}) where {F<:MSAFormat}
+    throw(ArgumentError("eachmsa does not support the $F format"))
+end
+
+"""
+Skip blank lines and consume the next header, returning whether an alignment follows.
+With `strict = true`, reject a nonblank line that is not a header.
+"""
+function _read_msa_header(io::IO, format::Type{<:MSAFormat}; strict::Bool = false)
+    for line in eachline(io)
+        line = strip(line)
+        isempty(line) && continue
+        found = occursin(_msa_header(format), line)
+        strict && !found && throw(ArgumentError("Expected a $format header, got: $line"))
+        return found
+    end
+    false
+end
+
 # Mappings
 # ========
 
