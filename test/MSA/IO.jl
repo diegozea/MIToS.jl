@@ -1,3 +1,5 @@
+import Downloads
+
 @testset "IO" begin
 
     msa_types = (
@@ -240,15 +242,21 @@
             end
 
             @testset "Download" begin
-
-                @test read_file(gaoetal2011, FASTA) == read_file(
-                    "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/Gaoetal2011.fasta",
-                    FASTA,
-                )
-                @test read_file(pf09645_fas, FASTA) == read_file(
-                    "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.fasta.gz",
-                    FASTA,
-                )
+                for path in (gaoetal2011, pf09645_fas)
+                    url =
+                        "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/" *
+                        basename(path)
+                    msa = try
+                        read_file(url, FASTA)
+                    catch err
+                        # Skip only proxy/DNS, connection, or timeout failures.
+                        err isa Downloads.RequestError && err.code in (5, 6, 7, 28) ||
+                            rethrow()
+                        @test_skip read_file(url, FASTA)
+                        continue
+                    end
+                    @test msa == read_file(path, FASTA)
+                end
             end
         end
 

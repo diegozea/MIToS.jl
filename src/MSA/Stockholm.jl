@@ -79,7 +79,7 @@ function _load_sequences(
     io::Union{IO,AbstractString},
     format::Type{Stockholm};
     create_annotations::Bool = false,
-    has_next = nothing,
+    has_next::Union{Nothing,Base.RefValue{Bool}} = nothing,
 )
     if create_annotations
         IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
@@ -89,7 +89,7 @@ function _load_sequences(
         annot = Annotations()
     end
     # Only read_file requests lookahead, using an open stream.
-    has_next === nothing || (has_next[] = _read_msa_header(io, Stockholm))
+    has_next === nothing || (has_next[] = _read_msa_header(io, _msa_header(Stockholm)))
     return collect(IDS), SEQS, annot
 end
 

@@ -8,22 +8,20 @@ abstract type MSAFormat <: AbstractSequenceFormat end
 abstract type SequenceFormat <: AbstractSequenceFormat end
 
 """
-Return the alignment header pattern for formats supported by `eachmsa`.
+Return the alignment header pattern. Methods are defined for `Stockholm` and `Clustal`.
 """
-function _msa_header(::Type{F}) where {F<:MSAFormat}
-    throw(ArgumentError("eachmsa does not support the $F format"))
-end
+function _msa_header end
 
 """
-Skip blank lines and consume the next header, returning whether an alignment follows.
+Skip blank lines and check the next line against the `header` pattern.
 With `strict = true`, reject a nonblank line that is not a header.
 """
-function _read_msa_header(io::IO, format::Type{<:MSAFormat}; strict::Bool = false)
+function _read_msa_header(io::IO, header::Regex; strict::Bool = false)
     for line in eachline(io)
         line = strip(line)
         isempty(line) && continue
-        found = occursin(_msa_header(format), line)
-        strict && !found && throw(ArgumentError("Expected a $format header, got: $line"))
+        found = occursin(header, line)
+        strict && !found && throw(ArgumentError("Invalid alignment header: $line"))
         return found
     end
     false
@@ -492,18 +490,18 @@ end
 # =====================
 
 """
-Construct an MSA with the requested output type and parsing options. The loader takes a
-`create_annotations` boolean and returns sequence names, sequences and annotations.
+Construct an MSA with the requested output type and parsing options. `load_sequences`
+takes a `create_annotations` boolean and returns sequence names, sequences and annotations.
 """
 function _parse_msa(
-    load::F,
+    load_sequences::F,
     output::Type{AnnotatedMultipleSequenceAlignment};
     generatemapping::Bool = false,
     useidcoordinates::Bool = false,
     deletefullgaps::Bool = true,
     keepinserts::Bool = false,
 )::AnnotatedMultipleSequenceAlignment where {F}
-    IDS, SEQS, annot = load(true)
+    IDS, SEQS, annot = load_sequences(true)
     _check_seq_len(IDS, SEQS)
     _generate_annotated_msa(
         annot,
@@ -517,11 +515,11 @@ function _parse_msa(
 end
 
 function _parse_msa(
-    load::F,
+    load_sequences::F,
     output::Type{NamedResidueMatrix{Array{Residue,2}}};
     deletefullgaps::Bool = true,
 )::NamedResidueMatrix{Array{Residue,2}} where {F}
-    IDS, SEQS, _ = load(false)
+    IDS, SEQS, _ = load_sequences(false)
     _check_seq_len(IDS, SEQS)
     msa = _generate_named_array(SEQS, IDS)
     if deletefullgaps
@@ -531,12 +529,12 @@ function _parse_msa(
 end
 
 function _parse_msa(
-    load::F,
+    load_sequences::F,
     output::Type{MultipleSequenceAlignment};
     deletefullgaps::Bool = true,
 )::MultipleSequenceAlignment where {F}
     msa = _parse_msa(
-        load,
+        load_sequences,
         NamedResidueMatrix{Array{Residue,2}},
         deletefullgaps = deletefullgaps,
     )
@@ -544,11 +542,11 @@ function _parse_msa(
 end
 
 function _parse_msa(
-    load::F,
+    load_sequences::F,
     output::Type{Matrix{Residue}};
     deletefullgaps::Bool = true,
 )::Matrix{Residue} where {F}
-    IDS, SEQS, _ = load(false)
+    IDS, SEQS, _ = load_sequences(false)
     _check_seq_len(IDS, SEQS)
     _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
 end

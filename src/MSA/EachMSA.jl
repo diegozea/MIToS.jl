@@ -58,7 +58,7 @@ function Base.isdone(msas::MSAIterator{F}, ::Nothing = nothing) where {F}
     msas.closed && return true
     msas.ready && return false
     try
-        msas.ready = _read_msa_header(msas.io, F; strict = true)
+        msas.ready = _read_msa_header(msas.io, _msa_header(F); strict = true)
         msas.ready && return false
         close(msas)
         return true
@@ -81,8 +81,8 @@ function Base.iterate(msas::MSAIterator, ::Nothing = nothing)
 end
 
 """
-    eachmsa(source, format[, output::Type]; kwargs...)
-    eachmsa(f, source, format[, output::Type]; kwargs...)
+    eachmsa(source, format::Type[, output::Type]; kwargs...)
+    eachmsa(f, source, format::Type[, output::Type]; kwargs...)
 
 Iterate over the alignments in a `Stockholm` or `Clustal` file, parsing one MSA at a time.
 For Clustal, each alignment starts with its own CLUSTAL header. The default
@@ -111,8 +111,7 @@ eachmsa(\"Pfam-A.full.gz\", Stockholm) do msas
 end
 ```
 
-[`read_file`](@ref) reads only the first alignment of a Stockholm or Clustal file
-and warns if another alignment is found.
+[`read_file`](@ref) reads only the first alignment and warns if another alignment is found.
 """
 function eachmsa(
     source::AbstractString,
@@ -120,28 +119,15 @@ function eachmsa(
     ::Type{T} = AnnotatedMultipleSequenceAlignment;
     kwargs...,
 ) where {F<:MSAFormat,T}
-    _eachmsa(download_file, source, F, T; kwargs...)
-end
-
-"""
-Open an alignment iterator using the supplied download function for remote sources.
-This allows download lifetime and cleanup to be tested without a network connection.
-"""
-function _eachmsa(
-    download::D,
-    source::AbstractString,
-    ::Type{F},
-    ::Type{T};
-    kwargs...,
-) where {D,F<:MSAFormat,T}
-    _msa_header(F) # reject unsupported formats before opening or downloading the source
+    applicable(_msa_header, F) ||
+        throw(ArgumentError("eachmsa does not support the $F format"))
     remote = any(prefix -> startswith(source, prefix), ("http://", "https://", "ftp://"))
     temporary = remote ? tempname() * (endswith(source, ".gz") ? ".gz" : "") : nothing
     filename = temporary === nothing ? source : temporary
     io = nothing
     try
         if remote
-            download(source, filename; headers = Dict("Accept-Encoding" => "identity"))
+            download_file(source, filename; headers = Dict("Accept-Encoding" => "identity"))
         end
         io = open(filename, "r")
         if endswith(source, ".gz")

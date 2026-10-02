@@ -11,7 +11,10 @@ _msa_header(::Type{Clustal}) = r"^CLUSTALW?(?:\s|$)"
 """
 Read sequence data and conservation annotations from an iterable of Clustal lines.
 """
-function _load_clustal_sequences(lines; has_next = nothing)
+function _load_clustal_sequences(
+    lines;
+    has_next::Union{Nothing,Base.RefValue{Bool}} = nothing,
+)
     seqs = OrderedDict{String,String}()
     conservation = IOBuffer()
     seq_re = r"^(\S+)\s+([A-Za-z.-]+)(?:\s+\d+)?"  # sequence line with optional count
@@ -76,7 +79,7 @@ function _load_sequences(
     io::Union{IO,AbstractString},
     format::Type{Clustal};
     create_annotations::Bool = false,
-    has_next = nothing,
+    has_next::Union{Nothing,Base.RefValue{Bool}} = nothing,
 )
     _load_clustal_sequences(lineiterator(io); has_next = has_next)
 end

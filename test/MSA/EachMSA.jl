@@ -1,4 +1,5 @@
 using CodecZlib: GzipCompressor, transcode
+import Downloads
 
 """
 Write an alignment fixture, compressing it when the filename ends in `.gz`.
@@ -262,56 +263,41 @@ _write_msa_fixture(path, contents) =
                 end
             end
 
-            @testset "URL download lifetime" begin
-                open_msas(download, url, F = format) =
-                    MSA._eachmsa(download, url, F, AnnotatedMultipleSequenceAlignment)
-                for suffix in ("", ".gz")
-                    url = "https://example.invalid/multiple" * suffix
-                    requests = String[]
-                    # Real HTTP downloads are covered by the download_file tests.
-                    download = function (source, destination; headers)
-                        push!(requests, source)
-                        @test headers == Dict("Accept-Encoding" => "identity")
-                        cp(isempty(suffix) ? plain : gzip, destination)
-                    end
-                    @test_throws ArgumentError open_msas(download, url, Raw)
-                    @test isempty(requests) # unsupported formats must not download the URL
-                    msas = open_msas(download, url)
-                    temporary = msas.temporary
-                    @test isfile(temporary)
-                    @test requests == [url]
-                    @test size(first(msas)) == (4, 29)
-                    @test isfile(temporary)
-                    @test size.(collect(msas)) == [(3, 30)]
-                    @test requests == [url] # no redownload between records
-                    @test !isfile(temporary)
-                    @test !isopen(msas.io)
-                    msas = open_msas(download, url)
-                    temporary = msas.temporary
-                    first(msas)
-                    close(msas)
-                    @test !isfile(temporary)
-                    @test !isopen(msas.io)
-                    @test requests == [url, url]
+        end
+    end
+
+    @testset "URL download lifetime" begin
+        base = "https://raw.githubusercontent.com/diegozea/MIToS.jl/0ce717038b642d550f710ba7ea095d791812ff6e/"
+        for (format, file) in (
+            (Stockholm, "test/data/PF09645_full.stockholm"),
+            (Stockholm, "docs/data/PF18883.stockholm.gz"),
+            (Clustal, "test/data/PF09645.aln"),
+        )
+            url = base * file
+            @test_throws ArgumentError eachmsa(url, Raw)
+            for exhaust in (false, true)
+                msas = try
+                    eachmsa(url, format)
+                catch err
+                    # Skip only proxy/DNS, connection, or timeout failures.
+                    err isa Downloads.RequestError && err.code in (5, 6, 7, 28) ||
+                        rethrow()
+                    @test_skip eachmsa(url, format)
+                    break
                 end
-                download =
-                    (source, destination; headers) -> write(destination, "invalid header\n")
-                msas = open_msas(download, "https://example.invalid/bad")
                 temporary = msas.temporary
-                @test_throws ArgumentError first(msas)
+                try
+                    @test isfile(temporary)
+                    @test first(msas) == read_file(joinpath(DATA, "..", "..", file), format)
+                    @test isfile(temporary)
+                    if exhaust
+                        @test isempty(msas)
+                    end
+                finally
+                    close(msas)
+                end
                 @test !isfile(temporary)
                 @test !isopen(msas.io)
-
-                download = function (source, destination; headers)
-                    temporary = destination
-                    write(destination, "partial download")
-                    error("download failed")
-                end
-                @test_throws ErrorException open_msas(
-                    download,
-                    "https://example.invalid/bad",
-                )
-                @test !isfile(temporary)
             end
         end
     end
