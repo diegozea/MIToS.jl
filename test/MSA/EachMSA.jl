@@ -69,10 +69,7 @@ using CodecZlib: GzipCompressor, transcode
                     @test isempty(collect(msas))
                     @test close(msas) === nothing
                     @test isfile(path) # never remove a user's local source
-                    if format === Stockholm
-                        @test read_file(path, format, T) ==
-                              parse_file(first_record, format, T)
-                    end
+                    @test read_file(path, format, T) == parse_file(first_record, format, T)
                 end
             end
 

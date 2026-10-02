@@ -424,6 +424,22 @@
             @test occursin(" 58", printed_num)
             @test parse_file(printed_num, Clustal) == msa
         end
+
+        @testset "First alignment in concatenated input" begin
+            first_record = read(clustal_file, String)
+            expected = parse_file(first_record, Clustal)
+            # Repeated identifiers must not join sequences from different alignments;
+            # a following alignment may also have different identifiers and dimensions.
+            for second_record in
+                (first_record, "CLUSTALW (1.83) multiple sequence alignment\n\nother AAA\n")
+                contents = first_record * "\n" * second_record
+                for input in (contents, IOBuffer(contents))
+                    msa = parse_file(input, Clustal)
+                    @test msa == expected
+                    @test annotations(msa) == annotations(expected)
+                end
+            end
+        end
     end
 
     @testset "Raw" begin

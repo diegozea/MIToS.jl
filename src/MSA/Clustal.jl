@@ -16,12 +16,18 @@ function _pre_readclustal(lines)
     seq_re = r"^(\S+)\s+([A-Za-z.-]+)(?:\s+\d+)?"  # sequence line with optional count
     startidx = 0
     endidx = 0
+    seen_header = false
     in_sequence_block = false # true when reading a sequence block
     for line in lines
         chomped = chomp(line)
         # blank line ends the current sequence block
         isempty(strip(chomped)) && (in_sequence_block = false; continue)
-        _is_clustal_header(chomped) && continue
+        if _is_clustal_header(chomped)
+            # A new header starts another alignment, not another sequence block.
+            (seen_header || !isempty(seqs)) && break
+            seen_header = true
+            continue
+        end
         startswith(chomped, '#') && continue
         if (m = match(seq_re, chomped)) !== nothing  # sequence line
             id = m.captures[1]
