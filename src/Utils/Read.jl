@@ -86,11 +86,29 @@ Returns `true` if the file exists and isn't empty.
 """
 isnotemptyfile(filename) = isfile(filename) && filesize(filename) > 0
 
+"""
+Wrap `io` in a gzip decompressor when `source` ends in `.gz`; otherwise return `io`.
+"""
+_input_stream(io::IO, source::AbstractString) =
+    endswith(source, ".gz") ? GzipDecompressorStream(io) : io
+
+"""
+Close an optional stream and remove its temporary download, even if closing fails.
+"""
+function _close_input(io::Union{Nothing,IO}, temporary::Union{Nothing,String})
+    try
+        io === nothing || close(io)
+    finally
+        temporary === nothing || rm(temporary; force = true)
+    end
+    nothing
+end
+
 function _get_xml_document(filename::AbstractString)
     if endswith(filename, ".gz")
         _check_gzip_file(filename)
         open(filename, "r") do fh
-            xml = read(GzipDecompressorStream(fh), String)
+            xml = read(_input_stream(fh, filename), String)
             return LightXML.parse_string(xml)
         end
     else
@@ -116,7 +134,7 @@ function _read(
         end
     else
         open(filename, "r") do fh
-            fh = endswith(completename, ".gz") ? GzipDecompressorStream(fh) : fh
+            fh = _input_stream(fh, completename)
             _read(fh, T, args...; kargs...)
         end
     end

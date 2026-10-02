@@ -490,6 +490,14 @@ end
 # =====================
 
 """
+Load sequences, requesting annotations only for an annotated MSA output.
+"""
+function _load_sequences(io, format::Type{<:MSAFormat}, ::Type{T}) where {T}
+    create_annotations = T === AnnotatedMultipleSequenceAlignment
+    _load_sequences(io, format; create_annotations = create_annotations)
+end
+
+"""
 Construct an MSA with the requested output type and parsing options. `loaded_sequences`
 contains sequence names, sequences and annotations; any following parser state is ignored.
 """
@@ -557,11 +565,7 @@ function Utils.parse_file(
     output::Type{T};
     kwargs...,
 ) where {F<:MSAFormat,T}
-    loaded_sequences = _load_sequences(
-        io,
-        format;
-        create_annotations = T === AnnotatedMultipleSequenceAlignment,
-    )
+    loaded_sequences = _load_sequences(io, format, output)
     _parse_msa(loaded_sequences, output; kwargs...)
 end
 

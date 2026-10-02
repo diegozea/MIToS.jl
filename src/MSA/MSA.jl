@@ -25,7 +25,6 @@ using PairwiseListMatrices  # Percent Identity Matrices
 using StatsBase             # Weights for clustering
 using RecipesBase           # Plots for MSAs
 using TranscodingStreams    # To solve MethodError seek(::TranscodingStream, ::Int)
-using CodecZlib: GzipDecompressorStream
 using MIToS.Utils
 
 import Markdown: @md_str # for docstrings

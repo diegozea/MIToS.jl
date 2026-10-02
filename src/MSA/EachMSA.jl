@@ -18,14 +18,7 @@ Base.isopen(msas::MSAIterator) = !msas.closed && isopen(msas.io)
 function Base.close(msas::MSAIterator)
     msas.closed && return nothing
     msas.closed = true
-    try
-        close(msas.io)
-    finally
-        if msas.temporary !== nothing
-            rm(msas.temporary; force = true)
-        end
-    end
-    nothing
+    Utils._close_input(msas.io, msas.temporary)
 end
 
 """
@@ -122,9 +115,7 @@ function eachmsa(
             download_file(source, filename; headers = Dict("Accept-Encoding" => "identity"))
         end
         io = open(filename, "r")
-        if endswith(source, ".gz")
-            io = GzipDecompressorStream(io)
-        end
+        io = Utils._input_stream(io, source)
         options = (; kwargs...)
         msas = MSAIterator{F,T,typeof(io),typeof(options)}(
             io,
@@ -136,11 +127,7 @@ function eachmsa(
         finalizer(close, msas)
         return msas
     catch
-        try
-            io === nothing || close(io)
-        finally
-            temporary === nothing || rm(temporary; force = true)
-        end
+        Utils._close_input(io, temporary)
         rethrow()
     end
 end
@@ -170,11 +157,7 @@ function Utils._read(
     output::Type{T} = AnnotatedMultipleSequenceAlignment;
     kwargs...,
 ) where {F<:Union{Stockholm,Clustal},T}
-    IDS, SEQS, annot, has_next = _load_sequences(
-        io,
-        format;
-        create_annotations = T === AnnotatedMultipleSequenceAlignment,
-    )
+    IDS, SEQS, annot, has_next = _load_sequences(io, format, output)
     msa = _parse_msa((IDS, SEQS, annot), output; kwargs...)
     if has_next === nothing
         has_next = _read_msa_header(io, _msa_header(format))
