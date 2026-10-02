@@ -7,6 +7,17 @@ import Base: read
 abstract type FileFormat end
 
 """
+Return whether `source` is an HTTP, HTTPS or FTP URL.
+"""
+_is_url(source::AbstractString) =
+    any(prefix -> startswith(source, prefix), ("http://", "https://", "ftp://"))
+
+"""
+Create a temporary download filename, preserving a `.gz` suffix.
+"""
+_download_tempname(url::AbstractString) = tempname() * (endswith(url, ".gz") ? ".gz" : "")
+
+"""
 This function raises an error if a GZip file doesn't have the 0x1f8b magic number.
 """
 function _check_gzip_file(filename)
@@ -48,11 +59,7 @@ function download_file(url::AbstractString, filename::AbstractString; kargs...)
 end
 
 function download_file(url::AbstractString; kargs...)
-    name = tempname()
-    if endswith(url, ".gz")
-        name *= ".gz"
-    end
-    download_file(url, name; kargs...)
+    download_file(url, _download_tempname(url); kargs...)
 end
 
 """
@@ -79,11 +86,29 @@ Returns `true` if the file exists and isn't empty.
 """
 isnotemptyfile(filename) = isfile(filename) && filesize(filename) > 0
 
+"""
+Wrap `io` in a gzip decompressor when `source` ends in `.gz`; otherwise return `io`.
+"""
+_input_stream(io::IO, source::AbstractString) =
+    endswith(source, ".gz") ? GzipDecompressorStream(io) : io
+
+"""
+Close an optional stream and remove its temporary download, even if closing fails.
+"""
+function _close_input(io::Union{Nothing,IO}, temporary::Union{Nothing,String})
+    try
+        io === nothing || close(io)
+    finally
+        temporary === nothing || rm(temporary; force = true)
+    end
+    nothing
+end
+
 function _get_xml_document(filename::AbstractString)
     if endswith(filename, ".gz")
         _check_gzip_file(filename)
         open(filename, "r") do fh
-            xml = read(GzipDecompressorStream(fh), String)
+            xml = read(_input_stream(fh, filename), String)
             return LightXML.parse_string(xml)
         end
     else
@@ -92,7 +117,7 @@ function _get_xml_document(filename::AbstractString)
 end
 
 # for using with download, since filename doesn't have file extension
-function _read(
+function _read_file(
     completename::AbstractString,
     filename::AbstractString,
     format::Type{T},
@@ -109,10 +134,18 @@ function _read(
         end
     else
         open(filename, "r") do fh
-            fh = endswith(completename, ".gz") ? GzipDecompressorStream(fh) : fh
-            parse_file(fh, T, args...; kargs...)
+            fh = _input_stream(fh, completename)
+            _read_file(fh, T, args...; kargs...)
         end
     end
+end
+
+"""
+Read an object from an open file. Formats can specialize this method to check for
+additional records without changing `parse_file` or how files are opened and closed.
+"""
+function _read_file(io::IO, format::Type{<:FileFormat}, args...; kwargs...)
+    parse_file(io, format, args...; kwargs...)
 end
 
 """
@@ -122,6 +155,9 @@ This function opens a file in the `pathname` and calls `parse_file(io, ...)` for
 the given `FileFormat` and `Type` on it. If the  `pathname` is an HTTP or FTP URL,
 the file is downloaded with `download` in a temporal file.
 Gzipped files should end on `.gz`.
+
+For Stockholm and Clustal files, only the first alignment is returned. A warning is
+shown if another alignment is found; use [`eachmsa`](@ref MIToS.MSA.eachmsa) to read them all.
 """
 function read_file(
     completename::AbstractString,
@@ -129,20 +165,17 @@ function read_file(
     args...;
     kargs...,
 ) where {T<:FileFormat}
-    if startswith(completename, "http://") ||
-       startswith(completename, "https://") ||
-       startswith(completename, "ftp://")
-
+    if _is_url(completename)
         filename =
             download_file(completename, headers = Dict("Accept-Encoding" => "identity"))
         try
-            _read(completename, filename, T, args...; kargs...)
+            _read_file(completename, filename, T, args...; kargs...)
         finally
             rm(filename)
         end
     else
         # completename and filename are the same
-        _read(completename, completename, T, args...; kargs...)
+        _read_file(completename, completename, T, args...; kargs...)
     end
 end
 

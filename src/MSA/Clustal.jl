@@ -5,18 +5,36 @@ struct Clustal <: MSAFormat end
 # Each block ends with a line showing the degree of conservation for
 # the columns of the alignment.
 
-function _pre_readclustal(io::Union{IO,AbstractString})
+# Match a header token, not a sequence name such as CLUSTAL_seq.
+_msa_header(::Type{Clustal}) = r"^CLUSTALW?(?:\s|$)"
+
+"""
+Read sequence data and conservation annotations from an iterable of Clustal lines.
+Return sequence names, sequences, annotations and whether another header was consumed.
+Set `header_read` when the caller has already consumed the current alignment's header.
+"""
+function _load_clustal_sequences(lines; header_read::Bool = false)
     seqs = OrderedDict{String,String}()
     conservation = IOBuffer()
     seq_re = r"^(\S+)\s+([A-Za-z.-]+)(?:\s+\d+)?"  # sequence line with optional count
     startidx = 0
     endidx = 0
+    seen_header = header_read
+    has_next = false
     in_sequence_block = false # true when reading a sequence block
-    for line in lineiterator(io)
+    for line in lines
         chomped = chomp(line)
         # blank line ends the current sequence block
         isempty(strip(chomped)) && (in_sequence_block = false; continue)
-        startswith(chomped, "CLUSTAL") && continue
+        if occursin(_msa_header(Clustal), chomped)
+            # A new header starts another alignment, not another sequence block.
+            if seen_header || !isempty(seqs)
+                has_next = true
+                break
+            end
+            seen_header = true
+            continue
+        end
         startswith(chomped, '#') && continue
         if (m = match(seq_re, chomped)) !== nothing  # sequence line
             id = m.captures[1]
@@ -51,7 +69,10 @@ function _pre_readclustal(io::Union{IO,AbstractString})
     IDS = collect(keys(seqs))
     SEQS = collect(values(seqs))
     CONS = String(take!(conservation))
-    (IDS, SEQS, isempty(CONS) ? nothing : CONS)
+    annot = Annotations()
+    _disambiguate_seqnames!(IDS, annot)
+    isempty(CONS) || setannotcolumn!(annot, "cons", CONS)
+    return IDS, SEQS, annot, has_next
 end
 
 function _load_sequences(
@@ -59,11 +80,7 @@ function _load_sequences(
     format::Type{Clustal};
     create_annotations::Bool = false,
 )
-    IDS, SEQS, CONS = _pre_readclustal(io)
-    annot = Annotations()
-    _disambiguate_seqnames!(IDS, annot)
-    CONS !== nothing && setannotcolumn!(annot, "cons", CONS)
-    return IDS, SEQS, annot
+    _load_clustal_sequences(lineiterator(io))
 end
 
 function Utils.print_file(

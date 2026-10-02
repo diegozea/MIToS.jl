@@ -1,3 +1,5 @@
+import Downloads
+
 @testset "IO" begin
 
     msa_types = (
@@ -240,15 +242,21 @@
             end
 
             @testset "Download" begin
-
-                @test read_file(gaoetal2011, FASTA) == read_file(
-                    "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/Gaoetal2011.fasta",
-                    FASTA,
-                )
-                @test read_file(pf09645_fas, FASTA) == read_file(
-                    "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.fasta.gz",
-                    FASTA,
-                )
+                for path in (gaoetal2011, pf09645_fas)
+                    url =
+                        "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/" *
+                        basename(path)
+                    msa = try
+                        read_file(url, FASTA)
+                    catch err
+                        # Skip only proxy/DNS, connection, or timeout failures.
+                        err isa Downloads.RequestError && err.code in (5, 6, 7, 28) ||
+                            rethrow()
+                        @test_skip read_file(url, FASTA)
+                        continue
+                    end
+                    @test msa == read_file(path, FASTA)
+                end
             end
         end
 
@@ -423,6 +431,22 @@
             printed_num = String(take!(io))
             @test occursin(" 58", printed_num)
             @test parse_file(printed_num, Clustal) == msa
+        end
+
+        @testset "First alignment in concatenated input" begin
+            first_record = read(clustal_file, String)
+            expected = parse_file(first_record, Clustal)
+            # Repeated identifiers must not join sequences from different alignments;
+            # a following alignment may also have different identifiers and dimensions.
+            for second_record in
+                (first_record, "CLUSTALW (1.83) multiple sequence alignment\n\nother AAA\n")
+                contents = first_record * "\n" * second_record
+                for input in (contents, IOBuffer(contents))
+                    msa = parse_file(input, Clustal)
+                    @test msa == expected
+                    @test annotations(msa) == annotations(expected)
+                end
+            end
         end
     end
 

@@ -1,5 +1,7 @@
 struct Stockholm <: MSAFormat end
 
+_msa_header(::Type{Stockholm}) = r"^# STOCKHOLM 1\.0$"
+
 # NOTE: Sequence‑Name Disambiguation
 # We do not support sequence‑name disambiguation via the `OnlineSequenceNameDisambiguator`
 # in Stockholm format, because duplicate sequence names are not permitted.
@@ -85,7 +87,8 @@ function _load_sequences(
         IDS, SEQS = _pre_readstockholm_sequences(io)
         annot = Annotations()
     end
-    return collect(IDS), SEQS, annot
+    # Leave the next header unread; nothing means that has_next has not been checked.
+    return collect(IDS), SEQS, annot, nothing
 end
 
 # Print Pfam

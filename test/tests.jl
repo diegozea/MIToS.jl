@@ -48,6 +48,7 @@ end
     include("MSA/MultipleSequenceAlignment.jl")
     include("MSA/GeneralParserMethods.jl")
     include("MSA/IO.jl")
+    include("MSA/EachMSA.jl")
     include("MSA/General.jl")
     include("MSA/MSAEditing.jl")
     include("MSA/MSAStats.jl")
