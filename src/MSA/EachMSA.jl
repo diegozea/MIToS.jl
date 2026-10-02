@@ -38,18 +38,10 @@ function _read_msa!(msas::MSAIterator{F,T}) where {F,T}
 end
 
 function _read_msa!(msas::MSAIterator{Clustal,T}) where {T}
-    # A new header ends the current alignment; blank lines only separate its blocks.
-    # Save that lookahead for the next iteration, including on non-seekable gzip streams.
-    lines = Iterators.takewhile(eachline(msas.io)) do line
-        if occursin(_msa_header(Clustal), line)
-            msas.ready = true
-            return false
-        end
-        true
-    end
-    _parse_msa(T; msas.kwargs...) do create_annotations
-        _load_clustal_sequences(lines)
-    end
+    IDS, SEQS, annot, has_next =
+        _load_clustal_sequences(eachline(msas.io); header_read = true)
+    msas.ready = has_next
+    _parse_msa((IDS, SEQS, annot), T; msas.kwargs...)
 end
 
 # Look ahead only as far as the next header. In particular, isempty and zip must
@@ -169,8 +161,8 @@ function eachmsa(
 end
 
 """
-Read the first MSA and warn if another alignment header is found. Only `read_file`
-requests this check, so `parse_file` and `eachmsa` remain quiet.
+Read the first MSA and warn if another alignment header is found. If the parser leaves
+`has_next` unchecked (`nothing`), look for the next header after parsing.
 """
 function Utils._read(
     io::IO,
@@ -178,16 +170,16 @@ function Utils._read(
     output::Type{T} = AnnotatedMultipleSequenceAlignment;
     kwargs...,
 ) where {F<:Union{Stockholm,Clustal},T}
-    has_next = Ref(false)
-    msa = _parse_msa(output; kwargs...) do create_annotations
-        _load_sequences(
-            io,
-            format;
-            create_annotations = create_annotations,
-            has_next = has_next,
-        )
+    IDS, SEQS, annot, has_next = _load_sequences(
+        io,
+        format;
+        create_annotations = T === AnnotatedMultipleSequenceAlignment,
+    )
+    msa = _parse_msa((IDS, SEQS, annot), output; kwargs...)
+    if has_next === nothing
+        has_next = _read_msa_header(io, _msa_header(format))
     end
-    if has_next[]
+    if has_next
         @warn "Read only the first alignment; use `eachmsa` to read all."
     end
     msa

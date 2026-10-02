@@ -111,6 +111,9 @@ _write_msa_fixture(path, contents) =
                 io = IOBuffer(contents)
                 msa = @test_logs parse_file(io, format)
                 @test msa == expected
+                if format === Stockholm
+                    @test position(io) == sizeof(first_record)
+                end
                 msa = @test_logs parse_file(io, format)
                 @test msa == parse_file(second_record, format)
             end

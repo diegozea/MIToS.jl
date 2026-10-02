@@ -79,7 +79,6 @@ function _load_sequences(
     io::Union{IO,AbstractString},
     format::Type{Stockholm};
     create_annotations::Bool = false,
-    has_next::Union{Nothing,Base.RefValue{Bool}} = nothing,
 )
     if create_annotations
         IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
@@ -88,9 +87,8 @@ function _load_sequences(
         IDS, SEQS = _pre_readstockholm_sequences(io)
         annot = Annotations()
     end
-    # Only read_file requests lookahead, using an open stream.
-    has_next === nothing || (has_next[] = _read_msa_header(io, _msa_header(Stockholm)))
-    return collect(IDS), SEQS, annot
+    # Leave the next header unread; nothing means that has_next has not been checked.
+    return collect(IDS), SEQS, annot, nothing
 end
 
 # Print Pfam

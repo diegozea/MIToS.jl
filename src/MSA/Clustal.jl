@@ -10,17 +10,17 @@ _msa_header(::Type{Clustal}) = r"^CLUSTALW?(?:\s|$)"
 
 """
 Read sequence data and conservation annotations from an iterable of Clustal lines.
+Return sequence names, sequences, annotations and whether another header was consumed.
+Set `header_read` when the caller has already consumed the current alignment's header.
 """
-function _load_clustal_sequences(
-    lines;
-    has_next::Union{Nothing,Base.RefValue{Bool}} = nothing,
-)
+function _load_clustal_sequences(lines; header_read::Bool = false)
     seqs = OrderedDict{String,String}()
     conservation = IOBuffer()
     seq_re = r"^(\S+)\s+([A-Za-z.-]+)(?:\s+\d+)?"  # sequence line with optional count
     startidx = 0
     endidx = 0
-    seen_header = false
+    seen_header = header_read
+    has_next = false
     in_sequence_block = false # true when reading a sequence block
     for line in lines
         chomped = chomp(line)
@@ -29,7 +29,7 @@ function _load_clustal_sequences(
         if occursin(_msa_header(Clustal), chomped)
             # A new header starts another alignment, not another sequence block.
             if seen_header || !isempty(seqs)
-                has_next === nothing || (has_next[] = true)
+                has_next = true
                 break
             end
             seen_header = true
@@ -72,16 +72,15 @@ function _load_clustal_sequences(
     annot = Annotations()
     _disambiguate_seqnames!(IDS, annot)
     isempty(CONS) || setannotcolumn!(annot, "cons", CONS)
-    return IDS, SEQS, annot
+    return IDS, SEQS, annot, has_next
 end
 
 function _load_sequences(
     io::Union{IO,AbstractString},
     format::Type{Clustal};
     create_annotations::Bool = false,
-    has_next::Union{Nothing,Base.RefValue{Bool}} = nothing,
 )
-    _load_clustal_sequences(lineiterator(io); has_next = has_next)
+    _load_clustal_sequences(lineiterator(io))
 end
 
 function Utils.print_file(

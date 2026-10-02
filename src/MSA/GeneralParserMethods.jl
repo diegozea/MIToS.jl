@@ -490,18 +490,18 @@ end
 # =====================
 
 """
-Construct an MSA with the requested output type and parsing options. `load_sequences_function`
-takes a `create_annotations` boolean and returns sequence names, sequences and annotations.
+Construct an MSA with the requested output type and parsing options. `loaded_sequences`
+contains sequence names, sequences and annotations; any following parser state is ignored.
 """
 function _parse_msa(
-    load_sequences_function::F,
+    loaded_sequences::Tuple,
     output::Type{AnnotatedMultipleSequenceAlignment};
     generatemapping::Bool = false,
     useidcoordinates::Bool = false,
     deletefullgaps::Bool = true,
     keepinserts::Bool = false,
-)::AnnotatedMultipleSequenceAlignment where {F}
-    IDS, SEQS, annot = load_sequences_function(true)
+)::AnnotatedMultipleSequenceAlignment
+    IDS, SEQS, annot = loaded_sequences
     _check_seq_len(IDS, SEQS)
     _generate_annotated_msa(
         annot,
@@ -515,11 +515,11 @@ function _parse_msa(
 end
 
 function _parse_msa(
-    load_sequences_function::F,
+    loaded_sequences::Tuple,
     output::Type{NamedResidueMatrix{Array{Residue,2}}};
     deletefullgaps::Bool = true,
-)::NamedResidueMatrix{Array{Residue,2}} where {F}
-    IDS, SEQS, _ = load_sequences_function(false)
+)::NamedResidueMatrix{Array{Residue,2}}
+    IDS, SEQS, _ = loaded_sequences
     _check_seq_len(IDS, SEQS)
     msa = _generate_named_array(SEQS, IDS)
     if deletefullgaps
@@ -529,12 +529,12 @@ function _parse_msa(
 end
 
 function _parse_msa(
-    load_sequences_function::F,
+    loaded_sequences::Tuple,
     output::Type{MultipleSequenceAlignment};
     deletefullgaps::Bool = true,
-)::MultipleSequenceAlignment where {F}
+)::MultipleSequenceAlignment
     msa = _parse_msa(
-        load_sequences_function,
+        loaded_sequences,
         NamedResidueMatrix{Array{Residue,2}},
         deletefullgaps = deletefullgaps,
     )
@@ -542,11 +542,11 @@ function _parse_msa(
 end
 
 function _parse_msa(
-    load_sequences_function::F,
+    loaded_sequences::Tuple,
     output::Type{Matrix{Residue}};
     deletefullgaps::Bool = true,
-)::Matrix{Residue} where {F}
-    IDS, SEQS, _ = load_sequences_function(false)
+)::Matrix{Residue}
+    IDS, SEQS, _ = loaded_sequences
     _check_seq_len(IDS, SEQS)
     _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
 end
@@ -557,9 +557,12 @@ function Utils.parse_file(
     output::Type{T};
     kwargs...,
 ) where {F<:MSAFormat,T}
-    _parse_msa(output; kwargs...) do create_annotations
-        _load_sequences(io, format; create_annotations = create_annotations)
-    end
+    loaded_sequences = _load_sequences(
+        io,
+        format;
+        create_annotations = T === AnnotatedMultipleSequenceAlignment,
+    )
+    _parse_msa(loaded_sequences, output; kwargs...)
 end
 
 function Utils.parse_file(
