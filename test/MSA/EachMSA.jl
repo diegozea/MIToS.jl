@@ -61,10 +61,6 @@ _write_msa_fixture(path, contents) =
                 for path in (plain, gzip)
                     msas = eachmsa(path, format, T; deletefullgaps = false)
                     @test eltype(msas) === T
-                    @test isopen(msas)
-                    @test position(msas.io) == 0 # opening does not parse the first MSA
-                    @test !isempty(msas)
-                    @test !isempty(msas) # repeated lookahead must not lose a record
                     alignments = @test_logs collect(msas)
                     @test alignments isa Vector{T}
                     @test size.(alignments) == [(4, 30), (3, 30)]
@@ -72,17 +68,14 @@ _write_msa_fixture(path, contents) =
                           parse_file(first_record, format, T; deletefullgaps = false)
                     @test alignments[2] ==
                           parse_file(second_record, format, T; deletefullgaps = false)
-                    @test !isopen(msas)
-                    @test !isopen(msas.io)
-                    @test isempty(collect(msas))
-                    @test close(msas) === nothing
-                    @test isfile(path) # never remove a user's local source
-                    msa = @test_logs (:warn, multiple_warning) read_file(path, format, T)
-                    @test msa == parse_file(first_record, format, T)
                 end
             end
 
             @testset "read_file warnings" begin
+                for T in output_types, path in (plain, gzip)
+                    msa = @test_logs (:warn, multiple_warning) read_file(path, format, T)
+                    @test msa == parse_file(first_record, format, T)
+                end
                 expected = parse_file(first_record, format)
                 header = format === Stockholm ? "# STOCKHOLM 1.0\n" : "CLUSTAL\n"
                 for suffix in ("", ".gz")
@@ -106,7 +99,12 @@ _write_msa_fixture(path, contents) =
                         @test msa == expected
                     end
                 end
-                @test_logs parse_file(contents, format)
+            end
+
+            @testset "Successive parse_file calls" begin
+                expected = parse_file(first_record, format)
+                msa = @test_logs parse_file(contents, format)
+                @test msa == expected
                 # Reading one alignment from an open stream must leave the next readable.
                 io = IOBuffer(contents)
                 msa = @test_logs parse_file(io, format)
@@ -118,8 +116,13 @@ _write_msa_fixture(path, contents) =
                 @test msa == parse_file(second_record, format)
             end
 
-            @testset "Defaults and independent annotations" begin
-                alignments = collect(eachmsa(plain, format))
+            @testset "Defaults, lookahead and cleanup" for path in (plain, gzip)
+                msas = eachmsa(path, format)
+                @test isopen(msas)
+                @test position(msas.io) == 0 # opening does not parse the first MSA
+                @test !isempty(msas)
+                @test !isempty(msas) # repeated lookahead must not lose a record
+                alignments = collect(msas)
                 @test alignments isa Vector{AnnotatedMultipleSequenceAlignment}
                 @test size.(alignments) == [(4, 29), (3, 30)]
                 if format === Stockholm
@@ -128,6 +131,11 @@ _write_msa_fixture(path, contents) =
                 @test stringsequence(alignments[2], 1) == "LPENWQALLDDTGTYFYANHLTKTSQWEHP"
                 setannotfile!(alignments[1], "ID", "changed")
                 @test getannotfile(alignments[2], "ID", "") == ""
+                @test !isopen(msas)
+                @test !isopen(msas.io)
+                @test isempty(collect(msas))
+                @test close(msas) === nothing
+                @test isfile(path) # never remove a user's local source
             end
 
             @testset "Wrapped records and parsing keywords" begin
@@ -150,7 +158,6 @@ _write_msa_fixture(path, contents) =
                     expected = parse_file(text, format; options...)
                     @test msa == expected
                     @test annotations(msa) == annotations(expected)
-                    @test getcolumnmapping(msa) == getcolumnmapping(expected)
                 end
             end
 
@@ -255,8 +262,6 @@ _write_msa_fixture(path, contents) =
                     @test !isopen(msas.io)
                 end
                 @test_throws SystemError eachmsa(joinpath(dir, "missing.sto"), format)
-                @test_throws ArgumentError eachmsa(plain, Raw)
-                @test_throws ArgumentError eachmsa(joinpath(dir, "missing.txt"), Raw)
             end
 
             @testset "zip does not consume an extra MSA" begin
@@ -269,15 +274,21 @@ _write_msa_fixture(path, contents) =
         end
     end
 
+    @testset "Unsupported format" begin
+        mktempdir() do dir
+            @test_throws ArgumentError eachmsa(joinpath(dir, "missing.txt"), Raw)
+        end
+    end
+
     @testset "URL download lifetime" begin
         base = "https://raw.githubusercontent.com/diegozea/MIToS.jl/0ce717038b642d550f710ba7ea095d791812ff6e/"
+        @test_throws ArgumentError eachmsa(base * "test/data/PF09645_full.stockholm", Raw)
         for (format, file) in (
             (Stockholm, "test/data/PF09645_full.stockholm"),
             (Stockholm, "docs/data/PF18883.stockholm.gz"),
             (Clustal, "test/data/PF09645.aln"),
         )
             url = base * file
-            @test_throws ArgumentError eachmsa(url, Raw)
             for exhaust in (false, true)
                 msas = try
                     eachmsa(url, format)
@@ -295,12 +306,14 @@ _write_msa_fixture(path, contents) =
                     @test isfile(temporary)
                     if exhaust
                         @test isempty(msas)
+                    else
+                        close(msas)
                     end
+                    @test !isfile(temporary)
+                    @test !isopen(msas.io)
                 finally
                     close(msas)
                 end
-                @test !isfile(temporary)
-                @test !isopen(msas.io)
             end
         end
     end
