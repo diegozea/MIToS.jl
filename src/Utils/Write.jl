@@ -1,9 +1,19 @@
 """
-`write_file{T<:FileFormat}(filename::AbstractString, object, format::Type{T}, mode::ASCIIString="w")`
+Validate an object before opening its output file. Formats can specialize this check.
+"""
+_validate_write(object, format::Type{<:FileFormat}) = nothing
+
+"""
+    write_file(filename::AbstractString, object, format::Type, mode::String = "w")
 
 This function opens a file with `filename` and `mode` (default: "w")
 and writes (`print_file`) the `object` with the given `format`.
 Gzipped files should end on `.gz`.
+
+For `Stockholm` and `Clustal`, `object` can also be a collection or iterator with a
+declared alignment element type (`eltype(object) <: AbstractMatrix{Residue}`). Alignments
+are written one at a time. Unknown or incompatible element types raise an `ArgumentError`
+before the file is opened. An empty typed collection writes an empty file.
 """
 function write_file(
     filename::AbstractString,
@@ -11,11 +21,13 @@ function write_file(
     format::Type{T},
     mode::String = "w",
 ) where {T<:FileFormat}
+    _validate_write(object, format)
     fh = open(filename, mode)
-    if endswith(filename, ".gz")
-        fh = GzipCompressorStream(fh)
-    end
     try
+        if endswith(filename, ".gz")
+            fh = GzipCompressorStream(fh)
+            write(fh, "") # Start a valid gzip stream even when there are no alignments.
+        end
         print_file(fh, object, format)
     finally
         close(fh)

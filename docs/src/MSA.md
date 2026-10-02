@@ -169,6 +169,34 @@ so `write_file` behaves as `print_file`.
 write_file("msa.gz", msa, FASTA) # writes msa in FASTA format in a gzipped file
 ```
 
+#### Writing multiple alignments
+
+To save several alignments in one Stockholm or Clustal file, pass a vector of MSA objects:
+
+```julia
+write_file("alignments.sto", [msa1, msa2], Stockholm)
+write_file("alignments.aln.gz", [msa1, msa2], Clustal)
+```
+
+For a large file, use `eachmsa` to read and write one alignment at a time:
+
+```julia
+using MIToS.MSA
+
+eachmsa("input.sto.gz", Stockholm) do msas
+    write_file("output.sto.gz", msas, Stockholm)
+end
+```
+
+Both compressed and uncompressed files use the same interface. The input must declare
+which type of alignment it contains. Vectors of MSA objects and `eachmsa` provide this
+information. In Julia, this is the input's `eltype`, which must be a subtype of
+`AbstractMatrix{Residue}`. Inputs with an unknown element type or `eltype` equal to `Any`
+are rejected before the output file is opened.
+
+An empty typed collection writes an empty file. If writing fails after it has started,
+the output is closed but may contain only the alignments written so far.
+
 ## [MSA Annotations](@id MSA-Annotations)
 
 MSA annotations are based on the Stockholm format mark-ups. There are four types of
