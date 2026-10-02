@@ -157,6 +157,20 @@ function eachmsa(
     ::Type{T} = AnnotatedMultipleSequenceAlignment;
     kwargs...,
 ) where {F<:MSAFormat,T}
+    _eachmsa(download_file, source, F, T; kwargs...)
+end
+
+"""
+Open an alignment iterator using the supplied download function for remote sources.
+This allows download lifetime and cleanup to be tested without a network connection.
+"""
+function _eachmsa(
+    download::D,
+    source::AbstractString,
+    ::Type{F},
+    ::Type{T};
+    kwargs...,
+) where {D,F<:MSAFormat,T}
     _check_eachmsa_format(F)
     remote = any(prefix -> startswith(source, prefix), ("http://", "https://", "ftp://"))
     temporary = remote ? tempname() * (endswith(source, ".gz") ? ".gz" : "") : nothing
@@ -164,7 +178,7 @@ function eachmsa(
     io = nothing
     try
         if remote
-            download_file(source, filename; headers = Dict("Accept-Encoding" => "identity"))
+            download(source, filename; headers = Dict("Accept-Encoding" => "identity"))
         end
         io = open(filename, "r")
         if endswith(source, ".gz")

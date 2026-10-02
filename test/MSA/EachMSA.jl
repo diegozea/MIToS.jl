@@ -1,42 +1,4 @@
 using CodecZlib: GzipCompressor, transcode
-using Sockets
-
-# Serve an in-memory fixture locally so URL tests also count downloads and do not
-# depend on an external service. Each request uses a fresh connection.
-function _with_msa_server(f, payload)
-    server = listen(ip"127.0.0.1", 0)
-    port = getsockname(server)[2]
-    requests = String[]
-    task = @async begin
-        while isopen(server)
-            socket = try
-                accept(server)
-            catch
-                isopen(server) && rethrow()
-                break
-            end
-            try
-                push!(requests, readline(socket))
-                while !isempty(readline(socket))
-                end
-                write(
-                    socket,
-                    "HTTP/1.1 200 OK\r\nContent-Length: $(length(payload))\r\nConnection: close\r\n\r\n",
-                )
-                write(socket, payload)
-                flush(socket)
-            finally
-                close(socket)
-            end
-        end
-    end
-    try
-        return f("http://127.0.0.1:$port", requests)
-    finally
-        close(server)
-        wait(task)
-    end
-end
 
 @testset "eachmsa" begin
     @testset "$format" for format in (Stockholm, Clustal)
@@ -269,39 +231,55 @@ end
             end
 
             @testset "URL download lifetime" begin
+                open_msas(download, url, F = format) =
+                    MSA._eachmsa(download, url, F, AnnotatedMultipleSequenceAlignment)
                 for suffix in ("", ".gz")
-                    payload = read(isempty(suffix) ? plain : gzip)
-                    _with_msa_server(payload) do base, requests
-                        url = base * "/multiple.sto" * suffix
-                        @test_throws ArgumentError eachmsa(url, Raw)
-                        @test isempty(requests) # unsupported formats must not download the URL
-                        msas = eachmsa(url, format)
-                        temporary = msas.temporary
-                        @test isfile(temporary)
-                        @test length(requests) == 1
-                        @test size(first(msas)) == (4, 29)
-                        @test isfile(temporary)
-                        @test size.(collect(msas)) == [(3, 30)]
-                        @test length(requests) == 1 # no redownload between records
-                        @test !isfile(temporary)
-                        @test !isopen(msas.io)
-                        eachmsa(url, format) do reader
-                            temporary = reader.temporary
-                            first(reader)
-                        end
-                        @test !isfile(temporary)
-                        @test length(requests) == 2
+                    url = "https://example.invalid/multiple" * suffix
+                    requests = String[]
+                    # Real HTTP downloads are covered by the download_file tests.
+                    download = function (source, destination; headers)
+                        push!(requests, source)
+                        @test headers == Dict("Accept-Encoding" => "identity")
+                        cp(isempty(suffix) ? plain : gzip, destination)
                     end
-                end
-                _with_msa_server(
-                    Vector{UInt8}(codeunits("invalid header\n")),
-                ) do base, requests
-                    msas = eachmsa(base * "/bad.sto", format)
+                    @test_throws ArgumentError open_msas(download, url, Raw)
+                    @test isempty(requests) # unsupported formats must not download the URL
+                    msas = open_msas(download, url)
                     temporary = msas.temporary
-                    @test_throws ArgumentError first(msas)
+                    @test isfile(temporary)
+                    @test requests == [url]
+                    @test size(first(msas)) == (4, 29)
+                    @test isfile(temporary)
+                    @test size.(collect(msas)) == [(3, 30)]
+                    @test requests == [url] # no redownload between records
                     @test !isfile(temporary)
                     @test !isopen(msas.io)
+                    msas = open_msas(download, url)
+                    temporary = msas.temporary
+                    first(msas)
+                    close(msas)
+                    @test !isfile(temporary)
+                    @test !isopen(msas.io)
+                    @test requests == [url, url]
                 end
+                download =
+                    (source, destination; headers) -> write(destination, "invalid header\n")
+                msas = open_msas(download, "https://example.invalid/bad")
+                temporary = msas.temporary
+                @test_throws ArgumentError first(msas)
+                @test !isfile(temporary)
+                @test !isopen(msas.io)
+
+                download = function (source, destination; headers)
+                    temporary = destination
+                    write(destination, "partial download")
+                    error("download failed")
+                end
+                @test_throws ErrorException open_msas(
+                    download,
+                    "https://example.invalid/bad",
+                )
+                @test !isfile(temporary)
             end
         end
     end
