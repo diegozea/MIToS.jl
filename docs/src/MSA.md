@@ -31,8 +31,8 @@ Depth = 4
 
 ### [Reading MSA files](@id Reading-MSA-files)
 
-Use [`read_file`](@ref MIToS.Utils.read_file) to load a single MSA. To iterate over the
-alignments in a Stockholm or Clustal file, use [`eachmsa`](@ref MIToS.MSA.eachmsa).
+Use [`read_file`](@ref MIToS.Utils.read_file) to load a single MSA. To read the alignments
+in a Stockholm or Clustal file one at a time, use [`eachmsa`](@ref MIToS.MSA.eachmsa).
 
 The `read_file` function is defined in the `Utils` module. It takes a filename/path as a
 first argument followed by other arguments. It opens the file and uses the arguments to
@@ -102,11 +102,12 @@ printmodifications(msa)
 
 ### Reading multiple alignments
 
-[`eachmsa`](@ref MIToS.MSA.eachmsa) yields one MSA at a time from a Stockholm or Clustal file
-containing one or more alignments. [`read_file`](@ref MIToS.Utils.read_file) returns the
-first alignment of a Stockholm file as a single MSA object.
+A file such as `Pfam-A.full.gz` contains alignments for many protein families.
+Use [`eachmsa`](@ref MIToS.MSA.eachmsa) to read these alignments one at a time.
+It works with Stockholm and Clustal files. For a file containing a single alignment,
+use [`read_file`](@ref MIToS.Utils.read_file).
 
-Use a `do` block to ensure the file is closed when your analysis finishes:
+This example prints the accession and number of sequences for each Pfam family:
 
 ```julia
 using MIToS.MSA
@@ -118,24 +119,28 @@ eachmsa("Pfam-A.full.gz", Stockholm) do msas
 end
 ```
 
-The `do` block closes the stream even if you `break` from the loop or your analysis throws
-an exception.
+The `for` loop runs once for each alignment, which you can access as `msa` inside the loop.
+Replace the `println` line with your own analysis. The `do` block closes the file
+automatically when your analysis finishes, even if you stop early with `break` or an
+error occurs.
 
-For a Clustal file, use `Clustal` as the format. Each alignment must start with its own
-CLUSTAL header. Blank lines separate blocks within an alignment.
+For a Clustal file, replace `Stockholm` with `Clustal`. Each alignment must start with
+its own CLUSTAL header line. Blank lines can separate parts of the same alignment.
 
-Both compressed and uncompressed files use the same interface. Gzip data is decompressed
-in one pass, so there is no need to decompress Pfam to disk first. The iterator retains
-no previous MSAs, but each individual alignment and the memory used by your analysis
-must fit in RAM.
+Both compressed and uncompressed files use the same interface. Files ending in `.gz`
+can be read directly, so there is no need to decompress the Pfam file first. MIToS reads
+each alignment when the loop reaches it and does not keep previous alignments. Your
+computer needs enough memory for one complete alignment and your analysis, without
+having to load all the families into memory at once.
 
-HTTP, HTTPS and FTP URLs are downloaded once per iterator to a temporary file on disk,
-which is removed when the iterator closes. Download the file yourself if you want to
-reuse it across several calls. Files are opened or downloaded when `eachmsa` is called;
-alignment parsing is lazy, and the iterator cannot be restarted after exhaustion.
+You can also give `eachmsa` a web address (HTTP, HTTPS or FTP). The file is downloaded
+once when `eachmsa` is called, and the temporary copy is deleted when the `do` block ends.
+If you want to analyse the same file several times, download it first and use its
+local filename.
 
-The optional output type and parsing keywords are passed to `parse_file`, for example
-`eachmsa(path, Stockholm, Matrix{Residue}; deletefullgaps = false)`.
+You can use the same options as for [`read_file`](@ref MIToS.Utils.read_file).
+For example, `deletefullgaps = false` keeps columns containing only gaps.
+See [`parse_file`](@ref MIToS.Utils.parse_file) for the available options and output types.
 
 ### [Writing MSA files](@id Writing-MSA-files)
 

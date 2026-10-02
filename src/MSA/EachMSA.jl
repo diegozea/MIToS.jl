@@ -149,7 +149,7 @@ eachmsa(\"Pfam-A.full.gz\", Stockholm) do msas
 end
 ```
 
-[`read_file`](@ref) returns the first alignment of a Stockholm file as a single MSA object.
+For a Stockholm or Clustal file containing a single alignment, use [`read_file`](@ref).
 """
 function eachmsa(
     source::AbstractString,
