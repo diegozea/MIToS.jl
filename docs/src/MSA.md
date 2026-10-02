@@ -105,7 +105,8 @@ printmodifications(msa)
 A file such as `Pfam-A.full.gz` contains alignments for many protein families.
 Use [`eachmsa`](@ref MIToS.MSA.eachmsa) to read these alignments one at a time.
 It works with Stockholm and Clustal files. To read only the first alignment in either
-format, use [`read_file`](@ref MIToS.Utils.read_file).
+format, use [`read_file`](@ref MIToS.Utils.read_file). It warns you if the file contains
+more alignments.
 
 This example prints the accession and number of sequences for each Pfam family:
 

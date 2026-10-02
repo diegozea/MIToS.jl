@@ -110,9 +110,17 @@ function _read(
     else
         open(filename, "r") do fh
             fh = endswith(completename, ".gz") ? GzipDecompressorStream(fh) : fh
-            parse_file(fh, T, args...; kargs...)
+            _read(fh, T, args...; kargs...)
         end
     end
+end
+
+"""
+Read an object from an open file. Formats can specialize this method to check for
+additional records without changing `parse_file` or how files are opened and closed.
+"""
+function _read(io::IO, format::Type{<:FileFormat}, args...; kwargs...)
+    parse_file(io, format, args...; kwargs...)
 end
 
 """
@@ -122,6 +130,9 @@ This function opens a file in the `pathname` and calls `parse_file(io, ...)` for
 the given `FileFormat` and `Type` on it. If the  `pathname` is an HTTP or FTP URL,
 the file is downloaded with `download` in a temporal file.
 Gzipped files should end on `.gz`.
+
+For Stockholm and Clustal files, only the first alignment is returned. A warning is
+shown if another alignment is found; use [`eachmsa`](@ref MIToS.MSA.eachmsa) to read them all.
 """
 function read_file(
     completename::AbstractString,

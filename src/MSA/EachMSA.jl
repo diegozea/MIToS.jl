@@ -149,7 +149,8 @@ eachmsa(\"Pfam-A.full.gz\", Stockholm) do msas
 end
 ```
 
-[`read_file`](@ref) reads only the first alignment of a Stockholm or Clustal file.
+[`read_file`](@ref) reads only the first alignment of a Stockholm or Clustal file
+and warns if another alignment is found.
 """
 function eachmsa(
     source::AbstractString,
@@ -217,4 +218,29 @@ function eachmsa(
     finally
         close(msas)
     end
+end
+
+"""
+Read the first MSA and warn if another alignment header is found. Only `read_file`
+requests this check, so `parse_file` and `eachmsa` remain quiet.
+"""
+function Utils._read(
+    io::IO,
+    format::Type{F},
+    output::Type{T} = AnnotatedMultipleSequenceAlignment;
+    kwargs...,
+) where {F<:Union{Stockholm,Clustal},T}
+    has_next = Ref(false)
+    msa = _parse_msa(output; kwargs...) do create_annotations
+        _load_sequences(
+            io,
+            format;
+            create_annotations = create_annotations,
+            has_next = has_next,
+        )
+    end
+    if has_next[]
+        @warn "Read only the first alignment; use `eachmsa` to read all."
+    end
+    msa
 end

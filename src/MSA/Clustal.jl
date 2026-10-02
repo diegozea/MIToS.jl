@@ -10,7 +10,7 @@ _is_clustal_header(line::AbstractString) = occursin(r"^CLUSTALW?(?:\s|$)", line)
 
 _pre_readclustal(io::Union{IO,AbstractString}) = _pre_readclustal(lineiterator(io))
 
-function _pre_readclustal(lines)
+function _pre_readclustal(lines; has_next = nothing)
     seqs = OrderedDict{String,String}()
     conservation = IOBuffer()
     seq_re = r"^(\S+)\s+([A-Za-z.-]+)(?:\s+\d+)?"  # sequence line with optional count
@@ -24,7 +24,10 @@ function _pre_readclustal(lines)
         isempty(strip(chomped)) && (in_sequence_block = false; continue)
         if _is_clustal_header(chomped)
             # A new header starts another alignment, not another sequence block.
-            (seen_header || !isempty(seqs)) && break
+            if seen_header || !isempty(seqs)
+                has_next === nothing || (has_next[] = true)
+                break
+            end
             seen_header = true
             continue
         end
@@ -68,8 +71,8 @@ end
 """
 Read sequence data and conservation annotations from an iterable of Clustal lines.
 """
-function _load_clustal_sequences(lines)
-    IDS, SEQS, CONS = _pre_readclustal(lines)
+function _load_clustal_sequences(lines; has_next = nothing)
+    IDS, SEQS, CONS = _pre_readclustal(lines; has_next = has_next)
     annot = Annotations()
     _disambiguate_seqnames!(IDS, annot)
     CONS !== nothing && setannotcolumn!(annot, "cons", CONS)
@@ -80,8 +83,9 @@ function _load_sequences(
     io::Union{IO,AbstractString},
     format::Type{Clustal};
     create_annotations::Bool = false,
+    has_next = nothing,
 )
-    _load_clustal_sequences(lineiterator(io))
+    _load_clustal_sequences(lineiterator(io); has_next = has_next)
 end
 
 function Utils.print_file(

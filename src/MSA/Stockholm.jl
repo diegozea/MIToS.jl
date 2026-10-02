@@ -77,6 +77,7 @@ function _load_sequences(
     io::Union{IO,AbstractString},
     format::Type{Stockholm};
     create_annotations::Bool = false,
+    has_next = nothing,
 )
     if create_annotations
         IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
@@ -84,6 +85,14 @@ function _load_sequences(
     else
         IDS, SEQS = _pre_readstockholm_sequences(io)
         annot = Annotations()
+    end
+    # Only read_file requests lookahead, using an open stream.
+    if has_next !== nothing
+        for line in lineiterator(io)
+            isempty(strip(line)) && continue
+            has_next[] = strip(line) == "# STOCKHOLM 1.0"
+            break
+        end
     end
     return collect(IDS), SEQS, annot
 end

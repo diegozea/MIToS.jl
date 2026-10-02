@@ -2,6 +2,7 @@ using CodecZlib: GzipCompressor, transcode
 
 @testset "eachmsa" begin
     @testset "$format" for format in (Stockholm, Clustal)
+        multiple_warning = "Read only the first alignment; use `eachmsa` to read all."
         # Issue #202: different numbers of sequences and a repeated identifier across MSAs.
         first_record = """
         # STOCKHOLM 1.0
@@ -57,7 +58,7 @@ using CodecZlib: GzipCompressor, transcode
                     @test position(msas.io) == 0 # opening does not parse the first MSA
                     @test !isempty(msas)
                     @test !isempty(msas) # repeated lookahead must not lose a record
-                    alignments = collect(msas)
+                    alignments = @test_logs collect(msas)
                     @test alignments isa Vector{T}
                     @test size.(alignments) == [(4, 30), (3, 30)]
                     @test alignments[1] ==
@@ -69,8 +70,48 @@ using CodecZlib: GzipCompressor, transcode
                     @test isempty(collect(msas))
                     @test close(msas) === nothing
                     @test isfile(path) # never remove a user's local source
-                    @test read_file(path, format, T) == parse_file(first_record, format, T)
+                    msa = @test_logs (:warn, multiple_warning) read_file(path, format, T)
+                    @test msa == parse_file(first_record, format, T)
                 end
+            end
+
+            @testset "read_file warnings" begin
+                expected = parse_file(first_record, format)
+                header = format === Stockholm ? "# STOCKHOLM 1.0\n" : "CLUSTAL\n"
+                for suffix in ("", ".gz")
+                    path = joinpath(dir, "warning-test" * suffix)
+                    for trailing in ("", "\n \t\n", "\n# end of file\n")
+                        text = first_record * trailing
+                        write(
+                            path,
+                            isempty(suffix) ? text : transcode(GzipCompressor, text),
+                        )
+                        msa = @test_logs read_file(path, format)
+                        @test msa == expected
+                    end
+                    # Warn once, even with three alignments. Detecting another header
+                    # must not require reading or validating its alignment.
+                    for following in (
+                        second_record * second_record,
+                        header,
+                        header * "not a valid alignment\n",
+                    )
+                        text = first_record * "\n \t\n" * following
+                        write(
+                            path,
+                            isempty(suffix) ? text : transcode(GzipCompressor, text),
+                        )
+                        msa = @test_logs (:warn, multiple_warning) read_file(path, format)
+                        @test msa == expected
+                    end
+                end
+                @test_logs parse_file(contents, format)
+                # Reading one alignment from an open stream must leave the next readable.
+                io = IOBuffer(contents)
+                msa = @test_logs parse_file(io, format)
+                @test msa == expected
+                msa = @test_logs parse_file(io, format)
+                @test msa == parse_file(second_record, format)
             end
 
             @testset "Defaults and independent annotations" begin
