@@ -113,8 +113,8 @@ function eachmsa(
 ) where {F<:MSAFormat,T}
     applicable(_msa_header, F) ||
         throw(ArgumentError("eachmsa does not support the $F format"))
-    remote = any(prefix -> startswith(source, prefix), ("http://", "https://", "ftp://"))
-    temporary = remote ? tempname() * (endswith(source, ".gz") ? ".gz" : "") : nothing
+    remote = Utils._is_url(source)
+    temporary = remote ? Utils._download_tempname(source) : nothing
     filename = temporary === nothing ? source : temporary
     io = nothing
     try

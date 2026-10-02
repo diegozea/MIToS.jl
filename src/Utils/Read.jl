@@ -7,6 +7,17 @@ import Base: read
 abstract type FileFormat end
 
 """
+Return whether `source` is an HTTP, HTTPS or FTP URL.
+"""
+_is_url(source::AbstractString) =
+    any(prefix -> startswith(source, prefix), ("http://", "https://", "ftp://"))
+
+"""
+Create a temporary download filename, preserving a `.gz` suffix.
+"""
+_download_tempname(url::AbstractString) = tempname() * (endswith(url, ".gz") ? ".gz" : "")
+
+"""
 This function raises an error if a GZip file doesn't have the 0x1f8b magic number.
 """
 function _check_gzip_file(filename)
@@ -48,11 +59,7 @@ function download_file(url::AbstractString, filename::AbstractString; kargs...)
 end
 
 function download_file(url::AbstractString; kargs...)
-    name = tempname()
-    if endswith(url, ".gz")
-        name *= ".gz"
-    end
-    download_file(url, name; kargs...)
+    download_file(url, _download_tempname(url); kargs...)
 end
 
 """
@@ -140,10 +147,7 @@ function read_file(
     args...;
     kargs...,
 ) where {T<:FileFormat}
-    if startswith(completename, "http://") ||
-       startswith(completename, "https://") ||
-       startswith(completename, "ftp://")
-
+    if _is_url(completename)
         filename =
             download_file(completename, headers = Dict("Accept-Encoding" => "identity"))
         try
