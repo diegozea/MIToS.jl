@@ -276,13 +276,17 @@ _write_msa_fixture(path, contents) =
 
     @testset "Unsupported format" begin
         mktempdir() do dir
-            @test_throws ArgumentError eachmsa(joinpath(dir, "missing.txt"), Raw)
+            path = joinpath(dir, "missing.txt")
+            for args in ((path, Raw), (identity, path, Raw))
+                @test !applicable(eachmsa, args...)
+                @test_throws MethodError eachmsa(args...; deletefullgaps = false)
+            end
         end
     end
 
     @testset "URL download lifetime" begin
         base = "https://raw.githubusercontent.com/diegozea/MIToS.jl/0ce717038b642d550f710ba7ea095d791812ff6e/"
-        @test_throws ArgumentError eachmsa(base * "test/data/PF09645_full.stockholm", Raw)
+        @test_throws MethodError eachmsa(base * "test/data/PF09645_full.stockholm", Raw)
         for (format, file) in (
             (Stockholm, "test/data/PF09645_full.stockholm"),
             (Stockholm, "docs/data/PF18883.stockholm.gz"),

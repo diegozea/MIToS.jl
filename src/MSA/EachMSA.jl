@@ -103,9 +103,7 @@ function eachmsa(
     ::Type{F},
     ::Type{T} = AnnotatedMultipleSequenceAlignment;
     kwargs...,
-) where {F<:MSAFormat,T}
-    applicable(_msa_header, F) ||
-        throw(ArgumentError("eachmsa does not support the $F format"))
+) where {F<:Union{Stockholm,Clustal},T}
     remote = Utils._is_url(source)
     temporary = remote ? Utils._download_tempname(source) : nothing
     filename = temporary === nothing ? source : temporary
@@ -135,7 +133,7 @@ end
 function eachmsa(
     f::Function,
     source::AbstractString,
-    format::Type{<:MSAFormat},
+    format::Type{<:Union{Stockholm,Clustal}},
     args...;
     kwargs...,
 )
