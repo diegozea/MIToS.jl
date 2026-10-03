@@ -178,13 +178,18 @@ write_file("alignments.sto", [msa1, msa2], Stockholm)
 write_file("alignments.aln.gz", [msa1, msa2], Clustal)
 ```
 
-For example, save the Pfam alignments without insert columns, processing one family at
-a time:
+For example, save the Pfam alignments without insert columns, keeping the original
+column and residue numbers and processing one family at a time:
 
 ```julia
 using MIToS.MSA
 
-eachmsa("Pfam-A.full.gz", Stockholm) do msas
+eachmsa(
+    "Pfam-A.full.gz",
+    Stockholm;
+    generatemapping = true,
+    useidcoordinates = true,
+) do msas
     write_file("Pfam-A.aligned.stockholm.gz", msas, Stockholm)
 end
 ```
@@ -192,6 +197,22 @@ end
 By default, `eachmsa` treats lowercase insert residues as gaps and removes columns
 containing only gaps. Column and residue annotations are filtered along with the
 alignment. File and sequence annotations are kept.
+
+Here, `generatemapping = true` saves the original column and residue numbers before
+removing insert columns. `useidcoordinates = true` uses the sequence start positions
+in Pfam names such as `F112_SSV1/3-112`.
+
+When reading the saved file, `generatemapping` is `false` by default, so the saved
+mappings are reused. For example, print the original residue numbers for the first
+sequence of each family (`0` indicates a gap):
+
+```julia
+eachmsa("Pfam-A.aligned.stockholm.gz", Stockholm) do msas
+    for msa in msas
+        println(sequencenames(msa)[1], ": ", getsequencemapping(msa, 1))
+    end
+end
+```
 
 Both compressed and uncompressed files use the same interface. The input must declare
 which type of alignment it contains. Vectors of MSA objects and `eachmsa` provide this

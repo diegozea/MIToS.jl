@@ -132,6 +132,41 @@ end
         end
     end
 
+    @testset "Pfam example preserves mappings" begin
+        fixture = joinpath(DATA, "PF09645_full.stockholm")
+        expected = read_file(fixture, Stockholm)
+        mktempdir() do dir
+            source = joinpath(dir, "Pfam-A.full.gz")
+            output = joinpath(dir, "Pfam-A.aligned.stockholm.gz")
+            _write_msa_fixture(source, repeat(read(fixture, String) * "\n", 2))
+            eachmsa(
+                source,
+                Stockholm;
+                generatemapping = true,
+                useidcoordinates = true,
+            ) do input
+                write_file(output, input, Stockholm)
+            end
+            saved = @test_logs collect(eachmsa(output, Stockholm))
+            @test saved == [expected, expected]
+            for msa in saved
+                @test getcolumnmapping(msa) == 6:115
+                @test getannotfile(msa, "NCol") == "120"
+                @test getsequencemapping(msa, 1)[1:4] == [0, 0, 0, 3]
+                @test getsequencemapping(msa, "F112_SSV1/3-112") == 3:112
+                @test getannotcolumn(msa) == getannotcolumn(expected)
+                @test getannotresidue(msa) == getannotresidue(expected)
+                @test getannotsequence(msa, "F112_SSV1/3-112", "DR") == "PDB; 2VQC A; 4-73;"
+            end
+            eachmsa(output, Stockholm) do input
+                write_file(source, input, Stockholm)
+            end
+            reread = @test_logs collect(eachmsa(source, Stockholm))
+            @test reread == saved
+            @test annotations.(reread) == annotations.(saved)
+        end
+    end
+
     @testset "Format dispatch and keywords" begin
         @test !applicable(print_file, IOBuffer(), msas, FASTA)
         @test sprint(io -> print_file(io, msas, Clustal; showcounts = true)) == join(
