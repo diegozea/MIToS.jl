@@ -1,5 +1,7 @@
 """
-Validate an object before opening its output file. Formats can specialize this check.
+Validate an object before opening its output file. Formats can specialize this check. This 
+function must throw an error if the object to be written is not valid for the given format. 
+If no error is thrown, the object is assumed to be valid.
 """
 _validate_write(object, format::Type{<:FileFormat}) = nothing
 
@@ -9,14 +11,6 @@ _validate_write(object, format::Type{<:FileFormat}) = nothing
 This function opens a file with `filename` and `mode` (default: "w")
 and writes (`print_file`) the `object` with the given `format`.
 Gzipped files should end on `.gz`.
-
-For `Stockholm` and `Clustal`, `object` can also be a collection or iterator with a
-declared alignment element type (`eltype(object) <: AbstractMatrix{Residue}`). Alignments
-are written one at a time. Unknown or incompatible element types, including `Any`, raise
-an `ArgumentError` before the file is opened. An empty typed collection writes an empty
-file, with valid gzip encoding when requested. If writing fails, the output is closed
-but may contain only the alignments written so far. Input streams remain the caller's
-responsibility; use an `eachmsa` do block to close them automatically.
 """
 function write_file(
     filename::AbstractString,
