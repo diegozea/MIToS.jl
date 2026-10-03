@@ -334,6 +334,206 @@ function superimpose(
     end
 end
 
+# Structure similarity metrics
+# ----------------------------
+
+_default_matches(A::AbstractVector{PDBResidue}, B::AbstractVector{PDBResidue}) =
+    ((i, i) for i in 1:min(length(A), length(B)))
+
+@inline _has_ca(res::PDBResidue) = !isempty(findatoms(res, "CA"))
+
+function _valid_matches(
+    A::AbstractVector{PDBResidue},
+    B::AbstractVector{PDBResidue},
+    matches,
+)
+    lenA, lenB = length(A), length(B)
+    valid = Tuple{Int,Int}[]
+    for (i, j) in matches
+        if (1 <= i <= lenA) && (1 <= j <= lenB) && _has_ca(A[i]) && _has_ca(B[j])
+            push!(valid, (i, j))
+        end
+    end
+    return valid
+end
+
+function _ca_distances(
+    A::AbstractVector{PDBResidue},
+    B::AbstractVector{PDBResidue},
+    matches::AbstractVector{<:Tuple{Int,Int}},
+)
+    distances = Vector{Float64}(undef, length(matches))
+    @inbounds for idx in eachindex(matches)
+        i, j = matches[idx]
+        distances[idx] = distance(getCA(A[i]), getCA(B[j]))
+    end
+    return distances
+end
+
+function _fragment_windows(
+    matches::AbstractVector{<:Tuple{Int,Int}},
+    window_sizes::Tuple,
+)
+    fragments = Vector{Vector{Tuple{Int,Int}}}()
+    isempty(matches) && return fragments
+    push!(fragments, matches)
+    for w in window_sizes
+        step = max(1, w ÷ 2)
+        start = 1
+        while start <= length(matches)
+            stop = min(length(matches), start + w - 1)
+            if stop - start + 1 >= 3
+                push!(fragments, matches[start:stop])
+            end
+            start += step
+        end
+    end
+    return fragments
+end
+
+function _best_counts(
+    A::AbstractVector{PDBResidue},
+    B::AbstractVector{PDBResidue},
+    fragments::AbstractVector{<:AbstractVector{<:Tuple{Int,Int}}},
+    matches_all::AbstractVector{<:Tuple{Int,Int}},
+    cutoffs::AbstractVector{<:Real},
+)
+    best_counts = Dict{Float64,Int}(float(c) => 0 for c in cutoffs)
+    for fragment in fragments
+        Asuper, Bsuper, _ = superimpose(A, B, fragment)
+        distances = _ca_distances(Asuper, Bsuper, matches_all)
+        for cutoff in cutoffs
+            cutofff = float(cutoff)
+            cnt = count(d -> d <= cutofff, distances)
+            if cnt > best_counts[cutofff]
+                best_counts[cutofff] = cnt
+            end
+        end
+    end
+    return best_counts
+end
+
+"""
+    gdt_per_cutoff(A, B; matches = nothing, cutoffs = (1.0, 2.0, 4.0, 8.0), local_search = true, window_sizes = (8, 16, 32))
+
+Compute the Global Distance Test (GDT) percentage for each distance cutoff in `cutoffs`
+between two structures `A` (reference) and `B` (model). Corresponding residues are
+provided via `matches`; if it is `nothing`, a 1:1 mapping up to the shortest structure
+length is assumed.
+
+Only Cα atoms are considered. When `local_search` is `true` (default), multiple candidate
+superpositions are generated from contiguous alignment fragments of lengths given by
+`window_sizes` to approximate the LGA search; otherwise, a single global superposition is
+used. The result is a `Dict` mapping each cutoff to the fraction of aligned residues (in
+percent) that can be placed within the cutoff distance.
+"""
+function gdt_per_cutoff(
+    A::AbstractVector{PDBResidue},
+    B::AbstractVector{PDBResidue};
+    matches = nothing,
+    cutoffs = (1.0, 2.0, 4.0, 8.0),
+    local_search::Bool = true,
+    window_sizes = (8, 16, 32),
+)
+    matches_iter = isnothing(matches) ? _default_matches(A, B) : matches
+    matches_all = _valid_matches(A, B, matches_iter)
+    if isempty(matches_all)
+        return Dict(float(c) => 0.0 for c in cutoffs)
+    end
+
+    cutoffs_vec = Float64.(collect(cutoffs))
+    fragments = local_search ? _fragment_windows(matches_all, window_sizes) : [matches_all]
+    best_counts = _best_counts(A, B, fragments, matches_all, cutoffs_vec)
+    N = length(matches_all)
+    return Dict(c => 100.0 * best_counts[c] / N for c in keys(best_counts))
+end
+
+"""
+    gdt_ts(A, B; kwargs...)
+
+Compute the CASP-style GDT_TS score (average of GDT at 1, 2, 4, and 8 Å) between `A`
+and `B`. Keyword arguments are forwarded to [`gdt_per_cutoff`](@ref).
+"""
+function gdt_ts(
+    A::AbstractVector{PDBResidue},
+    B::AbstractVector{PDBResidue};
+    matches = nothing,
+    cutoffs = (1.0, 2.0, 4.0, 8.0),
+    kwargs...,
+)
+    scores = gdt_per_cutoff(A, B; matches = matches, cutoffs = cutoffs, kwargs...)
+    return mean(values(scores))
+end
+
+"""
+    gdt_ha(A, B; kwargs...)
+
+Compute the high-accuracy GDT_HA score (average of GDT at 0.5, 1, 2, and 4 Å) between
+`A` and `B`. Keyword arguments are forwarded to [`gdt_per_cutoff`](@ref).
+"""
+function gdt_ha(
+    A::AbstractVector{PDBResidue},
+    B::AbstractVector{PDBResidue};
+    matches = nothing,
+    cutoffs = (0.5, 1.0, 2.0, 4.0),
+    kwargs...,
+)
+    scores = gdt_per_cutoff(A, B; matches = matches, cutoffs = cutoffs, kwargs...)
+    return mean(values(scores))
+end
+
+tm_d0(L::Integer) = max(0.5, 1.24 * cbrt(L - 15) - 1.8)
+
+function _tm_score_from_distances(distances::AbstractVector{<:Real}, Ltarget::Integer)
+    d0 = tm_d0(Ltarget)
+    invL = 1.0 / Ltarget
+    s = 0.0
+    @inbounds for d in distances
+        s += 1.0 / (1.0 + (d / d0)^2)
+    end
+    return invL * s
+end
+
+"""
+    tm_score(A, B; matches = nothing, Ltarget = length(A), local_search = true, window_sizes = (8, 16, 32))
+
+Approximate the TM-score between reference structure `A` and model `B` using only Cα
+atoms. `Ltarget` is the length of the reference structure used for normalization (default
+`length(A)`). When `local_search` is `true`, multiple fragment-based superpositions are
+evaluated and the maximum TM-score is returned; otherwise, a single global superposition
+is used.
+"""
+function tm_score(
+    A::AbstractVector{PDBResidue},
+    B::AbstractVector{PDBResidue};
+    matches = nothing,
+    Ltarget::Integer = length(A),
+    local_search::Bool = true,
+    window_sizes = (8, 16, 32),
+)
+    if Ltarget <= 0
+        return 0.0
+    end
+
+    matches_iter = isnothing(matches) ? _default_matches(A, B) : matches
+    matches_all = _valid_matches(A, B, matches_iter)
+    if isempty(matches_all)
+        return 0.0
+    end
+
+    fragments = local_search ? _fragment_windows(matches_all, window_sizes) : [matches_all]
+    best_score = 0.0
+    for fragment in fragments
+        Asuper, Bsuper, _ = superimpose(A, B, fragment)
+        distances = _ca_distances(Asuper, Bsuper, matches_all)
+        score = _tm_score_from_distances(distances, Ltarget)
+        if score > best_score
+            best_score = score
+        end
+    end
+    return best_score
+end
+
 # RMSF: Root Mean-Square-average distance (Fluctuation)
 # -----------------------------------------------------
 
