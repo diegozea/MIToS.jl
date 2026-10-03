@@ -138,7 +138,7 @@ gr(size=(600,300))
 ```@repl inf_plotfreq
 using MIToS.Information
 using MIToS.MSA
-file_name = "http://www.uniprot.org/uniprot/P29374.fasta"
+file_name = "https://www.ebi.ac.uk/Tools/dbfetch/dbfetch/uniprotkb/P29374/fasta"
 sequences = read_file(file_name, FASTASequences)
 Pa = probabilities(sequences[1])
 ```
