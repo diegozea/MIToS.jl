@@ -1,5 +1,13 @@
 @testset "Iterations" begin
 
+    function _test_same_named_plm(a, b)
+        @test getlist(getarray(a)) == getlist(getarray(b))
+        @test getdiag(getarray(a)) == getdiag(getarray(b))
+        @test dimnames(a) == dimnames(b)
+        @test names(a, 1) == names(b, 1)
+        @test names(a, 2) == names(b, 2)
+    end
+
     @testset "NMI" begin
         # This is the example of MI(X, Y)/H(X, Y) from:
         #
@@ -33,6 +41,51 @@
             usediagonal = false,
         )
         @test nmi_mat == convert(Matrix{Float64}, getarray(nmi_t))
+    end
+
+    @testset "Threaded mapcolpairfreq!" begin
+        synthetic = Residue[
+            'A' 'A' 'R' 'N'
+            'A' 'R' 'R' 'N'
+            'R' 'A' 'A' 'D'
+            'R' 'R' 'A' 'D'
+            'A' 'A' 'A' 'N'
+        ]
+
+        synthetic_serial = mapcolpairfreq!(
+            Information._mutual_information,
+            synthetic,
+            Probabilities(ContingencyTable(Float64, Val{2}, UngappedAlphabet()));
+            usediagonal = true,
+            pseudocounts = AdditiveSmoothing(0.05),
+        )
+        synthetic_threaded = mapcolpairfreq!(
+            Information._mutual_information,
+            synthetic,
+            Probabilities(ContingencyTable(Float64, Val{2}, UngappedAlphabet()));
+            usediagonal = true,
+            pseudocounts = AdditiveSmoothing(0.05),
+            threads = true,
+        )
+
+        _test_same_named_plm(synthetic_serial, synthetic_threaded)
+
+        aln = read_file(joinpath(DATA, "Gaoetal2011.fasta"), FASTA)
+        serial = mapcolpairfreq!(
+            normalized_mutual_information,
+            aln,
+            Frequencies(ContingencyTable(Float64, Val{2}, UngappedAlphabet()));
+            usediagonal = false,
+        )
+        threaded = mapcolpairfreq!(
+            normalized_mutual_information,
+            aln,
+            Frequencies(ContingencyTable(Float64, Val{2}, UngappedAlphabet()));
+            usediagonal = false,
+            threads = true,
+        )
+
+        _test_same_named_plm(serial, threaded)
     end
 
     @testset "Gaps" begin
