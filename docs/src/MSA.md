@@ -178,15 +178,20 @@ write_file("alignments.sto", [msa1, msa2], Stockholm)
 write_file("alignments.aln.gz", [msa1, msa2], Clustal)
 ```
 
-For a large file, use `eachmsa` to read and write one alignment at a time:
+For example, save the Pfam alignments without insert columns, processing one family at
+a time:
 
 ```julia
 using MIToS.MSA
 
-eachmsa("input.sto.gz", Stockholm) do msas
-    write_file("output.sto.gz", msas, Stockholm)
+eachmsa("Pfam-A.full.gz", Stockholm) do msas
+    write_file("Pfam-A.aligned.stockholm.gz", msas, Stockholm)
 end
 ```
+
+By default, `eachmsa` treats lowercase insert residues as gaps and removes columns
+containing only gaps. Column and residue annotations are filtered along with the
+alignment. File and sequence annotations are kept.
 
 Both compressed and uncompressed files use the same interface. The input must declare
 which type of alignment it contains. Vectors of MSA objects and `eachmsa` provide this
