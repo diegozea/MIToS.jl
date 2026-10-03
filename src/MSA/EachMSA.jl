@@ -89,7 +89,7 @@ or your analysis throws an exception. It returns the result of the block.
 ```julia
 using MIToS.MSA
 
-eachmsa(\"Pfam-A.full.gz\", Stockholm) do msas
+eachmsa(\"Pfam-A.seed.gz\", Stockholm) do msas
     for msa in msas
         println(getannotfile(msa, \"AC\", \"\"), '\\t', nsequences(msa))
     end

@@ -7,9 +7,8 @@ given `pfamcode`.
 
 By default, it downloads the `full` Pfam alignment. You can use the `alignment` keyword
 argument to download the `seed` or the `uniprot` alignment instead. For example,
-`downloadpfam("PF00069")` will download the **full alignment** for the
-*PF00069 Pfam family*, while `downloadpfam("PF00069", alignment="seed")` will download the
-**seed alignment** of the family.
+`downloadpfam("PF00069", alignment="seed")` downloads the smaller **seed alignment**
+for the *PF00069 Pfam family*.
 
 The extension of the downloaded file is `.stockholm.gz` by default; you can change it
 using the `filename` keyword argument, but the `.gz` at the end is mandatory.

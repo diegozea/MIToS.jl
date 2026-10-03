@@ -136,8 +136,8 @@ end
         fixture = joinpath(DATA, "PF09645_full.stockholm")
         expected = read_file(fixture, Stockholm)
         mktempdir() do dir
-            source = joinpath(dir, "Pfam-A.full.gz")
-            output = joinpath(dir, "Pfam-A.aligned.stockholm.gz")
+            source = joinpath(dir, "Pfam-A.seed.gz")
+            output = joinpath(dir, "Pfam-A.seed.aligned.stockholm.gz")
             _write_msa_fixture(source, repeat(read(fixture, String) * "\n", 2))
             eachmsa(
                 source,

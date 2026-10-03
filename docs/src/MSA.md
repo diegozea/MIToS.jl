@@ -102,7 +102,7 @@ printmodifications(msa)
 
 ### Reading multiple alignments
 
-Files such as `Pfam-A.full.gz` contain alignments for many protein families.
+Files such as `Pfam-A.seed.gz` contain alignments for many protein families.
 Use [`eachmsa`](@ref MIToS.MSA.eachmsa) to read a Stockholm or Clustal file one alignment
 at a time. [`read_file`](@ref MIToS.Utils.read_file) reads only the first alignment and
 warns you if there are more.
@@ -112,7 +112,7 @@ This example prints the accession and number of sequences for each Pfam family:
 ```julia
 using MIToS.MSA
 
-eachmsa("Pfam-A.full.gz", Stockholm) do msas
+eachmsa("Pfam-A.seed.gz", Stockholm) do msas
     for msa in msas
         println(getannotfile(msa, "AC", ""), '\t', nsequences(msa))
     end
@@ -174,12 +174,12 @@ a new Stockholm file, removing insert columns while keeping the original column 
 using MIToS.MSA
 
 eachmsa(
-    "Pfam-A.full.gz",
+    "Pfam-A.seed.gz",
     Stockholm;
     generatemapping = true,
     useidcoordinates = true,
 ) do msas
-    write_file("Pfam-A.aligned.stockholm.gz", msas, Stockholm)
+    write_file("Pfam-A.seed.aligned.stockholm.gz", msas, Stockholm)
 end
 ```
 
@@ -192,7 +192,7 @@ saved numbering. For example, the following code will show the residue numbers f
 first sequence of each family (`0` means that there is a gap in that position):
 
 ```julia
-eachmsa("Pfam-A.aligned.stockholm.gz", Stockholm) do msas
+eachmsa("Pfam-A.seed.aligned.stockholm.gz", Stockholm) do msas
     for msa in msas
         println(sequencenames(msa)[1], ": ", getsequencemapping(msa, 1))
     end
