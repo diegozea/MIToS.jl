@@ -13,13 +13,13 @@ MSA from the [Julia REPL](@ref juliarepl) or using a
 ## [MIToS in the Julia REPL](@id juliarepl)
 
 If you load the `Pfam` module from `MIToS`, you will get access to a set of functions that
-work with Pfam MSAs. In this case, we will download a small seed alignment in
+work with Pfam MSAs. In this case, we are going to use it for download a
 [Stockholm![](./assets/external-link.png)](https://en.wikipedia.org/wiki/Stockholm_format)
-format from Pfam and read it into Julia.
+MSA from the Pfam website and read it into Julia.
 
 ```@example juliarepl
 using MIToS.Pfam
-pfam_file = downloadpfam("PF10660", alignment = "seed")
+pfam_file = downloadpfam("PF10660")
 msa = read_file(pfam_file, Stockholm, generatemapping = true, useidcoordinates = true)
 ```
 
