@@ -121,18 +121,18 @@ end
 
 Each `msa` contains one family's alignment. Replace the `println` line with your own
 analysis. The `do` block closes the file automatically when your analysis ends, even
-if you stop early or an error occurs.
+if you stop early or an error occurs. 
 
-For a Clustal file, replace `Stockholm` with `Clustal`.
-
-Both compressed and uncompressed files can be read this way. Files ending in `.gz`
+For a Clustal file, replace `Stockholm` with `Clustal`. Both compressed and uncompressed 
+files can be read this way. Files ending in `.gz`
 do not need to be decompressed first. MIToS loads one alignment at a time, so your
-computer only needs enough memory for that alignment and your analysis.
+computer only needs enough memory for analyzing the larger alignment in the file.
 
-You can also use a web address. If you want to analyse the same file several times,
-download it first and use its filename to avoid downloading it again each time.
+You can also use a web address (HTTP, HTTPS or FTP) as the input. If you want to analyse 
+the same file several times, download it first and use its filename to avoid 
+downloading it again each time.
 
-The reading options are the same as for [`read_file`](@ref MIToS.Utils.read_file).
+The reading options are the same as for [`read_file`](@ref MIToS.Utils.read_file) and [`parse_file`](@ref MIToS.Utils.parse_file).
 
 ### [Writing MSA files](@id Writing-MSA-files)
 
@@ -150,8 +150,9 @@ msa = read_file(
 print_file(msa, FASTA) # prints msa in FASTA format
 ```
 
-Use [`write_file`](@ref MIToS.Utils.write_file) to save an alignment. Give it the output
-filename, the alignment and the format. A filename ending in `.gz` produces a compressed file.
+By default, `print_file` writes to the standard output. 
+Use [`write_file`](@ref MIToS.Utils.write_file) to save the alignment in a file. It takes the output filename as the first argument, followed by an alignment and the file format. 
+A filename ending in `.gz` produces a compressed file.
 
 ```@example msa_write
 write_file("msa.gz", msa, FASTA) # writes msa in FASTA format in a gzipped file
@@ -159,14 +160,15 @@ write_file("msa.gz", msa, FASTA) # writes msa in FASTA format in a gzipped file
 
 #### Writing multiple alignments
 
-To save several alignments in one Stockholm or Clustal file, put them together in brackets:
+To save several alignments in one Stockholm or Clustal file, put them together in a vector 
+using brackets and pass it to `write_file`.
 
 ```julia
 write_file("alignments.sto", [msa1, msa2], Stockholm)
 ```
 
-For a whole Pfam file, read and save one family at a time. This example removes insert
-columns while keeping the original column and residue numbers:
+In fact, `write_file` does not need a vector, it can take any iterator of alignments. For example, you use the alignment iterator returned by `eachmsa` to read, process and save one alignment at a time. For example, this code reads a Pfam file and saves the alignments in 
+a new Stockholm file, removing insert columns while keeping the original column and residue numbers:
 
 ```julia
 using MIToS.MSA
@@ -181,17 +183,13 @@ eachmsa(
 end
 ```
 
-By default, lowercase inserts become gaps and columns containing only gaps are removed.
-Annotations for the retained columns and residues are kept, along with file and sequence
-annotations.
-
-`generatemapping = true` records the original positions before removing columns.
-`useidcoordinates = true` takes the starting residue number from Pfam sequence names
+`generatemapping = true` records the original positions before removing the insert columns.
+`useidcoordinates = true` takes the start and end coordinates from Pfam sequence names
 such as `F112_SSV1/3-112`.
 
 When rereading the output, leave `generatemapping` at its default (`false`) to keep the
-saved numbering. For example, show the original residue numbers for the first sequence
-of each family (`0` means a gap):
+saved numbering. For example, the following code will show the residue numbers for the 
+first sequence of each family (`0` means that there is a gap in that position):
 
 ```julia
 eachmsa("Pfam-A.aligned.stockholm.gz", Stockholm) do msas
