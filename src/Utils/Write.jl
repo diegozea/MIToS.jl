@@ -1,6 +1,6 @@
 """
-Validate an object before opening its output file. Formats can specialize this check. This 
-function must throw an error if the object to be written is not valid for the given format. 
+Validate an object before opening its output file. Formats can specialize this check. This
+function must throw an error if the object to be written is not valid for the given format.
 If no error is thrown, the object is assumed to be valid.
 """
 _validate_write(object, format::Type{<:FileFormat}) = nothing
