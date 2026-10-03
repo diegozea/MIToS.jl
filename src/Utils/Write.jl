@@ -12,8 +12,11 @@ Gzipped files should end on `.gz`.
 
 For `Stockholm` and `Clustal`, `object` can also be a collection or iterator with a
 declared alignment element type (`eltype(object) <: AbstractMatrix{Residue}`). Alignments
-are written one at a time. Unknown or incompatible element types raise an `ArgumentError`
-before the file is opened. An empty typed collection writes an empty file.
+are written one at a time. Unknown or incompatible element types, including `Any`, raise
+an `ArgumentError` before the file is opened. An empty typed collection writes an empty
+file, with valid gzip encoding when requested. If writing fails, the output is closed
+but may contain only the alignments written so far. Input streams remain the caller's
+responsibility; use an `eachmsa` do block to close them automatically.
 """
 function write_file(
     filename::AbstractString,
