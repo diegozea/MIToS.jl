@@ -53,7 +53,8 @@ MIToS accepts both legacy IDs such as `1abc` and extended IDs such as `pdb_00001
 or `pdb_10021abc`, in either case. The extended format is `pdb_` followed by eight
 ASCII alphanumeric characters. Only `pdb_0000` followed by a valid legacy ID is an
 alias of that legacy entry; extended-only IDs are never shortened to four characters.
-[`check_pdbcode`](@ref) validates syntax, not whether an entry exists.
+[`check_pdbcode`](@ref MIToS.Utils.check_pdbcode) validates syntax, not whether an
+entry exists.
 
 `downloadpdb` keeps the existing RCSB URLs and uppercase filenames for legacy IDs.
 For extended IDs, it uses the published download shortlinks of the
