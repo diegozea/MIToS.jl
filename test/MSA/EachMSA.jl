@@ -23,6 +23,26 @@ function Utils.parse_file(io::IO, ::Type{_CountedMSAFormat}, output::Type; kwarg
     parse_file(sequences, Raw, output; kwargs...)
 end
 
+"""
+A format with only a two-argument parser and no iterator support.
+"""
+struct _TwoArgumentMSAFormat <: MSAFormat end
+
+Utils.parse_file(io::IO, ::Type{_TwoArgumentMSAFormat}; kwargs...) =
+    parse_file(io, Raw, MultipleSequenceAlignment; kwargs...)
+
+"""
+A format whose parser defaults to an unannotated alignment.
+"""
+struct _DefaultOutputMSAFormat <: MSAFormat end
+
+Utils.parse_file(
+    io::IO,
+    ::Type{_DefaultOutputMSAFormat},
+    output::Type = MultipleSequenceAlignment;
+    kwargs...,
+) = parse_file(io, Raw, output; kwargs...)
+
 @testset "eachmsa" begin
     @testset "$format" for format in (Stockholm, Clustal)
         multiple_warning = "Read only the first alignment; use `eachmsa` to read all."
@@ -258,6 +278,28 @@ end
                         end
                     end
                 end
+                @testset "Conservation line endings" begin
+                    for newline in ("\n", "\r\n"), cons in ("*", "* ", " *")
+                        record = join(
+                            ("CLUSTAL", "", "a ACD", "b AEF", "  " * cons, ""),
+                            newline,
+                        )
+                        @test getannotcolumn(parse_file(record, Clustal), "cons") == cons
+                        for suffix in ("", ".gz")
+                            path = joinpath(dir, "conservation.aln" * suffix)
+                            _write_msa_fixture(path, record * record)
+                            msa = @test_logs (:warn, multiple_warning) read_file(
+                                path,
+                                Clustal,
+                            )
+                            @test getannotcolumn(msa, "cons") == cons
+                            @test getannotcolumn.(
+                                collect(eachmsa(path, Clustal)),
+                                "cons",
+                            ) == [cons, cons]
+                        end
+                    end
+                end
             end
 
             @testset "Empty, single and whitespace-separated records" begin
@@ -376,6 +418,32 @@ end
                 @test !isopen(msas)
                 _write_msa_fixture(path, "\n\t\n")
                 @test isempty(collect(eachmsa(path, _CountedMSAFormat)))
+            end
+        end
+    end
+
+    @testset "Non-iterable custom formats" begin
+        mktempdir() do dir
+            record = "A-C-\nATC-\n"
+            options = (deletefullgaps = false,)
+            expected = parse_file(record, Raw, MultipleSequenceAlignment; options...)
+            for suffix in ("", ".gz")
+                path = joinpath(dir, "custom.msa" * suffix)
+                _write_msa_fixture(path, record)
+                for format in (_TwoArgumentMSAFormat, _DefaultOutputMSAFormat)
+                    msa = read_file(path, format; options...)
+                    @test msa isa MultipleSequenceAlignment
+                    @test msa == expected
+                end
+                msa = read_file(
+                    path,
+                    _DefaultOutputMSAFormat,
+                    AnnotatedMultipleSequenceAlignment;
+                    generatemapping = true,
+                    options...,
+                )
+                @test msa isa AnnotatedMultipleSequenceAlignment
+                @test getcolumnmapping(msa) == collect(1:4)
             end
         end
     end

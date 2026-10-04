@@ -52,15 +52,15 @@ function _load_clustal_sequences(io::IO)
             in_sequence_block = true  # we are inside a sequence block now
             continue
         end
-        # using line instead of chomped to preserve whitespaces in the conservation line
-        if in_sequence_block && isascii(line) && match(seq_re, line) === nothing
+        # Preserve conservation spaces, but exclude line endings.
+        if in_sequence_block && isascii(chomped)
             # conservation line found
-            stop = min(endidx, lastindex(line))
+            stop = min(endidx, lastindex(chomped))
             if stop >= startidx
                 # remove leading/trailing padding spaces from the conservation
                 # line before storing it using the previously stored indices
                 # of the aligned columns in this block.
-                consblock = line[startidx:stop]
+                consblock = chomped[startidx:stop]
                 write(conservation, consblock)
             end
             in_sequence_block = false

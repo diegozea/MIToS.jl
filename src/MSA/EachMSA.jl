@@ -155,16 +155,18 @@ end
 
 """
 Read one alignment through `parse_file` and warn if another alignment header follows.
+For other formats, forward the original arguments to preserve their parser's defaults.
 """
 function Utils._read_file(
     io::IO,
     format::Type{F},
-    output::Type{T} = AnnotatedMultipleSequenceAlignment;
+    args::Vararg{Any,N};
     kwargs...,
-) where {F<:MSAFormat,T}
-    _supports_eachmsa(format) || return parse_file(io, format, output; kwargs...)
+) where {F<:MSAFormat,N}
+    _supports_eachmsa(format) || return parse_file(io, format, args...; kwargs...)
     io = _buffer_msa_input(io)
-    msa = parse_file(io, format, output; kwargs...)
+    output_args = isempty(args) ? (AnnotatedMultipleSequenceAlignment,) : args
+    msa = parse_file(io, format, output_args...; kwargs...)
     if hasnextmsa(io, format)
         @warn "Read only the first alignment; use `eachmsa` to read all."
     end
