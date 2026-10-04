@@ -1,3 +1,23 @@
+function hasnextmsa(
+    io::TranscodingStream,
+    format::Type{<:Union{Stockholm,Clustal}};
+    strict::Bool = false,
+)
+    hasnextmsa(io, _msa_header(format); strict = strict)
+end
+
+"""
+Check whether a format implements the buffered alignment-reading interface.
+"""
+_supports_eachmsa(::Type{F}) where {F<:MSAFormat} =
+    hasmethod(hasnextmsa, Tuple{TranscodingStream,Type{F}})
+
+"""
+Reuse a buffered input, or add a buffer to an ordinary input.
+"""
+_buffer_msa_input(io::IO) = NoopStream(io)
+_buffer_msa_input(io::TranscodingStream) = io
+
 """
 An iterator owning an open alignment stream and, for URLs, its temporary download.
 Construct it with [`eachmsa`](@ref). Iteration consumes the stream and cannot restart it.
@@ -27,7 +47,7 @@ function Base.isdone(msas::MSAIterator{F}, ::Nothing = nothing) where {F}
     msas.closed && return true
     msas.ready && return false
     try
-        msas.ready = _has_msa_header(msas.io, _msa_header(F); strict = true)
+        msas.ready = hasnextmsa(msas.io, F; strict = true)
         msas.ready && return false
         close(msas)
         return true
@@ -58,6 +78,8 @@ For Clustal, each alignment starts with its own CLUSTAL header. The default
 output is `AnnotatedMultipleSequenceAlignment`; the output types and parsing keywords
 are the same as for [`read_file`](@ref) and [`parse_file`](@ref).
 Each alignment is read with `parse_file`, including user-defined output types.
+Additional formats can implement [`hasnextmsa`](@ref) and `parse_file` to support this
+interface without defining another iterator type.
 
 The source is a local path or an HTTP, HTTPS or FTP URL. Files ending in `.gz` are
 decompressed incrementally using one open stream. A URL is downloaded once to a temporary
@@ -88,7 +110,8 @@ function eachmsa(
     ::Type{F},
     ::Type{T} = AnnotatedMultipleSequenceAlignment;
     kwargs...,
-) where {F<:Union{Stockholm,Clustal},T}
+) where {F<:MSAFormat,T}
+    _supports_eachmsa(F) || throw(MethodError(eachmsa, (source, F, T)))
     remote = Utils._is_url(source)
     temporary = remote ? Utils._download_tempname(source) : nothing
     filename = temporary === nothing ? source : temporary
@@ -98,7 +121,7 @@ function eachmsa(
             download_file(source, filename; headers = Dict("Accept-Encoding" => "identity"))
         end
         io = open(filename, "r")
-        io = Utils._input_stream(io, source)
+        io = _buffer_msa_input(Utils._input_stream(io, source))
         options = (; kwargs...)
         msas = MSAIterator{F,T,typeof(io),typeof(options)}(
             io,
@@ -118,7 +141,7 @@ end
 function eachmsa(
     f::Function,
     source::AbstractString,
-    format::Type{<:Union{Stockholm,Clustal}},
+    format::Type{<:MSAFormat},
     args...;
     kwargs...,
 )
@@ -138,9 +161,11 @@ function Utils._read_file(
     format::Type{F},
     output::Type{T} = AnnotatedMultipleSequenceAlignment;
     kwargs...,
-) where {F<:Union{Stockholm,Clustal},T}
+) where {F<:MSAFormat,T}
+    _supports_eachmsa(format) || return parse_file(io, format, output; kwargs...)
+    io = _buffer_msa_input(io)
     msa = parse_file(io, format, output; kwargs...)
-    if _has_msa_header(io, _msa_header(format))
+    if hasnextmsa(io, format)
         @warn "Read only the first alignment; use `eachmsa` to read all."
     end
     msa

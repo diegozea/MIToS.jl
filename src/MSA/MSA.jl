@@ -124,6 +124,7 @@ export  # Residue
     # Stockholm
     Stockholm,
     eachmsa,
+    hasnextmsa,
     # FASTA
     FASTA,
     # NBRF/PIR

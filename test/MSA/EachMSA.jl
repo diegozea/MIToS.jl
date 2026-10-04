@@ -1,4 +1,5 @@
 using CodecZlib: GzipCompressor, transcode
+using TranscodingStreams: NoopStream, TranscodingStream
 import Downloads
 import GZip
 
@@ -9,14 +10,18 @@ _write_msa_fixture(path, contents) =
     write(path, endswith(path, ".gz") ? transcode(GzipCompressor, contents) : contents)
 
 """
-A line reader without marking or seeking, for testing sequential parsing.
+A test format giving the sequence count followed by that many sequence lines.
 """
-struct _SequentialMSAInput <: IO
-    buffer::IOBuffer
-end
+struct _CountedMSAFormat <: MSAFormat end
 
-Base.eof(io::_SequentialMSAInput) = eof(io.buffer)
-Base.readline(io::_SequentialMSAInput; kwargs...) = readline(io.buffer; kwargs...)
+MSA.hasnextmsa(io::IO, ::Type{_CountedMSAFormat}; strict::Bool = false) =
+    hasnextmsa(io, r"^\d+$"; strict = strict)
+
+function Utils.parse_file(io::IO, ::Type{_CountedMSAFormat}, output::Type; kwargs...)
+    count = parse(Int, readline(io))
+    sequences = join((readline(io) for _ = 1:count), '\n')
+    parse_file(sequences, Raw, output; kwargs...)
+end
 
 @testset "eachmsa" begin
     @testset "$format" for format in (Stockholm, Clustal)
@@ -120,6 +125,7 @@ Base.readline(io::_SequentialMSAInput; kwargs...) = readline(io.buffer; kwargs..
                 # A small gzip buffer puts the next header across buffer boundaries.
                 streams = (
                     IOBuffer(contents),
+                    NoopStream(IOBuffer(contents); bufsize = 7),
                     Utils.GzipDecompressorStream(
                         IOBuffer(transcode(GzipCompressor, contents));
                         bufsize = 7,
@@ -132,7 +138,9 @@ Base.readline(io::_SequentialMSAInput; kwargs...) = readline(io.buffer; kwargs..
                     try
                         msa = @test_logs parse_file(io, format)
                         @test msa == expected
-                        @test position(io) == sizeof(first_record)
+                        if format === Stockholm || io isa TranscodingStream
+                            @test position(io) == sizeof(first_record)
+                        end
                         msa = @test_logs parse_file(io, format)
                         @test msa == parse_file(second_record, format)
                     finally
@@ -187,10 +195,28 @@ Base.readline(io::_SequentialMSAInput; kwargs...) = readline(io.buffer; kwargs..
             end
 
             if format === Clustal
-                @testset "Sequential input without marking or seeking" begin
-                    io = _SequentialMSAInput(IOBuffer(contents))
-                    @test parse_file(io, format) == parse_file(first_record, format)
-                    @test parse_file(io, format) == parse_file(second_record, format)
+                @testset "Pipe-backed IOStream" begin
+                    if Sys.isunix()
+                        for buffered in (false, true)
+                            fds = Vector{Cint}(undef, 2)
+                            @test ccall(:pipe, Cint, (Ptr{Cint},), fds) == 0
+                            io = Base.fdio(fds[1], true)
+                            writer = Base.fdio(fds[2], true)
+                            try
+                                write(writer, contents)
+                                close(writer)
+                                @test_throws SystemError position(io)
+                                input = buffered ? NoopStream(io; bufsize = 7) : io
+                                @test parse_file(input, format) ==
+                                      parse_file(first_record, format)
+                                @test parse_file(input, format) ==
+                                      parse_file(second_record, format)
+                            finally
+                                close(io)
+                                close(writer)
+                            end
+                        end
+                    end
                 end
                 @testset "Clustal headers, blocks and conservation" begin
                     wrapped = """
@@ -304,11 +330,53 @@ Base.readline(io::_SequentialMSAInput; kwargs...) = readline(io.buffer; kwargs..
         end
     end
 
+    @testset "User-defined format" begin
+        mktempdir() do dir
+            record = "2\nA-C-\nATC-\n"
+            options = (generatemapping = true, deletefullgaps = false)
+            expected = parse_file("A-C-\nATC-", Raw; options...)
+            for suffix in ("", ".gz")
+                path = joinpath(dir, "counted.msas" * suffix)
+                _write_msa_fixture(path, record * "\n1\nGG\n\n")
+                eachmsa(path, _CountedMSAFormat; options...) do msas
+                    @test !isempty(msas)
+                    @test !isempty(msas)
+                    msa = first(msas)
+                    @test msa == expected
+                    @test annotations(msa) == annotations(expected)
+                    @test stringsequence(only(collect(msas)), 1) == "GG"
+                    @test !isopen(msas)
+                end
+                # Output types and keywords go through the extension's public parser.
+                matrices = collect(
+                    eachmsa(
+                        path,
+                        _CountedMSAFormat,
+                        Matrix{Residue};
+                        deletefullgaps = false,
+                    ),
+                )
+                @test size.(matrices) == [(2, 4), (1, 2)]
+                msa = @test_logs (
+                    :warn,
+                    "Read only the first alignment; use `eachmsa` to read all.",
+                ) read_file(path, _CountedMSAFormat; options...)
+                @test annotations(msa) == annotations(expected)
+                _write_msa_fixture(path, record * "bad header\n")
+                msas = eachmsa(path, _CountedMSAFormat)
+                @test size(first(msas)) == (2, 3)
+                @test_throws ArgumentError iterate(msas)
+                @test !isopen(msas)
+                _write_msa_fixture(path, "\n\t\n")
+                @test isempty(collect(eachmsa(path, _CountedMSAFormat)))
+            end
+        end
+    end
+
     @testset "Unsupported format" begin
         mktempdir() do dir
             path = joinpath(dir, "missing.txt")
             for args in ((path, Raw), (identity, path, Raw))
-                @test !applicable(eachmsa, args...)
                 @test_throws MethodError eachmsa(args...; deletefullgaps = false)
             end
         end

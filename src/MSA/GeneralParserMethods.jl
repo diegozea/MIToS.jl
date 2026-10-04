@@ -13,20 +13,32 @@ Return the alignment header pattern. Methods are defined for `Stockholm` and `Cl
 function _msa_header end
 
 """
-Skip blank lines and check the next line against `header`, leaving that line unread.
-With `strict = true`, reject a nonblank line that is not a header.
+    hasnextmsa(io::TranscodingStream, format::Type; strict::Bool=false) -> Bool
+    hasnextmsa(io::TranscodingStream, header::Regex; strict::Bool=false) -> Bool
+
+Check for another alignment in a buffered input, leaving its beginning available to read.
+The regular-expression method skips blank lines and checks the next line against `header`.
+It returns `false` at the end of the input or for a different header. With `strict=true`,
+an unexpected nonblank line raises an `ArgumentError` instead.
+
+To support a new `MSAFormat` in [`eachmsa`](@ref), define this method for the format and
+its usual `parse_file(io, format, output; kwargs...)` method. `eachmsa` supplies the same
+buffered input to both methods, and uses `strict=true`. The parser must read one alignment
+at a time. If it reads a line belonging to the next alignment, preserve its newline with
+`readline(io; keep=true)` and put it back with `TranscodingStreams.unread(io, codeunits(line))`.
+Neither method should close the input. A format with a header pattern can delegate to the
+regular-expression method, forwarding `strict`.
+
+`read_file` also uses this interface to warn when another alignment follows.
 """
-function _has_msa_header(io::IO, header::Regex; strict::Bool = false)
+function hasnextmsa(io::TranscodingStream, header::Regex; strict::Bool = false)
     while !eof(io)
-        mark(io)
-        line = strip(readline(io))
-        if isempty(line)
-            unmark(io)
-            continue
-        end
-        reset(io)
-        found = occursin(header, line)
-        strict && !found && throw(ArgumentError("Invalid alignment header: $line"))
+        line = readline(io; keep = true)
+        stripped = strip(line)
+        isempty(stripped) && continue
+        TranscodingStreams.unread(io, codeunits(line))
+        found = occursin(header, stripped)
+        strict && !found && throw(ArgumentError("Invalid alignment header: $stripped"))
         return found
     end
     false

@@ -129,8 +129,11 @@ Utils.print_file(
                     write_file(output, input, format)
                 end
                 @test collect(eachmsa(output, format)) == msas
-                write_file(output, AnnotatedMultipleSequenceAlignment[], format)
-                @test isempty(collect(eachmsa(output, format)))
+                for empty in (AnnotatedMultipleSequenceAlignment[], (), Union{}[])
+                    @test sprint(print_file, empty, format) == ""
+                    write_file(output, empty, format)
+                    @test isempty(collect(eachmsa(output, format)))
+                end
             end
 
             @testset "Append" begin

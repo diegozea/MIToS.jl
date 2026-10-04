@@ -13,6 +13,7 @@ function Utils._validate_write(
     Base.IteratorEltype(typeof(msas)) isa Base.HasEltype ||
         throw(ArgumentError("Iterator must declare an alignment eltype."))
     T = eltype(msas)
+    T === Union{} && return nothing
     all(
         type -> which(print_file, (S, type, Type{F})) !== collection_writer,
         Base.uniontypes(T),

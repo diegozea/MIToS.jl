@@ -9,8 +9,8 @@ struct Clustal <: MSAFormat end
 _msa_header(::Type{Clustal}) = r"^CLUSTALW?(?:\s|$)"
 
 """
-Read one Clustal alignment. Leave the next header unread when the input supports
-marking or seeking; otherwise consume it as with sequential line reading.
+Read one Clustal alignment. Put the next header back in buffered inputs;
+otherwise consume it as with sequential line reading.
 Return sequence names, sequences and annotations.
 """
 function _load_clustal_sequences(io::IO)
@@ -21,32 +21,17 @@ function _load_clustal_sequences(io::IO)
     endidx = 0
     seen_header = false
     in_sequence_block = false # true when reading a sequence block
-    # Some readable inputs, including GZipStream, do not implement marking.
-    can_mark = try
-        mark(io)
-        unmark(io)
-        true
-    catch err
-        err isa InterruptException && rethrow()
-        false
-    end
-    can_seek = !can_mark && applicable(position, io) && applicable(seek, io, 0)
+    buffered = io isa TranscodingStream
     while !eof(io)
-        line_start = can_mark ? mark(io) : can_seek ? position(io) : nothing
-        line = readline(io)
+        line = buffered ? readline(io; keep = true) : readline(io)
         chomped = chomp(line)
-        if occursin(_msa_header(Clustal), chomped) && (seen_header || !isempty(seqs))
-            if can_mark
-                reset(io)
-            elseif can_seek
-                seek(io, line_start)
-            end
-            break
-        end
-        can_mark && unmark(io)
         # blank line ends the current sequence block
         isempty(strip(chomped)) && (in_sequence_block = false; continue)
         if occursin(_msa_header(Clustal), chomped)
+            if seen_header || !isempty(seqs)
+                buffered && TranscodingStreams.unread(io, codeunits(line))
+                break
+            end
             seen_header = true
             continue
         end
