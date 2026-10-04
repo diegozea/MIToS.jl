@@ -25,12 +25,16 @@ Base.IteratorSize(::Type{_CustomMSA}) = Base.SizeUnknown()
 Base.eltype(::Type{_CustomMSA}) = Residue
 Base.iterate(custom::_CustomMSA, args...) = iterate(custom.msa, args...)
 
-Utils.parse_file(
+function Utils.parse_file(
     io::IO,
     format::Type{<:Union{Stockholm,Clustal}},
     ::Type{_CustomMSA};
     kwargs...,
-) = _CustomMSA(parse_file(io, format; kwargs...))
+)
+    header = format === Stockholm ? "# STOCKHOLM" : "CLUSTAL"
+    startswith(readline(io), header) || error("Missing alignment header.")
+    _CustomMSA(parse_file(io, format; kwargs...))
+end
 
 Utils.print_file(io::IO, custom::_CustomMSA, ::Type{Stockholm}) =
     print_file(io, custom.msa, Stockholm)
@@ -71,6 +75,26 @@ Utils.print_file(
                     write_file(output, _CustomMSA(msas[1]), format)
                     read_file(output, format) == msas[1]
                 end
+                write_file(source, _CustomMSA.(msas), format)
+                custom = @test_logs (
+                    :warn,
+                    "Read only the first alignment; use `eachmsa` to read all.",
+                ) read_file(source, format, _CustomMSA; generatemapping = true)
+                @test annotations(custom.msa) == annotations(expected)
+                eachmsa(source, format, _CustomMSA; generatemapping = true) do input
+                    write_file(output, input, format)
+                end
+                actual = collect(eachmsa(output, format, _CustomMSA))
+                @test getfield.(actual, :msa) == msas
+                if format === Stockholm
+                    @test annotations(actual[1].msa) == annotations(expected)
+                end
+                mixed = Union{_CustomMSA,AnnotatedMultipleSequenceAlignment}[
+                    _CustomMSA(msas[1]),
+                    msas[2],
+                ]
+                write_file(output, mixed, format)
+                @test collect(eachmsa(output, format)) == msas
             end
 
             @testset "Alignment types" for T in msa_types

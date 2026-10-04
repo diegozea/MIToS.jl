@@ -87,8 +87,7 @@ function _load_sequences(
         IDS, SEQS = _pre_readstockholm_sequences(io)
         annot = Annotations()
     end
-    # Leave the next header unread; nothing means that has_next has not been checked.
-    return collect(IDS), SEQS, annot, nothing
+    return collect(IDS), SEQS, annot
 end
 
 # Print Pfam

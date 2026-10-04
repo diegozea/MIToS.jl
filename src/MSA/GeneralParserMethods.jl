@@ -13,13 +13,18 @@ Return the alignment header pattern. Methods are defined for `Stockholm` and `Cl
 function _msa_header end
 
 """
-Skip blank lines and check the next line against the `header` pattern.
+Skip blank lines and check the next line against `header`, leaving that line unread.
 With `strict = true`, reject a nonblank line that is not a header.
 """
-function _read_msa_header(io::IO, header::Regex; strict::Bool = false)
-    for line in eachline(io)
-        line = strip(line)
-        isempty(line) && continue
+function _has_msa_header(io::IO, header::Regex; strict::Bool = false)
+    while !eof(io)
+        mark(io)
+        line = strip(readline(io))
+        if isempty(line)
+            unmark(io)
+            continue
+        end
+        reset(io)
         found = occursin(header, line)
         strict && !found && throw(ArgumentError("Invalid alignment header: $line"))
         return found
@@ -499,7 +504,7 @@ end
 
 """
 Construct an MSA with the requested output type and parsing options. `loaded_sequences`
-contains sequence names, sequences and annotations; any following parser state is ignored.
+contains sequence names, sequences and annotations.
 """
 function _parse_msa(
     loaded_sequences::Tuple,

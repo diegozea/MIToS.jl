@@ -9,29 +9,29 @@ struct Clustal <: MSAFormat end
 _msa_header(::Type{Clustal}) = r"^CLUSTALW?(?:\s|$)"
 
 """
-Read sequence data and conservation annotations from an iterable of Clustal lines.
-Return sequence names, sequences, annotations and whether another header was consumed.
-Set `header_read` when the caller has already consumed the current alignment's header.
+Read one Clustal alignment, leaving the next alignment's header unread.
+Return sequence names, sequences and annotations.
 """
-function _load_clustal_sequences(lines; header_read::Bool = false)
+function _load_clustal_sequences(io::IO)
     seqs = OrderedDict{String,String}()
     conservation = IOBuffer()
     seq_re = r"^(\S+)\s+([A-Za-z.-]+)(?:\s+\d+)?"  # sequence line with optional count
     startidx = 0
     endidx = 0
-    seen_header = header_read
-    has_next = false
+    seen_header = false
     in_sequence_block = false # true when reading a sequence block
-    for line in lines
+    while !eof(io)
+        mark(io)
+        line = readline(io)
         chomped = chomp(line)
+        if occursin(_msa_header(Clustal), chomped) && (seen_header || !isempty(seqs))
+            reset(io)
+            break
+        end
+        unmark(io)
         # blank line ends the current sequence block
         isempty(strip(chomped)) && (in_sequence_block = false; continue)
         if occursin(_msa_header(Clustal), chomped)
-            # A new header starts another alignment, not another sequence block.
-            if seen_header || !isempty(seqs)
-                has_next = true
-                break
-            end
             seen_header = true
             continue
         end
@@ -72,7 +72,7 @@ function _load_clustal_sequences(lines; header_read::Bool = false)
     annot = Annotations()
     _disambiguate_seqnames!(IDS, annot)
     isempty(CONS) || setannotcolumn!(annot, "cons", CONS)
-    return IDS, SEQS, annot, has_next
+    return IDS, SEQS, annot
 end
 
 function _load_sequences(
@@ -80,7 +80,7 @@ function _load_sequences(
     format::Type{Clustal};
     create_annotations::Bool = false,
 )
-    _load_clustal_sequences(lineiterator(io))
+    _load_clustal_sequences(io isa AbstractString ? IOBuffer(io) : io)
 end
 
 function Utils.print_file(

@@ -106,14 +106,24 @@ _write_msa_fixture(path, contents) =
                 msa = @test_logs parse_file(contents, format)
                 @test msa == expected
                 # Reading one alignment from an open stream must leave the next readable.
-                io = IOBuffer(contents)
-                msa = @test_logs parse_file(io, format)
-                @test msa == expected
-                if format === Stockholm
-                    @test position(io) == sizeof(first_record)
+                # A small gzip buffer puts the next header across buffer boundaries.
+                for io in (
+                    IOBuffer(contents),
+                    Utils.GzipDecompressorStream(
+                        IOBuffer(transcode(GzipCompressor, contents));
+                        bufsize = 7,
+                    ),
+                )
+                    try
+                        msa = @test_logs parse_file(io, format)
+                        @test msa == expected
+                        @test position(io) == sizeof(first_record)
+                        msa = @test_logs parse_file(io, format)
+                        @test msa == parse_file(second_record, format)
+                    finally
+                        close(io)
+                    end
                 end
-                msa = @test_logs parse_file(io, format)
-                @test msa == parse_file(second_record, format)
             end
 
             @testset "Defaults, lookahead and cleanup" for path in (plain, gzip)
