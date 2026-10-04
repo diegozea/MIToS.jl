@@ -126,8 +126,16 @@ import BioStructures
 # include modified HETATM residues separately if they belong to the desired polymer.
 protein = read_file("input.pdb", PDBFile; chain = "A", model = "1", group = "ATOM")
 template = alphafold_mmcifdict(protein; entry_id = "my_template")
-BioStructures.writemmcif("my_template.cif", template)
+BioStructures.writemmcif("tmpl.cif", template)
 ```
+
+For ColabFold's directory-based custom-template workflow (`--custom-template-path`),
+use a **four-character alphanumeric filename stem**, with lowercase letters, such as
+`tmpl.cif`. ColabFold builds hit names from the filename, e.g. `tmpl_A`; AlphaFold
+expects a four-character identifier and lowercases it when locating the mmCIF file.
+This requirement is separate from `entry_id`, which sets the mmCIF data-block name and
+`_entry.id`. The descriptive `entry_id = "my_template"` above is valid, but changing
+`entry_id` does not fix an incompatible filename.
 
 The helper adds `_chem_comp`, `_entity`, `_entity_poly_seq`, `_struct_asym`, `_entry`
 and `_exptl` categories, both label and author atom identifiers, and consistent entity

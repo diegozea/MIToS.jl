@@ -107,8 +107,13 @@ numbers and removes insertion codes **in the output only**. Empty chains, empty 
 and empty selections are rejected.
 
 `entry_id` is a caller-chosen local identifier (letters, digits, `_`, `.`, `-`, starting
-with a letter or digit). No experimental method, resolution, release date, missing
-sequence or atom element is inferred. The method defaults to mmCIF unknown (`"?"`).
+with a letter or digit). It sets the mmCIF data-block name and `_entry.id`, independently
+of the output filename. ColabFold's directory-based custom-template workflow needs a
+four-character alphanumeric filename stem with lowercase letters, e.g. `tmpl.cif`.
+Changing `entry_id` does not rename the output file.
+
+No experimental method, resolution, release date, missing sequence or atom element is
+inferred. The method defaults to mmCIF unknown (`"?"`).
 Supply a known `exptl_method` and, if available, `release_date::Dates.Date` from the
 source structure. A supplied date is written as a single revision-history entry;
 otherwise that category is omitted. AlphaFold date filtering may require it; ColabFold
