@@ -102,52 +102,42 @@ printmodifications(msa)
 
 ### Reading multiple alignments
 
-A file such as `Pfam-A.full.gz` contains alignments for many protein families.
-Use [`eachmsa`](@ref MIToS.MSA.eachmsa) to read these alignments one at a time.
-It works with Stockholm and Clustal files. To read only the first alignment in either
-format, use [`read_file`](@ref MIToS.Utils.read_file). It warns you if the file contains
-more alignments.
+Files such as `Pfam-A.seed.gz` contain alignments for many protein families.
+Use [`eachmsa`](@ref MIToS.MSA.eachmsa) to read a Stockholm or Clustal file one alignment
+at a time. [`read_file`](@ref MIToS.Utils.read_file) reads only the first alignment and
+warns you if there are more.
 
 This example prints the accession and number of sequences for each Pfam family:
 
 ```julia
 using MIToS.MSA
 
-eachmsa("Pfam-A.full.gz", Stockholm) do msas
+eachmsa("Pfam-A.seed.gz", Stockholm) do msas
     for msa in msas
         println(getannotfile(msa, "AC", ""), '\t', nsequences(msa))
     end
 end
 ```
 
-The `for` loop runs once for each alignment, which you can access as `msa` inside the loop.
-Replace the `println` line with your own analysis. The `do` block closes the file
-automatically when your analysis finishes, even if you stop early with `break` or an
-error occurs.
+Each `msa` contains one family's alignment. Replace the `println` line with your own
+analysis. The `do` block closes the file automatically when your analysis ends, even
+if you stop early or an error occurs. 
 
-For a Clustal file, replace `Stockholm` with `Clustal`. Each alignment must start with
-its own CLUSTAL header line. Blank lines can separate parts of the same alignment.
+For a Clustal file, replace `Stockholm` with `Clustal`. Both compressed and uncompressed 
+files can be read this way. Files ending in `.gz`
+do not need to be decompressed first. MIToS loads one alignment at a time, so your
+computer only needs enough memory for analyzing the larger alignment in the file.
 
-Both compressed and uncompressed files use the same interface. Files ending in `.gz`
-can be read directly, so there is no need to decompress the Pfam file first. MIToS reads
-each alignment when the loop reaches it and does not keep previous alignments. Your
-computer needs enough memory for one complete alignment and your analysis, without
-having to load all the families into memory at once.
+You can also use a web address (HTTP, HTTPS or FTP) as the input. If you want to analyse 
+the same file several times, download it first and use its filename to avoid 
+downloading it again each time.
 
-You can also give `eachmsa` a web address (HTTP, HTTPS or FTP). The file is downloaded
-once when `eachmsa` is called, and the temporary copy is deleted when the `do` block ends.
-If you want to analyse the same file several times, download it first and use its
-local filename.
-
-You can use the same options as for [`read_file`](@ref MIToS.Utils.read_file).
-For example, `deletefullgaps = false` keeps columns containing only gaps.
-See [`parse_file`](@ref MIToS.Utils.parse_file) for the available options and output types.
+The reading options are the same as for [`read_file`](@ref MIToS.Utils.read_file) and [`parse_file`](@ref MIToS.Utils.parse_file).
 
 ### [Writing MSA files](@id Writing-MSA-files)
 
-Julia REPL shows MSAs as Matrices. If you want to print them in another format, you should
-use the `print_file` function with an MSA object as first argument and the `FileFormat` `FASTA`,
-`Stockholm`, `Clustal`, `PIR` or `Raw` as second argument.
+Use `print_file` to display an alignment in `FASTA`, `Stockholm`, `Clustal`, `PIR` or
+`Raw` format:
 
 ```@example msa_write
 using MIToS.MSA
@@ -160,13 +150,53 @@ msa = read_file(
 print_file(msa, FASTA) # prints msa in FASTA format
 ```
 
-To save an MSA object to a file, use the `write_file` function. This function takes a filename
-as a first argument. If the filename ends with `.gz`, the output will be a compressed
-(gzipped) file. The next two arguments of `write_file` are passed to `print_file`,
-so `write_file` behaves as `print_file`.
+By default, `print_file` writes to the standard output. 
+Use [`write_file`](@ref MIToS.Utils.write_file) to save the alignment in a file. It takes the output filename as the first argument, followed by an alignment and the file format. 
+A filename ending in `.gz` produces a compressed file.
 
 ```@example msa_write
 write_file("msa.gz", msa, FASTA) # writes msa in FASTA format in a gzipped file
+```
+
+#### Writing multiple alignments
+
+To save several alignments in one Stockholm or Clustal file, put them together in a vector 
+using brackets and pass it to `write_file`.
+
+```julia
+write_file("alignments.sto", [msa1, msa2], Stockholm)
+```
+
+In fact, `write_file` does not need a vector, it can take any iterator of alignments. For example, you use the alignment iterator returned by `eachmsa` to read, process and save one alignment at a time. For example, this code reads a Pfam file and saves the alignments in 
+a new Stockholm file, removing insert columns while keeping the original column and residue numbers:
+
+```julia
+using MIToS.MSA
+
+eachmsa(
+    "Pfam-A.seed.gz",
+    Stockholm;
+    generatemapping = true,
+    useidcoordinates = true,
+) do msas
+    write_file("Pfam-A.seed.aligned.stockholm.gz", msas, Stockholm)
+end
+```
+
+`generatemapping = true` records the original positions before removing the insert columns.
+`useidcoordinates = true` takes the start and end coordinates from Pfam sequence names
+such as `F112_SSV1/3-112`.
+
+When rereading the output, leave `generatemapping` at its default (`false`) to keep the
+saved numbering. For example, the following code will show the residue numbers for the 
+first sequence of each family (`0` means that there is a gap in that position):
+
+```julia
+eachmsa("Pfam-A.seed.aligned.stockholm.gz", Stockholm) do msas
+    for msa in msas
+        println(sequencenames(msa)[1], ": ", getsequencemapping(msa, 1))
+    end
+end
 ```
 
 ## [MSA Annotations](@id MSA-Annotations)
