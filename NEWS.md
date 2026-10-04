@@ -1,5 +1,21 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.10.1 to v3.11.0
+
+- Added `eachmsa` to read Stockholm and Clustal files one alignment at a time,
+  without loading all alignments into memory. It supports local files, URLs,
+  and gzip-compressed files.
+- `write_file` and `print_file` now accept typed collections and iterators of
+  alignments to write multiple MSAs in Stockholm or Clustal format.
+- Fixed Clustal parsing to stop after the first alignment in files containing
+  multiple alignments.
+- `read_file` now warns when a Stockholm or Clustal file contains another alignment
+  and recommends `eachmsa` to read them all.
+- Corrected Stockholm output to include the `# STOCKHOLM 1.0` header and use spaces
+  to separate sequence and annotation fields.
+- Fixed a SIFTS benchmark crash by keeping its XML document alive until each
+  benchmark sample finishes.
+
 ### Changes from v3.10.0 to v3.10.1
 
 - Fixed a precompilation error on Julia 1.13; users of Julia 1.13 must upgrade to
