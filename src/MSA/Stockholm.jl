@@ -1,5 +1,7 @@
 struct Stockholm <: MSAFormat end
 
+_msa_header(::Type{Stockholm}) = r"^# STOCKHOLM 1\.0$"
+
 # NOTE: Sequence‑Name Disambiguation
 # We do not support sequence‑name disambiguation via the `OnlineSequenceNameDisambiguator`
 # in Stockholm format, because duplicate sequence names are not permitted.
@@ -23,39 +25,19 @@ struct Stockholm <: MSAFormat end
     end
 end
 
-@inline function _append_annotation_fragment!(dict::AbstractDict, key, fragment)
-    if haskey(dict, key)
-        dict[key] = dict[key] * fragment
-    else
-        dict[key] = fragment
-    end
-end
-
 function _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
     if startswith(line, "#=GF")
         words = get_n_words(line, 3)
-        id = words[2]
-        if id in keys(GF)
-            GF[id] = GF[id] * "\n" * words[3]
-        else
-            GF[id] = words[3]
-        end
+        _append_with_separator!(GF, words[2], words[3], "\n")
     elseif startswith(line, "#=GS")
         words = get_n_words(line, 4)
-        idtuple = (words[2], words[3])
-        if idtuple in keys(GS)
-            GS[idtuple] = GS[idtuple] * "\n" * words[4]
-        else
-            GS[idtuple] = words[4]
-        end
+        _append_with_separator!(GS, (words[2], words[3]), words[4], "\n")
     elseif startswith(line, "#=GC")
         words = get_n_words(line, 3)
-        _append_annotation_fragment!(GC, words[2], words[3])
+        _append_with_separator!(GC, words[2], words[3])
     elseif startswith(line, "#=GR")
         words = get_n_words(line, 4)
-        key = (words[2], words[3])
-        fragment = words[4]
-        _append_annotation_fragment!(GR, key, fragment)
+        _append_with_separator!(GR, (words[2], words[3]), words[4])
     else
         _fill_with_sequence_line!(IDS, SEQS, line)
     end
@@ -105,7 +87,8 @@ function _load_sequences(
         IDS, SEQS = _pre_readstockholm_sequences(io)
         annot = Annotations()
     end
-    return collect(IDS), SEQS, annot
+    # Leave the next header unread; nothing means that has_next has not been checked.
+    return collect(IDS), SEQS, annot, nothing
 end
 
 # Print Pfam
@@ -116,15 +99,16 @@ function _to_sequence_dict(annotation::Dict{Tuple{String,String},String})
     for (key, value) in annotation
         seq_id = key[1]
         if haskey(seq_dict, seq_id)
-            push!(seq_dict[seq_id], string(seq_id, '\t', key[2], '\t', value))
+            push!(seq_dict[seq_id], string(seq_id, ' ', key[2], ' ', value))
         else
-            seq_dict[seq_id] = [string(seq_id, '\t', key[2], '\t', value)]
+            seq_dict[seq_id] = [string(seq_id, ' ', key[2], ' ', value)]
         end
     end
     sizehint!(seq_dict, length(seq_dict))
 end
 
 function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{Stockholm})
+    println(io, "# STOCKHOLM 1.0")
     has_annotations = isa(msa, AnnotatedAlignedObject) && !isempty(msa.annotations)
     if has_annotations
         _printfileannotations(io, msa.annotations)
@@ -137,7 +121,7 @@ function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{Sto
         id = seqnames[i]
         seq = stringsequence(msa, i)
         formatted_seq = _format_inserts(seq, aligned)
-        println(io, id, "\t\t\t", formatted_seq)
+        println(io, id, ' ', formatted_seq)
         if has_annotations && haskey(res_annotations, id)
             for line in res_annotations[id]
                 println(io, "#=GR ", line)

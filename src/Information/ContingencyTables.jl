@@ -244,12 +244,12 @@ end
         table = NamedArray(
             zeros($T, dimtable),
             @ntuple($N, k -> namedict), # (namedict, namedict, ...)
-            @ntuple($N, k -> "Dim_k")
+            @ntuple($N, k -> string("Dim_", k))
         ) # ("Dim_1", "Dim_2", ...)
         marginals = NamedArray(
             zeros($T, n, $N),
             # OrderedDict{String,Int}("Dim_$i" => i for i in 1:N)
-            (namedict, OrderedDict{String,Int}(@ntuple $N k -> "Dim_k" => k)),
+            (namedict, OrderedDict{String,Int}(@ntuple $N k -> string("Dim_", k) => k)),
             ("Residue", "Dim"),
         )
         ContingencyTable{T,N,A}(alphabet, zeros(T, dimtemporal), table, marginals, zero(T))

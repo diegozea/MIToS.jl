@@ -553,6 +553,33 @@ end
             @test parsed[1].id.PDBe_number == "10"
             @test parsed == residues
         end
+
+        @testset "read_file/write_file roundtrip" begin
+            residues = read_file(cif_file, MMCIFFile)
+
+            mktemp() do path, io
+                close(io)
+                write_file(path, residues, MMCIFFile)
+                parsed = read_file(path, MMCIFFile)
+
+                @test parsed == residues
+            end
+
+            @testset "PDB without element field" begin
+                for pdb_file in ["short.pdb", "foldseek_example.pdb"]
+                    @testset "$pdb_file" begin
+                        pdb_residues = read_file(joinpath(DATA, pdb_file), PDBFile)
+                        mktemp() do path, io
+                            close(io)
+                            write_file(path, pdb_residues, MMCIFFile)
+                            parsed = read_file(path, MMCIFFile)
+
+                            @test parsed == pdb_residues
+                        end
+                    end
+                end
+            end
+        end
     end
 end
 

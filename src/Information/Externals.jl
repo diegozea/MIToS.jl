@@ -8,7 +8,7 @@ You need to install GaussDCA:
 ```julia
 using Pkg
 
-Pkg.add(PackageSpec(url = "https://github.com/carlobaldassi/GaussDCA.jl", rev = "master"))
+Pkg.add(PackageSpec(url = \"https://github.com/carlobaldassi/GaussDCA.jl\", rev = \"master\"))
 ```
 
 Look into [GaussDCA.jl README](https://github.com/carlobaldassi/GaussDCA.jl) for further information.

@@ -43,7 +43,7 @@ parsing `components.cif` file from the Protein Data Bank.
 ```jldoctest
 julia> using MIToS.Utils
 
-julia> one_letter_code = THREE2ONE["ALA"]
+julia> one_letter_code = THREE2ONE[\"ALA\"]
 'A': ASCII/Unicode U+0041 (category Lu: Letter, uppercase)
 ```
 """
