@@ -310,3 +310,49 @@ nothing # hide
 ```
 
 ![](pdb_aligned.png)
+
+## Structural similarity scores
+
+[`gdt_ts`](@ref) and [`gdt_ha`](@ref) measure the mean percentage of reference Cα
+positions within four distance thresholds: 1, 2, 4 and 8 Å for GDT_TS; 0.5, 1, 2 and
+4 Å for GDT_HA. Each threshold can use its own best superposition
+[10.1093/nar/gkg571](@cite). [`tm_score`](@ref) uses a smooth distance weighting and
+a reference-length-dependent distance scale [10.1002/prot.20264](@cite).
+GDT scores range from 0 to 100; TM-score ranges from 0 to 1. Higher is better.
+
+```@example pdb_rmsd
+# The two haemoglobin alpha chains have corresponding residues in the same order.
+(gdt_ts(chain_A, chain_C), gdt_ha(chain_A, chain_C), tm_score(chain_A, chain_C))
+```
+
+The first structure is the **reference**. Both metrics normalize by its length,
+`Ltarget = length(A)`, including unpaired residues and pairs with a missing Cα. Thus,
+a perfect fragment covering half the reference gives GDT 50 and TM-score 0.5, rather
+than a perfect full-length score. `Ltarget` also controls the TM distance scale;
+swapping reference and model can therefore change the score. To evaluate a domain,
+select that domain as the reference or pass its length explicitly. The normalization
+length cannot be smaller than the number of usable pairs.
+
+Select the protein chain and model before scoring. By default, vector positions are
+paired up to the shorter vector, without sequence alignment or matching PDB residue
+numbers. For an existing alignment, provide one-to-one `(reference_index, model_index)`
+pairs in alignment order. Missing Cα pairs contribute zero; alternate Cα locations
+use the highest occupancy. The input structures are left unchanged.
+
+```@example pdb_rmsd
+# A supplied alignment of a fragment; omitted reference positions remain in Ltarget.
+fragment = chain_C[11:30]
+pairs = [(i + 10, i) for i in eachindex(fragment)]
+tm_score(chain_A, fragment; matches = pairs)
+```
+
+These functions use **approximate fragment searches**, not a sequence-independent
+structural alignment or an exact reproduction of LGA/TM-score executables. Global
+and contiguous fragment fits seed iterative superposition of nearby Cα pairs; the
+best score encountered is retained. For GDT the subset is refined independently at
+each threshold. TM-score refines within a search radius derived from its distance
+scale but scores **all** supplied pairs, including distant pairs. The default
+`window_sizes = (4, 8, 16, 32)` and `max_iterations = 20` trade search effort for
+accuracy; neither guarantees the global optimum. Use `local_search = false` for a
+score under a single global least-squares fit, or `max_iterations = 0` for seed fits
+without refinement. Custom thresholds are available through [`gdt_per_cutoff`](@ref).
