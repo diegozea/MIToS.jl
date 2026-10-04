@@ -30,6 +30,7 @@ end
         first_record = """
         # STOCKHOLM 1.0
         #=GF SQ 4
+        #=GF DE Example α
         0.0 --EKWVKSKDEEGAYYYHDQGTNEVRWEKP
         1.7656331811711743 ---GWTVFRTKNGAAYYVETRTQQATWENP
         3.5312663623423486 -HPPWVQRMTPAGRTYYHYLQTRETTWTDP
@@ -117,32 +118,38 @@ end
                 end
             end
 
-            @testset "Successive parse_file calls" begin
-                expected = parse_file(first_record, format)
-                msa = @test_logs parse_file(contents, format)
+            @testset "Successive parsing, $(repr(newline))" for newline in ("\n", "\r\n")
+                # Preserve columns to compare annotations without modification timestamps.
+                options = (deletefullgaps = false,)
+                expected = parse_file(first_record, format; options...)
+                msa = @test_logs parse_file(contents, format; options...)
                 @test msa == expected
                 # Reading one alignment from an open stream must leave the next readable.
-                # A small gzip buffer puts the next header across buffer boundaries.
+                # Small buffers split lines and headers across buffer boundaries.
+                text = replace(contents, "\n" => newline)
                 streams = (
-                    IOBuffer(contents),
-                    NoopStream(IOBuffer(contents); bufsize = 7),
+                    IOBuffer(text),
+                    NoopStream(IOBuffer(text); bufsize = 7),
                     Utils.GzipDecompressorStream(
-                        IOBuffer(transcode(GzipCompressor, contents));
+                        IOBuffer(transcode(GzipCompressor, text));
                         bufsize = 7,
                     ),
                 )
                 if format === Clustal
+                    _write_msa_fixture(gzip, text)
                     streams = (streams..., GZip.open(gzip))
                 end
                 for io in streams
                     try
-                        msa = @test_logs parse_file(io, format)
+                        msa = @test_logs parse_file(io, format; options...)
                         @test msa == expected
+                        @test annotations(msa) == annotations(expected)
                         if format === Stockholm || io isa TranscodingStream
-                            @test position(io) == sizeof(first_record)
+                            @test position(io) ==
+                                  sizeof(replace(first_record, "\n" => newline))
                         end
-                        msa = @test_logs parse_file(io, format)
-                        @test msa == parse_file(second_record, format)
+                        msa = @test_logs parse_file(io, format; options...)
+                        @test msa == parse_file(second_record, format; options...)
                     finally
                         close(io)
                     end

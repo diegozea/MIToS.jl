@@ -13,6 +13,13 @@ Return the alignment header pattern. Methods are defined for `Stockholm` and `Cl
 function _msa_header end
 
 """
+Read an alignment line, using a byte delimiter for the buffered `readuntil` method.
+Buffered inputs retain the newline so a line can be put back unchanged.
+"""
+_read_msa_line(io::IO) = readline(io)
+_read_msa_line(io::TranscodingStream) = String(readuntil(io, 0x0a; keep = true))
+
+"""
     hasnextmsa(io::TranscodingStream, format::Type; strict::Bool=false) -> Bool
     hasnextmsa(io::TranscodingStream, header::Regex; strict::Bool=false) -> Bool
 
@@ -33,7 +40,7 @@ regular-expression method, forwarding `strict`.
 """
 function hasnextmsa(io::TranscodingStream, header::Regex; strict::Bool = false)
     while !eof(io)
-        line = readline(io; keep = true)
+        line = _read_msa_line(io)
         stripped = strip(line)
         isempty(stripped) && continue
         TranscodingStreams.unread(io, codeunits(line))

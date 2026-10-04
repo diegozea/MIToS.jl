@@ -23,7 +23,7 @@ function _load_clustal_sequences(io::IO)
     in_sequence_block = false # true when reading a sequence block
     buffered = io isa TranscodingStream
     while !eof(io)
-        line = buffered ? readline(io; keep = true) : readline(io)
+        line = _read_msa_line(io)
         chomped = chomp(line)
         # blank line ends the current sequence block
         isempty(strip(chomped)) && (in_sequence_block = false; continue)

@@ -43,7 +43,7 @@ function _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
     end
 end
 
-function _pre_readstockholm(io::Union{IO,AbstractString})
+function _pre_readstockholm(io::IO)
     IDS = OrderedSet{String}()
     SEQS = String[]
     GF = OrderedDict{String,String}()
@@ -51,7 +51,8 @@ function _pre_readstockholm(io::Union{IO,AbstractString})
     GS = Dict{Tuple{String,String},String}()
     GR = Dict{Tuple{String,String},String}()
 
-    @inbounds for line in lineiterator(io)
+    @inbounds while !eof(io)
+        line = chomp(_read_msa_line(io))
         isempty(line) && continue
         startswith(line, "//") && break
         _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
@@ -64,10 +65,11 @@ function _pre_readstockholm(io::Union{IO,AbstractString})
     (IDS, SEQS, GF, GS, GC, GR)
 end
 
-function _pre_readstockholm_sequences(io::Union{IO,AbstractString})
+function _pre_readstockholm_sequences(io::IO)
     IDS = OrderedSet{String}()
     SEQS = String[]
-    @inbounds for line in lineiterator(io)
+    @inbounds while !eof(io)
+        line = chomp(_read_msa_line(io))
         isempty(line) && continue
         startswith(line, "//") && break
         _fill_with_sequence_line!(IDS, SEQS, line)
@@ -80,6 +82,7 @@ function _load_sequences(
     format::Type{Stockholm};
     create_annotations::Bool = false,
 )
+    io = io isa AbstractString ? IOBuffer(io) : io
     if create_annotations
         IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
         annot = Annotations(GF, GS, GC, GR)
