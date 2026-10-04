@@ -333,6 +333,60 @@ clusters = hobohmI(msa, 62) # from MIToS.MSA
 frequencies(msa[:, 1], msa[:, 2], weights = clusters)
 ```
 
+## Position-specific profiles and sequence scores
+
+The profile functions summarize an MSA with **residues in rows and alignment positions
+in columns**. They preserve the alignment's column names. A
+[`PositionFrequencyMatrix`](@ref) stores weighted counts; a
+[`PositionSpecificProbabilityMatrix`](@ref) normalizes each column; a
+[`PositionSpecificScoringMatrix`](@ref) stores log-odds scores
+``S_i(a) = \log_b(p_i(a) / q(a))`` against a background distribution.
+
+```@example profiles
+using MIToS.MSA, MIToS.Information
+
+alignment = permutedims(hcat(res"AC-", res"AC-", res"CC-"))
+pfm = position_frequency_matrix(alignment;
+    weights = hobohmI(alignment, 62),
+    pseudocounts = AdditiveSmoothing(1))
+ppm = position_specific_probability_matrix(pfm)
+pssm = position_specific_scoring_matrix(ppm; background = ones(20), base = 2)
+pssm["A", 1]
+```
+
+The background defaults to the amino-acid frequencies in `BLOSUM62_Pi`. Background
+weights are normalized and must be finite, nonnegative, and have a positive sum. Plain
+arrays follow alphabet order. Named vectors and MIToS frequency/probability tables must
+use the same residue names in the same order. For a gapped or reduced alphabet, supply
+an explicit background with one value per symbol or group.
+
+`UngappedAlphabet()` ignores gaps and unknown residues. `GappedAlphabet()` counts gaps,
+and `GappedXAlphabet()` also counts `X`. `ReducedAlphabet` counts the specified groups;
+additive pseudocounts are added once per group. Each sequence weight and additive
+pseudocount must be finite and nonnegative. An all-gap column under an ungapped alphabet
+has no observations: without smoothing its probabilities and scores are `NaN`; positive
+additive smoothing gives a uniform probability column.
+
+For bases greater than one, enrichment gives positive scores and depletion gives
+negative scores. An unobserved residue with positive background gives `-Inf`, a positive
+probability with zero background gives `Inf`, and zero in both gives `NaN`. No clipping
+or implicit smoothing is applied. Bases between zero and one reverse the score signs.
+
+```@example profiles
+odds = score_sequence(pssm, res"AC-")
+likelihood = score_sequence(ppm, res"AC-"; base = 2)
+(odds.score, likelihood.score, odds.used_positions)
+```
+
+[`score_sequence`](@ref) sums log odds for a PSSM or log probabilities for a PSPM. Its
+[`ProfileScore`](@ref) records the score, kind, base, and number of positions used. The
+sequence must have the same length as the profile; a row or column matrix represents a
+single sequence. Residues outside the alphabet are skipped, and unknown non-gap residues
+emit a warning. Gaps contribute when the alphabet includes them. Thus the example scores
+two positions. A sequence with no included positions scores zero, but its average score
+per position is undefined. These are scores for an already aligned sequence, not a
+sequence alignment or database-search algorithm.
+
 ## Estimating information measures on an MSA
 
 The `Information` module has a number of functions defined to calculate information

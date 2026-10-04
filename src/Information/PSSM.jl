@@ -16,8 +16,10 @@ const _DOC_PROFILE_SHAPE = string(
 
 const _DOC_MSA_KWARGS = """
   - `alphabet = UngappedAlphabet()`: residue alphabet defining the row order.
-  - `weights = NoClustering()`: sequence weights to reduce redundancy.
-  - `pseudocounts = NoPseudocount()`: smoothing applied before normalization.
+  - `weights = NoClustering()`: one finite, nonnegative weight per sequence, supplied as
+    `StatsBase.Weights` or `Clusters`, or equal weights with `NoClustering()`.
+  - `pseudocounts = NoPseudocount()`: optional `AdditiveSmoothing(λ)` with finite,
+    nonnegative `λ`, added once per alphabet symbol in each column before normalization.
 """
 const _DOC_PSSM_FORMULA = string(
     "``Sᵢ(a) = log_b(pᵢ(a) / q(a))``, where i is the alignment column, ",
@@ -100,9 +102,11 @@ end
 Position-specific scoring matrix (PSSM) with log-odds scores relative to a background
 distribution. Scores are defined as $(_DOC_PSSM_FORMULA)
 
-Positive scores indicate enrichment over background; negative scores indicate depletion.
+For bases greater than one, positive scores indicate enrichment over background and
+negative scores indicate depletion. Bases between zero and one reverse these signs.
 The `base` field controls units. $(_LOG_BASE_UNITS) IEEE floating-point rules apply for
-zeros (pᵢ(a) = 0 ⇒ `-Inf`, q(a) = 0 ⇒ `Inf`, invalid ratios ⇒ `NaN`).
+zeros: for bases greater than one, pᵢ(a) = 0 < q(a) gives `-Inf`,
+q(a) = 0 < pᵢ(a) gives `Inf`, and pᵢ(a) = q(a) = 0 gives `NaN`.
 
 To score an aligned sequence x of length n_positions, you can sum per-position scores:
 ``score(x) = ∑ᵢ Sᵢ(xᵢ)``, where xᵢ is the residue observed at position i.
@@ -134,10 +138,10 @@ end
 # -----------------
 
 @inline function _check_log_base(base::Number)
-    if !(base > 0) || base == 1 # this also catches NaN
+    if !(base isa Real && isfinite(base) && base > 0 && base != 1)
         throw(
             ArgumentError(
-                "The logarithm base must be positive and different from 1 (base=$base).",
+                "The logarithm base must be finite, real, positive and different from 1 (base=$base).",
             ),
         )
     end
@@ -155,6 +159,19 @@ end
 
 @inline _convert_base(base::Number) = Float64(base)
 
+function _checked_log_base(base::Number)
+    _check_log_base(base)
+    value = _convert_base(base)
+    _check_log_base(value) # Conversion must not round to 0, 1 or Inf.
+    value
+end
+
+function _check_profile_names(table::NamedArray, alphabet::ResidueAlphabet)
+    _check_matrix_nrows(table, alphabet)
+    names(table, 1) == names(alphabet) ||
+        throw(ArgumentError("Profile row names must match the alphabet in order."))
+end
+
 # NamedArray constructors (main)
 # ------------------------------
 
@@ -162,7 +179,7 @@ function PositionFrequencyMatrix(
     table::NamedArray{Float64,2,Array{Float64,2},NTuple{2,OrderedDict{String,Int}}},
     alphabet::A,
 ) where {A<:ResidueAlphabet}
-    _check_matrix_nrows(table, alphabet)
+    _check_profile_names(table, alphabet)
     PositionFrequencyMatrix{A}(table, alphabet)
 end
 
@@ -170,7 +187,7 @@ function PositionSpecificProbabilityMatrix(
     table::NamedArray{Float64,2,Array{Float64,2},NTuple{2,OrderedDict{String,Int}}},
     alphabet::A,
 ) where {A<:ResidueAlphabet}
-    _check_matrix_nrows(table, alphabet)
+    _check_profile_names(table, alphabet)
     PositionSpecificProbabilityMatrix{A}(table, alphabet)
 end
 
@@ -180,7 +197,7 @@ function PositionSpecificScoringMatrix(
     base::Union{Irrational{:ℯ},Float64,Int},
 ) where {A<:ResidueAlphabet}
     _check_log_base(base)
-    _check_matrix_nrows(table, alphabet)
+    _check_profile_names(table, alphabet)
     PositionSpecificScoringMatrix{A}(table, alphabet, base)
 end
 
@@ -189,7 +206,7 @@ function PositionSpecificScoringMatrix(
     alphabet::A,
     base::Number = ℯ,
 ) where {A<:ResidueAlphabet}
-    PositionSpecificScoringMatrix(table, alphabet, _convert_base(base))
+    PositionSpecificScoringMatrix(table, alphabet, _checked_log_base(base))
 end
 
 
@@ -197,10 +214,20 @@ end
 # --------------------------------------------------
 
 function _named_matrix(data::AbstractMatrix, alphabet::ResidueAlphabet)
+    _check_matrix_nrows(data, alphabet)
     ncols = size(data, 2)
-    row_dict = getnamedict(alphabet)
+    row_dict = copy(getnamedict(alphabet))
     col_dict = OrderedDict{String,Int}(string(i) => i for i = 1:ncols)
     NamedArray(Matrix{Float64}(data), (row_dict, col_dict), ("Res", "Col"))
+end
+
+function _named_matrix(data::NamedArray{T,2}, alphabet::ResidueAlphabet) where {T}
+    _check_profile_names(data, alphabet)
+    NamedArray(
+        Matrix{Float64}(getarray(data)),
+        (names(data, 1), string.(names(data, 2))),
+        Tuple(dimnames(data)),
+    )
 end
 
 PositionFrequencyMatrix(data::AbstractMatrix, alphabet::ResidueAlphabet) =
@@ -342,21 +369,64 @@ function _collect_background(background::AbstractArray, alphabet::ResidueAlphabe
     if !(total > 0)
         throw(DomainError(total, "Background distribution must have positive sum."))
     end
+    if isinf(total)
+        vector ./= maximum(vector)
+        total = sum(vector)
+    end
     if total != 1.0
         vector ./= total
     end
     vector
 end
 
+function _collect_background(
+    background::Union{ContingencyTable,Probabilities,Frequencies},
+    alphabet::ResidueAlphabet,
+)
+    names(getalphabet(background)) == names(alphabet) || throw(
+        ArgumentError("Background alphabet must match the profile alphabet in order."),
+    )
+    _collect_background(gettable(background), alphabet)
+end
+
+function _collect_background(background::NamedArray, alphabet::ResidueAlphabet)
+    ndims(background) == 1 && names(background, 1) == names(alphabet) ||
+        throw(ArgumentError("Named backgrounds must be vectors in profile alphabet order."))
+    _collect_background(getarray(background), alphabet)
+end
+
 # Frequencies
 # ===========
 
+_profile_pseudocount(p::Pseudocount) = p
+
+function _profile_pseudocount(p::AdditiveSmoothing)
+    value = Float64(p.λ)
+    isfinite(value) && p.λ >= 0 ||
+        throw(DomainError(p.λ, "Pseudocounts must be finite and nonnegative."))
+    AdditiveSmoothing(value)
+end
+
+_check_profile_weights(::NoClustering, nseq::Int) = nothing
+
+function _check_profile_weights(weights::Union{Weights,Clusters}, nseq::Int)
+    values = weights isa Clusters ? getweight(weights) : weights
+    Base.require_one_based_indexing(values)
+    length(values) == nseq ||
+        throw(ArgumentError("There must be one weight per MSA sequence."))
+    all(w -> isfinite(Float64(w)) && w >= 0, values) ||
+        throw(DomainError(values, "Sequence weights must be finite and nonnegative."))
+end
+
 function _position_frequency_matrix(
-    msa::AbstractArray{Residue};
+    msa::AbstractMatrix{Residue};
     alphabet::ResidueAlphabet = UngappedAlphabet(),
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
 )
+    Base.require_one_based_indexing(msa)
+    _check_profile_weights(weights, size(msa, 1))
+    pseudocounts = _profile_pseudocount(pseudocounts)
     nres = length(alphabet)
     ncols = ncolumns(msa)
     frequencies = Matrix{Float64}(undef, nres, ncols)
@@ -370,14 +440,17 @@ function _position_frequency_matrix(
         @inbounds frequencies[:, j] .= gettablearray(column_table)
     end
 
-    row_dict = getnamedict(alphabet)
+    all(x -> isfinite(x) && x >= 0, frequencies) ||
+        throw(DomainError(frequencies, "Profile counts must be finite and nonnegative."))
+
+    row_dict = copy(getnamedict(alphabet))
     col_names = columnnames(msa)
     col_dict = OrderedDict{String,Int}(col_names[i] => i for i = 1:ncols)
     NamedArray(frequencies, (row_dict, col_dict), ("Res", "Col"))
 end
 
 """
-    position_frequency_matrix(msa::AbstractArray{Residue}; kwargs...)
+    position_frequency_matrix(msa::AbstractMatrix{Residue}; kwargs...)
 
 Compute a position frequency matrix (PFM) from a protein MSA. Each column summarizes how
 often each residue appears at that alignment position. Therefore, for column i and residue
@@ -390,15 +463,17 @@ ungapped alphabet ignores gaps while a gapped alphabet treats the gap as a symbo
 # Keyword Arguments
 
   - `alphabet = UngappedAlphabet()`: residue alphabet defining the row order.
-  - `weights = NoClustering()`: sequence weights to reduce redundancy.
-  - `pseudocounts = NoPseudocount()`: smoothing applied before normalization.
+  - `weights = NoClustering()`: one finite, nonnegative weight per sequence, supplied as
+    `StatsBase.Weights` or `Clusters`, or equal weights with `NoClustering()`.
+  - `pseudocounts = NoPseudocount()`: optional `AdditiveSmoothing(λ)` with finite,
+    nonnegative `λ`, added once per alphabet symbol in each column before normalization.
 
 # Returns
 
 [`PositionFrequencyMatrix`](@ref) with $(_DOC_PROFILE_SHAPE).
 """
 function position_frequency_matrix(
-    msa::AbstractArray{Residue};
+    msa::AbstractMatrix{Residue};
     alphabet::ResidueAlphabet = UngappedAlphabet(),
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
@@ -416,13 +491,21 @@ end
 # ============
 
 function _normalize_position_probabilities!(matrix::AbstractMatrix)
+    all(x -> isfinite(x) && x >= 0, matrix) ||
+        throw(DomainError(matrix, "Profile counts must be finite and nonnegative."))
     @inbounds for j = 1:size(matrix, 2)
         col = @view matrix[:, j]
         total = sum(col)
         if total == 0.0
             fill!(col, NaN)
-        elseif total != 1.0
-            col ./= total
+        else
+            if isinf(total)
+                col ./= maximum(col)
+                total = sum(col)
+            end
+            if total != 1.0
+                col ./= total
+            end
         end
     end
     matrix
@@ -430,7 +513,7 @@ end
 
 """
     position_specific_probability_matrix(pfm::PositionFrequencyMatrix)
-    position_specific_probability_matrix(msa::AbstractArray{Residue}; kwargs...)
+    position_specific_probability_matrix(msa::AbstractMatrix{Residue}; kwargs...)
 
 Build a position-specific probability matrix (PSPM). Internally, it converts a PFM
 (position frequency matrix) into a PSPM by column-wise normalization using
@@ -455,7 +538,7 @@ function position_specific_probability_matrix(pfm::PositionFrequencyMatrix)
 end
 
 function position_specific_probability_matrix(
-    msa::AbstractArray{Residue};
+    msa::AbstractMatrix{Residue};
     alphabet::ResidueAlphabet = UngappedAlphabet(),
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
@@ -474,7 +557,7 @@ end
 # =======
 
 """
-    position_specific_scoring_matrix(msa::AbstractArray{Residue}; kwargs...)
+    position_specific_scoring_matrix(msa::AbstractMatrix{Residue}; kwargs...)
     position_specific_scoring_matrix(pfm::PositionFrequencyMatrix; kwargs...)
     position_specific_scoring_matrix(ppm::PositionSpecificProbabilityMatrix; kwargs...)
 
@@ -482,16 +565,21 @@ Compute a position-specific scoring matrix (PSSM) with log-odds scores
 $(_DOC_PSSM_FORMULA) The PSSM can be built from an MSA, a position frequency matrix (PFM),
 or a position-specific probability matrix (PSPM).
 
-Positive scores indicate enrichment over background; negative scores indicate depletion.
+For bases greater than one, positive scores indicate enrichment over background and
+negative scores indicate depletion. Bases between zero and one reverse these signs.
 PSSMs are used to score sequences against a profile.
 
 # Keyword Arguments
 
 $(_DOC_MSA_KWARGS)
 
-  - `background = BLOSUM62_Pi`: background distribution `q(a)`; accepts `AbstractArray`,
-    `Probabilities` or `ContingencyTable` objects. It is normalized if needed.
-  - `base::Number = ℯ`: logarithm base.
+  - `background = BLOSUM62_Pi`: finite, nonnegative background weights `q(a)` with a
+    positive sum. Plain arrays follow alphabet order; named vectors and
+    `Probabilities`, `Frequencies` or `ContingencyTable` objects must have matching
+    residue names in the same order. Background weights are normalized without modifying
+    the input. Supply an explicit background for gapped or reduced alphabets.
+  - `base::Number = ℯ`: finite, positive real logarithm base other than one. Values
+    converted to `Float64` must remain finite, positive and different from one.
 
 Use the keyword argument `base` to change the base of the log. $_DOC_LOG_BASE
 
@@ -500,8 +588,11 @@ Gaps are handled by the chosen `alphabet`: `UngappedAlphabet()` ignores gaps, wh
 length and is normalized if needed.
 
 Scores are computed directly as log-odds, so IEEE floating-point rules apply for zeros:
-pᵢ(a) = 0 ⇒ `-Inf`, q(a) = 0 ⇒ `Inf`, invalid ratios ⇒ `NaN`. Columns with no valid
-observations (e.g. all gaps using `UngappedAlphabet()`) are filled with `NaN`.
+for bases greater than one, pᵢ(a) = 0 < q(a) gives `-Inf`, q(a) = 0 < pᵢ(a) gives
+`Inf`, and pᵢ(a) = q(a) = 0 gives `NaN`. Without pseudocounts, columns with no valid
+observations (e.g. all gaps using `UngappedAlphabet()`) are filled with `NaN`. Positive
+additive pseudocounts instead give a uniform distribution for these columns. The
+`alphabet`, `weights`, and `pseudocounts` keywords apply only to the MSA overload.
 
 # Notes
 
@@ -513,15 +604,22 @@ $(_LOG_BASE_UNITS)
 
 # Examples
 
-```julia
-using MIToS.Information, MIToS.MSA
+```jldoctest
+julia> using MIToS.Information, MIToS.MSA
 
-msa = permutedims(hcat(res"AC", res"AD", res"AE")) # three sequences, two positions
-result = position_specific_scoring_matrix(msa)
+julia> msa = permutedims(hcat(res\"AC\", res\"AD\", res\"AE\")); # three sequences, two positions
+
+julia> result = position_specific_scoring_matrix(msa; background = ones(20), base = 2);
+
+julia> round(result[res\"A\"[1], 1]; digits = 3)
+4.322
+
+julia> score_sequence(result, res\"AC\").used_positions
+2
 ```
 """
 function position_specific_scoring_matrix(
-    msa::AbstractArray{Residue};
+    msa::AbstractMatrix{Residue};
     alphabet::ResidueAlphabet = UngappedAlphabet(),
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
@@ -542,7 +640,7 @@ function position_specific_scoring_matrix(
     background = BLOSUM62_Pi,
     base::Number = ℯ,
 )
-    _check_log_base(base)
+    base = _checked_log_base(base)
 
     q = _collect_background(background, ppm.alphabet)
     table = deepcopy(ppm.table)
@@ -555,8 +653,10 @@ function position_specific_scoring_matrix(
         for i = 1:nrows
             p = @inbounds X[i, j]
             qi = @inbounds q[i]
-            ratio = p / qi
-            @inbounds X[i, j] = invlogbase == 1.0 ? log(ratio) : log(ratio) * invlogbase
+            # Avoid overflow of p / q for finite, nonzero probabilities. Subtraction
+            # retains the intended IEEE results for zeros, including 0/0 -> NaN.
+            log_odds = log(p) - log(qi)
+            @inbounds X[i, j] = log_odds * invlogbase
         end
     end
 
@@ -584,7 +684,8 @@ end
 Score sequences against a profile.
 
 The result is a [`ProfileScore`](@ref) with `score`, `kind`, `base`, and `used_positions`
-(count of non-gap residues of the sequence that are present in the alphabet). For PSSMs
+(count of sequence positions whose residues are present in the alphabet, including
+gaps when the alphabet contains them). For PSSMs
 ([`PositionSpecificScoringMatrix`](@ref)), `score` is the sum of per-position log-odds
 scores (`kind = :log_odds`). For PSPMs ([`PositionSpecificProbabilityMatrix`](@ref)), 
 `score` is the log-likelihood (`kind = :log_likelihood`), computed as the sum of the log
@@ -604,8 +705,12 @@ the sequence under the PSPM (here, `used_positions` is how many positions were s
 - The **Likelihood** is the probability of the whole sequence under the PSPM (this may 
   underflow for long sequences, so prefer using `score`): `base^score`
 
-Residues not present in the profile alphabet are skipped. Non-gap residues that are
-missing from the alphabet emit one warning per residue/alphabet pair.
+The sequence must have exactly as many positions as the profile. Matrix inputs must
+have a singleton dimension and represent one sequence, not a batch. Residues not present
+in the profile alphabet are skipped; gaps are scored when included in the alphabet. Non-gap
+residues that are missing from the alphabet emit one warning per residue/alphabet pair. An entirely skipped
+or empty sequence has score `0.0` and `used_positions == 0`; its per-position average
+is undefined. Skipping positions means these scores describe only the included positions.
 """ score_sequence
 
 """
@@ -631,6 +736,7 @@ function _warn_unknown_residue(res::Residue, alphabet::ResidueAlphabet)
 end
 
 function _check_sequence_length(psm::AbstractPositionSpecificMatrix, seq)
+    Base.require_one_based_indexing(seq)
     ncols = size(psm, 2)
     nres = length(seq)
     if nres != ncols
@@ -642,9 +748,11 @@ end
 function _sequence_vec(seq::AbstractMatrix{Residue})
     if size(seq, 1) != 1 && size(seq, 2) != 1
         throw(
-            ArgumentError(string(
-                "A sequence must be represented as a matrix with a singleton dimension, ",
-                "but got size $(size(seq)).",)
+            ArgumentError(
+                string(
+                    "A sequence must be represented as a matrix with a singleton dimension, ",
+                    "but got size $(size(seq)).",
+                ),
             ),
         )
     end
@@ -702,13 +810,13 @@ function _score_sequence(
     seq::AbstractVector{Residue};
     base::Number = ℯ,
 )
-    _check_log_base(base)
-    base_val = _convert_base(base)
+    base_val = _checked_log_base(base)
     _check_sequence_length(ppm, seq)
     alphabet = ppm.alphabet
     table = gettablearray(ppm)
     invlogbase = base_val === ℯ ? 1.0 : inv(log(base_val))
-    score, used_positions = _score_sequence_kernel(table, alphabet, seq, Val(true), invlogbase)
+    score, used_positions =
+        _score_sequence_kernel(table, alphabet, seq, Val(true), invlogbase)
     ProfileScore(score, :log_likelihood, base_val, used_positions)
 end
 

@@ -1,3 +1,6 @@
+using NamedArrays
+using StatsBase
+
 @testset "PSSM" begin
 
     alphabet = UngappedAlphabet()
@@ -46,7 +49,7 @@
         @test all(==(0.0), pfm_data)
 
         bad_data = zeros(Float64, length(alphabet) - 1, 2)
-        @test_throws ErrorException PositionFrequencyMatrix(bad_data, alphabet)
+        @test_throws ArgumentError PositionFrequencyMatrix(bad_data, alphabet)
 
         pssm_float = PositionSpecificScoringMatrix(alphabet, 2, 2.5)
         @test pssm_float.base == 2.5
@@ -472,5 +475,272 @@
                 background = background,
             )
         end
+    end
+
+    @testset "Weighted counts and additive pseudocounts" begin
+        msa = Residue['A' 'C' GAP; 'A' GAP GAP; 'C' 'D' GAP]
+        weights = Weights([0.5, 0.5, 2.0])
+        for prior in (1, 1.0f0, 1 // 1, 1.0)
+            pfm = position_frequency_matrix(
+                msa;
+                weights = weights,
+                pseudocounts = AdditiveSmoothing(prior),
+            )
+            @test pfm["A", 1] == 2.0
+            @test pfm["C", 1] == 3.0
+            @test pfm["C", 2] == 1.5
+            @test pfm["D", 2] == 3.0
+            @test sum(pfm; dims = 1) == [23.0 22.5 20.0]
+            ppm = position_specific_probability_matrix(pfm)
+            @test ppm["A", 1] ≈ 2 / 23
+            @test ppm["C", 2] ≈ 1.5 / 22.5
+            @test all(==(1 / 20), ppm[:, 3])
+            pssm = position_specific_scoring_matrix(
+                msa;
+                weights = weights,
+                pseudocounts = AdditiveSmoothing(prior),
+                background = ones(20),
+                base = 2,
+            )
+            @test pssm["A", 1] ≈ log2((2 / 23) / (1 / 20))
+            @test all(iszero, pssm[:, 3])
+        end
+        clusters = Clusters([2, 1], [1, 1, 2], Weights([0.5, 0.5, 1.0]))
+        pfm = position_frequency_matrix(msa; weights = clusters)
+        @test pfm["A", 1] == pfm["C", 1] == 1.0
+        @test pfm["C", 2] == 0.5
+        @test pfm["D", 2] == 1.0
+        @test all(
+            isnan,
+            position_specific_probability_matrix(msa; weights = Weights(zeros(3))),
+        )
+        @test all(
+            ==(1 / 20),
+            position_specific_probability_matrix(
+                msa;
+                weights = Weights(zeros(3)),
+                pseudocounts = AdditiveSmoothing(1),
+            ),
+        )
+        for invalid in (-1.0, Inf, NaN)
+            @test_throws DomainError position_frequency_matrix(
+                msa;
+                pseudocounts = AdditiveSmoothing(invalid),
+            )
+            invalid_values = [1.0, 1.0, 1.0]
+            invalid_weights = Weights(invalid_values)
+            invalid_values[3] = invalid
+            @test_throws DomainError position_frequency_matrix(
+                msa;
+                weights = invalid_weights,
+            )
+        end
+        @test_throws ArgumentError position_frequency_matrix(
+            msa;
+            weights = Weights(ones(2)),
+        )
+        @test_throws DomainError position_frequency_matrix(
+            msa;
+            pseudocounts = AdditiveSmoothing(-big"1e-1000"),
+        )
+        bad_clusters = Clusters([2], [1, 1], Weights([0.5, 0.5]))
+        @test_throws ArgumentError position_frequency_matrix(msa; weights = bad_clusters)
+        @test_throws DomainError position_frequency_matrix(
+            fill(Residue('A'), 2, 1);
+            weights = Weights(fill(floatmax(Float64) / 2, 2)),
+            pseudocounts = AdditiveSmoothing(floatmax(Float64)),
+        )
+    end
+
+    @testset "Reduced, gapped and unknown alphabets" begin
+        reduced = ReducedAlphabet("(AC)D")
+        msa = reshape(res"ACD-", 4, 1)
+        pfm = position_frequency_matrix(
+            msa;
+            alphabet = reduced,
+            pseudocounts = AdditiveSmoothing(1),
+        )
+        @test names(pfm.table, 1) == ["AC", "D"]
+        @test pfm[Residue('A'), 1] == pfm[Residue('C'), 1] == 3
+        @test pfm["D", 1] == 2 # prior is per group, not per constituent residue
+        pssm = position_specific_scoring_matrix(pfm; background = [1, 1], base = 2)
+        @test pssm["AC", 1] ≈ log2(1.2)
+        @test score_sequence(pssm, res"C").score == pssm["AC", 1]
+        @test_throws ArgumentError position_specific_scoring_matrix(pfm)
+
+        for ab in (GappedAlphabet(), GappedXAlphabet())
+            gpfm = position_frequency_matrix(reshape(res"AX-", 3, 1); alphabet = ab)
+            @test gpfm["A", 1] == 1
+            @test gpfm[GAP, 1] == 1
+            @test sum(gpfm) == (ab isa GappedXAlphabet ? 3 : 2)
+            if ab isa GappedXAlphabet
+                @test gpfm["X", 1] == 1
+            end
+            ppm = position_specific_probability_matrix(gpfm)
+            pssm = position_specific_scoring_matrix(ppm; background = ones(length(ab)))
+            @test score_sequence(pssm, res"-").used_positions == 1
+            @test score_sequence(pssm, res"-").score ≈ log(length(ab) / sum(gpfm))
+            @test score_sequence(ppm, res"-").score ≈ log(1 / sum(gpfm))
+            @test score_sequence(ppm, res"-").used_positions == 1
+            if ab isa GappedXAlphabet
+                @test score_sequence(pssm, res"X").used_positions == 1
+            end
+        end
+        @test all(isnan, position_specific_probability_matrix(fill(XAA, 2, 1)))
+    end
+
+    @testset "Background alphabet and array representations" begin
+        msa = reshape(res"AAC", 3, 1)
+        background = collect(1.0:20.0)
+        backup = copy(background)
+        expected = position_specific_scoring_matrix(msa; background = background)
+        table = ContingencyTable(background, alphabet)
+        named = NamedArray(background, (names(alphabet),), ("Res",))
+        for bg in (
+            view(background, :),
+            reshape(background, 20, 1),
+            named,
+            table,
+            Probabilities(table),
+            Frequencies(table),
+        )
+            result = position_specific_scoring_matrix(msa; background = bg)
+            @test gettablearray(result) == gettablearray(expected)
+        end
+        @test background == backup
+        @test gettablearray(table) == backup
+        @test expected["A", 1] ≈ log((2 / 3) / (1 / 210))
+        default = position_specific_scoring_matrix(msa)
+        @test default["A", 1] ≈ log((2 / 3) / (BLOSUM62_Pi[1] / sum(BLOSUM62_Pi)))
+        wrong_order = ReducedAlphabet(join(reverse(names(alphabet))))
+        @test_throws ArgumentError position_specific_scoring_matrix(
+            msa;
+            background = ContingencyTable(background, wrong_order),
+        )
+        @test_throws ArgumentError position_specific_scoring_matrix(
+            msa;
+            background = NamedArray(background, (reverse(names(alphabet)),), ("Res",)),
+        )
+        @test_throws DomainError position_specific_scoring_matrix(
+            msa;
+            background = [Inf; ones(19)],
+        )
+    end
+
+    @testset "Finite extreme counts and log odds" begin
+        msa = reshape(res"A", 1, 1)
+        huge =
+            position_specific_scoring_matrix(msa; background = fill(floatmax(Float64), 20))
+        @test huge["A", 1] ≈ log(20)
+        tiny = nextfloat(0.0)
+        background = [tiny; 1.0; zeros(18)]
+        result = position_specific_scoring_matrix(msa; background = background)
+        @test isfinite(result["A", 1])
+        @test result["A", 1] ≈ -log(tiny)
+        ppm = position_specific_probability_matrix(
+            PositionFrequencyMatrix(fill(floatmax(Float64), 20, 1), alphabet),
+        )
+        @test all(==(1 / 20), ppm)
+        for value in (-1.0, Inf, NaN)
+            pfm = PositionFrequencyMatrix(fill(value, 20, 1), alphabet)
+            @test_throws DomainError position_specific_probability_matrix(pfm)
+        end
+    end
+
+    @testset "Base conversion and sign semantics" begin
+        msa = reshape(res"A", 1, 1)
+        ppm = position_specific_probability_matrix(msa)
+        for base in (
+            Inf,
+            -Inf,
+            NaN,
+            0,
+            1,
+            -2,
+            2 + im,
+            big"1e1000",
+            big"1e-1000",
+            BigFloat(1) + eps(BigFloat),
+        )
+            @test_throws ArgumentError PositionSpecificScoringMatrix(alphabet, 1, base)
+            @test_throws ArgumentError position_specific_scoring_matrix(ppm; base = base)
+            @test_throws ArgumentError score_sequence(ppm, res"A"; base = base)
+        end
+        for base in (Int32(2), UInt(2), big(2), big(typemax(Int)) + 1, 2.0f0, 3 // 2, 0.5)
+            result =
+                position_specific_scoring_matrix(ppm; background = ones(20), base = base)
+            @test result["A", 1] ≈ log(20) / log(Float64(base))
+            @test score_sequence(result, res"A").base == result.base
+            likelihood = score_sequence(ppm, res"R"; base = base)
+            @test likelihood.score == (base < 1 ? Inf : -Inf)
+        end
+        zeros_bg = [0.0; ones(19)]
+        result = position_specific_scoring_matrix(ppm; background = zeros_bg, base = 0.5)
+        @test result["A", 1] == -Inf
+        @test result["R", 1] == Inf
+    end
+
+    @testset "Matrix API, names and empty alignments" begin
+        msa = NamedArray(
+            Residue['A' 'C'; 'C' 'D'],
+            (["s1", "s2"], ["10", "20"]),
+            ("Seq", "Col"),
+        )
+        for input in
+            (msa, MultipleSequenceAlignment(msa), AnnotatedMultipleSequenceAlignment(msa))
+            pfm = position_frequency_matrix(input)
+            ppm = position_specific_probability_matrix(pfm)
+            pssm = position_specific_scoring_matrix(ppm)
+            for profile in (pfm, ppm, pssm)
+                @test names(profile.table, 1) == names(alphabet)
+                @test names(profile.table, 2) == ["10", "20"]
+                @test getalphabet(profile) == alphabet
+                @test profile[CartesianIndex(1, 1)] == profile[1, 1]
+                @test profile[1] == profile[1, 1]
+                @test profile["A", "10"] == profile[Residue('A'), 1]
+                @test !isempty(sprint(show, MIME"text/plain"(), profile))
+                @test_throws BoundsError profile[Residue('A'), 3]
+                @test_throws BoundsError setindex!(profile, 1, GAP, 1)
+            end
+        end
+        named =
+            NamedArray(ones(Float32, 20, 2), (names(alphabet), [10, 20]), ("Res", "Pos"))
+        for constructor in (
+            PositionFrequencyMatrix,
+            PositionSpecificProbabilityMatrix,
+            PositionSpecificScoringMatrix,
+        )
+            profile = constructor(named, alphabet)
+            @test eltype(profile) == Float64
+            @test names(profile.table, 2) == ["10", "20"]
+            @test NamedArrays.dimnames(profile.table) == ["Res", "Pos"]
+            @test_throws ArgumentError constructor(zeros(19, 2), alphabet)
+            reversed = NamedArray(
+                ones(20, 2),
+                (reverse(names(alphabet)), ["10", "20"]),
+                ("Res", "Col"),
+            )
+            @test_throws ArgumentError constructor(reversed, alphabet)
+        end
+        for msa in (Matrix{Residue}(undef, 0, 2), Matrix{Residue}(undef, 3, 0))
+            pfm = position_frequency_matrix(msa)
+            ppm = position_specific_probability_matrix(msa)
+            pssm = position_specific_scoring_matrix(msa)
+            @test size(pfm) == size(ppm) == size(pssm) == (20, size(msa, 2))
+            @test all(iszero, pfm)
+            @test all(isnan, ppm)
+            @test all(isnan, pssm)
+        end
+        for profile in (
+            PositionSpecificProbabilityMatrix(alphabet, 0),
+            PositionSpecificScoringMatrix(alphabet, 0),
+        )
+            score = score_sequence(profile, Residue[])
+            @test score.score == 0.0
+            @test score.used_positions == 0
+        end
+        score = score_sequence(PositionSpecificScoringMatrix(alphabet, 2), res"--")
+        @test score.score == 0.0
+        @test score.used_positions == 0
     end
 end
