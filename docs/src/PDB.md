@@ -313,11 +313,12 @@ nothing # hide
 
 ## Structural similarity scores
 
-[`gdt_ts`](@ref) and [`gdt_ha`](@ref) measure the mean percentage of reference Cα
-positions within four distance thresholds: 1, 2, 4 and 8 Å for GDT_TS; 0.5, 1, 2 and
-4 Å for GDT_HA. Each threshold can use its own best superposition
-[10.1093/nar/gkg571](@cite). [`tm_score`](@ref) uses a smooth distance weighting and
-a reference-length-dependent distance scale [10.1002/prot.20264](@cite).
+[`gdt_ts`](@ref MIToS.PDB.gdt_ts) and [`gdt_ha`](@ref MIToS.PDB.gdt_ha) measure the mean
+percentage of reference Cα positions within four distance thresholds: 1, 2, 4 and 8 Å
+for GDT_TS; 0.5, 1, 2 and 4 Å for GDT_HA. Each threshold can use its own best
+superposition
+[10.1093/nar/gkg571](@cite). [`tm_score`](@ref MIToS.PDB.tm_score) uses a smooth distance
+weighting and a reference-length-dependent distance scale [10.1002/prot.20264](@cite).
 GDT scores range from 0 to 100; TM-score ranges from 0 to 1. Higher is better.
 
 ```@example pdb_rmsd
@@ -355,4 +356,5 @@ scale but scores **all** supplied pairs, including distant pairs. The default
 `window_sizes = (4, 8, 16, 32)` and `max_iterations = 20` trade search effort for
 accuracy; neither guarantees the global optimum. Use `local_search = false` for a
 score under a single global least-squares fit, or `max_iterations = 0` for seed fits
-without refinement. Custom thresholds are available through [`gdt_per_cutoff`](@ref).
+without refinement. Custom thresholds are available through
+[`gdt_per_cutoff`](@ref MIToS.PDB.gdt_per_cutoff).
