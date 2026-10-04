@@ -26,6 +26,9 @@ Parser behavior:
   - Keyword `format_has_sequence_line` controls whether the `Format` section
     includes a sequence descriptor line after the `>...` prototype and before
     annotation tags (`true` by default).
+  - Keyword `fail_on_duplicate_seqnames = true` rejects duplicate sequence IDs with
+    `ArgumentError`. By default, duplicates are renamed with a warning and their input
+    IDs are kept in `"OriginalSeqName"` annotations.
 """
 struct AnnotatedFASTASequences <: SequenceFormat end
 
@@ -242,10 +245,15 @@ function _push_annotated_fasta_record!(
     disambiguator::OnlineSequenceNameDisambiguator,
     original_id::AbstractString,
     lines::Vector{String},
-    format_tags::Vector{String},
+    format_tags::Vector{String};
+    fail_on_duplicate_seqnames::Bool = false,
 )
     original_name = String(original_id)
-    new_name = _disambiguate_seqname!(disambiguator, original_name)
+    new_name = _disambiguate_seqname!(
+        disambiguator,
+        original_name;
+        fail_on_duplicate_seqnames = fail_on_duplicate_seqnames,
+    )
     push!(ids, new_name)
 
     if new_name != original_name
@@ -269,6 +277,7 @@ end
 function _pre_read_annotated_fasta_sequences(
     io::Union{IO,AbstractString};
     format_has_sequence_line::Bool = true,
+    fail_on_duplicate_seqnames::Bool = false,
 )
     ids = String[]
     seqs = String[]
@@ -317,7 +326,8 @@ function _pre_read_annotated_fasta_sequences(
                     disambiguator,
                     current_id,
                     current_lines,
-                    format_tags,
+                    format_tags;
+                    fail_on_duplicate_seqnames = fail_on_duplicate_seqnames,
                 )
             end
 
@@ -339,7 +349,8 @@ function _pre_read_annotated_fasta_sequences(
             disambiguator,
             current_id,
             current_lines,
-            format_tags,
+            format_tags;
+            fail_on_duplicate_seqnames = fail_on_duplicate_seqnames,
         )
     end
 
@@ -354,10 +365,12 @@ function _load_sequences(
     format::Type{AnnotatedFASTASequences};
     create_annotations::Bool = false,
     format_has_sequence_line::Bool = true,
+    fail_on_duplicate_seqnames::Bool = false,
 )
     ids, seqs, gf, gs, gr = _pre_read_annotated_fasta_sequences(
         io;
         format_has_sequence_line = format_has_sequence_line,
+        fail_on_duplicate_seqnames = fail_on_duplicate_seqnames,
     )
     annot = Annotations()
     if create_annotations
@@ -379,12 +392,14 @@ function Utils.parse_file(
     deletefullgaps::Bool = true,
     keepinserts::Bool = false,
     format_has_sequence_line::Bool = true,
+    fail_on_duplicate_seqnames::Bool = false,
 )::Vector{AnnotatedSequence}
     ids, seqs, annot = _load_sequences(
         io,
         format;
         create_annotations = true,
         format_has_sequence_line = format_has_sequence_line,
+        fail_on_duplicate_seqnames = fail_on_duplicate_seqnames,
     )
     _generate_sequences(ids, seqs, annot)
 end

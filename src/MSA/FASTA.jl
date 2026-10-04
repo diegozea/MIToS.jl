@@ -34,10 +34,15 @@ function _load_sequences(
     io::Union{IO,AbstractString},
     format::Type{FASTA};
     create_annotations::Bool = false,
+    fail_on_duplicate_seqnames::Bool = false,
 )
     IDS, SEQS = _pre_readfasta(io)
     annot = Annotations()
-    _disambiguate_seqnames!(IDS, annot)
+    _disambiguate_seqnames!(
+        IDS,
+        annot;
+        fail_on_duplicate_seqnames = fail_on_duplicate_seqnames,
+    )
     return IDS, SEQS, annot
 end
 

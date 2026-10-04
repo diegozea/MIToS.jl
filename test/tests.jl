@@ -49,6 +49,7 @@ end
     include("MSA/GeneralParserMethods.jl")
     include("MSA/IO.jl")
     include("MSA/EachMSA.jl")
+    include("MSA/DuplicateSequenceIDs.jl")
     include("MSA/Write.jl")
     include("MSA/General.jl")
     include("MSA/MSAEditing.jl")

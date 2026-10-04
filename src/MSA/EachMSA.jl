@@ -31,10 +31,24 @@ function _read_msa!(msas::MSAIterator{F,T}) where {F,T}
 end
 
 function _read_msa!(msas::MSAIterator{Clustal,T}) where {T}
-    IDS, SEQS, annot, has_next =
-        _load_clustal_sequences(eachline(msas.io); header_read = true)
+    _read_clustal_msa!(msas; msas.kwargs...)
+end
+
+"""
+Separate loader options from MSA construction options when reading Clustal blocks.
+"""
+function _read_clustal_msa!(
+    msas::MSAIterator{Clustal,T};
+    fail_on_duplicate_seqnames::Bool = false,
+    kwargs...,
+) where {T}
+    IDS, SEQS, annot, has_next = _load_clustal_sequences(
+        eachline(msas.io);
+        header_read = true,
+        fail_on_duplicate_seqnames = fail_on_duplicate_seqnames,
+    )
     msas.ready = has_next
-    _parse_msa((IDS, SEQS, annot), T; msas.kwargs...)
+    _parse_msa((IDS, SEQS, annot), T; kwargs...)
 end
 
 # Look ahead only as far as the next header. In particular, isempty and zip must
@@ -153,9 +167,11 @@ function Utils._read_file(
     io::IO,
     format::Type{F},
     output::Type{T} = AnnotatedMultipleSequenceAlignment;
+    fail_on_duplicate_seqnames::Bool = false,
     kwargs...,
 ) where {F<:Union{Stockholm,Clustal},T}
-    IDS, SEQS, annot, has_next = _load_sequences(io, format, output)
+    options = fail_on_duplicate_seqnames ? (; fail_on_duplicate_seqnames = true) : (;)
+    IDS, SEQS, annot, has_next = _load_sequences(io, format, output; options...)
     msa = _parse_msa((IDS, SEQS, annot), output; kwargs...)
     if has_next === nothing
         has_next = _read_msa_header(io, _msa_header(format))

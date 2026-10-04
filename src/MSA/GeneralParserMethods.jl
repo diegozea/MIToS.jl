@@ -190,7 +190,7 @@ function _candidate_seqname(base_name, count::Int)
 end
 
 """
-    _disambiguate_seqname!(disambiguator::OnlineSequenceNameDisambiguator, original_seqname)
+    _disambiguate_seqname!(disambiguator::OnlineSequenceNameDisambiguator, original_seqname; fail_on_duplicate_seqnames=false)
 
 Given an `original_seqname` (as it appears in the input), return a **unique** identifier
 and record the choice inside `disambiguator`.
@@ -199,11 +199,17 @@ The algorithm tries the bare name first, then appends monotonically increasing
 suffixes `(1)`, `(2)`, ... until it finds one that hasn't been used yet.
 
 Returns the collision-free identifier for use in your alignment or output.
+With `fail_on_duplicate_seqnames = true`, throw `ArgumentError` on a repeated input name
+before renaming it or emitting a warning.
 """
 function _disambiguate_seqname!(
     disambiguator::OnlineSequenceNameDisambiguator,
-    original_seqname,
+    original_seqname;
+    fail_on_duplicate_seqnames::Bool = false,
 )
+    if fail_on_duplicate_seqnames && haskey(disambiguator.old2count, original_seqname)
+        throw(ArgumentError("Duplicate sequence identifier: $(repr(original_seqname))."))
+    end
     # start with whatever counter we’ve already recorded (0 if first time)
     n = get!(disambiguator.old2count, original_seqname, 0)
     name = _candidate_seqname(original_seqname, n)
@@ -248,7 +254,7 @@ function _annotate_seqname_changes!(
 end
 
 """
-    _disambiguate_seqnames!(ids::Vector{String}, annotations::Annotations)
+    _disambiguate_seqnames!(ids::Vector{String}, annotations::Annotations; fail_on_duplicate_seqnames=false)
 
 Takes a list of sequence identifiers (`ids`) and disambiguates them in-place,
 ensuring that all names are unique by appending suffixes as needed.
@@ -257,14 +263,32 @@ Also annotates all renamed sequences with their original names under the key
 `"OriginalSeqName"` in the provided `annotations` object.
 
 Returns a tuple: the updated list of unique IDs and the updated annotations.
+With `fail_on_duplicate_seqnames = true`, throw `ArgumentError` on a repeated input name.
 """
-function _disambiguate_seqnames!(ids::Vector{String}, annotations::Annotations)
+function _disambiguate_seqnames!(
+    ids::Vector{String},
+    annotations::Annotations;
+    fail_on_duplicate_seqnames::Bool = false,
+)
     disambiguator = OnlineSequenceNameDisambiguator()
     for i in eachindex(ids)
-        ids[i] = _disambiguate_seqname!(disambiguator, ids[i])
+        ids[i] = _disambiguate_seqname!(
+            disambiguator,
+            ids[i];
+            fail_on_duplicate_seqnames = fail_on_duplicate_seqnames,
+        )
     end
     _annotate_seqname_changes!(disambiguator, annotations)
     return ids, annotations
+end
+
+"""
+Reject a repeated sequence identifier within an alignment block before recording it.
+"""
+function _check_unique_seqname!(seen::Set{String}, id)
+    id in seen && throw(ArgumentError("Duplicate sequence identifier: $(repr(id))."))
+    push!(seen, id)
+    nothing
 end
 
 # NamedArray{Residue,2} and AnnotatedMultipleSequenceAlignment generation
@@ -435,7 +459,7 @@ function deletefullgapcolumns(msa::AbstractMultipleSequenceAlignment, annotate::
 end
 
 @doc """
-`parse_file(io, format[, output; generatemapping, useidcoordinates, deletefullgaps])`
+`parse_file(io, format[, output]; generatemapping, useidcoordinates, deletefullgaps, fail_on_duplicate_seqnames=false)`
 
 The keyword argument `generatemapping` (`false` by default) indicates if the mapping of the
 sequences ("SeqMap") and columns ("ColMap") and the number of columns in the original MSA
@@ -444,6 +468,17 @@ sequences ("SeqMap") and columns ("ColMap") and the number of columns in the ori
 determining the start and end positions when the mappings are generated. `deletefullgaps`
 (`true` by default) indicates if columns 100% gaps (generally inserts from a HMM) must be
 removed from the MSA.
+
+Set `fail_on_duplicate_seqnames = true` to throw `ArgumentError` containing the repeated
+sequence identifier. The default (`false`) preserves disambiguation with warnings and
+`"OriginalSeqName"` annotations where supported. This option is available for all built-in
+MSA and sequence formats, including `AnnotatedFASTASequences`, through `parse_file` and
+`read_file`, regardless of the output type. Raw formats generate unique numeric IDs.
+
+For `Stockholm` and `Clustal`, strict mode checks sequence names within each alignment
+block. Empty lines separate blocks; Clustal conservation lines also end a block.
+Repeated names in later blocks are continuation fragments and remain valid. `eachmsa`
+checks each alignment independently. Annotation lines do not count as sequence records.
 """ parse_file
 
 # Keepinserts
@@ -492,9 +527,9 @@ end
 """
 Load sequences, requesting annotations only for an annotated MSA output.
 """
-function _load_sequences(io, format::Type{<:MSAFormat}, ::Type{T}) where {T}
+function _load_sequences(io, format::Type{<:MSAFormat}, ::Type{T}; kwargs...) where {T}
     create_annotations = T === AnnotatedMultipleSequenceAlignment
-    _load_sequences(io, format; create_annotations = create_annotations)
+    _load_sequences(io, format; create_annotations = create_annotations, kwargs...)
 end
 
 """
@@ -563,9 +598,12 @@ function Utils.parse_file(
     io::Union{IO,AbstractString},
     format::Type{F},
     output::Type{T};
+    fail_on_duplicate_seqnames::Bool = false,
     kwargs...,
 ) where {F<:MSAFormat,T}
-    loaded_sequences = _load_sequences(io, format, output)
+    # Preserve loaders for custom formats that do not accept the new keyword.
+    options = fail_on_duplicate_seqnames ? (; fail_on_duplicate_seqnames = true) : (;)
+    loaded_sequences = _load_sequences(io, format, output; options...)
     _parse_msa(loaded_sequences, output; kwargs...)
 end
 
@@ -576,7 +614,9 @@ function Utils.parse_file(
     useidcoordinates::Bool = false,
     deletefullgaps::Bool = true,
     keepinserts::Bool = false,
+    fail_on_duplicate_seqnames::Bool = false,
 )::AnnotatedMultipleSequenceAlignment where {T<:MSAFormat}
+    options = fail_on_duplicate_seqnames ? (; fail_on_duplicate_seqnames = true) : (;)
     parse_file(
         io,
         format,
@@ -585,5 +625,6 @@ function Utils.parse_file(
         useidcoordinates = useidcoordinates,
         deletefullgaps = deletefullgaps,
         keepinserts = keepinserts,
+        options...,
     )
 end

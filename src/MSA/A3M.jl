@@ -42,6 +42,7 @@ function _load_sequences(
     io::Union{IO,AbstractString},
     format::Type{A3M};
     create_annotations::Bool = false,
+    fail_on_duplicate_seqnames::Bool = false,
 )
     IDS, SEQS = _pre_readfasta(io)
     _check_seq_and_id_number(IDS, SEQS)
@@ -51,7 +52,11 @@ function _load_sequences(
         SEQS = _add_insert_gaps!(SEQS)
     end
     annot = Annotations()
-    _disambiguate_seqnames!(IDS, annot)
+    _disambiguate_seqnames!(
+        IDS,
+        annot;
+        fail_on_duplicate_seqnames = fail_on_duplicate_seqnames,
+    )
     return IDS, SEQS, annot
 end
 
@@ -59,7 +64,8 @@ end
 # format, all sequences have the same length. Since MIToS handles the inserts, we can load 
 # it as FASTA. However, I will use the A3M parser instead of the FASTA parser to ensure 
 # the file can be read correctly if the user confuses A2M with A3M.
-_load_sequences(io::Union{IO,AbstractString}, format::Type{A2M}) = _load_sequences(io, A3M)
+_load_sequences(io::Union{IO,AbstractString}, format::Type{A2M}; kwargs...) =
+    _load_sequences(io, A3M; kwargs...)
 
 # Print A3M
 # =========
