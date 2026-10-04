@@ -2,6 +2,9 @@
 
 ### Changes from v3.10.1 to v3.11.0
 
+This release adds support for reading and writing files containing multiple sequence
+alignments and includes a few bug fixes.
+
 - Added `eachmsa` to read Stockholm and Clustal files one alignment at a time,
   without loading all alignments into memory. It supports local files, URLs,
   and gzip-compressed files.
@@ -11,8 +14,9 @@
   multiple alignments.
 - `read_file` now warns when a Stockholm or Clustal file contains another alignment
   and recommends `eachmsa` to read them all.
-- Corrected Stockholm output to include the `# STOCKHOLM 1.0` header and use spaces
-  to separate sequence and annotation fields.
+- Corrected Stockholm output to include the `# STOCKHOLM 1.0` header. Sequence and
+  annotation fields now use spaces instead of tabs to improve compatibility with
+  other readers.
 - Fixed a SIFTS benchmark crash by keeping its XML document alive until each
   benchmark sample finishes.
 
