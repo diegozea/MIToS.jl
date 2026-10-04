@@ -153,32 +153,54 @@ _file_extension(format::Type{MMCIFFile}) = ".cif.gz"
 _file_extension(format::Type{PDBML}) = ".xml.gz"
 _file_extension(format::Type{PDBFile}) = ".pdb.gz"
 
-"""
-    downloadpdb(pdbcode::String; format::Type{T} = MMCIFFile, filename, baseurl, kargs...)
+function _pdb_download_name(pdbcode::AbstractString, format::Type{<:FileFormat})
+    code = Utils._normalize_pdbcode(pdbcode)
+    if format === PDBFile && Utils._legacy_pdbcode(code) === nothing
+        throw(
+            ArgumentError(
+                "Extended-only PDB IDs have no PDB-format file; use MMCIFFile or PDBML.",
+            ),
+        )
+    end
+    # Preserve legacy output names; extended archive paths are lowercase.
+    (length(code) == 4 ? uppercase(code) : code) * _file_extension(format)
+end
 
-It downloads a gzipped PDB file from PDB database.
-It requires a four character `pdbcode`.
-Its default `format` is `MMCIFFile` (mmCIF) and It uses the `baseurl`
-"https://files.rcsb.org/download/".
-`filename` is the path/name of the output file.
+_pdb_baseurl(pdbcode::AbstractString) =
+    length(pdbcode) == 4 ? "https://files.rcsb.org/download/" :
+    "https://files-beta.wwpdb.org/download/"
+
+function _pdb_download_url(pdbcode, format, baseurl)
+    sep = endswith(baseurl, "/") ? "" : "/"
+    string(baseurl, sep, _pdb_download_name(pdbcode, format))
+end
+
+"""
+    downloadpdb(pdbcode::AbstractString; format::Type{T} = MMCIFFile, filename, baseurl, kargs...)
+
+Download a gzipped structure file using a legacy or extended PDB ID, in either case.
+The default `format` is `MMCIFFile` (PDBx/mmCIF). Legacy IDs use the RCSB download service;
+extended IDs use the wwPDB Beta Archive's published download shortlinks. Override
+`baseurl` to use another download service or mirror.
+
+The default output name is uppercase for legacy IDs (`1ABC.cif.gz`) and lowercase for
+extended IDs (`pdb_00001abc.cif.gz`). `filename` overrides the output path/name;
+`.gz` is appended if absent. `PDBFile` is only supported for IDs with a legacy alias,
+and even these entries may lack a PDB-format file. Use `MMCIFFile` or `PDBML` for
+extended-only entries.
 This function calls `MIToS.Utils.download_file` that calls `Downloads.download`. So, you
 can use keyword arguments, such as `headers`, from that function.
 """
 function downloadpdb(
     pdbcode::AbstractString;
     format::Type{T} = MMCIFFile,
-    filename::AbstractString = uppercase(pdbcode) * _file_extension(format),
-    baseurl::AbstractString = "https://files.rcsb.org/download/",
+    filename::AbstractString = _pdb_download_name(pdbcode, format),
+    baseurl::AbstractString = _pdb_baseurl(pdbcode),
     kargs...,
 ) where {T<:FileFormat}
-    if check_pdbcode(pdbcode)
-        pdbfilename = uppercase(pdbcode) * _file_extension(format)
-        filename = _inputnameforgzip(filename)
-        sepchar = endswith(baseurl, "/") ? "" : "/"
-        download_file(string(baseurl, sepchar, pdbfilename), filename; kargs...)
-    else
-        throw(ErrorException("$pdbcode is not a correct PDB code"))
-    end
+    url = _pdb_download_url(pdbcode, format, baseurl)
+    filename = _inputnameforgzip(filename)
+    download_file(url, filename; kargs...)
     filename
 end
 
@@ -210,6 +232,13 @@ function _escape_url_query(query::AbstractString)::String
 end
 
 function _graphql_query(pdbcode::AbstractString)
+    code = Utils._legacy_pdbcode(pdbcode)
+    code === nothing && throw(
+        ArgumentError(
+            "RCSB GraphQL metadata currently requires a legacy PDB ID; $pdbcode has no legacy alias.",
+        ),
+    )
+    pdbcode = uppercase(code)
     """
     {
       entry(entry_id: "$pdbcode") {
@@ -239,33 +268,31 @@ function _graphql_query(pdbcode::AbstractString)
 end
 
 function _pdbheader(pdbcode::AbstractString; kargs...)
-    pdbcode = uppercase(pdbcode)
-    if check_pdbcode(pdbcode)
-        with_logger(ConsoleLogger(stderr, Logging.Warn)) do
-            body = IOBuffer()
-            Downloads.request(
-                "https://data.rcsb.org/graphql?query=$(_graphql_query(pdbcode))";
-                method = "GET",
-                output = body,
-                kargs...,
-            )
-            String(take!(body))
-        end
-    else
-        throw(ErrorException("$pdbcode is not a correct PDB code"))
+    query = _graphql_query(pdbcode)
+    with_logger(ConsoleLogger(stderr, Logging.Warn)) do
+        body = IOBuffer()
+        Downloads.request(
+            "https://data.rcsb.org/graphql?query=$query";
+            method = "GET",
+            output = body,
+            kargs...,
+        )
+        String(take!(body))
     end
 end
 
 """
 It downloads a JSON file containing the PDB header information.
+Extended IDs with a legacy alias are accepted; see [`getpdbdescription`](@ref).
 """
 function downloadpdbheader(
     pdbcode::AbstractString;
     filename::AbstractString = tempname(),
     kargs...,
 )
+    header = _pdbheader(pdbcode; kargs...)
     open(filename, "w") do fh
-        write(fh, _pdbheader(pdbcode; kargs...))
+        write(fh, header)
     end
     filename
 end
@@ -274,6 +301,9 @@ end
 Access general information about a PDB entry (e.g., Header information) using the
 GraphQL interface of the PDB database. It parses the JSON answer into a `JSON.Object` that
 can be used as a dictionary.
+Legacy IDs and their extended aliases are accepted in either case. The current RCSB
+GraphQL service requires a legacy ID, so an extended-only ID raises `ArgumentError`.
+The returned metadata retains the identifiers supplied by RCSB.
 """
 function getpdbdescription(pdbcode::AbstractString; kargs...)
     JSON.parse(_pdbheader(pdbcode; kargs...))["data"]["entry"]

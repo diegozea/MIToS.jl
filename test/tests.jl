@@ -81,6 +81,7 @@ end
 # PDB
 @testset verbose = true "PDB" begin
     include("PDB/PDB.jl")
+    include("PDB/ExtendedIdentifiers.jl")
     include("PDB/BioStructures.jl")
     include("PDB/Contacts.jl")
     include("PDB/Kabsch.jl")
@@ -98,6 +99,7 @@ end
 # SIFTS
 @testset verbose = true "SIFTS" begin
     include("SIFTS/SIFTS.jl")
+    include("SIFTS/ExtendedIdentifiers.jl")
     include("SIFTS/Summary.jl")
 end
 

@@ -263,6 +263,7 @@ function msacolumn2pdbresidue(
 )
 
     siftsres = read_file(siftsfile, SIFTSXML, chain = chain, missings = missings)
+    pdbkey = Utils._pdbcode_key(pdbid)
 
     up2res = OrderedDict{String,Tuple{String,String,Char}}()
     for res in siftsres
@@ -272,7 +273,9 @@ function msacolumn2pdbresidue(
                 continue
             end
             pfname = res.Pfam.name
-            if !ismissing(res.PDB) && (res.PDB.id == lowercase(pdbid)) && !res.missing
+            if !ismissing(res.PDB) &&
+               Utils._pdbcode_key(res.PDB.id) == pdbkey &&
+               !res.missing
                 up2res[pfnum] =
                     checkpdbname ? (pfname, res.PDB.number, three2residue(res.PDB.name)) :
                     (pfname, res.PDB.number, '-')

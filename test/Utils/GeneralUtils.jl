@@ -167,4 +167,40 @@ end
     @test !check_pdbcode("123")
     @test !check_pdbcode("ABCDE")
     @test check_pdbcode("9Z9Z")
+    for code in [
+        "1ABC",
+        "pdb_00001abc",
+        "pdb_10021abc",
+        "PDB_00001ABC",
+        "pDb_a1B2c3D4",
+        "pdb_0000abcd",
+        SubString("!pdb_00001abc!", 2, 13),
+    ]
+        @test check_pdbcode(code)
+    end
+    for code in [
+        "",
+        "abcd",
+        "0abc",
+        "1ab_",
+        "1äbc",
+        "1abK",
+        "1abc\n",
+        " 1abc",
+        "1abc ",
+        "pdb_00001ab",
+        "pdb_00001abcd",
+        "00001abc",
+        "pdb-00001abc",
+        "pdb_00001ab_",
+        "pdb_00001abé",
+        "pdb_00001abc\n",
+        "../1abc",
+    ]
+        @test !check_pdbcode(code)
+    end
+    @test Utils._legacy_pdbcode("PDB_00001AbC") == "1abc"
+    for code in ["pdb_10021abc", "pdb_00011a7y", "pdb_0000abcd", "pdb_00000abc"]
+        @test Utils._legacy_pdbcode(code) === nothing
+    end
 end

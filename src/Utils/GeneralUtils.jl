@@ -174,9 +174,34 @@ function list2matrix(vec::AbstractVector{T}, side::Int; diagonal::Bool = false) 
 end
 
 """
-It checks if a PDB code has the correct format.
+    check_pdbcode(pdbcode::AbstractString)
+
+Check the syntax of a legacy PDB ID (a nonzero digit followed by three alphanumeric
+characters) or an extended ID (`pdb_` followed by eight alphanumeric characters).
+Both formats are case insensitive and use ASCII characters. This does not check whether
+the entry exists in the archive.
 """
-check_pdbcode(pdbcode::AbstractString) = occursin(r"^\w{4}$", pdbcode)
+check_pdbcode(pdbcode::AbstractString) =
+    occursin(r"\A(?:[1-9][A-Za-z0-9]{3}|[pP][dD][bB]_[A-Za-z0-9]{8})\z", pdbcode)
+
+# Validate before using an identifier in a URL or as a filename.
+function _normalize_pdbcode(pdbcode::AbstractString)
+    check_pdbcode(pdbcode) || error("$pdbcode is not a correct PDB code")
+    lowercase(pdbcode)
+end
+
+# Only pdb_0000 + a valid legacy ID is an alias. Never truncate extended-only IDs.
+function _legacy_pdbcode(pdbcode::AbstractString)
+    code = _normalize_pdbcode(pdbcode)
+    length(code) == 4 && return code
+    startswith(code, "pdb_0000") && check_pdbcode(code[9:12]) ? code[9:12] : nothing
+end
+
+# A comparison key for PDB cross-references; leave identifiers stored in files intact.
+function _pdbcode_key(pdbcode::AbstractString)
+    code = lowercase(pdbcode)
+    length(code) == 4 && check_pdbcode(code) ? "pdb_0000" * code : code
+end
 
 """
 Getter for the `array` field of `NamedArray`s

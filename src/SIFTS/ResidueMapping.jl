@@ -354,11 +354,16 @@ end
 _is_All(::Any) = false
 _is_All(::Type{All}) = true
 
+_sifts_accession(::Type{<:DataBase}, id) = id
+_sifts_accession(::Type{dbPDB}, id::AbstractString) = Utils._pdbcode_key(id)
+
 """
 Parses a SIFTS XML file and returns a `OrderedDict` between residue numbers of
 two `DataBase`s with the given identifiers. A `chain` could be specified
 (`All` by default). If `missings` is `true` (default) all the residues are
 used, even if they haven’t coordinates in the PDB file.
+PDB identifiers are case insensitive, and legacy IDs match their extended aliases in
+either direction. Other database identifiers retain case-sensitive matching.
 """
 function siftsmapping(
     filename::String,
@@ -369,6 +374,8 @@ function siftsmapping(
     chain::Union{Type{All},String} = All,
     missings::Bool = true,
 ) where {F,T}
+    id_from = _sifts_accession(db_from, id_from)
+    id_to = _sifts_accession(db_to, id_to)
     mapping = OrderedDict{String,String}()
     xdoc = Utils._get_xml_document(filename)
     try
@@ -389,11 +396,17 @@ function siftsmapping(
                         for ref in crossref
                             source = LightXML.attribute(ref, "dbSource")
                             if source == _name(db_from) &&
-                               LightXML.attribute(ref, "dbAccessionId") == id_from
+                               _sifts_accession(
+                                db_from,
+                                LightXML.attribute(ref, "dbAccessionId"),
+                            ) == id_from
                                 key_data = _get_nullable_attribute(ref, "dbResNum")
                             end
                             if source == _name(db_to) &&
-                               LightXML.attribute(ref, "dbAccessionId") == id_to
+                               _sifts_accession(
+                                db_to,
+                                LightXML.attribute(ref, "dbAccessionId"),
+                            ) == id_to
                                 value_data = _get_nullable_attribute(ref, "dbResNum")
                             end
                             if !in_chain && source == "PDB" # XML: <crossRefDb dbSource="PDB" ... dbChainId="E"/>
