@@ -14,6 +14,34 @@ function Base.iterate(msas::_MSAWriteIterator, state::Int = 1)
     iterate(msas.msas, state)
 end
 
+"""
+An alignment wrapper with custom I/O methods that also iterates over its residues.
+"""
+struct _CustomMSA
+    msa::AnnotatedMultipleSequenceAlignment
+end
+
+Base.IteratorSize(::Type{_CustomMSA}) = Base.SizeUnknown()
+Base.eltype(::Type{_CustomMSA}) = Residue
+Base.iterate(custom::_CustomMSA, args...) = iterate(custom.msa, args...)
+
+Utils.parse_file(
+    io::IO,
+    format::Type{<:Union{Stockholm,Clustal}},
+    ::Type{_CustomMSA};
+    kwargs...,
+) = _CustomMSA(parse_file(io, format; kwargs...))
+
+Utils.print_file(io::IO, custom::_CustomMSA, ::Type{Stockholm}) =
+    print_file(io, custom.msa, Stockholm)
+
+# Also cover a writer specialized on the actual file stream type.
+Utils.print_file(
+    io::Union{IOStream,Utils.GzipCompressorStream},
+    custom::_CustomMSA,
+    ::Type{Clustal},
+) = print_file(io, custom.msa, Clustal)
+
 @testset "Writing multiple alignments" begin
     records = (
         "# STOCKHOLM 1.0\n#=GF ID first\n#=GS a DE first sequence\na AC-\nb ADE\n#=GC cons * .\n//\n",
@@ -29,6 +57,22 @@ end
 
     @testset "$format" for format in (Stockholm, Clustal)
         mktempdir() do dir
+            @testset "Custom I/O methods" for suffix in ("", ".gz")
+                source = joinpath(dir, "source" * suffix)
+                output = joinpath(dir, "custom" * suffix)
+                write_file(source, msas[1], format)
+                expected = read_file(source, format; generatemapping = true)
+                @test let custom =
+                        read_file(source, format, _CustomMSA; generatemapping = true)
+                    custom.msa == expected &&
+                        annotations(custom.msa) == annotations(expected)
+                end
+                @test begin
+                    write_file(output, _CustomMSA(msas[1]), format)
+                    read_file(output, format) == msas[1]
+                end
+            end
+
             @testset "Alignment types" for T in msa_types
                 typed_msas = [
                     parse_file(record, Stockholm, T; deletefullgaps = false) for

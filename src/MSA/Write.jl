@@ -1,8 +1,15 @@
 """
-Accept a single alignment or a collection with a declared alignment element type.
+Validate collections handled by the generic writer, leaving custom writers in control
+of their own inputs.
 """
-function Utils._validate_write(msas, format::Type{<:Union{Stockholm,Clustal}})
+function Utils._validate_write(
+    msas,
+    format::Type{F},
+    ::Type{S},
+) where {F<:Union{Stockholm,Clustal},S<:IO}
     msas isa AbstractMatrix{Residue} && return nothing
+    which(print_file, (S, typeof(msas), Type{F})) ===
+    which(print_file, (S, Any, Type{F})) || return nothing
     Base.IteratorEltype(typeof(msas)) isa Base.HasEltype ||
         throw(ArgumentError("Iterator must declare an alignment eltype."))
     T = eltype(msas)
@@ -21,7 +28,7 @@ writer. An empty typed collection writes nothing. The caller owns the output str
 any input stream.
 """
 function Utils.print_file(io::IO, msas, format::Type{<:Union{Stockholm,Clustal}}; kwargs...)
-    Utils._validate_write(msas, format)
+    Utils._validate_write(msas, format, typeof(io))
     for msa in msas
         print_file(io, msa::AbstractMatrix{Residue}, format; kwargs...)
     end

@@ -148,13 +148,17 @@ end
 """
 Read the first MSA and warn if another alignment header is found. If the parser leaves
 `has_next` unchecked (`nothing`), look for the next header after parsing.
+Custom output types use the generic `parse_file` dispatch instead.
 """
 function Utils._read_file(
     io::IO,
     format::Type{F},
     output::Type{T} = AnnotatedMultipleSequenceAlignment;
     kwargs...,
-) where {F<:Union{Stockholm,Clustal},T}
+) where {
+    F<:Union{Stockholm,Clustal},
+    T<:Union{MSAMatrix,MultipleSequenceAlignment,AnnotatedMultipleSequenceAlignment},
+}
     IDS, SEQS, annot, has_next = _load_sequences(io, format, output)
     msa = _parse_msa((IDS, SEQS, annot), output; kwargs...)
     if has_next === nothing
