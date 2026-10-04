@@ -1,5 +1,7 @@
 struct Stockholm <: MSAFormat end
 
+_msa_header(::Type{Stockholm}) = r"^# STOCKHOLM 1\.0$"
+
 # NOTE: Sequence‑Name Disambiguation
 # We do not support sequence‑name disambiguation via the `OnlineSequenceNameDisambiguator`
 # in Stockholm format, because duplicate sequence names are not permitted.
@@ -85,7 +87,8 @@ function _load_sequences(
         IDS, SEQS = _pre_readstockholm_sequences(io)
         annot = Annotations()
     end
-    return collect(IDS), SEQS, annot
+    # Leave the next header unread; nothing means that has_next has not been checked.
+    return collect(IDS), SEQS, annot, nothing
 end
 
 # Print Pfam
@@ -96,15 +99,16 @@ function _to_sequence_dict(annotation::Dict{Tuple{String,String},String})
     for (key, value) in annotation
         seq_id = key[1]
         if haskey(seq_dict, seq_id)
-            push!(seq_dict[seq_id], string(seq_id, '\t', key[2], '\t', value))
+            push!(seq_dict[seq_id], string(seq_id, ' ', key[2], ' ', value))
         else
-            seq_dict[seq_id] = [string(seq_id, '\t', key[2], '\t', value)]
+            seq_dict[seq_id] = [string(seq_id, ' ', key[2], ' ', value)]
         end
     end
     sizehint!(seq_dict, length(seq_dict))
 end
 
 function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{Stockholm})
+    println(io, "# STOCKHOLM 1.0")
     has_annotations = isa(msa, AnnotatedAlignedObject) && !isempty(msa.annotations)
     if has_annotations
         _printfileannotations(io, msa.annotations)
@@ -117,7 +121,7 @@ function Utils.print_file(io::IO, msa::AbstractMatrix{Residue}, format::Type{Sto
         id = seqnames[i]
         seq = stringsequence(msa, i)
         formatted_seq = _format_inserts(seq, aligned)
-        println(io, id, "\t\t\t", formatted_seq)
+        println(io, id, ' ', formatted_seq)
         if has_annotations && haskey(res_annotations, id)
             for line in res_annotations[id]
                 println(io, "#=GR ", line)

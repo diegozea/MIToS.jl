@@ -14,6 +14,9 @@
                 @test length(table) == length(alphabet)^N
                 @test length(getmarginals(table)) == length(alphabet) * N
                 @test size(getmarginals(table)) == (length(alphabet), N)
+                expected_dimnames = ["Dim_1", "Dim_2", "Dim_3"][1:N]
+                @test dimnames(gettable(table)) == expected_dimnames
+                @test names(getmarginals(table), 2) == expected_dimnames
                 @test sum(gettable(table)) == 0.0
                 @test sum(table) == 0.0 # == gettotal(table)
                 @test sum(table.temporal) == 0.0

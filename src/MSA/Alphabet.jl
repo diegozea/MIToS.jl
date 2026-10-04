@@ -42,7 +42,7 @@ inside parenthesis belong to the same group.
 ```jldoctest
 julia> using MIToS.MSA
 
-julia> ab = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
+julia> ab = ReducedAlphabet(\"(AILMV)(RHK)(NQST)(DE)(FWY)CGP\")
 ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
 
 julia> ab[Residue('K')]
@@ -182,7 +182,7 @@ residue that belong to the group.
 ```jldoctest
 julia> using MIToS.MSA
 
-julia> ab = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
+julia> ab = ReducedAlphabet(\"(AILMV)(RHK)(NQST)(DE)(FWY)CGP\")
 ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
 
 julia> names(ab)
@@ -221,7 +221,7 @@ It takes a `ResidueAlphabet` and returns a dictionary from group name to group p
 ```jldoctest
 julia> using MIToS.MSA
 
-julia> ab = ReducedAlphabet("(AILMV)(RHK)(NQST)(DE)(FWY)CGP")
+julia> ab = ReducedAlphabet(\"(AILMV)(RHK)(NQST)(DE)(FWY)CGP\")
 ReducedAlphabet of length 8 : "(AILMV)(RHK)(NQST)(DE)(FWY)CGP"
 
 julia> getnamedict(ab)

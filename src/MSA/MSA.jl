@@ -123,6 +123,7 @@ export  # Residue
     Clustal,
     # Stockholm
     Stockholm,
+    eachmsa,
     # FASTA
     FASTA,
     # NBRF/PIR
@@ -188,6 +189,8 @@ include("GeneralParserMethods.jl")
 include("Raw.jl")
 include("Clustal.jl")
 include("Stockholm.jl")
+include("EachMSA.jl")
+include("Write.jl")
 include("FASTA.jl")
 include("PIR.jl")
 include("A3M.jl")

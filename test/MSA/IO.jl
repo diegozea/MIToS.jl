@@ -1,3 +1,5 @@
+import Downloads
+
 @testset "IO" begin
 
     msa_types = (
@@ -140,6 +142,40 @@
             end
         end
 
+        @testset "Output syntax" begin
+
+            for T in msa_types
+                msa = read_file(pf09645_sto, Stockholm, T)
+                printed = sprint(print_file, msa, Stockholm)
+                lines = split(chomp(printed), '\n')
+
+                @test first(lines) == "# STOCKHOLM 1.0"
+                @test count(==("# STOCKHOLM 1.0"), lines) == 1
+                @test last(lines) == "//"
+                @test !occursin('\t', printed)
+
+                sequence_lines = filter(
+                    line -> !isempty(line) && !startswith(line, '#') && line != "//",
+                    lines,
+                )
+                @test length(sequence_lines) == nsequences(msa)
+                @test all(line -> occursin(r"^\S+ +\S+$", line), sequence_lines)
+                @test parse_file(printed, Stockholm, T) == msa
+            end
+        end
+
+        @testset "Free-text annotation whitespace" begin
+
+            msa = read_file(pf09645_sto, Stockholm)
+            seqname = first(sequencenames(msa))
+            text = "first\tsecond  third"
+            setannotfile!(msa, "CC", text)
+            setannotsequence!(msa, seqname, "DE", text)
+            roundtrip = parse_file(sprint(print_file, msa, Stockholm), Stockholm)
+            @test getannotfile(roundtrip, "CC") == text
+            @test getannotsequence(roundtrip, seqname, "DE") == text
+        end
+
         @testset "Keep insert columns" begin
 
             msa = read_file(pf09645_sto, Stockholm, keepinserts = true)
@@ -206,15 +242,21 @@
             end
 
             @testset "Download" begin
-
-                @test read_file(gaoetal2011, FASTA) == read_file(
-                    "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/Gaoetal2011.fasta",
-                    FASTA,
-                )
-                @test read_file(pf09645_fas, FASTA) == read_file(
-                    "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/PF09645_full.fasta.gz",
-                    FASTA,
-                )
+                for path in (gaoetal2011, pf09645_fas)
+                    url =
+                        "https://raw.githubusercontent.com/diegozea/MIToS.jl/master/test/data/" *
+                        basename(path)
+                    msa = try
+                        read_file(url, FASTA)
+                    catch err
+                        # Skip only proxy/DNS, connection, or timeout failures.
+                        err isa Downloads.RequestError && err.code in (5, 6, 7, 28) ||
+                            rethrow()
+                        @test_skip read_file(url, FASTA)
+                        continue
+                    end
+                    @test msa == read_file(path, FASTA)
+                end
             end
         end
 
@@ -389,6 +431,22 @@
             printed_num = String(take!(io))
             @test occursin(" 58", printed_num)
             @test parse_file(printed_num, Clustal) == msa
+        end
+
+        @testset "First alignment in concatenated input" begin
+            first_record = read(clustal_file, String)
+            expected = parse_file(first_record, Clustal)
+            # Repeated identifiers must not join sequences from different alignments;
+            # a following alignment may also have different identifiers and dimensions.
+            for second_record in
+                (first_record, "CLUSTALW (1.83) multiple sequence alignment\n\nother AAA\n")
+                contents = first_record * "\n" * second_record
+                for input in (contents, IOBuffer(contents))
+                    msa = parse_file(input, Clustal)
+                    @test msa == expected
+                    @test annotations(msa) == annotations(expected)
+                end
+            end
         end
     end
 

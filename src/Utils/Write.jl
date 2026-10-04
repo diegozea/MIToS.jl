@@ -1,5 +1,12 @@
 """
-`write_file{T<:FileFormat}(filename::AbstractString, object, format::Type{T}, mode::ASCIIString="w")`
+Validate an object before opening its output file. Formats can specialize this check. This
+function must throw an error if the object to be written is not valid for the given format.
+If no error is thrown, the object is assumed to be valid.
+"""
+_validate_write(object, format::Type{<:FileFormat}) = nothing
+
+"""
+    write_file(filename::AbstractString, object, format::Type, mode::String = "w")
 
 This function opens a file with `filename` and `mode` (default: "w")
 and writes (`print_file`) the `object` with the given `format`.
@@ -11,11 +18,13 @@ function write_file(
     format::Type{T},
     mode::String = "w",
 ) where {T<:FileFormat}
+    _validate_write(object, format)
     fh = open(filename, mode)
-    if endswith(filename, ".gz")
-        fh = GzipCompressorStream(fh)
-    end
     try
+        if endswith(filename, ".gz")
+            fh = GzipCompressorStream(fh)
+            write(fh, "") # Start a valid gzip stream even when there are no alignments.
+        end
         print_file(fh, object, format)
     finally
         close(fh)

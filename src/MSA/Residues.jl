@@ -313,7 +313,7 @@ The MIToS macro `@res_str` takes a string and returns a `Vector` of `Residues` (
 ```jldoctest
 julia> using MIToS.MSA
 
-julia> res"MIToS"
+julia> res\"MIToS\"
 5-element Vector{Residue}:
  M
  I
