@@ -43,15 +43,33 @@ function _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
     end
 end
 
-function _pre_readstockholm(io::Union{IO,AbstractString})
+"""
+Check sequence names within each blank-line-separated Stockholm block. Annotation lines
+do not introduce sequences or end a block; names may recur in later blocks.
+"""
+function _check_stockholm_seqname!(block_ids::Set{String}, line)
+    if isempty(line)
+        empty!(block_ids)
+    elseif !startswith(line, '#') && !startswith(line, "//")
+        _check_unique_seqname!(block_ids, get_n_words(line, 2)[1])
+    end
+    nothing
+end
+
+function _pre_readstockholm(
+    io::Union{IO,AbstractString};
+    fail_on_duplicate_seqnames::Bool = false,
+)
     IDS = OrderedSet{String}()
     SEQS = String[]
     GF = OrderedDict{String,String}()
     GC = Dict{String,String}()
     GS = Dict{Tuple{String,String},String}()
     GR = Dict{Tuple{String,String},String}()
+    block_ids = fail_on_duplicate_seqnames ? Set{String}() : nothing
 
     @inbounds for line in lineiterator(io)
+        fail_on_duplicate_seqnames && _check_stockholm_seqname!(block_ids, line)
         isempty(line) && continue
         startswith(line, "//") && break
         _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
@@ -64,10 +82,15 @@ function _pre_readstockholm(io::Union{IO,AbstractString})
     (IDS, SEQS, GF, GS, GC, GR)
 end
 
-function _pre_readstockholm_sequences(io::Union{IO,AbstractString})
+function _pre_readstockholm_sequences(
+    io::Union{IO,AbstractString};
+    fail_on_duplicate_seqnames::Bool = false,
+)
     IDS = OrderedSet{String}()
     SEQS = String[]
+    block_ids = fail_on_duplicate_seqnames ? Set{String}() : nothing
     @inbounds for line in lineiterator(io)
+        fail_on_duplicate_seqnames && _check_stockholm_seqname!(block_ids, line)
         isempty(line) && continue
         startswith(line, "//") && break
         _fill_with_sequence_line!(IDS, SEQS, line)
@@ -79,12 +102,17 @@ function _load_sequences(
     io::Union{IO,AbstractString},
     format::Type{Stockholm};
     create_annotations::Bool = false,
+    fail_on_duplicate_seqnames::Bool = false,
 )
     if create_annotations
-        IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
+        IDS, SEQS, GF, GS, GC, GR =
+            _pre_readstockholm(io; fail_on_duplicate_seqnames = fail_on_duplicate_seqnames)
         annot = Annotations(GF, GS, GC, GR)
     else
-        IDS, SEQS = _pre_readstockholm_sequences(io)
+        IDS, SEQS = _pre_readstockholm_sequences(
+            io;
+            fail_on_duplicate_seqnames = fail_on_duplicate_seqnames,
+        )
         annot = Annotations()
     end
     # Leave the next header unread; nothing means that has_next has not been checked.

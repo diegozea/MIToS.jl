@@ -37,9 +37,13 @@ function Utils.parse_file(
     useidcoordinates::Bool = false,
     deletefullgaps::Bool = true,
     keepinserts::Bool = false,
+    fail_on_duplicate_seqnames::Bool = false,
 )::Vector{AnnotatedSequence} where {T<:SequenceFormat}
     pre_parser_format = _format_fallback(T)
-    ids, seqs, annot = _load_sequences(io, pre_parser_format; create_annotations = true)
+    # Do not require existing custom loaders to accept the new keyword by default.
+    options = fail_on_duplicate_seqnames ? (; fail_on_duplicate_seqnames = true) : (;)
+    ids, seqs, annot =
+        _load_sequences(io, pre_parser_format; create_annotations = true, options...)
     _generate_sequences(ids, seqs, annot)
 end
 

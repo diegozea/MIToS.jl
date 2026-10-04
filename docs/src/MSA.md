@@ -100,6 +100,42 @@ msa = read_file(
 printmodifications(msa)
 ```
 
+### Rejecting duplicate sequence identifiers
+
+By default, FASTA, A2M, A3M and PIR parsing renames duplicate sequence IDs (for example,
+`P1` becomes `P1(1)`) and emits a warning. Annotated outputs retain renamed IDs in
+`OriginalSeqName` sequence annotations. To reject duplicates instead, set
+`fail_on_duplicate_seqnames = true`:
+
+```julia
+msa = read_file("alignment.fasta", FASTA; fail_on_duplicate_seqnames = true)
+sequences = read_file("sequences.fasta", FASTASequences; fail_on_duplicate_seqnames = true)
+```
+
+The option works with `parse_file` on strings or streams and with `read_file` on plain
+or gzip files. It applies to every MSA output type, including `Matrix{Residue}`, and to
+`FASTASequences`, `PIRSequences` and `AnnotatedFASTASequences`. IDs are compared exactly
+as extracted by the format's parser; distinct names such as `P1` and `P1(1)` are valid.
+`Raw` and `RawSequences` also accept the option, but generate unique numeric IDs.
+
+```jldoctest
+julia> using MIToS.MSA
+
+julia> parse_file(
+           ">P1\nAC\n>P1\nGT\n", FASTASequences;
+           fail_on_duplicate_seqnames = true,
+       )
+ERROR: ArgumentError: Duplicate sequence identifier: "P1".
+```
+
+Stockholm and Clustal may repeat a sequence ID to continue that sequence in a later
+alignment block. Strict mode rejects a repeated ID **within a block**, while permitting
+these continuations. Empty lines separate blocks; Clustal conservation lines also end
+a block. Stockholm annotation lines neither introduce sequences nor end a block.
+Consequently, repeats across blocks cannot be distinguished from valid continuations.
+The default fragment-joining behavior is unchanged. When using `eachmsa`, pass the same
+keyword to check each alignment independently; IDs may recur in separate alignments.
+
 ### Reading multiple alignments
 
 Files such as `Pfam-A.seed.gz` contain alignments for many protein families.

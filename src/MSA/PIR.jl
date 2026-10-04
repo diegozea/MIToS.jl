@@ -11,7 +11,10 @@ struct PIR <: MSAFormat end
 
 # They could be annotations/comments after the sequence, we are ignoring that at the moment.
 
-function _pre_readpir(io::Union{IO,AbstractString})
+function _pre_readpir(
+    io::Union{IO,AbstractString};
+    fail_on_duplicate_seqnames::Bool = false,
+)
     IDS = String[]
     SEQS = String[]
     GS = Dict{Tuple{String,String},String}()
@@ -42,7 +45,11 @@ function _pre_readpir(io::Union{IO,AbstractString})
             if m !== nothing
                 seq_type = m[1] === nothing ? "" : m[1]
                 original_seq_id = m[2] === nothing ? "" : rstrip(m[2]::SubString)
-                seq_id = _disambiguate_seqname!(disambiguator, original_seq_id)
+                seq_id = _disambiguate_seqname!(
+                    disambiguator,
+                    original_seq_id;
+                    fail_on_duplicate_seqnames = fail_on_duplicate_seqnames,
+                )
                 push!(IDS, seq_id)
                 if seq_id != original_seq_id
                     push!(GS, (seq_id, "OriginalSeqName") => original_seq_id)
@@ -76,8 +83,10 @@ function _load_sequences(
     io::Union{IO,AbstractString},
     format::Type{PIR};
     create_annotations::Bool = false,
+    fail_on_duplicate_seqnames::Bool = false,
 )
-    IDS, SEQS, GS = _pre_readpir(io)
+    IDS, SEQS, GS =
+        _pre_readpir(io; fail_on_duplicate_seqnames = fail_on_duplicate_seqnames)
     annot = Annotations()
     if create_annotations
         annot.sequences = GS

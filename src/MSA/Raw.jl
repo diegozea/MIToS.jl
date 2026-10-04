@@ -7,6 +7,7 @@ function _load_sequences(
     io::Union{IO,AbstractString},
     format::Type{Raw};
     create_annotations::Bool = false,
+    fail_on_duplicate_seqnames::Bool = false,
 )
     SEQS = String[]
     IDS = String[]

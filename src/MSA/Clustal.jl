@@ -13,8 +13,13 @@ Read sequence data and conservation annotations from an iterable of Clustal line
 Return sequence names, sequences, annotations and whether another header was consumed.
 Set `header_read` when the caller has already consumed the current alignment's header.
 """
-function _load_clustal_sequences(lines; header_read::Bool = false)
+function _load_clustal_sequences(
+    lines;
+    header_read::Bool = false,
+    fail_on_duplicate_seqnames::Bool = false,
+)
     seqs = OrderedDict{String,String}()
+    block_ids = fail_on_duplicate_seqnames ? Set{String}() : nothing
     conservation = IOBuffer()
     seq_re = r"^(\S+)\s+([A-Za-z.-]+)(?:\s+\d+)?"  # sequence line with optional count
     startidx = 0
@@ -40,10 +45,12 @@ function _load_clustal_sequences(lines; header_read::Bool = false)
             id = m.captures[1]
             seq = m.captures[2]
             if !in_sequence_block
+                fail_on_duplicate_seqnames && empty!(block_ids)
                 # store positions of the sequence slice to read conservation line
                 startidx = m.offsets[2]
                 endidx = startidx + length(seq) - 1
             end
+            fail_on_duplicate_seqnames && _check_unique_seqname!(block_ids, id)
             if haskey(seqs, id)
                 seqs[id] = seqs[id] * seq
             else
@@ -79,8 +86,12 @@ function _load_sequences(
     io::Union{IO,AbstractString},
     format::Type{Clustal};
     create_annotations::Bool = false,
+    fail_on_duplicate_seqnames::Bool = false,
 )
-    _load_clustal_sequences(lineiterator(io))
+    _load_clustal_sequences(
+        lineiterator(io);
+        fail_on_duplicate_seqnames = fail_on_duplicate_seqnames,
+    )
 end
 
 function Utils.print_file(
