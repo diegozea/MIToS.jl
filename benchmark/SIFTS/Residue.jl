@@ -11,14 +11,12 @@ let
         return residue, xdoc
     end
 
-    residue_for_constructor, xdoc_for_constructor = build_residue()
-    missing_residue, sscode, ssname = SIFTS._get_details(residue_for_constructor)
-    SUITE["SIFTS"]["SIFTSResidue"]["18gs"] = @benchmarkable SIFTS.SIFTSResidue(
-        $residue_for_constructor,
-        $missing_residue,
-        $sscode,
-        $ssname,
-    )
+    SUITE["SIFTS"]["SIFTSResidue"]["18gs"] =
+        @benchmarkable SIFTS.SIFTSResidue(residue, missing_residue, sscode, ssname) setup =
+            (
+                (residue, xdoc) = build_residue();
+                (missing_residue, sscode, ssname) = SIFTS._get_details(residue)
+            ) teardown = (SIFTS.LightXML.free(xdoc))
     SUITE["SIFTS"]["ResidueDetails"]["_get_details"] =
         @benchmarkable SIFTS._get_details(residue) setup=((residue, xdoc) = build_residue()) teardown=(SIFTS.LightXML.free(
             xdoc,
@@ -27,5 +25,4 @@ let
         @benchmarkable SIFTS._is_missing(residue) setup=((residue, xdoc) = build_residue()) teardown=(SIFTS.LightXML.free(
             xdoc,
         ))
-    SIFTS.LightXML.free(xdoc_for_constructor)
 end

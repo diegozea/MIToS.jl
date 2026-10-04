@@ -376,10 +376,28 @@ function _test_feature_name(feature::String)
     @assert !occursin(r"\s", feature) "Feature name must not have spaces."
 end
 
+"""
+    _append_with_separator!(dict, key, value, separator = "")
+
+Internal helper to append string annotations with an optional separator.
+If the key is not present (or currently maps to an empty string), it stores
+the new value directly. Otherwise it concatenates: old * separator * new.
+"""
+function _append_with_separator!(
+    dict::AbstractDict,
+    key,
+    value::AbstractString,
+    separator::AbstractString = "",
+)
+    previous = get(dict, key, "")
+    annotation = String(value)
+    dict[key] = isempty(previous) ? annotation : string(previous, separator, annotation)
+    dict
+end
+
 function setannotfile!(ann::Annotations, feature::String, annotation::String)
     _test_feature_name(feature)
-    previous = get(ann.file, feature, "")
-    ann.file[feature] = previous != "" ? string(previous, '\n', annotation) : annotation
+    _append_with_separator!(ann.file, feature, annotation, "\n")
 end
 
 function setannotsequence!(
@@ -389,9 +407,7 @@ function setannotsequence!(
     annotation::String,
 )
     _test_feature_name(feature)
-    previous = get(ann.sequences, (seqname, feature), "")
-    ann.sequences[(seqname, feature)] =
-        previous != "" ? string(previous, '\n', annotation) : annotation
+    _append_with_separator!(ann.sequences, (seqname, feature), annotation, "\n")
 end
 
 function setannotcolumn!(ann::Annotations, feature::String, annotation::String)
@@ -502,7 +518,7 @@ function _printfileannotations(io::IO, ann::Annotations)
     if !isempty(ann.file)
         for (key, value) in ann.file
             for val in split(value, '\n')
-                println(io, string("#=GF ", key, '\t', val))
+                println(io, string("#=GF ", key, ' ', val))
             end
         end
     end
@@ -511,7 +527,7 @@ end
 function _printcolumnsannotations(io::IO, ann::Annotations)
     if !isempty(ann.columns)
         for (key, value) in ann.columns
-            println(io, string("#=GC ", key, "\t\t\t", value))
+            println(io, string("#=GC ", key, ' ', value))
         end
     end
 end
@@ -520,7 +536,7 @@ function _printsequencesannotations(io::IO, ann::Annotations)
     if !isempty(ann.sequences)
         for (key, value) in ann.sequences
             for val in split(value, '\n')
-                println(io, string("#=GS ", key[1], '\t', key[2], '\t', val))
+                println(io, string("#=GS ", key[1], ' ', key[2], ' ', val))
             end
         end
     end
@@ -529,7 +545,7 @@ end
 function _printresiduesannotations(io::IO, ann::Annotations)
     if !isempty(ann.residues)
         for (key, value) in ann.residues
-            println(io, string("#=GR ", key[1], '\t', key[2], '\t', value))
+            println(io, string("#=GR ", key[1], ' ', key[2], ' ', value))
         end
     end
 end

@@ -1,0 +1,18 @@
+# Data Name: Example AFF file
+#
+# Sequences: 2
+#
+# Format:
+# >accession|FASTA=identifier
+# Amino acid sequence
+# IDR  Protein disordered region
+# binding  IDR binding in general
+#
+>AFF_SEQ_1|FASTA=AFF_SEQ_1
+ACDEFG
+010011
+111000
+>AFF_SEQ_2|FASTA=AFF_SEQ_2
+GGTTAA
+111000
+000111

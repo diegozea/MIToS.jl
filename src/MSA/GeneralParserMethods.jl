@@ -7,6 +7,26 @@ abstract type MSAFormat <: AbstractSequenceFormat end
 
 abstract type SequenceFormat <: AbstractSequenceFormat end
 
+"""
+Return the alignment header pattern. Methods are defined for `Stockholm` and `Clustal`.
+"""
+function _msa_header end
+
+"""
+Skip blank lines and check the next line against the `header` pattern.
+With `strict = true`, reject a nonblank line that is not a header.
+"""
+function _read_msa_header(io::IO, header::Regex; strict::Bool = false)
+    for line in eachline(io)
+        line = strip(line)
+        isempty(line) && continue
+        found = occursin(header, line)
+        strict && !found && throw(ArgumentError("Invalid alignment header: $line"))
+        return found
+    end
+    false
+end
+
 # Mappings
 # ========
 
@@ -469,16 +489,27 @@ end
 # Parse for MSA formats
 # =====================
 
-function Utils.parse_file(
-    io::Union{IO,AbstractString},
-    format::Type{T},
+"""
+Load sequences, requesting annotations only for an annotated MSA output.
+"""
+function _load_sequences(io, format::Type{<:MSAFormat}, ::Type{T}) where {T}
+    create_annotations = T === AnnotatedMultipleSequenceAlignment
+    _load_sequences(io, format; create_annotations = create_annotations)
+end
+
+"""
+Construct an MSA with the requested output type and parsing options. `loaded_sequences`
+contains sequence names, sequences and annotations; any following parser state is ignored.
+"""
+function _parse_msa(
+    loaded_sequences::Tuple,
     output::Type{AnnotatedMultipleSequenceAlignment};
     generatemapping::Bool = false,
     useidcoordinates::Bool = false,
     deletefullgaps::Bool = true,
     keepinserts::Bool = false,
-)::AnnotatedMultipleSequenceAlignment where {T<:MSAFormat}
-    IDS, SEQS, annot = _load_sequences(io, format; create_annotations = true)
+)::AnnotatedMultipleSequenceAlignment
+    IDS, SEQS, annot = loaded_sequences
     _check_seq_len(IDS, SEQS)
     _generate_annotated_msa(
         annot,
@@ -491,13 +522,12 @@ function Utils.parse_file(
     )
 end
 
-function Utils.parse_file(
-    io::Union{IO,AbstractString},
-    format::Type{T},
+function _parse_msa(
+    loaded_sequences::Tuple,
     output::Type{NamedResidueMatrix{Array{Residue,2}}};
     deletefullgaps::Bool = true,
-)::NamedResidueMatrix{Array{Residue,2}} where {T<:MSAFormat}
-    IDS, SEQS, _ = _load_sequences(io, format; create_annotations = false)
+)::NamedResidueMatrix{Array{Residue,2}}
+    IDS, SEQS, _ = loaded_sequences
     _check_seq_len(IDS, SEQS)
     msa = _generate_named_array(SEQS, IDS)
     if deletefullgaps
@@ -506,30 +536,37 @@ function Utils.parse_file(
     msa
 end
 
-function Utils.parse_file(
-    io::Union{IO,AbstractString},
-    format::Type{T},
+function _parse_msa(
+    loaded_sequences::Tuple,
     output::Type{MultipleSequenceAlignment};
     deletefullgaps::Bool = true,
-)::MultipleSequenceAlignment where {T<:MSAFormat}
-    msa = parse_file(
-        io,
-        format,
+)::MultipleSequenceAlignment
+    msa = _parse_msa(
+        loaded_sequences,
         NamedResidueMatrix{Array{Residue,2}},
         deletefullgaps = deletefullgaps,
     )
     MultipleSequenceAlignment(msa)
 end
 
-function Utils.parse_file(
-    io::Union{IO,AbstractString},
-    format::Type{T},
+function _parse_msa(
+    loaded_sequences::Tuple,
     output::Type{Matrix{Residue}};
     deletefullgaps::Bool = true,
-)::Matrix{Residue} where {T<:MSAFormat}
-    IDS, SEQS, _ = _load_sequences(io, format; create_annotations = false)
+)::Matrix{Residue}
+    IDS, SEQS, _ = loaded_sequences
     _check_seq_len(IDS, SEQS)
     _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
+end
+
+function Utils.parse_file(
+    io::Union{IO,AbstractString},
+    format::Type{F},
+    output::Type{T};
+    kwargs...,
+) where {F<:MSAFormat,T}
+    loaded_sequences = _load_sequences(io, format, output)
+    _parse_msa(loaded_sequences, output; kwargs...)
 end
 
 function Utils.parse_file(

@@ -1,5 +1,22 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.10.0 to v3.10.1
+
+- Fixed a precompilation error on Julia 1.13; users of Julia 1.13 must upgrade to
+  MIToS v3.10.1 or later.
+
+### Changes from v3.9.0 to v3.10.0
+
+- The `hobohmI` function now accepts an optional `threads` keyword argument to
+  parallelize the inner scan over candidate cluster members when multiple Julia
+  threads are available.
+
+
+### Changes from v3.8.0 to v3.9.0
+
+- Added `AnnotatedFASTASequences` in `MIToS.MSA` to parse annotated sequence files in
+  the Annotated FASTA Format (AFF) and the CAID modified FASTA references/labels format.
+
 ### Changes from v3.7.0 to v3.8.0
 
 - Fix a bug when writing mmCIF files with `write_file(..., MMCIFFile)` that caused

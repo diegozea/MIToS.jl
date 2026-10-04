@@ -123,6 +123,7 @@ export  # Residue
     Clustal,
     # Stockholm
     Stockholm,
+    eachmsa,
     # FASTA
     FASTA,
     # NBRF/PIR
@@ -132,6 +133,7 @@ export  # Residue
     A2M,
     # Sequences
     FASTASequences,
+    AnnotatedFASTASequences,
     PIRSequences,
     RawSequences,
     # Shuffle
@@ -187,9 +189,12 @@ include("GeneralParserMethods.jl")
 include("Raw.jl")
 include("Clustal.jl")
 include("Stockholm.jl")
+include("EachMSA.jl")
+include("Write.jl")
 include("FASTA.jl")
 include("PIR.jl")
 include("A3M.jl")
+include("AnnotatedFASTA.jl")
 include("Sequences.jl")
 include("Shuffle.jl")
 include("PLM.jl")
