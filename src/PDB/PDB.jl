@@ -31,6 +31,7 @@ using JSON
 using Downloads
 using Logging
 using BioStructures
+using Dates: Date
 
 export  # PDBResidues
     PDBResidueIdentifier,
@@ -84,6 +85,7 @@ export  # PDBResidues
     PDBFile,
     # MMCIF
     MMCIFFile,
+    alphafold_mmcifdict,
     # PDBMLParser
     PDBML,
     downloadpdb,
@@ -127,6 +129,7 @@ include("AtomsData.jl")
 include("Interaction.jl")
 include("PDBParser.jl")
 include("MMCIF.jl")
+include("AlphaFoldMMCIF.jl")
 include("PDBMLParser.jl")
 include("BioStructures.jl")
 include("Kabsch.jl")

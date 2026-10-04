@@ -2,6 +2,10 @@
 `MMCIFFile <: FileFormat`
 
 macromolecular Crystallographic Information File (mmCIF) format.
+
+Writing `PDBResidue`s with this format emits only `_atom_site` data. For a
+coordinate-derived protein template with the additional categories used by AlphaFold,
+see [`alphafold_mmcifdict`](@ref).
 """
 struct MMCIFFile <: FileFormat end
 
