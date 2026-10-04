@@ -586,10 +586,11 @@ sequence_id(seq::Union{AbstractSequence,AbstractAlignedSequence}) = only(sequenc
 """
 `sequencename_iterator(msa)`
 
-It returns an iterator that returns the sequence names/identifiers of the `msa`.
+It returns an iterator over the sequence names/identifiers of the `msa` in row order.
+For named alignments, it uses the stored names without allocating a vector.
 """
 function sequencename_iterator(x::NamedResidueMatrix{AT}) where {AT}
-    keys(x.dicts[1])::Base.KeySet{String,OrderedDict{String,Int64}}
+    keys(x.dicts[1])
 end
 sequencename_iterator(x::AbstractResidueMatrix) = sequencename_iterator(namedmatrix(x))
 sequencename_iterator(msa::AbstractMatrix{Residue}) = (string(i) for i = 1:size(msa, 1))

@@ -225,6 +225,23 @@
             end
         end
 
+        @testset "Sequence name iterator with native indices" begin
+            # NamedResidueMatrix uses Int indices, which are Int32 on 32-bit Julia.
+            named = NamedArray(
+                Matrix{Residue}(M),
+                (["third", "first", "second"], string.(1:size(M, 2))),
+            )
+            for object in (
+                named,
+                MultipleSequenceAlignment(named),
+                AnnotatedMultipleSequenceAlignment(named),
+            )
+                iterator = @inferred sequencename_iterator(object)
+                @test iterator isa Base.KeySet{String,OrderedDict{String,Int}}
+                @test collect(iterator) == ["third", "first", "second"]
+            end
+        end
+
         @testset "Rename sequences" begin
 
             # rename_sequences!
