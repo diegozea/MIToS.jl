@@ -232,7 +232,7 @@ function _mappairfreq_threaded!(
                 j = i + !D
             end
         end
-    end
+    end # COV_EXCL_LINE: Julia 1.9 marks the generated @threads wrapper as uncovered.
     plm
 end
 
