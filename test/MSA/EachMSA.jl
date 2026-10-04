@@ -1,11 +1,22 @@
 using CodecZlib: GzipCompressor, transcode
 import Downloads
+import GZip
 
 """
 Write an alignment fixture, compressing it when the filename ends in `.gz`.
 """
 _write_msa_fixture(path, contents) =
     write(path, endswith(path, ".gz") ? transcode(GzipCompressor, contents) : contents)
+
+"""
+A line reader without marking or seeking, for testing sequential parsing.
+"""
+struct _SequentialMSAInput <: IO
+    buffer::IOBuffer
+end
+
+Base.eof(io::_SequentialMSAInput) = eof(io.buffer)
+Base.readline(io::_SequentialMSAInput; kwargs...) = readline(io.buffer; kwargs...)
 
 @testset "eachmsa" begin
     @testset "$format" for format in (Stockholm, Clustal)
@@ -107,13 +118,17 @@ _write_msa_fixture(path, contents) =
                 @test msa == expected
                 # Reading one alignment from an open stream must leave the next readable.
                 # A small gzip buffer puts the next header across buffer boundaries.
-                for io in (
+                streams = (
                     IOBuffer(contents),
                     Utils.GzipDecompressorStream(
                         IOBuffer(transcode(GzipCompressor, contents));
                         bufsize = 7,
                     ),
                 )
+                if format === Clustal
+                    streams = (streams..., GZip.open(gzip))
+                end
+                for io in streams
                     try
                         msa = @test_logs parse_file(io, format)
                         @test msa == expected
@@ -172,6 +187,11 @@ _write_msa_fixture(path, contents) =
             end
 
             if format === Clustal
+                @testset "Sequential input without marking or seeking" begin
+                    io = _SequentialMSAInput(IOBuffer(contents))
+                    @test parse_file(io, format) == parse_file(first_record, format)
+                    @test parse_file(io, format) == parse_file(second_record, format)
+                end
                 @testset "Clustal headers, blocks and conservation" begin
                     wrapped = """
                     CLUSTAL W (2.1) multiple sequence alignment

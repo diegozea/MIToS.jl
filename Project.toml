@@ -50,6 +50,7 @@ Documenter = "0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 1"
 Downloads = "1"
 FastaIO = "1"
 Format = "1"
+GZip = "0.6"
 InteractiveUtils = "1.11.0"
 JSON = "1"
 LightXML = "0.8, 0.9"
@@ -76,9 +77,10 @@ BioAlignments = "00701ae9-d1dc-5365-b64a-a3a3ebf5695e"
 Clustering = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+GZip = "92fee26a-97fe-5a0c-ad85-20a5f3185b63"
 InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 ROCAnalysis = "f535d66d-59bb-5153-8d2b-ef0a426c6aff"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Aqua", "DelimitedFiles", "Test", "ROCAnalysis", "Documenter", "Clustering", "BioAlignments", "InteractiveUtils"]
+test = ["Aqua", "DelimitedFiles", "Test", "ROCAnalysis", "Documenter", "Clustering", "BioAlignments", "InteractiveUtils", "GZip"]
