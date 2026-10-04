@@ -115,7 +115,8 @@ CA_1ivo[1] # First residue. It has only the α carbon.
 It does not reconstruct the polymer and header categories expected by the
 [AlphaFold mmCIF parser](https://github.com/google-deepmind/alphafold/blob/c77e5d2a8961d1a353632c462914ff0a32a950f6/alphafold/data/mmcif_parsing.py).
 For a template derived from selected protein coordinates, use
-[`alphafold_mmcifdict`](@ref) and write the resulting dictionary with BioStructures:
+[`alphafold_mmcifdict`](@ref MIToS.PDB.alphafold_mmcifdict) and write the resulting
+dictionary with BioStructures:
 
 ```julia
 using MIToS.PDB
