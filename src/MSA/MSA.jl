@@ -124,6 +124,7 @@ export  # Residue
     # Stockholm
     Stockholm,
     eachmsa,
+    support_eachmsa,
     hasnextmsa,
     # FASTA
     FASTA,

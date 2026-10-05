@@ -8,6 +8,16 @@ abstract type MSAFormat <: AbstractSequenceFormat end
 abstract type SequenceFormat <: AbstractSequenceFormat end
 
 """
+    support_eachmsa(format::Type{<:MSAFormat}) -> Bool
+
+Return whether `format` supports [`eachmsa`](@ref). The default is `false`.
+To support a new format, define `MIToS.MSA.support_eachmsa(::Type{MyFormat}) = true` and
+implement [`hasnextmsa`](@ref) and `parse_file(io, format, output; kwargs...)`.
+`read_file` also uses this declaration to check for additional alignments.
+"""
+support_eachmsa(::Type{<:MSAFormat}) = false
+
+"""
 Return the alignment header pattern. Methods are defined for `Stockholm` and `Clustal`.
 """
 function _msa_header end
@@ -28,10 +38,11 @@ The regular-expression method skips blank lines and checks the next line against
 It returns `false` at the end of the input or for a different header. With `strict=true`,
 an unexpected nonblank line raises an `ArgumentError` instead.
 
-To support a new `MSAFormat` in [`eachmsa`](@ref), define this method for the format and
-its usual `parse_file(io, format, output; kwargs...)` method. `eachmsa` supplies the same
-buffered input to both methods, and uses `strict=true`. The parser must read one alignment
-at a time. If it reads a line belonging to the next alignment, preserve its newline with
+To support a new `MSAFormat` in [`eachmsa`](@ref), declare [`support_eachmsa`](@ref) as
+`true` and define this method and `parse_file(io, format, output; kwargs...)` for the format.
+`eachmsa` gives both methods the same buffered input and uses `strict=true`.
+The parser must read one alignment at a time. If it reads a line belonging to the next
+alignment, preserve its newline with
 `readline(io; keep=true)` and put it back with `TranscodingStreams.unread(io, codeunits(line))`.
 Neither method should close the input. A format with a header pattern can delegate to the
 regular-expression method, forwarding `strict`.

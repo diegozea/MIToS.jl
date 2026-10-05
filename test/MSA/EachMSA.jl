@@ -14,6 +14,8 @@ A test format giving the sequence count followed by that many sequence lines.
 """
 struct _CountedMSAFormat <: MSAFormat end
 
+MSA.support_eachmsa(::Type{_CountedMSAFormat}) = true
+
 MSA.hasnextmsa(io::IO, ::Type{_CountedMSAFormat}; strict::Bool = false) =
     hasnextmsa(io, r"^\d+$"; strict = strict)
 
@@ -36,6 +38,10 @@ A format whose parser defaults to an unannotated alignment.
 """
 struct _DefaultOutputMSAFormat <: MSAFormat end
 
+# A lookahead method alone must not enable iteration or change read_file dispatch.
+MSA.hasnextmsa(io::IO, ::Type{_DefaultOutputMSAFormat}; strict::Bool = false) =
+    error("This format has not opted into eachmsa.")
+
 Utils.parse_file(
     io::IO,
     ::Type{_DefaultOutputMSAFormat},
@@ -45,6 +51,7 @@ Utils.parse_file(
 
 @testset "eachmsa" begin
     @testset "$format" for format in (Stockholm, Clustal)
+        @test support_eachmsa(format)
         multiple_warning = "Read only the first alignment; use `eachmsa` to read all."
         # Issue #202: different numbers of sequences and a repeated identifier across MSAs.
         first_record = """
@@ -380,6 +387,7 @@ Utils.parse_file(
     end
 
     @testset "User-defined format" begin
+        @test support_eachmsa(_CountedMSAFormat)
         mktempdir() do dir
             record = "2\nA-C-\nATC-\n"
             options = (generatemapping = true, deletefullgaps = false)
@@ -431,6 +439,8 @@ Utils.parse_file(
                 path = joinpath(dir, "custom.msa" * suffix)
                 _write_msa_fixture(path, record)
                 for format in (_TwoArgumentMSAFormat, _DefaultOutputMSAFormat)
+                    @test !support_eachmsa(format)
+                    @test_throws MethodError eachmsa(path, format)
                     msa = read_file(path, format; options...)
                     @test msa isa MultipleSequenceAlignment
                     @test msa == expected
@@ -449,6 +459,7 @@ Utils.parse_file(
     end
 
     @testset "Unsupported format" begin
+        @test !support_eachmsa(Raw)
         mktempdir() do dir
             path = joinpath(dir, "missing.txt")
             for args in ((path, Raw), (identity, path, Raw))

@@ -6,11 +6,8 @@ function hasnextmsa(
     hasnextmsa(io, _msa_header(format); strict = strict)
 end
 
-"""
-Check whether a format implements the buffered alignment-reading interface.
-"""
-_supports_eachmsa(::Type{F}) where {F<:MSAFormat} =
-    hasmethod(hasnextmsa, Tuple{TranscodingStream,Type{F}})
+support_eachmsa(::Type{Stockholm}) = true
+support_eachmsa(::Type{Clustal}) = true
 
 """
 Reuse a buffered input, or add a buffer to an ordinary input.
@@ -78,8 +75,8 @@ For Clustal, each alignment starts with its own CLUSTAL header. The default
 output is `AnnotatedMultipleSequenceAlignment`; the output types and parsing keywords
 are the same as for [`read_file`](@ref) and [`parse_file`](@ref).
 Each alignment is read with `parse_file`, including user-defined output types.
-Additional formats can implement [`hasnextmsa`](@ref) and `parse_file` to support this
-interface without defining another iterator type.
+Additional formats can declare [`support_eachmsa`](@ref) as `true` and implement
+[`hasnextmsa`](@ref) and `parse_file` without defining another iterator type.
 
 The source is a local path or an HTTP, HTTPS or FTP URL. Files ending in `.gz` are
 decompressed incrementally using one open stream. A URL is downloaded once to a temporary
@@ -111,7 +108,7 @@ function eachmsa(
     ::Type{T} = AnnotatedMultipleSequenceAlignment;
     kwargs...,
 ) where {F<:MSAFormat,T}
-    _supports_eachmsa(F) || throw(MethodError(eachmsa, (source, F, T)))
+    support_eachmsa(F) || throw(MethodError(eachmsa, (source, F, T)))
     remote = Utils._is_url(source)
     temporary = remote ? Utils._download_tempname(source) : nothing
     filename = temporary === nothing ? source : temporary
@@ -163,7 +160,7 @@ function Utils._read_file(
     args::Vararg{Any,N};
     kwargs...,
 ) where {F<:MSAFormat,N}
-    _supports_eachmsa(format) || return parse_file(io, format, args...; kwargs...)
+    support_eachmsa(format) || return parse_file(io, format, args...; kwargs...)
     io = _buffer_msa_input(io)
     output_args = isempty(args) ? (AnnotatedMultipleSequenceAlignment,) : args
     msa = parse_file(io, format, output_args...; kwargs...)
