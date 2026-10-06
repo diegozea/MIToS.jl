@@ -1,55 +1,8 @@
-using CodecZlib: GzipCompressor, transcode
-using TranscodingStreams: NoopStream, TranscodingStream
-import Downloads
-import GZip
-
-"""
-Write an alignment fixture, compressing it when the filename ends in `.gz`.
-"""
-_write_msa_fixture(path, contents) =
-    write(path, endswith(path, ".gz") ? transcode(GzipCompressor, contents) : contents)
-
-"""
-A test format giving the sequence count followed by that many sequence lines.
-"""
-struct _CountedMSAFormat <: MSAFormat end
-
-MSA.support_eachmsa(::Type{_CountedMSAFormat}) = true
-
-MSA.hasnextmsa(io::IO, ::Type{_CountedMSAFormat}; strict::Bool = false) =
-    hasnextmsa(io, r"^\d+$"; strict = strict)
-
-function Utils.parse_file(io::IO, ::Type{_CountedMSAFormat}, output::Type; kwargs...)
-    count = parse(Int, readline(io))
-    sequences = join((readline(io) for _ = 1:count), '\n')
-    parse_file(sequences, Raw, output; kwargs...)
-end
-
-"""
-A format with only a two-argument parser and no iterator support.
-"""
-struct _TwoArgumentMSAFormat <: MSAFormat end
-
-Utils.parse_file(io::IO, ::Type{_TwoArgumentMSAFormat}; kwargs...) =
-    parse_file(io, Raw, MultipleSequenceAlignment; kwargs...)
-
-"""
-A format whose parser defaults to an unannotated alignment.
-"""
-struct _DefaultOutputMSAFormat <: MSAFormat end
-
-# A lookahead method alone must not enable iteration or change read_file dispatch.
-MSA.hasnextmsa(io::IO, ::Type{_DefaultOutputMSAFormat}; strict::Bool = false) =
-    error("This format has not opted into eachmsa.")
-
-Utils.parse_file(
-    io::IO,
-    ::Type{_DefaultOutputMSAFormat},
-    output::Type = MultipleSequenceAlignment;
-    kwargs...,
-) = parse_file(io, Raw, output; kwargs...)
-
 @testset "eachmsa" begin
+    # Prepare plain and compressed fixtures without sharing helpers with other test files.
+    _write_msa_fixture(path, contents) =
+        write(path, endswith(path, ".gz") ? transcode(GzipCompressor, contents) : contents)
+
     @testset "Buffered line preservation" for compressed in (false, true)
         line = repeat("α", 10_000) * "\r\n"
         text = line * "tail"
@@ -118,24 +71,23 @@ Utils.parse_file(
             _write_msa_fixture(gzip, contents)
 
             @testset "Plain and gzip, output $T" for T in output_types
+                expected = [
+                    parse_file(record, format, T; deletefullgaps = false) for
+                    record in (first_record, second_record)
+                ]
                 for path in (plain, gzip)
                     msas = eachmsa(path, format, T; deletefullgaps = false)
                     @test eltype(msas) === T
                     alignments = @test_logs collect(msas)
                     @test alignments isa Vector{T}
                     @test size.(alignments) == [(4, 30), (3, 30)]
-                    @test alignments[1] ==
-                          parse_file(first_record, format, T; deletefullgaps = false)
-                    @test alignments[2] ==
-                          parse_file(second_record, format, T; deletefullgaps = false)
+                    @test alignments == expected
+                    msa = @test_logs (:warn, multiple_warning) read_file(path, format, T)
+                    @test msa == parse_file(first_record, format, T)
                 end
             end
 
             @testset "read_file warnings" begin
-                for T in output_types, path in (plain, gzip)
-                    msa = @test_logs (:warn, multiple_warning) read_file(path, format, T)
-                    @test msa == parse_file(first_record, format, T)
-                end
                 expected = parse_file(first_record, format)
                 header = format === Stockholm ? "# STOCKHOLM 1.0\n" : "CLUSTAL\n"
                 for suffix in ("", ".gz")
@@ -164,12 +116,15 @@ Utils.parse_file(
             @testset "Successive parsing, $(repr(newline))" for newline in ("\n", "\r\n")
                 # Preserve columns to compare annotations without modification timestamps.
                 options = (deletefullgaps = false,)
-                expected = parse_file(first_record, format; options...)
-                msa = @test_logs parse_file(contents, format; options...)
-                @test msa == expected
+                expected = [
+                    parse_file(record, format; options...) for
+                    record in (first_record, second_record)
+                ]
                 # Reading one alignment from an open stream must leave the next readable.
                 # Small buffers split lines and headers across buffer boundaries.
                 text = replace(contents, "\n" => newline)
+                msa = @test_logs parse_file(text, format; options...)
+                @test msa == first(expected)
                 streams = (
                     IOBuffer(text),
                     NoopStream(IOBuffer(text); bufsize = 7),
@@ -185,14 +140,14 @@ Utils.parse_file(
                 for io in streams
                     try
                         msa = @test_logs parse_file(io, format; options...)
-                        @test msa == expected
-                        @test annotations(msa) == annotations(expected)
+                        @test msa == first(expected)
+                        @test annotations(msa) == annotations(first(expected))
                         if format === Stockholm || io isa TranscodingStream
                             @test position(io) ==
                                   sizeof(replace(first_record, "\n" => newline))
                         end
                         msa = @test_logs parse_file(io, format; options...)
-                        @test msa == parse_file(second_record, format; options...)
+                        @test msa == last(expected)
                     finally
                         close(io)
                     end
@@ -291,8 +246,6 @@ Utils.parse_file(
                             @test size(first_msa) == (2, 6)
                             @test stringsequence(first_msa, 1) == "A-CEFG"
                             @test getannotcolumn(first_msa, "cons") == "* .* *"
-                            @test !isempty(msas)
-                            @test !isempty(msas)
                             second_msa = first(msas)
                             @test size(second_msa) == (1, 2)
                             @test stringsequence(second_msa, 1) == "KK"
@@ -403,6 +356,25 @@ Utils.parse_file(
     end
 
     @testset "User-defined format" begin
+        # A test format giving the sequence count followed by that many sequence lines.
+        struct _CountedMSAFormat <: MSAFormat end
+
+        MSA.support_eachmsa(::Type{_CountedMSAFormat}) = true
+
+        MSA.hasnextmsa(io::IO, ::Type{_CountedMSAFormat}; strict::Bool = false) =
+            hasnextmsa(io, r"^\d+$"; strict = strict)
+
+        function Utils.parse_file(
+            io::IO,
+            ::Type{_CountedMSAFormat},
+            output::Type;
+            kwargs...,
+        )
+            count = parse(Int, readline(io))
+            sequences = join((readline(io) for _ = 1:count), '\n')
+            parse_file(sequences, Raw, output; kwargs...)
+        end
+
         @test support_eachmsa(_CountedMSAFormat)
         mktempdir() do dir
             record = "2\nA-C-\nATC-\n"
@@ -447,6 +419,26 @@ Utils.parse_file(
     end
 
     @testset "Non-iterable custom formats" begin
+        # A format with only a two-argument parser and no iterator support.
+        struct _TwoArgumentMSAFormat <: MSAFormat end
+
+        Utils.parse_file(io::IO, ::Type{_TwoArgumentMSAFormat}; kwargs...) =
+            parse_file(io, Raw, MultipleSequenceAlignment; kwargs...)
+
+        # A format whose parser defaults to an unannotated alignment.
+        struct _DefaultOutputMSAFormat <: MSAFormat end
+
+        # A lookahead method alone must not enable iteration or change read_file dispatch.
+        MSA.hasnextmsa(io::IO, ::Type{_DefaultOutputMSAFormat}; strict::Bool = false) =
+            error("This format has not opted into eachmsa.")
+
+        Utils.parse_file(
+            io::IO,
+            ::Type{_DefaultOutputMSAFormat},
+            output::Type = MultipleSequenceAlignment;
+            kwargs...,
+        ) = parse_file(io, Raw, output; kwargs...)
+
         mktempdir() do dir
             record = "A-C-\nATC-\n"
             options = (deletefullgaps = false,)

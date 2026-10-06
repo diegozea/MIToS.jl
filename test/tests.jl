@@ -11,7 +11,10 @@ import BioStructures
 using Aqua
 using LinearAlgebra
 using Random
-using Downloads
+using Downloads # EachMSA, IO, AlphaFoldDB
+using CodecZlib: GzipCompressor, transcode # EachMSA, Write
+using TranscodingStreams: NoopStream, TranscodingStream # EachMSA
+import GZip # EachMSA
 using OrderedCollections    # OrderedDict
 using Statistics            # mean
 using DelimitedFiles        # readdlm

@@ -1,58 +1,38 @@
-"""
-A typed iterator without a length, calling `before_next` before each iteration step.
-"""
-struct _MSAWriteIterator{T,F}
-    msas::Vector{T}
-    before_next::F
-end
-
-Base.IteratorSize(::Type{<:_MSAWriteIterator}) = Base.SizeUnknown()
-Base.eltype(::Type{<:_MSAWriteIterator{T}}) where {T} = T
-
-function Base.iterate(msas::_MSAWriteIterator, state::Int = 1)
-    msas.before_next(state)
-    iterate(msas.msas, state)
-end
-
-"""
-An alignment wrapper with custom I/O methods that also iterates over its residues.
-"""
-struct _CustomMSA <: AbstractMatrix{Residue}
-    msa::AnnotatedMultipleSequenceAlignment
-end
-
-Base.size(custom::_CustomMSA) = size(custom.msa)
-Base.getindex(custom::_CustomMSA, i::Int, j::Int) = custom.msa[i, j]
-
-function Utils.parse_file(
-    io::IO,
-    format::Type{<:Union{Stockholm,Clustal}},
-    ::Type{_CustomMSA};
-    kwargs...,
-)
-    header = format === Stockholm ? "# STOCKHOLM" : "CLUSTAL"
-    startswith(readline(io), header) || error("Missing alignment header.")
-    _CustomMSA(parse_file(io, format; kwargs...))
-end
-
-Utils.print_file(io::IO, custom::_CustomMSA, ::Type{Stockholm}) =
-    print_file(io, custom.msa, Stockholm)
-
-# Also cover a writer specialized on the actual file stream type.
-Utils.print_file(
-    io::Union{IOStream,Utils.GzipCompressorStream},
-    custom::_CustomMSA,
-    ::Type{Clustal},
-) = print_file(io, custom.msa, Clustal)
-
-"""
-A non-matrix object with a writer, excluded from alignment collections.
-"""
-struct _NonMatrixMSA end
-
-Utils.print_file(io::IO, ::_NonMatrixMSA, ::Type{<:Union{Stockholm,Clustal}}) = nothing
-
 @testset "Writing multiple alignments" begin
+    # An alignment wrapper with custom I/O methods that also iterates over its residues.
+    struct _CustomMSA <: AbstractMatrix{Residue}
+        msa::AnnotatedMultipleSequenceAlignment
+    end
+
+    Base.size(custom::_CustomMSA) = size(custom.msa)
+    Base.getindex(custom::_CustomMSA, i::Int, j::Int) = custom.msa[i, j]
+
+    function Utils.parse_file(
+        io::IO,
+        format::Type{<:Union{Stockholm,Clustal}},
+        ::Type{_CustomMSA};
+        kwargs...,
+    )
+        header = format === Stockholm ? "# STOCKHOLM" : "CLUSTAL"
+        startswith(readline(io), header) || error("Missing alignment header.")
+        _CustomMSA(parse_file(io, format; kwargs...))
+    end
+
+    Utils.print_file(io::IO, custom::_CustomMSA, ::Type{Stockholm}) =
+        print_file(io, custom.msa, Stockholm)
+
+    # Also cover a writer specialized on the actual file stream type.
+    Utils.print_file(
+        io::Union{IOStream,Utils.GzipCompressorStream},
+        custom::_CustomMSA,
+        ::Type{Clustal},
+    ) = print_file(io, custom.msa, Clustal)
+
+    # A non-matrix object with a writer, excluded from alignment collections.
+    struct _NonMatrixMSA end
+
+    Utils.print_file(io::IO, ::_NonMatrixMSA, ::Type{<:Union{Stockholm,Clustal}}) = nothing
+
     records = (
         "# STOCKHOLM 1.0\n#=GF ID first\n#=GS a DE first sequence\na AC-\nb ADE\n#=GC cons * .\n//\n",
         "# STOCKHOLM 1.0\n#=GF ID second\na WK\n#=GC cons :*\n//\n",
@@ -72,21 +52,15 @@ Utils.print_file(io::IO, ::_NonMatrixMSA, ::Type{<:Union{Stockholm,Clustal}}) = 
                 output = joinpath(dir, "custom" * suffix)
                 write_file(source, msas[1], format)
                 expected = read_file(source, format; generatemapping = true)
-                @test let custom =
-                        read_file(source, format, _CustomMSA; generatemapping = true)
-                    custom.msa == expected &&
-                        annotations(custom.msa) == annotations(expected)
-                end
-                @test begin
-                    write_file(output, _CustomMSA(msas[1]), format)
-                    read_file(output, format) == msas[1]
-                end
+                write_file(output, _CustomMSA(msas[1]), format)
+                custom = read_file(output, format, _CustomMSA; generatemapping = true)
+                @test custom.msa == expected
+                @test annotations(custom.msa) == annotations(expected)
                 write_file(source, _CustomMSA.(msas), format)
-                custom = @test_logs (
+                @test_logs (
                     :warn,
                     "Read only the first alignment; use `eachmsa` to read all.",
                 ) read_file(source, format, _CustomMSA; generatemapping = true)
-                @test annotations(custom.msa) == annotations(expected)
                 eachmsa(source, format, _CustomMSA; generatemapping = true) do input
                     write_file(output, input, format)
                 end
@@ -127,7 +101,7 @@ Utils.print_file(io::IO, ::_NonMatrixMSA, ::Type{<:Union{Stockholm,Clustal}}) = 
                 end
             end
 
-            @testset "eachmsa and empty input" for suffix in ("", ".gz")
+            @testset "eachmsa input" for suffix in ("", ".gz")
                 source = joinpath(dir, "input" * suffix)
                 output = joinpath(dir, "output" * suffix)
                 write_file(source, msas, format)
@@ -135,8 +109,13 @@ Utils.print_file(io::IO, ::_NonMatrixMSA, ::Type{<:Union{Stockholm,Clustal}}) = 
                     write_file(output, input, format)
                 end
                 @test collect(eachmsa(output, format)) == msas
-                for empty in (AnnotatedMultipleSequenceAlignment[], (), Union{}[])
-                    @test sprint(print_file, empty, format) == ""
+            end
+
+            @testset "Empty input" for empty in
+                                       (AnnotatedMultipleSequenceAlignment[], (), Union{}[])
+                @test sprint(print_file, empty, format) == ""
+                for suffix in ("", ".gz")
+                    output = joinpath(dir, "empty" * suffix)
                     write_file(output, empty, format)
                     @test isempty(collect(eachmsa(output, format)))
                 end
@@ -152,29 +131,24 @@ Utils.print_file(io::IO, ::_NonMatrixMSA, ::Type{<:Union{Stockholm,Clustal}}) = 
             @testset "Incremental output" begin
                 io = IOBuffer()
                 steps = Int[]
-                input = _MSAWriteIterator(
-                    msas,
-                    state -> begin
-                        push!(steps, state)
-                        if state == 2
-                            @test String(take!(io)) == sprint(print_file, msas[1], format)
-                        end
-                    end,
-                )
+                input = Iterators.filter(msas) do msa
+                    push!(steps, length(steps) + 1)
+                    if length(steps) == 2
+                        @test String(take!(io)) == sprint(print_file, msas[1], format)
+                    end
+                    true
+                end
                 @test print_file(io, input, format) === nothing
-                @test steps == [1, 2, 3]
+                @test steps == [1, 2]
                 @test String(take!(io)) == sprint(print_file, msas[2], format)
                 @test isopen(io)
             end
 
             @testset "Iteration errors close output" for suffix in ("", ".gz")
                 path = joinpath(dir, "partial" * suffix)
-                input = _MSAWriteIterator(
-                    msas,
-                    state -> begin
-                        state == 2 && error("iteration failed")
-                    end,
-                )
+                input = Iterators.filter(msas) do msa
+                    msa === first(msas) || error("iteration failed")
+                end
                 @test_throws ErrorException("iteration failed") write_file(
                     path,
                     input,
@@ -203,8 +177,8 @@ Utils.print_file(io::IO, ::_NonMatrixMSA, ::Type{<:Union{Stockholm,Clustal}}) = 
 
             @testset "Reject non-alignment elements" for suffix in ("", ".gz")
                 path = joinpath(dir, "unsupported" * suffix)
-                recursive = _MSAWriteIterator(_MSAWriteIterator[], _ -> nothing)
-                push!(recursive.msas, recursive)
+                recursive = Vector[]
+                push!(recursive, recursive)
                 for input in (
                     1,
                     'A',
@@ -230,7 +204,10 @@ Utils.print_file(io::IO, ::_NonMatrixMSA, ::Type{<:Union{Stockholm,Clustal}}) = 
         mktempdir() do dir
             source = joinpath(dir, "msas.sto.gz")
             output = joinpath(dir, "aligned-msas.sto.gz")
-            _write_msa_fixture(source, repeat(read(fixture, String) * "\n", 2))
+            write(
+                source,
+                transcode(GzipCompressor, repeat(read(fixture, String) * "\n", 2)),
+            )
             eachmsa(
                 source,
                 Stockholm;
