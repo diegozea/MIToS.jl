@@ -48,6 +48,8 @@
     @testset "$format" for format in (Stockholm, Clustal)
         mktempdir() do dir
             @testset "Custom I/O methods" for suffix in ("", ".gz")
+                # Use user-defined reading and writing methods for single MSAs and
+                # collections, including collections mixed with built-in alignment types.
                 source = joinpath(dir, "source" * suffix)
                 output = joinpath(dir, "custom" * suffix)
                 write_file(source, msas[1], format)
@@ -78,6 +80,8 @@
             end
 
             @testset "Alignment types" for T in msa_types
+                # Save and read each alignment type, preserving sequences, names and
+                # the annotations supported by the format.
                 typed_msas = [
                     parse_file(record, Stockholm, T; deletefullgaps = false) for
                     record in records
@@ -102,6 +106,7 @@
             end
 
             @testset "eachmsa input" for suffix in ("", ".gz")
+                # Pass eachmsa directly to write_file and read back the same alignments.
                 source = joinpath(dir, "input" * suffix)
                 output = joinpath(dir, "output" * suffix)
                 write_file(source, msas, format)
@@ -113,6 +118,7 @@
 
             @testset "Empty input" for empty in
                                        (AnnotatedMultipleSequenceAlignment[], (), Union{}[])
+                # Empty collections, including tuples, must write no alignments and succeed.
                 @test sprint(print_file, empty, format) == ""
                 for suffix in ("", ".gz")
                     output = joinpath(dir, "empty" * suffix)
@@ -122,6 +128,7 @@
             end
 
             @testset "Append" begin
+                # Adding another alignment must preserve the first and keep their order.
                 path = joinpath(dir, "append")
                 write_file(path, msas[1], format)
                 write_file(path, msas[2:2], format, "a")
@@ -129,6 +136,8 @@
             end
 
             @testset "Incremental output" begin
+                # Write the first alignment before requesting the second, and leave the
+                # caller's output open after print_file finishes.
                 io = IOBuffer()
                 steps = Int[]
                 input = Iterators.filter(msas) do msa
@@ -145,6 +154,8 @@
             end
 
             @testset "Iteration errors close output" for suffix in ("", ".gz")
+                # If obtaining the next MSA fails, report the error and leave the first
+                # alignment readable, including in gzip output.
                 path = joinpath(dir, "partial" * suffix)
                 input = Iterators.filter(msas) do msa
                     msa === first(msas) || error("iteration failed")
@@ -158,6 +169,8 @@
             end
 
             @testset "Reject missing element types" begin
+                # Reject Any or undeclared element types with an informative error before
+                # processing the input or writing any text.
                 invalid_inputs = (
                     (Any[msas[1]], "Expected an alignment `eltype`; got `Any`."),
                     (Any[], "Expected an alignment `eltype`; got `Any`."),
@@ -176,6 +189,8 @@
             end
 
             @testset "Reject non-alignment elements" for suffix in ("", ".gz")
+                # Unsuitable objects must raise MethodError, including nested collections.
+                # A valid alignment written before the error must remain readable.
                 path = joinpath(dir, "unsupported" * suffix)
                 recursive = Vector[]
                 push!(recursive, recursive)
@@ -199,6 +214,8 @@
     end
 
     @testset "Pfam example preserves mappings" begin
+        # The documented workflow must preserve sequence coordinates, column mappings and
+        # annotations, including after saving and reading again without regenerating maps.
         fixture = joinpath(DATA, "PF09645_full.stockholm")
         expected = read_file(fixture, Stockholm)
         mktempdir() do dir
@@ -237,6 +254,7 @@
     end
 
     @testset "Format dispatch and keywords" begin
+        # Collections are unsupported for FASTA; Clustal options apply to every alignment.
         @test !applicable(print_file, IOBuffer(), msas, FASTA)
         @test sprint(io -> print_file(io, msas, Clustal; showcounts = true)) == join(
             sprint(io -> print_file(io, msa, Clustal; showcounts = true)) for msa in msas
