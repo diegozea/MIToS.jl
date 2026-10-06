@@ -6,8 +6,13 @@ function hasnextmsa(
     hasnextmsa(io, _msa_header(format); strict = strict)
 end
 
-support_eachmsa(::Type{Stockholm}) = true
-support_eachmsa(::Type{Clustal}) = true
+function support_eachmsa(::Type{Stockholm})
+    return true
+end
+
+function support_eachmsa(::Type{Clustal})
+    return true
+end
 
 """
 Reuse a buffered input, or add a buffer to an ordinary input.

@@ -18,7 +18,10 @@ When `support_eachmsa` returns `true`, [`read_file`](@ref) calls [`hasnextmsa`](
 after reading the first alignment and warns the user to use `eachmsa` if another follows.
 When `support_eachmsa` returns `false`, `read_file` calls `parse_file` directly.
 """
-support_eachmsa(::Type{<:MSAFormat}) = false
+# Explicit returns keep these constant traits visible to Julia 1.13 coverage.
+function support_eachmsa(::Type{<:MSAFormat})
+    return false
+end
 
 """
 Read an alignment line, using a byte delimiter for the buffered `readuntil` method.
