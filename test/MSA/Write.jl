@@ -17,13 +17,12 @@ end
 """
 An alignment wrapper with custom I/O methods that also iterates over its residues.
 """
-struct _CustomMSA
+struct _CustomMSA <: AbstractMatrix{Residue}
     msa::AnnotatedMultipleSequenceAlignment
 end
 
-Base.IteratorSize(::Type{_CustomMSA}) = Base.SizeUnknown()
-Base.eltype(::Type{_CustomMSA}) = Residue
-Base.iterate(custom::_CustomMSA, args...) = iterate(custom.msa, args...)
+Base.size(custom::_CustomMSA) = size(custom.msa)
+Base.getindex(custom::_CustomMSA, i::Int, j::Int) = custom.msa[i, j]
 
 function Utils.parse_file(
     io::IO,
@@ -45,6 +44,13 @@ Utils.print_file(
     custom::_CustomMSA,
     ::Type{Clustal},
 ) = print_file(io, custom.msa, Clustal)
+
+"""
+A non-matrix object with a writer, excluded from alignment collections.
+"""
+struct _NonMatrixMSA end
+
+Utils.print_file(io::IO, ::_NonMatrixMSA, ::Type{<:Union{Stockholm,Clustal}}) = nothing
 
 @testset "Writing multiple alignments" begin
     records = (
@@ -195,11 +201,20 @@ Utils.print_file(
                 end
             end
 
-            @testset "Missing alignment writers" for suffix in ("", ".gz")
+            @testset "Reject non-alignment elements" for suffix in ("", ".gz")
                 path = joinpath(dir, "unsupported" * suffix)
                 recursive = _MSAWriteIterator(_MSAWriteIterator[], _ -> nothing)
                 push!(recursive.msas, recursive)
-                for input in (1, 'A', [1], ['A'], recursive)
+                for input in (
+                    1,
+                    'A',
+                    [1],
+                    ['A'],
+                    recursive,
+                    [msas],
+                    [ones(Int, 1, 1)],
+                    [_NonMatrixMSA()],
+                )
                     @test_throws MethodError write_file(path, input, format)
                 end
                 mixed = Union{AnnotatedMultipleSequenceAlignment,Int}[msas[1], 1]
