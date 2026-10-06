@@ -10,7 +10,8 @@ _msa_header(::Type{Stockholm}) = r"^# STOCKHOLM 1\.0$"
 # file with multiple blocks is at test/data/clustalo-I20240512-trunc.aln-stockholm
 
 @inline function _fill_with_sequence_line!(IDS, SEQS, line)
-    if !startswith(line, '#') && !startswith(line, "//")
+    # Headers accepted by hasnextmsa may have leading whitespace.
+    if !startswith(lstrip(line), '#') && !startswith(line, "//")
         words = get_n_words(line, 2)
         @inbounds id = words[1]
         if id in IDS

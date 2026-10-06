@@ -209,7 +209,30 @@
                 end
             end
 
-            if format === Clustal
+            if format === Stockholm
+                @testset "Indented Stockholm headers" begin
+                    # Headers must never become sequences, even when their text has
+                    # the same length as a 13-column alignment.
+                    records = (
+                        "# STOCKHOLM 1.0\na ACDEFGHIKLMNP\n//\n",
+                        "# STOCKHOLM 1.0\na ACD\n//\n",
+                    )
+                    for T in (AnnotatedMultipleSequenceAlignment, MultipleSequenceAlignment)
+                        expected = [parse_file(record, format, T) for record in records]
+                        for suffix in ("", ".gz")
+                            path = joinpath(dir, "indented.sto" * suffix)
+                            _write_msa_fixture(path, "  " * records[1] * "\t" * records[2])
+                            @test collect(eachmsa(path, format, T)) == expected
+                            msa = @test_logs (:warn, multiple_warning) read_file(
+                                path,
+                                format,
+                                T,
+                            )
+                            @test msa == first(expected)
+                        end
+                    end
+                end
+            elseif format === Clustal
                 @testset "Pipe-backed IOStream" begin
                     # Clustal must read consecutive alignments even when the input cannot
                     # move backwards, with or without an additional buffer.
