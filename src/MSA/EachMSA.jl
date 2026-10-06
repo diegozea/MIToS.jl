@@ -76,7 +76,7 @@ output is `AnnotatedMultipleSequenceAlignment`; the output types and parsing key
 are the same as for [`read_file`](@ref) and [`parse_file`](@ref).
 Each alignment is read with `parse_file`, including user-defined output types.
 Additional formats can declare [`support_eachmsa`](@ref) as `true` and implement
-[`hasnextmsa`](@ref) and `parse_file` without defining another iterator type.
+[`hasnextmsa`](@ref) and `parse_file` to support this iterator.
 
 The source is a local path or an HTTP, HTTPS or FTP URL. Files ending in `.gz` are
 decompressed incrementally using one open stream. A URL is downloaded once to a temporary
