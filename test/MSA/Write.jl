@@ -179,11 +179,11 @@ Utils.print_file(
 
             @testset "Reject missing element types" begin
                 invalid_inputs = (
-                    (Any[msas[1]], "Expected an alignment eltype; got Any."),
-                    (Any[], "Expected an alignment eltype; got Any."),
+                    (Any[msas[1]], "Expected an alignment `eltype`; got `Any`."),
+                    (Any[], "Expected an alignment `eltype`; got `Any`."),
                     (
                         (error("must not iterate") for _ = 1:1),
-                        "Iterator must declare an alignment eltype.",
+                        "Iterator must declare an alignment `eltype`.",
                     ),
                 )
                 for (input, message) in invalid_inputs

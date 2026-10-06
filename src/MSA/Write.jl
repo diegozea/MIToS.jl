@@ -11,8 +11,9 @@ any input stream.
 """
 function Utils.print_file(io::IO, msas, format::Type{<:Union{Stockholm,Clustal}}; kwargs...)
     Base.IteratorEltype(typeof(msas)) isa Base.HasEltype ||
-        throw(ArgumentError("Iterator must declare an alignment eltype."))
-    eltype(msas) === Any && throw(ArgumentError("Expected an alignment eltype; got Any."))
+        throw(ArgumentError("Iterator must declare an alignment `eltype`."))
+    eltype(msas) === Any &&
+        throw(ArgumentError("Expected an alignment `eltype`; got `Any`."))
     for msa in msas
         # Some scalar values iterate over themselves; stop instead of recursing.
         msa === msas && throw(MethodError(print_file, (io, msas, format)))
