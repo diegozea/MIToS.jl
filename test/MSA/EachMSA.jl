@@ -50,6 +50,22 @@ Utils.parse_file(
 ) = parse_file(io, Raw, output; kwargs...)
 
 @testset "eachmsa" begin
+    @testset "Buffered line preservation" for compressed in (false, true)
+        line = repeat("α", 10_000) * "\r\n"
+        text = line * "tail"
+        data = compressed ? transcode(GzipCompressor, text) : text
+        wrapper = compressed ? Utils.GzipDecompressorStream : NoopStream
+        io = wrapper(IOBuffer(data); bufsize = 1)
+        @test_throws ArgumentError hasnextmsa(io, r"^other"; strict = true)
+        @test hasnextmsa(io, r"^α"; strict = true)
+        @test hasnextmsa(io, r"^α"; strict = true)
+        first_line = MSA._read_msa_line(io)
+        @test MSA._read_msa_line(io) == "tail"
+        @test first_line == line
+        @test eof(io)
+        close(io)
+    end
+
     @testset "$format" for format in (Stockholm, Clustal)
         @test support_eachmsa(format)
         multiple_warning = "Read only the first alignment; use `eachmsa` to read all."

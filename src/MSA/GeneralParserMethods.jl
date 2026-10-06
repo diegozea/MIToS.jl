@@ -13,14 +13,12 @@ abstract type SequenceFormat <: AbstractSequenceFormat end
 Return whether `format` supports [`eachmsa`](@ref). The default is `false`.
 To support a new format, define `MIToS.MSA.support_eachmsa(::Type{MyFormat}) = true` and
 implement [`hasnextmsa`](@ref) and `parse_file(io, format, output; kwargs...)`.
-`read_file` also uses this declaration to check for additional alignments.
+
+When `support_eachmsa` returns `true`, [`read_file`](@ref) calls [`hasnextmsa`](@ref)
+after reading the first alignment and warns the user to use `eachmsa` if another follows.
+When `support_eachmsa` returns `false`, `read_file` calls `parse_file` directly.
 """
 support_eachmsa(::Type{<:MSAFormat}) = false
-
-"""
-Return the alignment header pattern. Methods are defined for `Stockholm` and `Clustal`.
-"""
-function _msa_header end
 
 """
 Read an alignment line, using a byte delimiter for the buffered `readuntil` method.
@@ -54,6 +52,7 @@ function hasnextmsa(io::TranscodingStream, header::Regex; strict::Bool = false)
         line = _read_msa_line(io)
         stripped = strip(line)
         isempty(stripped) && continue
+        # Put the line back before checking the header so an error does not consume it.
         TranscodingStreams.unread(io, codeunits(line))
         found = occursin(header, stripped)
         strict && !found && throw(ArgumentError("Invalid alignment header: $stripped"))

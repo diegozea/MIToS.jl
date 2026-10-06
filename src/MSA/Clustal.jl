@@ -6,6 +6,11 @@ struct Clustal <: MSAFormat end
 # the columns of the alignment.
 
 # Match a header token, not a sequence name such as CLUSTAL_seq.
+"""
+Return the regular expression that identifies an alignment header.
+Used by `hasnextmsa` to check for another alignment and by parsers to recognize
+where the next alignment begins, so they can stop reading the current one.
+"""
 _msa_header(::Type{Clustal}) = r"^CLUSTALW?(?:\s|$)"
 
 """
