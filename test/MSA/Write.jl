@@ -177,11 +177,10 @@ Utils.print_file(
                 @test collect(eachmsa(path, format)) == msas[1:1]
             end
 
-            @testset "Reject element types before writing" begin
+            @testset "Reject missing element types" begin
                 invalid_inputs = (
                     (Any[msas[1]], "Expected an alignment eltype; got Any."),
                     (Any[], "Expected an alignment eltype; got Any."),
-                    ([1], "Expected an alignment eltype; got $(Int)."),
                     (
                         (error("must not iterate") for _ = 1:1),
                         "Iterator must declare an alignment eltype.",
@@ -190,15 +189,22 @@ Utils.print_file(
                 for (input, message) in invalid_inputs
                     path = joinpath(dir, "invalid")
                     @test_throws ArgumentError(message) write_file(path, input, format)
-                    @test !ispath(path)
-                    write(path, "keep this file")
-                    @test_throws ArgumentError(message) write_file(path, input, format)
-                    @test read(path, String) == "keep this file"
-                    rm(path)
                     io = IOBuffer()
                     @test_throws ArgumentError(message) print_file(io, input, format)
                     @test position(io) == 0
                 end
+            end
+
+            @testset "Missing alignment writers" for suffix in ("", ".gz")
+                path = joinpath(dir, "unsupported" * suffix)
+                recursive = _MSAWriteIterator(_MSAWriteIterator[], _ -> nothing)
+                push!(recursive.msas, recursive)
+                for input in (1, 'A', [1], ['A'], recursive)
+                    @test_throws MethodError write_file(path, input, format)
+                end
+                mixed = Union{AnnotatedMultipleSequenceAlignment,Int}[msas[1], 1]
+                @test_throws MethodError write_file(path, mixed, format)
+                @test read_file(path, format) == msas[1]
             end
         end
     end

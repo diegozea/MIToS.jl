@@ -1,12 +1,4 @@
 """
-Validate an object before opening its output file. Formats can specialize this check. This
-function must throw an error if the object to be written is not valid for the given format.
-If no error is thrown, the object is assumed to be valid.
-The stream type allows validation to account for specialized writers.
-"""
-_validate_write(object, format::Type{<:FileFormat}, ::Type{<:IO}) = nothing
-
-"""
     write_file(filename::AbstractString, object, format::Type, mode::String = "w")
 
 This function opens a file with `filename` and `mode` (default: "w")
@@ -19,11 +11,9 @@ function write_file(
     format::Type{T},
     mode::String = "w",
 ) where {T<:FileFormat}
-    compressed = endswith(filename, ".gz")
-    _validate_write(object, format, compressed ? GzipCompressorStream{IOStream} : IOStream)
     fh = open(filename, mode)
     try
-        if compressed
+        if endswith(filename, ".gz")
             fh = GzipCompressorStream(fh)
             write(fh, "") # Start a valid gzip stream even when there are no alignments.
         end
