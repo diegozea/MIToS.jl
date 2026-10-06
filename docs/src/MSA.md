@@ -134,6 +134,8 @@ downloading it again each time.
 
 The reading options are the same as for [`read_file`](@ref MIToS.Utils.read_file) and [`parse_file`](@ref MIToS.Utils.parse_file).
 
+To add another file format, see [Supporting another alignment format](@ref Supporting-another-alignment-format).
+
 ### [Writing MSA files](@id Writing-MSA-files)
 
 Use `print_file` to display an alignment in `FASTA`, `Stockholm`, `Clustal`, `PIR` or
