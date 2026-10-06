@@ -1,6 +1,9 @@
 """
-Validate collections handled by the generic writer. Single alignments and collection
-elements use their public `print_file` methods, including user-defined types.
+Check whether a group of multiple sequence alignments can be saved in the requested
+file format. Each declared alignment type must have a `print_file` method for that format.
+The check does not read the alignments or inspect their sequences. `write_file` runs it
+before creating or overwriting the output file.
+Single alignments and groups with their own `print_file` method need no additional check.
 """
 function Utils._validate_write(
     msas,
