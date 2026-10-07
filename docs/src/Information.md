@@ -380,6 +380,25 @@ After that, this function takes some keyword arguments:
   - `usediagonal` (default: `true`) : Indicates if the function should be applied to pairs containing the same sequence or column.
   - `diagonalvalue` (default to zero) : The value that fills the diagonal elements of the table if `usediagonal` is `false`.
 
+For column pairs, `mapcolpairfreq!(f, msa, table; threads = true)` opts into parallel
+execution. Start Julia with multiple worker threads, for example `julia --threads=4`.
+The default remains serial, and `threads=true` also uses the serial path when only one
+worker is available. `mapfreq(f, msa; rank=2, dims=2, threads=true)` and column-pair
+information measures such as `normalized_mutual_information(msa; threads=true)` forward
+this option to `mapcolpairfreq!`.
+
+Each work chunk has its own scratch table and writes to a separate part of the result.
+For deterministic callbacks that depend only on the current pair and read-only arguments,
+the scores match the serial result exactly: residue counting and arithmetic within each
+pair use the same order. On successful return, the caller's table holds the last pair in
+serial order, including its marginals and total; it is unchanged when there are no pairs.
+
+The callback must be safe to call concurrently. It must not mutate shared inputs or retain
+the scratch table, and it cannot rely on callback order. Shared mutable state and random
+number generation can make results differ from serial execution. Parallel execution adds
+task and scratch-table allocation costs and can be slower for small alignments. Measure
+both modes on your alignment and hardware before choosing one.
+
 #### Example: Estimating *H(X)* and *H(X, Y)* over an MSA
 
 In this example, we are going to use `mapcolfreq!` and `mapcolpairfreq!` to estimate

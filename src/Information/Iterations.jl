@@ -35,6 +35,21 @@ _mappairfreq_kargs_doc = """
 - `diagonalvalue` (default: `zero`): Value to fill diagonal elements if `usediagonal` is `false`.
 """
 
+_mapcolpairfreq_kargs_doc = """
+- `threads` (default: `false`): If `true` and Julia has multiple worker threads, column
+  pairs are processed in parallel using a separate scratch table for each work chunk.
+  Start Julia with e.g. `julia --threads=4` to enable multiple workers. Small alignments
+  may be slower because of task and scratch-table allocation overhead.
+
+With `threads=true`, `f` must be safe to call concurrently and depend only on the current
+pair's table and read-only arguments. Do not mutate shared inputs or retain the scratch
+table. Callback order is unspecified; callbacks using shared state or random numbers are
+not guaranteed to match the serial result. For deterministic, independent callbacks, each
+pair uses the same counting and arithmetic order as the serial path, so scores match
+exactly. On successful return, the supplied `table` contains the last pair in serial order
+(or remains unchanged if there are no pairs), in either mode.
+"""
+
 # Residues: The output is a Named Vector
 # --------------------------------------
 
@@ -164,6 +179,63 @@ function _mappairfreq!(
     plm
 end
 
+function _mappairfreq_threaded!(
+    f::Function,
+    res_list::Vector{V},
+    plm::PairwiseListMatrix{T,D,TV},
+    table::Union{Probabilities{T,2,A},Frequencies{T,2,A}};
+    weights::WeightTypes = NoClustering(),
+    pseudocounts::Pseudocount = NoPseudocount(),
+    pseudofrequencies::Pseudofrequencies = NoPseudofrequencies(),
+    kargs...,
+) where {T,D,TV,A,V<:AbstractArray{Residue}}
+    list = getlist(plm)
+    npairs = length(list)
+    npairs == 0 && return plm
+    nres = length(res_list)
+    nchunks = min(Threads.nthreads(), npairs)
+
+    # Each chunk owns its scratch table even if its task yields or migrates.
+    # Copy before starting any workers. The final chunk uses the caller's table,
+    # leaving it filled with the last pair, just as the serial path does.
+    tables = [chunk == nchunks ? table : deepcopy(table) for chunk = 1:nchunks]
+    Threads.@threads for chunk = 1:nchunks
+        local_table = tables[chunk]
+        first = div((chunk - 1) * npairs, nchunks) + 1
+        last = div(chunk * npairs, nchunks)
+
+        # Split the packed upper triangle by pair count, not by rows, whose
+        # lengths decrease. Locate the first pair once per chunk.
+        offset = first - 1
+        i = 1
+        rowlength = nres - !D
+        while offset >= rowlength
+            offset -= rowlength
+            rowlength -= 1
+            i += 1
+        end
+        j = i + !D + offset
+        @inbounds for k = first:last
+            list[k] = _mapfreq_kernel!(
+                f,
+                local_table,
+                weights,
+                pseudocounts,
+                pseudofrequencies,
+                res_list[i],
+                res_list[j];
+                kargs...,
+            )
+            j += 1
+            if j > nres
+                i += 1
+                j = i + !D
+            end
+        end
+    end # COV_EXCL_LINE: Julia 1.9 marks the generated @threads wrapper as uncovered.
+    plm
+end
+
 # Map to column pairs
 
 """
@@ -173,12 +245,14 @@ probabilities of each pair of columns from the `msa` (second argument).
 
 $_mapfreq_kargs_doc
 $_mappairfreq_kargs_doc
+$_mapcolpairfreq_kargs_doc
 """
 function mapcolpairfreq!(
     f::Function,
     msa::AbstractMatrix{Residue},
     table::Union{Probabilities{T,2,A},Frequencies{T,2,A}};
     usediagonal::Bool = true,
+    threads::Bool = false,
     diagonalvalue::T = zero(T),
     weights::WeightTypes = NoClustering(),
     pseudocounts::Pseudocount = NoPseudocount(),
@@ -190,17 +264,30 @@ function mapcolpairfreq!(
     columns = map(i -> view(residues, :, i), 1:ncol) # 2x faster than calling view inside the loop
     scores = columnpairsmatrix(msa, T, Val{usediagonal}, diagonalvalue) # Named PairwiseListMatrix
     plm = getarray(scores)
-    _mappairfreq!(
-        f,
-        columns,
-        plm,
-        table,
-        Val{usediagonal};
-        weights = weights,
-        pseudocounts = pseudocounts,
-        pseudofrequencies = pseudofrequencies,
-        kargs...,
-    )
+    if threads && Threads.nthreads() > 1
+        _mappairfreq_threaded!(
+            f,
+            columns,
+            plm,
+            table;
+            weights = weights,
+            pseudocounts = pseudocounts,
+            pseudofrequencies = pseudofrequencies,
+            kargs...,
+        )
+    else
+        _mappairfreq!(
+            f,
+            columns,
+            plm,
+            table,
+            Val{usediagonal};
+            weights = weights,
+            pseudocounts = pseudocounts,
+            pseudofrequencies = pseudofrequencies,
+            kargs...,
+        )
+    end
     scores
 end
 
