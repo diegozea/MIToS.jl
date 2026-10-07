@@ -1,5 +1,43 @@
 @testset "GeneralParserMethods" begin
 
+    @testset "Custom named-matrix parser" begin
+        # Reuse a format's public named-matrix parser when an MSA object is requested.
+        struct _NamedMatrixFormat <: MSAFormat end
+
+        Utils.parse_file(
+            io::Union{IO,AbstractString},
+            ::Type{_NamedMatrixFormat},
+            ::Type{NamedResidueMatrix{Matrix{Residue}}};
+            deletefullgaps::Bool = true,
+        ) = parse_file(io, FASTA, NamedResidueMatrix{Matrix{Residue}}; deletefullgaps)
+
+        text = ">a\nA-C-\n>b\nA-E-\n"
+        mktemp() do path, io
+            write(io, text)
+            close(io)
+            for gaps in (true, false)
+                expected = parse_file(
+                    text,
+                    FASTA,
+                    MultipleSequenceAlignment;
+                    deletefullgaps = gaps,
+                )
+                for (reader, input) in
+                    ((parse_file, text), (parse_file, IOBuffer(text)), (read_file, path))
+                    msa = reader(
+                        input,
+                        _NamedMatrixFormat,
+                        MultipleSequenceAlignment;
+                        deletefullgaps = gaps,
+                    )
+                    @test msa isa MultipleSequenceAlignment
+                    @test msa == expected
+                    @test sequencenames(msa) == ["a", "b"]
+                end
+            end
+        end
+    end
+
     @testset "Test input lengths" begin
         # NOTE: _pre_read... functions should call _check_seq_len
         # if _convert_to_matrix_residues is used

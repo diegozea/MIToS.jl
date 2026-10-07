@@ -10,7 +10,8 @@ _msa_header(::Type{Stockholm}) = r"^# STOCKHOLM 1\.0$"
 # file with multiple blocks is at test/data/clustalo-I20240512-trunc.aln-stockholm
 
 @inline function _fill_with_sequence_line!(IDS, SEQS, line)
-    if !startswith(line, '#') && !startswith(line, "//")
+    # Headers accepted by hasnextmsa may have leading whitespace.
+    if !startswith(lstrip(line), '#') && !startswith(line, "//")
         words = get_n_words(line, 2)
         @inbounds id = words[1]
         if id in IDS
@@ -43,7 +44,7 @@ function _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
     end
 end
 
-function _pre_readstockholm(io::Union{IO,AbstractString})
+function _pre_readstockholm(io::IO)
     IDS = OrderedSet{String}()
     SEQS = String[]
     GF = OrderedDict{String,String}()
@@ -51,7 +52,8 @@ function _pre_readstockholm(io::Union{IO,AbstractString})
     GS = Dict{Tuple{String,String},String}()
     GR = Dict{Tuple{String,String},String}()
 
-    @inbounds for line in lineiterator(io)
+    @inbounds while !eof(io)
+        line = chomp(_read_msa_line(io))
         isempty(line) && continue
         startswith(line, "//") && break
         _fill_with_line!(IDS, SEQS, GF, GS, GC, GR, line)
@@ -64,10 +66,11 @@ function _pre_readstockholm(io::Union{IO,AbstractString})
     (IDS, SEQS, GF, GS, GC, GR)
 end
 
-function _pre_readstockholm_sequences(io::Union{IO,AbstractString})
+function _pre_readstockholm_sequences(io::IO)
     IDS = OrderedSet{String}()
     SEQS = String[]
-    @inbounds for line in lineiterator(io)
+    @inbounds while !eof(io)
+        line = chomp(_read_msa_line(io))
         isempty(line) && continue
         startswith(line, "//") && break
         _fill_with_sequence_line!(IDS, SEQS, line)
@@ -80,6 +83,7 @@ function _load_sequences(
     format::Type{Stockholm};
     create_annotations::Bool = false,
 )
+    io = io isa AbstractString ? IOBuffer(io) : io
     if create_annotations
         IDS, SEQS, GF, GS, GC, GR = _pre_readstockholm(io)
         annot = Annotations(GF, GS, GC, GR)
@@ -87,8 +91,7 @@ function _load_sequences(
         IDS, SEQS = _pre_readstockholm_sequences(io)
         annot = Annotations()
     end
-    # Leave the next header unread; nothing means that has_next has not been checked.
-    return collect(IDS), SEQS, annot, nothing
+    return collect(IDS), SEQS, annot
 end
 
 # Print Pfam

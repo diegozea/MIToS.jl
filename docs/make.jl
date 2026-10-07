@@ -47,6 +47,7 @@ makedocs(
             "Pfam_API.md",
             "Utils_API.md",
         ],
+        "Development.md",
         "Scripts.md",
         "References.md",
     ],
