@@ -574,12 +574,15 @@ function _parse_msa(
 end
 
 function _parse_msa(
-    loaded_sequences::Tuple,
+    io::Union{IO,AbstractString},
+    format::Type{<:MSAFormat},
     output::Type{MultipleSequenceAlignment};
     deletefullgaps::Bool = true,
 )::MultipleSequenceAlignment
-    msa = _parse_msa(
-        loaded_sequences,
+    # Reuse public named-matrix parsers, including those supplied by custom formats.
+    msa = parse_file(
+        io,
+        format,
         NamedResidueMatrix{Array{Residue,2}},
         deletefullgaps = deletefullgaps,
     )
@@ -596,7 +599,7 @@ function _parse_msa(
     _strings_to_matrix_residue_unsafe(SEQS, deletefullgaps)
 end
 
-function Utils.parse_file(
+function _parse_msa(
     io::Union{IO,AbstractString},
     format::Type{F},
     output::Type{T};
@@ -604,6 +607,15 @@ function Utils.parse_file(
 ) where {F<:MSAFormat,T}
     loaded_sequences = _load_sequences(io, format, output)
     _parse_msa(loaded_sequences, output; kwargs...)
+end
+
+function Utils.parse_file(
+    io::Union{IO,AbstractString},
+    format::Type{F},
+    output::Type{T};
+    kwargs...,
+) where {F<:MSAFormat,T}
+    _parse_msa(io, format, output; kwargs...)
 end
 
 function Utils.parse_file(
