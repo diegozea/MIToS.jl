@@ -1,5 +1,27 @@
 @testset "Kabsch algorithm" begin
 
+    @testset "Proper rotations for singular fits and reflections" begin
+        for points in (
+            [0.0 0 0],
+            [-1.0 0 0; 1 0 0],
+            [-1.0 0 0; 1 0 0; 0 1 0],
+            zeros(4, 3),
+            [1.0 1 1; 1 -1 -1; -1 1 -1; -1 -1 1],
+        )
+            center!(points)
+            for model in (copy(points), points .* [-1.0 1 1])
+                rotation = kabsch(points, model)
+                @test rotation' * rotation ≈ Matrix{Float64}(I, 3, 3)
+                @test det(rotation) ≈ 1.0
+                # A held-out point must not collapse onto the fitted plane/line.
+                @test norm([1.0 2 3] * rotation) ≈ sqrt(14)
+            end
+        end
+        tetrahedron = [1.0 1 1; 1 -1 -1; -1 1 -1; -1 -1 1]
+        reflection = tetrahedron .* [-1.0 1 1]
+        @test PDB.rmsd(tetrahedron, reflection * kabsch(tetrahedron, reflection)) ≈ 2.0
+    end
+
     @testset "Test I" begin
         a = [
             1 1 0

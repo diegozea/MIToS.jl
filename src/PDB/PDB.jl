@@ -102,6 +102,10 @@ export  # PDBResidues
     superimpose,
     mean_coordinates,
     rmsf,
+    gdt_per_cutoff,
+    gdt_ts,
+    gdt_ha,
+    tm_score,
     # MIToS.Utils
     All,
     read_file,
