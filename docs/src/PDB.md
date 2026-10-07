@@ -47,6 +47,47 @@ PDB entry.
 getpdbdescription("1IVO")
 ```
 
+### Extended PDB identifiers
+
+MIToS accepts both legacy IDs such as `1abc` and extended IDs such as `pdb_00001abc`
+or `pdb_10021abc`, in either case. The extended format is `pdb_` followed by eight
+ASCII alphanumeric characters. Only `pdb_0000` followed by a valid legacy ID is an
+alias of that legacy entry; extended-only IDs are never shortened to four characters.
+[`check_pdbcode`](@ref MIToS.Utils.check_pdbcode) validates syntax, not whether an
+entry exists.
+
+`downloadpdb` keeps the existing RCSB URLs and uppercase filenames for legacy IDs.
+For extended IDs, it uses the published download shortlinks of the
+[wwPDB Beta Archive](https://www.wwpdb.org/ftp/pdb-beta-ftp-sites) and lowercase
+filenames. These shortlinks support the reorganized entry directories without callers
+having to construct archive paths such as
+`.../pub/wwpdb/pdb/data/entries/vq/pdb_00002vqc/structures/pdb_00002vqc.cif.gz`.
+The default format remains PDBx/mmCIF:
+
+```julia
+file = downloadpdb("PDB_00002VQC") # pdb_00002vqc.cif.gz
+residues = read_file(file, MMCIFFile)
+downloadpdb("pdb_00002vqc", format = PDBML) # pdb_00002vqc.xml.gz
+
+# A mirror can be selected explicitly; filenames still use the supplied ID format.
+downloadpdb("pdb_00002vqc", baseurl = "https://files.rcsb.org/download/")
+```
+
+Use PDBx/mmCIF for new workflows. The
+[wwPDB transition](https://www.wwpdb.org/documentation/new-format-for-pdb-ids) is
+scheduled for July 21, 2027: new entries will have extended-only IDs and no legacy
+PDB-format files. Requesting `format = PDBFile` for an extended-only ID raises
+`ArgumentError` with guidance to use `MMCIFFile` or `PDBML`. A legacy alias allows
+the request, but does not guarantee that a PDB-format file exists.
+
+**Metadata limitation:** `getpdbdescription` and `downloadpdbheader` translate extended
+aliases to legacy IDs for RCSB GraphQL, retaining the identifiers in RCSB's response.
+Extended-only IDs raise `ArgumentError`. In endpoint checks on October 4, 2026,
+GraphQL returned `null` for `pdb_00002vqc` but returned metadata for `2VQC`.
+Coordinate support therefore does not imply that the metadata service supports the
+same identifiers. This restriction can be revisited when that service supports them.
+See also [SIFTS](@ref Module-SIFTS) for the current SIFTS download limitation.
+
 ## Retrieve information from AlphaFold database
 
 This module provides functions to download and query protein structures from AlphaFold DB.

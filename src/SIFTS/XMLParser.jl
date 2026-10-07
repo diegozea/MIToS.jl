@@ -3,6 +3,28 @@ struct SIFTSXML <: FileFormat end
 # Download SIFTS
 # ==============
 
+function _sifts_url(pdbcode::AbstractString, source::AbstractString)
+    @assert source == "ftp" || source == "https" "source must be ftp or https"
+    code = Utils._legacy_pdbcode(pdbcode)
+    code === nothing && throw(
+        ArgumentError(
+            "SIFTS XML downloads currently require a legacy PDB ID; $pdbcode has no legacy alias. " *
+            "Read a local SIFTSXML file if one is available.",
+        ),
+    )
+    if source == "ftp"
+        string(
+            "https://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/",
+            code[2:3],
+            "/",
+            code,
+            ".xml.gz",
+        )
+    else
+        string("https://www.ebi.ac.uk/pdbe/files/sifts/", code, ".xml.gz")
+    end
+end
+
 """
     downloadsifts(pdbcode::AbstractString; filename::AbstractString, source::AbstractString="ftp")
 
@@ -13,6 +35,10 @@ The `source` keyword argument is set to `"ftp"` by default, downloading from the
 mirror at `https://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/`.
 Alternatively, you can choose `"https"` as the `source` to download directly from the
 EBI PDBe server at https://www.ebi.ac.uk/pdbe/files/sifts/.
+Legacy IDs and their extended aliases are accepted in either case. The remote SIFTS
+XML services still use legacy IDs: `pdb_00001abc` downloads `1abc.xml.gz`, while keeping
+`pdb_00001abc.xml.gz` as the default local filename. An extended-only ID raises
+`ArgumentError` because no SIFTS XML endpoint for these IDs is currently documented.
 """
 function downloadsifts(
     pdbcode::AbstractString;
@@ -20,23 +46,8 @@ function downloadsifts(
     source::AbstractString = "ftp",
 )
     @assert endswith(filename, ".xml.gz") "filename must end with .xml.gz"
-    @assert source == "ftp" || source == "https" "source must be ftp or https"
-    if check_pdbcode(pdbcode)
-        url = if source == "ftp"
-            string(
-                "https://ftp.ebi.ac.uk/pub/databases/msd/sifts/split_xml/",
-                lowercase(pdbcode[2:3]),
-                "/",
-                lowercase(pdbcode),
-                ".xml.gz",
-            )
-        else
-            string("https://www.ebi.ac.uk/pdbe/files/sifts/", lowercase(pdbcode), ".xml.gz")
-        end
-        download_file(url, filename)
-    else
-        throw(ErrorException("$pdbcode is not a correct PDB"))
-    end
+    url = _sifts_url(pdbcode, source)
+    download_file(url, filename)
     filename
 end
 

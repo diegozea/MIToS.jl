@@ -153,10 +153,26 @@ using MIToS.SIFTS
 siftsfile = downloadsifts("1IVO")
 ```
 
+Legacy IDs and their extended aliases can be used in either case:
+`downloadsifts("PDB_00001IVO")` downloads the remote `1ivo.xml.gz` file and saves it
+as `pdb_00001ivo.xml.gz` by default. This applies to both `source = "ftp"` (HTTPS
+FTP mirror) and `source = "https"` (PDBe).
+
+The [SIFTS download documentation](https://www.ebi.ac.uk/pdbe/docs/sifts/quick.html)
+still specifies legacy paths. On October 4, 2026, the FTP mirror served
+`split_xml/vq/2vqc.xml.gz` but returned HTTP 404 for
+`split_xml/vq/pdb_00002vqc.xml.gz`. There is no documented extended-only XML
+download path yet, so `downloadsifts` raises `ArgumentError` for IDs without a
+legacy alias. Locally supplied SIFTS XML and CSV files can contain full extended IDs;
+they are preserved when parsed. `siftsmapping` and `msacolumn2pdbresidue` recognise
+legacy and extended aliases in either direction, and keep extended-only IDs distinct.
+The local XML tests use synthetic cross-references because an official extended-only
+SIFTS XML fixture is not currently available.
+
 The following example, shows the residue number mapping between *Pfam* and *PDB*.
 *Pfam* uses *UniProt* coordinates and *PDB* uses their own residue numbers with insertion
-codes. Note that **the `siftsmapping` function is case sensitive**, and that
-**SIFTS stores PDB identifiers using lowercase characters**.
+codes. `siftsmapping` matches PDB identifiers without regard to case; identifiers for
+other databases, including Pfam and UniProt, remain case sensitive.
 
 ```@example sifts_simple
 siftsmap = siftsmapping(
