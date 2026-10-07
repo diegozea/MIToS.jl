@@ -1,5 +1,33 @@
 ## MIToS.jl Release Notes
 
+### Changes from v3.10.1 to v3.11.0
+
+This release adds support for reading and writing files containing multiple sequence
+alignments and includes a few bug fixes.
+
+- Added `eachmsa` to read Stockholm and Clustal files one alignment at a time,
+  without loading all alignments into memory. It supports local files, URLs,
+  and gzip-compressed files.
+- Added `support_eachmsa` and `hasnextmsa` so other alignment formats can support
+  `eachmsa` through their `parse_file` methods. The new Development documentation
+  explains how to add this support.
+- `write_file` and `print_file` now accept typed collections and iterators of
+  alignments to write multiple MSAs in Stockholm or Clustal format.
+- Reading and writing multiple alignments use user-defined `parse_file` and
+  `print_file` methods, including custom alignment types. Requests for
+  `MultipleSequenceAlignment` continue to reuse custom named-matrix parsers.
+- Fixed Clustal parsing to stop after the first alignment in files containing
+  multiple alignments, including when the next header has leading spaces or tabs.
+- Stockholm headers with leading spaces or tabs are no longer mistaken for
+  sequence data.
+- `read_file` now warns when a Stockholm or Clustal file contains another alignment
+  and recommends `eachmsa` to read them all.
+- Corrected Stockholm output to include the `# STOCKHOLM 1.0` header. Sequence and
+  annotation fields now use spaces instead of tabs to improve compatibility with
+  other readers.
+- Fixed a SIFTS benchmark crash by keeping its XML document alive until each
+  benchmark sample finishes.
+
 ### Changes from v3.10.0 to v3.10.1
 
 - Fixed a precompilation error on Julia 1.13; users of Julia 1.13 must upgrade to
