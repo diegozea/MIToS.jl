@@ -288,7 +288,7 @@ end
             end
             table
         end
-    elseif (A === UngappedAlphabet) || (A === GappedAlphabet)
+    elseif (A === UngappedAlphabet) || (A === GappedAlphabet) || (A === GappedXAlphabet)
         quote
             temporal = table.temporal::Array{T,N}
             freqtable = getarray(table.table)::Array{T,N}

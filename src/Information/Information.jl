@@ -93,6 +93,16 @@ export  # MIToS.MSA
     # CorrectedMutualInformation
     buslje09,
     BLMI,
+    # PSSM
+    AbstractPositionSpecificMatrix,
+    PositionFrequencyMatrix,
+    position_frequency_matrix,
+    PositionSpecificProbabilityMatrix,
+    position_specific_probability_matrix,
+    PositionSpecificScoringMatrix,
+    position_specific_scoring_matrix,
+    ProfileScore,
+    score_sequence,
     # Gaps
     gap_union_percentage,
     gap_intersection_percentage,
@@ -119,5 +129,6 @@ include("Corrections.jl")
 include("CorrectedMutualInformation.jl")
 include("Gaps.jl")
 include("Externals.jl")
+include("PSSM.jl")
 
 end
