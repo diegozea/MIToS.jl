@@ -1570,6 +1570,22 @@ end
         end
 
         @testset "default pairing" begin
+            @testset "FASTA join with native indices (issue #200)" begin
+                mktempdir() do dir
+                    a = joinpath(dir, "a.fasta")
+                    b = joinpath(dir, "b.fasta")
+                    write(a, ">ENSG00000000001\nAA\n>ORTHO1\nAB\n")
+                    write(b, ">ENSG00000000001\nCC\n>ORTHO1\nCD\n")
+
+                    joined = join_msas(read_file(a, FASTA), read_file(b, FASTA))
+                    @test size(joined) == (2, 4)
+                    @test sequencenames(joined) == ["ENSG00000000001", "ORTHO1"]
+                    @test columnnames(joined) == ["1_1", "1_2", "2_1", "2_2"]
+                    # Ambiguous residue B is represented by X in MIToS.
+                    @test getresidues(joined) == Residue['A' 'A' 'C' 'C'; 'A' 'X' 'C' 'D']
+                end
+            end
+
             @testset "sequences" begin
                 msa_simple =
                     read_file(joinpath(DATA, "simple.fasta"), FASTA, generatemapping = true)

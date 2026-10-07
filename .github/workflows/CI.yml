@@ -57,6 +57,26 @@ jobs:
           flag-name: run-${{ join(matrix.*, '-') }}
           parallel: true
 
+  test-x86:
+    name: Julia 1.12 - ubuntu-latest - x86 - MSA names and joins
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.12'
+          arch: x86
+      - uses: julia-actions/julia-buildpkg@v1
+      - name: Test MSA names and joins on 32-bit Julia
+        run: |
+          julia --project -e '
+            using Test, MIToS, MIToS.MSA, MIToS.Utils, NamedArrays, OrderedCollections
+            @assert Sys.WORD_SIZE == 32
+            const DATA = joinpath(pwd(), "test", "data")
+            include("test/MSA/MultipleSequenceAlignment.jl")
+            include("test/MSA/Concatenation.jl")
+          '
+
   finish:
     needs: test
     if: ${{ always() }}
