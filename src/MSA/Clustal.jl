@@ -30,9 +30,10 @@ function _load_clustal_sequences(io::IO)
     while !eof(io)
         line = _read_msa_line(io)
         chomped = chomp(line)
+        stripped = strip(chomped)
         # blank line ends the current sequence block
-        isempty(strip(chomped)) && (in_sequence_block = false; continue)
-        if occursin(_msa_header(Clustal), chomped)
+        isempty(stripped) && (in_sequence_block = false; continue)
+        if occursin(_msa_header(Clustal), stripped)
             if seen_header || !isempty(seqs)
                 buffered && TranscodingStreams.unread(io, codeunits(line))
                 break

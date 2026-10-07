@@ -258,6 +258,31 @@
                         end
                     end
                 end
+                @testset "Indented Clustal headers" begin
+                    # Each header starts a new MSA, even when sequence names are repeated.
+                    records = (
+                        "CLUSTAL\n\na AAA\n\n",
+                        "  CLUSTAL\n\na CCC\n\n",
+                        "\tCLUSTALW\n\na DDD\n\n",
+                    )
+                    text = join(records)
+                    expected = [parse_file(lstrip(record), Clustal) for record in records]
+                    for suffix in ("", ".gz")
+                        path = joinpath(dir, "indented.aln" * suffix)
+                        _write_msa_fixture(path, text)
+                        @test collect(eachmsa(path, Clustal)) == expected
+                        msa = @test_logs (:warn, multiple_warning) read_file(path, Clustal)
+                        @test msa == first(expected)
+                    end
+                    # Preserve the next header exactly, including whitespace and newline.
+                    io = NoopStream(IOBuffer(text))
+                    try
+                        @test parse_file(io, Clustal) == first(expected)
+                        @test readline(io; keep = true) == "  CLUSTAL\n"
+                    finally
+                        close(io)
+                    end
+                end
                 @testset "Clustal headers, blocks and conservation" begin
                     # Handle header variants, residue counts and multiple text blocks.
                     # CLUSTAL_seq is a sequence name; conservation belongs to its own MSA.
