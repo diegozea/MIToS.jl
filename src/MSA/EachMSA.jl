@@ -1,3 +1,25 @@
+function hasnextmsa(
+    io::TranscodingStream,
+    format::Type{<:Union{Stockholm,Clustal}};
+    strict::Bool = false,
+)
+    hasnextmsa(io, _msa_header(format); strict = strict)
+end
+
+function support_eachmsa(::Type{Stockholm})
+    return true
+end
+
+function support_eachmsa(::Type{Clustal})
+    return true
+end
+
+"""
+Reuse a buffered input, or add a buffer to an ordinary input.
+"""
+_buffer_msa_input(io::IO) = NoopStream(io)
+_buffer_msa_input(io::TranscodingStream) = io
+
 """
 An iterator owning an open alignment stream and, for URLs, its temporary download.
 Construct it with [`eachmsa`](@ref). Iteration consumes the stream and cannot restart it.
@@ -21,29 +43,13 @@ function Base.close(msas::MSAIterator)
     Utils._close_input(msas.io, msas.temporary)
 end
 
-"""
-Read one prepared alignment, forwarding the output type and parsing keywords. Formats
-whose parser consumes the next header can specialize this method and set `msas.ready = true`
-to preserve that header for the next iteration.
-"""
-function _read_msa!(msas::MSAIterator{F,T}) where {F,T}
-    parse_file(msas.io, F, T; msas.kwargs...)
-end
-
-function _read_msa!(msas::MSAIterator{Clustal,T}) where {T}
-    IDS, SEQS, annot, has_next =
-        _load_clustal_sequences(eachline(msas.io); header_read = true)
-    msas.ready = has_next
-    _parse_msa((IDS, SEQS, annot), T; msas.kwargs...)
-end
-
 # Look ahead only as far as the next header. In particular, isempty and zip must
 # not consume an alignment from this stateful iterator.
 function Base.isdone(msas::MSAIterator{F}, ::Nothing = nothing) where {F}
     msas.closed && return true
     msas.ready && return false
     try
-        msas.ready = _read_msa_header(msas.io, _msa_header(F); strict = true)
+        msas.ready = hasnextmsa(msas.io, F; strict = true)
         msas.ready && return false
         close(msas)
         return true
@@ -53,11 +59,11 @@ function Base.isdone(msas::MSAIterator{F}, ::Nothing = nothing) where {F}
     end
 end
 
-function Base.iterate(msas::MSAIterator, ::Nothing = nothing)
+function Base.iterate(msas::MSAIterator{F,T}, ::Nothing = nothing) where {F,T}
     Base.isdone(msas) && return nothing
     try
         msas.ready = false
-        msa = _read_msa!(msas)
+        msa = parse_file(msas.io, F, T; msas.kwargs...)
         return msa, nothing
     catch
         close(msas)
@@ -73,6 +79,9 @@ Iterate over the alignments in a `Stockholm` or `Clustal` file, parsing one MSA 
 For Clustal, each alignment starts with its own CLUSTAL header. The default
 output is `AnnotatedMultipleSequenceAlignment`; the output types and parsing keywords
 are the same as for [`read_file`](@ref) and [`parse_file`](@ref).
+Each alignment is read with `parse_file`, including user-defined output types.
+Additional formats can declare [`support_eachmsa`](@ref) as `true` and implement
+[`hasnextmsa`](@ref) and `parse_file` to support this iterator.
 
 The source is a local path or an HTTP, HTTPS or FTP URL. Files ending in `.gz` are
 decompressed incrementally using one open stream. A URL is downloaded once to a temporary
@@ -103,7 +112,8 @@ function eachmsa(
     ::Type{F},
     ::Type{T} = AnnotatedMultipleSequenceAlignment;
     kwargs...,
-) where {F<:Union{Stockholm,Clustal},T}
+) where {F<:MSAFormat,T}
+    support_eachmsa(F) || throw(MethodError(eachmsa, (source, F, T)))
     remote = Utils._is_url(source)
     temporary = remote ? Utils._download_tempname(source) : nothing
     filename = temporary === nothing ? source : temporary
@@ -113,7 +123,7 @@ function eachmsa(
             download_file(source, filename; headers = Dict("Accept-Encoding" => "identity"))
         end
         io = open(filename, "r")
-        io = Utils._input_stream(io, source)
+        io = _buffer_msa_input(Utils._input_stream(io, source))
         options = (; kwargs...)
         msas = MSAIterator{F,T,typeof(io),typeof(options)}(
             io,
@@ -133,7 +143,7 @@ end
 function eachmsa(
     f::Function,
     source::AbstractString,
-    format::Type{<:Union{Stockholm,Clustal}},
+    format::Type{<:MSAFormat},
     args...;
     kwargs...,
 )
@@ -146,21 +156,20 @@ function eachmsa(
 end
 
 """
-Read the first MSA and warn if another alignment header is found. If the parser leaves
-`has_next` unchecked (`nothing`), look for the next header after parsing.
+Read one alignment through `parse_file` and warn if another alignment header follows.
+For other formats, forward the original arguments to preserve their parser's defaults.
 """
 function Utils._read_file(
     io::IO,
     format::Type{F},
-    output::Type{T} = AnnotatedMultipleSequenceAlignment;
+    args::Vararg{Any,N};
     kwargs...,
-) where {F<:Union{Stockholm,Clustal},T}
-    IDS, SEQS, annot, has_next = _load_sequences(io, format, output)
-    msa = _parse_msa((IDS, SEQS, annot), output; kwargs...)
-    if has_next === nothing
-        has_next = _read_msa_header(io, _msa_header(format))
-    end
-    if has_next
+) where {F<:MSAFormat,N}
+    support_eachmsa(format) || return parse_file(io, format, args...; kwargs...)
+    io = _buffer_msa_input(io)
+    output_args = isempty(args) ? (AnnotatedMultipleSequenceAlignment,) : args
+    msa = parse_file(io, format, output_args...; kwargs...)
+    if hasnextmsa(io, format)
         @warn "Read only the first alignment; use `eachmsa` to read all."
     end
     msa

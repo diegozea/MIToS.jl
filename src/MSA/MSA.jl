@@ -115,6 +115,8 @@ export  # Residue
     # GeneralParserMethods
     SequenceFormat,
     MSAFormat,
+    support_eachmsa,
+    hasnextmsa,
     deletefullgapcolumns,
     deletefullgapcolumns!,
     # Raw
@@ -123,6 +125,7 @@ export  # Residue
     Clustal,
     # Stockholm
     Stockholm,
+    # EachMSA
     eachmsa,
     # FASTA
     FASTA,

@@ -6,30 +6,35 @@ struct Clustal <: MSAFormat end
 # the columns of the alignment.
 
 # Match a header token, not a sequence name such as CLUSTAL_seq.
+"""
+Return the regular expression that identifies an alignment header.
+Used by `hasnextmsa` to check for another alignment and by parsers to recognize
+where the next alignment begins, so they can stop reading the current one.
+"""
 _msa_header(::Type{Clustal}) = r"^CLUSTALW?(?:\s|$)"
 
 """
-Read sequence data and conservation annotations from an iterable of Clustal lines.
-Return sequence names, sequences, annotations and whether another header was consumed.
-Set `header_read` when the caller has already consumed the current alignment's header.
+Read one Clustal alignment. Put the next header back in buffered inputs;
+otherwise consume it as with sequential line reading.
+Return sequence names, sequences and annotations.
 """
-function _load_clustal_sequences(lines; header_read::Bool = false)
+function _load_clustal_sequences(io::IO)
     seqs = OrderedDict{String,String}()
     conservation = IOBuffer()
     seq_re = r"^(\S+)\s+([A-Za-z.-]+)(?:\s+\d+)?"  # sequence line with optional count
     startidx = 0
     endidx = 0
-    seen_header = header_read
-    has_next = false
+    seen_header = false
     in_sequence_block = false # true when reading a sequence block
-    for line in lines
+    buffered = io isa TranscodingStream
+    while !eof(io)
+        line = _read_msa_line(io)
         chomped = chomp(line)
         # blank line ends the current sequence block
         isempty(strip(chomped)) && (in_sequence_block = false; continue)
         if occursin(_msa_header(Clustal), chomped)
-            # A new header starts another alignment, not another sequence block.
             if seen_header || !isempty(seqs)
-                has_next = true
+                buffered && TranscodingStreams.unread(io, codeunits(line))
                 break
             end
             seen_header = true
@@ -52,15 +57,15 @@ function _load_clustal_sequences(lines; header_read::Bool = false)
             in_sequence_block = true  # we are inside a sequence block now
             continue
         end
-        # using line instead of chomped to preserve whitespaces in the conservation line
-        if in_sequence_block && isascii(line) && match(seq_re, line) === nothing
+        # Preserve conservation spaces, but exclude line endings.
+        if in_sequence_block && isascii(chomped)
             # conservation line found
-            stop = min(endidx, lastindex(line))
+            stop = min(endidx, lastindex(chomped))
             if stop >= startidx
                 # remove leading/trailing padding spaces from the conservation
                 # line before storing it using the previously stored indices
                 # of the aligned columns in this block.
-                consblock = line[startidx:stop]
+                consblock = chomped[startidx:stop]
                 write(conservation, consblock)
             end
             in_sequence_block = false
@@ -72,7 +77,7 @@ function _load_clustal_sequences(lines; header_read::Bool = false)
     annot = Annotations()
     _disambiguate_seqnames!(IDS, annot)
     isempty(CONS) || setannotcolumn!(annot, "cons", CONS)
-    return IDS, SEQS, annot, has_next
+    return IDS, SEQS, annot
 end
 
 function _load_sequences(
@@ -80,7 +85,7 @@ function _load_sequences(
     format::Type{Clustal};
     create_annotations::Bool = false,
 )
-    _load_clustal_sequences(lineiterator(io))
+    _load_clustal_sequences(io isa AbstractString ? IOBuffer(io) : io)
 end
 
 function Utils.print_file(

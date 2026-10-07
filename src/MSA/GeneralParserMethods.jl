@@ -8,20 +8,57 @@ abstract type MSAFormat <: AbstractSequenceFormat end
 abstract type SequenceFormat <: AbstractSequenceFormat end
 
 """
-Return the alignment header pattern. Methods are defined for `Stockholm` and `Clustal`.
+    support_eachmsa(format::Type{<:MSAFormat}) -> Bool
+
+Return whether `format` supports [`eachmsa`](@ref). The default is `false`.
+To support a new format, define `MIToS.MSA.support_eachmsa(::Type{MyFormat}) = true` and
+implement [`hasnextmsa`](@ref) and `parse_file(io, format, output; kwargs...)`.
+
+When `support_eachmsa` returns `true`, [`read_file`](@ref) calls [`hasnextmsa`](@ref)
+after reading the first alignment and warns the user to use `eachmsa` if another follows.
+When `support_eachmsa` returns `false`, `read_file` calls `parse_file` directly.
 """
-function _msa_header end
+function support_eachmsa(::Type{<:MSAFormat})
+    # Explicit returns keep these constant traits visible to Julia 1.13 coverage.
+    return false
+end
 
 """
-Skip blank lines and check the next line against the `header` pattern.
-With `strict = true`, reject a nonblank line that is not a header.
+Read an alignment line, using a byte delimiter for the buffered `readuntil` method.
+Buffered inputs retain the newline so a line can be put back unchanged.
 """
-function _read_msa_header(io::IO, header::Regex; strict::Bool = false)
-    for line in eachline(io)
-        line = strip(line)
-        isempty(line) && continue
-        found = occursin(header, line)
-        strict && !found && throw(ArgumentError("Invalid alignment header: $line"))
+_read_msa_line(io::IO) = readline(io)
+_read_msa_line(io::TranscodingStream) = String(readuntil(io, 0x0a; keep = true))
+
+"""
+    hasnextmsa(io::TranscodingStream, format::Type; strict::Bool=false) -> Bool
+    hasnextmsa(io::TranscodingStream, header::Regex; strict::Bool=false) -> Bool
+
+Check for another alignment in a buffered input, leaving its beginning available to read.
+The regular-expression method skips blank lines and checks the next line against `header`.
+It returns `false` at the end of the input or for a different header. With `strict=true`,
+an unexpected nonblank line raises an `ArgumentError` instead.
+
+To support a new `MSAFormat` in [`eachmsa`](@ref), declare [`support_eachmsa`](@ref) as
+`true` and define this method and `parse_file(io, format, output; kwargs...)` for the format.
+`eachmsa` gives both methods the same buffered input and uses `strict=true`.
+The parser must read one alignment at a time. If it reads a line belonging to the next
+alignment, preserve its newline with
+`readline(io; keep=true)` and put it back with `TranscodingStreams.unread(io, codeunits(line))`.
+Neither method should close the input. A format with a header pattern can delegate to the
+regular-expression method, forwarding `strict`.
+
+`read_file` also uses this interface to warn when another alignment follows.
+"""
+function hasnextmsa(io::TranscodingStream, header::Regex; strict::Bool = false)
+    while !eof(io)
+        line = _read_msa_line(io)
+        stripped = strip(line)
+        isempty(stripped) && continue
+        # Put the line back before checking the header so an error does not consume it.
+        TranscodingStreams.unread(io, codeunits(line))
+        found = occursin(header, stripped)
+        strict && !found && throw(ArgumentError("Invalid alignment header: $stripped"))
         return found
     end
     false
@@ -499,7 +536,7 @@ end
 
 """
 Construct an MSA with the requested output type and parsing options. `loaded_sequences`
-contains sequence names, sequences and annotations; any following parser state is ignored.
+contains sequence names, sequences and annotations.
 """
 function _parse_msa(
     loaded_sequences::Tuple,
