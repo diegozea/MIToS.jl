@@ -109,6 +109,75 @@ CA_1ivo =
 CA_1ivo[1] # First residue. It has only the α carbon.
 ```
 
+## Writing AlphaFold and ColabFold templates
+
+`write_file(path, residues, MMCIFFile)` writes the atom records retained by MIToS.
+It does not reconstruct the polymer and header categories expected by the
+[AlphaFold mmCIF parser](https://github.com/google-deepmind/alphafold/blob/c77e5d2a8961d1a353632c462914ff0a32a950f6/alphafold/data/mmcif_parsing.py).
+For a template derived from selected protein coordinates, use
+[`alphafold_mmcifdict`](@ref MIToS.PDB.alphafold_mmcifdict) and write the resulting
+dictionary with BioStructures:
+
+```julia
+using MIToS.PDB
+import BioStructures
+
+# Select the desired protein polymer explicitly. This example uses only ATOM records;
+# include modified HETATM residues separately if they belong to the desired polymer.
+protein = read_file("input.pdb", PDBFile; chain = "A", model = "1", group = "ATOM")
+template = alphafold_mmcifdict(protein; entry_id = "my_template")
+BioStructures.writemmcif("tmpl.cif", template)
+```
+
+For ColabFold's directory-based custom-template workflow (`--custom-template-path`),
+use a **four-character alphanumeric filename stem**, with lowercase letters, such as
+`tmpl.cif`. ColabFold builds hit names from the filename, e.g. `tmpl_A`; AlphaFold
+expects a four-character identifier and lowercases it when locating the mmCIF file.
+This requirement is separate from `entry_id`, which sets the mmCIF data-block name and
+`_entry.id`. The descriptive `entry_id = "my_template"` above is valid, but changing
+`entry_id` does not fix an incompatible filename.
+
+The helper adds `_chem_comp`, `_entity`, `_entity_poly_seq`, `_struct_asym`, `_entry`
+and `_exptl` categories, both label and author atom identifiers, and consistent entity
+references. Each selected chain gets its own entity and sequential `label_seq_id`s
+starting at 1. Input order within each chain defines the template sequence; author
+numbers are not sorted, and gaps are not filled with guessed residues. The sequence
+therefore describes **only the selected, observed residues**, not the original full
+polymer. Existing PDBe numbering is replaced in the output. MIToS stores only one chain,
+residue-name and atom-name namespace, so both label and author fields use those stored
+values; the original distinction cannot be recovered after parsing into `PDBResidue`s.
+
+Multi-model input requires an explicit choice, e.g. `model = "14"`. That model is written
+as model `1` for AlphaFold. Signed author numbers and single-letter insertion codes are
+preserved by default. Duplicate author positions (including alternate residue identities
+at one site) are rejected, since their polymer sequence would be ambiguous. Atom
+alternative locations within a residue are retained.
+
+Only the 20 standard amino acids get default chemical component types; glycine is
+`peptide linking`, the others `L-peptide linking`. Other monomers require explicit types,
+for example `chem_comp_types = Dict("MSE" => "L-peptide linking")`. This does not rename
+the residue or convert its `HETATM` record. A three-to-one residue mapping does not
+establish stereochemistry or polymer membership. Select protein polymer residues only;
+exclude solvent, ligands and nucleic acids before export.
+
+No experimental metadata is recovered from coordinates. The default method is `?`
+(unknown); no resolution, release date or missing element is invented. Supply a known
+`exptl_method` and `release_date = Dates.Date(...)` from the source structure when
+available. The date becomes a single revision-history entry, not a reconstructed audit
+trail. The returned dictionary can be extended with additional verified metadata.
+
+!!! note "Downstream limits"
+
+    This helper produces a minimal coordinate-derived template, not a wwPDB deposition.
+    AlphaFold template date filtering may require a real release date.
+    [ColabFold's custom-template preparation](https://github.com/sokrypton/ColabFold/blob/efbf31c37cedb38cd09c69c1b991910a9866480e/colabfold/batch.py)
+    may add a fallback date when it is absent and may skip residues with insertion codes.
+    For that path, opt into `renumber_auth = true` to replace author residue numbers with
+    sequential numbers and remove insertion codes in the output. Keep the original
+    residues to retain their source identifiers. Downstream handling of modified residues,
+    atom completeness, chain names, sequence matching and template search still applies;
+    successful mmCIF parsing alone does not guarantee successful template inference.
+
 ## Looking for particular residues
 
 MIToS parse PDB files to vector of residues, instead of using a hierarchical structure

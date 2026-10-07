@@ -95,6 +95,7 @@ end
     include("PDB/Copy.jl")
     include("PDB/PDBResidues.jl")
     include("PDB/MMCIFParser.jl")
+    include("PDB/AlphaFoldMMCIF.jl")
     include("PDB/Plots.jl")
 end
 
